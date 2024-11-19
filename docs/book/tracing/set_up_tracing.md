@@ -27,7 +27,7 @@ Use `init_tracing` to enable tracely tracing. Example:
 init_tracing(
    address="https://app.evidently.cloud/",
    api_key=”YOUR_EVIDENTLY_TOKEN”,
-   team_id="YOUR_EVIDENTLY_TEAM_ID",
+   project_id="YOUR_PROJECT_ID",
    export_name="YOUR_TRACING_DATASET_NAME",
    )
 ```
@@ -39,7 +39,7 @@ init_tracing(
 | `address: Optional[str]`       | The URL of the collector service where tracing data will be sent. For Evidently Cloud, set `https://app.evidently.cloud/`.<br>**Required:** No, **Default:** `None` |
 | `exporter_type: Optional[str]` | Specifies the type of exporter to use for tracing. Options are `grpc` for gRPC protocol or `http` for HTTP protocol.<br>**Required:** No, **Default:** `None` |
 | `api_key: Optional[str]`       | The authorization API key for Evidently Cloud tracing. This key authenticates your requests and is necessary for sending data to Evidently Cloud.<br>**Required:** No, **Default:** `None` |
-| `team_id: Optional[str]`       | The ID of your team in Evidently Cloud. This is used to organize and group tracing data under your specific team in the Evidently Cloud UI.<br>**Required:** No, **Default:** `None` |
+| `project_id: str`       | The ID of your Project in Evidently Cloud. <br>**Required:** Yes, **Default:** `None` |
 | `export_name: Optional[str]`   | A string name assigned to the exported tracing data. All data with the same `export_name` will be grouped into a single dataset.<br>**Required:** No, **Default:** `None` |
 | `as_global: bool = True`       | Indicates whether to register the tracing provider globally for OpenTelemetry (`opentelemetry.trace.TracerProvider`) or use it locally within a scope. **Default:** `True` |
 
