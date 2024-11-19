@@ -73,7 +73,7 @@ It is recommended to pass the key as an environment variable. [See Open AI docs]
 
 Set up configuration details:
 * The `address` is the destination backend to store collected traces. In this case, it is Evidently Cloud.
-* `Project_id` is the identification of the Evidently Project. Go to the [Projects page](https://app.evidently.cloud/projects), enter the selected Project and copy its ID.
+* `Project_id` is the identification of the Evidently Project. Go to the [Projects page](https://app.evidently.cloud/), enter the selected Project and copy its ID.
 * `Dataset_name` helps identify the resulting Tracing dataset. All data with the same ID would be grouped into single dataset.
 
 ```python
