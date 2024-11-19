@@ -1,9 +1,20 @@
+from enum import Enum
 from typing import Dict
 
 from evidently import ColumnMapping
 from evidently import ColumnType
 from evidently.ui.type_aliases import SnapshotID
 from evidently.utils.data_preprocessing import FeatureDefinition
+
+
+class DatasetSourceType(Enum):
+    # This values correspond dataset_sources table in db.
+    # Changing this class care about data consistency manually: add/remove from db
+    file = 1
+    tracing = 2
+    snapshot_builder = 3
+    dataset = 4
+    datagen = 5
 
 
 def inject_feature_types_in_column_mapping(
