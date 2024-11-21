@@ -92,6 +92,7 @@ class FeatureQualityStats:
     most_common_not_null_value_percentage: Optional[float] = None
     new_in_current_values_count: Optional[int] = None
     unused_in_current_values_count: Optional[int] = None
+    skew: Optional[float] = None
 
     def is_datetime(self):
         """Checks that the object store stats for a datetime feature"""
@@ -205,6 +206,7 @@ def get_features_stats(feature: pd.Series, feature_type: ColumnType) -> FeatureQ
         result.percentile_25 = np.round(common_stats["25%"], 2)  # type: ignore[assignment]
         result.percentile_50 = np.round(common_stats["50%"], 2)  # type: ignore[assignment]
         result.percentile_75 = np.round(common_stats["75%"], 2)  # type: ignore[assignment]
+        result.skew = feature.skew()
 
     if feature_type == ColumnType.Datetime:
         # cast datetime value to str for datetime features
