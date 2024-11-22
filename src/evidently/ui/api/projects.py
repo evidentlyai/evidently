@@ -37,7 +37,6 @@ from evidently.ui.dashboards.reports import DashboardPanelPlot
 from evidently.ui.dashboards.test_suites import DashboardPanelTestSuite
 from evidently.ui.dashboards.test_suites import DashboardPanelTestSuiteCounter
 from evidently.ui.errors import NotEnoughPermissions
-from evidently.ui.type_aliases import ZERO_UUID
 from evidently.ui.type_aliases import OrgID
 from evidently.ui.type_aliases import ProjectID
 from evidently.ui.type_aliases import SnapshotID
@@ -348,9 +347,10 @@ async def add_project(
     project_manager: Annotated[ProjectManager, Dependency(skip_validation=True)],
     log_event: Callable,
     user_id: UserID,
-    team_id: TeamID = ZERO_UUID,
+    team_id: Optional[TeamID] = None,
+    org_id: Optional[OrgID] = None,
 ) -> Project:
-    p = await project_manager.add_project(data, user_id, team_id)
+    p = await project_manager.add_project(data, user_id, team_id, org_id)
     log_event("add_project")
     return p
 

@@ -37,6 +37,7 @@ from evidently.ui.storage.common import NO_TEAM
 from evidently.ui.storage.common import NO_USER
 from evidently.ui.type_aliases import BlobID
 from evidently.ui.type_aliases import DataPointsAsType
+from evidently.ui.type_aliases import OrgID
 from evidently.ui.type_aliases import PointType
 from evidently.ui.type_aliases import ProjectID
 from evidently.ui.type_aliases import SnapshotID
@@ -201,8 +202,9 @@ class JsonFileMetadataStorage(MetadataStorage):
             self._state = LocalState.load(self.path, None)
         return self._state
 
-    async def add_project(self, project: Project, user: User, team: Team) -> Project:
+    async def add_project(self, project: Project, user: User, team: Optional[Team], org_id: Optional[OrgID]) -> Project:
         project_id = str(project.id)
+        project.org_id = org_id
         self.state.location.makedirs(posixpath.join(project_id, SNAPSHOTS))
         with self.state.location.open(posixpath.join(project_id, METADATA_PATH), "w") as f:
             json.dump(project.dict(), f, indent=2, cls=NumpyEncoder)

@@ -22,7 +22,9 @@ from evidently.ui.type_aliases import TeamID
 
 class WorkspaceBase(abc.ABC):
     @abc.abstractmethod
-    def create_project(self, name: str, description: Optional[str] = None, team_id: TeamID = None) -> Project:
+    def create_project(
+        self, name: str, description: Optional[str] = None, team_id: TeamID = None, org_id: OrgID = None
+    ) -> Project:
         raise NotImplementedError
 
     @abc.abstractmethod

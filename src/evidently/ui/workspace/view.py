@@ -29,16 +29,20 @@ class WorkspaceView(WorkspaceBase):
         self.project_manager = project_manager
         self.user_id = user_id or ZERO_UUID
 
-    def create_project(self, name: str, description: Optional[str] = None, team_id: TeamID = None) -> Project:
+    def create_project(
+        self, name: str, description: Optional[str] = None, team_id: TeamID = None, org_id: OrgID = None
+    ) -> Project:
         return async_to_sync(
             self.project_manager.create_project(
-                name, user_id=self.user_id, team_id=team_id or ZERO_UUID, description=description
+                name, user_id=self.user_id, team_id=team_id, description=description, org_id=org_id
             )
         )
 
-    def add_project(self, project: Project, team_id: TeamID = None) -> Project:
+    def add_project(
+        self, project: Project, team_id: Optional[TeamID] = None, org_id: Optional[OrgID] = None
+    ) -> Project:
         project = async_to_sync(
-            self.project_manager.add_project(project, user_id=self.user_id, team_id=team_id or ZERO_UUID)
+            self.project_manager.add_project(project, user_id=self.user_id, team_id=team_id, org_id=org_id)
         )
         return project
 
