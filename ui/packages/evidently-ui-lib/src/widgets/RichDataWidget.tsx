@@ -17,8 +17,9 @@ import ExpandMoreSharpIcon from '@mui/icons-material/ExpandMoreSharp'
 
 import type { RichDataParams } from '~/api'
 
-import Plot from '~/components/Plot'
+import Plot, { darkPlotlyLayoutTemplate } from '~/components/Plot'
 import { useDashboardViewParams } from '~/contexts/DashboardViewParams'
+import { useThemeMode } from '~/hooks/theme'
 import { BigTableDetails } from './BigTableWidget/BigTableDetails'
 
 const RichDataWidget: React.FunctionComponent<RichDataParams & { widgetSize: number }> = (
@@ -26,12 +27,28 @@ const RichDataWidget: React.FunctionComponent<RichDataParams & { widgetSize: num
 ) => {
   const [details, setDetails] = useState<boolean>(false)
   const viewParams = useDashboardViewParams()
+  const mode = useThemeMode()
   const isHistogram = props.graph?.data.some(({ type }) => type === 'histogram')
   const isCastXaxisToCategory = viewParams?.isXaxisAsCategorical && !isHistogram
 
+  const tOverride =
+    mode === 'dark'
+      ? {
+          template: {
+            ...darkPlotlyLayoutTemplate,
+            layout: {
+              ...darkPlotlyLayoutTemplate.layout,
+              colorway:
+                props.graph?.layout.template?.layout?.colorway ||
+                darkPlotlyLayoutTemplate.layout?.colorway
+            }
+          }
+        }
+      : undefined
+
   const xaxisOptionsOverride = isCastXaxisToCategory
     ? ({ type: 'category', categoryorder: 'category ascending' } as const)
-    : ({} as const)
+    : undefined
 
   return (
     <React.Fragment>
@@ -73,6 +90,7 @@ const RichDataWidget: React.FunctionComponent<RichDataParams & { widgetSize: num
               data={props.graph.data}
               layout={{
                 ...props.graph.layout,
+                ...tOverride,
                 title: undefined,
                 xaxis: { ...props.graph.layout?.xaxis, ...xaxisOptionsOverride }
               }}

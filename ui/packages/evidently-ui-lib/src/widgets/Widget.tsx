@@ -69,15 +69,9 @@ const Widget = (
   const { id, title, details, content, alerts, alertStats, insights } = props.children
   const isAlertsExists = alerts === undefined ? false : alerts.length > 0
   const isInsightsExists = insights === undefined ? false : insights.length > 0
+
   const Component = (
-    <Card
-      sx={{
-        border: '1px solid',
-        borderColor: '#d6d6d6',
-        borderRadius: '4px'
-      }}
-      elevation={0}
-    >
+    <Card elevation={0}>
       <CardContent>
         <Grid container spacing={1} direction={'column'}>
           {alertsPosition === 'row' ? (

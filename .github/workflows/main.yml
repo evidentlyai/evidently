@@ -128,7 +128,7 @@ jobs:
     if: github.event.pull_request.draft == false
     strategy:
       matrix:
-        os: [ubuntu-22.04, windows-2022, macos-13]
+        os: [ubuntu-22.04, windows-2022, macos-14]
         python: ["3.8", "3.9", "3.10", "3.11", "3.12"]
         exclude:
           - os: windows-latest
@@ -139,7 +139,6 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python }}
-          architecture: "x64"
           cache: "pip"
           cache-dependency-path: setup.py
       - uses: actions/cache@v4

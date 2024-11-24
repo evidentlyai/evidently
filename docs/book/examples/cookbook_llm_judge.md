@@ -17,7 +17,7 @@ By the end, you'll know how to create custom LLM judges and apply them to your d
 # Tutorial scope
 
 Here's what we'll do:
-* **Create an evaluation dataset**. Ceate a toy Q&A dataset with two responses to each question, and add manual labels based on the criteria we want the LLM evaluator to follow later.
+* **Create an evaluation dataset**. Create a toy Q&A dataset with two responses to each question, and add manual labels based on the criteria we want the LLM evaluator to follow later.
 * **Create and run an LLM as a judge**. Design an LLM evaluator prompt to determine whether the new response is correct compared to the reference. 
 * **Evaluate the judge**. Compare the LLM judge's evaluations with manual labels to see if they meet the expectations or need tweaking.
   
@@ -84,7 +84,7 @@ data = [
     ["Hi there, how do I reset my password?",
      "To reset your password, click on 'Forgot Password' on the login page and follow the instructions sent to your registered email.",
      "To change your password, select 'Forgot Password' on the login screen and follow the steps sent to your registered email address. If you don't receive the email, check your spam folder or contact support for assistance.",
-     "incorrect", "adds new infromation (contact support)"],
+     "incorrect", "adds new information (contact support)"],
 
     ["Where can I find my transaction history?",
      "You can view your transaction history by logging into your account and navigating to the 'Transaction History' section. Here, you can see all your past transactions. You can also filter the transactions by date or type for easier viewing.",

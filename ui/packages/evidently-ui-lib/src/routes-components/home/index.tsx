@@ -4,17 +4,17 @@ import { BreadCrumbs, NavigationProgress, ServiceHeader, type crumbFunction } fr
 import type { LoaderData } from './data'
 
 export const HomeComponentTemplate = ({
-  logoSrc,
+  LogoSvg,
   authComponent
 }: {
-  logoSrc: string
+  LogoSvg: () => JSX.Element
   authComponent?: React.ReactNode
 }) => {
   const { version } = useLoaderData() as LoaderData
 
   return (
     <>
-      <ServiceHeader authComponent={authComponent} version={version} logoSrc={logoSrc} />
+      <ServiceHeader authComponent={authComponent} version={version} LogoSvg={LogoSvg} />
       <NavigationProgress />
       <ScrollRestoration />
       <Box p={3}>

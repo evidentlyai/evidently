@@ -17,6 +17,11 @@ register_type_alias(
 )
 register_type_alias(
     FeatureDescriptor,
+    "evidently.descriptors.is_valid_python_descriptor.IsValidPython",
+    "evidently:descriptor:IsValidPython",
+)
+register_type_alias(
+    FeatureDescriptor,
     "evidently.descriptors.json_schema_match_descriptor.JSONSchemaMatch",
     "evidently:descriptor:JSONSchemaMatch",
 )
@@ -60,6 +65,11 @@ register_type_alias(
     FeatureDescriptor,
     "evidently.descriptors.semantic_similarity.SemanticSimilarity",
     "evidently:descriptor:SemanticSimilarity",
+)
+register_type_alias(
+    FeatureDescriptor,
+    "evidently.descriptors.BERTScore_descriptor.BERTScore",
+    "evidently:descriptor:BERTScore",
 )
 register_type_alias(
     FeatureDescriptor,

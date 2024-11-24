@@ -29,6 +29,11 @@ register_type_alias(
 )
 register_type_alias(
     GeneratedFeatures,
+    "evidently.features.is_valid_python_feature.IsValidPython",
+    "evidently:feature:IsValidPython",
+)
+register_type_alias(
+    GeneratedFeatures,
     "evidently.features.json_schema_match_feature.JSONSchemaMatch",
     "evidently:feature:JSONSchemaMatch",
 )
@@ -46,6 +51,11 @@ register_type_alias(
     GeneratedFeatures,
     "evidently.features.semantic_similarity_feature.SemanticSimilarityFeature",
     "evidently:feature:SemanticSimilarityFeature",
+)
+register_type_alias(
+    GeneratedFeatures,
+    "evidently.features.BERTScore_feature.BERTScoreFeature",
+    "evidently:feature:BERTScoreFeature",
 )
 register_type_alias(
     GeneratedFeatures, "evidently.features.sentence_count_feature.SentenceCount", "evidently:feature:SentenceCount"
