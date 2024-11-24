@@ -282,6 +282,7 @@ Check for regular expression matches.
 | **JSONMatch()** <ul><li>Compares two columns of a dataframe and checks whether the two objects in each row of the dataframe are matching JSONs or not. </li><li>Returns True/False for every input. </li></ul> Example use:<br> `JSONMatch(with_column="column_2")`| **Required:** <br> `with_column : str` <br><br>**Optional:**<ul><li>`display_name`</li> |
 | **ContainsLink()** <ul><li>Checks if the text contains at least one valid URL. </li><li>Returns True/False for each row. </li></ul> | **Required:** n/a <br>**Optional:**<ul><li>`display_name`</li></ul> |
 | **IsValidPython()** <ul><li>Checks if the text is valid Python code without syntax errors.</li><li>Returns True/False for every input. </li></ul>| **Required:** <br>n/a<br><br>**Optional:**<ul><li>`display_name`</li></ul> |
+| **IsValidSQL()** <ul><li>Checks if the text in a specified column is a valid SQL query without executing the query.</li><li>Returns True/False for every input. </li></ul>| **Required:** <br>n/a<br><br>**Optional:**<ul><li>`display_name`</li></ul> |
 
 ## Descriptors: Text stats
 

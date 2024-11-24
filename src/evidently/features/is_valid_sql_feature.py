@@ -12,7 +12,6 @@ class IsValidSQL(ApplyColumnGeneratedFeature):
 
     __feature_type__: ClassVar = ColumnType.Categorical
     display_name_template: ClassVar = "SQL Validity Check for {column_name}"
-
     column_name: str
 
     def __init__(self, column_name: str, display_name: Optional[str] = None):

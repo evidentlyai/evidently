@@ -7,8 +7,8 @@ from .exact_match_descriptor import ExactMatch
 from .hf_descriptor import HuggingFaceModel
 from .hf_descriptor import HuggingFaceToxicityModel
 from .is_valid_json_descriptor import IsValidJSON
-from .is_valid_sql_descriptor import IsValidSQL
 from .is_valid_python_descriptor import IsValidPython
+from .is_valid_sql_descriptor import IsValidSQL
 from .json_match_descriptor import JSONMatch
 from .json_schema_match_descriptor import JSONSchemaMatch
 from .llm_judges import BiasLLMEval
