@@ -1,24 +1,28 @@
 import { useFetcher } from 'evidently-ui-lib/shared-dependencies/react-router-dom'
 import { REST_PARAMS_FOR_FETCHER_SUBMIT } from 'evidently-ui-lib/utils/index'
 
-import { useCallback } from 'react'
-import { type GetRouteByPath, isPathMatchesRoutes } from '~/_routes/types'
+import { useCallback, useMemo } from 'react'
+import type { GetRouteByPath } from '~/_routes/types'
+import { isPathMatchesRoutes } from '~/_routes/utils'
 
-type R = GetRouteByPath<'/?index'>
+const routePath = '/?index'
+
+type R = GetRouteByPath<typeof routePath>
+type ActionRequestData = R['action']['args']
 
 export const useProjectFetcher = () => {
-  const fetcher = useFetcher<R['action']['returnType']>()
+  const f = useFetcher<R['action']['returnType']>()
 
-  const submit = useCallback(
-    ({ data }: R['action']['args']) =>
-      fetcher.submit(data, {
-        action: `${isPathMatchesRoutes('/?index')}`,
+  const s = useCallback(
+    ({ data }: ActionRequestData) =>
+      f.submit(data, {
+        action: `${isPathMatchesRoutes(routePath)}`,
         ...REST_PARAMS_FOR_FETCHER_SUBMIT
       }),
-    [fetcher]
+    [f]
   )
 
-  const { state, data } = fetcher
+  const fetcher = useMemo(() => ({ state: f.state, data: f.data, submit: s }), [f, s])
 
-  return { state, data, submit }
+  return fetcher
 }
