@@ -48,7 +48,7 @@ export const actionSpecial = async ({ data }: ActionSpecialArgs<{ data: ActionRe
 }
 
 const ProjectCardWrapper = ({ project }: { project: StrictID<ProjectModel> }) => {
-  const projectFetcher = useSubmitFetcher<Route>({ providePath: () => '/?index' })
+  const projectFetcher = useSubmitFetcher<Route>({ actionPath: () => '/?index' })
 
   const [mode, setMode] = useState<'edit' | 'view'>('view')
 

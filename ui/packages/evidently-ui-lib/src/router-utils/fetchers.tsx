@@ -1,22 +1,19 @@
 import { useCallback, useMemo } from 'react'
-import type { Match } from '~/router-utils/types'
+import type { MatchWithAction } from '~/router-utils/types'
 import { useFetcher } from '~/shared-dependencies/react-router-dom'
 import { REST_PARAMS_FOR_FETCHER_SUBMIT } from '~/utils/index'
 
-// biome-ignore lint/suspicious/noExplicitAny: fine
-export type MatchWithAction = Match<string, any, { args: { data: any }; returnType: any }>
-
-export const useSubmitFetcherGeneral = <K extends MatchWithAction, Z extends string>({
-  providePath
+export const useSubmitFetcherGeneral = <M extends MatchWithAction>({
+  actionPath
 }: {
-  providePath: ({ data }: { data: K['action']['args']['data'] }) => Extract<Z, K['path']>
+  actionPath: ({ data }: { data: M['action']['requestData'] }) => string
 }) => {
-  const f = useFetcher<K['action']['returnType']>()
+  const f = useFetcher<M['action']['returnType']>()
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: fine
   const s = useCallback(
-    (data: K['action']['args']['data']) =>
-      f.submit(data, { action: providePath({ data }), ...REST_PARAMS_FOR_FETCHER_SUBMIT }),
+    (data: M['action']['requestData']) =>
+      f.submit(data, { action: actionPath({ data }), ...REST_PARAMS_FOR_FETCHER_SUBMIT }),
     [f]
   )
 

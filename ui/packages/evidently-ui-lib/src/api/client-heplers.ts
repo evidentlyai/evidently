@@ -43,7 +43,7 @@ export function responseParser<T extends ResponseParserArgs>(args?: T): Determin
 
 const throwErrorIfResponseNotOk = <R extends ClientGenericResponse>(
   genResponse: R
-): NonNullable<R['data'] | null | undefined> => {
+): NonNullable<R['data']> => {
   const { data, error, response } = genResponse
   if (error) {
     throw json(error, { status: response.status })
@@ -54,7 +54,7 @@ const throwErrorIfResponseNotOk = <R extends ClientGenericResponse>(
 
 const returnErrorIfResponseNotOk = <R extends ClientGenericResponse>(
   genResponse: R
-): NonNullable<R['data']> | ErrorData | null | undefined => {
+): NonNullable<R['data']> | ErrorData => {
   const { data, error, response } = genResponse
 
   if (error) {
