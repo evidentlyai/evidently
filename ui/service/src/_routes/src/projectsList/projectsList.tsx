@@ -9,11 +9,12 @@ import {
 import { Box, Grid, Typography } from 'evidently-ui-lib/shared-dependencies/mui-material'
 import type { LoaderFunctionArgs } from 'evidently-ui-lib/shared-dependencies/react-router-dom'
 import { assertNeverActionVariant } from 'evidently-ui-lib/utils/index'
-import { useRouteParams } from '~/_routes/hooks'
+import { useState } from 'react'
+import { useSubmitFetcher } from '~/_routes/fetchers'
+import { useIsAnyLoaderOrActionRunning, useOnSubmitEnd, useRouteParams } from '~/_routes/hooks'
 import type { ActionSpecialArgs, GetRouteByPath } from '~/_routes/types'
 import type { CrumbDefinition } from '~/_routes/utils'
 import { clientAPI } from '~/api'
-import { useProjectCardProps } from './hooks'
 
 ///////////////////
 //    ROUTE
@@ -32,6 +33,8 @@ type ActionRequestData =
   | { action: 'edit-project'; project: StrictID<ProjectModel> }
 
 export const actionSpecial = async ({ data }: ActionSpecialArgs<{ data: ActionRequestData }>) => {
+  console.log('123', data)
+
   const { action } = data
 
   if (action === 'delete-project') {
@@ -46,18 +49,30 @@ export const actionSpecial = async ({ data }: ActionSpecialArgs<{ data: ActionRe
 }
 
 const ProjectCardWrapper = ({ project }: { project: StrictID<ProjectModel> }) => {
-  const { projectFetcher, ...otherProps } = useProjectCardProps()
+  const projectFetcher = useSubmitFetcher<Route>({ providePath: () => '/?index' })
+
+  const [mode, setMode] = useState<'edit' | 'view'>('view')
+
+  useOnSubmitEnd({
+    state: projectFetcher.state,
+    cb: () => projectFetcher.data === null && setMode('view')
+  })
+
+  const disabled = useIsAnyLoaderOrActionRunning()
 
   return (
     <ProjectCard
       project={project}
-      {...otherProps}
+      mode={mode}
+      onAlterMode={() => setMode((p) => (p === 'edit' ? 'view' : 'edit'))}
+      disabled={disabled}
       onDeleteProject={(project_id) =>
-        projectFetcher.submit({ data: { action: 'delete-project', project_id } })
+        projectFetcher.submit({ action: 'delete-project', project_id })
       }
       onEditProject={(nameAndDescription) =>
         projectFetcher.submit({
-          data: { action: 'edit-project', project: { ...project, ...nameAndDescription } }
+          action: 'edit-project',
+          project: { ...project, ...nameAndDescription }
         })
       }
     />
