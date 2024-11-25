@@ -1,6 +1,6 @@
 import { Close as CloseIcon } from '@mui/icons-material'
 import { AlertTitle, Box, IconButton, Snackbar, Typography } from '@mui/material'
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { isRouteErrorResponse, useActionData, useFetchers, useRouteError } from 'react-router-dom'
 import type { Fetcher } from 'react-router-dom'
 import type { ErrorData, ErrorResponse } from '~/api/types/utils'
@@ -100,8 +100,36 @@ export const ActionsErrorSnackbar = () => {
 }
 
 export const FetchersErrorSnackbar = () => {
+  const [lastActiveFetcherIndex, setLastActiveFetcherIndex] = useState(0)
+
   const fetchers = useFetchers() as Fetcher<ActionErrorData>[]
-  const data = fetchers.find((f) => Boolean(f.data?.error))?.data
+  const isSomeIsNotIdle = fetchers.some((e) => e.state !== 'idle')
+  const isAllFetchersIdle = !isSomeIsNotIdle
+
+  useEffect(() => {
+    if (isSomeIsNotIdle) {
+      const idnex = fetchers.findLastIndex((e) => e.state !== 'idle')
+
+      if (idnex > -1) {
+        setLastActiveFetcherIndex(idnex)
+      }
+    }
+  }, [isSomeIsNotIdle, fetchers])
+
+  const d = isAllFetchersIdle && fetchers?.[lastActiveFetcherIndex]?.data
+
+  const data = d && 'error' in d ? d : undefined
 
   return <ErrorAlertSnackBar data={data} />
 }
+
+// use this only on top level routes
+export const handleActionFetchersErrors = ({ Component }: { Component: React.ComponentType }) => ({
+  Component: () => (
+    <>
+      <ActionsErrorSnackbar />
+      <FetchersErrorSnackbar />
+      <Component />
+    </>
+  )
+})

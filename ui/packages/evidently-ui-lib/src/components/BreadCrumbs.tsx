@@ -24,12 +24,27 @@ const isCrumb = (match: MatchObject): match is MatchWithCrumbHandle =>
   // fine for now
   typeof (match as MatchWithCrumbHandle)?.handle?.crumb === 'function'
 
+// TODO: REMOVE IT
 export const BreadCrumbs = () => {
   const matches = useMatches()
   const crumbs = matches
     .filter(isCrumb)
     .map(({ handle, data, id, pathname, params }) => handle.crumb(data, { id, pathname, params }))
 
+  return (
+    <Box>
+      <Breadcrumbs aria-label='breadcrumb'>
+        {crumbs.map((crumb) => (
+          <Link key={crumb.to} component={RouterLink} color='inherit' to={crumb.to}>
+            {crumb.linkText}
+          </Link>
+        ))}
+      </Breadcrumbs>
+    </Box>
+  )
+}
+
+export const BreadCrumbs2 = ({ crumbs }: { crumbs: Crumb[] }) => {
   return (
     <Box>
       <Breadcrumbs aria-label='breadcrumb'>

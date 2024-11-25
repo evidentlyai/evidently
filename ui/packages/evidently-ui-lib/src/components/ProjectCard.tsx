@@ -11,7 +11,7 @@ import {
 } from '@mui/material'
 import type React from 'react'
 import { useEffect, useState } from 'react'
-import { Form, Link as RouterLink, useNavigation, useSubmit } from 'react-router-dom'
+import { Form, Link as RouterLink, useNavigation } from 'react-router-dom'
 
 import { Add as AddIcon } from '@mui/icons-material'
 
@@ -31,20 +31,14 @@ const editProjectInfoSchema = z.object({
 })
 
 export const EditProjectInfoForm = ({
-  project,
-  action
-}:
-  | {
-      action: 'edit-project'
-      project: StrictID<ProjectModel>
-    }
-  | {
-      action: 'create-new-project'
-      project: Omit<ProjectModel, 'id'>
-    }) => {
-  const navigation = useNavigation()
-  const isDisabled = navigation.state !== 'idle'
-
+  defaultValues,
+  onSuccess,
+  disabled
+}: {
+  defaultValues: z.infer<typeof editProjectInfoSchema>
+  onSuccess: (v: z.infer<typeof editProjectInfoSchema>) => void
+  disabled?: boolean
+}) => {
   const {
     setFocus,
     register,
@@ -52,40 +46,17 @@ export const EditProjectInfoForm = ({
     formState: { errors, dirtyFields }
   } = useForm<z.infer<typeof editProjectInfoSchema>>({
     resolver: zodResolver(editProjectInfoSchema),
-    defaultValues: {
-      name: project.name || '',
-      description: project.description || ''
-    }
+    defaultValues: defaultValues
   })
 
   const { palette } = useTheme()
-
-  // for form submitting
-  const submit = useSubmit()
 
   // focus on the firs input
   useEffect(() => setFocus('name'), [setFocus])
 
   return (
     <>
-      <Form
-        onSubmit={handleSubmit(({ name, description }) =>
-          // here we inject the new `name` and `description`
-          // to project object, then it goes to the action
-
-          submit(
-            // @ts-ignore
-            {
-              ...project,
-              name,
-              description,
-              action: action
-            },
-            { method: 'put', replace: true, encType: 'application/json' }
-          )
-        )}
-        style={{ opacity: isDisabled ? 0.5 : 1 }}
-      >
+      <Form onSubmit={handleSubmit(onSuccess)} style={{ opacity: disabled ? 0.5 : 1 }}>
         {/* name */}
         <TextField
           {...register('name')}
@@ -95,7 +66,7 @@ export const EditProjectInfoForm = ({
           InputProps={{
             style: { color: palette.primary.main, fontSize: '20px', fontWeight: '500' }
           }}
-          disabled={isDisabled}
+          disabled={disabled}
           variant='standard'
         />
         {/* description */}
@@ -104,7 +75,7 @@ export const EditProjectInfoForm = ({
           error={Boolean(errors.description)}
           helperText={errors.description?.message}
           placeholder='Description'
-          disabled={isDisabled}
+          disabled={disabled}
           fullWidth
           // this `multiline` below causes Material-UI: Too many re-renders
           // multiline
@@ -115,7 +86,7 @@ export const EditProjectInfoForm = ({
           <Button
             variant='outlined'
             disabled={
-              isDisabled ||
+              disabled ||
               // we didn't touch any fields
               Object.keys(dirtyFields).length === 0 ||
               // error here
@@ -148,18 +119,21 @@ export const ProjectInfoCard = ({ project }: { project: StrictID<ProjectModel> }
 
 interface ProjectProps {
   project: StrictID<ProjectModel>
+  mode: 'edit' | 'view'
+  onAlterMode: () => void
+  onDeleteProject: (id: string) => void
+  onEditProject: (args: { name: string; description: string }) => void
+  disabled?: boolean
 }
 
-export const ProjectCard: React.FC<ProjectProps> = ({ project }) => {
-  const [isEditMode, setEditMode] = useState(false)
-
-  const navigation = useNavigation()
-  const isDisabled = navigation.state !== 'idle'
-  const submit = useSubmit()
-
-  // biome-ignore lint: project has changed -> set edit mode to false
-  useEffect(() => setEditMode(false), [project])
-
+export const ProjectCard: React.FC<ProjectProps> = ({
+  project,
+  mode,
+  disabled,
+  onAlterMode,
+  onDeleteProject,
+  onEditProject
+}) => {
   return (
     <Paper
       sx={{
@@ -186,16 +160,10 @@ export const ProjectCard: React.FC<ProjectProps> = ({ project }) => {
           columnGap={1}
         >
           <IconButton
-            disabled={isDisabled || isEditMode}
+            disabled={disabled}
             onClick={() => {
               if (confirm('Are you sure you want to delete this project?') === true) {
-                submit(
-                  {
-                    projectId: project.id,
-                    action: 'delete-project'
-                  },
-                  { method: 'post', replace: true, encType: 'application/json' }
-                )
+                onDeleteProject(project.id)
               }
             }}
           >
@@ -203,20 +171,24 @@ export const ProjectCard: React.FC<ProjectProps> = ({ project }) => {
           </IconButton>
 
           <ToggleButton
-            disabled={isDisabled}
+            disabled={disabled}
             color='primary'
             value={'edit-mode'}
-            selected={isEditMode}
+            selected={mode === 'edit'}
             size='small'
             sx={{ border: 'none', borderRadius: '50%' }}
-            onChange={() => setEditMode((mode) => !mode)}
+            onChange={onAlterMode}
           >
             <EditIcon />
           </ToggleButton>
         </Box>
       </Box>
-      {isEditMode ? (
-        <EditProjectInfoForm project={project} action={'edit-project'} />
+      {mode === 'edit' ? (
+        <EditProjectInfoForm
+          defaultValues={{ name: project.name ?? '', description: project.description ?? '' }}
+          onSuccess={onEditProject}
+          disabled={disabled}
+        />
       ) : (
         <ProjectInfoCard project={project} />
       )}
@@ -259,10 +231,10 @@ export const AddNewProjectButton = () => {
 
       {on && (
         <Box p={3} display={'flex'} flexDirection={'column'} rowGap={1}>
-          <EditProjectInfoForm
+          {/* <EditProjectInfoForm
             project={{ name: '', description: '' }}
             action='create-new-project'
-          />
+          /> */}
         </Box>
       )}
     </Box>

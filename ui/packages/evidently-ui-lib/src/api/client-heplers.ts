@@ -5,6 +5,7 @@ import type { ErrorData, ErrorResponse } from '~/api/types/utils'
 import type { BackendPaths } from '~/api/types'
 
 export type API_CLIENT_TYPE = ReturnType<typeof createClient<BackendPaths>>
+export type API = { api: API_CLIENT_TYPE }
 
 // biome-ignore lint: <explanation>
 type ClientGenericResponse<D = any> =
@@ -42,7 +43,7 @@ export function responseParser<T extends ResponseParserArgs>(args?: T): Determin
 
 const throwErrorIfResponseNotOk = <R extends ClientGenericResponse>(
   genResponse: R
-): NonNullable<R['data']> => {
+): NonNullable<R['data'] | null | undefined> => {
   const { data, error, response } = genResponse
   if (error) {
     throw json(error, { status: response.status })
@@ -53,7 +54,7 @@ const throwErrorIfResponseNotOk = <R extends ClientGenericResponse>(
 
 const returnErrorIfResponseNotOk = <R extends ClientGenericResponse>(
   genResponse: R
-): NonNullable<R['data']> | ErrorData => {
+): NonNullable<R['data']> | ErrorData | null | undefined => {
   const { data, error, response } = genResponse
 
   if (error) {

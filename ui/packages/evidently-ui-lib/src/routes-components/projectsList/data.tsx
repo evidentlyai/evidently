@@ -1,9 +1,9 @@
 import { z } from 'zod'
-import { type API_CLIENT_TYPE, responseParser } from '~/api/client-heplers'
+import { type API, type API_CLIENT_TYPE, responseParser } from '~/api/client-heplers'
 import type { ProjectModel } from '~/api/types'
 
 import type { StrictID } from '~/api/types/utils'
-import { type GetLoaderAction, ensureID, expectJsonRequest } from '~/api/utils'
+import { type GetLoaderAction, ensureID, ensureIDInArray, expectJsonRequest } from '~/api/utils'
 
 export type LoaderData = StrictID<ProjectModel>[]
 
@@ -58,3 +58,19 @@ export const getLoaderAction: GetLoaderAction<API_CLIENT_TYPE, LoaderData> = ({ 
     throw 'Undefined action'
   }
 })
+
+export const getProjects = ({ api }: API) =>
+  api.GET('/api/projects').then(responseParser()).then(ensureIDInArray)
+
+export const editProject = ({ api, project }: API & { project: StrictID<ProjectModel> }) =>
+  api
+    .POST('/api/projects/{project_id}/info', {
+      params: { path: { project_id: project.id } },
+      body: project
+    })
+    .then(responseParser({ notThrowExc: true }))
+
+export const deleteProject = ({ api, project_id }: API & { project_id: string }) =>
+  api
+    .DELETE('/api/projects/{project_id}', { params: { path: { project_id } } })
+    .then(responseParser({ notThrowExc: true }))

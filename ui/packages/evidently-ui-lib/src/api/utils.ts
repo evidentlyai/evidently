@@ -20,6 +20,12 @@ export const ensureID: <Entity extends OptionalID>(e: Entity) => StrictID<Entity
   throw `"id" is missing in object: ${JSON.stringify(e)}`
 }
 
+export const ensureIDInArray: <Entity extends OptionalID>(e: Entity[]) => StrictID<Entity>[] = (
+  e
+) => {
+  return e.map(ensureID)
+}
+
 export const expectJsonRequest = (request: Request) => {
   if (request.headers.get('Content-type') !== 'application/json') {
     throw new Response('Unsupported Media Type', { status: 415 })
