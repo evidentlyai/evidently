@@ -1,6 +1,8 @@
 import type { ProjectModel } from 'evidently-ui-lib/api/types'
 import type { StrictID } from 'evidently-ui-lib/api/types/utils'
 import { AddNewProjectButton, ProjectCard } from 'evidently-ui-lib/components/ProjectCard'
+import type { ActionSpecialArgs } from 'evidently-ui-lib/router-utils/types'
+import type { CrumbDefinition } from 'evidently-ui-lib/router-utils/utils'
 import {
   deleteProject,
   editProject,
@@ -12,8 +14,8 @@ import { assertNeverActionVariant } from 'evidently-ui-lib/utils/index'
 import { useState } from 'react'
 import { useSubmitFetcher } from '~/_routes/fetchers'
 import { useIsAnyLoaderOrActionRunning, useOnSubmitEnd, useRouteParams } from '~/_routes/hooks'
-import type { ActionSpecialArgs, GetRouteByPath } from '~/_routes/types'
-import type { CrumbDefinition } from '~/_routes/utils'
+import type { GetRouteByPath } from '~/_routes/types'
+
 import { clientAPI } from '~/api'
 
 ///////////////////
@@ -23,7 +25,6 @@ import { clientAPI } from '~/api'
 export type Route = GetRouteByPath<'/?index'>
 
 const crumb: CrumbDefinition = { title: 'Projects' }
-
 export const handle = { crumb }
 
 export const loader = (_args: LoaderFunctionArgs) => getProjects({ api: clientAPI })
@@ -33,8 +34,6 @@ type ActionRequestData =
   | { action: 'edit-project'; project: StrictID<ProjectModel> }
 
 export const actionSpecial = async ({ data }: ActionSpecialArgs<{ data: ActionRequestData }>) => {
-  console.log('123', data)
-
   const { action } = data
 
   if (action === 'delete-project') {

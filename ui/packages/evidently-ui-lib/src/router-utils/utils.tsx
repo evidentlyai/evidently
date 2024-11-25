@@ -1,10 +1,7 @@
-import { expectJsonRequest } from 'evidently-ui-lib/api/utils'
-import { GenericErrorBoundary, handleActionFetchersErrors } from 'evidently-ui-lib/components/Error'
-import type {
-  LazyRouteFunction,
-  RouteObject
-} from 'evidently-ui-lib/shared-dependencies/react-router-dom'
-import type { PathsWithDynamicSegments, RouteExtended } from '~/_routes/types'
+import { expectJsonRequest } from '~/api/utils'
+import { GenericErrorBoundary, handleActionFetchersErrors } from '~/components/Error'
+import type { RouteExtended } from '~/router-utils/types'
+import type { LazyRouteFunction, RouteObject } from '~/shared-dependencies/react-router-dom'
 
 export type CrumbDefinition = { title?: string; param?: string; keyFromLoaderData?: string }
 
@@ -54,7 +51,3 @@ export const decarateTopLevelRoute = (r: RouteExtended): RouteExtended => {
 
   return r
 }
-
-export const isPathMatchesRoutes: <T extends string>(
-  arg: Extract<PathsWithDynamicSegments, T>
-) => T = (a) => a

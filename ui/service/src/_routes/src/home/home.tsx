@@ -11,7 +11,8 @@ import {
 } from 'evidently-ui-lib/shared-dependencies/react-router-dom'
 import { useRouteParams } from '~/_routes/hooks'
 import type { GetRouteByPath } from '~/_routes/types'
-import type { CrumbDefinition } from '~/_routes/utils'
+
+import type { CrumbDefinition } from 'evidently-ui-lib/router-utils/utils'
 import { clientAPI } from '~/api'
 import { useCrumbs } from './hooks'
 

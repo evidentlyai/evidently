@@ -1,5 +1,5 @@
+import type { HandleWithCrumb } from 'evidently-ui-lib/router-utils/utils'
 import { useMatches } from 'evidently-ui-lib/shared-dependencies/react-router-dom'
-import type { HandleWithCrumb } from '~/_routes/utils'
 
 export const useCrumbs = () => {
   const matches = useMatches()
