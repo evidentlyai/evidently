@@ -265,7 +265,9 @@ class Project(Entity):
 
 class MetadataStorage(ABC):
     @abstractmethod
-    async def add_project(self, project: Project, user: User, team: Optional[Team], org_id: Optional[OrgID]) -> Project:
+    async def add_project(
+        self, project: Project, user: User, team: Optional[Team], org_id: Optional[OrgID] = None
+    ) -> Project:
         raise NotImplementedError
 
     @abstractmethod

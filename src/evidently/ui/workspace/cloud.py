@@ -7,13 +7,11 @@ from typing import List
 from typing import Literal
 from typing import NamedTuple
 from typing import Optional
-from typing import Tuple
 from typing import Type
 from typing import Union
 from typing import overload
 
 import pandas as pd
-import uuid6
 from requests import HTTPError
 from requests import Response
 
@@ -27,9 +25,6 @@ from evidently.ui.base import Org
 from evidently.ui.base import ProjectManager
 from evidently.ui.base import Team
 from evidently.ui.datasets import DatasetSourceType
-from evidently.ui.errors import OrgNotFound
-from evidently.ui.errors import ProjectNotFound
-from evidently.ui.errors import TeamNotFound
 from evidently.ui.storage.common import NoopAuthManager
 from evidently.ui.type_aliases import STR_UUID
 from evidently.ui.type_aliases import ZERO_UUID
@@ -290,24 +285,6 @@ class CloudWorkspace(WorkspaceView):
             )
         finally:
             file.close()
-
-    def _get_org_id_team_id(self, project_id: STR_UUID) -> Tuple[OrgID, TeamID]:
-        """Temporary method until we can attach datasets to projects"""
-        assert isinstance(self.project_manager.metadata, CloudMetadataStorage)
-        if isinstance(project_id, str):
-            project_id = uuid6.UUID(project_id)
-        project = self.get_project(project_id)
-        if project is None:
-            raise ProjectNotFound()
-        if project.team_id is None:
-            raise TeamNotFound()
-        teams = self.project_manager.metadata._request(
-            "/api/teams/info", "GET", query_params={"team_ids": [project.team_id]}, response_model=Dict[TeamID, Team]
-        )
-        team = teams[project.team_id]
-        if team.org_id is None:
-            raise OrgNotFound()
-        return team.org_id, team.id
 
     def load_dataset(self, dataset_id: DatasetID) -> pd.DataFrame:
         assert isinstance(self.project_manager.metadata, CloudMetadataStorage)

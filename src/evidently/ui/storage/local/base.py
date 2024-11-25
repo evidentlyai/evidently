@@ -213,7 +213,7 @@ class JsonFileMetadataStorage(MetadataStorage):
         return project
 
     async def update_project(self, project: Project) -> Project:
-        return await self.add_project(project, NO_USER, NO_TEAM)
+        return await self.add_project(project, NO_USER, NO_TEAM, org_id=None)
 
     async def get_project(self, project_id: ProjectID) -> Optional[Project]:
         return self.state.projects.get(project_id)
