@@ -16,13 +16,21 @@ type ExtractPath<T extends RouteExtended> = T['path'] extends string ? T['path']
 // biome-ignore lint/suspicious/noExplicitAny: fine
 type ExtractLoader<T extends RouteExtended> = T['loader'] extends (args: any) => Promise<infer U>
   ? { returnType: U }
-  : undefined
+  : // biome-ignore lint/suspicious/noExplicitAny: fine
+    T['lazy'] extends (args: any) => Promise<{ loader: (args: any) => Promise<infer K> }>
+    ? { returnType: K }
+    : undefined
 
 type ExtractAction<T extends RouteExtended> = T['actionSpecial'] extends (
   args: ActionSpecialArgs<infer Z>
 ) => Promise<infer O>
   ? { args: Z; returnType: O }
-  : undefined
+  : T['lazy'] extends (
+        // biome-ignore lint/suspicious/noExplicitAny: fine
+        args: any
+      ) => Promise<{ actionSpecial: (args: ActionSpecialArgs<infer Z>) => Promise<infer O> }>
+    ? { args: Z; returnType: O }
+    : undefined
 
 type IsIndex<T extends RouteExtended> = T['index'] extends true ? true : false
 
@@ -69,7 +77,3 @@ export type ReplaceAllDynamicSegments<
     : T
 
 export type PathsWithDynamicSegments = ReplaceAllDynamicSegments<Routes['path']>
-
-export const isPathMatchesRoutes: <T extends string>(
-  arg: Extract<PathsWithDynamicSegments, T>
-) => T = (a) => a
