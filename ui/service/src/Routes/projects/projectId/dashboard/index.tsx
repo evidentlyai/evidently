@@ -9,16 +9,13 @@ export default {
   index: true,
   id: 'dashboard',
   lazy: async () => {
-    const [{ DashboardComponentTemplate }, { DashboardWidgets }] = await Promise.all([
-      import('evidently-ui-lib/routes-components/dashboard'),
-      import('evidently-ui-lib/components/DashboardWidgets')
-    ])
-
     return {
       Component: () => (
-        <DashboardComponentTemplate
-          Dashboard={({ data: { widgets } }) => <DashboardWidgets widgets={widgets} />}
-        />
+        <p>
+          Lorem ipsum dolor, sit amet consectetur adipisicing elit. Hic ad dolores molestias maiores
+          enim id. Modi tempore natus, expedita eius beatae, nemo nam non culpa repellat architecto
+          error fugit nisi?
+        </p>
       )
     }
   },

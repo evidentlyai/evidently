@@ -3,6 +3,8 @@ import { createBrowserRouter } from 'evidently-ui-lib/shared-dependencies/react-
 import type { RouteExtended } from 'evidently-ui-lib/router-utils/types'
 
 import { decarateTopLevelRoute, decorateAllRoute } from 'evidently-ui-lib/router-utils/utils'
+
+import { Dashboard } from './src/dashboard/import'
 import { Home } from './src/home/import'
 import { Project } from './src/project/import'
 import { ProjectsList } from './src/projects-list/import'
@@ -15,7 +17,13 @@ export const routes = [
       { index: true, ...ProjectsList },
       {
         path: ':projectId',
-        ...Project
+        ...Project,
+        children: [
+          {
+            index: true,
+            ...Dashboard
+          }
+        ]
       }
     ]
   }
