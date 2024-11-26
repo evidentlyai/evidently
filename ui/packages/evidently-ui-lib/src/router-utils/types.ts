@@ -61,7 +61,7 @@ export type Match<Path extends string, L, A> = {
   path: Path
   loader: L
   action: A
-  params: Record<ExtractParams<Path>, string>
+  params: { [Z in ExtractParams<Path>]: string }
 }
 
 export type MatchWithAction = Match<
@@ -72,11 +72,4 @@ export type MatchWithAction = Match<
   ProvideActionInfo<any, any>
 >
 
-export type ReplaceAllDynamicSegments<
-  T extends string,
-  K extends string = string
-> = T extends `${infer Start}/:${string}/${infer Rest}`
-  ? `${Start}/${K}/${ReplaceAllDynamicSegments<`${Rest}`, K>}`
-  : T extends `${infer Start}/:${string}`
-    ? `${Start}/${K}`
-    : T
+export type GetParams<K extends string> = { [Z in ExtractParams<K>]: string }

@@ -5,10 +5,13 @@ import { useState } from 'react'
 import { useSubmitFetcher } from '~/_routes/fetchers'
 import { useOnSubmitEnd } from '~/_routes/hooks'
 
+import { RouterLink } from '~/_routes/components'
 import type { CurrentRoute } from './projects-list-main'
 
 export const ProjectCardWrapper = ({ project }: { project: StrictID<ProjectModel> }) => {
-  const projectFetcher = useSubmitFetcher<CurrentRoute>({ actionPath: () => '/?index' })
+  const projectFetcher = useSubmitFetcher<CurrentRoute>({
+    actionPath: () => ({ path: '/?index', params: {} })
+  })
 
   const [mode, setMode] = useState<'edit' | 'view'>('view')
 
@@ -23,6 +26,14 @@ export const ProjectCardWrapper = ({ project }: { project: StrictID<ProjectModel
 
   return (
     <ProjectCard
+      LinkToProject={() => (
+        <RouterLink
+          to={'/:projectId'}
+          paramsToReplace={{ projectId: project.id }}
+          title={project.name}
+          typographyProps={{ variant: 'h6' }}
+        />
+      )}
       project={project}
       mode={mode}
       onAlterMode={() => setMode((p) => (p === 'edit' ? 'view' : 'edit'))}
@@ -41,7 +52,9 @@ export const ProjectCardWrapper = ({ project }: { project: StrictID<ProjectModel
 }
 
 export const AddNewProjectWrapper = () => {
-  const projectFetcher = useSubmitFetcher<CurrentRoute>({ actionPath: () => '/?index' })
+  const projectFetcher = useSubmitFetcher<CurrentRoute>({
+    actionPath: () => ({ path: '/?index', params: {} })
+  })
 
   const [opened, setOpened] = useState<boolean>(false)
 

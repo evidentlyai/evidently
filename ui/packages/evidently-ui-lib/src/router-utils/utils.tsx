@@ -3,6 +3,9 @@ import { GenericErrorBoundary, handleActionFetchersErrors } from '~/components/E
 import type { RouteExtended } from '~/router-utils/types'
 import type { LazyRouteFunction, RouteObject } from '~/shared-dependencies/react-router-dom'
 
+import { Link, Typography, type TypographyProps } from '@mui/material'
+import { Link as ReactRouterLink } from 'react-router-dom'
+
 export type CrumbDefinition = { title?: string; param?: string; keyFromLoaderData?: string }
 
 export type HandleWithCrumb = { crumb?: CrumbDefinition }
@@ -50,4 +53,45 @@ export const decarateTopLevelRoute = (r: RouteExtended): RouteExtended => {
   }
 
   return r
+}
+
+export type RouterLinkTemplateComponentProps = {
+  children?: React.ReactNode
+  to: string
+  title?: string
+  typographyProps?: TypographyProps
+}
+
+export const RouterLinkTemplateComponent = ({
+  children,
+  to,
+  title,
+  typographyProps
+}: RouterLinkTemplateComponentProps) => {
+  return (
+    <Link component={ReactRouterLink} to={to}>
+      <>
+        {title && <Typography {...typographyProps}>{title}</Typography>}
+        {children}
+      </>
+    </Link>
+  )
+}
+
+export const replaceParamsInLink = (paramsToReplace: Record<string, string>, path: string) => {
+  const result = path
+    .split('/')
+    .map((part) => {
+      if (part.startsWith(':')) {
+        const p = part.slice(1)
+        if (p in paramsToReplace) {
+          return paramsToReplace[p]
+        }
+      }
+
+      return part
+    })
+    .join('/')
+
+  return result
 }

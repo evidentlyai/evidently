@@ -2,7 +2,6 @@ import {
   Box,
   Button,
   IconButton,
-  Link,
   Paper,
   TextField,
   ToggleButton,
@@ -11,7 +10,7 @@ import {
 } from '@mui/material'
 import type React from 'react'
 import { useEffect } from 'react'
-import { Form, Link as RouterLink } from 'react-router-dom'
+import { Form } from 'react-router-dom'
 
 import { Add as AddIcon } from '@mui/icons-material'
 
@@ -104,12 +103,16 @@ export const EditProjectInfoForm = ({
   )
 }
 
-export const ProjectInfoCard = ({ project }: { project: StrictID<ProjectModel> }) => {
+export const ProjectInfoCard = ({
+  project,
+  LinkToProject
+}: {
+  project: StrictID<ProjectModel>
+  LinkToProject: (props: { projectId: string }) => JSX.Element
+}) => {
   return (
     <>
-      <Link component={RouterLink} to={`projects/${project.id}`}>
-        <Typography variant={'h6'}>{project.name}</Typography>
-      </Link>
+      <LinkToProject projectId={project.id} />
       <Typography style={{ whiteSpace: 'pre-line' }} variant='body1'>
         {project.description}
       </Typography>
@@ -124,6 +127,7 @@ interface ProjectProps {
   onDeleteProject: (id: string) => void
   onEditProject: (args: { name: string; description: string }) => void
   disabled?: boolean
+  LinkToProject: (props: { projectId: string }) => JSX.Element
 }
 
 export const ProjectCard: React.FC<ProjectProps> = ({
@@ -132,7 +136,8 @@ export const ProjectCard: React.FC<ProjectProps> = ({
   disabled,
   onAlterMode,
   onDeleteProject,
-  onEditProject
+  onEditProject,
+  LinkToProject
 }) => {
   return (
     <Paper
@@ -190,7 +195,7 @@ export const ProjectCard: React.FC<ProjectProps> = ({
           disabled={disabled}
         />
       ) : (
-        <ProjectInfoCard project={project} />
+        <ProjectInfoCard project={project} LinkToProject={LinkToProject} />
       )}
     </Paper>
   )

@@ -23,7 +23,9 @@ import { AddNewProjectWrapper, ProjectCardWrapper } from './components'
 //    ROUTE
 ///////////////////
 
-export type CurrentRoute = GetRouteByPath<'/?index'>
+type Path = '/?index'
+
+export type CurrentRoute = GetRouteByPath<Path>
 
 const crumb: CrumbDefinition = { title: 'Projects' }
 export const handle = { crumb }
@@ -58,7 +60,7 @@ export const Component = () => {
 
   return (
     <>
-      <Typography align='center' variant='h5'>
+      <Typography align='center' variant={'h6'}>
         {projects.length > 0 ? 'Project List' : "You don't have any projects yet"}
       </Typography>
       <Box m='auto' mt={2} maxWidth={600}>
