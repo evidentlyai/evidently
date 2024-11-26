@@ -762,6 +762,7 @@ class ProjectManager:
             ):
                 raise NotEnoughPermissions()
             project.team_id = team_id if team_id != ZERO_UUID else None
+            project.org_id = team.org_id if team_id else None
         elif org_id:
             project.org_id = org_id
             team = None
