@@ -20,7 +20,7 @@ import { useCrumbs } from './hooks'
 //    ROUTE
 ///////////////////
 
-type Route = GetRouteByPath<'/'>
+type CurrentRoute = GetRouteByPath<'/'>
 
 const crumb: CrumbDefinition = { title: 'Home' }
 
@@ -29,7 +29,7 @@ export const handle = { crumb }
 export const loader = (_args: LoaderFunctionArgs) => getVersion({ api: clientAPI })
 
 export const Component = () => {
-  const { loaderData } = useRouteParams<Route>()
+  const { loaderData } = useRouteParams<CurrentRoute>()
   const { crumbs } = useCrumbs()
 
   return (

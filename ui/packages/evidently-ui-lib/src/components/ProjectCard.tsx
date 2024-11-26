@@ -10,8 +10,8 @@ import {
   Typography
 } from '@mui/material'
 import type React from 'react'
-import { useEffect, useState } from 'react'
-import { Form, Link as RouterLink, useNavigation } from 'react-router-dom'
+import { useEffect } from 'react'
+import { Form, Link as RouterLink } from 'react-router-dom'
 
 import { Add as AddIcon } from '@mui/icons-material'
 
@@ -160,7 +160,7 @@ export const ProjectCard: React.FC<ProjectProps> = ({
           columnGap={1}
         >
           <IconButton
-            disabled={disabled}
+            disabled={disabled || mode === 'edit'}
             onClick={() => {
               if (confirm('Are you sure you want to delete this project?') === true) {
                 onDeleteProject(project.id)
@@ -196,45 +196,44 @@ export const ProjectCard: React.FC<ProjectProps> = ({
   )
 }
 
-export const AddNewProjectButton = () => {
-  const [on, toggle] = useState(false)
-  const [wasSubmitting, toggleWasSubmitting] = useState(false)
-  const navigation = useNavigation()
-  const isDisabled = navigation.state !== 'idle'
+type AddNewProjectButtonProps = {
+  opened: boolean
+  alterOpened: () => void
+  disabled?: boolean
+  onEditProject: (args: { name: string; description: string }) => void
+}
 
-  if (!wasSubmitting && navigation.state === 'submitting') {
-    toggleWasSubmitting(true)
-  }
-
-  if (wasSubmitting && navigation.state === 'idle') {
-    toggleWasSubmitting(false)
-    toggle(false)
-  }
-
+export const AddNewProjectButton = ({
+  opened,
+  alterOpened,
+  disabled,
+  onEditProject
+}: AddNewProjectButtonProps) => {
   return (
     <Box py={2}>
       <Box display={'flex'} justifyContent={'center'}>
         <Tooltip title='Create new project'>
           <ToggleButton
             size='small'
-            selected={on}
-            disabled={isDisabled}
+            selected={opened}
+            disabled={disabled}
             color='primary'
             value={'check'}
             sx={{ border: 'none', borderRadius: '50%' }}
-            onChange={() => toggle((prev) => !prev)}
+            onChange={alterOpened}
           >
             <AddIcon />
           </ToggleButton>
         </Tooltip>
       </Box>
 
-      {on && (
+      {opened && (
         <Box p={3} display={'flex'} flexDirection={'column'} rowGap={1}>
-          {/* <EditProjectInfoForm
-            project={{ name: '', description: '' }}
-            action='create-new-project'
-          /> */}
+          <EditProjectInfoForm
+            disabled={disabled}
+            defaultValues={{ name: '', description: '' }}
+            onSuccess={onEditProject}
+          />
         </Box>
       )}
     </Box>

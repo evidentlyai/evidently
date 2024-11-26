@@ -69,8 +69,21 @@ export const editProject = ({ api, project }: API & { project: StrictID<ProjectM
       body: project
     })
     .then(responseParser({ notThrowExc: true }))
+    .then((d) => (d && 'error' in d ? d : null))
 
 export const deleteProject = ({ api, project_id }: API & { project_id: string }) =>
   api
     .DELETE('/api/projects/{project_id}', { params: { path: { project_id } } })
     .then(responseParser({ notThrowExc: true }))
+    .then((d) => (d && 'error' in d ? d : null))
+
+type CreateProjectParams = { project: ProjectModel }
+
+export const createProject = ({ api, project }: API & CreateProjectParams) =>
+  api
+    .POST('/api/projects', {
+      body: project,
+      params: { query: { team_id: project.team_id ?? undefined } }
+    })
+    .then(responseParser({ notThrowExc: true }))
+    .then((d) => (d && 'error' in d ? d : null))

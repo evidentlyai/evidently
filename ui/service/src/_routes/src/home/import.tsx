@@ -1,3 +1,5 @@
-export * as Home from '~/_routes/src/home/home'
+export * as Home from '~/_routes/src/home/home-main'
 
-export const HomeLazy = { lazy: () => import('~/_routes/src/home/home') } as const
+const lazy = () => import('~/_routes/src/home/home-main')
+
+export const HomeLazy = { lazy } as const
