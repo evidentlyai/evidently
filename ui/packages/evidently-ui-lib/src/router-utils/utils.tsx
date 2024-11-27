@@ -10,19 +10,19 @@ export type CrumbDefinition = { title?: string; param?: string; keyFromLoaderDat
 
 export type HandleWithCrumb = { crumb?: CrumbDefinition }
 
-export const decorateAllRoute = (r: RouteExtended): RouteExtended => {
+export const decorateAllRoutes = (r: RouteExtended): RouteExtended => {
   if (r.lazy) {
     // @ts-ignore
     return {
       ...r,
-      lazy: (() => r.lazy?.().then(decorateAllRoute)) as LazyRouteFunction<RouteObject>,
-      children: r.children ? r.children.map(decorateAllRoute) : undefined
+      lazy: (() => r.lazy?.().then(decorateAllRoutes)) as LazyRouteFunction<RouteObject>,
+      children: r.children ? r.children.map(decorateAllRoutes) : undefined
     }
   }
 
   return {
     ...r,
-    children: r.children ? r.children.map(decorateAllRoute) : undefined,
+    children: r.children ? r.children.map(decorateAllRoutes) : undefined,
     ErrorBoundary: r.ErrorBoundary ? r.ErrorBoundary : GenericErrorBoundary,
     action: r.actionSpecial
       ? async (args) => {
@@ -40,11 +40,11 @@ export const decorateAllRoute = (r: RouteExtended): RouteExtended => {
   } as RouteExtended
 }
 
-export const decarateTopLevelRoute = (r: RouteExtended): RouteExtended => {
+export const decarateTopLevelRoutes = (r: RouteExtended): RouteExtended => {
   if (r.lazy) {
     return {
       ...r,
-      lazy: (() => r.lazy?.().then(decarateTopLevelRoute)) as LazyRouteFunction<RouteObject>
+      lazy: (() => r.lazy?.().then(decarateTopLevelRoutes)) as LazyRouteFunction<RouteObject>
     }
   }
 

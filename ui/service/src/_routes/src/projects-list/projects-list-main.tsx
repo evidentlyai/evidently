@@ -23,6 +23,8 @@ import { AddNewProjectWrapper, ProjectCardWrapper } from './components'
 //    ROUTE
 ///////////////////
 
+export const index = true
+
 type Path = '/?index'
 
 export type CurrentRoute = GetRouteByPath<Path>

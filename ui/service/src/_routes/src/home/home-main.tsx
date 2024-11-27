@@ -20,6 +20,8 @@ import { useCrumbs } from './hooks'
 //    ROUTE
 ///////////////////
 
+export const path = ''
+
 type CurrentRoute = GetRouteByPath<'/'>
 
 const crumb: CrumbDefinition = { title: 'Home' }

@@ -6,16 +6,14 @@ import type { LoaderFunctionArgs } from 'evidently-ui-lib/shared-dependencies/re
 import { useRouteParams } from '~/_routes/hooks'
 import type { GetRouteByPath } from '~/_routes/types'
 
-import { DashboardParams } from 'evidently-ui-lib/components/DashboardDateFilter'
-import { DashboardWidgets } from 'evidently-ui-lib/components/DashboardWidgets'
-import { DashboardViewParamsContext } from 'evidently-ui-lib/contexts/DashboardViewParams'
-import { useDashboardParams } from 'evidently-ui-lib/routes-components/dashboard'
 import { getProjectDashboard } from 'evidently-ui-lib/routes-components/dashboard/data'
 import { clientAPI } from '~/api'
 
 ///////////////////
 //    ROUTE
 ///////////////////
+
+export const index = true as const
 
 type Path = '/:projectId/?index'
 
@@ -27,30 +25,31 @@ const crumb: CrumbDefinition = { title: 'Dashboard' }
 
 export const handle = { crumb }
 
-export const loader = ({ params, request }: LoaderFunctionArgs) => {
+export const loader = ({ params /* request */ }: LoaderFunctionArgs) => {
   const { projectId: project_id } = params as Params
 
-  return getProjectDashboard({ api: clientAPI, project_id, request })
+  // const { searchParams } = new URL(request.url)
+
+  return getProjectDashboard({
+    api: clientAPI,
+    project_id,
+    timestamp_start: null,
+    timestamp_end: null
+  })
 }
 
 export const Component = () => {
   const { loaderData: data } = useRouteParams<CurrentRoute>()
 
-  const { dataRanges, isShowDateFilter, isDashboardHideDates, setIsDashboardHideDates } =
-    useDashboardParams(data)
+  console.log(data)
+
+  // return <ProjectDashboard data={data} />
 
   return (
-    <>
-      <DashboardParams
-        dataRanges={dataRanges}
-        isShowDateFilter={isShowDateFilter}
-        isDashboardHideDates={isDashboardHideDates}
-        setIsDashboardHideDates={setIsDashboardHideDates}
-      />
-
-      <DashboardViewParamsContext.Provider value={{ isXaxisAsCategorical: isDashboardHideDates }}>
-        <DashboardWidgets widgets={data.widgets} />
-      </DashboardViewParamsContext.Provider>
-    </>
+    <p>
+      Lorem ipsum dolor sit amet consectetur adipisicing elit. Delectus provident voluptatibus
+      accusamus molestiae illo, ullam aut nihil error numquam nesciunt cum tenetur rem quis
+      voluptatem voluptate ratione? Qui, doloremque mollitia.
+    </p>
   )
 }

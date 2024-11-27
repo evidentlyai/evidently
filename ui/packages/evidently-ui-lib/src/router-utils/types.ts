@@ -33,7 +33,14 @@ type ExtractAction<T extends RouteExtended> = T['actionSpecial'] extends (
     ? ProvideActionInfo<Z['data'], O>
     : undefined
 
-type IsIndex<T extends RouteExtended> = T['index'] extends true ? true : false
+type IsIndex<T extends RouteExtended> = T['index'] extends true
+  ? true
+  : T['lazy'] extends (
+        // biome-ignore lint/suspicious/noExplicitAny: fine
+        args: any
+      ) => Promise<{ index: infer Z }>
+    ? Z
+    : false
 
 type PathDelimitter<T extends string> = T extends `${string}/` ? '' : '/'
 
