@@ -350,6 +350,11 @@ async def add_project(
     team_id: Optional[TeamID] = None,
     org_id: Optional[OrgID] = None,
 ) -> Project:
+    if team_id is None and data.team_id is not None:
+        team_id = data.team_id
+    elif org_id is None and data.org_id is not None:
+        org_id = data.org_id
+
     p = await project_manager.add_project(data, user_id, team_id, org_id)
     log_event("add_project")
     return p

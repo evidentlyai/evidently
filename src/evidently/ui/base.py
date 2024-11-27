@@ -25,7 +25,6 @@ from evidently._pydantic_compat import Field
 from evidently._pydantic_compat import PrivateAttr
 from evidently._pydantic_compat import parse_obj_as
 from evidently.core import new_id
-from evidently.errors import EvidentlyError
 from evidently.model.dashboard import DashboardInfo
 from evidently.suite.base_suite import MetadataValueType
 from evidently.suite.base_suite import ReportBase
@@ -756,8 +755,8 @@ class ProjectManager:
         self, project: Project, user_id: UserID, team_id: Optional[TeamID] = None, org_id: Optional[OrgID] = None
     ) -> Project:
         user = await self.auth.get_or_default_user(user_id)
+        team = await self.auth.get_team_or_error(team_id)
         if team_id:
-            team = await self.auth.get_team_or_error(team_id)
             if not await self.auth.check_entity_permission(
                 user.id, EntityType.Team, team.id, Permission.TEAM_CREATE_PROJECT
             ):
@@ -770,8 +769,6 @@ class ProjectManager:
             team = None
             if not await self.auth.check_entity_permission(user.id, EntityType.Org, org_id, Permission.ORG_WRITE):
                 raise NotEnoughPermissions()
-        else:
-            raise EvidentlyError("team_id or org_id should not be None")
 
         project.created_at = project.created_at or datetime.datetime.now()
         project = (await self.metadata.add_project(project, user, team, org_id)).bind(self, user.id)
