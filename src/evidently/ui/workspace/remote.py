@@ -174,7 +174,9 @@ class RemoteMetadataStorage(MetadataStorage, RemoteBase):
             r.headers[SECRET_HEADER_NAME] = self.secret
         return r
 
-    async def add_project(self, project: Project, user: User, team: Optional[Team], org_id: Optional[OrgID]) -> Project:
+    async def add_project(
+        self, project: Project, user: User, team: Optional[Team], org_id: Optional[OrgID] = None
+    ) -> Project:
         params = {}
         if team is not None and team.id is not None and team.id != ZERO_UUID:
             params["team_id"] = str(team.id) if team is not None else None

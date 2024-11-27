@@ -202,7 +202,9 @@ class JsonFileMetadataStorage(MetadataStorage):
             self._state = LocalState.load(self.path, None)
         return self._state
 
-    async def add_project(self, project: Project, user: User, team: Optional[Team], org_id: Optional[OrgID]) -> Project:
+    async def add_project(
+        self, project: Project, user: User, team: Optional[Team], org_id: Optional[OrgID] = None
+    ) -> Project:
         project_id = str(project.id)
         project.org_id = org_id
         self.state.location.makedirs(posixpath.join(project_id, SNAPSHOTS))
