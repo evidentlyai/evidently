@@ -28,6 +28,7 @@ from evidently.ui.type_aliases import UserID
 class Permission(Enum):
     GRANT_ROLE = "all_grant_role"
     REVOKE_ROLE = "all_revoke_role"
+    LIST_USERS = "all_list_users"
 
     ORG_READ = "org_read"
     ORG_WRITE = "org_write"
@@ -62,11 +63,13 @@ class DefaultRole(Enum):
     OWNER = "owner"
     EDITOR = "editor"
     VIEWER = "viewer"
+    DEMO_VIEWER = "demo_viewer"
 
 
 DEFAULT_ROLE_PERMISSIONS: Dict[Tuple[DefaultRole, Optional[EntityType]], Set[Permission]] = {
     (DefaultRole.OWNER, None): set(Permission),
     (DefaultRole.EDITOR, EntityType.Org): {
+        Permission.LIST_USERS,
         Permission.ORG_READ,
         Permission.ORG_CREATE_TEAM,
         Permission.TEAM_READ,
@@ -81,6 +84,7 @@ DEFAULT_ROLE_PERMISSIONS: Dict[Tuple[DefaultRole, Optional[EntityType]], Set[Per
         Permission.DATASET_DELETE,
     },
     (DefaultRole.EDITOR, EntityType.Team): {
+        Permission.LIST_USERS,
         Permission.TEAM_READ,
         Permission.TEAM_WRITE,
         Permission.TEAM_CREATE_PROJECT,
@@ -93,29 +97,36 @@ DEFAULT_ROLE_PERMISSIONS: Dict[Tuple[DefaultRole, Optional[EntityType]], Set[Per
         Permission.DATASET_DELETE,
     },
     (DefaultRole.EDITOR, EntityType.Project): {
+        Permission.LIST_USERS,
         Permission.PROJECT_READ,
         Permission.PROJECT_WRITE,
         Permission.PROJECT_SNAPSHOT_ADD,
     },
     (DefaultRole.EDITOR, EntityType.Dataset): {
+        Permission.LIST_USERS,
         Permission.DATASET_READ,
         Permission.DATASET_WRITE,
         Permission.DATASET_DELETE,
     },
     (DefaultRole.VIEWER, EntityType.Org): {
+        Permission.LIST_USERS,
         Permission.ORG_READ,
     },
     (DefaultRole.VIEWER, EntityType.Team): {
+        Permission.LIST_USERS,
         Permission.TEAM_READ,
         Permission.PROJECT_READ,
         Permission.DATASET_READ,
     },
     (DefaultRole.VIEWER, EntityType.Project): {
+        Permission.LIST_USERS,
         Permission.PROJECT_READ,
     },
     (DefaultRole.VIEWER, EntityType.Dataset): {
+        Permission.LIST_USERS,
         Permission.DATASET_READ,
     },
+    (DefaultRole.DEMO_VIEWER, None): {Permission.PROJECT_READ},
 }
 
 

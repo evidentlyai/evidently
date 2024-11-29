@@ -56,8 +56,9 @@ class ProjectManager(BaseManager):
         self,
         name: str,
         user_id: UserID,
-        team_id: TeamID,
+        team_id: Optional[TeamID] = None,
         description: Optional[str] = None,
+        org_id: Optional[TeamID] = None,
     ) -> Project:
         from evidently.ui.dashboards import DashboardConfig
 
@@ -67,22 +68,37 @@ class ProjectManager(BaseManager):
                 description=description,
                 dashboard=DashboardConfig(name=name, panels=[]),
                 team_id=team_id,
+                org_id=org_id,
             ),
             user_id,
             team_id,
+            org_id,
         )
         return project
 
-    async def add_project(self, project: Project, user_id: UserID, team_id: TeamID) -> Project:
+    async def add_project(
+        self, project: Project, user_id: UserID, team_id: Optional[TeamID] = None, org_id: Optional[OrgID] = None
+    ) -> Project:
         user = await self.auth_manager.get_or_default_user(user_id)
-        team = await self.auth_manager.get_team_or_error(team_id)
-        if not await self.auth_manager.check_entity_permission(
-            user.id, EntityType.Team, team.id, Permission.TEAM_CREATE_PROJECT
-        ):
-            raise NotEnoughPermissions()
-        project.team_id = team_id if team_id != ZERO_UUID else None
+        team = await self.auth_manager.get_team_or_error(team_id) if team_id else None
+        if team:
+            if not await self.auth_manager.check_entity_permission(
+                user.id, EntityType.Team, team.id, Permission.TEAM_CREATE_PROJECT
+            ):
+                raise NotEnoughPermissions()
+            project.team_id = team_id if team_id != ZERO_UUID else None
+            org_id = team.org_id if team_id else None
+            project.org_id = org_id
+        elif org_id:
+            project.org_id = org_id
+            team = None
+            if not await self.auth_manager.check_entity_permission(
+                user.id, EntityType.Org, org_id, Permission.ORG_WRITE
+            ):
+                raise NotEnoughPermissions()
+
         project.created_at = project.created_at or datetime.datetime.now()
-        project = (await self.project_metadata.add_project(project, user, team)).bind(self, user.id)
+        project = (await self.project_metadata.add_project(project, user, team, org_id)).bind(self, user.id)
         await self.auth_manager.grant_entity_role(
             user.id,
             EntityType.Project,
