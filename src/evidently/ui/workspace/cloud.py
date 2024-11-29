@@ -7,13 +7,11 @@ from typing import List
 from typing import Literal
 from typing import NamedTuple
 from typing import Optional
-from typing import Tuple
 from typing import Type
 from typing import Union
 from typing import overload
 
 import pandas as pd
-import uuid6
 from requests import HTTPError
 from requests import Response
 
@@ -25,15 +23,14 @@ from evidently.ui.api.models import OrgModel
 from evidently.ui.api.models import TeamModel
 from evidently.ui.base import Org
 from evidently.ui.base import Team
-from evidently.ui.errors import OrgNotFound
-from evidently.ui.errors import ProjectNotFound
-from evidently.ui.errors import TeamNotFound
+from evidently.ui.datasets import DatasetSourceType
 from evidently.ui.managers.projects import ProjectManager
 from evidently.ui.storage.common import NoopAuthManager
 from evidently.ui.type_aliases import STR_UUID
 from evidently.ui.type_aliases import ZERO_UUID
 from evidently.ui.type_aliases import DatasetID
 from evidently.ui.type_aliases import OrgID
+from evidently.ui.type_aliases import ProjectID
 from evidently.ui.type_aliases import TeamID
 from evidently.ui.workspace.remote import NoopBlobStorage
 from evidently.ui.workspace.remote import NoopDataStorage
@@ -186,10 +183,10 @@ class CloudMetadataStorage(RemoteProjectMetadataStorage):
         self,
         file: BinaryIO,
         name: str,
-        org_id: OrgID,
-        team_id: TeamID,
+        project_id: ProjectID,
         description: Optional[str],
         column_mapping: Optional[ColumnMapping],
+        dataset_source: DatasetSourceType = DatasetSourceType.file,
     ) -> DatasetID:
         cm_payload = json.dumps(dataclasses.asdict(column_mapping)) if column_mapping is not None else None
         response: Response = self._request(
@@ -200,8 +197,9 @@ class CloudMetadataStorage(RemoteProjectMetadataStorage):
                 "description": description,
                 "file": file,
                 "column_mapping": cm_payload,
+                "source_type": dataset_source.value,
             },
-            query_params={"org_id": org_id, "team_id": team_id},
+            query_params={"project_id": project_id},
             form_data=True,
         )
         return DatasetID(response.json()["dataset_id"])
@@ -267,10 +265,10 @@ class CloudWorkspace(WorkspaceView):
         project_id: STR_UUID,
         description: Optional[str] = None,
         column_mapping: Optional[ColumnMapping] = None,
+        dataset_source: DatasetSourceType = DatasetSourceType.file,
     ) -> DatasetID:
         file: Union[NamedBytesIO, BinaryIO]
         assert isinstance(self.project_manager.project_metadata, CloudMetadataStorage)
-        org_id, team_id = self._get_org_id_team_id(project_id)
         if isinstance(data_or_path, str):
             file = open(data_or_path, "rb")
         elif isinstance(data_or_path, pd.DataFrame):
@@ -279,30 +277,14 @@ class CloudWorkspace(WorkspaceView):
             file.seek(0)
         else:
             raise NotImplementedError(f"Add datasets is not implemented for {get_classpath(data_or_path.__class__)}")
+        if isinstance(project_id, str):
+            project_id = ProjectID(project_id)
         try:
             return self.project_manager.project_metadata.add_dataset(
-                file, name, org_id, team_id, description, column_mapping
+                file, name, project_id, description, column_mapping, dataset_source
             )
         finally:
             file.close()
-
-    def _get_org_id_team_id(self, project_id: STR_UUID) -> Tuple[OrgID, TeamID]:
-        """Temporary method until we can attach datasets to projects"""
-        assert isinstance(self.project_manager.project_metadata, CloudMetadataStorage)
-        if isinstance(project_id, str):
-            project_id = uuid6.UUID(project_id)
-        project = self.get_project(project_id)
-        if project is None:
-            raise ProjectNotFound()
-        if project.team_id is None:
-            raise TeamNotFound()
-        teams = self.project_manager.project_metadata._request(
-            "/api/teams/info", "GET", query_params={"team_ids": [project.team_id]}, response_model=Dict[TeamID, Team]
-        )
-        team = teams[project.team_id]
-        if team.org_id is None:
-            raise OrgNotFound()
-        return team.org_id, team.id
 
     def load_dataset(self, dataset_id: DatasetID) -> pd.DataFrame:
         assert isinstance(self.project_manager.project_metadata, CloudMetadataStorage)

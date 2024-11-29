@@ -13,7 +13,6 @@ within a Python package.
 import functools
 import io
 import os
-import pipes
 import re
 import shlex
 import subprocess
@@ -40,9 +39,10 @@ try:
 except ImportError:
     bdist_wheel = None
 
-if sys.platform == "win32":
+try:
     from subprocess import list2cmdline
-else:
+except ImportError:
+    import pipes
 
     def list2cmdline(cmd_list):
         return " ".join(map(pipes.quote, cmd_list))

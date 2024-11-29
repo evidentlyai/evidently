@@ -41,6 +41,7 @@ from evidently.ui.storage.common import NoopAuthManager
 from evidently.ui.type_aliases import ZERO_UUID
 from evidently.ui.type_aliases import BlobID
 from evidently.ui.type_aliases import DataPointsAsType
+from evidently.ui.type_aliases import OrgID
 from evidently.ui.type_aliases import PointType
 from evidently.ui.type_aliases import ProjectID
 from evidently.ui.type_aliases import SnapshotID
@@ -173,10 +174,14 @@ class RemoteProjectMetadataStorage(ProjectMetadataStorage, RemoteBase):
             r.headers[SECRET_HEADER_NAME] = self.secret
         return r
 
-    async def add_project(self, project: Project, user: User, team: Team) -> Project:
+    async def add_project(
+        self, project: Project, user: User, team: Optional[Team], org_id: Optional[OrgID] = None
+    ) -> Project:
         params = {}
         if team is not None and team.id is not None and team.id != ZERO_UUID:
-            params["team_id"] = str(team.id)
+            params["team_id"] = str(team.id) if team is not None else None
+        if org_id:
+            params["org_id"] = str(org_id)
         return self._request("/api/projects", "POST", query_params=params, body=project.dict(), response_model=Project)
 
     async def get_project(self, project_id: ProjectID) -> Optional[Project]:

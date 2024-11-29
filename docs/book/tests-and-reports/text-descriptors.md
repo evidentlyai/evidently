@@ -188,7 +188,7 @@ For two-column descriptor like `SemanticSimilarity()`, pass both columns as a li
 
 ```python
 report = Report(metrics=[
-    ColumnSummaryMetric(column_name=SemanticSimilarity().on(["answer", "reference_answer"]))
+    ColumnSummaryMetric(column_name=SemanticSimilarity(with_column="question").on("response"))
 ])
 ```
 
@@ -249,8 +249,9 @@ test_suite = TestSuite(tests=[
 test_suite = TestSuite(tests=[
     TestColumnValueMin(
         column_name=SemanticSimilarity(
-        display_name="Response Similarity").
-        on(["target_response", "new_response"]),
+        display_name="Response Similarity",
+        with_column="target_response").
+        on("new_response"),
         gte=0.9),
 ])
 ```

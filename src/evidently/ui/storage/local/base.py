@@ -37,6 +37,7 @@ from evidently.ui.storage.common import NO_TEAM
 from evidently.ui.storage.common import NO_USER
 from evidently.ui.type_aliases import BlobID
 from evidently.ui.type_aliases import DataPointsAsType
+from evidently.ui.type_aliases import OrgID
 from evidently.ui.type_aliases import PointType
 from evidently.ui.type_aliases import ProjectID
 from evidently.ui.type_aliases import SnapshotID
@@ -201,8 +202,11 @@ class JsonFileProjectMetadataStorage(ProjectMetadataStorage):
             self._state = LocalState.load(self.path, None)
         return self._state
 
-    async def add_project(self, project: Project, user: User, team: Team) -> Project:
+    async def add_project(
+        self, project: Project, user: User, team: Optional[Team], org_id: Optional[OrgID] = None
+    ) -> Project:
         project_id = str(project.id)
+        project.org_id = org_id
         self.state.location.makedirs(posixpath.join(project_id, SNAPSHOTS))
         with self.state.location.open(posixpath.join(project_id, METADATA_PATH), "w") as f:
             json.dump(project.dict(), f, indent=2, cls=NumpyEncoder)
@@ -211,7 +215,7 @@ class JsonFileProjectMetadataStorage(ProjectMetadataStorage):
         return project
 
     async def update_project(self, project: Project) -> Project:
-        return await self.add_project(project, NO_USER, NO_TEAM)
+        return await self.add_project(project, NO_USER, NO_TEAM, org_id=None)
 
     async def get_project(self, project_id: ProjectID) -> Optional[Project]:
         return self.state.projects.get(project_id)
@@ -296,10 +300,14 @@ class InMemoryDataStorage(DataStorage):
     ) -> TestResultPoints:
         points: Dict[datetime.datetime, Dict[Test, TestInfo]] = defaultdict(dict)
         for report in (s.as_test_suite() for s in self.state.snapshot_data[project_id].values() if not s.is_report):
-            if not filter.filter(report):
+            if not (
+                filter.filter(report)
+                and isinstance(report, TestSuite)
+                and (timestamp_start is None or report.timestamp >= timestamp_start)
+                and (timestamp_end is None or report.timestamp < timestamp_end)
+            ):
                 continue
-            if not isinstance(report, TestSuite):
-                continue
+
             ts = to_period(time_agg, report.timestamp)
             if test_filters:
                 for test_filter in test_filters:

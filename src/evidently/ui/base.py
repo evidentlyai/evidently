@@ -167,7 +167,8 @@ class Project(Entity):
     description: Optional[str] = None
     dashboard: "DashboardConfig" = Field(default_factory=_default_dashboard)
 
-    team_id: Optional[TeamID]
+    team_id: Optional[TeamID] = None
+    org_id: Optional[OrgID] = None
 
     date_from: Optional[datetime.datetime] = None
     date_to: Optional[datetime.datetime] = None
@@ -259,7 +260,9 @@ class Project(Entity):
 
 class ProjectMetadataStorage(ABC):
     @abstractmethod
-    async def add_project(self, project: Project, user: User, team: Team) -> Project:
+    async def add_project(
+        self, project: Project, user: User, team: Optional[Team], org_id: Optional[OrgID] = None
+    ) -> Project:
         raise NotImplementedError
 
     @abstractmethod

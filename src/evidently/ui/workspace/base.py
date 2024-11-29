@@ -11,6 +11,7 @@ from evidently.suite.base_suite import ReportBase
 from evidently.suite.base_suite import Snapshot
 from evidently.test_suite import TestSuite
 from evidently.ui.base import Project
+from evidently.ui.datasets import DatasetSourceType
 from evidently.ui.datasets import get_dataset_name_output_current
 from evidently.ui.datasets import get_dataset_name_output_reference
 from evidently.ui.type_aliases import STR_UUID
@@ -21,11 +22,19 @@ from evidently.ui.type_aliases import TeamID
 
 class WorkspaceBase(abc.ABC):
     @abc.abstractmethod
-    def create_project(self, name: str, description: Optional[str] = None, team_id: TeamID = None) -> Project:
+    def create_project(
+        self,
+        name: str,
+        description: Optional[str] = None,
+        team_id: Optional[TeamID] = None,
+        org_id: Optional[OrgID] = None,
+    ) -> Project:
         raise NotImplementedError
 
     @abc.abstractmethod
-    def add_project(self, project: Project, team_id: TeamID = None) -> Project:
+    def add_project(
+        self, project: Project, team_id: Optional[TeamID] = None, org_id: Optional[OrgID] = None
+    ) -> Project:
         raise NotImplementedError
 
     @abc.abstractmethod
@@ -49,12 +58,20 @@ class WorkspaceBase(abc.ABC):
             if current is not None:
                 dataset_name_current = get_dataset_name_output_current(snapshot.is_report, snapshot.id, run_from)
                 snapshot.links.datasets.output.current = self.add_dataset(
-                    current, dataset_name_current, project_id, column_mapping=column_mapping
+                    current,
+                    dataset_name_current,
+                    project_id,
+                    column_mapping=column_mapping,
+                    dataset_source=DatasetSourceType.snapshot_builder,
                 )
             if reference is not None:
                 dataset_name_reference = get_dataset_name_output_reference(snapshot.is_report, snapshot.id, run_from)
                 snapshot.links.datasets.output.reference = self.add_dataset(
-                    reference, dataset_name_reference, project_id, column_mapping=column_mapping
+                    reference,
+                    dataset_name_reference,
+                    project_id,
+                    column_mapping=column_mapping,
+                    dataset_source=DatasetSourceType.snapshot_builder,
                 )
         self.add_snapshot(project_id, snapshot)
 
@@ -86,5 +103,6 @@ class WorkspaceBase(abc.ABC):
         project_id: STR_UUID,
         description: Optional[str] = None,
         column_mapping: Optional[ColumnMapping] = None,
+        dataset_source: DatasetSourceType = DatasetSourceType.file,
     ) -> DatasetID:
         raise NotImplementedError
