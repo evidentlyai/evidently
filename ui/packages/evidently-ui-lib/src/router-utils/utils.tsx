@@ -1,5 +1,5 @@
 import { expectJsonRequest } from '~/api/utils'
-import { GenericErrorBoundary, handleActionFetchersErrors } from '~/components/Error'
+import { GenericErrorBoundary, handleActionFetchersErrors } from '~/router-utils/components/Error'
 import type { RouteExtended } from '~/router-utils/types'
 import type { LazyRouteFunction, RouteObject } from '~/shared-dependencies/react-router-dom'
 
@@ -40,11 +40,11 @@ export const decorateAllRoutes = (r: RouteExtended): RouteExtended => {
   } as RouteExtended
 }
 
-export const decarateTopLevelRoutes = (r: RouteExtended): RouteExtended => {
+export const decorateTopLevelRoutes = (r: RouteExtended): RouteExtended => {
   if (r.lazy) {
     return {
       ...r,
-      lazy: (() => r.lazy?.().then(decarateTopLevelRoutes)) as LazyRouteFunction<RouteObject>
+      lazy: (() => r.lazy?.().then(decorateTopLevelRoutes)) as LazyRouteFunction<RouteObject>
     }
   }
 

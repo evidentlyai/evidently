@@ -54,12 +54,21 @@ export type DateFilterState = {
 
 export interface DateFilterProps {
   dates: DateFilterState
+  dateRange: { minDate?: Dayjs; maxDate?: Dayjs }
   setDates: React.Dispatch<React.SetStateAction<DateFilterState>>
   required?: boolean
+  flexEnd?: boolean
   children?: React.ReactNode
 }
 
-export const DateFilter = ({ dates, setDates, children, required = false }: DateFilterProps) => {
+export const DateFilter = ({
+  dates,
+  dateRange,
+  setDates,
+  children,
+  flexEnd,
+  required = false
+}: DateFilterProps) => {
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale={'en-gb'}>
       <Grid
@@ -67,7 +76,7 @@ export const DateFilter = ({ dates, setDates, children, required = false }: Date
         padding={1}
         zIndex={1}
         gap={2}
-        justifyContent='flex-start'
+        justifyContent={flexEnd ? 'flex-end' : 'flex-start'}
         alignItems={'flex-end'}
       >
         <>
@@ -82,15 +91,20 @@ export const DateFilter = ({ dates, setDates, children, required = false }: Date
                   const [valueStr, durationStr] = (event.target.value as string).split(',')
 
                   if (valueStr === '') {
-                    setDates({ dateFrom: null, dateTo: null })
+                    setDates({
+                      dateFrom: dateRange.minDate ?? null,
+                      dateTo: dateRange.maxDate ?? null
+                    })
                     return
                   }
 
-                  const now = dayjs()
                   const [value, duration] = [Number(valueStr), durationStr]
-                  const lastDate = now.subtract(value, duration as dayjs.ManipulateType)
 
-                  setDates({ dateFrom: lastDate, dateTo: now })
+                  const dateTo = dateRange.maxDate || dayjs()
+
+                  const lastDate = dateTo.subtract(value, duration as dayjs.ManipulateType)
+
+                  setDates({ dateFrom: lastDate, dateTo: dateTo })
                 }}
               >
                 <MenuItem value={''}>
@@ -113,7 +127,7 @@ export const DateFilter = ({ dates, setDates, children, required = false }: Date
             <Box display={'flex'} alignItems={'center'} gap={2}>
               <DateTimePicker
                 minDate={undefined}
-                maxDate={dates?.dateTo}
+                maxDate={dateRange.maxDate && dates?.dateTo}
                 slotProps={{
                   textField: {
                     variant: 'standard',
@@ -128,7 +142,7 @@ export const DateFilter = ({ dates, setDates, children, required = false }: Date
                 <Typography> - </Typography>
               </Box>
               <DateTimePicker
-                minDate={dates?.dateFrom}
+                minDate={dateRange.minDate && dates?.dateFrom}
                 maxDate={undefined}
                 slotProps={{
                   textField: {

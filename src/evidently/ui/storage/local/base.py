@@ -300,7 +300,7 @@ class InMemoryDataStorage(DataStorage):
                 filter.filter(report)
                 and isinstance(report, TestSuite)
                 and (timestamp_start is None or report.timestamp >= timestamp_start)
-                and (timestamp_end is None or report.timestamp < timestamp_end)
+                and (timestamp_end is None or report.timestamp <= timestamp_end)
             ):
                 continue
 
@@ -327,7 +327,7 @@ class InMemoryDataStorage(DataStorage):
             if not (
                 filter.filter(report)
                 and (timestamp_start is None or report.timestamp >= timestamp_start)
-                and (timestamp_end is None or report.timestamp < timestamp_end)
+                and (timestamp_end is None or report.timestamp <= timestamp_end)
             ):
                 continue
 

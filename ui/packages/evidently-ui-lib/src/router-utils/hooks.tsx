@@ -1,11 +1,13 @@
+import { useEffect, useState } from 'react'
 import {
   useFetchers,
   useLoaderData,
+  useMatches,
   useNavigation,
   useParams,
   useRevalidator
-} from 'evidently-ui-lib/shared-dependencies/react-router-dom'
-import { useEffect, useState } from 'react'
+} from 'react-router-dom'
+import type { HandleWithCrumb } from '~/router-utils/utils'
 
 export const useRouteParams = <
   // biome-ignore lint/suspicious/noExplicitAny: fine
@@ -50,4 +52,25 @@ export const useIsAnyLoaderOrActionRunning = () => {
     fetchers.some(({ state }) => state !== 'idle') ||
     state !== 'idle'
   )
+}
+
+export const useCrumbsFromHandle = () => {
+  const matches = useMatches()
+
+  const crumbs = matches
+    .filter((e) => (e.handle as HandleWithCrumb)?.crumb)
+    .map(({ handle, data, pathname, params }) => ({
+      to: pathname,
+      linkText:
+        (handle as HandleWithCrumb)?.crumb?.title ??
+        params[(handle as HandleWithCrumb)?.crumb?.param ?? ''] ??
+        (typeof data === 'object'
+          ? (data as Record<string, string>)[
+              (handle as HandleWithCrumb)?.crumb?.keyFromLoaderData ?? ''
+            ]
+          : '') ??
+        `undefined (provide title or param in crumb). Path: ${pathname}`
+    }))
+
+  return { crumbs }
 }

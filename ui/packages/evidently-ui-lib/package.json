@@ -10,6 +10,9 @@
     "./routes-components/*/data": {
       "default": "./src/routes-components/*/data.tsx"
     },
+    "./routes-components/*/router": {
+      "default": "./src/routes-components/*/router.tsx"
+    },
     "./routes-components/*": {
       "default": "./src/routes-components/*/index.tsx"
     },

@@ -17,15 +17,15 @@ export const ProjectDashboard = ({
   dateFilterProps: DateFilterProps
   showInOrderProps: ShowInOrderSwitchProps
 }) => {
-  const { isXaxisAsCategorical } = showInOrderProps
-
   return (
     <>
-      <DateFilter {...dateFilterProps}>
+      <DateFilter {...dateFilterProps} flexEnd>
         <ShowInOrderSwitch {...showInOrderProps} />
       </DateFilter>
 
-      <DashboardViewParamsContext.Provider value={{ isXaxisAsCategorical }}>
+      <DashboardViewParamsContext.Provider
+        value={{ isXaxisAsCategorical: showInOrderProps.isXaxisAsCategorical }}
+      >
         <DashboardWidgets widgets={data.widgets} />
       </DashboardViewParamsContext.Provider>
     </>

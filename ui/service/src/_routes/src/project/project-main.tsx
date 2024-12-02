@@ -15,16 +15,14 @@ import {
 
 import { ContentCopy as ContentCopyIcon } from 'evidently-ui-lib/shared-dependencies/mui-icons-material'
 
-import { useRouteParams } from '~/_routes/hooks'
 import type { GetRouteByPath } from '~/_routes/types'
 
+import { useRouteParams } from 'evidently-ui-lib/router-utils/hooks'
 import { clientAPI } from '~/api'
 
 ///////////////////
 //    ROUTE
 ///////////////////
-
-export const path = ':projectId'
 
 type Path = '/:projectId'
 

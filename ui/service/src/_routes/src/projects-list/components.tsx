@@ -3,8 +3,8 @@ import type { StrictID } from 'evidently-ui-lib/api/types/utils'
 import { AddNewProjectButton, ProjectCard } from 'evidently-ui-lib/components/ProjectCard'
 import { useState } from 'react'
 import { useSubmitFetcher } from '~/_routes/fetchers'
-import { useOnSubmitEnd } from '~/_routes/hooks'
 
+import { useOnSubmitEnd } from 'evidently-ui-lib/router-utils/hooks'
 import { RouterLink } from '~/_routes/components'
 import type { CurrentRoute } from './projects-list-main'
 

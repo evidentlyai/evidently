@@ -3,17 +3,21 @@ import type { CrumbDefinition } from 'evidently-ui-lib/router-utils/utils'
 
 import type { LoaderFunctionArgs } from 'evidently-ui-lib/shared-dependencies/react-router-dom'
 
-import { useRouteParams } from '~/_routes/hooks'
 import type { GetRouteByPath } from '~/_routes/types'
 
+import { useLocalStorage } from 'evidently-ui-lib/hooks/index'
+import { useRouteParams } from 'evidently-ui-lib/router-utils/hooks'
+import { ProjectDashboard } from 'evidently-ui-lib/routes-components/dashboard'
 import { getProjectDashboard } from 'evidently-ui-lib/routes-components/dashboard/data'
+import {
+  getDateFromSearchForAPI,
+  useDashboardFilterPropsFromSearchParamsDebounced
+} from 'evidently-ui-lib/routes-components/dashboard/router'
 import { clientAPI } from '~/api'
 
 ///////////////////
 //    ROUTE
 ///////////////////
-
-export const index = true as const
 
 type Path = '/:projectId/?index'
 
@@ -25,31 +29,38 @@ const crumb: CrumbDefinition = { title: 'Dashboard' }
 
 export const handle = { crumb }
 
-export const loader = ({ params /* request */ }: LoaderFunctionArgs) => {
+export const loader = ({ params /* request */, request }: LoaderFunctionArgs) => {
   const { projectId: project_id } = params as Params
 
-  // const { searchParams } = new URL(request.url)
+  const { searchParams } = new URL(request.url)
+
+  const { timestamp_start, timestamp_end } = getDateFromSearchForAPI(searchParams)
 
   return getProjectDashboard({
     api: clientAPI,
     project_id,
-    timestamp_start: null,
-    timestamp_end: null
+    timestamp_start,
+    timestamp_end
   })
 }
 
 export const Component = () => {
   const { loaderData: data } = useRouteParams<CurrentRoute>()
 
-  console.log(data)
+  const { min_timestamp, max_timestamp } = data
 
-  // return <ProjectDashboard data={data} />
+  const dateFilterProps = useDashboardFilterPropsFromSearchParamsDebounced({
+    min_timestamp,
+    max_timestamp
+  })
+
+  const [isXaxisAsCategorical, setIsXaxisAsCategorical] = useLocalStorage('some-key', false)
 
   return (
-    <p>
-      Lorem ipsum dolor sit amet consectetur adipisicing elit. Delectus provident voluptatibus
-      accusamus molestiae illo, ullam aut nihil error numquam nesciunt cum tenetur rem quis
-      voluptatem voluptate ratione? Qui, doloremque mollitia.
-    </p>
+    <ProjectDashboard
+      data={data}
+      dateFilterProps={dateFilterProps}
+      showInOrderProps={{ isXaxisAsCategorical, setIsXaxisAsCategorical }}
+    />
   )
 }

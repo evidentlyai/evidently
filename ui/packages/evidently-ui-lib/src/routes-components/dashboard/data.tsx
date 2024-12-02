@@ -8,8 +8,8 @@ export const getProjectDashboard = ({
   project_id,
   timestamp_start,
   timestamp_end
-}: API & { project_id: string; timestamp_start: string | null; timestamp_end: string | null }) => {
-  return api
+}: API & { project_id: string; timestamp_start: string | null; timestamp_end: string | null }) =>
+  api
     .GET('/api/projects/{project_id}/dashboard', {
       params: {
         path: { project_id },
@@ -19,4 +19,3 @@ export const getProjectDashboard = ({
     })
     .then(responseParser())
     .then(JSONParseExtended<DashboardInfoModel>)
-}

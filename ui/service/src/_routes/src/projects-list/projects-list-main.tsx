@@ -12,18 +12,16 @@ import { Box, Grid, Typography } from 'evidently-ui-lib/shared-dependencies/mui-
 import type { LoaderFunctionArgs } from 'evidently-ui-lib/shared-dependencies/react-router-dom'
 import { assertNeverActionVariant } from 'evidently-ui-lib/utils/index'
 
-import { useRouteParams } from '~/_routes/hooks'
 import type { GetRouteByPath } from '~/_routes/types'
 
 import { clientAPI } from '~/api'
 
+import { useRouteParams } from 'evidently-ui-lib/router-utils/hooks'
 import { AddNewProjectWrapper, ProjectCardWrapper } from './components'
 
 ///////////////////
 //    ROUTE
 ///////////////////
-
-export const index = true
 
 type Path = '/?index'
 
