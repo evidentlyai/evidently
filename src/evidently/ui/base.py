@@ -410,6 +410,8 @@ class Permission(Enum):
     DATASET_WRITE = "datasets_write"
     DATASET_DELETE = "datasets_delete"
 
+    UNKNOWN = "unknown"
+
 
 class Role(BaseModel):
     id: RoleID
@@ -426,7 +428,7 @@ class DefaultRole(Enum):
 
 
 DEFAULT_ROLE_PERMISSIONS: Dict[Tuple[DefaultRole, Optional[EntityType]], Set[Permission]] = {
-    (DefaultRole.OWNER, None): set(Permission),
+    (DefaultRole.OWNER, None): set(Permission) - {Permission.UNKNOWN},
     (DefaultRole.EDITOR, EntityType.Org): {
         Permission.LIST_USERS,
         Permission.ORG_READ,
