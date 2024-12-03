@@ -1,6 +1,6 @@
 import { responseParser } from 'evidently-ui-lib/api/client-heplers'
 import { ensureID } from 'evidently-ui-lib/api/utils'
-import type { GetParams } from 'evidently-ui-lib/router-utils/types'
+import type { GetParams, LoaderSpecialArgs } from 'evidently-ui-lib/router-utils/types'
 import type { CrumbDefinition } from 'evidently-ui-lib/router-utils/utils'
 import {
   Box,
@@ -8,10 +8,7 @@ import {
   IconButton,
   Typography
 } from 'evidently-ui-lib/shared-dependencies/mui-material'
-import {
-  type LoaderFunctionArgs,
-  Outlet
-} from 'evidently-ui-lib/shared-dependencies/react-router-dom'
+import { Outlet } from 'evidently-ui-lib/shared-dependencies/react-router-dom'
 
 import { ContentCopy as ContentCopyIcon } from 'evidently-ui-lib/shared-dependencies/mui-icons-material'
 
@@ -36,7 +33,7 @@ const crumb: CrumbDefinition = {
 
 export const handle = { crumb }
 
-export const loader = ({ params }: LoaderFunctionArgs) => {
+export const loaderSpecial = ({ params }: LoaderSpecialArgs) => {
   const { projectId: project_id } = params as Params
 
   return clientAPI

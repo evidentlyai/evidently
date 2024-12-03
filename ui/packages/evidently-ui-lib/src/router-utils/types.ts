@@ -1,4 +1,4 @@
-import type { ActionFunctionArgs, RouteObject } from 'react-router-dom'
+import type { ActionFunctionArgs, LoaderFunctionArgs, RouteObject } from 'react-router-dom'
 
 // biome-ignore lint/suspicious/noExplicitAny: fine
 export type AdditionalActionFunctionArg = { data: any }
@@ -6,21 +6,42 @@ export type AdditionalActionFunctionArg = { data: any }
 export type ActionSpecialArgs<T extends AdditionalActionFunctionArg = AdditionalActionFunctionArg> =
   ActionFunctionArgs & T
 
+export type AdditionalLoaderFunctionArgs = { queryKeys: string }
+
+type QueryKeysToObject<T extends AdditionalLoaderFunctionArgs | undefined> = T extends {
+  queryKeys: string
+}
+  ? Partial<Record<T['queryKeys'], string>>
+  : // biome-ignore lint/complexity/noBannedTypes: fine
+    {}
+
+export type LoaderSpecialArgs<
+  T extends AdditionalLoaderFunctionArgs = AdditionalLoaderFunctionArgs
+> = LoaderFunctionArgs & { searchParams: URLSearchParams } & {
+  query: QueryKeysToObject<T>
+}
+
 // biome-ignore lint/suspicious/noExplicitAny: fine
-export type RouteExtended = RouteObject & { actionSpecial?: (args: ActionSpecialArgs) => any }
+export type RouteExtended = RouteObject & { actionSpecial?: (args: ActionSpecialArgs) => any } & {
+  // biome-ignore lint/suspicious/noExplicitAny: fine
+  loaderSpecial?: (args: LoaderSpecialArgs) => any
+}
 
 type ExtractPath<T extends RouteExtended> = T['path'] extends string ? T['path'] : ''
 
-export type ProvideLoaderInfo<K> = { returnType: K }
+export type ProvideLoaderInfo<K, Z> = { query: K; returnType: Z }
 export type ProvideActionInfo<K, Z> = { requestData: K; returnType: Z }
 
-// biome-ignore lint/suspicious/noExplicitAny: fine
-type ExtractLoader<T extends RouteExtended> = T['loader'] extends (args: any) => Promise<infer U>
-  ? ProvideLoaderInfo<U>
-  : // biome-ignore lint/suspicious/noExplicitAny: fine
-    T['lazy'] extends (args: any) => Promise<{ loader: (args: any) => Promise<infer K> }>
-    ? ProvideLoaderInfo<K>
-    : undefined
+type ExtractLoader<T extends RouteExtended> = T['loaderSpecial'] extends (
+  args: LoaderSpecialArgs<infer Z>
+) => Promise<infer U>
+  ? ProvideLoaderInfo<QueryKeysToObject<Z>, U>
+  : T['lazy'] extends (
+        // biome-ignore lint/suspicious/noExplicitAny: fine
+        args: any
+      ) => Promise<{ loaderSpecial: (args: LoaderSpecialArgs<infer Z>) => Promise<infer K> }>
+    ? ProvideLoaderInfo<QueryKeysToObject<Z>, K>
+    : ProvideLoaderInfo<QueryKeysToObject<undefined>, undefined>
 
 type ExtractAction<T extends RouteExtended> = T['actionSpecial'] extends (
   args: ActionSpecialArgs<infer Z>
@@ -31,7 +52,7 @@ type ExtractAction<T extends RouteExtended> = T['actionSpecial'] extends (
         args: any
       ) => Promise<{ actionSpecial: (args: ActionSpecialArgs<infer Z>) => Promise<infer O> }>
     ? ProvideActionInfo<Z['data'], O>
-    : undefined
+    : ProvideActionInfo<undefined, undefined>
 
 type IsIndex<T extends RouteExtended> = T['index'] extends true
   ? true
@@ -77,6 +98,14 @@ export type MatchWithAction = Match<
   any, // any loader
   // biome-ignore lint/suspicious/noExplicitAny: fine
   ProvideActionInfo<any, any>
+>
+
+export type MatchWithLoader = Match<
+  string,
+  // biome-ignore lint/suspicious/noExplicitAny: fine
+  ProvideLoaderInfo<any, any>,
+  // biome-ignore lint/suspicious/noExplicitAny: fine
+  any // any action
 >
 
 export type GetParams<K extends string> = { [Z in ExtractParams<K>]: string }

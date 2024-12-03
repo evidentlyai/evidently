@@ -1,96 +1,30 @@
-// import type { ActionFunctionArgs } from 'react-router-dom'
-// import invariant from 'tiny-invariant'
-// import { z } from 'zod'
-// import { type API_CLIENT_TYPE, responseParser } from '~/api/client-heplers'
-// import type { ReportModel, TestSuiteModel } from '~/api/types'
-// import type { ErrorData } from '~/api/types/utils'
-// import { type GetLoaderAction, expectJsonRequest } from '~/api/utils'
+import { type API, responseParser } from '~/api/client-heplers'
 
-// export type ReportsLoaderData = ReportModel[]
+export const getSnapshots = ({
+  api,
+  projectId,
+  snapshotType
+}: API & { projectId: string; snapshotType: 'reports' | 'test_suites' }) =>
+  api
+    .GET(`/api/projects/{project_id}/${snapshotType}`, {
+      params: { path: { project_id: projectId } }
+    })
+    .then(responseParser())
 
-// const ACTIONS = {
-//   RELOAD_SNAPSHOTS: 'reload-snapshots',
-//   DELETE_SNAPSHOT: 'delete-snapshot'
-// } as const
+export const reloadSnapshots = ({ api, projectId }: API & { projectId: string }) =>
+  api
+    .GET('/api/projects/{project_id}/reload', {
+      params: { path: { project_id: projectId } }
+    })
+    .then(responseParser({ notThrowExc: true }))
 
-// export const reloadSnapshotSchema = z.object({
-//   action: z.literal(ACTIONS.RELOAD_SNAPSHOTS)
-// })
-
-// export const deleteSnapshotSchema = z.object({
-//   action: z.literal(ACTIONS.DELETE_SNAPSHOT),
-//   snapshotId: z.string().uuid()
-// })
-
-// const getAction =
-//   (api: API_CLIENT_TYPE) =>
-//   async ({ request, params }: ActionFunctionArgs) => {
-//     invariant(params.projectId, 'missing projectId')
-//     expectJsonRequest(request)
-
-//     const data = await request.json()
-
-//     const reloadParse = reloadSnapshotSchema.safeParse(data)
-
-//     if (reloadParse.success) {
-//       return api
-//         .GET('/api/projects/{project_id}/reload', {
-//           params: { path: { project_id: params.projectId } }
-//         })
-//         .then(responseParser({ notThrowExc: true }))
-//     }
-
-//     const deleteParse = deleteSnapshotSchema.safeParse(data)
-
-//     if (deleteParse.success) {
-//       return api
-//         .DELETE('/api/projects/{project_id}/{snapshot_id}', {
-//           params: {
-//             path: { project_id: params.projectId, snapshot_id: deleteParse.data.snapshotId }
-//           }
-//         })
-//         .then(responseParser({ notThrowExc: true }))
-//     }
-
-//     return {
-//       error: { status_code: false, detail: 'Unknown action' }
-//     } satisfies ErrorData
-//   }
-
-// export const injectReportsAPI: GetLoaderAction<API_CLIENT_TYPE, ReportsLoaderData> = ({ api }) => ({
-//   loader: ({ params }) => {
-//     invariant(params.projectId, 'missing projectId')
-
-//     if (params.snapshotId) {
-//       return Promise.resolve([])
-//     }
-
-//     return api
-//       .GET('/api/projects/{project_id}/reports', {
-//         params: { path: { project_id: params.projectId } }
-//       })
-//       .then(responseParser())
-//   },
-//   action: getAction(api)
-// })
-
-// export type TestSuitesLoaderData = TestSuiteModel[]
-
-// export const injectTestSuitesAPI: GetLoaderAction<API_CLIENT_TYPE, TestSuitesLoaderData> = ({
-//   api
-// }) => ({
-//   loader: ({ params }) => {
-//     invariant(params.projectId, 'missing projectId')
-
-//     if (params.snapshotId) {
-//       return Promise.resolve([])
-//     }
-
-//     return api
-//       .GET('/api/projects/{project_id}/test_suites', {
-//         params: { path: { project_id: params.projectId } }
-//       })
-//       .then(responseParser())
-//   },
-//   action: getAction(api)
-// })
+export const deleteSnapshot = ({
+  api,
+  projectId,
+  snapshotId
+}: API & { projectId: string; snapshotId: string }) =>
+  api
+    .DELETE('/api/projects/{project_id}/{snapshot_id}', {
+      params: { path: { project_id: projectId, snapshot_id: snapshotId } }
+    })
+    .then(responseParser({ notThrowExc: true }))

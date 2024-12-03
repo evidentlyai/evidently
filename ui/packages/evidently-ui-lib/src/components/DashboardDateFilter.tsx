@@ -129,10 +129,7 @@ export const DateFilter = ({
                 minDate={undefined}
                 maxDate={dateRange.maxDate && dates?.dateTo}
                 slotProps={{
-                  textField: {
-                    variant: 'standard',
-                    error: required ? !dates.dateFrom : undefined
-                  }
+                  textField: { variant: 'standard', error: required ? !dates.dateFrom : undefined }
                 }}
                 label='From'
                 value={dates?.dateFrom}

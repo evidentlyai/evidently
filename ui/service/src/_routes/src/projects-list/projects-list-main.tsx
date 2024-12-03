@@ -9,7 +9,6 @@ import {
   getProjects
 } from 'evidently-ui-lib/routes-components/projectsList/data'
 import { Box, Grid, Typography } from 'evidently-ui-lib/shared-dependencies/mui-material'
-import type { LoaderFunctionArgs } from 'evidently-ui-lib/shared-dependencies/react-router-dom'
 import { assertNeverActionVariant } from 'evidently-ui-lib/utils/index'
 
 import type { GetRouteByPath } from '~/_routes/types'
@@ -30,7 +29,7 @@ export type CurrentRoute = GetRouteByPath<Path>
 const crumb: CrumbDefinition = { title: 'Projects' }
 export const handle = { crumb }
 
-export const loader = (_args: LoaderFunctionArgs) => getProjects({ api: clientAPI })
+export const loaderSpecial = () => getProjects({ api: clientAPI })
 
 type ActionRequestData =
   | { action: 'delete-project'; project_id: string }

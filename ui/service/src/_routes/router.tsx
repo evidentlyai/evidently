@@ -8,6 +8,7 @@ import { Dashboard } from './src/dashboard/import'
 import { Home } from './src/home/import'
 import { Project } from './src/project/import'
 import { ProjectsList } from './src/projects-list/import'
+import { Reports } from './src/reports/import'
 
 export const routes = [
   {
@@ -17,7 +18,10 @@ export const routes = [
       {
         path: ':projectId',
         ...Project,
-        children: [{ index: true, ...Dashboard }]
+        children: [
+          { index: true, ...Dashboard },
+          { path: 'reports', ...Reports }
+        ]
       }
     ]
   }

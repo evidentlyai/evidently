@@ -1,33 +1,87 @@
+import dayjs, { type Dayjs } from 'dayjs'
+import { useEffect, useState } from 'react'
 import type { DashboardInfoModel } from '~/api/types'
 import {
   DateFilter,
   type DateFilterProps,
-  ShowInOrderSwitch,
-  type ShowInOrderSwitchProps
+  type DateFilterState,
+  ShowInOrderSwitch
 } from '~/components/DashboardDateFilter'
 import { DashboardWidgets } from '~/components/DashboardWidgets'
 import { DashboardViewParamsContext } from '~/contexts/DashboardViewParams'
+import { useDebounce, useIsFirstRender, useLocalStorage } from '~/hooks/index'
 
 export const ProjectDashboard = ({
   data,
-  dateFilterProps,
-  showInOrderProps
+  dateFilterProps
 }: {
   data: DashboardInfoModel
   dateFilterProps: DateFilterProps
-  showInOrderProps: ShowInOrderSwitchProps
 }) => {
+  const [isXaxisAsCategorical, setIsXaxisAsCategorical] = useLocalStorage(
+    'dashboard-hide-dates',
+    false
+  )
+
   return (
     <>
       <DateFilter {...dateFilterProps} flexEnd>
-        <ShowInOrderSwitch {...showInOrderProps} />
+        <ShowInOrderSwitch
+          isXaxisAsCategorical={isXaxisAsCategorical}
+          setIsXaxisAsCategorical={setIsXaxisAsCategorical}
+        />
       </DateFilter>
 
-      <DashboardViewParamsContext.Provider
-        value={{ isXaxisAsCategorical: showInOrderProps.isXaxisAsCategorical }}
-      >
+      <DashboardViewParamsContext.Provider value={{ isXaxisAsCategorical }}>
         <DashboardWidgets widgets={data.widgets} />
       </DashboardViewParamsContext.Provider>
     </>
   )
+}
+
+export const getValidDate = (date?: string | null | Dayjs) =>
+  date && dayjs(date).isValid() ? dayjs(date) : undefined
+
+export const getDataRange = ({
+  min_timestamp,
+  max_timestamp
+}: { min_timestamp?: string | null; max_timestamp?: string | null }) => {
+  const [from, to] = [getValidDate(min_timestamp), getValidDate(max_timestamp)]
+
+  const dateRange = {
+    ...(from ? { minDate: from } : null),
+    ...(to ? { maxDate: to } : null)
+  }
+
+  return dateRange
+}
+
+export const useDashboardFilterParamsDebounced = ({
+  dates,
+  onDebounce,
+  delay = 300
+}: {
+  delay?: number
+  dates: DateFilterState
+  onDebounce: (d: DateFilterState) => void
+}) => {
+  const isFirstRender = useIsFirstRender()
+
+  const [internalDates, setInternalDates] = useState<DateFilterState>(dates)
+
+  const datesDebounced = useDebounce(internalDates, delay)
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies: fine
+  useEffect(() => {
+    if (isFirstRender) {
+      return
+    }
+
+    onDebounce(datesDebounced)
+  }, [datesDebounced])
+
+  return {
+    dates: internalDates,
+    setDates: setInternalDates
+  }
 }

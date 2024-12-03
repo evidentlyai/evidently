@@ -1,18 +1,21 @@
-import type { GetParams } from 'evidently-ui-lib/router-utils/types'
+import type { GetParams, LoaderSpecialArgs } from 'evidently-ui-lib/router-utils/types'
 import type { CrumbDefinition } from 'evidently-ui-lib/router-utils/utils'
-
-import type { LoaderFunctionArgs } from 'evidently-ui-lib/shared-dependencies/react-router-dom'
 
 import type { GetRouteByPath } from '~/_routes/types'
 
-import { useLocalStorage } from 'evidently-ui-lib/hooks/index'
 import { useRouteParams } from 'evidently-ui-lib/router-utils/hooks'
-import { ProjectDashboard } from 'evidently-ui-lib/routes-components/dashboard'
-import { getProjectDashboard } from 'evidently-ui-lib/routes-components/dashboard/data'
 import {
-  getDateFromSearchForAPI,
-  useDashboardFilterPropsFromSearchParamsDebounced
-} from 'evidently-ui-lib/routes-components/dashboard/router'
+  ProjectDashboard,
+  getDataRange,
+  getValidDate,
+  useDashboardFilterParamsDebounced
+} from 'evidently-ui-lib/routes-components/dashboard'
+import {
+  type ProjectDashboardSearchParams,
+  getProjectDashboard
+} from 'evidently-ui-lib/routes-components/dashboard/data'
+
+import { formatDate } from 'evidently-ui-lib/utils/index'
 import { clientAPI } from '~/api'
 
 ///////////////////
@@ -29,38 +32,48 @@ const crumb: CrumbDefinition = { title: 'Dashboard' }
 
 export const handle = { crumb }
 
-export const loader = ({ params /* request */, request }: LoaderFunctionArgs) => {
+export const loaderSpecial = ({
+  params,
+  query
+}: LoaderSpecialArgs<{ queryKeys: keyof ProjectDashboardSearchParams }>) => {
   const { projectId: project_id } = params as Params
 
-  const { searchParams } = new URL(request.url)
-
-  const { timestamp_start, timestamp_end } = getDateFromSearchForAPI(searchParams)
-
-  return getProjectDashboard({
-    api: clientAPI,
-    project_id,
-    timestamp_start,
-    timestamp_end
-  })
+  return getProjectDashboard({ api: clientAPI, project_id, query })
 }
 
 export const Component = () => {
-  const { loaderData: data } = useRouteParams<CurrentRoute>()
+  const { loaderData: data, query, setSearchParams } = useRouteParams<CurrentRoute>()
+  type QueryParams = typeof query
 
-  const { min_timestamp, max_timestamp } = data
+  const dateRange = getDataRange(data)
 
-  const dateFilterProps = useDashboardFilterPropsFromSearchParamsDebounced({
-    min_timestamp,
-    max_timestamp
+  const { dates, setDates } = useDashboardFilterParamsDebounced({
+    dates: {
+      dateFrom: getValidDate(query.timestamp_start) || dateRange.minDate,
+      dateTo: getValidDate(query.timestamp_end) || dateRange.maxDate
+    },
+    onDebounce: (newDate) =>
+      setSearchParams(
+        (p) => {
+          p.delete('timestamp_start' satisfies keyof QueryParams)
+          p.delete('timestamp_end' satisfies keyof QueryParams)
+
+          const [from, to] = [
+            getValidDate(newDate.dateFrom)?.toDate(),
+            getValidDate(newDate.dateTo)?.toDate()
+          ]
+
+          const newSearchParams = {
+            ...Object.fromEntries(p),
+            ...(from ? ({ timestamp_start: formatDate(from) } satisfies QueryParams) : null),
+            ...(to ? ({ timestamp_end: formatDate(to) } satisfies QueryParams) : null)
+          }
+
+          return newSearchParams
+        },
+        { replace: true, preventScrollReset: true }
+      )
   })
 
-  const [isXaxisAsCategorical, setIsXaxisAsCategorical] = useLocalStorage('some-key', false)
-
-  return (
-    <ProjectDashboard
-      data={data}
-      dateFilterProps={dateFilterProps}
-      showInOrderProps={{ isXaxisAsCategorical, setIsXaxisAsCategorical }}
-    />
-  )
+  return <ProjectDashboard data={data} dateFilterProps={{ dates, setDates, dateRange }} />
 }

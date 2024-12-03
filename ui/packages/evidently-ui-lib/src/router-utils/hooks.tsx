@@ -5,21 +5,26 @@ import {
   useMatches,
   useNavigation,
   useParams,
-  useRevalidator
+  useRevalidator,
+  useSearchParams
 } from 'react-router-dom'
+import type { MatchWithLoader } from '~/router-utils/types'
 import type { HandleWithCrumb } from '~/router-utils/utils'
 
 export const useRouteParams = <
-  // biome-ignore lint/suspicious/noExplicitAny: fine
-  K extends { params: Record<string, string>; loader: { returnType: any } } & (unknown extends K
-    ? never
-    : // biome-ignore lint/complexity/noBannedTypes: fine
-      {})
+  K extends MatchWithLoader &
+    (unknown extends K
+      ? never
+      : // biome-ignore lint/complexity/noBannedTypes: fine
+        {})
 >() => {
   const loaderData = useLoaderData() as K['loader']['returnType']
   const params = useParams() as K['params']
 
-  return { loaderData, params }
+  const [searchParams, setSearchParams] = useSearchParams()
+  const query = Object.fromEntries(searchParams) as K['loader']['query']
+
+  return { loaderData, params, query, setSearchParams }
 }
 
 export const useOnSubmitEnd = ({
@@ -60,7 +65,7 @@ export const useCrumbsFromHandle = () => {
   const crumbs = matches
     .filter((e) => (e.handle as HandleWithCrumb)?.crumb)
     .map(({ handle, data, pathname, params }) => ({
-      to: pathname,
+      to: `${pathname}`,
       linkText:
         (handle as HandleWithCrumb)?.crumb?.title ??
         params[(handle as HandleWithCrumb)?.crumb?.param ?? ''] ??
