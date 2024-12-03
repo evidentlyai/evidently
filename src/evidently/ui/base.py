@@ -399,7 +399,6 @@ class Permission(Enum):
     TEAM_WRITE = "team_write"
     TEAM_CREATE_PROJECT = "team_create_project"
     TEAM_DELETE = "team_delete"
-    TEAM_CREATE_DATASET = "team_create_dataset"
 
     PROJECT_READ = "project_read"
     PROJECT_WRITE = "project_write"
@@ -410,6 +409,8 @@ class Permission(Enum):
     DATASET_READ = "datasets_read"
     DATASET_WRITE = "datasets_write"
     DATASET_DELETE = "datasets_delete"
+
+    UNKNOWN = "unknown"
 
 
 class Role(BaseModel):
@@ -427,7 +428,7 @@ class DefaultRole(Enum):
 
 
 DEFAULT_ROLE_PERMISSIONS: Dict[Tuple[DefaultRole, Optional[EntityType]], Set[Permission]] = {
-    (DefaultRole.OWNER, None): set(Permission),
+    (DefaultRole.OWNER, None): set(Permission) - {Permission.UNKNOWN},
     (DefaultRole.EDITOR, EntityType.Org): {
         Permission.LIST_USERS,
         Permission.ORG_READ,
@@ -439,7 +440,6 @@ DEFAULT_ROLE_PERMISSIONS: Dict[Tuple[DefaultRole, Optional[EntityType]], Set[Per
         Permission.PROJECT_WRITE,
         Permission.PROJECT_SNAPSHOT_ADD,
         Permission.DATASET_READ,
-        Permission.TEAM_CREATE_DATASET,
         Permission.DATASET_WRITE,
         Permission.DATASET_DELETE,
     },
@@ -448,7 +448,6 @@ DEFAULT_ROLE_PERMISSIONS: Dict[Tuple[DefaultRole, Optional[EntityType]], Set[Per
         Permission.TEAM_READ,
         Permission.TEAM_WRITE,
         Permission.TEAM_CREATE_PROJECT,
-        Permission.TEAM_CREATE_DATASET,
         Permission.PROJECT_READ,
         Permission.PROJECT_WRITE,
         Permission.PROJECT_SNAPSHOT_ADD,
