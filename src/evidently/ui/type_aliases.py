@@ -30,6 +30,7 @@ ZERO_UUID = uuid6.UUID(int=0, version=7)
 
 
 class TestInfo(NamedTuple):
+    snapshot_id: SnapshotID
     status: TestStatus
     description: str
 
