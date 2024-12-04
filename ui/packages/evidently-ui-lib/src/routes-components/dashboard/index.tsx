@@ -1,4 +1,5 @@
 import dayjs from 'dayjs'
+import type { PlotMouseEvent } from 'plotly.js'
 import { useLoaderData, useParams } from 'react-router-dom'
 import invariant from 'tiny-invariant'
 import { DashboardParams } from '~/components/DashboardDateFilter'
@@ -8,9 +9,15 @@ import type { LoaderData } from './data'
 
 interface Props {
   Dashboard: ({ data }: { data: LoaderData }) => JSX.Element
+  OnClickedPointComponent?: ({ event }: { event: PlotMouseEvent }) => JSX.Element
+  OnHoveredPlotComponent?: () => JSX.Element
 }
 
-export const DashboardComponentTemplate = ({ Dashboard }: Props) => {
+export const DashboardComponentTemplate = ({
+  Dashboard,
+  OnClickedPointComponent,
+  OnHoveredPlotComponent
+}: Props) => {
   const { projectId } = useParams()
   invariant(projectId, 'missing projectId')
 
@@ -32,7 +39,13 @@ export const DashboardComponentTemplate = ({ Dashboard }: Props) => {
         setIsDashboardHideDates={setIsDashboardHideDates}
       />
 
-      <DashboardViewParamsContext.Provider value={{ isXaxisAsCategorical: isDashboardHideDates }}>
+      <DashboardViewParamsContext.Provider
+        value={{
+          isXaxisAsCategorical: isDashboardHideDates,
+          OnClickedPointComponent,
+          OnHoveredPlotComponent
+        }}
+      >
         <Dashboard data={data} />
       </DashboardViewParamsContext.Provider>
     </>
