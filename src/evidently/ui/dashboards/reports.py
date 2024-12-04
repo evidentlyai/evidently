@@ -67,8 +67,7 @@ class DashboardPanelPlot(DashboardPanel):
                     "legendgroup": val.legend,
                     "hovertemplate": hover,
                     "customdata": [
-                        str({"metric_fingerprint": metric.get_fingerprint(), "snapshot_id": str(p.snapshot_id)})
-                        for p in pts
+                        {"metric_fingerprint": metric.get_fingerprint(), "snapshot_id": str(p.snapshot_id)} for p in pts
                     ],
                 }
 

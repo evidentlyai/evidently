@@ -116,7 +116,7 @@ def _flatten_params(obj: EvidentlyBaseModel) -> Dict[str, str]:
 
 def _get_metric_hover(params: List[str], value: "PanelValue"):
     params_join = "<br>".join(params)
-    hover = f"<b>Timestamp: %{{x}}</b><br><b>{value.field_path}: %{{y}}</b><br>{params_join}<br>%{{customdata}}"
+    hover = f"<b>Timestamp: %{{x}}</b><br><b>{value.field_path}: %{{y}}</b><br>{params_join}<br>"
     return hover
 
 
