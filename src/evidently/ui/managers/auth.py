@@ -313,9 +313,9 @@ class AuthManager(ABC):
         raise NotImplementedError
 
     async def list_entity_users(self, user_id: UserID, entity_type: EntityType, entity_id: EntityID):
-        if not await self.check_entity_permission(user_id, entity_type, entity_id, ENTITY_READ_PERMISSION[entity_type]):
+        if not await self.check_entity_permission(user_id, entity_type, entity_id, Permission.LIST_USERS):
             raise ENTITY_NOT_FOUND_ERROR[entity_type]()
-        return await self._list_entity_users(entity_type, entity_id, ENTITY_READ_PERMISSION[entity_type])
+        return await self._list_entity_users(entity_type, entity_id, Permission.LIST_USERS)
 
     @abstractmethod
     async def _list_entity_users_with_roles(
@@ -324,9 +324,9 @@ class AuthManager(ABC):
         raise NotImplementedError
 
     async def list_entity_users_with_roles(self, user_id: UserID, entity_type: EntityType, entity_id: EntityID):
-        if not await self.check_entity_permission(user_id, entity_type, entity_id, ENTITY_READ_PERMISSION[entity_type]):
+        if not await self.check_entity_permission(user_id, entity_type, entity_id, Permission.LIST_USERS):
             raise ENTITY_NOT_FOUND_ERROR[entity_type]()
-        return await self._list_entity_users_with_roles(entity_type, entity_id, ENTITY_READ_PERMISSION[entity_type])
+        return await self._list_entity_users_with_roles(entity_type, entity_id, Permission.LIST_USERS)
 
     @abstractmethod
     async def list_user_teams(self, user_id: UserID, org_id: Optional[OrgID]) -> List[Team]:
