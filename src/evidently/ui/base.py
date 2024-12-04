@@ -470,6 +470,7 @@ DEFAULT_ROLE_PERMISSIONS: Dict[Tuple[DefaultRole, Optional[EntityType]], Set[Per
     (DefaultRole.VIEWER, EntityType.Org): {
         Permission.LIST_USERS,
         Permission.ORG_READ,
+        Permission.PROJECT_READ,
     },
     (DefaultRole.VIEWER, EntityType.Team): {
         Permission.LIST_USERS,
