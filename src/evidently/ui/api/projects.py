@@ -8,7 +8,6 @@ from typing import Optional
 from typing import Sequence
 from typing import Union
 
-from litestar import Request
 from litestar import Response
 from litestar import Router
 from litestar import delete
@@ -46,11 +45,10 @@ from evidently.utils import NumpyEncoder
 
 
 async def path_project_dependency(
-    request: Request,
+    project_id: ProjectID,
     project_manager: Annotated[ProjectManager, Dependency(skip_validation=True)],
     user_id: UserID,
 ):
-    project_id = request.path_params["project_id"]
     project = await project_manager.get_project(user_id, project_id)
     if project is None:
         raise HTTPException(status_code=404, detail="project not found")
@@ -155,11 +153,9 @@ async def reload_project_snapshots(
 
 
 async def path_snapshot_metadata_dependency(
-    request: Request,
     project: Annotated[Project, Dependency()],
-    # snapshot_id: Annotated[SnapshotID, Parameter(title="id of snapshot")],
+    snapshot_id: SnapshotID,
 ):
-    snapshot_id = request.path_params["snapshot_id"]
     snapshot = await project.get_snapshot_metadata_async(snapshot_id)
     if snapshot is None:
         raise HTTPException(status_code=404, detail="Snapshot not found")
