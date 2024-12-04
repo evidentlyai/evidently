@@ -12,8 +12,7 @@ Need help? Ask on [Discord](https://discord.com/invite/xZjKRaNp8b).
 
 Set up your Evidently Cloud workspace:
 * **Sign up** for a free [Evidently Cloud account](https://app.evidently.cloud/signup).
-* **Create an Organization** when you log in for the first time.
-* **Create a Team**. Click Teams in the left menu, create a Team, and save the Team ID ([Team page](https://app.evidently.cloud/teams)).
+* **Create an Organization** when you log in for the first time. Get an ID of your organization. [Organizations page](https://app.evidently.cloud/organizations) 
 * **Get your API token**. Click the **Key** icon in the left menu. Generate and save the token. ([Token page](https://app.evidently.cloud/token)).
 
 Now, switch to your Python environment.
@@ -49,10 +48,10 @@ Connect to Evidently Cloud using your API token:
 ws = CloudWorkspace(token="YOUR_API_TOKEN", url="https://app.evidently.cloud")
 ```
 
-Create a Project within your Team:
+Create a Project within your Organization:
 
 ```python
-project = ws.create_project("My test project", team_id="YOUR_TEAM_ID")
+project = ws.create_project("My test project", org_id="YOUR_ORG_ID")
 project.description = "My project description"
 project.save()
 ```
