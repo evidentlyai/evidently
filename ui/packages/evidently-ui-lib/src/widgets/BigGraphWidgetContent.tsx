@@ -1,4 +1,6 @@
+import { Box, Button, Stack, Typography } from '@mui/material'
 import type React from 'react'
+import { useState } from 'react'
 
 import type { AdditionalGraphInfo } from '~/api'
 import Plot, { darkPlotlyLayoutTemplate } from '~/components/Plot'
@@ -14,6 +16,8 @@ const BigGraphWidgetContent: React.FunctionComponent<BigGraphWidgetProps> = (pro
   const mode = useThemeMode()
   const isHistogram = props.data.some(({ type }) => type === 'histogram')
   const isCastXaxisToCategory = viewParams?.isXaxisAsCategorical && !isHistogram
+
+  const [p, setP] = useState('')
 
   const tOverride =
     mode === 'dark'
@@ -33,23 +37,45 @@ const BigGraphWidgetContent: React.FunctionComponent<BigGraphWidgetProps> = (pro
     : undefined
 
   return (
-    <div>
-      <Plot
-        data={props.data}
-        layout={{
-          ...props.layout,
-          ...tOverride,
-          title: undefined,
-          xaxis: { ...props.layout?.xaxis, ...xaxisOptionsOverride }
-        }}
-        config={{ responsive: true }}
-        style={{
-          width: '100%',
-          minHeight: 300 + 100 * (1 + props.widgetSize / 2),
-          maxHeight: 400
-        }}
-      />
-    </div>
+    <>
+      <Box position={'relative'}>
+        <Plot
+          onClick={(e) => {
+            console.log(e.points[0])
+            const x = e.points[0].x
+
+            setP(String(x))
+          }}
+          data={props.data}
+          layout={{
+            ...props.layout,
+            ...tOverride,
+            title: undefined,
+            xaxis: { ...props.layout?.xaxis, ...xaxisOptionsOverride }
+          }}
+          config={{ responsive: true }}
+          style={{
+            width: '100%',
+            minHeight: 300 + 100 * (1 + props.widgetSize / 2),
+            maxHeight: 400
+          }}
+        />
+        {p && (
+          <Box sx={{ position: 'absolute', bottom: 0, right: 0 }}>
+            <Stack direction={'row'} alignItems={'center'} gap={2}>
+              <Typography variant='caption'>
+                <b>Timestamp</b> : {p}
+                <br />
+              </Typography>
+
+              <Button variant='outlined' size='small'>
+                Go to snapshot
+              </Button>
+            </Stack>
+          </Box>
+        )}
+      </Box>
+    </>
   )
 }
 
