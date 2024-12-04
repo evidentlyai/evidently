@@ -103,6 +103,7 @@ setup_args = dict(
             "evaluate>=0.4.1",
             "transformers[torch]>=4.39.3",
             "sentence-transformers>=2.7.0",
+            "sqlvalidator>=0.0.20",
             "chromadb>=0.4.0",
         ],
         "spark": ["pyspark>=3.4.0"],
