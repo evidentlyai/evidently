@@ -1,6 +1,6 @@
 **TL;DR:** You can explore and compare text datasets.
 
-* **Report**: for visual analysis or metrics export, use the `TextOverviewPreset`.
+* **Report**: for visual analysis or metrics export, use the `TextEvals`.
 
 # Use case 
 
@@ -14,13 +14,13 @@ You can evaluate and explore text data:
 
 # Text Overview Report   
 
-If you want to visually explore the text data, you can create a new Report object and use the `TextOverviewPreset`.
+If you want to visually explore the text data, you can create a new Report object and use the `TextEvals`.
 
 ## Code example
 
 ```python
 text_overview_report = Report(metrics=[
-    TextOverviewPreset(column_name="Review_Text")
+    TextEvals(column_name="Review_Text")
 ])
 
 text_overview_report.run(reference_data=ref, current_data=cur)
@@ -38,7 +38,7 @@ nltk.download('omw-1.4')
 
 ## How it works
 
-The `TextOverviewPreset` provides an overview and comparison of text datasets.
+The `TextEvals` provides an overview and comparison of text datasets.
 * Generates a **descriptive summary** of the text columns in the dataset. 
 * Performs **data drift detection** to compare the two texts using the domain classifier approach. 
 * Shows distributions of the **text descriptors** in two datasets, and their **correlations** with other features. 
