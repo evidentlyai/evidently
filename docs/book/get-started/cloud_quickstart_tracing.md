@@ -56,7 +56,7 @@ Initialize the OpenAI client. Pass the token as an environment variable:
 client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 ```
 
-Set up tracing parameters. Copy the Team ID from the [Teams page](https://app.evidently.cloud/teams), and give a name to identify your tracing dataset.
+Set up tracing parameters. Give it a name to identify your tracing dataset.
 
 ```python
 init_tracing(
