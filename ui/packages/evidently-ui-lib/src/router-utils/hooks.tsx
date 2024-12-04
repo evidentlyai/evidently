@@ -65,7 +65,7 @@ export const useCrumbsFromHandle = () => {
   const crumbs = matches
     .filter((e) => (e.handle as HandleWithCrumb)?.crumb)
     .map(({ handle, data, pathname, params }) => ({
-      to: `${pathname}`,
+      to: pathname,
       linkText:
         (handle as HandleWithCrumb)?.crumb?.title ??
         params[(handle as HandleWithCrumb)?.crumb?.param ?? ''] ??

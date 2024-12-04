@@ -1,10 +1,11 @@
 import {
-  RouterLinkTemplateComponent,
+  RouterLinkTemplate,
   type RouterLinkTemplateComponentProps,
   replaceParamsInLink
 } from 'evidently-ui-lib/router-utils/utils'
 
 import type { GetParams } from 'evidently-ui-lib/router-utils/types'
+import { useMatch } from 'evidently-ui-lib/shared-dependencies/react-router-dom'
 import type { Routes } from './types'
 
 type RouterLinkProps<K extends string> = RouterLinkTemplateComponentProps & {
@@ -12,9 +13,14 @@ type RouterLinkProps<K extends string> = RouterLinkTemplateComponentProps & {
   paramsToReplace: GetParams<K>
 }
 
-export const RouterLink = <K extends Routes['path']>({ ...props }: RouterLinkProps<K>) => (
-  <RouterLinkTemplateComponent
-    {...props}
-    to={replaceParamsInLink(props.paramsToReplace, props.to)}
-  />
+type Paths = Routes['path']
+
+export const RouterLink = <K extends Paths>({ ...props }: RouterLinkProps<K>) => (
+  <RouterLinkTemplate {...props} to={replaceParamsInLink(props.paramsToReplace, props.to)} />
 )
+
+export const useMatchRouter = ({ path }: { path: Paths }) => {
+  const m = useMatch({ path })
+
+  return Boolean(m)
+}

@@ -29,29 +29,6 @@ export const loaderSpecial = ({ params }: LoaderSpecialArgs) => {
   return getSnapshots({ api: clientAPI, snapshotType: 'reports', projectId })
 }
 
-// type ActionRequestData =
-//   | { action: 'delete-project'; project_id: string }
-//   | { action: 'edit-project'; project: StrictID<ProjectModel> }
-//   | { action: 'create-project'; project: ProjectModel }
-
-// export const actionSpecial = async ({ data }: ActionSpecialArgs<{ data: ActionRequestData }>) => {
-//   const { action } = data
-
-//   if (action === 'delete-project') {
-//     return deleteProject({ api: clientAPI, project_id: data.project_id })
-//   }
-
-//   if (action === 'edit-project') {
-//     return editProject({ api: clientAPI, project: data.project })
-//   }
-
-//   if (action === 'create-project') {
-//     return createProject({ api: clientAPI, project: data.project })
-//   }
-
-//   assertNeverActionVariant(action)
-// }
-
 export const Component = () => {
   const { loaderData: reports, params } = useRouteParams<CurrentRoute>()
 

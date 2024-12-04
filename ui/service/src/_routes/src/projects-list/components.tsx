@@ -29,10 +29,10 @@ export const ProjectCardWrapper = ({ project }: { project: StrictID<ProjectModel
       LinkToProject={() => (
         <RouterLink
           type='link'
+          variant='h6'
           title={project.name}
           to={'/:projectId'}
           paramsToReplace={{ projectId: project.id }}
-          typographyProps={{ variant: 'h6' }}
         />
       )}
       project={project}

@@ -6,6 +6,7 @@ import {
   Box,
   Grid,
   IconButton,
+  Tabs,
   Typography
 } from 'evidently-ui-lib/shared-dependencies/mui-material'
 import { Outlet } from 'evidently-ui-lib/shared-dependencies/react-router-dom'
@@ -15,6 +16,7 @@ import { ContentCopy as ContentCopyIcon } from 'evidently-ui-lib/shared-dependen
 import type { GetRouteByPath } from '~/_routes/types'
 
 import { useRouteParams } from 'evidently-ui-lib/router-utils/hooks'
+import { RouterLink, useMatchRouter } from '~/_routes/components'
 import { clientAPI } from '~/api'
 
 ///////////////////
@@ -43,7 +45,8 @@ export const loaderSpecial = ({ params }: LoaderSpecialArgs) => {
 }
 
 export const Component = () => {
-  const { loaderData: project } = useRouteParams<CurrentRoute>()
+  const { loaderData: project, params } = useRouteParams<CurrentRoute>()
+  const isReports = useMatchRouter({ path: '/:projectId/reports' })
 
   return (
     <Box mt={2}>
@@ -62,15 +65,28 @@ export const Component = () => {
         </Grid>
       </Grid>
 
-      {/* {tabsConfig.length > 0 && (
-      <Tabs value={tabIndex} aria-label='simple tabs example' indicatorColor={'primary'}>
-        {tabsConfig.map((tab) => (
-          <Link key={tab.id} component={RouterLink} to={tab.link}>
-            <Tab label={tab.label || tab.id} value={tab.id} />
-          </Link>
-        ))}
+      <Tabs
+        value={isReports ? 'reports' : 'index'}
+        aria-label='simple tabs example'
+        indicatorColor={'primary'}
+      >
+        <RouterLink
+          type='tab'
+          value={'index'}
+          label={'Dashboard'}
+          to='/:projectId/?index'
+          paramsToReplace={{ projectId: params.projectId }}
+        />
+
+        <RouterLink
+          type='tab'
+          value={'reports'}
+          label={'reports'}
+          to='/:projectId/reports'
+          paramsToReplace={{ projectId: params.projectId }}
+        />
       </Tabs>
-    )} */}
+
       <Outlet />
     </Box>
   )

@@ -3,7 +3,15 @@ import { GenericErrorBoundary, handleActionFetchersErrors } from '~/router-utils
 import type { ActionSpecialArgs, LoaderSpecialArgs, RouteExtended } from '~/router-utils/types'
 import type { LazyRouteFunction, RouteObject } from '~/shared-dependencies/react-router-dom'
 
-import { Button, type ButtonProps, Link, Typography, type TypographyProps } from '@mui/material'
+import {
+  Button,
+  type ButtonProps,
+  Link,
+  Tab,
+  type TabProps,
+  Typography,
+  type TypographyProps
+} from '@mui/material'
 import { Link as ReactRouterLink } from 'react-router-dom'
 
 export type CrumbDefinition = { title?: string; param?: string; keyFromLoaderData?: string }
@@ -70,30 +78,30 @@ export const decorateTopLevelRoutes = (r: RouteExtended): RouteExtended => {
 export type RouterLinkTemplateComponentProps =
   | ({
       type: 'button'
-    } & RouterLinkTemplateComponentPropsButton)
+    } & RLB)
   | ({
       type: 'link'
-    } & RouterLinkTemplateComponentPropsLink)
+    } & RLL)
+  | ({
+      type: 'tab'
+    } & RLT)
 
-export const RouterLinkTemplateComponent = (props: RouterLinkTemplateComponentProps) => {
+export const RouterLinkTemplate = (props: RouterLinkTemplateComponentProps) => {
   return props.type === 'button' ? (
-    <RouterLinkTemplateComponentButton {...props} />
+    <RLBComponent {...props} />
+  ) : props.type === 'tab' ? (
+    <RLTComponent {...props} />
   ) : (
-    <RouterLinkTemplateComponentLink {...props} />
+    <RLLComponent {...props} />
   )
 }
 
-export type RouterLinkTemplateComponentPropsButton = {
+export type RLB = {
   to: string
   title?: string
-  buttonProps?: ButtonProps
-}
+} & ButtonProps
 
-export const RouterLinkTemplateComponentButton = ({
-  to,
-  title,
-  buttonProps
-}: RouterLinkTemplateComponentPropsButton) => {
+export const RLBComponent = ({ to, title, ...buttonProps }: RLB) => {
   return (
     <Button component={ReactRouterLink} to={to} {...buttonProps}>
       {title}
@@ -101,19 +109,13 @@ export const RouterLinkTemplateComponentButton = ({
   )
 }
 
-export type RouterLinkTemplateComponentPropsLink = {
+export type RLL = {
   children?: React.ReactNode
   to: string
   title?: string
-  typographyProps?: TypographyProps
-}
+} & TypographyProps
 
-export const RouterLinkTemplateComponentLink = ({
-  children,
-  to,
-  title,
-  typographyProps
-}: RouterLinkTemplateComponentPropsLink) => {
+export const RLLComponent = ({ children, to, title, ...typographyProps }: RLL) => {
   return (
     <Link component={ReactRouterLink} to={to}>
       <>
@@ -122,6 +124,14 @@ export const RouterLinkTemplateComponentLink = ({
       </>
     </Link>
   )
+}
+
+export type RLT = {
+  to: string
+} & TabProps
+
+export const RLTComponent = ({ to, ...tabProps }: RLT) => {
+  return <Tab component={ReactRouterLink} to={to} {...tabProps} />
 }
 
 export const replaceParamsInLink = (paramsToReplace: Record<string, string>, path: string) => {
