@@ -26,6 +26,7 @@ from evidently.ui.dashboards.utils import HistBarMode
 from evidently.ui.dashboards.utils import PlotType
 from evidently.ui.dashboards.utils import _get_hover_params
 from evidently.ui.dashboards.utils import _get_metric_hover
+from evidently.ui.type_aliases import PointInfo
 from evidently.ui.type_aliases import ProjectID
 
 if TYPE_CHECKING:
@@ -59,25 +60,26 @@ class DashboardPanelPlot(DashboardPanel):
                 continue
 
             for metric, pts in metric_pts.items():
-                pts.sort(key=lambda x: x[0])
-
+                pts.sort(key=lambda x: x.timestamp)
                 hover = _get_metric_hover(hover_params[metric], val)
+                hover_args = {
+                    "name": val.legend,
+                    "legendgroup": val.legend,
+                    "hovertemplate": hover,
+                    "customdata": [
+                        str({"metric_fingerprint": metric.get_fingerprint(), "snapshot_id": str(p.snapshot_id)})
+                        for p in pts
+                    ],
+                }
 
                 if self.plot_type == PlotType.HISTOGRAM:
-                    plot = go.Histogram(
-                        x=[p[1] for p in pts],
-                        name=val.legend,
-                        legendgroup=val.legend,
-                        hovertemplate=hover,
-                    )
+                    plot = go.Histogram(x=[p.value for p in pts], **hover_args)
                 else:
                     cls, args = self.plot_type_cls
                     plot = cls(
-                        x=[p[0] for p in pts],
-                        y=[p[1] for p in pts],
-                        name=val.legend,
-                        legendgroup=val.legend,
-                        hovertemplate=hover,
+                        x=[p.timestamp for p in pts],
+                        y=[p.value for p in pts],
+                        **hover_args,
                         **args,
                     )
                 fig.add_trace(plot)
@@ -125,18 +127,18 @@ class DashboardPanelCounter(DashboardPanel):
             ct = CounterData.int(self.text or "", int(value))
         return counter(title=self.title, counters=[ct], size=self.size)
 
-    def _get_counter_value(self, points: Dict[Metric, List[Tuple[datetime.datetime, Any]]]) -> float:
+    def _get_counter_value(self, points: Dict[Metric, List[PointInfo]]) -> float:
         if self.value is None:
             raise ValueError("Counters with agg should have value")
         if self.agg == CounterAgg.LAST:
             if len(points) == 0:
                 return 0
             return max(
-                ((ts, v) for vs in points.values() for ts, v in vs),
+                ((pi.timestamp, pi.value) for vs in points.values() for pi in vs),
                 key=lambda x: x[0],
             )[1]
         if self.agg == CounterAgg.SUM:
-            return sum(v or 0 for vs in points.values() for ts, v in vs)
+            return sum(pi.value or 0 for vs in points.values() for pi in vs)
         raise ValueError(f"Unknown agg type {self.agg}")
 
 
