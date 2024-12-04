@@ -13,16 +13,10 @@ You can create a Project using the Python API or directly in the user interface.
 
 ## Add a new Project - API
 
-{% hint style="success" %}
-Team management is a Pro feature available in the `Evidently Cloud` and `Evidently Enterprise`.
-{% endhint %}
-
-In Evidently Cloud and Enterprise, you must create a Team before adding a Project. To get your Team ID, go to the [Teams page](https://app.evidently.cloud/teams), select your Team, and copy the ID from there.
-
-To create a Project inside a workspace `ws` and Team with a `team_id`, assign a name and description, and save the changes:
+To create a Project inside a workspace `ws` and Organization ([see organizations](https://app.evidently.cloud/organizations)) with an `org_id`, assign a name and description, and save the changes:
 
 ```
-project = ws.create_project("My test project", team_id="YOUR_TEAM_ID")
+project = ws.create_project("My test project", org_id="YOUR_ORG_ID")
 project.description = "My project description"
 project.save()
 ```
@@ -37,7 +31,7 @@ project.save()
 
 ## Add a new Project - UI
 
-Click on the “plus” sign on the home page, create a Team if you do not have one yet and type your Project name and description.
+Click on the “plus” sign on the home page, type your Project name and description.
 
 ![](../.gitbook/assets/cloud/add_project_wide-min.png)
 
