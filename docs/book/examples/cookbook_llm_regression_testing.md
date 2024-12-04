@@ -86,13 +86,13 @@ ws = CloudWorkspace(token="YOUR_API_TOKEN", url="https://app.evidently.cloud")
 Create a Project:
 
 ```python 
-project = ws.create_project("Regression testing example", team_id="YOUR_TEAM_ID")
+project = ws.create_project("Regression testing example", org_id="YOUR_ORG_ID")
 project.description = "My project description"
 project.save()
 ```
 
 {% hint style="info" %}
-**Need help?** Check how to find API key and [create a Team](../installation/cloud_account.md).
+**Need help?** Check how to find [API key](../installation/cloud_account.md).
 {% endhint %}
 
 # 3. Prepare the Dataset
