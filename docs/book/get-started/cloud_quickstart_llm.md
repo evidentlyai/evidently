@@ -12,7 +12,7 @@ Need help? Ask on [Discord](https://discord.com/invite/xZjKRaNp8b).
 
 Set up your Evidently Cloud workspace:
 * **Sign up** for a free [Evidently Cloud account](https://app.evidently.cloud/signup).
-* **Create an Organization** when you log in for the first time. Get an ID of your organization. [Organizations page](https://app.evidently.cloud/organizations) 
+* **Create an Organization** when you log in for the first time. Get an ID of your organization. [Organizations page](https://app.evidently.cloud/organizations). 
 * **Get your API token**. Click the **Key** icon in the left menu. Generate and save the token. ([Token page](https://app.evidently.cloud/token)).
 
 Now, switch to your Python environment.
