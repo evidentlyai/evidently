@@ -26,6 +26,7 @@ from evidently.ui.dashboards.utils import HistBarMode
 from evidently.ui.dashboards.utils import PlotType
 from evidently.ui.dashboards.utils import _get_hover_params
 from evidently.ui.dashboards.utils import _get_metric_hover
+from evidently.ui.type_aliases import DataPointsAsType
 from evidently.ui.type_aliases import PointInfo
 from evidently.ui.type_aliases import ProjectID
 
@@ -157,16 +158,17 @@ class DashboardPanelDistribution(DashboardPanel):
         timestamp_start: Optional[datetime.datetime],
         timestamp_end: Optional[datetime.datetime],
     ) -> BaseWidgetInfo:
-        bins_for_hists = (
-            await data_storage.load_points_as_type(
-                Union[HistogramData, Distribution],  # type: ignore[arg-type]
-                project_id,
-                self.filter,
-                [self.value],
-                timestamp_start,
-                timestamp_end,
-            )
-        )[0]
+        bins_for_hists_data: DataPointsAsType[
+            Union[HistogramData, Distribution]
+        ] = await data_storage.load_points_as_type(
+            Union[HistogramData, Distribution],  # type: ignore[arg-type]
+            project_id,
+            self.filter,
+            [self.value],
+            timestamp_start,
+            timestamp_end,
+        )
+        bins_for_hists = bins_for_hists_data[0]
         if len(bins_for_hists) == 0:
             raise ValueError(f"Cannot build hist from {self.value}")
         if len(bins_for_hists) > 1:
