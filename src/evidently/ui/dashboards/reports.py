@@ -157,7 +157,7 @@ class DashboardPanelDistribution(DashboardPanel):
         timestamp_start: Optional[datetime.datetime],
         timestamp_end: Optional[datetime.datetime],
     ) -> BaseWidgetInfo:
-        bins_for_hists: Dict[Metric, List[Tuple[datetime.datetime, Union[HistogramData, Distribution]]]] = (  # type: ignore[assignment]
+        bins_for_hists = (
             await data_storage.load_points_as_type(
                 Union[HistogramData, Distribution],  # type: ignore[arg-type]
                 project_id,
@@ -172,7 +172,13 @@ class DashboardPanelDistribution(DashboardPanel):
         if len(bins_for_hists) > 1:
             raise ValueError(f"Ambiguious metrics for {self.value}")
         bins_for_hist: List[Tuple[datetime.datetime, HistogramData]] = next(
-            [(d, h if isinstance(h, HistogramData) else HistogramData.from_distribution(h)) for d, h in v]
+            [
+                (
+                    d.timestamp,
+                    d.value if isinstance(d.value, HistogramData) else HistogramData.from_distribution(d.value),
+                )
+                for d in v
+            ]
             for v in bins_for_hists.values()
         )
 
