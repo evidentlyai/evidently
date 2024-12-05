@@ -5,6 +5,8 @@ import type { PlotMouseEvent } from 'plotly.js'
 import { useEffect, useState } from 'react'
 import { Link as RLink } from 'react-router-dom'
 
+export type PlotMouseEventType = PlotMouseEvent
+
 export const GoToSnapshotByPoint = ({ event }: { event: PlotMouseEvent }) => {
   const p = event.points[0]
   const customdata = p.customdata as Partial<
