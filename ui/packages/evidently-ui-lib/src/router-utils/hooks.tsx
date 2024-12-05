@@ -10,7 +10,7 @@ import {
   useSearchParams
 } from 'react-router-dom'
 import type { MatchWithLoader } from '~/router-utils/types'
-import type { HandleWithCrumb } from '~/router-utils/utils'
+import type { CrumbDefinition, HandleWithCrumb } from '~/router-utils/utils'
 
 export const useRouteParams = <
   K extends MatchWithLoader &
@@ -91,18 +91,32 @@ export const useCrumbsFromHandle = () => {
 
   const crumbs = matches
     .filter((e) => (e.handle as HandleWithCrumb)?.crumb)
-    .map(({ handle, data, pathname, params }) => ({
-      to: pathname,
-      linkText:
-        (handle as HandleWithCrumb)?.crumb?.title ??
-        params[(handle as HandleWithCrumb)?.crumb?.param ?? ''] ??
-        (typeof data === 'object'
-          ? (data as Record<string, string>)[
-              (handle as HandleWithCrumb)?.crumb?.keyFromLoaderData ?? ''
-            ]
-          : '') ??
-        `undefined (provide title or param in crumb). Path: ${pathname}`
-    }))
+    .map(({ handle, data, pathname, params }) => {
+      const linkText = (() => {
+        const crumb = (handle as HandleWithCrumb).crumb as CrumbDefinition
+
+        if (crumb.title) {
+          return crumb.title
+        }
+
+        if (crumb.param && params[crumb.param]) {
+          return params[crumb.param]
+        }
+
+        if (
+          crumb.keyFromLoaderData &&
+          typeof data === 'object' &&
+          data &&
+          (data as Record<string, string>)[crumb.keyFromLoaderData]
+        ) {
+          return (data as Record<string, string>)[crumb.keyFromLoaderData]
+        }
+
+        return 'undefined'
+      })()
+
+      return { to: pathname, linkText }
+    })
 
   return { crumbs }
 }
