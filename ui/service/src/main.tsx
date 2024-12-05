@@ -5,7 +5,7 @@ import { CssBaseline, ThemeProvider } from 'evidently-ui-lib/shared-dependencies
 import { RouterProvider } from 'evidently-ui-lib/shared-dependencies/react-router-dom'
 import { theme } from 'evidently-ui-lib/theme/index'
 // import { router } from './Routes'
-import { _router as router } from './_routes/router'
+import { router } from './routes/router'
 
 import './index.css'
 

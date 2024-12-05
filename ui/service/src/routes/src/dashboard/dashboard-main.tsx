@@ -1,7 +1,7 @@
 import type { GetParams, LoaderSpecialArgs } from 'evidently-ui-lib/router-utils/types'
 import type { CrumbDefinition } from 'evidently-ui-lib/router-utils/utils'
 
-import type { GetRouteByPath } from '~/_routes/types'
+import type { GetRouteByPath } from '~/routes/types'
 
 import { useRouteParams } from 'evidently-ui-lib/router-utils/hooks'
 import {

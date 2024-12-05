@@ -5,7 +5,7 @@ import {
 } from 'evidently-ui-lib/routes-components/projectsList/data'
 import { Box, Grid, Typography } from 'evidently-ui-lib/shared-dependencies/mui-material'
 
-import type { GetRouteByPath } from '~/_routes/types'
+import type { GetRouteByPath } from '~/routes/types'
 
 import { clientAPI } from '~/api'
 

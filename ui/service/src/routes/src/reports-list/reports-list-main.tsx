@@ -1,23 +1,23 @@
 import type { GetParams, LoaderSpecialArgs } from 'evidently-ui-lib/router-utils/types'
 
-import type { GetRouteByPath } from '~/_routes/types'
+import type { GetRouteByPath } from '~/routes/types'
 
 import { clientAPI } from '~/api'
 
 import { useIsAnyLoaderOrActionRunning, useRouteParams } from 'evidently-ui-lib/router-utils/hooks'
 import { SnapshotsListTemplate } from 'evidently-ui-lib/routes-components/snapshots'
 import {
-  getSnapshotsActionSpecial,
-  getTestSuites
+  getReports,
+  getSnapshotsActionSpecial
 } from 'evidently-ui-lib/routes-components/snapshots/data'
-import { RouterLink } from '~/_routes/components'
-import { useSubmitFetcher } from '~/_routes/fetchers'
+import { RouterLink } from '~/routes/components'
+import { useSubmitFetcher } from '~/routes/fetchers'
 
 ///////////////////
 //    ROUTE
 ///////////////////
 
-type Path = '/:projectId/test-suites/?index'
+type Path = '/:projectId/reports/?index'
 
 type Params = GetParams<Path>
 
@@ -26,7 +26,7 @@ type CurrentRoute = GetRouteByPath<Path>
 export const loaderSpecial = ({ params }: LoaderSpecialArgs) => {
   const { projectId } = params as Params
 
-  return getTestSuites({ api: clientAPI, projectId })
+  return getReports({ api: clientAPI, projectId })
 }
 
 export const actionSpecial = getSnapshotsActionSpecial({ api: clientAPI })
@@ -37,7 +37,7 @@ export const Component = () => {
   const { projectId } = params
 
   const fetcher = useSubmitFetcher<CurrentRoute>({
-    actionPath: () => ({ path: '/:projectId/test-suites/?index', params: { projectId } })
+    actionPath: () => ({ path: '/:projectId/reports/?index', params: { projectId } })
   })
 
   const disabled = useIsAnyLoaderOrActionRunning()
@@ -48,7 +48,7 @@ export const Component = () => {
         disabled={disabled}
         projectId={params.projectId}
         snapshots={reports}
-        type='test suites'
+        type='reports'
         LinkToSnapshot={LinkToSnapshot}
         onDeleteSnapshot={({ snapshotId }) =>
           fetcher.submit({
@@ -74,9 +74,9 @@ const LinkToSnapshot = ({ snapshotId, projectId }: { snapshotId: string; project
   return (
     <RouterLink
       type='button'
-      // type safe!
       disabled={disabled}
-      to={'/:projectId/test-suites/:snapshotId'}
+      // type safe!
+      to={'/:projectId/reports/:snapshotId'}
       paramsToReplace={{ projectId, snapshotId }}
       title={'View'}
     />

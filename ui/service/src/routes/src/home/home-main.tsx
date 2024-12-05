@@ -6,7 +6,7 @@ import { getVersion } from 'evidently-ui-lib/routes-components/home/data'
 import { Box } from 'evidently-ui-lib/shared-dependencies/mui-material'
 import { Outlet, ScrollRestoration } from 'evidently-ui-lib/shared-dependencies/react-router-dom'
 
-import type { GetRouteByPath } from '~/_routes/types'
+import type { GetRouteByPath } from '~/routes/types'
 
 import { useCrumbsFromHandle, useRouteParams } from 'evidently-ui-lib/router-utils/hooks'
 import type { CrumbDefinition } from 'evidently-ui-lib/router-utils/utils'

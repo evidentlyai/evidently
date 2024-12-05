@@ -1,4 +1,4 @@
-import type { GetRouteByPath } from '~/_routes/types'
+import type { GetRouteByPath } from '~/routes/types'
 
 import { useRouteParams } from 'evidently-ui-lib/router-utils/hooks'
 import type { GetParams, LoaderSpecialArgs } from 'evidently-ui-lib/router-utils/types'

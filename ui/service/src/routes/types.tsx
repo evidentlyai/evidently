@@ -1,5 +1,5 @@
 import type { GetMatches } from 'evidently-ui-lib/router-utils/types'
-import type { routes } from '~/_routes/router'
+import type { routes } from '~/routes/router'
 
 export type Routes = GetMatches<typeof routes>
 

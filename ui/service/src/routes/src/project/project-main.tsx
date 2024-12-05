@@ -13,11 +13,11 @@ import { Outlet } from 'evidently-ui-lib/shared-dependencies/react-router-dom'
 
 import { ContentCopy as ContentCopyIcon } from 'evidently-ui-lib/shared-dependencies/mui-icons-material'
 
-import type { GetRouteByPath } from '~/_routes/types'
+import type { GetRouteByPath } from '~/routes/types'
 
 import { useRouteParams } from 'evidently-ui-lib/router-utils/hooks'
-import { RouterLink, useMatchRouter } from '~/_routes/components'
 import { clientAPI } from '~/api'
+import { RouterLink, useMatchRouter } from '~/routes/components'
 
 ///////////////////
 //    ROUTE
