@@ -46,14 +46,9 @@ export const getDataRange = ({
   min_timestamp,
   max_timestamp
 }: { min_timestamp?: string | null; max_timestamp?: string | null }) => {
-  const [from, to] = [getValidDate(min_timestamp), getValidDate(max_timestamp)]
+  const [minDate, maxDate] = [getValidDate(min_timestamp), getValidDate(max_timestamp)]
 
-  const dateRange = {
-    ...(from ? { minDate: from } : null),
-    ...(to ? { maxDate: to } : null)
-  }
-
-  return dateRange
+  return { minDate, maxDate }
 }
 
 export const useDashboardFilterParamsDebounced = ({

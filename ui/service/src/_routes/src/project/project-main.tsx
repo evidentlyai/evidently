@@ -56,6 +56,8 @@ export const Component = () => {
   const isReports = useMatchRouter({ path: '/:projectId/reports' })
   const isTestSuites = useMatchRouter({ path: '/:projectId/test-suites' })
 
+  const { projectId } = params
+
   const selectedTab = isReports ? TABS.reports : isTestSuites ? TABS['test-suites'] : TABS.index
 
   return (
@@ -81,7 +83,7 @@ export const Component = () => {
           value={TABS.index}
           label={'Dashboard'}
           to='/:projectId/?index'
-          paramsToReplace={{ projectId: params.projectId }}
+          paramsToReplace={{ projectId }}
         />
 
         <RouterLink
@@ -89,7 +91,7 @@ export const Component = () => {
           value={TABS.reports}
           label={'Reports'}
           to='/:projectId/reports'
-          paramsToReplace={{ projectId: params.projectId }}
+          paramsToReplace={{ projectId }}
         />
 
         <RouterLink
@@ -97,7 +99,7 @@ export const Component = () => {
           value={TABS['test-suites']}
           label={'Test suites'}
           to='/:projectId/test-suites'
-          paramsToReplace={{ projectId: params.projectId }}
+          paramsToReplace={{ projectId }}
         />
       </Tabs>
 

@@ -52,11 +52,13 @@ export const getSnapshotsActionSpecial =
 
     if (action === 'reload-snapshots') {
       const { projectId } = data
+
       return reloadSnapshots({ api, projectId })
     }
 
     if (action === 'delete-snapshot') {
       const { snapshotId, projectId } = data
+
       return deleteSnapshot({ api, snapshotId, projectId })
     }
 
