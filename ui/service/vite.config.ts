@@ -8,7 +8,7 @@ export default defineConfig({
   server: {
     port: 3000,
     proxy: {
-      '/api': 'http://demo.evidentlyai.com'
+      '/api': 'https://demo.evidentlyai.com'
     }
   },
   build: {
