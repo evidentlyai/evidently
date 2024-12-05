@@ -1,15 +1,9 @@
-import type { ProjectModel } from 'evidently-ui-lib/api/types'
-import type { StrictID } from 'evidently-ui-lib/api/types/utils'
-import type { ActionSpecialArgs } from 'evidently-ui-lib/router-utils/types'
 import type { CrumbDefinition } from 'evidently-ui-lib/router-utils/utils'
 import {
-  createProject,
-  deleteProject,
-  editProject,
-  getProjects
+  getProjects,
+  getProjectsListActionSpecial
 } from 'evidently-ui-lib/routes-components/projectsList/data'
 import { Box, Grid, Typography } from 'evidently-ui-lib/shared-dependencies/mui-material'
-import { assertNeverActionVariant } from 'evidently-ui-lib/utils/index'
 
 import type { GetRouteByPath } from '~/_routes/types'
 
@@ -31,28 +25,7 @@ export const handle = { crumb }
 
 export const loaderSpecial = () => getProjects({ api: clientAPI })
 
-type ActionRequestData =
-  | { action: 'delete-project'; project_id: string }
-  | { action: 'edit-project'; project: StrictID<ProjectModel> }
-  | { action: 'create-project'; project: ProjectModel }
-
-export const actionSpecial = async ({ data }: ActionSpecialArgs<{ data: ActionRequestData }>) => {
-  const { action } = data
-
-  if (action === 'delete-project') {
-    return deleteProject({ api: clientAPI, project_id: data.project_id })
-  }
-
-  if (action === 'edit-project') {
-    return editProject({ api: clientAPI, project: data.project })
-  }
-
-  if (action === 'create-project') {
-    return createProject({ api: clientAPI, project: data.project })
-  }
-
-  assertNeverActionVariant(action)
-}
+export const actionSpecial = getProjectsListActionSpecial({ api: clientAPI })
 
 export const Component = () => {
   const { loaderData: projects } = useRouteParams<CurrentRoute>()

@@ -19,6 +19,6 @@ export const RouterLink = <K extends Paths>({ ...props }: RouterLinkProps<K>) =>
   <RouterLinkTemplate {...props} to={replaceParamsInLink(props.paramsToReplace, props.to)} />
 )
 
-export const useMatchRouter = ({ path }: { path: Paths }) => {
+export const useMatchRouter = <K extends Paths>({ path }: { path: K }) => {
   return Boolean(useMatch({ path, end: false }))
 }
