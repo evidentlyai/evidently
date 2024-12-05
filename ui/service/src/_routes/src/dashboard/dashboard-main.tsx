@@ -15,7 +15,6 @@ import {
   getProjectDashboard
 } from 'evidently-ui-lib/routes-components/dashboard/data'
 
-import { formatDate } from 'evidently-ui-lib/utils/index'
 import { clientAPI } from '~/api'
 
 ///////////////////
@@ -54,8 +53,8 @@ export const Component = () => {
     onDebounce: (newDate) => {
       setQuery(
         {
-          timestamp_start: formatDate(getValidDate(newDate.dateFrom)?.toDate()) ?? undefined,
-          timestamp_end: formatDate(getValidDate(newDate.dateTo)?.toDate()) ?? undefined
+          timestamp_start: getValidDate(newDate.dateFrom)?.format('YYYY-MM-DDTHH:mm') ?? undefined,
+          timestamp_end: getValidDate(newDate.dateTo)?.format('YYYY-MM-DDTHH:mm') ?? undefined
         },
         {
           replace: true,
