@@ -42,11 +42,21 @@ export const loaderSpecial = ({ params }: LoaderSpecialArgs) => {
     .GET('/api/projects/{project_id}/info', { params: { path: { project_id } } })
     .then(responseParser())
     .then(ensureID)
+    .then(({ name, id }) => ({ name, id }))
+}
+
+const TABS = {
+  reports: 'reports',
+  'test-suites': 'test-suites',
+  index: 'index'
 }
 
 export const Component = () => {
   const { loaderData: project, params } = useRouteParams<CurrentRoute>()
   const isReports = useMatchRouter({ path: '/:projectId/reports' })
+  const isTestSuites = useMatchRouter({ path: '/:projectId/test-suites' })
+
+  const selectedTab = isReports ? TABS.reports : isTestSuites ? TABS['test-suites'] : TABS.index
 
   return (
     <Box mt={2}>
@@ -65,14 +75,10 @@ export const Component = () => {
         </Grid>
       </Grid>
 
-      <Tabs
-        value={isReports ? 'reports' : 'index'}
-        aria-label='simple tabs example'
-        indicatorColor={'primary'}
-      >
+      <Tabs value={selectedTab} aria-label='simple tabs example' indicatorColor={'primary'}>
         <RouterLink
           type='tab'
-          value={'index'}
+          value={TABS.index}
           label={'Dashboard'}
           to='/:projectId/?index'
           paramsToReplace={{ projectId: params.projectId }}
@@ -80,9 +86,17 @@ export const Component = () => {
 
         <RouterLink
           type='tab'
-          value={'reports'}
-          label={'reports'}
+          value={TABS.reports}
+          label={'Reports'}
           to='/:projectId/reports'
+          paramsToReplace={{ projectId: params.projectId }}
+        />
+
+        <RouterLink
+          type='tab'
+          value={TABS['test-suites']}
+          label={'Test suites'}
+          to='/:projectId/test-suites'
           paramsToReplace={{ projectId: params.projectId }}
         />
       </Tabs>

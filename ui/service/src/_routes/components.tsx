@@ -20,7 +20,5 @@ export const RouterLink = <K extends Paths>({ ...props }: RouterLinkProps<K>) =>
 )
 
 export const useMatchRouter = ({ path }: { path: Paths }) => {
-  const m = useMatch({ path })
-
-  return Boolean(m)
+  return Boolean(useMatch({ path, end: false }))
 }

@@ -11,6 +11,8 @@ type ActionErrorData = ErrorData | undefined | null
 export const GenericErrorBoundary = () => {
   const error = useRouteError()
 
+  console.error(error)
+
   return (
     <AlertThemed severity='error'>
       <AlertTitle>Something went wrong</AlertTitle>

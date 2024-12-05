@@ -58,18 +58,21 @@ export const SnapshotsListTemplate = ({
   snapshots,
   disabled,
   projectId,
-  LinkToSnapshot
+  LinkToSnapshot,
+  onReloadSnapshots,
+  onDeleteSnapshot
 }: {
   projectId: string
   disabled?: boolean
   snapshots: ReportModel[] | TestSuiteModel[]
   type: 'reports' | 'test suites'
-  LinkToSnapshot: (props: { snapshotId: string }) => JSX.Element
+  LinkToSnapshot: (props: { snapshotId: string; projectId: string }) => JSX.Element
   slots?: {
     additionalSnapshotActions?: (args: { snapshotId: string; projectId: string }) => JSX.Element
-    ViewButton?: (args: { snapshotId: string; projectId: string }) => JSX.Element
     donwloadButtonVariant?: ButtonOwnProps['variant']
   }
+  onReloadSnapshots: () => void
+  onDeleteSnapshot: ({ snapshotId }: { snapshotId: string }) => void
 }) => {
   const [searchParams] = useSearchParams()
   const [sortByTimestamp, setSortByTimestamp] = useState<undefined | 'desc' | 'asc'>('desc')
@@ -163,7 +166,7 @@ export const SnapshotsListTemplate = ({
                 sx={{ minWidth: 160 }}
                 variant='outlined'
                 onClick={() => {
-                  // reload snapshot
+                  onReloadSnapshots()
                 }}
                 color='primary'
                 disabled={disabled}
@@ -264,11 +267,7 @@ export const SnapshotsListTemplate = ({
               </TableCell>
               <TableCell>
                 <Box display={'flex'} justifyContent={'center'} gap={1}>
-                  {slots?.ViewButton ? (
-                    <slots.ViewButton snapshotId={snapshot.id} projectId={projectId} />
-                  ) : (
-                    <LinkToSnapshot snapshotId={snapshot.id} />
-                  )}
+                  <LinkToSnapshot snapshotId={snapshot.id} projectId={projectId} />
 
                   <DownloadButton
                     variant={slots?.donwloadButtonVariant || 'outlined'}
@@ -294,7 +293,7 @@ export const SnapshotsListTemplate = ({
                       <IconButton
                         onClick={() => {
                           if (confirm('Are you sure?') === true) {
-                            //  delete snapshot
+                            onDeleteSnapshot({ snapshotId: snapshot.id })
                           }
                         }}
                         color='primary'
