@@ -14,26 +14,28 @@ export const GenericErrorBoundary = () => {
   console.error(error)
 
   return (
-    <AlertThemed severity='error'>
-      <AlertTitle>Something went wrong</AlertTitle>
+    <Box p={2}>
+      <AlertThemed severity='error'>
+        <AlertTitle>Something went wrong</AlertTitle>
 
-      {isRouteErrorResponse(error) && (
-        <>
-          <Typography fontWeight={'bold'}>
-            {[
-              `Status: ${error.status}`,
-              typeof error.data?.detail === 'string' && error.data.detail
-            ]
-              .filter(Boolean)
-              .join(', ')}
-          </Typography>
+        {isRouteErrorResponse(error) && (
+          <>
+            <Typography fontWeight={'bold'}>
+              {[
+                `Status: ${error.status}`,
+                typeof error.data?.detail === 'string' && error.data.detail
+              ]
+                .filter(Boolean)
+                .join(', ')}
+            </Typography>
 
-          {typeof error.data === 'string' && <Typography>{error.data}</Typography>}
-        </>
-      )}
+            {typeof error.data === 'string' && <Typography>{error.data}</Typography>}
+          </>
+        )}
 
-      {typeof error === 'string' && <Typography fontWeight={'bold'}>{error}</Typography>}
-    </AlertThemed>
+        {typeof error === 'string' && <Typography fontWeight={'bold'}>{error}</Typography>}
+      </AlertThemed>
+    </Box>
   )
 }
 
