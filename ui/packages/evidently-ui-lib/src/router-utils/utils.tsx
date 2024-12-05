@@ -56,8 +56,8 @@ export const decorateAllRoutes = (
     return {
       ...r,
       lazy: (() => r.lazy?.().then(decorateAllRoutes)) as LazyRouteFunction<RouteObject>,
-      action: r.actionSpecial ? replaceActionSpecial(r.actionSpecial) : undefined,
       loader: r.loaderSpecial ? replaceLoaderSpecial(r.loaderSpecial) : undefined,
+      action: r.actionSpecial ? replaceActionSpecial(r.actionSpecial) : undefined,
       ErrorBoundary: r.ErrorBoundary ? r.ErrorBoundary : ErrorBoundary,
       children: r.children ? r.children.map((r) => decorateAllRoutes(r, ErrorBoundary)) : undefined
     }
@@ -65,10 +65,10 @@ export const decorateAllRoutes = (
 
   return {
     ...r,
-    children: r.children ? r.children.map((r) => decorateAllRoutes(r, ErrorBoundary)) : undefined,
-    ErrorBoundary: r.ErrorBoundary ? r.ErrorBoundary : ErrorBoundary,
+    loader: r.loaderSpecial ? replaceLoaderSpecial(r.loaderSpecial) : undefined,
     action: r.actionSpecial ? replaceActionSpecial(r.actionSpecial) : undefined,
-    loader: r.loaderSpecial ? replaceLoaderSpecial(r.loaderSpecial) : undefined
+    ErrorBoundary: r.ErrorBoundary ? r.ErrorBoundary : ErrorBoundary,
+    children: r.children ? r.children.map((r) => decorateAllRoutes(r, ErrorBoundary)) : undefined
   } as RouteExtended
 }
 
