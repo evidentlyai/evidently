@@ -75,7 +75,7 @@ export const HintOnHoverToPlot = () => {
         >
           <Box display={'flex'} justifyContent={'space-between'} alignItems={'center'} gap={2}>
             <Box>
-              <Typography>Click on point in order to go to snapshot</Typography>
+              <Typography>You can click on the data point to open the Report.</Typography>
             </Box>
             <Box>
               <IconButton
