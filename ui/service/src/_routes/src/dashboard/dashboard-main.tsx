@@ -47,8 +47,8 @@ export const Component = () => {
 
   const { dates, setDates } = useDashboardFilterParamsDebounced({
     dates: {
-      dateFrom: getValidDate(query.timestamp_start) || dateRange.minDate,
-      dateTo: getValidDate(query.timestamp_end) || dateRange.maxDate
+      dateFrom: getValidDate(query.timestamp_start) ?? dateRange.minDate,
+      dateTo: getValidDate(query.timestamp_end) ?? dateRange.maxDate
     },
     onDebounce: (newDate) => {
       setQuery(
