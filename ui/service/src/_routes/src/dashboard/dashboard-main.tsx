@@ -11,7 +11,7 @@ import {
   useDashboardFilterParamsDebounced
 } from 'evidently-ui-lib/routes-components/dashboard'
 import {
-  type ProjectDashboardSearchParams,
+  type DashboardFilterQueryParams,
   getProjectDashboard
 } from 'evidently-ui-lib/routes-components/dashboard/data'
 
@@ -34,10 +34,10 @@ export const handle = { crumb }
 export const loaderSpecial = ({
   params,
   query
-}: LoaderSpecialArgs<{ queryKeys: keyof ProjectDashboardSearchParams }>) => {
-  const { projectId: project_id } = params as Params
+}: LoaderSpecialArgs<{ queryKeys: DashboardFilterQueryParams }>) => {
+  const { projectId } = params as Params
 
-  return getProjectDashboard({ api: clientAPI, project_id, query })
+  return getProjectDashboard({ api: clientAPI, projectId, query })
 }
 
 export const Component = () => {
