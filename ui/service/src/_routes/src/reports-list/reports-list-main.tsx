@@ -74,8 +74,8 @@ const LinkToSnapshot = ({ snapshotId, projectId }: { snapshotId: string; project
   return (
     <RouterLink
       type='button'
-      // type safe!
       disabled={disabled}
+      // type safe!
       to={'/:projectId/reports/:snapshotId'}
       paramsToReplace={{ projectId, snapshotId }}
       title={'View'}

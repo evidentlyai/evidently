@@ -6,11 +6,12 @@ import {
 
 import type { GetParams } from 'evidently-ui-lib/router-utils/types'
 import { useMatch } from 'evidently-ui-lib/shared-dependencies/react-router-dom'
-import type { Routes } from './types'
+import type { GetRouteByPath, Routes } from './types'
 
-type RouterLinkProps<K extends string> = RouterLinkTemplateComponentProps & {
+type RouterLinkProps<K extends Paths> = RouterLinkTemplateComponentProps & {
   to: K
   paramsToReplace: GetParams<K>
+  query?: GetRouteByPath<K>['loader']['query']
 }
 
 type Paths = Routes['path']

@@ -1,7 +1,12 @@
 import { expectJsonRequest } from '~/api/utils'
 import { GenericErrorBoundary, handleActionFetchersErrors } from '~/router-utils/components/Error'
 import type { ActionSpecialArgs, LoaderSpecialArgs, RouteExtended } from '~/router-utils/types'
-import type { LazyRouteFunction, RouteObject } from '~/shared-dependencies/react-router-dom'
+import type {
+  ActionFunction,
+  LazyRouteFunction,
+  LoaderFunction,
+  RouteObject
+} from '~/shared-dependencies/react-router-dom'
 
 import {
   Button,
@@ -18,45 +23,52 @@ export type CrumbDefinition = { title?: string; param?: string; keyFromLoaderDat
 
 export type HandleWithCrumb = { crumb?: CrumbDefinition }
 
-export const decorateAllRoutes = (r: RouteExtended): RouteExtended => {
+// biome-ignore lint/suspicious/noExplicitAny: fine
+const replaceLoaderSpecial = (loaderSpecial: (args: LoaderSpecialArgs) => any) => {
+  const loader: LoaderFunction = async (args) => {
+    const { searchParams } = new URL(args.request.url)
+    const query = Object.fromEntries(searchParams)
+
+    return loaderSpecial({ ...args, searchParams, query })
+  }
+
+  return loader
+}
+
+// biome-ignore lint/suspicious/noExplicitAny: fine
+const replaceActionSpecial = (actionSpecial: (args: ActionSpecialArgs) => any) => {
+  const action: ActionFunction = async (args) => {
+    expectJsonRequest(args.request)
+    const data = await args.request.json()
+
+    return actionSpecial({ ...args, data })
+  }
+
+  return action
+}
+
+export const decorateAllRoutes = (
+  r: RouteExtended,
+  ErrorBoundary: () => JSX.Element = GenericErrorBoundary
+): RouteExtended => {
   if (r.lazy) {
     // @ts-ignore
     return {
       ...r,
       lazy: (() => r.lazy?.().then(decorateAllRoutes)) as LazyRouteFunction<RouteObject>,
-      children: r.children ? r.children.map(decorateAllRoutes) : undefined
+      action: r.actionSpecial ? replaceActionSpecial(r.actionSpecial) : undefined,
+      loader: r.loaderSpecial ? replaceLoaderSpecial(r.loaderSpecial) : undefined,
+      ErrorBoundary: r.ErrorBoundary ? r.ErrorBoundary : ErrorBoundary,
+      children: r.children ? r.children.map((r) => decorateAllRoutes(r, ErrorBoundary)) : undefined
     }
   }
 
   return {
     ...r,
-    children: r.children ? r.children.map(decorateAllRoutes) : undefined,
-    ErrorBoundary: r.ErrorBoundary ? r.ErrorBoundary : GenericErrorBoundary,
-    action: r.actionSpecial
-      ? async (args) => {
-          expectJsonRequest(args.request)
-
-          const data = await args.request.json()
-
-          if (r.actionSpecial) {
-            return r.actionSpecial({ ...args, data } satisfies ActionSpecialArgs)
-          }
-
-          return null
-        }
-      : undefined,
-    loader: r.loaderSpecial
-      ? async (args) => {
-          const { searchParams } = new URL(args.request.url)
-          const query = Object.fromEntries(searchParams)
-
-          if (r.loaderSpecial) {
-            return r.loaderSpecial({ ...args, searchParams, query } satisfies LoaderSpecialArgs)
-          }
-
-          return null
-        }
-      : undefined
+    children: r.children ? r.children.map((r) => decorateAllRoutes(r, ErrorBoundary)) : undefined,
+    ErrorBoundary: r.ErrorBoundary ? r.ErrorBoundary : ErrorBoundary,
+    action: r.actionSpecial ? replaceActionSpecial(r.actionSpecial) : undefined,
+    loader: r.loaderSpecial ? replaceLoaderSpecial(r.loaderSpecial) : undefined
   } as RouteExtended
 }
 
