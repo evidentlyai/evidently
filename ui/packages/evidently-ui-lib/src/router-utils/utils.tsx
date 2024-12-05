@@ -12,7 +12,7 @@ import {
   Typography,
   type TypographyProps
 } from '@mui/material'
-import { Link as ReactRouterLink } from 'react-router-dom'
+import { Outlet, Link as ReactRouterLink } from 'react-router-dom'
 
 export type CrumbDefinition = { title?: string; param?: string; keyFromLoaderData?: string }
 
@@ -150,4 +150,17 @@ export const replaceParamsInLink = (paramsToReplace: Record<string, string>, pat
     .join('/')
 
   return result
+}
+
+export function PrefixRoute<K extends string>({
+  prefix,
+  crumbTitle
+}: { prefix: K; crumbTitle: string }) {
+  return {
+    path: prefix,
+    Component: () => <Outlet />,
+    handle: {
+      crumb: { title: crumbTitle } satisfies CrumbDefinition
+    }
+  }
 }

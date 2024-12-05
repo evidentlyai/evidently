@@ -2,14 +2,17 @@ import { createBrowserRouter } from 'evidently-ui-lib/shared-dependencies/react-
 
 import type { RouteExtended } from 'evidently-ui-lib/router-utils/types'
 
-import { decorateAllRoutes, decorateTopLevelRoutes } from 'evidently-ui-lib/router-utils/utils'
+import {
+  PrefixRoute,
+  decorateAllRoutes,
+  decorateTopLevelRoutes
+} from 'evidently-ui-lib/router-utils/utils'
 
 // It's important to import `SnapshotIdLazy` before `DashboardLazy`. Affects bundle chunks
 import { SnapshotIdLazy } from './src/snapshot-view/import'
 
 import { DashboardLazy } from './src/dashboard/import'
 
-import { PrefixRoute } from './src/_prefix'
 import { Home } from './src/home/import'
 import { Project } from './src/project/import'
 import { ProjectsList } from './src/projects-list/import'

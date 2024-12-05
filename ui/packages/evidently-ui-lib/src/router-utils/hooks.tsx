@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import {
+  type NavigateOptions,
   useFetchers,
   useLoaderData,
   useMatches,
@@ -24,7 +25,33 @@ export const useRouteParams = <
   const [searchParams, setSearchParams] = useSearchParams()
   const query = Object.fromEntries(searchParams) as K['loader']['query']
 
-  return { loaderData, params, query, setSearchParams }
+  /**
+   * @param newQuery Pass undefined as value to remove key
+   * @param navOpts
+   */
+  const setQuery = (newQuery: K['loader']['query'], navOpts?: NavigateOptions) => {
+    setSearchParams((p) => {
+      const undefinedKeys = Object.entries(newQuery)
+        .filter(([_, v]) => v === undefined || !v)
+        .map(([k]) => k)
+
+      // @ts-ignore this is actually type safe
+      const newQueryFiltered: Record<string, string> = Object.fromEntries(
+        Object.entries(newQuery).filter(([_, v]) => v)
+      )
+
+      for (const k of undefinedKeys) {
+        p.delete(k)
+      }
+
+      return {
+        ...Object.fromEntries(p),
+        ...newQueryFiltered
+      }
+    }, navOpts)
+  }
+
+  return { loaderData, params, query, setQuery }
 }
 
 export const useOnSubmitEnd = ({

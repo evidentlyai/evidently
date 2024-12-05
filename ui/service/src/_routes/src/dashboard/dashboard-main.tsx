@@ -42,8 +42,7 @@ export const loaderSpecial = ({
 }
 
 export const Component = () => {
-  const { loaderData: data, query, setSearchParams } = useRouteParams<CurrentRoute>()
-  type QueryParams = typeof query
+  const { loaderData: data, query, setQuery } = useRouteParams<CurrentRoute>()
 
   const dateRange = getDataRange(data)
 
@@ -52,27 +51,18 @@ export const Component = () => {
       dateFrom: getValidDate(query.timestamp_start) || dateRange.minDate,
       dateTo: getValidDate(query.timestamp_end) || dateRange.maxDate
     },
-    onDebounce: (newDate) =>
-      setSearchParams(
-        (p) => {
-          p.delete('timestamp_start' satisfies keyof QueryParams)
-          p.delete('timestamp_end' satisfies keyof QueryParams)
-
-          const [from, to] = [
-            getValidDate(newDate.dateFrom)?.toDate(),
-            getValidDate(newDate.dateTo)?.toDate()
-          ]
-
-          const newSearchParams = {
-            ...Object.fromEntries(p),
-            ...(from ? ({ timestamp_start: formatDate(from) } satisfies QueryParams) : null),
-            ...(to ? ({ timestamp_end: formatDate(to) } satisfies QueryParams) : null)
-          }
-
-          return newSearchParams
+    onDebounce: (newDate) => {
+      setQuery(
+        {
+          timestamp_start: formatDate(getValidDate(newDate.dateFrom)?.toDate()) ?? undefined,
+          timestamp_end: formatDate(getValidDate(newDate.dateTo)?.toDate()) ?? undefined
         },
-        { replace: true, preventScrollReset: true }
+        {
+          replace: true,
+          preventScrollReset: true
+        }
       )
+    }
   })
 
   return <ProjectDashboard data={data} dateFilterProps={{ dates, setDates, dateRange }} />

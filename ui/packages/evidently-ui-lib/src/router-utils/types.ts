@@ -103,7 +103,7 @@ export type MatchWithAction = Match<
 export type MatchWithLoader = Match<
   string,
   // biome-ignore lint/suspicious/noExplicitAny: fine
-  ProvideLoaderInfo<any, any>,
+  ProvideLoaderInfo<Partial<Record<string, string>>, any>,
   // biome-ignore lint/suspicious/noExplicitAny: fine
   any // any action
 >

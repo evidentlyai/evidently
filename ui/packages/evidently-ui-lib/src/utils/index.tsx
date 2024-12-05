@@ -1,12 +1,12 @@
-export function formatDate(date: Date): string {
-  return (
-    `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}` +
-    `-${date.getDate().toString().padStart(2, '0')}` +
-    `T${date.getHours().toString().padStart(2, '0')}:${date
-      .getMinutes()
-      .toString()
-      .padStart(2, '0')}`
-  )
+export function formatDate(date: Date | null | undefined): string | undefined {
+  return !date
+    ? undefined
+    : `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}` +
+        `-${date.getDate().toString().padStart(2, '0')}` +
+        `T${date.getHours().toString().padStart(2, '0')}:${date
+          .getMinutes()
+          .toString()
+          .padStart(2, '0')}`
 }
 
 // https://www.typescriptlang.org/docs/handbook/unions-and-intersections.html
