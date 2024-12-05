@@ -99,17 +99,18 @@ export const useCrumbsFromHandle = () => {
           return crumb.title
         }
 
-        if (crumb.param && params[crumb.param]) {
-          return params[crumb.param]
+        if (crumb.param) {
+          const c = params?.[crumb.param]
+          if (c) {
+            return c
+          }
         }
 
-        if (
-          crumb.keyFromLoaderData &&
-          typeof data === 'object' &&
-          data &&
-          (data as Record<string, string>)[crumb.keyFromLoaderData]
-        ) {
-          return (data as Record<string, string>)[crumb.keyFromLoaderData]
+        if (crumb.keyFromLoaderData && typeof data === 'object' && data) {
+          const c = (data as Record<string, string>)?.[crumb.keyFromLoaderData]
+          if (c) {
+            return c
+          }
         }
 
         return 'undefined'
