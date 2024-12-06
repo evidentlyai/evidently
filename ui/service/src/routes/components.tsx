@@ -18,9 +18,9 @@ type RouterLinkProps<K extends Paths> = RouterLinkTemplateComponentProps & {
 }
 
 export const RouterLink = <K extends Paths>({
-  query,
   to,
   paramsToReplace,
+  query,
   ...props
 }: RouterLinkProps<K>) => {
   const searchParams =
@@ -29,7 +29,9 @@ export const RouterLink = <K extends Paths>({
       Object.fromEntries(Object.entries(query).filter(([_, v]) => v)) as Record<string, string>
     )
 
-  const toActual = [replaceParamsInLink(paramsToReplace, to), searchParams].join('?')
+  const toActual = [replaceParamsInLink(paramsToReplace, to), searchParams]
+    .filter(Boolean)
+    .join('?')
 
   return <RouterLinkTemplate {...props} to={toActual} />
 }

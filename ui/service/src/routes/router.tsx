@@ -31,7 +31,7 @@ export const routes = [
           { index: true, ...DashboardLazy },
           {
             path: 'reports',
-            ...provideCrumb({ title: 'Reports' }),
+            ...{ _route_path: '/:projectId/reports' as const },
             children: [
               { index: true, ...ReportsList },
               { path: ':snapshotId', ...SnapshotIdLazy }
@@ -40,6 +40,7 @@ export const routes = [
           {
             path: 'test-suites',
             ...provideCrumb({ title: 'Test suites' }),
+            ...{ _route_path: '/:projectId/test-suites' as const },
             children: [
               { index: true, ...TestSuitesList },
               { path: ':snapshotId', ...SnapshotIdLazy }

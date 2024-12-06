@@ -17,7 +17,8 @@ import { useSubmitFetcher } from '~/routes/fetchers'
 //    ROUTE
 ///////////////////
 
-type Path = '/:projectId/test-suites/?index'
+export const _route_path = '/:projectId/test-suites/?index'
+type Path = typeof _route_path
 
 type Params = GetParams<Path>
 

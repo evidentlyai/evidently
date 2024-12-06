@@ -1,6 +1,18 @@
-import type { GetMatches } from 'evidently-ui-lib/router-utils/types'
+import type { Expect } from 'evidently-ui-lib/api/types/utils'
+
+import type {
+  ExpectEqActuall,
+  GetMatches,
+  GetRouteStructure
+} from 'evidently-ui-lib/router-utils/types'
+
 import type { routes } from '~/routes/router'
 
 export type Routes = GetMatches<typeof routes>
 
 export type GetRouteByPath<K extends Routes['path']> = Extract<Routes, { path: K }>
+
+// TEST THAT ALL CORRECT
+type RouteStructure = GetRouteStructure<typeof routes>
+
+export type __TESTS_ROUTE_STRUCTURE = Expect<ExpectEqActuall<RouteStructure>>

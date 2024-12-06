@@ -22,7 +22,8 @@ import { clientAPI } from '~/api'
 //    ROUTE
 ///////////////////
 
-type Path = '/:projectId/?index'
+export const _route_path = '/:projectId/?index'
+type Path = typeof _route_path
 
 type CurrentRoute = GetRouteByPath<Path>
 

@@ -11,7 +11,11 @@ import { clientAPI } from '~/api'
 //    ROUTE
 ///////////////////
 
-type Path = '/:projectId/reports/:snapshotId' | '/:projectId/test-suites/:snapshotId'
+export const _route_path = (!0 as boolean)
+  ? '/:projectId/reports/:snapshotId'
+  : '/:projectId/test-suites/:snapshotId'
+
+type Path = typeof _route_path
 
 type CurrentRoute = GetRouteByPath<Path>
 

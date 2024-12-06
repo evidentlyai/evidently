@@ -95,3 +95,10 @@ export const replaceParamsInLink = (paramsToReplace: Record<string, string>, pat
 }
 
 export const provideCrumb = (crumb: CrumbDefinition) => ({ handle: { crumb } })
+
+export const Route: <K extends RouteExtended, A extends RouteExtended>(a: K, b: A) => K & A = (
+  a,
+  b
+) => {
+  return { ...a, ...b }
+}

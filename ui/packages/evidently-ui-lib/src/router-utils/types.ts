@@ -25,7 +25,7 @@ export type LoaderSpecialArgs<
 export type RouteExtended = RouteObject & { actionSpecial?: (args: ActionSpecialArgs) => any } & {
   // biome-ignore lint/suspicious/noExplicitAny: fine
   loaderSpecial?: (args: LoaderSpecialArgs) => any
-}
+} & { _route_path?: string }
 
 type ExtractPath<T extends RouteExtended> = T['path'] extends string ? T['path'] : ''
 
@@ -78,6 +78,35 @@ export type GetMatches<
       | GetMatches<First['children'], `${Prefix}${PathDelimitter<Prefix>}${ExtractPath<First>}`>
       | GetMatches<Rest, Prefix>
   : never
+
+export type GetRouteStructure<
+  T extends readonly RouteExtended[] | undefined,
+  Prefix extends string = ''
+> = T extends readonly [infer First extends RouteExtended, ...infer Rest extends RouteExtended[]]
+  ?
+      | {
+          expected: `${Prefix}${PathDelimitter<Prefix>}${IsIndex<First> extends true ? '?index' : ''}${ExtractPath<First>}`
+          actuall: First['_route_path'] extends string
+            ? First['_route_path']
+            : First['lazy'] extends (
+                  // biome-ignore lint/suspicious/noExplicitAny: fine
+                  args: any
+                ) => Promise<{ _route_path: infer Z }>
+              ? Z
+              : 'missing export _route_path in expected route'
+        }
+      | GetRouteStructure<
+          First['children'],
+          `${Prefix}${PathDelimitter<Prefix>}${ExtractPath<First>}`
+        >
+      | GetRouteStructure<Rest, Prefix>
+  : never
+
+export type ExpectEqActuall<T> = T extends { expected: infer E; actuall: infer A }
+  ? E extends A
+    ? true
+    : { Error: T }
+  : false
 
 type ExtractParams<T extends string> = T extends `${string}:${infer Param}/${infer Rest}`
   ? Param | ExtractParams<`/${Rest}`>

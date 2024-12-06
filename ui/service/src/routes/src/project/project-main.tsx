@@ -23,7 +23,8 @@ import { RouterLink, useMatchRouter } from '~/routes/components'
 //    ROUTE
 ///////////////////
 
-type Path = '/:projectId'
+export const _route_path = '/:projectId'
+type Path = typeof _route_path
 
 type CurrentRoute = GetRouteByPath<Path>
 
