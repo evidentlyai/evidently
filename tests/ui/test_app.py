@@ -54,7 +54,10 @@ async def test_list_projects(test_client: TestClient, project_manager: ProjectMa
 @pytest.mark.asyncio
 async def test_add_project(test_client: TestClient, project_manager: ProjectManager, mock_project):
     """post /api/projects"""
-    r = test_client.post("/api/projects", content=_dumps(mock_project), headers=HEADERS)
+    mock_project.team_id = None
+    org_id = new_id()
+    mock_project.org_id = org_id
+    r = test_client.post(f"/api/projects?org_id={org_id}", content=_dumps(mock_project), headers=HEADERS)
     r.raise_for_status()
 
     data = await project_manager.list_projects(ZERO_UUID, None, None)

@@ -171,7 +171,8 @@ class Project(Entity):
     description: Optional[str] = None
     dashboard: "DashboardConfig" = Field(default_factory=_default_dashboard)
 
-    team_id: Optional[TeamID]
+    team_id: Optional[TeamID] = None
+    org_id: Optional[OrgID] = None
 
     date_from: Optional[datetime.datetime] = None
     date_to: Optional[datetime.datetime] = None
@@ -263,7 +264,9 @@ class Project(Entity):
 
 class MetadataStorage(ABC):
     @abstractmethod
-    async def add_project(self, project: Project, user: User, team: Team) -> Project:
+    async def add_project(
+        self, project: Project, user: User, team: Optional[Team], org_id: Optional[OrgID] = None
+    ) -> Project:
         raise NotImplementedError
 
     @abstractmethod
@@ -396,7 +399,6 @@ class Permission(Enum):
     TEAM_WRITE = "team_write"
     TEAM_CREATE_PROJECT = "team_create_project"
     TEAM_DELETE = "team_delete"
-    TEAM_CREATE_DATASET = "team_create_dataset"
 
     PROJECT_READ = "project_read"
     PROJECT_WRITE = "project_write"
@@ -407,6 +409,8 @@ class Permission(Enum):
     DATASET_READ = "datasets_read"
     DATASET_WRITE = "datasets_write"
     DATASET_DELETE = "datasets_delete"
+
+    UNKNOWN = "unknown"
 
 
 class Role(BaseModel):
@@ -424,7 +428,7 @@ class DefaultRole(Enum):
 
 
 DEFAULT_ROLE_PERMISSIONS: Dict[Tuple[DefaultRole, Optional[EntityType]], Set[Permission]] = {
-    (DefaultRole.OWNER, None): set(Permission),
+    (DefaultRole.OWNER, None): set(Permission) - {Permission.UNKNOWN},
     (DefaultRole.EDITOR, EntityType.Org): {
         Permission.LIST_USERS,
         Permission.ORG_READ,
@@ -436,7 +440,6 @@ DEFAULT_ROLE_PERMISSIONS: Dict[Tuple[DefaultRole, Optional[EntityType]], Set[Per
         Permission.PROJECT_WRITE,
         Permission.PROJECT_SNAPSHOT_ADD,
         Permission.DATASET_READ,
-        Permission.TEAM_CREATE_DATASET,
         Permission.DATASET_WRITE,
         Permission.DATASET_DELETE,
     },
@@ -445,7 +448,6 @@ DEFAULT_ROLE_PERMISSIONS: Dict[Tuple[DefaultRole, Optional[EntityType]], Set[Per
         Permission.TEAM_READ,
         Permission.TEAM_WRITE,
         Permission.TEAM_CREATE_PROJECT,
-        Permission.TEAM_CREATE_DATASET,
         Permission.PROJECT_READ,
         Permission.PROJECT_WRITE,
         Permission.PROJECT_SNAPSHOT_ADD,
@@ -468,6 +470,7 @@ DEFAULT_ROLE_PERMISSIONS: Dict[Tuple[DefaultRole, Optional[EntityType]], Set[Per
     (DefaultRole.VIEWER, EntityType.Org): {
         Permission.LIST_USERS,
         Permission.ORG_READ,
+        Permission.PROJECT_READ,
     },
     (DefaultRole.VIEWER, EntityType.Team): {
         Permission.LIST_USERS,
@@ -727,8 +730,9 @@ class ProjectManager:
         self,
         name: str,
         user_id: UserID,
-        team_id: TeamID,
+        team_id: Optional[TeamID] = None,
         description: Optional[str] = None,
+        org_id: Optional[TeamID] = None,
     ) -> Project:
         from evidently.ui.dashboards import DashboardConfig
 
@@ -738,22 +742,35 @@ class ProjectManager:
                 description=description,
                 dashboard=DashboardConfig(name=name, panels=[]),
                 team_id=team_id,
+                org_id=org_id,
             ),
             user_id,
             team_id,
+            org_id,
         )
         return project
 
-    async def add_project(self, project: Project, user_id: UserID, team_id: TeamID) -> Project:
+    async def add_project(
+        self, project: Project, user_id: UserID, team_id: Optional[TeamID] = None, org_id: Optional[OrgID] = None
+    ) -> Project:
         user = await self.auth.get_or_default_user(user_id)
-        team = await self.auth.get_team_or_error(team_id)
-        if not await self.auth.check_entity_permission(
-            user.id, EntityType.Team, team.id, Permission.TEAM_CREATE_PROJECT
-        ):
-            raise NotEnoughPermissions()
-        project.team_id = team_id if team_id != ZERO_UUID else None
+        team = await self.auth.get_team_or_error(team_id) if team_id else None
+        if team:
+            if not await self.auth.check_entity_permission(
+                user.id, EntityType.Team, team.id, Permission.TEAM_CREATE_PROJECT
+            ):
+                raise NotEnoughPermissions()
+            project.team_id = team_id if team_id != ZERO_UUID else None
+            org_id = team.org_id if team_id else None
+            project.org_id = org_id
+        elif org_id:
+            project.org_id = org_id
+            team = None
+            if not await self.auth.check_entity_permission(user.id, EntityType.Org, org_id, Permission.ORG_WRITE):
+                raise NotEnoughPermissions()
+
         project.created_at = project.created_at or datetime.datetime.now()
-        project = (await self.metadata.add_project(project, user, team)).bind(self, user.id)
+        project = (await self.metadata.add_project(project, user, team, org_id)).bind(self, user.id)
         await self.auth.grant_entity_role(
             user.id,
             EntityType.Project,

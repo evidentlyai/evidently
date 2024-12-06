@@ -1,4 +1,5 @@
 import dayjs, { type Dayjs } from 'dayjs'
+import type { PlotMouseEvent } from 'plotly.js'
 import { useEffect, useState } from 'react'
 import type { DashboardInfoModel } from '~/api/types'
 import {
@@ -13,10 +14,14 @@ import { useDebounce, useIsFirstRender, useLocalStorage } from '~/hooks/index'
 
 export const ProjectDashboard = ({
   data,
-  dateFilterProps
+  dateFilterProps,
+  OnClickedPointComponent,
+  OnHoveredPlotComponent
 }: {
   data: DashboardInfoModel
   dateFilterProps: DateFilterProps
+  OnClickedPointComponent?: ({ event }: { event: PlotMouseEvent }) => JSX.Element
+  OnHoveredPlotComponent?: () => JSX.Element
 }) => {
   const [isXaxisAsCategorical, setIsXaxisAsCategorical] = useLocalStorage(
     'dashboard-hide-dates',
@@ -32,7 +37,9 @@ export const ProjectDashboard = ({
         />
       </DateFilter>
 
-      <DashboardViewParamsContext.Provider value={{ isXaxisAsCategorical }}>
+      <DashboardViewParamsContext.Provider
+        value={{ isXaxisAsCategorical, OnClickedPointComponent, OnHoveredPlotComponent }}
+      >
         <DashboardWidgets widgets={data.widgets} />
       </DashboardViewParamsContext.Provider>
     </>

@@ -1,3 +1,4 @@
+import warnings
 from typing import List
 from typing import Optional
 from typing import Union
@@ -20,6 +21,16 @@ from evidently.ui.workspace.base import WorkspaceBase
 from evidently.utils.sync import async_to_sync
 
 
+def _team_id_deprecation_message(team_id: Optional[TeamID]):
+    if team_id is not None:
+        warnings.warn(
+            "The 'team_id' parameter is deprecated and will be removed in a future version. "
+            "Please use 'org_id' instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+
+
 class WorkspaceView(WorkspaceBase):
     def __init__(
         self,
@@ -29,16 +40,26 @@ class WorkspaceView(WorkspaceBase):
         self.project_manager = project_manager
         self.user_id = user_id or ZERO_UUID
 
-    def create_project(self, name: str, description: Optional[str] = None, team_id: TeamID = None) -> Project:
+    def create_project(
+        self,
+        name: str,
+        description: Optional[str] = None,
+        team_id: Optional[TeamID] = None,
+        org_id: Optional[OrgID] = None,
+    ) -> Project:
+        _team_id_deprecation_message(team_id)
         return async_to_sync(
             self.project_manager.create_project(
-                name, user_id=self.user_id, team_id=team_id or ZERO_UUID, description=description
+                name, user_id=self.user_id, team_id=team_id, description=description, org_id=org_id
             )
         )
 
-    def add_project(self, project: Project, team_id: TeamID = None) -> Project:
+    def add_project(
+        self, project: Project, team_id: Optional[TeamID] = None, org_id: Optional[OrgID] = None
+    ) -> Project:
+        _team_id_deprecation_message(team_id)
         project = async_to_sync(
-            self.project_manager.add_project(project, user_id=self.user_id, team_id=team_id or ZERO_UUID)
+            self.project_manager.add_project(project, user_id=self.user_id, team_id=team_id, org_id=org_id)
         )
         return project
 
@@ -53,6 +74,7 @@ class WorkspaceView(WorkspaceBase):
         async_to_sync(self.project_manager.delete_project(self.user_id, project_id))
 
     def list_projects(self, team_id: Optional[TeamID] = None, org_id: Optional[OrgID] = None) -> List[Project]:
+        _team_id_deprecation_message(team_id)
         return async_to_sync(
             self.project_manager.list_projects(self.user_id, team_id or ZERO_UUID, org_id or ZERO_UUID)
         )
@@ -72,6 +94,7 @@ class WorkspaceView(WorkspaceBase):
     def search_project(
         self, project_name: str, team_id: Optional[TeamID] = None, org_id: Optional[OrgID] = None
     ) -> List[Project]:
+        _team_id_deprecation_message(team_id)
         return async_to_sync(
             self.project_manager.search_project(self.user_id, project_name, team_id or ZERO_UUID, org_id or ZERO_UUID)
         )

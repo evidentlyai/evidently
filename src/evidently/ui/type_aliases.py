@@ -1,9 +1,10 @@
+import dataclasses
 import datetime
 import uuid
 from typing import Dict
+from typing import Generic
 from typing import List
 from typing import NamedTuple
-from typing import Tuple
 from typing import TypeVar
 from typing import Union
 
@@ -30,11 +31,22 @@ ZERO_UUID = uuid6.UUID(int=0, version=7)
 
 
 class TestInfo(NamedTuple):
+    snapshot_id: SnapshotID
     status: TestStatus
     description: str
 
 
 TestResultPoints = Dict[datetime.datetime, Dict[Test, TestInfo]]
+
 PointType = TypeVar("PointType")
-DataPointsAsType = List[Dict[Metric, List[Tuple[datetime.datetime, PointType]]]]
+
+
+@dataclasses.dataclass
+class PointInfo(Generic[PointType]):
+    timestamp: datetime.datetime
+    snapshot_id: SnapshotID
+    value: PointType
+
+
+DataPointsAsType = List[Dict[Metric, List[PointInfo[PointType]]]]
 DataPoints = DataPointsAsType[float]

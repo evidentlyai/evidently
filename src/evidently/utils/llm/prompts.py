@@ -146,7 +146,7 @@ class StringListFormatBlock(OutputFormatBlock[List[str]]):
 This should be only a list of string {self.of_what}, each one on a new line with no enumeration"""
 
     def parse_response(self, response: str) -> List[str]:
-        return response.split("\n")
+        return [line.strip() for line in response.split("\n") if line.strip()]
 
 
 class StringFormatBlock(OutputFormatBlock[str]):
