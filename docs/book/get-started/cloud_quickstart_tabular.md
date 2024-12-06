@@ -6,8 +6,7 @@ description: ML Monitoring “Hello world.” From data to dashboard in a couple
 
 Set up your Evidently Cloud workspace:
 * **Sign up**. If you do not have one yet, sign up for a free [Evidently Cloud account](https://app.evidently.cloud/signup).
-* **Create an Organization**. When you log in the first time, create and name your Organization.
-* **Create a Team**. Click **Teams** in the left menu. Create a Team, copy and save the Team ID. ([Team page](https://app.evidently.cloud/teams)).
+* **Create an Organization** when you log in for the first time. Get an ID of your organization. [Organizations page](https://app.evidently.cloud/organizations).
 * **Get your API token**. Click the **Key** icon in the left menu. Generate and save the token. ([Token page](https://app.evidently.cloud/token)).
 
 You can now go to your Python environment.
@@ -39,10 +38,10 @@ Connect to Evidently Cloud using your access token.
 ws = CloudWorkspace(token="YOUR_TOKEN_HERE", url="https://app.evidently.cloud")
 ```
 
-Create a new Project inside your Team. Pass the `team_id`.
+Create a new Project inside your Organization. Pass the `org_id`.
 
 ```python
-project = ws.create_project("My test project", team_id="YOUR_TEAM_ID")
+project = ws.create_project("My test project", org_id="YOUR_ORG_ID")
 project.description = "My project description"
 project.save()
 ```

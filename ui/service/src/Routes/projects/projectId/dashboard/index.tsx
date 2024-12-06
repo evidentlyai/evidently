@@ -1,4 +1,5 @@
 import { GenericErrorBoundary } from 'evidently-ui-lib/components/Error'
+import { GoToSnapshotByPoint, HintOnHoverToPlot } from 'evidently-ui-lib/components/OnClickedPoint'
 import { getLoaderAction } from 'evidently-ui-lib/routes-components/dashboard/data'
 import type { RouteObject } from 'evidently-ui-lib/shared-dependencies/react-router-dom'
 import { clientAPI } from '~/api'
@@ -18,6 +19,8 @@ export default {
       Component: () => (
         <DashboardComponentTemplate
           Dashboard={({ data: { widgets } }) => <DashboardWidgets widgets={widgets} />}
+          OnClickedPointComponent={GoToSnapshotByPoint}
+          OnHoveredPlotComponent={HintOnHoverToPlot}
         />
       )
     }
