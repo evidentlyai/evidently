@@ -2,7 +2,6 @@ import datetime
 import json
 from typing import List
 from typing import Optional
-from typing import Tuple
 from typing import Union
 
 from litestar.params import Dependency
@@ -16,10 +15,8 @@ from evidently.ui.base import EntityType
 from evidently.ui.base import Project
 from evidently.ui.base import ProjectMetadataStorage
 from evidently.ui.base import SnapshotMetadata
-from evidently.ui.base import Team
 from evidently.ui.errors import NotEnoughPermissions
 from evidently.ui.errors import ProjectNotFound
-from evidently.ui.errors import TeamNotFound
 from evidently.ui.managers.auth import AuthManager
 from evidently.ui.managers.auth import DefaultRole
 from evidently.ui.managers.auth import Permission
@@ -217,13 +214,3 @@ class ProjectManager(BaseManager):
         ):
             raise NotEnoughPermissions()
         await self.project_metadata.reload_snapshots(project_id)
-
-    async def get_project_with_team(self, user_id: UserID, project_id: ProjectID) -> Tuple[Project, Team]:
-        project = await self.get_project(user_id, project_id)
-        if project is None:
-            raise ProjectNotFound()
-        assert project.team_id is not None
-        team = await self.auth_manager.get_team(project.team_id)
-        if team is None:
-            raise TeamNotFound()
-        return project, team
