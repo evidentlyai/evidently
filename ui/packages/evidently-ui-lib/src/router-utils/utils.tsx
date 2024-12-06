@@ -8,17 +8,6 @@ import type {
   RouteObject
 } from '~/shared-dependencies/react-router-dom'
 
-import {
-  Button,
-  type ButtonProps,
-  Link,
-  Tab,
-  type TabProps,
-  Typography,
-  type TypographyProps
-} from '@mui/material'
-import { Outlet, Link as ReactRouterLink } from 'react-router-dom'
-
 export type CrumbDefinition = { title?: string; param?: string; keyFromLoaderData?: string }
 
 export type HandleWithCrumb = { crumb?: CrumbDefinition }
@@ -87,65 +76,6 @@ export const decorateTopLevelRoutes = (r: RouteExtended): RouteExtended => {
   return r
 }
 
-export type RouterLinkTemplateComponentProps =
-  | ({
-      type: 'button'
-    } & RLB)
-  | ({
-      type: 'link'
-    } & RLL)
-  | ({
-      type: 'tab'
-    } & RLT)
-
-export const RouterLinkTemplate = (props: RouterLinkTemplateComponentProps) => {
-  return props.type === 'button' ? (
-    <RLBComponent {...props} />
-  ) : props.type === 'tab' ? (
-    <RLTComponent {...props} />
-  ) : (
-    <RLLComponent {...props} />
-  )
-}
-
-export type RLB = {
-  to: string
-  title?: string
-} & ButtonProps
-
-export const RLBComponent = ({ to, title, ...buttonProps }: RLB) => {
-  return (
-    <Button component={ReactRouterLink} to={to} {...buttonProps}>
-      {title}
-    </Button>
-  )
-}
-
-export type RLL = {
-  children?: React.ReactNode
-  to: string
-  title?: string
-} & TypographyProps
-
-export const RLLComponent = ({ children, to, title, ...typographyProps }: RLL) => {
-  return (
-    <Link component={ReactRouterLink} to={to}>
-      <>
-        {title && <Typography {...typographyProps}>{title}</Typography>}
-        {children}
-      </>
-    </Link>
-  )
-}
-
-export type RLT = {
-  to: string
-} & TabProps
-
-export const RLTComponent = ({ to, ...tabProps }: RLT) => {
-  return <Tab component={ReactRouterLink} to={to} {...tabProps} />
-}
-
 export const replaceParamsInLink = (paramsToReplace: Record<string, string>, path: string) => {
   const result = path
     .split('/')
@@ -164,15 +94,4 @@ export const replaceParamsInLink = (paramsToReplace: Record<string, string>, pat
   return result
 }
 
-export function PrefixRoute<K extends string>({
-  prefix,
-  crumbTitle
-}: { prefix: K; crumbTitle: string }) {
-  return {
-    path: prefix,
-    Component: () => <Outlet />,
-    handle: {
-      crumb: { title: crumbTitle } satisfies CrumbDefinition
-    }
-  }
-}
+export const provideCrumb = (crumb: CrumbDefinition) => ({ handle: { crumb } })

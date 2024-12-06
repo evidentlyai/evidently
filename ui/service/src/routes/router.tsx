@@ -3,9 +3,9 @@ import { createBrowserRouter } from 'evidently-ui-lib/shared-dependencies/react-
 import type { RouteExtended } from 'evidently-ui-lib/router-utils/types'
 
 import {
-  PrefixRoute,
   decorateAllRoutes,
-  decorateTopLevelRoutes
+  decorateTopLevelRoutes,
+  provideCrumb
 } from 'evidently-ui-lib/router-utils/utils'
 
 // It's important to import `SnapshotIdLazy` before `DashboardLazy`. Affects bundle chunks
@@ -30,14 +30,16 @@ export const routes = [
         children: [
           { index: true, ...DashboardLazy },
           {
-            ...PrefixRoute({ prefix: 'reports', crumbTitle: 'Reports' } as const),
+            path: 'reports',
+            ...provideCrumb({ title: 'Reports' }),
             children: [
               { index: true, ...ReportsList },
               { path: ':snapshotId', ...SnapshotIdLazy }
             ]
           },
           {
-            ...PrefixRoute({ prefix: 'test-suites', crumbTitle: 'Test Suites' } as const),
+            path: 'test-suites',
+            ...provideCrumb({ title: 'Test suites' }),
             children: [
               { index: true, ...TestSuitesList },
               { path: ':snapshotId', ...SnapshotIdLazy }
