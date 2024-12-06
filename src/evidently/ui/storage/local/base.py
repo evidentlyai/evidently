@@ -38,6 +38,7 @@ from evidently.ui.storage.common import NO_USER
 from evidently.ui.type_aliases import BlobID
 from evidently.ui.type_aliases import DataPointsAsType
 from evidently.ui.type_aliases import OrgID
+from evidently.ui.type_aliases import PointInfo
 from evidently.ui.type_aliases import PointType
 from evidently.ui.type_aliases import ProjectID
 from evidently.ui.type_aliases import SnapshotID
@@ -339,5 +340,7 @@ class InMemoryDataStorage(DataStorage):
                 for metric, metric_field_value in value.get(report).items():
                     if metric not in points[i]:
                         points[i][metric] = []
-                    points[i][metric].append((report.timestamp, self.parse_value(cls, metric_field_value)))
+                    points[i][metric].append(
+                        PointInfo(report.timestamp, report.id, self.parse_value(cls, metric_field_value))
+                    )
         return points

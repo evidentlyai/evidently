@@ -78,7 +78,7 @@ class TestFilter(BaseModel):
             if self.test_matched(test):
                 try:
                     result = test.get_result()
-                    results[test] = TestInfo(result.status, result.description)
+                    results[test] = TestInfo(test_suite.id, result.status, result.description)
                 except AttributeError:
                     pass
         return results
@@ -138,10 +138,15 @@ class DashboardPanelTestSuite(DashboardPanel):
         tests = list(all_tests)
         hover_params = _get_hover_params(all_tests)
 
-        def get_description(test, date):
-            description = points[date][test].description
+        def get_description(test: Test, date):
+            test_info = points[date][test]
+            description = test_info.description
             description, _ = descr_re.subn(r".<br>\g<1>", description)
-            return description
+            return {
+                "description": description,
+                "test_fingerprint": test.get_fingerprint(),
+                "snapshot_id": str(test_info.snapshot_id),
+            }
 
         def get_color(test, date) -> Optional[str]:
             ti = points[date].get(test)
