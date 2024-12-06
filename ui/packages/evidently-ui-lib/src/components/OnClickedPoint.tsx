@@ -13,8 +13,6 @@ export const GoToSnapshotByPoint = ({ event }: { event: PlotMouseEvent }) => {
     Record<'test_fingerprint' | 'metric_fingerprint' | 'snapshot_id', string>
   >
 
-  const timestamp = p.x && typeof p.x === 'string' ? p.x : null
-
   if (!customdata) {
     return <></>
   }
@@ -34,11 +32,8 @@ export const GoToSnapshotByPoint = ({ event }: { event: PlotMouseEvent }) => {
         }}
       >
         <Stack direction={'row'} alignItems={'center'} gap={2}>
-          {timestamp && (
-            <Typography variant='button'>Selected point timestamp: {timestamp}</Typography>
-          )}
           <Link component={RLink} to={`${snapshot_type}s/${customdata.snapshot_id}`}>
-            <Button variant='outlined'>Go to {snapshot_type}</Button>
+            <Button variant='outlined'>View {snapshot_type.split('-').join(' ')}</Button>
           </Link>
         </Stack>
       </Box>
