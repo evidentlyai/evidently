@@ -1,5 +1,5 @@
 import { Box } from '@mui/material'
-import type { PlotMouseEvent } from 'plotly.js'
+import type { PlotMouseEvent, Shape } from 'plotly.js'
 import type React from 'react'
 import { useState } from 'react'
 
@@ -24,6 +24,29 @@ const BigGraphWidgetContent: React.FunctionComponent<BigGraphWidgetProps> = (pro
   const [clickEvent, setClickEvent] = useState<PlotMouseEvent | null>(null)
   const [isHovered, setIsHovered] = useState<boolean>(false)
 
+  const lineOnClickedPoint: Partial<Shape> | undefined =
+    OnClickComponent && clickEvent
+      ? {
+          type: 'line',
+          x0: clickEvent.points[0].x, // X-coordinate where the line starts
+          x1: clickEvent.points[0].x, // X-coordinate where the line ends
+          y0: 0,
+          y1: 1,
+          xref: 'x',
+          yref: 'paper',
+          line: {
+            color: mode === 'dark' ? 'rgba(255, 255, 255, 0.5)' : 'rgba(0, 0, 0, 0.5)',
+            width: 3,
+            dash: 'solid'
+          }
+        }
+      : undefined
+
+  const shapes = [
+    ...(props.layout.shapes ?? []),
+    ...(lineOnClickedPoint ? [lineOnClickedPoint] : [])
+  ]
+
   const tOverride =
     mode === 'dark'
       ? {
@@ -37,6 +60,7 @@ const BigGraphWidgetContent: React.FunctionComponent<BigGraphWidgetProps> = (pro
           }
         }
       : undefined
+
   const xaxisOptionsOverride = isCastXaxisToCategory
     ? ({ type: 'category', categoryorder: 'category ascending' } as const)
     : undefined
@@ -52,6 +76,7 @@ const BigGraphWidgetContent: React.FunctionComponent<BigGraphWidgetProps> = (pro
             ...props.layout,
             ...tOverride,
             title: undefined,
+            shapes,
             xaxis: { ...props.layout?.xaxis, ...xaxisOptionsOverride }
           }}
           config={{ responsive: true }}
