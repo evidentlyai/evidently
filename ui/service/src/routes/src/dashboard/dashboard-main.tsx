@@ -15,6 +15,7 @@ import {
   getProjectDashboard
 } from 'evidently-ui-lib/routes-components/dashboard/data'
 
+import { GoToSnapshotByPoint, HintOnHoverToPlot } from 'evidently-ui-lib/components/OnClickedPoint'
 import { clientAPI } from '~/api'
 
 ///////////////////
@@ -64,5 +65,12 @@ export const Component = () => {
     }
   })
 
-  return <ProjectDashboard data={data} dateFilterProps={{ dates, setDates, dateRange }} />
+  return (
+    <ProjectDashboard
+      data={data}
+      dateFilterProps={{ dates, setDates, dateRange }}
+      OnClickedPointComponent={GoToSnapshotByPoint}
+      OnHoveredPlotComponent={HintOnHoverToPlot}
+    />
+  )
 }
