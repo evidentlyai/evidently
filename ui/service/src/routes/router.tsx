@@ -3,9 +3,9 @@ import { createBrowserRouter } from 'evidently-ui-lib/shared-dependencies/react-
 import type { RouteExtended } from 'evidently-ui-lib/router-utils/types'
 
 import {
+  Route,
   decorateAllRoutes,
-  decorateTopLevelRoutes,
-  provideCrumb
+  decorateTopLevelRoutes
 } from 'evidently-ui-lib/router-utils/utils'
 
 // It's important to import `SnapshotIdLazy` before `DashboardLazy`. Affects bundle chunks
@@ -16,40 +16,37 @@ import { DashboardLazy } from './src/dashboard/import'
 import { Home } from './src/home/import'
 import { Project } from './src/project/import'
 import { ProjectsList } from './src/projects-list/import'
+import { ReportsLayout } from './src/reports-layout/import'
 import { ReportsList } from './src/reports-list/import'
+import { TestSuitesLayout } from './src/test-suites-layout/import'
 import { TestSuitesList } from './src/test-suites-list/import'
 
 export const routes = [
-  {
-    ...Home,
+  Route(Home, {
     children: [
-      { index: true, ...ProjectsList },
-      {
+      Route(ProjectsList, { index: true } as const),
+      Route(Project, {
         path: ':projectId',
-        ...Project,
         children: [
-          { index: true, ...DashboardLazy },
-          {
+          Route(DashboardLazy, { index: true } as const),
+          Route(ReportsLayout, {
             path: 'reports',
-            ...{ _route_path: '/:projectId/reports' as const },
             children: [
-              { index: true, ...ReportsList },
-              { path: ':snapshotId', ...SnapshotIdLazy }
+              Route(ReportsList, { index: true } as const),
+              Route(SnapshotIdLazy, { path: ':snapshotId' } as const)
             ]
-          },
-          {
+          } as const),
+          Route(TestSuitesLayout, {
             path: 'test-suites',
-            ...provideCrumb({ title: 'Test suites' }),
-            ...{ _route_path: '/:projectId/test-suites' as const },
             children: [
-              { index: true, ...TestSuitesList },
-              { path: ':snapshotId', ...SnapshotIdLazy }
+              Route(TestSuitesList, { index: true } as const),
+              Route(SnapshotIdLazy, { path: ':snapshotId' } as const)
             ]
-          }
+          } as const)
         ]
-      }
+      } as const)
     ]
-  }
+  } as const)
 ] as const satisfies RouteExtended[]
 
 const finalRoutes = routes.map(decorateTopLevelRoutes).map((r) => decorateAllRoutes(r))

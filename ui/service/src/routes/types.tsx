@@ -12,7 +12,4 @@ export type Routes = GetMatches<typeof routes>
 
 export type GetRouteByPath<K extends Routes['path']> = Extract<Routes, { path: K }>
 
-// TEST THAT ALL CORRECT
-type RouteStructure = GetRouteStructure<typeof routes>
-
-export type __TESTS_ROUTE_STRUCTURE = Expect<ExpectEqActuall<RouteStructure>>
+export type __TESTS_ROUTE_STRUCTURE = Expect<ExpectEqActuall<GetRouteStructure<typeof routes>>>
