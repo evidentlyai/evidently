@@ -1,60 +1,61 @@
-import { z } from 'zod'
-import { type API_CLIENT_TYPE, responseParser } from '~/api/client-heplers'
+import { type API, responseParser } from '~/api/client-heplers'
 import type { ProjectModel } from '~/api/types'
 
 import type { StrictID } from '~/api/types/utils'
-import { type GetLoaderAction, ensureID, expectJsonRequest } from '~/api/utils'
+import { ensureIDInArray } from '~/api/utils'
+import type { ActionSpecialArgs } from '~/router-utils/types'
+import { assertNeverActionVariant } from '~/utils'
 
-export type LoaderData = StrictID<ProjectModel>[]
+export const getProjects = ({ api }: API) =>
+  api.GET('/api/projects').then(responseParser()).then(ensureIDInArray)
 
-export const editProjectSchema = z.object({
-  action: z.literal('edit-project')
-})
+export const editProject = ({ api, project }: API & { project: StrictID<ProjectModel> }) =>
+  api
+    .POST('/api/projects/{project_id}/info', {
+      params: { path: { project_id: project.id } },
+      body: project
+    })
+    .then(responseParser({ notThrowExc: true }))
+    .then((d) => (d && 'error' in d ? d : null))
 
-export const createNewProjectSchema = z.object({
-  action: z.literal('create-new-project')
-})
+export const deleteProject = ({ api, project_id }: API & { project_id: string }) =>
+  api
+    .DELETE('/api/projects/{project_id}', { params: { path: { project_id } } })
+    .then(responseParser({ notThrowExc: true }))
+    .then((d) => (d && 'error' in d ? d : null))
 
-export const deleteProjectAction = z.object({
-  action: z.literal('delete-project'),
-  projectId: z.string().uuid()
-})
+type CreateProjectParams = { project: ProjectModel }
 
-export const getLoaderAction: GetLoaderAction<API_CLIENT_TYPE, LoaderData> = ({ api }) => ({
-  loader: () =>
-    api
-      .GET('/api/projects')
-      .then(responseParser())
-      .then((p) => p.map(ensureID)),
+export const createProject = ({ api, project }: API & CreateProjectParams) =>
+  api
+    .POST('/api/projects', {
+      body: project,
+      params: { query: { team_id: project.team_id ?? undefined } }
+    })
+    .then(responseParser({ notThrowExc: true }))
+    .then((d) => (d && 'error' in d ? d : null))
 
-  action: async ({ request }) => {
-    expectJsonRequest(request)
+type ActionRequestData =
+  | { action: 'delete-project'; project_id: string }
+  | { action: 'edit-project'; project: StrictID<ProjectModel> }
+  | { action: 'create-project'; project: ProjectModel }
 
-    // TODO: fix this (ensure submit right data in right places)
-    const json = (await request.json()) as StrictID<ProjectModel>
+export const getProjectsListActionSpecial =
+  ({ api }: API) =>
+  async ({ data }: ActionSpecialArgs<{ data: ActionRequestData }>) => {
+    const { action } = data
 
-    if (createNewProjectSchema.safeParse(json).success) {
-      return api.POST('/api/projects', { body: json }).then(responseParser({ notThrowExc: true }))
+    if (action === 'delete-project') {
+      return deleteProject({ api, project_id: data.project_id })
     }
 
-    const isDeleteAction = deleteProjectAction.safeParse(json)
-    if (isDeleteAction.success) {
-      return api
-        .DELETE('/api/projects/{project_id}', {
-          params: { path: { project_id: isDeleteAction.data.projectId } }
-        })
-        .then(responseParser({ notThrowExc: true }))
+    if (action === 'edit-project') {
+      return editProject({ api, project: data.project })
     }
 
-    if (editProjectSchema.safeParse(json).success) {
-      return api
-        .POST('/api/projects/{project_id}/info', {
-          params: { path: { project_id: json.id } },
-          body: json
-        })
-        .then(responseParser({ notThrowExc: true }))
+    if (action === 'create-project') {
+      return createProject({ api, project: data.project })
     }
 
-    throw 'Undefined action'
+    assertNeverActionVariant(action)
   }
-})
