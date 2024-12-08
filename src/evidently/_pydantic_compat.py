@@ -12,6 +12,7 @@ if v == 2:
     from pydantic.v1 import PrivateAttr
     from pydantic.v1 import SecretStr
     from pydantic.v1 import ValidationError
+    from pydantic.v1 import create_model
     from pydantic.v1 import parse_obj_as
     from pydantic.v1 import validator
     from pydantic.v1.fields import SHAPE_DICT
@@ -37,6 +38,7 @@ else:
     from pydantic import PrivateAttr
     from pydantic import SecretStr  # type: ignore[assignment]
     from pydantic import ValidationError  # type: ignore[assignment]
+    from pydantic import create_model  # type: ignore[attr-defined,no-redef]
     from pydantic import parse_obj_as
     from pydantic import validator
     from pydantic.fields import SHAPE_DICT  # type: ignore[attr-defined,no-redef]
@@ -77,4 +79,5 @@ __all__ = [
     "DictStrAny",
     "PrivateAttr",
     "Extra",
+    "create_model",
 ]

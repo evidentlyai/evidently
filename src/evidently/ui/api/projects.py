@@ -2,6 +2,7 @@ import datetime
 import json
 from dataclasses import asdict
 from typing import Callable
+from typing import Dict
 from typing import List
 from typing import Optional
 from typing import Sequence
@@ -12,6 +13,7 @@ from litestar import Router
 from litestar import delete
 from litestar import get
 from litestar import post
+from litestar.di import Provide
 from litestar.exceptions import HTTPException
 from litestar.params import Dependency
 from litestar.params import Parameter
@@ -25,10 +27,7 @@ from evidently.test_suite.test_suite import TEST_PRESETS
 from evidently.ui.api.models import DashboardInfoModel
 from evidently.ui.api.models import ReportModel
 from evidently.ui.api.models import TestSuiteModel
-from evidently.ui.base import EntityType
-from evidently.ui.base import Permission
 from evidently.ui.base import Project
-from evidently.ui.base import ProjectManager
 from evidently.ui.base import SnapshotMetadata
 from evidently.ui.dashboards.base import DashboardPanel
 from evidently.ui.dashboards.reports import DashboardPanelCounter
@@ -36,7 +35,7 @@ from evidently.ui.dashboards.reports import DashboardPanelDistribution
 from evidently.ui.dashboards.reports import DashboardPanelPlot
 from evidently.ui.dashboards.test_suites import DashboardPanelTestSuite
 from evidently.ui.dashboards.test_suites import DashboardPanelTestSuiteCounter
-from evidently.ui.errors import NotEnoughPermissions
+from evidently.ui.managers.projects import ProjectManager
 from evidently.ui.type_aliases import OrgID
 from evidently.ui.type_aliases import ProjectID
 from evidently.ui.type_aliases import SnapshotID
@@ -45,16 +44,22 @@ from evidently.ui.type_aliases import UserID
 from evidently.utils import NumpyEncoder
 
 
-@get("/{project_id:uuid}/reports")
-async def list_reports(
-    project_id: Annotated[ProjectID, Parameter(title="id of project")],
+async def path_project_dependency(
+    project_id: ProjectID,
     project_manager: Annotated[ProjectManager, Dependency(skip_validation=True)],
-    log_event: Callable,
     user_id: UserID,
-) -> List[ReportModel]:
+):
     project = await project_manager.get_project(user_id, project_id)
     if project is None:
         raise HTTPException(status_code=404, detail="project not found")
+    return project
+
+
+@get("/{project_id:uuid}/reports")
+async def list_reports(
+    project: Annotated[Project, Dependency()],
+    log_event: Callable,
+) -> List[ReportModel]:
     reports = [
         ReportModel.from_snapshot(s)
         for s in await project.list_snapshots_async(include_test_suites=False)
@@ -64,17 +69,27 @@ async def list_reports(
     return reports
 
 
+@get("/{project_id:uuid}/test_suites")
+async def list_test_suites(
+    project: Annotated[Project, Dependency()],
+    log_event: Callable,
+) -> List[TestSuiteModel]:
+    log_event("list_test_suites")
+    return [
+        TestSuiteModel.from_snapshot(s)
+        for s in await project.list_snapshots_async(include_reports=False)
+        if not s.is_report
+    ]
+
+
 @get("/{project_id:uuid}/snapshots")
 async def list_snapshots(
-    project_id: Annotated[ProjectID, Parameter(title="id of project")],
+    project: Annotated[Project, Dependency()],
     project_manager: Annotated[ProjectManager, Dependency(skip_validation=True)],
     log_event: Callable,
     user_id: UserID,
 ) -> List[SnapshotMetadata]:
-    project = await project_manager.get_project(user_id, project_id)
-    if project is None:
-        raise HTTPException(status_code=404, detail="project not found")
-    snapshots = await project_manager.list_snapshots(user_id, project_id)
+    snapshots = await project_manager.list_snapshots(user_id, project.id)
     log_event("list_snapshots", reports_count=len(snapshots))
     return snapshots
 
@@ -94,14 +109,9 @@ async def list_projects(
 
 @get("/{project_id:uuid}/info")
 async def get_project_info(
-    project_id: Annotated[ProjectID, Parameter(title="id of project")],
-    project_manager: Annotated[ProjectManager, Dependency(skip_validation=True)],
+    project: Annotated[Project, Dependency()],
     log_event: Callable,
-    user_id: UserID,
 ) -> Project:
-    project = await project_manager.get_project(user_id, project_id)
-    if project is None:
-        raise HTTPException(status_code=404, detail="project not found")
     log_event("get_project_info")
     return project
 
@@ -121,79 +131,46 @@ async def search_projects(
 
 @post("/{project_id:uuid}/info")
 async def update_project_info(
-    project_id: Annotated[ProjectID, Parameter(title="id of project")],
+    project: Annotated[Project, Dependency()],
     data: Project,
     project_manager: Annotated[ProjectManager, Dependency(skip_validation=True)],
     log_event: Callable,
     user_id: UserID,
 ) -> Project:
-    project = await project_manager.get_project(user_id, project_id)
-    if project is None:
-        raise HTTPException(status_code=404, detail="project not found")
-    if not await project_manager.auth.check_entity_permission(
-        user_id, EntityType.Project, project.id, Permission.PROJECT_WRITE
-    ):
-        raise NotEnoughPermissions()
-    project.description = data.description
-    project.name = data.name
-    project.date_from = data.date_from
-    project.date_to = data.date_to
-    project.dashboard = data.dashboard
-    await project.save_async()
+    data.id = project.id
+    await project_manager.update_project(user_id, data)
     log_event("update_project_info")
     return project
 
 
 @get("/{project_id:uuid}/reload")
 async def reload_project_snapshots(
-    project_id: Annotated[ProjectID, Parameter(title="id of project")],
-    project_manager: Annotated[ProjectManager, Dependency(skip_validation=True)],
+    project: Annotated[Project, Dependency()],
     log_event: Callable,
-    user_id: UserID,
 ) -> None:
-    project = await project_manager.get_project(user_id, project_id)
-    if project is None:
-        raise HTTPException(status_code=404, detail="project not found")
     await project.reload_async(reload_snapshots=True)
     log_event("reload_project_snapshots")
 
 
-@get("/{project_id:uuid}/test_suites")
-async def list_test_suites(
-    project_id: Annotated[ProjectID, Parameter(title="id of project")],
-    project_manager: Annotated[ProjectManager, Dependency(skip_validation=True)],
-    log_event: Callable,
-    user_id: UserID,
-) -> List[TestSuiteModel]:
-    project = await project_manager.get_project(user_id, project_id)
-    if project is None:
-        raise HTTPException(status_code=404, detail="project not found")
-    log_event("list_test_suites")
-    return [
-        TestSuiteModel.from_snapshot(s)
-        for s in await project.list_snapshots_async(include_reports=False)
-        if not s.is_report
-    ]
+async def path_snapshot_metadata_dependency(
+    project: Annotated[Project, Dependency()],
+    snapshot_id: SnapshotID,
+):
+    snapshot = await project.get_snapshot_metadata_async(snapshot_id)
+    if snapshot is None:
+        raise HTTPException(status_code=404, detail="Snapshot not found")
+    return snapshot
 
 
 @get(
     "/{project_id:uuid}/{snapshot_id:uuid}/graphs_data/{graph_id:str}",
 )
 async def get_snapshot_graph_data(
-    project_id: Annotated[ProjectID, Parameter(title="id of project")],
-    snapshot_id: Annotated[SnapshotID, Parameter(title="id of snapshot")],
+    snapshot_metadata: Annotated[SnapshotMetadata, Dependency()],
     graph_id: Annotated[str, Parameter(title="id of graph in snapshot")],
-    project_manager: Annotated[ProjectManager, Dependency(skip_validation=True)],
     log_event: Callable,
-    user_id: UserID,
 ) -> str:
-    project = await project_manager.get_project(user_id, project_id)
-    if project is None:
-        raise HTTPException(status_code=404, detail="Project not found")
-    snapshot = await project.get_snapshot_metadata_async(snapshot_id)
-    if snapshot is None:
-        raise HTTPException(status_code=404, detail="Snapshot not found")
-    graph = (await snapshot.get_additional_graphs()).get(graph_id)
+    graph = (await snapshot_metadata.get_additional_graphs()).get(graph_id)
     if graph is None:
         raise HTTPException(status_code=404, detail="Graph not found")
     log_event("get_snapshot_graph_data")
@@ -202,29 +179,20 @@ async def get_snapshot_graph_data(
 
 @get("/{project_id:uuid}/{snapshot_id:uuid}/download")
 async def get_snapshot_download(
-    project_id: Annotated[ProjectID, Parameter(title="id of project")],
-    snapshot_id: Annotated[SnapshotID, Parameter(title="id of snapshot")],
-    project_manager: Annotated[ProjectManager, Dependency(skip_validation=True)],
+    snapshot_metadata: Annotated[SnapshotMetadata, Dependency()],
     log_event: Callable,
-    user_id: UserID,
     report_format: str = "html",
 ) -> Response:
-    project = await project_manager.get_project(user_id, project_id)
-    if project is None:
-        raise HTTPException(status_code=404, detail="Project not found")
-    snapshot = await project.get_snapshot_metadata_async(snapshot_id)
-    if snapshot is None:
-        raise HTTPException(status_code=404, detail="Snapshot not found")
-    report = await snapshot.as_report_base()
+    report = await snapshot_metadata.as_report_base()
     if report_format == "html":
         return Response(
             report.get_html(),
-            headers={"content-disposition": f"attachment;filename={snapshot_id}.html"},
+            headers={"content-disposition": f"attachment;filename={snapshot_metadata.id}.html"},
         )
     if report_format == "json":
         return Response(
             report.json(),
-            headers={"content-disposition": f"attachment;filename={snapshot_id}.json"},
+            headers={"content-disposition": f"attachment;filename={snapshot_metadata.id}.json"},
         )
     log_event("get_snapshot_download")
     raise HTTPException(status_code=400, detail=f"Unknown format {report_format}")
@@ -232,20 +200,11 @@ async def get_snapshot_download(
 
 @get("/{project_id:uuid}/{snapshot_id:uuid}/data")
 async def get_snapshot_data(
-    project_id: Annotated[ProjectID, Parameter(title="id of project")],
-    snapshot_id: Annotated[SnapshotID, Parameter(title="id of snapshot")],
-    project_manager: Annotated[ProjectManager, Dependency(skip_validation=True)],
+    snapshot_metadata: Annotated[SnapshotMetadata, Dependency()],
     log_event: Callable,
-    user_id: UserID,
 ) -> str:
-    project = await project_manager.get_project(user_id, project_id)
-    if project is None:
-        raise HTTPException(status_code=404, detail="Project not found")
-    snapshot_meta = await project.get_snapshot_metadata_async(snapshot_id)
-    if snapshot_meta is None:
-        raise HTTPException(status_code=404, detail="Snapshot not found")
-    info = DashboardInfoModel.from_dashboard_info(await snapshot_meta.get_dashboard_info())
-    snapshot = await snapshot_meta.load()
+    info = DashboardInfoModel.from_dashboard_info(await snapshot_metadata.get_dashboard_info())
+    snapshot = await snapshot_metadata.load()
     log_event(
         "get_snapshot_data",
         snapshot_type="report" if snapshot.is_report else "test_suite",
@@ -261,39 +220,25 @@ async def get_snapshot_data(
 
 @get("/{project_id:uuid}/{snapshot_id:uuid}/metadata")
 async def get_snapshot_metadata(
-    project_id: Annotated[ProjectID, Parameter(title="id of project")],
-    snapshot_id: Annotated[SnapshotID, Parameter(title="id of snapshot")],
-    project_manager: Annotated[ProjectManager, Dependency(skip_validation=True)],
+    snapshot_metadata: Annotated[SnapshotMetadata, Dependency()],
     log_event: Callable,
-    user_id: UserID,
 ) -> SnapshotMetadata:
-    project = await project_manager.get_project(user_id, project_id)
-    if project is None:
-        raise HTTPException(status_code=404, detail="Project not found")
-    snapshot_meta = await project.get_snapshot_metadata_async(snapshot_id)
-    if snapshot_meta is None:
-        raise HTTPException(status_code=404, detail="Snapshot not found")
     log_event(
         "get_snapshot_metadata",
-        snapshot_type="report" if snapshot_meta.is_report else "test_suite",
-        metric_presets=snapshot_meta.metadata.get(METRIC_PRESETS, []),
-        metric_generators=snapshot_meta.metadata.get(METRIC_GENERATORS, []),
-        test_presets=snapshot_meta.metadata.get(TEST_PRESETS, []),
-        test_generators=snapshot_meta.metadata.get(TEST_GENERATORS, []),
+        snapshot_type="report" if snapshot_metadata.is_report else "test_suite",
+        metric_presets=snapshot_metadata.metadata.get(METRIC_PRESETS, []),
+        metric_generators=snapshot_metadata.metadata.get(METRIC_GENERATORS, []),
+        test_presets=snapshot_metadata.metadata.get(TEST_PRESETS, []),
+        test_generators=snapshot_metadata.metadata.get(TEST_GENERATORS, []),
     )
-    return snapshot_meta
+    return snapshot_metadata
 
 
 @get("/{project_id:uuid}/dashboard/panels")
 async def list_project_dashboard_panels(
-    project_id: Annotated[ProjectID, Parameter(title="id of project")],
-    project_manager: Annotated[ProjectManager, Dependency(skip_validation=True)],
+    project: Annotated[Project, Dependency()],
     log_event: Callable,
-    user_id: UserID,
 ) -> List[DashboardPanel]:
-    project = await project_manager.get_project(user_id, project_id)
-    if project is None:
-        raise HTTPException(status_code=404, detail="Project not found")
     log_event("list_project_dashboard_panels")
     return list(project.dashboard.panels)
 
@@ -318,19 +263,14 @@ async def additional_models() -> (
 
 @get("/{project_id:uuid}/dashboard")
 async def project_dashboard(
-    project_id: Annotated[ProjectID, Parameter(title="id of project")],
+    project: Annotated[Project, Dependency()],
     # TODO: no datetime, as it unable to validate '2023-07-09T02:03'
-    project_manager: Annotated[ProjectManager, Dependency(skip_validation=True)],
     log_event: Callable,
-    user_id: UserID,
     timestamp_start: Optional[str] = None,
     timestamp_end: Optional[str] = None,
 ) -> str:
     timestamp_start_ = datetime.datetime.fromisoformat(timestamp_start) if timestamp_start else None
     timestamp_end_ = datetime.datetime.fromisoformat(timestamp_end) if timestamp_end else None
-    project = await project_manager.get_project(user_id, project_id)
-    if project is None:
-        raise HTTPException(status_code=404, detail="Project not found")
 
     info = await DashboardInfoModel.from_project_with_time_range(
         project,
@@ -373,28 +313,25 @@ async def delete_project(
 
 @post("/{project_id:uuid}/snapshots")
 async def add_snapshot(
-    project_id: Annotated[ProjectID, Parameter(title="id of project")],
+    project: Annotated[Project, Dependency()],
     parsed_json: Snapshot,
     project_manager: Annotated[ProjectManager, Dependency(skip_validation=True)],
     log_event: Callable,
     user_id: UserID,
 ) -> None:
-    if await project_manager.get_project(user_id, project_id) is None:
-        raise HTTPException(status_code=404, detail="Project not found")
-
-    await project_manager.add_snapshot(user_id, project_id, parsed_json)
+    await project_manager.add_snapshot(user_id, project.id, parsed_json)
     log_event("add_snapshot")
 
 
 @delete("/{project_id:uuid}/{snapshot_id:uuid}")
 async def delete_snapshot(
-    project_id: Annotated[ProjectID, Parameter(title="id of project")],
+    project: Annotated[Project, Dependency()],
     snapshot_id: Annotated[SnapshotID, Parameter(title="id of snapshot")],
     project_manager: Annotated[ProjectManager, Dependency(skip_validation=True)],
     log_event: Callable,
     user_id: UserID,
 ) -> None:
-    await project_manager.delete_snapshot(user_id, project_id, snapshot_id)
+    await project_manager.delete_snapshot(user_id, project.id, snapshot_id)
     log_event("delete_snapshot")
 
 
@@ -434,3 +371,9 @@ def create_projects_api(guard: Callable) -> Router:
             ),
         ],
     )
+
+
+projects_api_dependencies: Dict[str, Provide] = {
+    "project": Provide(path_project_dependency),
+    "snapshot_metadata": Provide(path_snapshot_metadata_dependency),
+}
