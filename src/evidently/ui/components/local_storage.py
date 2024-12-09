@@ -4,14 +4,14 @@ from typing import Optional
 
 from evidently.ui.base import BlobStorage
 from evidently.ui.base import DataStorage
-from evidently.ui.base import MetadataStorage
+from evidently.ui.base import ProjectMetadataStorage
 from evidently.ui.components.base import FactoryComponent
 from evidently.ui.components.storage import BlobStorageComponent
 from evidently.ui.components.storage import DataStorageComponent
 from evidently.ui.components.storage import MetadataStorageComponent
 from evidently.ui.storage.local import FSSpecBlobStorage
 from evidently.ui.storage.local import InMemoryDataStorage
-from evidently.ui.storage.local import JsonFileMetadataStorage
+from evidently.ui.storage.local import JsonFileProjectMetadataStorage
 from evidently.ui.storage.local import LocalState
 
 
@@ -31,9 +31,9 @@ class JsonMetadataComponent(MetadataStorageComponent):
 
     path: str
 
-    def dependency_factory(self) -> Callable[..., MetadataStorage]:
+    def dependency_factory(self) -> Callable[..., ProjectMetadataStorage]:
         def json_meta(local_state: Optional[LocalState] = None):
-            return JsonFileMetadataStorage(path=self.path, local_state=local_state)
+            return JsonFileProjectMetadataStorage(path=self.path, local_state=local_state)
 
         return json_meta
 

@@ -2,6 +2,7 @@ import datetime
 import json
 import typing
 import uuid
+from functools import partial
 from typing import Callable
 from typing import Tuple
 from typing import Type
@@ -59,3 +60,6 @@ class NumpyEncoder(json.JSONEncoder):
             return None
 
         return json.JSONEncoder.default(self, o)
+
+
+numpy_dumps = partial(json.dumps, cls=NumpyEncoder)
