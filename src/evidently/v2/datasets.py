@@ -1,6 +1,9 @@
+import abc
 import dataclasses
 from typing import Dict
+from typing import List
 from typing import Optional
+from typing import Union
 
 import pandas as pd
 
@@ -35,24 +38,34 @@ class DatasetColumn:
 
 
 class Scorer:
-    def generate_data(self, dataset: "Dataset") -> Dict[str, DatasetColumn]:
+    def __init__(self, alias: str):
+        self._alias = alias
+
+    @abc.abstractmethod
+    def generate_data(self, dataset: "Dataset") -> Union[DatasetColumn, Dict[str, DatasetColumn]]:
         raise NotImplementedError()
+
+    @property
+    def alias(self) -> str:
+        return self._alias
 
 
 class FeatureScorer(Scorer):
-    def __init__(self, feature: GeneratedFeatures):
-        self.feature = feature
+    def __init__(self, feature: GeneratedFeatures, alias: Optional[str] = None):
+        super().__init__(alias)
+        self._feature = feature
+        self._alias = alias
 
-    def generate_data(self, dataset: "Dataset") -> Dict[str, DatasetColumn]:
-        feature = self.feature.generate_features(dataset.as_dataframe(), None, Options())
+    def generate_data(self, dataset: "Dataset") -> Union[DatasetColumn, Dict[str, DatasetColumn]]:
+        feature = self._feature.generate_features(dataset.as_dataframe(), None, Options())
         if len(feature.columns) > 1:
             return {
                 col: DatasetColumn(
-                    type=self.feature.get_type(f"{self.feature.get_fingerprint()}.{col}"), data=feature[col]
+                    type=self._feature.get_type(f"{self._feature.get_fingerprint()}.{col}"), data=feature[col]
                 )
                 for col in feature.columns
             }
-        return {"": DatasetColumn(type=self.feature.get_type(), data=feature[feature.columns[0]])}
+        return DatasetColumn(type=self._feature.get_type(), data=feature[feature.columns[0]])
 
 
 class Dataset:
@@ -63,12 +76,15 @@ class Dataset:
         cls,
         data: pd.DataFrame,
         data_definition: Optional[DataDefinition] = None,
-        scorers: Optional[Dict[str, Scorer]] = None,
+        scorers: Optional[List[Scorer]] = None,
     ) -> "Dataset":
         dataset = PandasDataset(data, data_definition)
-        for key, scorer in scorers.items():
+        for scorer in scorers or []:
+            key = scorer.alias
             new_column = scorer.generate_data(dataset)
-            if len(new_column) > 1:
+            if isinstance(new_column, DatasetColumn):
+                data[key] = new_column.data
+            elif len(new_column) > 1:
                 for col, value in new_column.items():
                     data[f"{key}.{col}"] = value.data
             else:
