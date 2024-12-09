@@ -9,8 +9,8 @@ from evidently.v2.metrics.base import SingleValue
 
 class MinMetric(Metric[SingleValue]):
     def __init__(self, column: str, checks: Optional[List[SingleValueCheck]] = None):
+        super().__init__(f"min:{column}", checks if checks is not None else [])
         self._column = column
-        self._checks = checks or []
 
     def calculate(self, current_data: Dataset, reference_data: Optional[Dataset]) -> SingleValue:
         data = current_data.column(self._column)

@@ -1,14 +1,28 @@
+import dataclasses
 from typing import Dict
 from typing import Optional
 
 import pandas as pd
 
 from evidently import ColumnType
-from evidently.features.generated_features import GeneratedFeature
+from evidently.features.generated_features import GeneratedFeatures
+from evidently.options.base import Options
+
+
+@dataclasses.dataclass
+class ColumnInfo:
+    type: ColumnType
 
 
 class DataDefinition:
-    pass
+    _columns: Dict[str, ColumnInfo]
+
+    def __init__(self, columns: Dict[str, ColumnInfo]):
+        self._columns = columns
+
+    def get_column_type(self, column_name: str) -> ColumnType:
+        # TODO: implement
+        return ColumnType.Unknown
 
 
 class DatasetColumn:
@@ -21,17 +35,24 @@ class DatasetColumn:
 
 
 class Scorer:
-    def generate_data(self, dataset: "Dataset") -> DatasetColumn:
+    def generate_data(self, dataset: "Dataset") -> Dict[str, DatasetColumn]:
         raise NotImplementedError()
 
 
 class FeatureScorer(Scorer):
-    def __init__(self, feature: GeneratedFeature):
+    def __init__(self, feature: GeneratedFeatures):
         self.feature = feature
 
-    def generate_data(self, dataset: "Dataset") -> DatasetColumn:
-        feature = self.feature.generate_feature(dataset.as_dataframe(), None)
-        return DatasetColumn(type=self.feature.get_type(), data=feature[feature.columns[0]])
+    def generate_data(self, dataset: "Dataset") -> Dict[str, DatasetColumn]:
+        feature = self.feature.generate_features(dataset.as_dataframe(), None, Options())
+        if len(feature.columns) > 1:
+            return {
+                col: DatasetColumn(
+                    type=self.feature.get_type(f"{self.feature.get_fingerprint()}.{col}"), data=feature[col]
+                )
+                for col in feature.columns
+            }
+        return {"": DatasetColumn(type=self.feature.get_type(), data=feature[feature.columns[0]])}
 
 
 class Dataset:
@@ -47,18 +68,26 @@ class Dataset:
         dataset = PandasDataset(data, data_definition)
         for key, scorer in scorers.items():
             new_column = scorer.generate_data(dataset)
-            data[key] = new_column.data
+            if len(new_column) > 1:
+                for col, value in new_column.items():
+                    data[f"{key}.{col}"] = value.data
+            else:
+                data[key] = list(new_column.values())[0].data
         return dataset
 
     def as_dataframe(self) -> pd.DataFrame:
         raise NotImplementedError()
 
-    def column(self, column_name: str) -> pd.Series:
+    def column(self, column_name: str) -> DatasetColumn:
+        raise NotImplementedError()
+
+    def subdataset(self, column_name: str, label: object) -> "Dataset":
         raise NotImplementedError()
 
 
 class PandasDataset(Dataset):
     _data: pd.DataFrame
+    _data_definition: DataDefinition
 
     def __init__(
         self,
@@ -67,15 +96,18 @@ class PandasDataset(Dataset):
     ):
         self._data = data
         if data_definition is None:
-            self._generate_data_definition()
+            self._data_definition = self._generate_data_definition(data)
         else:
             self._data_definition = data_definition
 
     def as_dataframe(self) -> pd.DataFrame:
         return self._data
 
-    def column(self, column_name: str) -> pd.Series:
-        return self._data[column_name]
+    def column(self, column_name: str) -> DatasetColumn:
+        return DatasetColumn(self._data_definition.get_column_type(column_name), self._data[column_name])
 
-    def _generate_data_definition(self):
-        raise NotImplementedError()
+    def subdataset(self, column_name: str, label: object):
+        return PandasDataset(self._data[self._data[column_name] == label], self._data_definition)
+
+    def _generate_data_definition(self, data: pd.DataFrame) -> DataDefinition:
+        return DataDefinition(columns={column: ColumnInfo(ColumnType.Unknown) for column in data.columns})
