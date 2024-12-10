@@ -149,6 +149,7 @@ class DashboardPanelDistribution(DashboardPanel):
 
     value: PanelValue
     barmode: HistBarMode = HistBarMode.STACK
+    color_mapping: Dict[str, str] = {}
 
     @assign_panel_id
     async def build(
@@ -207,6 +208,7 @@ class DashboardPanelDistribution(DashboardPanel):
                     x=timestamps,
                     y=name_to_date_value.get(name),
                     hovertemplate=hovertemplate.format(name=name),
+                    marker_color=self.color_mapping.get(name, None),
                 )
                 for name in names_sorted
             ]
