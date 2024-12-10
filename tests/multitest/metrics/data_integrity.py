@@ -86,6 +86,7 @@ def column_summary_metric_period():
                         p25=1.5,
                         p50=2,
                         p75=2.5,
+                        skew=0.0,
                         std=1,
                         unique=3,
                         unique_percentage=100,
