@@ -1,10 +1,10 @@
 from typing import List
 from typing import Optional
 
-from evidently.v2.checks.base import SingleValueCheck
 from evidently.v2.datasets import Dataset
-from evidently.v2.metrics.base import Metric
-from evidently.v2.metrics.base import SingleValue
+from evidently.v2.metrics import Metric
+from evidently.v2.metrics import SingleValue
+from evidently.v2.metrics import SingleValueCheck
 
 
 class MinMetric(Metric[SingleValue]):
@@ -14,7 +14,7 @@ class MinMetric(Metric[SingleValue]):
 
     def calculate(self, current_data: Dataset, reference_data: Optional[Dataset]) -> SingleValue:
         data = current_data.column(self._column)
-        value = data.min()
+        value = data.data.min()
         return SingleValue(value)
 
     def display_name(self) -> str:

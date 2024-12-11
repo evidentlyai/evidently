@@ -9,7 +9,7 @@ from evidently.v2.report import Context
 
 
 class GroupByMetric(Metric):
-    def __init__(self, metric: Metric, column_name: str, label: str):
+    def __init__(self, metric: Metric, column_name: str, label: object):
         super().__init__(f"{metric.id}:group_by:{label}")
         self._metric = metric
         self._column_name = column_name
@@ -36,3 +36,6 @@ class GroupBy(MetricContainer):
     def generate_metrics(self, context: Context) -> List[Metric]:
         labels = context.column(self._column_name).labels()
         return [GroupByMetric(self._metric, self._column_name, label) for label in labels]
+
+    def label_metric(self, label: object) -> Metric:
+        return GroupByMetric(self._metric, self._column_name, label)

@@ -44,13 +44,7 @@ class MetricResult:
         self._widget = value
 
 
-def render_results(results: Union[MetricResult, List[MetricResult]], html=True):
-    data = []
-    if isinstance(results, MetricResult):
-        data = [results]
-    else:
-        data = results
-    widgets = list(itertools.chain(*[item.widget for item in data]))
+def render_widgets(widgets: List[BaseWidgetInfo]):
     dashboard_id, dashboard_info, graphs = (
         "metric_" + str(uuid.uuid4()).replace("-", ""),
         DashboardInfo("Report", widgets=widgets),
@@ -61,9 +55,20 @@ def render_results(results: Union[MetricResult, List[MetricResult]], html=True):
         dashboard_info=dashboard_info,
         additional_graphs=graphs,
     )
-    if html:
-        return HTML(inline_iframe_html_template(template_params))
     return inline_iframe_html_template(template_params)
+
+
+def render_results(results: Union[MetricResult, List[MetricResult]], html=True):
+    data = []
+    if isinstance(results, MetricResult):
+        data = [results]
+    else:
+        data = results
+    widgets = list(itertools.chain(*[item.widget for item in data]))
+    result = render_widgets(widgets)
+    if html:
+        return HTML(result)
+    return result
 
 
 TResult = TypeVar("TResult", bound=MetricResult)
