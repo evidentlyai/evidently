@@ -41,6 +41,7 @@ class DashboardPanelPlot(DashboardPanel):
 
     values: List[PanelValue]
     plot_type: PlotType
+    color_map: Dict[str, str] = {}
 
     @assign_panel_id
     async def build(
@@ -71,6 +72,9 @@ class DashboardPanelPlot(DashboardPanel):
                         {"metric_fingerprint": metric.get_fingerprint(), "snapshot_id": str(p.snapshot_id)} for p in pts
                     ],
                 }
+                color = self.color_map.get(val.legend)
+                if color is not None:
+                    hover_args["marker_color"] = color
 
                 if self.plot_type == PlotType.HISTOGRAM:
                     plot = go.Histogram(x=[p.value for p in pts], **hover_args)
@@ -149,7 +153,7 @@ class DashboardPanelDistribution(DashboardPanel):
 
     value: PanelValue
     barmode: HistBarMode = HistBarMode.STACK
-    color_mapping: Dict[str, str] = {}
+    color_map: Dict[str, str] = {}
 
     @assign_panel_id
     async def build(
@@ -208,7 +212,7 @@ class DashboardPanelDistribution(DashboardPanel):
                     x=timestamps,
                     y=name_to_date_value.get(name),
                     hovertemplate=hovertemplate.format(name=name),
-                    marker_color=self.color_mapping.get(name, None),
+                    marker_color=self.color_map.get(name, None),
                 )
                 for name in names_sorted
             ]
