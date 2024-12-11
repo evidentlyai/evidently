@@ -56,7 +56,7 @@ class PrecisionRecallCalculation(Metric[PrecisionRecallCalculationResult]):
         res["map_include_no_feedback"] = list(
             user_df[[f"precision_{k}" for k in range(1, k + 1)]]
             .multiply(user_df[[f"rel_{k}" for k in range(1, k + 1)]].values)
-            .expanding(axis=1)
+            .T.expanding()
             .sum()
             .divide(user_df["all"], axis=0)
             .fillna(0)
@@ -65,7 +65,7 @@ class PrecisionRecallCalculation(Metric[PrecisionRecallCalculationResult]):
         res["map"] = list(
             user_df.loc[user_df["all"] != 0, [f"precision_{k}" for k in range(1, k + 1)]]
             .multiply(user_df.loc[user_df["all"] != 0, [f"rel_{k}" for k in range(1, k + 1)]].values)
-            .expanding(axis=1)
+            .T.expanding()
             .sum()
             .divide(user_df.loc[user_df["all"] != 0, "all"], axis=0)
             .fillna(0)
@@ -76,7 +76,7 @@ class PrecisionRecallCalculation(Metric[PrecisionRecallCalculationResult]):
         res["mar_include_no_feedback"] = list(
             user_df[[f"recall_{k}" for k in range(1, k + 1)]]
             .multiply(user_df[[f"rel_{k}" for k in range(1, k + 1)]].values)
-            .expanding(axis=1)
+            .T.expanding()
             .sum()
             .divide(user_df["all"], axis=0)
             .fillna(0)
@@ -85,7 +85,7 @@ class PrecisionRecallCalculation(Metric[PrecisionRecallCalculationResult]):
         res["mar"] = list(
             user_df.loc[user_df["all"] != 0, [f"recall_{k}" for k in range(1, k + 1)]]
             .multiply(user_df.loc[user_df["all"] != 0, [f"rel_{k}" for k in range(1, k + 1)]].values)
-            .expanding(axis=1)
+            .T.expanding()
             .sum()
             .divide(user_df.loc[user_df["all"] != 0, "all"], axis=0)
             .fillna(0)
