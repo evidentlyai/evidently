@@ -215,11 +215,11 @@ class DashboardPanelDistribution(DashboardPanel):
                 go.Bar(
                     name=name,
                     x=timestamps,
-                    y=name_to_date_value.get(name),
+                    y=name_to_date_value[name],
                     hovertemplate=hovertemplate.format(name=name),
                     customdata=[
                         {"metric_fingerprint": fingerprint, "snapshot_id": str(snapshot_id)}
-                        for snapshot_id in name_to_snapshot_id.get(name)
+                        for snapshot_id in name_to_snapshot_id[name]
                     ],
                 )
                 for name in names_sorted
