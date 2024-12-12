@@ -52,9 +52,8 @@ class Scorer:
 
 class FeatureScorer(Scorer):
     def __init__(self, feature: GeneratedFeatures, alias: Optional[str] = None):
-        super().__init__(alias)
+        super().__init__(alias or f"{feature.as_column().display_name}")
         self._feature = feature
-        self._alias = alias
 
     def generate_data(self, dataset: "Dataset") -> Union[DatasetColumn, Dict[str, DatasetColumn]]:
         feature = self._feature.generate_features(dataset.as_dataframe(), None, Options())
@@ -66,6 +65,15 @@ class FeatureScorer(Scorer):
                 for col in feature.columns
             }
         return DatasetColumn(type=self._feature.get_type(), data=feature[feature.columns[0]])
+
+
+def _determine_scorer_column_name(alias: str, columns: List[str]):
+    index = 1
+    key = alias
+    while key in columns:
+        key = f"{alias}_{index}"
+        index += 1
+    return key
 
 
 class Dataset:
@@ -80,7 +88,7 @@ class Dataset:
     ) -> "Dataset":
         dataset = PandasDataset(data, data_definition)
         for scorer in scorers or []:
-            key = scorer.alias
+            key = _determine_scorer_column_name(scorer.alias, data.columns)
             new_column = scorer.generate_data(dataset)
             if isinstance(new_column, DatasetColumn):
                 data[key] = new_column.data
