@@ -23,6 +23,6 @@
     "vite": "^5.2.12",
     "@vitejs/plugin-react-swc": "^3.7.0",
     "vite-tsconfig-paths": "^4.2.1",
-    "typescript": "^5.0.2"
+    "typescript": "^5.7.2"
   }
 }
