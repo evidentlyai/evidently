@@ -138,11 +138,11 @@ class Metric(Generic[TResult]):
     """
 
     _metric_id: MetricId
-    _checks: List[Check]
+    _checks: Optional[List[Check]]
 
     def __init__(self, metric_id: MetricId, checks: Optional[List[Check]] = None) -> None:
         self._metric_id = metric_id
-        self._checks = checks if checks is not None else []
+        self._checks = checks
 
     def call(self, current_data: Dataset, reference_data: Optional[Dataset]) -> TResult:
         """
@@ -164,6 +164,23 @@ class Metric(Generic[TResult]):
     @abc.abstractmethod
     def calculate(self, current_data: Dataset, reference_data: Optional[Dataset]) -> TResult:
         raise NotImplementedError()
+
+    def _default_checks(self) -> List[Check]:
+        """
+        allows to redefine default checks for metric
+        Returns:
+            list of checks to use as default
+        """
+        return []
+
+    def _default_checks_with_reference(self) -> Optional[List[Check]]:
+        """
+        allows to redefine default checks for metric when calculated with reference
+        Returns:
+            list of checks to use as default when called with reference data
+            None - if default checks should be returned
+        """
+        return None
 
     @property
     def id(self) -> MetricId:
