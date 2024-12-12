@@ -1,4 +1,5 @@
 import datetime
+from collections import defaultdict
 from typing import TYPE_CHECKING
 from typing import Any
 from typing import Dict
@@ -201,20 +202,24 @@ class DashboardPanelDistribution(DashboardPanel):
             snapshot_ids.append(snapshot_id)
 
         names_sorted = list(sorted(names))
-        name_to_date_value: Dict[str, List[Tuple[SnapshotID, Any]]] = {name: [] for name in names_sorted}
+        name_to_date_value: Dict[str, List[Any]] = defaultdict(list)
+        name_to_snapshot_id: Dict[str, List[SnapshotID]] = defaultdict(list)
         for timestamp, snapshot_id, data in zip(timestamps, snapshot_ids, values):
             for name in names_sorted:
-                name_to_date_value[name].append((snapshot_id, data.get(name)))
+                name_to_date_value[name].append(data.get(name))
+                name_to_snapshot_id[name].append(snapshot_id)
+
         hovertemplate = "<b>{name}: %{{y}}</b><br><b>Timestamp: %{{x}}</b>"
         fig = go.Figure(
             data=[
                 go.Bar(
                     name=name,
                     x=timestamps,
-                    y=name_to_date_value.get(name)[1],
+                    y=name_to_date_value.get(name),
                     hovertemplate=hovertemplate.format(name=name),
                     customdata=[
-                        {"metric_fingerprint": fingerprint, "snapshot_id": str(name_to_date_value.get(name)[0])}
+                        {"metric_fingerprint": fingerprint, "snapshot_id": str(snapshot_id)}
+                        for snapshot_id in name_to_snapshot_id.get(name)
                     ],
                 )
                 for name in names_sorted
