@@ -158,7 +158,7 @@ jobs:
         uses: ./.github/share-actions/get-bikes-dataset-cached
 
       - name: Run UI
-        run: EXPERIMENTAL_DETERMINISTIC_UUID="true" evidently ui --port 8000 --workspace workspace-for-visual-testing --demo-projects all
+        run: EXPERIMENTAL_DETERMINISTIC_UUID="true" evidently ui --port 8000 --workspace workspace-for-visual-testing --demo-projects all &
 
       - name: Wait UI to be ready to test
         working-directory: ui/service
