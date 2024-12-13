@@ -1,0 +1,362 @@
+from typing import Any
+from typing import Callable
+from typing import Dict
+from typing import List
+from typing import Optional
+
+from pandas.core.frame import DataFrame
+from pandas.core.series import Series
+
+from evidently.core import ColumnType
+from evidently.features.BERTScore_feature import BERTScoreFeature
+from evidently.features.contains_link_feature import ContainsLink
+from evidently.features.custom_feature import CustomFeature
+from evidently.features.custom_feature import CustomPairColumnFeature
+from evidently.features.custom_feature import CustomSingleColumnFeature
+from evidently.features.exact_match_feature import ExactMatchFeature
+from evidently.features.hf_feature import HuggingFaceFeature
+from evidently.features.hf_feature import HuggingFaceToxicityFeature
+from evidently.features.is_valid_json_feature import IsValidJSON
+from evidently.features.is_valid_python_feature import IsValidPython
+from evidently.features.json_match_feature import JSONMatch
+from evidently.features.json_schema_match_feature import JSONSchemaMatch
+from evidently.features.llm_judge import BaseLLMPromptTemplate
+from evidently.features.llm_judge import LLMJudge
+from evidently.features.non_letter_character_percentage_feature import NonLetterCharacterPercentage
+from evidently.features.OOV_words_percentage_feature import OOVWordsPercentage
+from evidently.features.openai_feature import OpenAIFeature
+from evidently.features.regexp_feature import RegExp
+from evidently.features.semantic_similarity_feature import SemanticSimilarityFeature
+from evidently.features.sentence_count_feature import SentenceCount
+from evidently.features.sentiment_feature import Sentiment
+from evidently.features.text_contains_feature import Contains
+from evidently.features.text_contains_feature import DoesNotContain
+from evidently.features.text_contains_feature import ItemMatch
+from evidently.features.text_contains_feature import ItemNoMatch
+from evidently.features.text_length_feature import TextLength
+from evidently.features.text_part_feature import BeginsWith
+from evidently.features.text_part_feature import EndsWith
+from evidently.features.trigger_words_presence_feature import TriggerWordsPresent
+from evidently.features.word_count_feature import WordCount
+from evidently.features.words_feature import ExcludesWords
+from evidently.features.words_feature import IncludesWords
+from evidently.features.words_feature import WordMatch
+from evidently.features.words_feature import WordNoMatch
+from evidently.features.words_feature import WordsPresence
+from evidently.v2.datasets import DataDefinition
+from evidently.v2.datasets import FeatureScorer
+
+
+def bert_score_feature(
+    columns: List[str],
+    display_name: Optional[str] = None,
+    model: str = "bert-base-uncased",
+    tfidf_weighted: bool = False,
+):
+    feature = BERTScoreFeature(columns=columns, display_name=display_name, model=model, tfidf_weighted=tfidf_weighted)
+    return FeatureScorer(feature)
+
+
+def begins_with(column_name: str, prefix: str, case_sensitive: bool = True, display_name: Optional[str] = None):
+    feature = BeginsWith(
+        column_name=column_name, prefix=prefix, case_sensitive=case_sensitive, display_name=display_name
+    )
+    return FeatureScorer(feature)
+
+
+def contains(
+    column_name: str,
+    items: List[str],
+    case_sensitive: bool = True,
+    mode: str = "any",
+    display_name: Optional[str] = None,
+):
+    feature = Contains(
+        column_name=column_name, items=items, case_sensitive=case_sensitive, mode=mode, display_name=display_name
+    )
+    return FeatureScorer(feature)
+
+
+def contains_link(column_name: str, display_name: Optional[str] = None):
+    feature = ContainsLink(column_name=column_name, display_name=display_name)
+    return FeatureScorer(feature)
+
+
+def custom_feature(
+    display_name: str,
+    func: Callable[[DataFrame, DataDefinition], Series],
+    feature_type: ColumnType = ColumnType.Numerical,
+    name: str = None,
+):
+    feature = CustomFeature(display_name=display_name, func=func, feature_type=feature_type, name=name)
+    return FeatureScorer(feature)
+
+
+def custom_pair_column_feature(
+    display_name: str,
+    func: Callable[[Series, Series], Series],
+    first_column: str,
+    second_column: str,
+    feature_type: ColumnType = ColumnType.Numerical,
+    name: str = None,
+):
+    feature = CustomPairColumnFeature(
+        display_name=display_name,
+        func=func,
+        first_column=first_column,
+        second_column=second_column,
+        feature_type=feature_type,
+        name=name,
+    )
+    return FeatureScorer(feature)
+
+
+def custom_single_column_feature(
+    display_name: str,
+    func: Callable[[Series], Series],
+    column_name: str,
+    feature_type: ColumnType = ColumnType.Numerical,
+    name: str = None,
+):
+    feature = CustomSingleColumnFeature(
+        display_name=display_name, func=func, column_name=column_name, feature_type=feature_type, name=name
+    )
+    return FeatureScorer(feature)
+
+
+def does_not_contain(
+    column_name: str,
+    items: List[str],
+    case_sensitive: bool = True,
+    mode: str = "any",
+    display_name: Optional[str] = None,
+):
+    feature = DoesNotContain(
+        column_name=column_name, items=items, case_sensitive=case_sensitive, mode=mode, display_name=display_name
+    )
+    return FeatureScorer(feature)
+
+
+def ends_with(column_name: str, suffix: str, case_sensitive: bool = True, display_name: Optional[str] = None):
+    feature = EndsWith(column_name=column_name, suffix=suffix, case_sensitive=case_sensitive, display_name=display_name)
+    return FeatureScorer(feature)
+
+
+def exact_match_feature(columns: List[str], display_name: Optional[str] = None):
+    feature = ExactMatchFeature(columns=columns, display_name=display_name)
+    return FeatureScorer(feature)
+
+
+def excludes_words(
+    column_name: str,
+    words_list: List[str],
+    mode: str = "any",
+    lemmatize: bool = True,
+    display_name: Optional[str] = None,
+):
+    feature = ExcludesWords(
+        column_name=column_name, words_list=words_list, mode=mode, lemmatize=lemmatize, display_name=display_name
+    )
+    return FeatureScorer(feature)
+
+
+def hugging_face_feature(column_name: str, model: str, params: dict, display_name: str):
+    feature = HuggingFaceFeature(column_name=column_name, model=model, params=params, display_name=display_name)
+    return FeatureScorer(feature)
+
+
+def hugging_face_toxicity_feature(
+    column_name: str, display_name: str, model: Optional[str] = None, toxic_label: Optional[str] = None
+):
+    feature = HuggingFaceToxicityFeature(
+        column_name=column_name, display_name=display_name, model=model, toxic_label=toxic_label
+    )
+    return FeatureScorer(feature)
+
+
+def includes_words(
+    column_name: str,
+    words_list: List[str],
+    mode: str = "any",
+    lemmatize: bool = True,
+    display_name: Optional[str] = None,
+):
+    feature = IncludesWords(
+        column_name=column_name, words_list=words_list, mode=mode, lemmatize=lemmatize, display_name=display_name
+    )
+    return FeatureScorer(feature)
+
+
+def is_valid_j_s_o_n(column_name: str, display_name: Optional[str] = None):
+    feature = IsValidJSON(column_name=column_name, display_name=display_name)
+    return FeatureScorer(feature)
+
+
+def is_valid_python(column_name: str, display_name: Optional[str] = None):
+    feature = IsValidPython(column_name=column_name, display_name=display_name)
+    return FeatureScorer(feature)
+
+
+def item_match(columns: List[str], case_sensitive: bool = True, mode: str = "any", display_name: Optional[str] = None):
+    feature = ItemMatch(columns=columns, case_sensitive=case_sensitive, mode=mode, display_name=display_name)
+    return FeatureScorer(feature)
+
+
+def item_no_match(
+    columns: List[str], case_sensitive: bool = True, mode: str = "any", display_name: Optional[str] = None
+):
+    feature = ItemNoMatch(columns=columns, case_sensitive=case_sensitive, mode=mode, display_name=display_name)
+    return FeatureScorer(feature)
+
+
+def json_match(
+    first_column: str,
+    second_column: str,
+    display_name: Optional[str] = None,
+    feature_type: ColumnType = ColumnType.Categorical,
+):
+    feature = JSONMatch(
+        first_column=first_column, second_column=second_column, display_name=display_name, feature_type=feature_type
+    )
+    return FeatureScorer(feature)
+
+
+def json_schema_match(
+    column_name: str,
+    expected_schema: Dict[str, type],
+    validate_types: bool = False,
+    exact_match: bool = False,
+    display_name: Optional[str] = None,
+):
+    feature = JSONSchemaMatch(
+        column_name=column_name,
+        expected_schema=expected_schema,
+        validate_types=validate_types,
+        exact_match=exact_match,
+        display_name=display_name,
+    )
+    return FeatureScorer(feature)
+
+
+def llm_judge(
+    provider: str,
+    model: str,
+    template: BaseLLMPromptTemplate,
+    display_name: Optional[str] = None,
+    input_column: Optional[str] = None,
+    input_columns: Optional[Dict[str, str]] = None,
+):
+    feature = LLMJudge(
+        provider=provider,
+        model=model,
+        template=template,
+        display_name=display_name,
+        input_column=input_column,
+        input_columns=input_columns,
+    )
+    return FeatureScorer(feature)
+
+
+def non_letter_character_percentage(column_name: str, display_name: Optional[str] = None):
+    feature = NonLetterCharacterPercentage(column_name=column_name, display_name=display_name)
+    return FeatureScorer(feature)
+
+
+def oov_words_percentage(column_name: str, ignore_words: Any = (), display_name: Optional[str] = None):
+    feature = OOVWordsPercentage(column_name=column_name, ignore_words=ignore_words, display_name=display_name)
+    return FeatureScorer(feature)
+
+
+def open_a_i_feature(
+    column_name: str,
+    model: str,
+    prompt: str,
+    feature_type: str,
+    context: Optional[str] = None,
+    context_column: Optional[str] = None,
+    prompt_replace_string: str = "REPLACE",
+    context_replace_string: str = "CONTEXT",
+    check_mode: str = "any_line",
+    possible_values: Optional[List[str]] = None,
+    openai_params: Optional[dict] = None,
+    display_name: Optional[str] = None,
+):
+    feature = OpenAIFeature(
+        column_name=column_name,
+        model=model,
+        prompt=prompt,
+        feature_type=feature_type,
+        context=context,
+        context_column=context_column,
+        prompt_replace_string=prompt_replace_string,
+        context_replace_string=context_replace_string,
+        check_mode=check_mode,
+        possible_values=possible_values,
+        openai_params=openai_params,
+        display_name=display_name,
+    )
+    return FeatureScorer(feature)
+
+
+def reg_exp(column_name: str, reg_exp: str, display_name: Optional[str] = None):
+    feature = RegExp(column_name=column_name, reg_exp=reg_exp, display_name=display_name)
+    return FeatureScorer(feature)
+
+
+def semantic_similarity_feature(
+    columns: List[str], display_name: Optional[str] = None, model: str = "all-MiniLM-L6-v2"
+):
+    feature = SemanticSimilarityFeature(columns=columns, display_name=display_name, model=model)
+    return FeatureScorer(feature)
+
+
+def sentence_count(column_name: str, display_name: Optional[str] = None):
+    feature = SentenceCount(column_name=column_name, display_name=display_name)
+    return FeatureScorer(feature)
+
+
+def sentiment(column_name: str, display_name: Optional[str] = None):
+    feature = Sentiment(column_name=column_name, display_name=display_name)
+    return FeatureScorer(feature)
+
+
+def text_length(column_name: str, display_name: Optional[str] = None):
+    feature = TextLength(column_name=column_name, display_name=display_name)
+    return FeatureScorer(feature)
+
+
+def trigger_words_present(
+    column_name: str, words_list: List[str], lemmatize: bool = True, display_name: Optional[str] = None
+):
+    feature = TriggerWordsPresent(
+        column_name=column_name, words_list=words_list, lemmatize=lemmatize, display_name=display_name
+    )
+    return FeatureScorer(feature)
+
+
+def word_count(column_name: str, display_name: Optional[str] = None):
+    feature = WordCount(column_name=column_name, display_name=display_name)
+    return FeatureScorer(feature)
+
+
+def word_match(columns: List[str], mode: str, lemmatize: bool, display_name: Optional[str] = None):
+    feature = WordMatch(columns=columns, mode=mode, lemmatize=lemmatize, display_name=display_name)
+    return FeatureScorer(feature)
+
+
+def word_no_match(columns: List[str], mode: str, lemmatize: bool, display_name: Optional[str] = None):
+    feature = WordNoMatch(columns=columns, mode=mode, lemmatize=lemmatize, display_name=display_name)
+    return FeatureScorer(feature)
+
+
+def words_presence(
+    column_name: str,
+    words_list: List[str],
+    mode: str = "any",
+    lemmatize: bool = True,
+    display_name: Optional[str] = None,
+):
+    feature = WordsPresence(
+        column_name=column_name, words_list=words_list, mode=mode, lemmatize=lemmatize, display_name=display_name
+    )
+    return FeatureScorer(feature)
