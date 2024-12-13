@@ -4,12 +4,15 @@ from typing import List
 from typing import Optional
 from typing import Tuple
 from typing import TypeVar
+from typing import Union
 
 from .datasets import Dataset
 from .datasets import DatasetColumn
-from .metrics.base import Metric
+from .metrics import Metric
+from .metrics import MetricContainer
+from .metrics import MetricPreset
+from .metrics import MetricResult
 from .metrics.base import MetricId
-from .metrics.base import MetricResult
 from .metrics.base import render_widgets
 
 TResultType = TypeVar("TResultType", bound="MetricResult")
@@ -60,7 +63,7 @@ class Context:
         prev_level = self._current_graph_level
         self._current_graph_level = prev_level[metric.id]
         if metric.id not in self._metrics:
-            self._metrics[metric.id] = metric.call(*self._input_data)
+            self._metrics[metric.id] = metric.call(self)
         self._current_graph_level = prev_level
         return self._metrics[metric.id]
 
@@ -76,7 +79,14 @@ class Snapshot:
     def run(self, current_data: Dataset, reference_data: Optional[Dataset]):
         self._context.init_dataset(current_data, reference_data)
         for metric in self._report._metrics:
-            self._context.calculate_metric(metric)
+            if isinstance(metric, (MetricPreset,)):
+                for metric in metric.metrics():
+                    self._context.calculate_metric(metric)
+            elif isinstance(metric, (MetricContainer,)):
+                for metric in metric.metrics(self._context):
+                    self._context.calculate_metric(metric)
+            else:
+                self._context.calculate_metric(metric)
 
     def _repr_html_(self):
         return render_widgets(
@@ -85,7 +95,7 @@ class Snapshot:
 
 
 class Report:
-    def __init__(self, metrics: List[Metric]):
+    def __init__(self, metrics: List[Union[Metric, MetricPreset]]):
         self._metrics = metrics
 
     def run(self, current_data: Dataset, reference_data: Optional[Dataset]) -> Snapshot:

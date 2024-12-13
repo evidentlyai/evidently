@@ -1,6 +1,7 @@
 import abc
 import dataclasses
 import itertools
+import typing
 import uuid
 from abc import abstractmethod
 from typing import Generic
@@ -8,7 +9,6 @@ from typing import List
 from typing import Optional
 from typing import Protocol
 from typing import Tuple
-from typing import TypeAlias
 from typing import TypeVar
 from typing import Union
 
@@ -25,6 +25,9 @@ from evidently.utils.dashboard import inline_iframe_html_template
 from evidently.v2.datasets import Dataset
 from evidently.v2.datasets import DatasetColumn
 
+if typing.TYPE_CHECKING:
+    from evidently.v2.report import Context
+
 
 class MetricResult:
     _widget: Optional[List[BaseWidgetInfo]] = None
@@ -35,9 +38,12 @@ class MetricResult:
     def _repr_html_(self):
         return render_results(self, html=False)
 
+    def is_widget_set(self) -> bool:
+        return self._widget is not None
+
     @property
     def widget(self) -> List[BaseWidgetInfo]:
-        return self._widget
+        return self._widget or []
 
     @widget.setter
     def widget(self, value: List[BaseWidgetInfo]):
@@ -73,7 +79,7 @@ def render_results(results: Union[MetricResult, List[MetricResult]], html=True):
 
 TResult = TypeVar("TResult", bound=MetricResult)
 
-MetricReturnValue: TypeAlias = Tuple[TResult, BaseWidgetInfo]
+MetricReturnValue = Tuple[TResult, BaseWidgetInfo]
 
 
 @dataclasses.dataclass
@@ -144,20 +150,18 @@ class Metric(Generic[TResult]):
         self._metric_id = metric_id
         self._checks = checks
 
-    def call(self, current_data: Dataset, reference_data: Optional[Dataset]) -> TResult:
+    def call(self, context: "Context") -> TResult:
         """
         main method is used for executing metric
         Args:
-            current_data:
-            reference_data:
-
+            context:
         Returns:
 
         """
-        result = self.calculate(current_data, reference_data)
-        if result.widget is None:
+        result = self.calculate(*context._input_data)
+        if not result.is_widget_set():
             result.widget = get_default_render(self, result)
-        if len(self._checks) > 0:
+        if self._checks and len(self._checks) > 0:
             result.widget.append(checks_widget(self, result))
         return result
 
