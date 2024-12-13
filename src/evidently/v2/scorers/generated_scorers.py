@@ -1,18 +1,11 @@
 from typing import Any
-from typing import Callable
 from typing import Dict
 from typing import List
 from typing import Optional
 
-from pandas.core.frame import DataFrame
-from pandas.core.series import Series
-
 from evidently.core import ColumnType
 from evidently.features.BERTScore_feature import BERTScoreFeature
 from evidently.features.contains_link_feature import ContainsLink
-from evidently.features.custom_feature import CustomFeature
-from evidently.features.custom_feature import CustomPairColumnFeature
-from evidently.features.custom_feature import CustomSingleColumnFeature
 from evidently.features.exact_match_feature import ExactMatchFeature
 from evidently.features.hf_feature import HuggingFaceFeature
 from evidently.features.hf_feature import HuggingFaceToxicityFeature
@@ -43,11 +36,10 @@ from evidently.features.words_feature import IncludesWords
 from evidently.features.words_feature import WordMatch
 from evidently.features.words_feature import WordNoMatch
 from evidently.features.words_feature import WordsPresence
-from evidently.v2.datasets import DataDefinition
 from evidently.v2.datasets import FeatureScorer
 
 
-def bert_score_feature(
+def bert_score(
     columns: List[str],
     display_name: Optional[str] = None,
     model: str = "bert-base-uncased",
@@ -82,48 +74,6 @@ def contains_link(column_name: str, display_name: Optional[str] = None):
     return FeatureScorer(feature)
 
 
-def custom_feature(
-    display_name: str,
-    func: Callable[[DataFrame, DataDefinition], Series],
-    feature_type: ColumnType = ColumnType.Numerical,
-    name: str = None,
-):
-    feature = CustomFeature(display_name=display_name, func=func, feature_type=feature_type, name=name)
-    return FeatureScorer(feature)
-
-
-def custom_pair_column_feature(
-    display_name: str,
-    func: Callable[[Series, Series], Series],
-    first_column: str,
-    second_column: str,
-    feature_type: ColumnType = ColumnType.Numerical,
-    name: str = None,
-):
-    feature = CustomPairColumnFeature(
-        display_name=display_name,
-        func=func,
-        first_column=first_column,
-        second_column=second_column,
-        feature_type=feature_type,
-        name=name,
-    )
-    return FeatureScorer(feature)
-
-
-def custom_single_column_feature(
-    display_name: str,
-    func: Callable[[Series], Series],
-    column_name: str,
-    feature_type: ColumnType = ColumnType.Numerical,
-    name: str = None,
-):
-    feature = CustomSingleColumnFeature(
-        display_name=display_name, func=func, column_name=column_name, feature_type=feature_type, name=name
-    )
-    return FeatureScorer(feature)
-
-
 def does_not_contain(
     column_name: str,
     items: List[str],
@@ -142,7 +92,7 @@ def ends_with(column_name: str, suffix: str, case_sensitive: bool = True, displa
     return FeatureScorer(feature)
 
 
-def exact_match_feature(columns: List[str], display_name: Optional[str] = None):
+def exact_match(columns: List[str], display_name: Optional[str] = None):
     feature = ExactMatchFeature(columns=columns, display_name=display_name)
     return FeatureScorer(feature)
 
@@ -160,12 +110,12 @@ def excludes_words(
     return FeatureScorer(feature)
 
 
-def hugging_face_feature(column_name: str, model: str, params: dict, display_name: str):
+def hugging_face(column_name: str, model: str, params: dict, display_name: str):
     feature = HuggingFaceFeature(column_name=column_name, model=model, params=params, display_name=display_name)
     return FeatureScorer(feature)
 
 
-def hugging_face_toxicity_feature(
+def hugging_face_toxicity(
     column_name: str, display_name: str, model: Optional[str] = None, toxic_label: Optional[str] = None
 ):
     feature = HuggingFaceToxicityFeature(
@@ -187,7 +137,7 @@ def includes_words(
     return FeatureScorer(feature)
 
 
-def is_valid_j_s_o_n(column_name: str, display_name: Optional[str] = None):
+def is_valid_json(column_name: str, display_name: Optional[str] = None):
     feature = IsValidJSON(column_name=column_name, display_name=display_name)
     return FeatureScorer(feature)
 
@@ -267,7 +217,7 @@ def oov_words_percentage(column_name: str, ignore_words: Any = (), display_name:
     return FeatureScorer(feature)
 
 
-def open_a_i_feature(
+def openai(
     column_name: str,
     model: str,
     prompt: str,
@@ -303,9 +253,7 @@ def reg_exp(column_name: str, reg_exp: str, display_name: Optional[str] = None):
     return FeatureScorer(feature)
 
 
-def semantic_similarity_feature(
-    columns: List[str], display_name: Optional[str] = None, model: str = "all-MiniLM-L6-v2"
-):
+def semantic_similarity(columns: List[str], display_name: Optional[str] = None, model: str = "all-MiniLM-L6-v2"):
     feature = SemanticSimilarityFeature(columns=columns, display_name=display_name, model=model)
     return FeatureScorer(feature)
 

@@ -4,22 +4,21 @@ import re
 from itertools import chain
 from pathlib import Path
 from typing import Any
-from typing import Callable
 from typing import Dict
 from typing import List
 from typing import Optional
 from typing import Tuple
 from typing import Type
 
-from pandas import DataFrame
-from pandas import Series
 from pydantic.utils import import_string
 
 from evidently import ColumnType
+from evidently.features.custom_feature import CustomFeature
+from evidently.features.custom_feature import CustomPairColumnFeature
+from evidently.features.custom_feature import CustomSingleColumnFeature
 from evidently.features.generated_features import GeneratedFeatures
 from evidently.features.llm_judge import BaseLLMPromptTemplate
 from evidently.pydantic_utils import TYPE_ALIASES
-from evidently.v2.datasets import DataDefinition
 from evidently.v2.datasets import FeatureScorer
 
 SOURCE_FILE = "generated_scorers.py"
@@ -29,6 +28,10 @@ REPLACES = {
     "evidently.utils.data_preprocessing.DataDefinition": "DataDefinition",
     "pandas.core.series.Series": "Series",
 }
+
+NAME_MAPPING = {"open_a_i_feature": "openai_feature", "is_valid_j_s_o_n": "is_valid_json"}
+
+SKIP_CLASSES = {CustomFeature, CustomPairColumnFeature, CustomSingleColumnFeature}
 
 
 def _get_type_name(tp: Type):
@@ -81,6 +84,9 @@ def create_scorer_function(feature_class: Type[GeneratedFeatures]):
     class_name = feature_class.__name__
     cmpx = os.path.commonprefix([class_name, class_name.upper()])[:-2]
     name = cmpx.lower() + re.sub(r"(?<!^)(?=[A-Z])", "_", class_name[len(cmpx) :]).lower()
+    name = NAME_MAPPING.get(name, name)
+    if name.endswith("_feature"):
+        name = name[: -len("_feature")]
 
     args, kwargs = get_args_kwargs(feature_class)
     args_str = ", ".join(f"{a}: {t}" for a, t in args.items())
@@ -110,18 +116,16 @@ def main():
     imports: List[Type] = [
         FeatureScorer,
         ColumnType,
-        Callable,
         BaseLLMPromptTemplate,
         Any,
         List,
         Optional,
         Dict,
-        DataFrame,
-        DataDefinition,
-        Series,
     ]
     for feature_class in sorted(subtypes__, key=lambda x: x.__name__):
         if inspect.isabstract(feature_class):
+            continue
+        if feature_class in SKIP_CLASSES:
             continue
         src, fname = create_scorer_function(feature_class)
         fnames.append(fname)
