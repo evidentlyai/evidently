@@ -90,6 +90,7 @@ def create_scorer_function(feature_class: Type[GeneratedFeatures]):
 
     args, kwargs = get_args_kwargs(feature_class)
     kwargs["alias"] = ("Optional[str]", "None")
+    kwargs.pop("display_name", None)
     args_str = ", ".join(f"{a}: {t}" for a, t in args.items())
     if len(kwargs) > 0:
         kwargs_str = ", " + ", ".join(f"{a}: {t} = {d}" for a, (t, d) in kwargs.items())
