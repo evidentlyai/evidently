@@ -89,17 +89,18 @@ def create_scorer_function(feature_class: Type[GeneratedFeatures]):
         name = name[: -len("_feature")]
 
     args, kwargs = get_args_kwargs(feature_class)
+    kwargs["alias"] = ("Optional[str]", "None")
     args_str = ", ".join(f"{a}: {t}" for a, t in args.items())
     if len(kwargs) > 0:
         kwargs_str = ", " + ", ".join(f"{a}: {t} = {d}" for a, (t, d) in kwargs.items())
     else:
         kwargs_str = ""
 
-    class_args = ", ".join(f"{k}={k}" for k in chain(args, kwargs))
+    class_args = ", ".join(f"{k}={k}" for k in chain(args, kwargs) if k != "alias")
     res = f"""
 def {name}({args_str}{kwargs_str}):
     feature = {class_name}({class_args})
-    return FeatureScorer(feature)"""
+    return FeatureScorer(feature, alias=alias)"""
     for substr, repl in REPLACES.items():
         res = res.replace(substr, repl)
     return res, name
