@@ -46,11 +46,7 @@ function sizeTransform(size: WidgetSize): 1 | 3 | 6 | 12 {
   return 12
 }
 
-export function WidgetRenderer(
-  key: string,
-  info: WidgetInfo,
-  ItemWrapper?: ({ id, children }: { id: string; children: React.ReactNode }) => React.ReactNode
-) {
+export function WidgetRenderer(key: string, info: WidgetInfo) {
   let content = <NotImplementedWidgetContent />
   if (info.type === 'counter') {
     content = <CounterWidgetContent {...(info.params as CounterWidgetParams)} />
@@ -102,7 +98,7 @@ export function WidgetRenderer(
     content = <TestSuiteWidgetContent {...(info.params as TestSuiteWidgetParams)} />
   }
   return (
-    <Widget key={key} size={sizeTransform(info.size)} ItemWrapper={ItemWrapper}>
+    <Widget key={key} size={sizeTransform(info.size)}>
       {{
         ...info,
         content: content
