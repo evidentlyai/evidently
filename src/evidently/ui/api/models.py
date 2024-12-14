@@ -18,10 +18,10 @@ from evidently.test_suite import TestSuite
 from evidently.ui.base import EntityType
 from evidently.ui.base import Org
 from evidently.ui.base import Project
-from evidently.ui.base import Role
 from evidently.ui.base import SnapshotMetadata
 from evidently.ui.base import Team
 from evidently.ui.base import User
+from evidently.ui.managers.auth import Role
 from evidently.ui.type_aliases import ZERO_UUID
 from evidently.ui.type_aliases import OrgID
 from evidently.ui.type_aliases import RoleID

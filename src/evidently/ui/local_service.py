@@ -1,11 +1,14 @@
 import logging
 import time
+from typing import Dict
 
 from litestar import Request
 from litestar import Response
+from litestar.di import Provide
 from litestar.logging import LoggingConfig
 
 from evidently.ui.api.projects import create_projects_api
+from evidently.ui.api.projects import projects_api_dependencies
 from evidently.ui.api.service import service_api
 from evidently.ui.api.static import assets_router
 from evidently.ui.components.base import AppBuilder
@@ -31,6 +34,11 @@ class LocalServiceComponent(ServiceComponent):
     def get_api_route_handlers(self, ctx: ComponentContext):
         guard = ctx.get_component(SecurityComponent).get_auth_guard()
         return [create_projects_api(guard), service_api()]
+
+    def get_dependencies(self, ctx: ComponentContext) -> Dict[str, Provide]:
+        deps = super().get_dependencies(ctx)
+        deps.update(projects_api_dependencies)
+        return deps
 
     def get_route_handlers(self, ctx: ComponentContext):
         return [assets_router()]
