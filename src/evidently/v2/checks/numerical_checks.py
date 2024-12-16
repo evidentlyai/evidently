@@ -1,5 +1,6 @@
 from typing import Union
 
+from ..metrics import Metric
 from ..metrics.base import CheckResult
 from ..metrics.base import SingleValue
 from ..metrics.base import SingleValueCheck
@@ -7,10 +8,11 @@ from ..metrics.base import TestStatus
 
 
 def le(threshold: Union[int, float]) -> SingleValueCheck:
-    def func(value: SingleValue):
+    def func(metric: Metric, value: SingleValue):
         return CheckResult(
-            f"Less or Equal {threshold}",
-            "",
+            "le",
+            f"{metric.display_name()}: Less or Equal {threshold}",
+            f"Actual value {value.value} {'<' if value.value < threshold else '>='} {threshold}",
             TestStatus.SUCCESS if value.value <= threshold else TestStatus.FAIL,
         )
 
@@ -18,10 +20,11 @@ def le(threshold: Union[int, float]) -> SingleValueCheck:
 
 
 def ge(threshold: Union[int, float]) -> SingleValueCheck:
-    def func(value: SingleValue):
+    def func(metric: Metric, value: SingleValue):
         return CheckResult(
-            f"Greater or Equal {threshold}",
-            "",
+            "ge",
+            f"{metric.display_name()}: Greater or Equal {threshold}",
+            f"Actual value {value.value} {'<' if value.value < threshold else '>='} {threshold}",
             TestStatus.SUCCESS if value.value >= threshold else TestStatus.FAIL,
         )
 

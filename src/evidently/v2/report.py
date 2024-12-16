@@ -2,6 +2,7 @@ from itertools import chain
 from typing import Dict
 from typing import List
 from typing import Optional
+from typing import Sequence
 from typing import Tuple
 from typing import TypeVar
 from typing import Union
@@ -13,6 +14,7 @@ from .metrics import MetricContainer
 from .metrics import MetricPreset
 from .metrics import MetricResult
 from .metrics.base import MetricId
+from .metrics.base import checks_widget
 from .metrics.base import render_widgets
 
 TResultType = TypeVar("TResultType", bound="MetricResult")
@@ -42,6 +44,7 @@ class Context:
 
     def __init__(self):
         self._metrics = {}
+        self._metric_defs = {}
         self._configuration = None
         self._data_columns = {}
         self._metrics_graph = {}
@@ -59,13 +62,21 @@ class Context:
 
     def calculate_metric(self, metric: Metric[TResultType]) -> TResultType:
         if metric.id not in self._current_graph_level:
-            self._current_graph_level[metric.id] = {}
+            self._current_graph_level[metric.id] = {"_self": metric}
         prev_level = self._current_graph_level
         self._current_graph_level = prev_level[metric.id]
         if metric.id not in self._metrics:
             self._metrics[metric.id] = metric.call(self)
         self._current_graph_level = prev_level
         return self._metrics[metric.id]
+
+    def get_metric_result(self, metric: Union[MetricId, Metric[TResultType]]) -> TResultType:
+        if isinstance(metric, MetricId):
+            return self._metrics[metric]
+        return self.calculate_metric(metric)
+
+    def get_metric(self, metric: MetricId) -> Metric[TResultType]:
+        return self._metrics_graph[metric]["_self"]
 
 
 class Snapshot:
@@ -76,29 +87,63 @@ class Snapshot:
         self._report = report
         self._context = Context()
 
+    @property
+    def context(self) -> Context:
+        return self._context
+
+    @property
+    def report(self) -> "Report":
+        return self._report
+
     def run(self, current_data: Dataset, reference_data: Optional[Dataset]):
-        self._context.init_dataset(current_data, reference_data)
-        for metric in self._report._metrics:
-            if isinstance(metric, (MetricPreset,)):
-                for metric in metric.metrics():
-                    self._context.calculate_metric(metric)
-            elif isinstance(metric, (MetricContainer,)):
-                for metric in metric.metrics(self._context):
-                    self._context.calculate_metric(metric)
+        self.context.init_dataset(current_data, reference_data)
+        for item in self.report.items():
+            if isinstance(item, (MetricPreset,)):
+                for metric in item.metrics():
+                    self.context.calculate_metric(metric)
+            elif isinstance(item, (MetricContainer,)):
+                for metric in item.metrics(self.context):
+                    self.context.calculate_metric(metric)
             else:
-                self._context.calculate_metric(metric)
+                self.context.calculate_metric(item)
 
     def _repr_html_(self):
+        from evidently.renderers.html_widgets import TabData
+        from evidently.renderers.html_widgets import group_widget
+        from evidently.renderers.html_widgets import widget_tabs
+
+        results = [
+            (
+                metric,
+                self._context.get_metric_result(metric).widget,
+                checks_widget(self.context.get_metric_result(metric))
+                if self.context.get_metric_result(metric).checks
+                else None,
+            )
+            for metric in self.context._metrics_graph.keys()
+        ]
+        tabs = widget_tabs(
+            title="tabs",
+            tabs=[
+                TabData("Metrics", group_widget(title="", widgets=list(chain(*[result[1] for result in results])))),
+                TabData(
+                    "Checks", group_widget(title="", widgets=[result[2] for result in results if result[2] is not None])
+                ),
+            ],
+        )
         return render_widgets(
-            list(chain(*[self._context._metrics[metric].widget for metric in self._context._metrics_graph.keys()]))
+            [tabs],
         )
 
 
 class Report:
-    def __init__(self, metrics: List[Union[Metric, MetricPreset]]):
+    def __init__(self, metrics: List[Union[Metric, MetricPreset, MetricContainer]]):
         self._metrics = metrics
 
     def run(self, current_data: Dataset, reference_data: Optional[Dataset]) -> Snapshot:
         snapshot = Snapshot(self)
         snapshot.run(current_data, reference_data)
         return snapshot
+
+    def items(self) -> Sequence[Union[Metric, MetricPreset, MetricContainer]]:
+        return self._metrics

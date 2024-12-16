@@ -4,6 +4,7 @@ import itertools
 import typing
 import uuid
 from abc import abstractmethod
+from copy import copy
 from typing import Generic
 from typing import List
 from typing import Optional
@@ -30,12 +31,18 @@ if typing.TYPE_CHECKING:
 
 
 class MetricResult:
+    _metric: Optional["Metric"] = None
     _widget: Optional[List[BaseWidgetInfo]] = None
+    _checks: Optional[List["CheckResult"]] = None
 
-    def set_widget(self, widget: List[BaseWidgetInfo]):
-        self._widget = widget
+    def set_checks(self, checks: List["CheckResult"]):
+        self._checks = checks
 
     def _repr_html_(self):
+        assert self._widget
+        widget = copy(self._widget)
+        if self._checks:
+            widget.append(checks_widget(self))
         return render_results(self, html=False)
 
     def is_widget_set(self) -> bool:
@@ -48,6 +55,10 @@ class MetricResult:
     @widget.setter
     def widget(self, value: List[BaseWidgetInfo]):
         self._widget = value
+
+    @property
+    def checks(self) -> List["CheckResult"]:
+        return self._checks
 
 
 def render_widgets(widgets: List[BaseWidgetInfo]):
@@ -81,9 +92,12 @@ TResult = TypeVar("TResult", bound=MetricResult)
 
 MetricReturnValue = Tuple[TResult, BaseWidgetInfo]
 
+CheckId = str
+
 
 @dataclasses.dataclass
 class CheckResult:
+    id: CheckId
     name: str
     description: str
     status: TestStatus
@@ -95,17 +109,17 @@ class SingleValue(MetricResult):
 
 
 class Check(Protocol[TResult]):
-    def __call__(self, value: TResult) -> CheckResult: ...
+    def __call__(self, metric: "Metric", value: TResult) -> CheckResult: ...
 
 
 class SingleValueCheck(Check[TResult], Protocol):
-    def __call__(self, value: SingleValue) -> CheckResult: ...
+    def __call__(self, metric: "Metric", value: SingleValue) -> CheckResult: ...
 
 
 MetricId = str
 
 
-def checks_widget(metric: "Metric", result: TResult) -> BaseWidgetInfo:
+def checks_widget(result: TResult) -> BaseWidgetInfo:
     return BaseWidgetInfo(
         title="",
         size=2,
@@ -118,17 +132,17 @@ def checks_widget(metric: "Metric", result: TResult) -> BaseWidgetInfo:
                     state=check.status.value.lower(),
                     groups=[],
                 )
-                for idx, check in enumerate([check(result) for check in metric.checks()])
+                for idx, check in enumerate(result.checks)
             ],
         },
     )
 
 
-def get_default_render(metric: "Metric", result: TResult) -> List[BaseWidgetInfo]:
+def get_default_render(title: str, result: TResult) -> List[BaseWidgetInfo]:
     if isinstance(result, SingleValue):
         return [
             counter(
-                title=metric.display_name(),
+                title=title,
                 size=WidgetSize.FULL,
                 counters=[CounterData(label="", value=result.value)],
             ),
@@ -160,9 +174,9 @@ class Metric(Generic[TResult]):
         """
         result = self.calculate(*context._input_data)
         if not result.is_widget_set():
-            result.widget = get_default_render(self, result)
+            result.widget = get_default_render(self.display_name(), result)
         if self._checks and len(self._checks) > 0:
-            result.widget.append(checks_widget(self, result))
+            result.set_checks([check(self, result) for check in self._checks])
         return result
 
     @abc.abstractmethod
@@ -195,7 +209,7 @@ class Metric(Generic[TResult]):
         raise NotImplementedError()
 
     def checks(self) -> List[Check]:
-        return self._checks
+        return self._checks or []
 
     def group_by(self, group_by: Optional[str]) -> Union["Metric", List["Metric"]]:
         if group_by is None:
