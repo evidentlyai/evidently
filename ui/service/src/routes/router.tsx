@@ -49,6 +49,6 @@ export const routes = [
   } as const)
 ] as const satisfies RouteExtended[]
 
-const finalRoutes = routes.map(decorateTopLevelRoutes).map((r) => decorateAllRoutes(r))
+const finalRoutes = routes.map((r) => decorateTopLevelRoutes(r)).map((r) => decorateAllRoutes(r))
 
 export const router = createBrowserRouter(finalRoutes)
