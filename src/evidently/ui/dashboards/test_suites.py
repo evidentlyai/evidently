@@ -130,6 +130,7 @@ class DashboardPanelTestSuite(DashboardPanel):
             layout={"showlegend": True},
         )
         fig.update_layout(barmode="stack")
+        fig.update_xaxes(type="category")
         return fig
 
     def _create_detailed_fig(self, points: TestResultPoints):
@@ -138,34 +139,53 @@ class DashboardPanelTestSuite(DashboardPanel):
         tests = list(all_tests)
         hover_params = _get_hover_params(all_tests)
 
-        def get_description(test: Test, date):
+        def get_customdata(test: Test, date):
             test_info = points[date][test]
             description = test_info.description
             description, _ = descr_re.subn(r".<br>\g<1>", description)
+
             return {
+                "test_name": test.name,
+                "params": "<br>".join(hover_params[test]),
                 "description": description,
                 "test_fingerprint": test.get_fingerprint(),
                 "snapshot_id": str(test_info.snapshot_id),
             }
 
-        def get_color(test, date) -> Optional[str]:
+        TEST_2_Z: Dict[TestStatus, float] = {
+            TestStatus.ERROR: 0.0,
+            TestStatus.FAIL: 0.25,
+            TestStatus.WARNING: 0.5,
+            TestStatus.SUCCESS: 0.75,
+            TestStatus.SKIPPED: 1.0,
+        }
+
+        def get_z_value(test, date) -> float:
             ti = points[date].get(test)
+            default = TEST_2_Z[TestStatus.SKIPPED]
+
             if ti is None:
-                return TEST_COLORS[TestStatus.SKIPPED]
-            return TEST_COLORS.get(ti.status)
+                return default
+
+            return TEST_2_Z.get(ti.status) or default
 
         fig = go.Figure(
             data=[
-                go.Bar(
+                go.Heatmap(
                     name="",
                     x=dates,
-                    y=[1 for _ in range(len(dates))],
-                    marker_color=[get_color(test, d) for d in dates],
-                    hovertemplate=_get_test_hover(test.name, hover_params[test]),
-                    customdata=[get_description(test, d) for i, d in enumerate(dates)],
+                    y=[i for i in range(len(tests))],
+                    z=[[get_z_value(test, date) for date in dates] for test in tests],
+                    hovertemplate=_get_test_hover(),
+                    customdata=[[get_customdata(test, date) for date in dates] for test in tests],
                     showlegend=False,
+                    showscale=False,
+                    colorscale=[[z, TEST_COLORS[status]] for status, z in TEST_2_Z.items()],
+                    xgap=1,
+                    ygap=0.5,
+                    zmin=0,
+                    zmax=1,
                 )
-                for test in tests
             ]
             + [
                 go.Scatter(
@@ -179,12 +199,10 @@ class DashboardPanelTestSuite(DashboardPanel):
             ],
             layout={"showlegend": True},
         )
-        fig.update_layout(
-            barmode="stack",
-            bargap=0.01,
-            barnorm="fraction",
-        )
+
         fig.update_yaxes(showticklabels=False)
+        fig.update_xaxes(type="category")
+
         return fig
 
 
