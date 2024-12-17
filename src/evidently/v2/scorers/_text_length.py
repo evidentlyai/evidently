@@ -5,10 +5,10 @@ from typing import Union
 from evidently import ColumnType
 from evidently.v2.datasets import Dataset
 from evidently.v2.datasets import DatasetColumn
-from evidently.v2.datasets import Scorer
+from evidently.v2.datasets import Descriptor
 
 
-class TextLength(Scorer):
+class TextLength(Descriptor):
     def __init__(self, column_name: str, alias: Optional[str] = None):
         super().__init__(alias)
         self._column_name: str = column_name

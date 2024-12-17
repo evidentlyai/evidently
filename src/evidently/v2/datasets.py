@@ -37,7 +37,7 @@ class DatasetColumn:
         self.data = data
 
 
-class Scorer:
+class Descriptor:
     def __init__(self, alias: str):
         self._alias = alias
 
@@ -50,7 +50,7 @@ class Scorer:
         return self._alias
 
 
-class FeatureScorer(Scorer):
+class FeatureDescriptor(Descriptor):
     def __init__(self, feature: GeneratedFeatures, alias: Optional[str] = None):
         super().__init__(alias or f"{feature.as_column().display_name}")
         self._feature = feature
@@ -67,7 +67,7 @@ class FeatureScorer(Scorer):
         return DatasetColumn(type=self._feature.get_type(), data=feature[feature.columns[0]])
 
 
-def _determine_scorer_column_name(alias: str, columns: List[str]):
+def _determine_desccriptor_column_name(alias: str, columns: List[str]):
     index = 1
     key = alias
     while key in columns:
@@ -84,12 +84,12 @@ class Dataset:
         cls,
         data: pd.DataFrame,
         data_definition: Optional[DataDefinition] = None,
-        scorers: Optional[List[Scorer]] = None,
+        descriptors: Optional[List[Descriptor]] = None,
     ) -> "Dataset":
         dataset = PandasDataset(data, data_definition)
-        for scorer in scorers or []:
-            key = _determine_scorer_column_name(scorer.alias, data.columns)
-            new_column = scorer.generate_data(dataset)
+        for descriptor in descriptors or []:
+            key = _determine_desccriptor_column_name(descriptor.alias, data.columns)
+            new_column = descriptor.generate_data(dataset)
             if isinstance(new_column, DatasetColumn):
                 data[key] = new_column.data
             elif len(new_column) > 1:

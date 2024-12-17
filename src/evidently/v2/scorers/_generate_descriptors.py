@@ -19,9 +19,9 @@ from evidently.features.custom_feature import CustomSingleColumnFeature
 from evidently.features.generated_features import GeneratedFeatures
 from evidently.features.llm_judge import BaseLLMPromptTemplate
 from evidently.pydantic_utils import TYPE_ALIASES
-from evidently.v2.datasets import FeatureScorer
+from evidently.v2.datasets import FeatureDescriptor
 
-SOURCE_FILE = "generated_scorers.py"
+SOURCE_FILE = "generated_descriptors.py"
 
 REPLACES = {
     "pandas.core.frame.DataFrame": "DataFrame",
@@ -29,7 +29,11 @@ REPLACES = {
     "pandas.core.series.Series": "Series",
 }
 
-NAME_MAPPING = {"open_a_i_feature": "openai_feature", "is_valid_j_s_o_n": "is_valid_json"}
+NAME_MAPPING = {
+    "open_a_i_feature": "openai_feature",
+    "is_valid_j_s_o_n": "is_valid_json",
+    "is_valid_s_q_l": "is_valid_sql",
+}
 
 SKIP_CLASSES = {CustomFeature, CustomPairColumnFeature, CustomSingleColumnFeature}
 
@@ -80,7 +84,7 @@ def get_args_kwargs(feature_class: Type[GeneratedFeatures]) -> Tuple[Dict[str, s
     return args, kwargs
 
 
-def create_scorer_function(feature_class: Type[GeneratedFeatures]):
+def create_descriptor_function(feature_class: Type[GeneratedFeatures]):
     class_name = feature_class.__name__
     cmpx = os.path.commonprefix([class_name, class_name.upper()])[:-2]
     name = cmpx.lower() + re.sub(r"(?<!^)(?=[A-Z])", "_", class_name[len(cmpx) :]).lower()
@@ -116,7 +120,7 @@ def main():
     srcs = []
     fnames = []
     imports: List[Type] = [
-        FeatureScorer,
+        FeatureDescriptor,
         ColumnType,
         BaseLLMPromptTemplate,
         Any,
@@ -129,7 +133,7 @@ def main():
             continue
         if feature_class in SKIP_CLASSES:
             continue
-        src, fname = create_scorer_function(feature_class)
+        src, fname = create_descriptor_function(feature_class)
         fnames.append(fname)
         srcs.append(src)
         imports.append(feature_class)

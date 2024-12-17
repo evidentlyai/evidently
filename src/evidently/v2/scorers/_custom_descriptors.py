@@ -5,10 +5,10 @@ from typing import Union
 
 from evidently.v2.datasets import Dataset
 from evidently.v2.datasets import DatasetColumn
-from evidently.v2.datasets import Scorer
+from evidently.v2.datasets import Descriptor
 
 
-class CustomColumnScorer(Scorer):
+class CustomColumnDescriptor(Descriptor):
     def __init__(self, column_name: str, func: Callable[[DatasetColumn], DatasetColumn], alias: Optional[str] = None):
         super().__init__(alias)
         self._column_name = column_name
@@ -19,7 +19,7 @@ class CustomColumnScorer(Scorer):
         return self._func(column_data)
 
 
-class CustomScorer(Scorer):
+class CustomDescriptor(Descriptor):
     def __init__(
         self, func: Callable[[Dataset], Union[DatasetColumn, Dict[str, DatasetColumn]]], alias: Optional[str] = None
     ):
