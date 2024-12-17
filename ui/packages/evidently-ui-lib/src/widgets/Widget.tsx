@@ -3,6 +3,7 @@ import type { WidgetInfo } from '~/api'
 
 import { Card, CardContent, Grid, Typography } from '@mui/material'
 
+import { useWidgetWrapper } from '~/contexts/WidgetWrapper'
 import AlertBlock from './AlertBlock'
 import AlertStatBlock from './AlertStatBlock'
 import InsightBlock from './InsightBlock'
@@ -59,127 +60,123 @@ function Sizes(size: number): sizes {
   }
 }
 
-const Widget = (
-  props: WidgetProps & {
-    ItemWrapper?: ({ id, children }: { id: string; children: React.ReactNode }) => React.ReactNode
-  }
-) => {
-  const { size, ItemWrapper } = props
+const Widget = (props: WidgetProps) => {
+  const { size } = props
   const alertsPosition = props.children.alertsPosition ?? 'row'
   const { id, title, details, content, alerts, alertStats, insights } = props.children
   const isAlertsExists = alerts === undefined ? false : alerts.length > 0
   const isInsightsExists = insights === undefined ? false : insights.length > 0
 
-  const Component = (
-    <Card elevation={0}>
-      <CardContent>
-        <Grid container spacing={1} direction={'column'}>
-          {alertsPosition === 'row' ? (
-            <Grid container spacing={1} item>
-              <Grid item xs={isAlertsExists && alertsPosition === 'row' ? 9 : 12}>
-                {title ? (
-                  <Typography fontWeight={500} variant={'h5'}>
-                    {title}
-                  </Typography>
-                ) : (
-                  <div />
-                )}
-                <div>{content}</div>
-                {details ? <Typography variant={'subtitle1'}>{details}</Typography> : <div />}
-              </Grid>
-              {isAlertsExists ? (
-                <Grid
-                  container
-                  spacing={1}
-                  direction={'column'}
-                  justifyContent={'center'}
-                  item
-                  xs={3}
-                >
-                  {alerts ? (
-                    <React.Fragment>
-                      {alertStats ? (
-                        <Grid item>
-                          <AlertStatBlock
-                            alertStats={alertStats}
-                            // classes={classes}
-                          />
-                        </Grid>
+  const { WidgetWrapper } = useWidgetWrapper()
+
+  return (
+    <Grid item {...Sizes(size)}>
+      <WidgetWrapper id={id}>
+        <Card elevation={0}>
+          <CardContent>
+            <Grid container spacing={1} direction={'column'}>
+              {alertsPosition === 'row' ? (
+                <Grid container spacing={1} item>
+                  <Grid item xs={isAlertsExists && alertsPosition === 'row' ? 9 : 12}>
+                    {title ? (
+                      <Typography fontWeight={500} variant={'h5'}>
+                        {title}
+                      </Typography>
+                    ) : (
+                      <div />
+                    )}
+                    <div>{content}</div>
+                    {details ? <Typography variant={'subtitle1'}>{details}</Typography> : <div />}
+                  </Grid>
+                  {isAlertsExists ? (
+                    <Grid
+                      container
+                      spacing={1}
+                      direction={'column'}
+                      justifyContent={'center'}
+                      item
+                      xs={3}
+                    >
+                      {alerts ? (
+                        <React.Fragment>
+                          {alertStats ? (
+                            <Grid item>
+                              <AlertStatBlock
+                                alertStats={alertStats}
+                                // classes={classes}
+                              />
+                            </Grid>
+                          ) : (
+                            <div />
+                          )}
+                          {alerts.map((alert) => (
+                            // biome-ignore lint/correctness/useJsxKeyInIterable: not reordered
+                            <Grid item>
+                              <AlertBlock data={alert} />
+                            </Grid>
+                          ))}
+                        </React.Fragment>
                       ) : (
                         <div />
                       )}
-                      {alerts.map((alert) => (
-                        // biome-ignore lint/correctness/useJsxKeyInIterable: not reordered
-                        <Grid item>
-                          <AlertBlock data={alert} />
-                        </Grid>
-                      ))}
-                    </React.Fragment>
+                    </Grid>
                   ) : (
                     <div />
                   )}
                 </Grid>
               ) : (
-                <div />
-              )}
-            </Grid>
-          ) : (
-            <React.Fragment>
-              <Grid item>
-                {title ? <Typography variant={'h5'}>{title}</Typography> : <div />}
-                <div>{content}</div>
-                {details ? <Typography variant={'subtitle1'}>{details}</Typography> : <div />}
-              </Grid>
-              {isAlertsExists ? (
-                <Grid item xs>
-                  <Grid container direction={'row'} spacing={1}>
-                    {alerts ? (
-                      <React.Fragment>
-                        {alertStats ? (
-                          <Grid item xs>
-                            <AlertStatBlock
-                              alertStats={alertStats}
-                              // classes={classes}
-                            />
-                          </Grid>
+                <React.Fragment>
+                  <Grid item>
+                    {title ? <Typography variant={'h5'}>{title}</Typography> : <div />}
+                    <div>{content}</div>
+                    {details ? <Typography variant={'subtitle1'}>{details}</Typography> : <div />}
+                  </Grid>
+                  {isAlertsExists ? (
+                    <Grid item xs>
+                      <Grid container direction={'row'} spacing={1}>
+                        {alerts ? (
+                          <React.Fragment>
+                            {alertStats ? (
+                              <Grid item xs>
+                                <AlertStatBlock
+                                  alertStats={alertStats}
+                                  // classes={classes}
+                                />
+                              </Grid>
+                            ) : (
+                              <div />
+                            )}
+                            {alerts.map((alert) => (
+                              // biome-ignore lint/correctness/useJsxKeyInIterable: not reordered
+                              <Grid item xs>
+                                <AlertBlock data={alert} />
+                              </Grid>
+                            ))}
+                          </React.Fragment>
                         ) : (
                           <div />
                         )}
-                        {alerts.map((alert) => (
-                          // biome-ignore lint/correctness/useJsxKeyInIterable: not reordered
-                          <Grid item xs>
-                            <AlertBlock data={alert} />
-                          </Grid>
-                        ))}
-                      </React.Fragment>
-                    ) : (
-                      <div />
-                    )}
+                      </Grid>
+                    </Grid>
+                  ) : (
+                    <div />
+                  )}
+                </React.Fragment>
+              )}
+              {isInsightsExists ? (
+                insights?.map((insight) => (
+                  // biome-ignore lint/correctness/useJsxKeyInIterable: not reordered
+                  <Grid item xs sm md>
+                    <InsightBlock data={insight} />
                   </Grid>
-                </Grid>
+                ))
               ) : (
                 <div />
               )}
-            </React.Fragment>
-          )}
-          {isInsightsExists ? (
-            insights?.map((insight) => (
-              // biome-ignore lint/correctness/useJsxKeyInIterable: not reordered
-              <Grid item xs sm md>
-                <InsightBlock data={insight} />
-              </Grid>
-            ))
-          ) : (
-            <div />
-          )}
-        </Grid>
-      </CardContent>
-    </Card>
-  )
-
-  return (
-    <Grid item {...Sizes(size)}>
-      {ItemWrapper ? ItemWrapper({ id, children: Component }) : Component}
+            </Grid>
+          </CardContent>
+        </Card>
+      </WidgetWrapper>
     </Grid>
   )
 }

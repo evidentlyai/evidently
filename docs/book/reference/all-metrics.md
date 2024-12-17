@@ -147,28 +147,6 @@ How to set [data drift parameters](../customization/options-for-statistical-test
 
 </details>
 
-<details>
-  
-<summary>Text Overview Preset</summary>
-
-`TextOverviewPreset()` provides a summary for a single or multiple text columns. Text columns are required.
-
-**Composition**:
-* `ColumnSummaryMetric()` for text descriptors for all columns. Descriptors included:
-  * `Sentiment()`
-  * `SentenceCount()`
-  * `OOV()`
-  * `TextLength()`
-  * `NonLetterCharacterPercentage()` 
-* `SemanticSimilarity()` between each pair of text columns, if there is more than one. 
-
-**Required parameters**:
-* `column_name` or `columns` list
-
-**Optional parameters**:
-* `descriptors` list
-
-</details>
 
 <details>
   
@@ -186,6 +164,9 @@ How to set [data drift parameters](../customization/options-for-statistical-test
   
 **Required parameters**:
 * `column_name`
+
+**Optional parameters**:
+* `descriptors` list
 
 </details>
 
@@ -282,6 +263,7 @@ Check for regular expression matches.
 | **JSONMatch()** <ul><li>Compares two columns of a dataframe and checks whether the two objects in each row of the dataframe are matching JSONs or not. </li><li>Returns True/False for every input. </li></ul> Example use:<br> `JSONMatch(with_column="column_2")`| **Required:** <br> `with_column : str` <br><br>**Optional:**<ul><li>`display_name`</li> |
 | **ContainsLink()** <ul><li>Checks if the text contains at least one valid URL. </li><li>Returns True/False for each row. </li></ul> | **Required:** n/a <br>**Optional:**<ul><li>`display_name`</li></ul> |
 | **IsValidPython()** <ul><li>Checks if the text is valid Python code without syntax errors.</li><li>Returns True/False for every input. </li></ul>| **Required:** <br>n/a<br><br>**Optional:**<ul><li>`display_name`</li></ul> |
+| **IsValidSQL()** <ul><li>Checks if the text in a specified column is a valid SQL query without executing the query.</li><li>Returns True/False for every input. </li></ul>| **Required:** <br>n/a<br><br>**Optional:**<ul><li>`display_name`</li></ul> |
 
 ## Descriptors: Text stats
 

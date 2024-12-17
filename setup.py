@@ -53,7 +53,7 @@ setup_args = dict(
     install_requires=[
         "plotly>=5.10.0",
         "statsmodels>=0.12.2",
-        "scikit-learn>=1.0.1",
+        "scikit-learn>=1.0.1,<1.6.0",
         "pandas[parquet]>=1.3.5",
         "numpy>=1.22.0,<2.1",
         "nltk>=3.6.7",
@@ -103,6 +103,7 @@ setup_args = dict(
             "evaluate>=0.4.1",
             "transformers[torch]>=4.39.3",
             "sentence-transformers>=2.7.0",
+            "sqlvalidator>=0.0.20",
             "chromadb>=0.4.0",
         ],
         "spark": ["pyspark>=3.4.0"],

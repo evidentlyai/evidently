@@ -22,9 +22,8 @@ from evidently.tests.base_test import Test
 from evidently.ui.base import BlobMetadata
 from evidently.ui.base import BlobStorage
 from evidently.ui.base import DataStorage
-from evidently.ui.base import MetadataStorage
 from evidently.ui.base import Project
-from evidently.ui.base import ProjectManager
+from evidently.ui.base import ProjectMetadataStorage
 from evidently.ui.base import SnapshotMetadata
 from evidently.ui.base import Team
 from evidently.ui.base import User
@@ -33,11 +32,13 @@ from evidently.ui.dashboards.base import ReportFilter
 from evidently.ui.dashboards.test_suites import TestFilter
 from evidently.ui.dashboards.test_suites import to_period
 from evidently.ui.errors import ProjectNotFound
+from evidently.ui.managers.projects import ProjectManager
 from evidently.ui.storage.common import NO_TEAM
 from evidently.ui.storage.common import NO_USER
 from evidently.ui.type_aliases import BlobID
 from evidently.ui.type_aliases import DataPointsAsType
 from evidently.ui.type_aliases import OrgID
+from evidently.ui.type_aliases import PointInfo
 from evidently.ui.type_aliases import PointType
 from evidently.ui.type_aliases import ProjectID
 from evidently.ui.type_aliases import SnapshotID
@@ -187,7 +188,7 @@ class LocalState:
                 raise ValueError(f"{snapshot_id} is malformed") from e
 
 
-class JsonFileMetadataStorage(MetadataStorage):
+class JsonFileProjectMetadataStorage(ProjectMetadataStorage):
     path: str
 
     _state: LocalState = PrivateAttr(None)
@@ -339,5 +340,7 @@ class InMemoryDataStorage(DataStorage):
                 for metric, metric_field_value in value.get(report).items():
                     if metric not in points[i]:
                         points[i][metric] = []
-                    points[i][metric].append((report.timestamp, self.parse_value(cls, metric_field_value)))
+                    points[i][metric].append(
+                        PointInfo(report.timestamp, report.id, self.parse_value(cls, metric_field_value))
+                    )
         return points
