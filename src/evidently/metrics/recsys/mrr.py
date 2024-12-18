@@ -23,7 +23,25 @@ class MRRKMetricResult(MetricResult):
 
     k: int
     current: pd.Series
+    current_value: float
     reference: Optional[pd.Series] = None
+    reference: Optional[float] = None
+
+    def __init__(
+        self,
+        k: int,
+        current: pd.Series,
+        current_value: Optional[float] = None,
+        reference: Optional[pd.Series] = None,
+        reference_value: Optional[float] = None,
+    ):
+        super().__init__(
+            k=k,
+            current=current,
+            current_value=current_value if current_value is not None else current[k - 1],
+            reference=reference,
+            reference_value=reference_value if reference_value is not None or reference is None else reference[k - 1],
+        )
 
 
 class MRRKMetric(Metric[MRRKMetricResult]):
