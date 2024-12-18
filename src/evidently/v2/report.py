@@ -17,7 +17,7 @@ from .metrics.base import MetricId
 from .metrics.base import checks_widget
 from .metrics.base import render_widgets
 
-TResultType = TypeVar("TResultType", bound="MetricResult")
+TResultType = TypeVar("TResultType", bound=MetricResult)
 
 
 class ContextColumnData:
@@ -116,9 +116,7 @@ class Snapshot:
             (
                 metric,
                 self._context.get_metric_result(metric).widget,
-                checks_widget(self.context.get_metric_result(metric))
-                if self.context.get_metric_result(metric).checks
-                else None,
+                self._context.get_metric_result(metric),
             )
             for metric in self.context._metrics_graph.keys()
         ]
@@ -126,9 +124,7 @@ class Snapshot:
             title="tabs",
             tabs=[
                 TabData("Metrics", group_widget(title="", widgets=list(chain(*[result[1] for result in results])))),
-                TabData(
-                    "Checks", group_widget(title="", widgets=[result[2] for result in results if result[2] is not None])
-                ),
+                TabData("Checks", checks_widget(list(chain(*[result[2].checks for result in results])))),
             ],
         )
         return render_widgets(

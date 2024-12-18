@@ -42,7 +42,7 @@ class MetricResult:
         assert self._widget
         widget = copy(self._widget)
         if self._checks:
-            widget.append(checks_widget(self))
+            widget.append(checks_widget(self.checks))
         return render_results(self, html=False)
 
     def is_widget_set(self) -> bool:
@@ -58,7 +58,7 @@ class MetricResult:
 
     @property
     def checks(self) -> List["CheckResult"]:
-        return self._checks
+        return self._checks or []
 
 
 def render_widgets(widgets: List[BaseWidgetInfo]):
@@ -119,7 +119,7 @@ class SingleValueCheck(Check[TResult], Protocol):
 MetricId = str
 
 
-def checks_widget(result: TResult) -> BaseWidgetInfo:
+def checks_widget(checks: List[CheckResult]) -> BaseWidgetInfo:
     return BaseWidgetInfo(
         title="",
         size=2,
@@ -132,7 +132,7 @@ def checks_widget(result: TResult) -> BaseWidgetInfo:
                     state=check.status.value.lower(),
                     groups=[],
                 )
-                for idx, check in enumerate(result.checks)
+                for idx, check in enumerate(checks)
             ],
         },
     )
