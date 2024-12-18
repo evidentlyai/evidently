@@ -74,6 +74,7 @@ class WidgetType(Enum):
     COUNTER = "counter"
     TABLE = "table"
     BIG_TABLE = "big_table"
+    GROUP = "group"
     BIG_GRAPH = "big_graph"
     RICH_DATA = "rich_data"
     TABBED_GRAPH = "tabbed_graph"

@@ -103,7 +103,7 @@ class DoesNotContain(GeneratedFeature):
     def _as_column(self) -> ColumnName:
         return self._create_column(
             self._feature_column_name(),
-            default_display_name=f"Text Contains of {self.mode} [{', '.join(self.items)}] for {self.column_name}",
+            default_display_name=f"Text Does Not Contain of {self.mode} [{', '.join(self.items)}] for {self.column_name}",
         )
 
     def comparison(self, item: str, string: str):
