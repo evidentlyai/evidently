@@ -130,6 +130,7 @@ class DashboardPanelTestSuite(DashboardPanel):
             layout={"showlegend": True},
         )
         fig.update_layout(barmode="stack")
+        fig.update_xaxes(type="category")
         return fig
 
     def _create_detailed_fig(self, points: TestResultPoints):
@@ -185,6 +186,7 @@ class DashboardPanelTestSuite(DashboardPanel):
             barnorm="fraction",
         )
         fig.update_yaxes(showticklabels=False)
+        fig.update_xaxes(type="category")
         return fig
 
 
