@@ -121,6 +121,7 @@ DEFAULT_ROLE_PERMISSIONS: Dict[Tuple[DefaultRole, Optional[EntityType]], Set[Per
     (DefaultRole.VIEWER, EntityType.Project): {
         Permission.LIST_USERS,
         Permission.PROJECT_READ,
+        Permission.DATASET_READ,
     },
     (DefaultRole.VIEWER, EntityType.Dataset): {
         Permission.LIST_USERS,

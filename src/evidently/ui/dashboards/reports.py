@@ -1,4 +1,5 @@
 import datetime
+from collections import defaultdict
 from typing import TYPE_CHECKING
 from typing import Any
 from typing import Dict
@@ -29,6 +30,7 @@ from evidently.ui.dashboards.utils import _get_metric_hover
 from evidently.ui.type_aliases import DataPointsAsType
 from evidently.ui.type_aliases import PointInfo
 from evidently.ui.type_aliases import ProjectID
+from evidently.ui.type_aliases import SnapshotID
 
 if TYPE_CHECKING:
     from evidently.ui.base import DataStorage
@@ -173,10 +175,13 @@ class DashboardPanelDistribution(DashboardPanel):
             raise ValueError(f"Cannot build hist from {self.value}")
         if len(bins_for_hists) > 1:
             raise ValueError(f"Ambiguious metrics for {self.value}")
-        bins_for_hist: List[Tuple[datetime.datetime, HistogramData]] = next(
+        metric = next(iter(bins_for_hists.keys()))
+        fingerprint = metric.get_fingerprint()
+        bins_for_hist: List[Tuple[datetime.datetime, SnapshotID, HistogramData]] = next(
             [
                 (
                     d.timestamp,
+                    d.snapshot_id,
                     d.value if isinstance(d.value, HistogramData) else HistogramData.from_distribution(d.value),
                 )
                 for d in v
@@ -187,26 +192,35 @@ class DashboardPanelDistribution(DashboardPanel):
         timestamps: List[datetime.datetime] = []
         names: Set[str] = set()
         values: List[Dict[str, Any]] = []
+        snapshot_ids = []
 
-        for timestamp, hist in bins_for_hist:
+        for timestamp, snapshot_id, hist in bins_for_hist:
             timestamps.append(timestamp)
             data = dict(zip(hist.x, hist.count))
-            names.update(data.keys())
             values.append(data)
+            names.update(data.keys())
+            snapshot_ids.append(snapshot_id)
 
         names_sorted = list(sorted(names))
-        name_to_date_value: Dict[str, List[Any]] = {name: [] for name in names_sorted}
-        for timestamp, data in zip(timestamps, values):
+        name_to_date_value: Dict[str, List[Any]] = defaultdict(list)
+        name_to_snapshot_id: Dict[str, List[SnapshotID]] = defaultdict(list)
+        for timestamp, snapshot_id, data in zip(timestamps, snapshot_ids, values):
             for name in names_sorted:
                 name_to_date_value[name].append(data.get(name))
+                name_to_snapshot_id[name].append(snapshot_id)
+
         hovertemplate = "<b>{name}: %{{y}}</b><br><b>Timestamp: %{{x}}</b>"
         fig = go.Figure(
             data=[
                 go.Bar(
                     name=name,
                     x=timestamps,
-                    y=name_to_date_value.get(name),
+                    y=name_to_date_value[name],
                     hovertemplate=hovertemplate.format(name=name),
+                    customdata=[
+                        {"metric_fingerprint": fingerprint, "snapshot_id": str(snapshot_id)}
+                        for snapshot_id in name_to_snapshot_id[name]
+                    ],
                 )
                 for name in names_sorted
             ]
