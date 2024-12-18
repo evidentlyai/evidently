@@ -156,6 +156,7 @@ TEST_COLORS = {
 tests_colors_order = {ts: i for i, ts in enumerate(TEST_COLORS)}
 
 
-def _get_test_hover():
-    hover = "<b>Timestamp: %{x}</b><br><b>%{customdata.test_name}</b><br>%{customdata.params}<br>%{customdata.description}<br>"
+def _get_test_hover(test_name: str, params: List[str]):
+    params_join = "<br>".join(params)
+    hover = f"<b>Timestamp: %{{x}}</b><br><b>{test_name}</b><br>{params_join}<br>%{{customdata.description}}<br>"
     return hover
