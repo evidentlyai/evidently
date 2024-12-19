@@ -1,4 +1,4 @@
-import type { GetParams, LoaderSpecialArgs } from 'evidently-ui-lib/router-utils/types'
+import type { GetParams, loadDataArgs } from 'evidently-ui-lib/router-utils/types'
 import type { CrumbDefinition } from 'evidently-ui-lib/router-utils/utils'
 
 import type { GetRouteByPath } from '~/routes/types'
@@ -33,10 +33,10 @@ const crumb: CrumbDefinition = { title: 'Dashboard' }
 
 export const handle = { crumb }
 
-export const loaderSpecial = ({
+export const loadData = ({
   params,
   query
-}: LoaderSpecialArgs<{ queryKeys: DashboardFilterQueryParams }>) => {
+}: loadDataArgs<{ queryKeys: DashboardFilterQueryParams }>) => {
   const { projectId } = params as Params
 
   return getProjectDashboard({ api: clientAPI, projectId, query })

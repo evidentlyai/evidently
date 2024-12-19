@@ -1,6 +1,6 @@
 import { expectJsonRequest } from '~/api/utils'
 import { GenericErrorBoundary, handleActionFetchersErrors } from '~/router-utils/components/Error'
-import type { ActionSpecialArgs, LoaderSpecialArgs, RouteExtended } from '~/router-utils/types'
+import type { ActionArgs, RouteExtended, loadDataArgs } from '~/router-utils/types'
 import type {
   ActionFunction,
   LazyRouteFunction,
@@ -14,19 +14,19 @@ export type CrumbDefinition = { title?: string; param?: string; keyFromLoaderDat
 export type HandleWithCrumb = { crumb?: CrumbDefinition }
 
 // biome-ignore lint/suspicious/noExplicitAny: fine
-const replaceLoaderSpecial = (loaderSpecial: (args: LoaderSpecialArgs) => any) => {
+const replaceloadData = (loadData: (args: loadDataArgs) => any) => {
   const loader: LoaderFunction = async (args) => {
     const { searchParams } = new URL(args.request.url)
     const query = Object.fromEntries(searchParams)
 
-    return loaderSpecial({ ...args, searchParams, query })
+    return loadData({ ...args, searchParams, query })
   }
 
   return loader
 }
 
 // biome-ignore lint/suspicious/noExplicitAny: fine
-const replaceActions = (actions: Record<string, (args: ActionSpecialArgs) => any>) => {
+const replaceActions = (actions: Record<string, (args: ActionArgs) => any>) => {
   const action: ActionFunction = async (args) => {
     expectJsonRequest(args.request)
 
@@ -52,7 +52,7 @@ export const decorateAllRoutes = (
     return {
       ...r,
       lazy: (() => r.lazy?.().then(decorateAllRoutes)) as LazyRouteFunction<RouteObject>,
-      loader: r.loaderSpecial ? replaceLoaderSpecial(r.loaderSpecial) : undefined,
+      loader: r.loadData ? replaceloadData(r.loadData) : undefined,
       action: r.actions ? replaceActions(r.actions) : undefined,
       ErrorBoundary: r.ErrorBoundary ? r.ErrorBoundary : ErrorBoundary,
       children: r.children ? r.children.map((r) => decorateAllRoutes(r, ErrorBoundary)) : undefined
@@ -61,7 +61,7 @@ export const decorateAllRoutes = (
 
   return {
     ...r,
-    loader: r.loaderSpecial ? replaceLoaderSpecial(r.loaderSpecial) : undefined,
+    loader: r.loadData ? replaceloadData(r.loadData) : undefined,
     action: r.actions ? replaceActions(r.actions) : undefined,
     ErrorBoundary: r.ErrorBoundary ? r.ErrorBoundary : ErrorBoundary,
     children: r.children ? r.children.map((r) => decorateAllRoutes(r, ErrorBoundary)) : undefined

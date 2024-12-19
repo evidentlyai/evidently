@@ -25,7 +25,7 @@ const crumb: CrumbDefinition = { title: 'Home' }
 
 export const handle = { crumb }
 
-export const loaderSpecial = () => getVersion({ api: clientAPI })
+export const loadData = () => getVersion({ api: clientAPI })
 
 export const Component = () => {
   const { loaderData } = useRouteParams<CurrentRoute>()

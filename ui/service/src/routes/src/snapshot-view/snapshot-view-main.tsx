@@ -1,7 +1,7 @@
 import type { GetRouteByPath } from '~/routes/types'
 
 import { useRouteParams } from 'evidently-ui-lib/router-utils/hooks'
-import type { GetParams, LoaderSpecialArgs } from 'evidently-ui-lib/router-utils/types'
+import type { GetParams, loadDataArgs } from 'evidently-ui-lib/router-utils/types'
 import type { CrumbDefinition } from 'evidently-ui-lib/router-utils/utils'
 import { SnapshotTemplateComponent } from 'evidently-ui-lib/routes-components/snapshotId'
 import { getSnapshotInfo } from 'evidently-ui-lib/routes-components/snapshotId/data'
@@ -25,7 +25,7 @@ const crumb: CrumbDefinition = { param: 'snapshotId' satisfies keyof Params }
 
 export const handle = { crumb }
 
-export const loaderSpecial = ({ params }: LoaderSpecialArgs) => {
+export const loadData = ({ params }: loadDataArgs) => {
   const { projectId, snapshotId } = params as Params
 
   return getSnapshotInfo({ api: clientAPI, projectId, snapshotId })

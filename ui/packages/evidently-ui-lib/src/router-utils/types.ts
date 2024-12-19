@@ -3,7 +3,7 @@ import type { ActionFunctionArgs, LoaderFunctionArgs, RouteObject } from 'react-
 // biome-ignore lint/suspicious/noExplicitAny: fine
 export type AdditionalActionFunctionArg = { data: any }
 
-export type ActionSpecialArgs<T extends AdditionalActionFunctionArg = AdditionalActionFunctionArg> =
+export type ActionArgs<T extends AdditionalActionFunctionArg = AdditionalActionFunctionArg> =
   ActionFunctionArgs & T
 
 export type AdditionalLoaderFunctionArgs = { queryKeys: string }
@@ -15,18 +15,17 @@ type QueryKeysToObject<T extends AdditionalLoaderFunctionArgs | undefined> = T e
   : // biome-ignore lint/complexity/noBannedTypes: fine
     {}
 
-export type LoaderSpecialArgs<
-  T extends AdditionalLoaderFunctionArgs = AdditionalLoaderFunctionArgs
-> = LoaderFunctionArgs & { searchParams: URLSearchParams } & {
-  query: QueryKeysToObject<T>
-}
+export type loadDataArgs<T extends AdditionalLoaderFunctionArgs = AdditionalLoaderFunctionArgs> =
+  LoaderFunctionArgs & { searchParams: URLSearchParams } & {
+    query: QueryKeysToObject<T>
+  }
 
 export type RouteExtended = RouteObject & {
   // biome-ignore lint/suspicious/noExplicitAny: fine
-  actions?: Record<string, (args: ActionSpecialArgs) => any>
+  actions?: Record<string, (args: ActionArgs) => any>
 } & {
   // biome-ignore lint/suspicious/noExplicitAny: fine
-  loaderSpecial?: (args: LoaderSpecialArgs) => any
+  loadData?: (args: loadDataArgs) => any
 } & { _route_path?: string }
 
 type ExtractPath<T extends RouteExtended> = T['path'] extends string ? T['path'] : ''
@@ -34,8 +33,8 @@ type ExtractPath<T extends RouteExtended> = T['path'] extends string ? T['path']
 export type ProvideLoaderInfo<K, Z> = { query: K; returnType: Z }
 export type ProvideActionInfo<K, Z> = { requestData: K; returnType: Z }
 
-type ExtractLoader<T extends RouteExtended> = T['loaderSpecial'] extends (
-  args: LoaderSpecialArgs<infer Z>
+type ExtractLoader<T extends RouteExtended> = T['loadData'] extends (
+  args: loadDataArgs<infer Z>
 ) => Promise<infer U>
   ? ProvideLoaderInfo<QueryKeysToObject<Z>, U>
   : // biome-ignore lint/suspicious/noExplicitAny: <explanation>
@@ -48,11 +47,11 @@ type ExtractLoader<T extends RouteExtended> = T['loaderSpecial'] extends (
 type ExtractAction<T extends RouteExtended> = T['actions'] extends Record<
   string,
   // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-  (args: ActionSpecialArgs) => any
+  (args: ActionArgs) => any
 >
   ? {
       [K in keyof T['actions']]: T['actions'][K] extends (
-        args: ActionSpecialArgs<infer Z>
+        args: ActionArgs<infer Z>
       ) => Promise<infer O>
         ? ProvideActionInfo<Z['data'], O>
         : undefined

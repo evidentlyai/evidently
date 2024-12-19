@@ -14,23 +14,29 @@ export const useSubmitFetcherGeneral = <M extends MatchWithAction, K extends key
     params: GetParams<M['path']>
   }
 }) => {
-  const f = useFetcher<M['action'][K]['returnType']>()
+  const originalFetcher = useFetcher<M['action'][K]['returnType']>()
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: fine
-  const s = useCallback(
-    (data: M['action'][K]['requestData']) =>
-      f.submit(
+  const submit = useCallback(
+    (data: M['action'][K]['requestData']) => {
+      const { params, path } = actionPath({ data })
+
+      originalFetcher.submit(
         // @ts-ignore
         { data, action },
         {
-          action: replaceParamsInLink(actionPath({ data }).params, actionPath({ data }).path),
+          action: replaceParamsInLink(params, path),
           ...REST_PARAMS_FOR_FETCHER_SUBMIT
         }
-      ),
-    [f]
+      )
+    },
+    [originalFetcher]
   )
 
-  const fetcher = useMemo(() => ({ state: f.state, data: f.data, submit: s }), [f, s])
+  const fetcher = useMemo(
+    () => ({ state: originalFetcher.state, data: originalFetcher.data, submit: submit }),
+    [originalFetcher, submit]
+  )
 
   return fetcher
 }

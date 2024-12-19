@@ -24,7 +24,7 @@ export type CurrentRoute = GetRouteByPath<Path>
 const crumb: CrumbDefinition = { title: 'Projects' }
 export const handle = { crumb }
 
-export const loaderSpecial = () => getProjects({ api: clientAPI })
+export const loadData = () => getProjects({ api: clientAPI })
 
 export const actions = getProjectsListActions({ api: clientAPI })
 

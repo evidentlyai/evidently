@@ -1,6 +1,6 @@
 import { responseParser } from 'evidently-ui-lib/api/client-heplers'
 import { ensureID } from 'evidently-ui-lib/api/utils'
-import type { GetParams, LoaderSpecialArgs } from 'evidently-ui-lib/router-utils/types'
+import type { GetParams, loadDataArgs } from 'evidently-ui-lib/router-utils/types'
 import type { CrumbDefinition } from 'evidently-ui-lib/router-utils/utils'
 import {
   Box,
@@ -36,7 +36,7 @@ const crumb: CrumbDefinition = {
 
 export const handle = { crumb }
 
-export const loaderSpecial = ({ params }: LoaderSpecialArgs) => {
+export const loadData = ({ params }: loadDataArgs) => {
   const { projectId: project_id } = params as Params
 
   return clientAPI

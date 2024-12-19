@@ -1,4 +1,4 @@
-import type { GetParams, LoaderSpecialArgs } from 'evidently-ui-lib/router-utils/types'
+import type { GetParams, loadDataArgs } from 'evidently-ui-lib/router-utils/types'
 
 import type { GetRouteByPath } from '~/routes/types'
 
@@ -7,10 +7,7 @@ import { clientAPI } from '~/api'
 import { createUseSubmitFetcherGeneral } from 'evidently-ui-lib/router-utils/fetchers'
 import { useIsAnyLoaderOrActionRunning, useRouteParams } from 'evidently-ui-lib/router-utils/hooks'
 import { SnapshotsListTemplate } from 'evidently-ui-lib/routes-components/snapshots'
-import {
-  getReports,
-  getSnapshotsActionSpecial
-} from 'evidently-ui-lib/routes-components/snapshots/data'
+import { getReports, getSnapshotsActions } from 'evidently-ui-lib/routes-components/snapshots/data'
 import { RouterLink } from '~/routes/components'
 
 ///////////////////
@@ -24,13 +21,13 @@ type Params = GetParams<Path>
 
 type CurrentRoute = GetRouteByPath<Path>
 
-export const loaderSpecial = ({ params }: LoaderSpecialArgs) => {
+export const loadData = ({ params }: loadDataArgs) => {
   const { projectId } = params as Params
 
   return getReports({ api: clientAPI, projectId })
 }
 
-export const actions = getSnapshotsActionSpecial({ api: clientAPI })
+export const actions = getSnapshotsActions({ api: clientAPI })
 
 const useFetcher = createUseSubmitFetcherGeneral<CurrentRoute>()
 
