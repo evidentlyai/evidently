@@ -14,6 +14,12 @@ export type BackendPaths = paths
 ///////////////////////////////
 type Schemas = components['schemas']
 
+type OmitNever<T> = { [K in keyof T as T[K] extends never ? never : K]: T[K] }
+
+export type GetSearchParamsAPIs<T extends 'get' | 'post'> = OmitNever<{
+  [P in keyof paths]: paths[P] extends Record<T, { parameters: { query?: infer Z } }> ? Z : never
+}>
+
 export type ProjectModel = Schemas['Project']
 export type ReportModel = Schemas['ReportModel']
 export type TestSuiteModel = Schemas['TestSuiteModel']
@@ -24,6 +30,11 @@ export type DashboardInfoModel = Omit<Schemas['DashboardInfoModel'], 'widgets'> 
 }
 export type VersionModel = Schemas['Version']
 export type MetadataModel = ReportModel['metadata']
+
+export type DownloadSnapshotURL = Extract<
+  keyof BackendPaths,
+  '/api/projects/{project_id}/{snapshot_id}/download'
+>
 
 ///////////////////////////////
 ///  EXTENDED TYPES FOR UI
