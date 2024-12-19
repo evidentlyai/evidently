@@ -25,11 +25,5 @@ export const getProjectsListActions = ({ api }: API) => ({
         params: { path: { project_id: args.data.project.id } },
         body: args.data.project
       })
-      .then(responseParser({ notThrowExc: true })),
-  'reload-all': (args: ActionArgs<{ data: { projectId: string; cara: number } }>) =>
-    api
-      .GET('/api/projects/{project_id}/reload', {
-        params: { path: { project_id: args.data.projectId } }
-      })
       .then(responseParser({ notThrowExc: true }))
 })
