@@ -7,6 +7,7 @@ import type {
   LoaderFunction,
   RouteObject
 } from '~/shared-dependencies/react-router-dom'
+import { assertNeverActionVariant } from '~/utils'
 
 export type CrumbDefinition = { title?: string; param?: string; keyFromLoaderData?: string }
 
@@ -25,12 +26,18 @@ const replaceLoaderSpecial = (loaderSpecial: (args: LoaderSpecialArgs) => any) =
 }
 
 // biome-ignore lint/suspicious/noExplicitAny: fine
-const replaceActionSpecial = (actionSpecial: (args: ActionSpecialArgs) => any) => {
+const replaceActions = (actions: Record<string, (args: ActionSpecialArgs) => any>) => {
   const action: ActionFunction = async (args) => {
     expectJsonRequest(args.request)
-    const data = await args.request.json()
 
-    return actionSpecial({ ...args, data })
+    // biome-ignore lint/suspicious/noExplicitAny: fine
+    const { action, data } = (await args.request.json()) as { action: string; data: any }
+
+    if (action in actions) {
+      return actions[action]({ ...args, data })
+    }
+
+    assertNeverActionVariant(action as never)
   }
 
   return action
@@ -46,7 +53,7 @@ export const decorateAllRoutes = (
       ...r,
       lazy: (() => r.lazy?.().then(decorateAllRoutes)) as LazyRouteFunction<RouteObject>,
       loader: r.loaderSpecial ? replaceLoaderSpecial(r.loaderSpecial) : undefined,
-      action: r.actionSpecial ? replaceActionSpecial(r.actionSpecial) : undefined,
+      action: r.actions ? replaceActions(r.actions) : undefined,
       ErrorBoundary: r.ErrorBoundary ? r.ErrorBoundary : ErrorBoundary,
       children: r.children ? r.children.map((r) => decorateAllRoutes(r, ErrorBoundary)) : undefined
     }
@@ -55,7 +62,7 @@ export const decorateAllRoutes = (
   return {
     ...r,
     loader: r.loaderSpecial ? replaceLoaderSpecial(r.loaderSpecial) : undefined,
-    action: r.actionSpecial ? replaceActionSpecial(r.actionSpecial) : undefined,
+    action: r.actions ? replaceActions(r.actions) : undefined,
     ErrorBoundary: r.ErrorBoundary ? r.ErrorBoundary : ErrorBoundary,
     children: r.children ? r.children.map((r) => decorateAllRoutes(r, ErrorBoundary)) : undefined
   } as RouteExtended

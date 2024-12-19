@@ -1,7 +1,7 @@
 import type { CrumbDefinition } from 'evidently-ui-lib/router-utils/utils'
 import {
   getProjects,
-  getProjectsListActionSpecial
+  getProjectsListActions
 } from 'evidently-ui-lib/routes-components/projectsList/data'
 import { Box, Grid, Typography } from 'evidently-ui-lib/shared-dependencies/mui-material'
 
@@ -26,7 +26,7 @@ export const handle = { crumb }
 
 export const loaderSpecial = () => getProjects({ api: clientAPI })
 
-export const actionSpecial = getProjectsListActionSpecial({ api: clientAPI })
+export const actions = getProjectsListActions({ api: clientAPI })
 
 export const Component = () => {
   const { loaderData: projects } = useRouteParams<CurrentRoute>()

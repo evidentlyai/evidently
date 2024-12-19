@@ -281,7 +281,6 @@ export const SnapshotsListTemplate = ({
                         .replace('{snapshot_id}', snapshot.id)
                     }
                   />
-
                   {slots?.additionalSnapshotActions && (
                     <slots.additionalSnapshotActions
                       snapshotId={snapshot.id}

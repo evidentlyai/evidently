@@ -4,6 +4,7 @@ import type { GetRouteByPath } from '~/routes/types'
 
 import { clientAPI } from '~/api'
 
+import { createUseSubmitFetcherGeneral } from 'evidently-ui-lib/router-utils/fetchers'
 import { useIsAnyLoaderOrActionRunning, useRouteParams } from 'evidently-ui-lib/router-utils/hooks'
 import { SnapshotsListTemplate } from 'evidently-ui-lib/routes-components/snapshots'
 import {
@@ -11,7 +12,6 @@ import {
   getTestSuites
 } from 'evidently-ui-lib/routes-components/snapshots/data'
 import { RouterLink } from '~/routes/components'
-import { useSubmitFetcher } from '~/routes/fetchers'
 
 ///////////////////
 //    ROUTE
@@ -30,14 +30,22 @@ export const loaderSpecial = ({ params }: LoaderSpecialArgs) => {
   return getTestSuites({ api: clientAPI, projectId })
 }
 
-export const actionSpecial = getSnapshotsActionSpecial({ api: clientAPI })
+export const actions = getSnapshotsActionSpecial({ api: clientAPI })
+
+const useFetcher = createUseSubmitFetcherGeneral<CurrentRoute>()
 
 export const Component = () => {
   const { loaderData: reports, params } = useRouteParams<CurrentRoute>()
 
   const { projectId } = params
 
-  const fetcher = useSubmitFetcher<CurrentRoute>({
+  const deleteSnapshotFetcher = useFetcher({
+    action: 'delete-snapshot',
+    actionPath: () => ({ path: '/:projectId/test-suites/?index', params: { projectId } })
+  })
+
+  const reloadSnapshotsFetcher = useFetcher({
+    action: 'reload-snapshots',
     actionPath: () => ({ path: '/:projectId/test-suites/?index', params: { projectId } })
   })
 
@@ -52,18 +60,9 @@ export const Component = () => {
         type='test suites'
         LinkToSnapshot={LinkToSnapshot}
         onDeleteSnapshot={({ snapshotId }) =>
-          fetcher.submit({
-            action: 'delete-snapshot',
-            snapshotId,
-            projectId
-          })
+          deleteSnapshotFetcher.submit({ snapshotId, projectId })
         }
-        onReloadSnapshots={() =>
-          fetcher.submit({
-            action: 'reload-snapshots',
-            projectId
-          })
-        }
+        onReloadSnapshots={() => reloadSnapshotsFetcher.submit({ projectId })}
       />
     </>
   )

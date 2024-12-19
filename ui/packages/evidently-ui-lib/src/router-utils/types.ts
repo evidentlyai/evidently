@@ -21,8 +21,10 @@ export type LoaderSpecialArgs<
   query: QueryKeysToObject<T>
 }
 
-// biome-ignore lint/suspicious/noExplicitAny: fine
-export type RouteExtended = RouteObject & { actionSpecial?: (args: ActionSpecialArgs) => any } & {
+export type RouteExtended = RouteObject & {
+  // biome-ignore lint/suspicious/noExplicitAny: fine
+  actions?: Record<string, (args: ActionSpecialArgs) => any>
+} & {
   // biome-ignore lint/suspicious/noExplicitAny: fine
   loaderSpecial?: (args: LoaderSpecialArgs) => any
 } & { _route_path?: string }
@@ -36,22 +38,30 @@ type ExtractLoader<T extends RouteExtended> = T['loaderSpecial'] extends (
   args: LoaderSpecialArgs<infer Z>
 ) => Promise<infer U>
   ? ProvideLoaderInfo<QueryKeysToObject<Z>, U>
-  : T['lazy'] extends (
-        // biome-ignore lint/suspicious/noExplicitAny: fine
-        args: any
-      ) => Promise<{ loaderSpecial: (args: LoaderSpecialArgs<infer Z>) => Promise<infer K> }>
-    ? ProvideLoaderInfo<QueryKeysToObject<Z>, K>
+  : // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+    T['lazy'] extends (args: any) => Promise<infer R>
+    ? R extends RouteExtended
+      ? ExtractLoader<R>
+      : ProvideLoaderInfo<QueryKeysToObject<undefined>, undefined>
     : ProvideLoaderInfo<QueryKeysToObject<undefined>, undefined>
 
-type ExtractAction<T extends RouteExtended> = T['actionSpecial'] extends (
-  args: ActionSpecialArgs<infer Z>
-) => Promise<infer O>
-  ? ProvideActionInfo<Z['data'], O>
-  : T['lazy'] extends (
-        // biome-ignore lint/suspicious/noExplicitAny: fine
-        args: any
-      ) => Promise<{ actionSpecial: (args: ActionSpecialArgs<infer Z>) => Promise<infer O> }>
-    ? ProvideActionInfo<Z['data'], O>
+type ExtractAction<T extends RouteExtended> = T['actions'] extends Record<
+  string,
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+  (args: ActionSpecialArgs) => any
+>
+  ? {
+      [K in keyof T['actions']]: T['actions'][K] extends (
+        args: ActionSpecialArgs<infer Z>
+      ) => Promise<infer O>
+        ? ProvideActionInfo<Z['data'], O>
+        : undefined
+    }
+  : // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+    T['lazy'] extends (args: any) => Promise<infer R>
+    ? R extends RouteExtended
+      ? ExtractAction<R>
+      : ProvideActionInfo<undefined, undefined>
     : ProvideActionInfo<undefined, undefined>
 
 type IsIndex<T extends RouteExtended> = T['index'] extends true
@@ -126,7 +136,7 @@ export type MatchWithAction = Match<
   // biome-ignore lint/suspicious/noExplicitAny: fine
   any, // any loader
   // biome-ignore lint/suspicious/noExplicitAny: fine
-  ProvideActionInfo<any, any>
+  Record<string, ProvideActionInfo<any, any>>
 >
 
 export type MatchWithLoader = Match<

@@ -108,11 +108,11 @@ export const ProjectInfoCard = ({
   LinkToProject
 }: {
   project: StrictID<ProjectModel>
-  LinkToProject: (props: { projectId: string }) => JSX.Element
+  LinkToProject: (props: { name: string; projectId: string }) => JSX.Element
 }) => {
   return (
     <>
-      <LinkToProject projectId={project.id} />
+      <LinkToProject projectId={project.id} name={project.name} />
       <Typography style={{ whiteSpace: 'pre-line' }} variant='body1'>
         {project.description}
       </Typography>
@@ -127,7 +127,7 @@ interface ProjectProps {
   onDeleteProject: (id: string) => void
   onEditProject: (args: { name: string; description: string }) => void
   disabled?: boolean
-  LinkToProject: (props: { projectId: string }) => JSX.Element
+  LinkToProject: (props: { name: string; projectId: string }) => JSX.Element
 }
 
 export const ProjectCard: React.FC<ProjectProps> = ({

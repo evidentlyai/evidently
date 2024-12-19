@@ -1,6 +1,5 @@
 import { type API, responseParser } from '~/api/client-heplers'
 import type { ActionSpecialArgs } from '~/router-utils/types'
-import { assertNeverActionVariant } from '~/utils'
 
 export const getReports = ({ api, projectId }: API & { projectId: string }) =>
   api
@@ -34,33 +33,12 @@ export const deleteSnapshot = ({
     })
     .then(responseParser({ notThrowExc: true }))
 
-type ActionData =
-  | {
-      action: 'reload-snapshots'
-      projectId: string
-    }
-  | {
-      action: 'delete-snapshot'
-      projectId: string
-      snapshotId: string
-    }
-
-export const getSnapshotsActionSpecial =
-  ({ api }: API) =>
-  async ({ data }: ActionSpecialArgs<{ data: ActionData }>) => {
-    const { action } = data
-
-    if (action === 'reload-snapshots') {
-      const { projectId } = data
-
-      return reloadSnapshots({ api, projectId })
-    }
-
-    if (action === 'delete-snapshot') {
-      const { snapshotId, projectId } = data
-
-      return deleteSnapshot({ api, snapshotId, projectId })
-    }
-
-    assertNeverActionVariant(action)
-  }
+export const getSnapshotsActionSpecial = ({ api }: API) => ({
+  'reload-snapshots': ({
+    data: { projectId }
+  }: ActionSpecialArgs<{ data: { projectId: string } }>) => reloadSnapshots({ api, projectId }),
+  'delete-snapshot': ({
+    data: { snapshotId, projectId }
+  }: ActionSpecialArgs<{ data: { snapshotId: string; projectId: string } }>) =>
+    deleteSnapshot({ api, snapshotId, projectId })
+})
