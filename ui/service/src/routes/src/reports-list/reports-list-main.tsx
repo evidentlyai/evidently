@@ -5,7 +5,10 @@ import type { GetRouteByPath } from '~/routes/types'
 import { clientAPI } from '~/api'
 
 import { createUseSubmitFetcherGeneral } from 'evidently-ui-lib/router-utils/fetchers'
-import { useIsAnyLoaderOrActionRunning, useRouteParams } from 'evidently-ui-lib/router-utils/hooks'
+import {
+  useCurrentRouteParams,
+  useIsAnyLoaderOrActionRunning
+} from 'evidently-ui-lib/router-utils/hooks'
 import { SnapshotsListTemplate } from 'evidently-ui-lib/routes-components/snapshots'
 import { getReports, getSnapshotsActions } from 'evidently-ui-lib/routes-components/snapshots/data'
 import { RouterLink } from '~/routes/components'
@@ -31,7 +34,7 @@ export const actions = getSnapshotsActions({ api: clientAPI })
 const useFetcher = createUseSubmitFetcherGeneral<CurrentRoute>()
 
 export const Component = () => {
-  const { loaderData: reports, params } = useRouteParams<CurrentRoute>()
+  const { loaderData: reports, params } = useCurrentRouteParams<CurrentRoute>()
 
   const { projectId } = params
 

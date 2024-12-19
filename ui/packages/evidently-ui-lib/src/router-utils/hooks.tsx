@@ -12,7 +12,7 @@ import {
 import type { MatchWithLoader } from '~/router-utils/types'
 import type { CrumbDefinition, HandleWithCrumb } from '~/router-utils/utils'
 
-export const useRouteParams = <
+export const useCurrentRouteParams = <
   K extends MatchWithLoader &
     (unknown extends K
       ? never

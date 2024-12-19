@@ -8,7 +8,7 @@ import { Outlet, ScrollRestoration } from 'evidently-ui-lib/shared-dependencies/
 
 import type { GetRouteByPath } from '~/routes/types'
 
-import { useCrumbsFromHandle, useRouteParams } from 'evidently-ui-lib/router-utils/hooks'
+import { useCrumbsFromHandle, useCurrentRouteParams } from 'evidently-ui-lib/router-utils/hooks'
 import type { CrumbDefinition } from 'evidently-ui-lib/router-utils/utils'
 import { clientAPI } from '~/api'
 
@@ -27,7 +27,7 @@ export const handle = { crumb }
 export const loadData = () => getVersion({ api: clientAPI })
 
 export const Component = () => {
-  const { loaderData } = useRouteParams<CurrentRoute>()
+  const { loaderData } = useCurrentRouteParams<CurrentRoute>()
   const { crumbs } = useCrumbsFromHandle()
 
   return (

@@ -15,7 +15,7 @@ import { ContentCopy as ContentCopyIcon } from 'evidently-ui-lib/shared-dependen
 
 import type { GetRouteByPath } from '~/routes/types'
 
-import { useRouteParams } from 'evidently-ui-lib/router-utils/hooks'
+import { useCurrentRouteParams } from 'evidently-ui-lib/router-utils/hooks'
 import { clientAPI } from '~/api'
 import { RouterLink, useMatchRouter } from '~/routes/components'
 
@@ -51,7 +51,7 @@ const TABS = {
 }
 
 export const Component = () => {
-  const { loaderData: project, params } = useRouteParams<CurrentRoute>()
+  const { loaderData: project, params } = useCurrentRouteParams<CurrentRoute>()
   const isReports = useMatchRouter({ path: '/:projectId/reports' })
   const isTestSuites = useMatchRouter({ path: '/:projectId/test-suites' })
 

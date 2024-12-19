@@ -9,7 +9,7 @@ import type { GetRouteByPath } from '~/routes/types'
 
 import { clientAPI } from '~/api'
 
-import { useRouteParams } from 'evidently-ui-lib/router-utils/hooks'
+import { useCurrentRouteParams } from 'evidently-ui-lib/router-utils/hooks'
 import { AddNewProjectWrapper, ProjectCardWrapper } from './components'
 
 ///////////////////
@@ -27,7 +27,7 @@ export const loadData = () => getProjects({ api: clientAPI })
 export const actions = getProjectsListActions({ api: clientAPI })
 
 export const Component = () => {
-  const { loaderData: projects } = useRouteParams<CurrentRoute>()
+  const { loaderData: projects } = useCurrentRouteParams<CurrentRoute>()
 
   return (
     <>

@@ -3,7 +3,7 @@ import type { CrumbDefinition } from 'evidently-ui-lib/router-utils/utils'
 
 import type { GetRouteByPath } from '~/routes/types'
 
-import { useRouteParams } from 'evidently-ui-lib/router-utils/hooks'
+import { useCurrentRouteParams } from 'evidently-ui-lib/router-utils/hooks'
 import {
   ProjectDashboard,
   getDataRange,
@@ -41,7 +41,7 @@ export const loadData = ({
 }
 
 export const Component = () => {
-  const { loaderData: data, query, setQuery } = useRouteParams<CurrentRoute>()
+  const { loaderData: data, query, setQuery } = useCurrentRouteParams<CurrentRoute>()
 
   const dateRange = getDataRange(data)
 

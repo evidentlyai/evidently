@@ -1,6 +1,6 @@
 import type { GetRouteByPath } from '~/routes/types'
 
-import { useRouteParams } from 'evidently-ui-lib/router-utils/hooks'
+import { useCurrentRouteParams } from 'evidently-ui-lib/router-utils/hooks'
 import type { GetParams, loadDataArgs } from 'evidently-ui-lib/router-utils/types'
 import type { CrumbDefinition } from 'evidently-ui-lib/router-utils/utils'
 import { SnapshotTemplateComponent } from 'evidently-ui-lib/routes-components/snapshotId'
@@ -29,7 +29,7 @@ export const loadData = ({ params }: loadDataArgs) => {
 }
 
 export const Component = () => {
-  const { loaderData, params } = useRouteParams<CurrentRoute>()
+  const { loaderData, params } = useCurrentRouteParams<CurrentRoute>()
 
   const { projectId, snapshotId } = params
 
