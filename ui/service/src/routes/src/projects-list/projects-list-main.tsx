@@ -16,10 +16,8 @@ import { AddNewProjectWrapper, ProjectCardWrapper } from './components'
 //    ROUTE
 ///////////////////
 
-export const _route_path = '/?index'
-type Path = typeof _route_path
-
-export type CurrentRoute = GetRouteByPath<Path>
+export const currentRoutePath = '/?index'
+export type CurrentRoute = GetRouteByPath<typeof currentRoutePath>
 
 const crumb: CrumbDefinition = { title: 'Projects' }
 export const handle = { crumb }

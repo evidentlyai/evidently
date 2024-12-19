@@ -23,12 +23,10 @@ import { RouterLink, useMatchRouter } from '~/routes/components'
 //    ROUTE
 ///////////////////
 
-export const _route_path = '/:projectId'
-type Path = typeof _route_path
+export const currentRoutePath = '/:projectId'
 
-type CurrentRoute = GetRouteByPath<Path>
-
-type Params = GetParams<Path>
+type CurrentRoute = GetRouteByPath<typeof currentRoutePath>
+type Params = GetParams<typeof currentRoutePath>
 
 const crumb: CrumbDefinition = {
   keyFromLoaderData: 'name' satisfies keyof CurrentRoute['loader']['returnType']

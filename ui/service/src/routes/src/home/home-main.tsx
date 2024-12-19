@@ -16,10 +16,9 @@ import { clientAPI } from '~/api'
 //    ROUTE
 ///////////////////
 
-export const _route_path = '/'
-type Path = typeof _route_path
+export const currentRoutePath = '/'
 
-type CurrentRoute = GetRouteByPath<Path>
+type CurrentRoute = GetRouteByPath<typeof currentRoutePath>
 
 const crumb: CrumbDefinition = { title: 'Home' }
 

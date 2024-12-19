@@ -14,12 +14,11 @@ import { RouterLink } from '~/routes/components'
 //    ROUTE
 ///////////////////
 
-export const _route_path = '/:projectId/reports/?index'
-type Path = typeof _route_path
+export const currentRoutePath = '/:projectId/reports/?index'
 
-type Params = GetParams<Path>
+type Params = GetParams<typeof currentRoutePath>
 
-type CurrentRoute = GetRouteByPath<Path>
+type CurrentRoute = GetRouteByPath<typeof currentRoutePath>
 
 export const loadData = ({ params }: loadDataArgs) => {
   const { projectId } = params as Params

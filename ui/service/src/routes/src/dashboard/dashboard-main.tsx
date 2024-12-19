@@ -22,12 +22,10 @@ import { clientAPI } from '~/api'
 //    ROUTE
 ///////////////////
 
-export const _route_path = '/:projectId/?index'
-type Path = typeof _route_path
+export const currentRoutePath = '/:projectId/?index'
 
-type CurrentRoute = GetRouteByPath<Path>
-
-type Params = GetParams<Path>
+type CurrentRoute = GetRouteByPath<typeof currentRoutePath>
+type Params = GetParams<typeof currentRoutePath>
 
 const crumb: CrumbDefinition = { title: 'Dashboard' }
 

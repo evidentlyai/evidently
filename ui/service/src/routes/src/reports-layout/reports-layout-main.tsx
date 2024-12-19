@@ -4,7 +4,7 @@ import type { CrumbDefinition } from 'evidently-ui-lib/router-utils/utils'
 //    ROUTE
 ///////////////////
 
-export const _route_path = '/:projectId/reports'
+export const currentRoutePath = '/:projectId/reports'
 
 const crumb: CrumbDefinition = { title: 'Reports' }
 

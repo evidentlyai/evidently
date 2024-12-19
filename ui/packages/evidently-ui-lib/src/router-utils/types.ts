@@ -26,7 +26,7 @@ export type RouteExtended = RouteObject & {
 } & {
   // biome-ignore lint/suspicious/noExplicitAny: fine
   loadData?: (args: loadDataArgs) => any
-} & { _route_path?: string }
+} & { currentRoutePath?: string }
 
 type ExtractPath<T extends RouteExtended> = T['path'] extends string ? T['path'] : ''
 
@@ -95,14 +95,14 @@ export type GetRouteStructure<
   ?
       | {
           expected: `${Prefix}${PathDelimitter<Prefix>}${IsIndex<First> extends true ? '?index' : ''}${ExtractPath<First>}`
-          actuall: First['_route_path'] extends string
-            ? First['_route_path']
+          actuall: First['currentRoutePath'] extends string
+            ? First['currentRoutePath']
             : First['lazy'] extends (
                   // biome-ignore lint/suspicious/noExplicitAny: fine
                   args: any
-                ) => Promise<{ _route_path: infer Z }>
+                ) => Promise<{ currentRoutePath: infer Z }>
               ? Z
-              : 'missing export _route_path in expected route'
+              : 'missing export currentRoutePath in expected route'
         }
       | GetRouteStructure<
           First['children'],
