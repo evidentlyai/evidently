@@ -100,6 +100,9 @@ DEFAULT_ROLE_PERMISSIONS: Dict[Tuple[DefaultRole, Optional[EntityType]], Set[Per
         Permission.PROJECT_READ,
         Permission.PROJECT_WRITE,
         Permission.PROJECT_SNAPSHOT_ADD,
+        Permission.DATASET_READ,
+        Permission.DATASET_WRITE,
+        Permission.DATASET_DELETE,
     },
     (DefaultRole.EDITOR, EntityType.Dataset): {
         Permission.LIST_USERS,
@@ -111,6 +114,7 @@ DEFAULT_ROLE_PERMISSIONS: Dict[Tuple[DefaultRole, Optional[EntityType]], Set[Per
         Permission.LIST_USERS,
         Permission.ORG_READ,
         Permission.PROJECT_READ,
+        Permission.DATASET_READ,
     },
     (DefaultRole.VIEWER, EntityType.Team): {
         Permission.LIST_USERS,
