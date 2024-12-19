@@ -18,7 +18,7 @@
   * [Regression Performance](presets/reg-performance.md)
   * [Classification Performance](presets/class-performance.md)
   * [NoTargetPerformance](presets/no-target-performance.md)
-  * [Text Overview](presets/text-overview.md)
+  * [Text Evals](presets/text-overview.md)
   * [Recommender System](presets/recsys.md)
 * [Tutorials and Examples](examples/README.md)
   * [All Tutorials](examples/examples.md)

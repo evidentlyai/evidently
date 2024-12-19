@@ -58,19 +58,9 @@ Let's quickly look at an example monitoring Dashboard.
 
 If you do not have one yet, [create an Evidently Cloud account](https://app.evidently.cloud/signup).
 
-## 2. Create a team
+## 2. View a demo project 
 
-Go to the main page, click on "plus" sign and create a new Team. For example, "personal" Team. 
-
-## 3. View a demo project 
-
-Click on "Generate Demo Project" inside your Team. It will create a Project for a toy regression model that forecasts bike demand. 
-
-![](../.gitbook/assets/cloud/generate_demo_project.png)
-
-It'll take a few moments to populate the data. In the background, Evidently will run the code to generate Reports and Test Suites for 20 days. Once it's ready, open the Project to see a monitoring Dashboard.
-
-Dashboards Tabs will show data quality, data drift, and model quality over time.
+View an example Demo Project for a Regression Model for bike demand forecasting. Dashboards Tabs will show data quality, data drift, and model quality over time.
 
 ![](../.gitbook/assets/cloud/demo_dashboard.gif)
 
@@ -194,7 +184,7 @@ Now, you need to create a new Project. You can do this programmatically or in th
 {% tabs %}
 
 {% tab title="UI" %} 
-Click on the “plus” sign on the home page. Create a Team if you do not have one yet. Type your Project name and description.
+Click on the “plus” sign on the home page. Type your Project name and description.
 
 ![](../.gitbook/assets/cloud/add_project_wide-min.png)
 
@@ -209,10 +199,10 @@ project = ws.get_project("PROJECT_ID")
 {% endtab %}
 
 {% tab title="API" %} 
-Use the `create_project` command to create a new Project. Add a name and description. Copy the Team ID from the [teams page](https://app.evidently.cloud/teams). 
+Use the `create_project` command to create a new Project. Add a name and description. Copy the ID of your organization from the [organizations page](https://app.evidently.cloud/organizations).
 
 ```python
-project = ws.create_project("My test project", team_id="YOUR_TEAM_ID")
+project = ws.create_project("My test project", org_id="YOUR_ORG_ID")
 project.description = "My project description"
 project.save()
 ```
