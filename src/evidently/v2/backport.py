@@ -1,15 +1,20 @@
 import dataclasses
 import datetime
+from typing import Dict
 from typing import List
 from typing import Optional
+from typing import TypeVar
 from typing import Union
 
+from evidently import ColumnMapping
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric as MetricV1
 from evidently.base_metric import MetricResult as MetricResultV1
+from evidently.core import ColumnType
 from evidently.core import new_id
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options.base import Options
+from evidently.pydantic_utils import FieldPath
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.suite.base_suite import ContextPayload
@@ -22,10 +27,18 @@ from evidently.ui.dashboards.base import DashboardPanel
 from evidently.ui.dashboards.base import PanelValue
 from evidently.ui.dashboards.base import ReportFilter
 from evidently.ui.dashboards.utils import PlotType
+from evidently.ui.dashboards.utils import getattr_nested
 from evidently.ui.type_aliases import ProjectID
+from evidently.utils.data_preprocessing import ColumnDefinition
+from evidently.utils.data_preprocessing import DataDefinition as DataDefinitionV1
+from evidently.v2.datasets import Dataset
 from evidently.v2.metrics import Metric as MetricV2
 from evidently.v2.metrics import MetricResult as MetricResultV2
 from evidently.v2.metrics import SingleValue
+from evidently.v2.metrics.base import Check
+from evidently.v2.metrics.base import MetricId
+from evidently.v2.metrics.base import SingleValueCheck
+from evidently.v2.metrics.base import TResult
 from evidently.v2.report import Snapshot as SnapshotV2
 
 
@@ -118,6 +131,70 @@ class SingleValueDashboardPanel(DashboardPanelV2):
         return await panel.build(data_storage, project_id, timestamp_start, timestamp_end)
 
 
+V1Result = TypeVar("V1Result", bound=MetricResultV1)
+
+
+class MetricV1Adapter(MetricV2[TResult]):
+    metric: MetricV1[V1Result]
+
+    def calculate(self, current_data: Dataset, reference_data: Optional[Dataset]) -> TResult:
+        # fixme
+        # columns: Dict[str, ColumnDefinition] = {k: ColumnDefinition(k, v.type) for k, v in current_data._data_definition._columns.items()}
+        columns: Dict[str, ColumnDefinition] = {
+            k: ColumnDefinition(k, ColumnType.Numerical) for k, _ in current_data._data_definition._columns.items()
+        }
+        dd = DataDefinitionV1(columns=columns, reference_present=reference_data is not None)
+        data = InputData(
+            reference_data=reference_data.as_dataframe() if reference_data is not None else None,
+            current_data=current_data.as_dataframe(),
+            additional_data={},
+            column_mapping=ColumnMapping(),
+            data_definition=dd,
+        )
+        result = self.metric.calculate(data)  # todo: need cache/deduplication
+        return self.extract_value(result)
+
+    def extract_value(self, result: V1Result) -> TResult:
+        raise NotImplementedError
+
+    def display_name(self) -> str:
+        return self.metric.get_id()  # todo
+
+
+class SingleValueMetricV1Adapter(MetricV1Adapter[SingleValue]):
+    class Config:
+        type_alias = "evidently:metric2:SingleValueMetricV1Adapter"
+
+    field_path: Union[str, FieldPath]
+
+    def __init__(
+        self, metric_id: MetricId, metric: MetricV1, field_path: FieldPath, checks: Optional[List[Check]] = None, **data
+    ) -> None:
+        self.field_path = field_path
+        self.metric = metric
+        super().__init__(metric_id, checks)
+
+    def extract_value(self, result: V1Result) -> SingleValue:
+        value = getattr_nested(result, self.field_path_str.split("."))
+        return SingleValue(value)
+
+    @property
+    def field_path_str(self) -> str:
+        if isinstance(self.field_path, str):
+            return self.field_path
+        return self.field_path.get_path()
+
+
+def column_mean_v1(column: str, checks: Optional[List[SingleValueCheck]] = None):
+    from evidently.metrics import ColumnSummaryMetric
+
+    return SingleValueMetricV1Adapter(
+        metric_id="column_mean_v1",
+        metric=ColumnSummaryMetric(column),
+        field_path=FieldPath("current_characteristics.mean".split("."), ColumnSummaryMetric.result_type()),
+    )
+
+
 def main():
     import pandas as pd
 
@@ -129,7 +206,7 @@ def main():
     def create_snapshot(i):
         df = pd.DataFrame({"col": list(range(i + 5))})
         dataset = Dataset.from_pandas(df)
-        report = ReportV2([column_mean("col")])
+        report = ReportV2([column_mean("col"), column_mean_v1("col")])
         snapshot_v2 = report.run(dataset, None)
 
         snapshot_v1 = snapshot_v2_to_v1(snapshot_v2)

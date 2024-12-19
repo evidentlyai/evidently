@@ -29,7 +29,7 @@ def evidently_service_exception_handler(_: Request, exc: EvidentlyServiceError) 
 
 
 class LocalServiceComponent(ServiceComponent):
-    debug: bool = False
+    debug: bool = True
 
     def get_api_route_handlers(self, ctx: ComponentContext):
         guard = ctx.get_component(SecurityComponent).get_auth_guard()
