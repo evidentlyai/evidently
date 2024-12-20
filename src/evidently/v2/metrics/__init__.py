@@ -1,3 +1,4 @@
+from .base import ByLabelValue
 from .base import Metric
 from .base import MetricResult
 from .base import SingleValue
@@ -10,6 +11,7 @@ from .presets import MetricPreset
 from .quantile import column_quantile
 
 __all__ = [
+    "ByLabelValue",
     "column_max",
     "column_mean",
     "column_min",

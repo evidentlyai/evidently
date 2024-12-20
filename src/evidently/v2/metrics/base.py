@@ -20,6 +20,7 @@ from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.html_widgets import CounterData
 from evidently.renderers.html_widgets import WidgetSize
 from evidently.renderers.html_widgets import counter
+from evidently.renderers.html_widgets import table_data
 from evidently.tests.base_test import TestStatus
 from evidently.utils.dashboard import TemplateParams
 from evidently.utils.dashboard import inline_iframe_html_template
@@ -147,6 +148,10 @@ def get_default_render(title: str, result: TResult) -> List[BaseWidgetInfo]:
                 counters=[CounterData(label="", value=result.value)],
             ),
         ]
+    if isinstance(result, ByLabelValue):
+        return [
+            table_data(title=title, column_names=["Label", "Value"], data=[(k, v) for k, v in result._values.items()])
+        ]
     raise NotImplementedError(f"No default render for {type(result)}")
 
 
@@ -172,12 +177,15 @@ class Metric(Generic[TResult]):
         Returns:
 
         """
-        result = self.calculate(*context._input_data)
+        result = self._call(context)
         if not result.is_widget_set():
             result.widget = get_default_render(self.display_name(), result)
         if self._checks and len(self._checks) > 0:
             result.set_checks([check(self, result) for check in self._checks])
         return result
+
+    def _call(self, context: "Context") -> TResult:
+        return self.calculate(*context._input_data)
 
     @abc.abstractmethod
     def calculate(self, current_data: Dataset, reference_data: Optional[Dataset]) -> TResult:
@@ -238,3 +246,8 @@ class ColumnMetric(Metric[TResult]):
     @property
     def column_name(self) -> str:
         return self._column_name
+
+
+class ByLabelValue(MetricResult):
+    def __init__(self, values: typing.Dict[str, Union[float, int, bool, str]]):
+        self._values = values
