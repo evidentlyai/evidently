@@ -913,3 +913,16 @@ def get_class_separation_plot_data_agg(
 
         additional_plots.append((str(label), plotly_figure(title="", figure=fig)))
     return additional_plots
+
+
+def group_widget(
+    *,
+    title: str,
+    widgets: List[BaseWidgetInfo],
+) -> BaseWidgetInfo:
+    return BaseWidgetInfo(
+        title=title,
+        type=WidgetType.GROUP.value,
+        widgets=widgets,
+        size=2,
+    )
