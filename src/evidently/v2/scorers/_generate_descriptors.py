@@ -10,9 +10,8 @@ from typing import Optional
 from typing import Tuple
 from typing import Type
 
-from pydantic.utils import import_string
-
 from evidently import ColumnType
+from evidently._pydantic_compat import import_string
 from evidently.features.custom_feature import CustomFeature
 from evidently.features.custom_feature import CustomPairColumnFeature
 from evidently.features.custom_feature import CustomSingleColumnFeature

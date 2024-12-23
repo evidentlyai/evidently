@@ -9,6 +9,9 @@ from evidently.v2.report import Context
 
 
 class GroupByMetric(Metric):
+    class Config:
+        type_alias = "evidently:metric_v2:GroupByMetric"
+
     def __init__(self, metric: Metric, column_name: str, label: object):
         super().__init__(f"{metric.id}:group_by:{label}")
         self._metric = metric

@@ -8,6 +8,9 @@ from evidently.v2.metrics import SingleValueCheck
 
 
 class ColumnQuantile(Metric[SingleValue]):
+    class Config:
+        type_alias = "evidently:metric_v2:ColumnQuantile"
+
     def __init__(self, column: str, quantile: float, checks: Optional[List[SingleValueCheck]] = None):
         super().__init__(f"quantile:{quantile}:{column}", checks)
         self._quantile = quantile

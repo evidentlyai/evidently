@@ -164,7 +164,7 @@ class Metric(EvidentlyBaseModel, Generic[TResult]):
     """
 
     class Config:
-        alias_required = False  # todo: turn on
+        is_base_type = True
 
     metric_id: MetricId
     _checks: Optional[List[Check]]
@@ -228,6 +228,9 @@ class Metric(EvidentlyBaseModel, Generic[TResult]):
         if group_by is None:
             return self
         raise NotImplementedError()
+
+
+MetricV2 = Metric
 
 
 class ColumnMetric(Metric[TResult]):
