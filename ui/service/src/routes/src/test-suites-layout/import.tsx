@@ -1,1 +1,1 @@
-export * as TestSuitesLayout from '~/routes/src/test-suites-layout/test-suites-layout-main'
+export * as TestSuitesLayout from './test-suites-layout-main'
