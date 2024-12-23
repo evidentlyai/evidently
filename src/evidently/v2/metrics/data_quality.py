@@ -10,9 +10,6 @@ from evidently.v2.report import Context
 
 
 class F1Metric(Metric[ByLabelValue]):
-    class Config:
-        type_alias = "evidently:metric_v2:F1Metric"
-
     def __init__(self, probas_threshold: Optional[float] = None, k: Optional[int] = None):
         super().__init__("f1")
         self.probas_threshold = probas_threshold
@@ -32,9 +29,6 @@ class F1Metric(Metric[ByLabelValue]):
 
 
 class PrecisionMetric(Metric[ByLabelValue]):
-    class Config:
-        type_alias = "evidently:metric_v2:PrecisionMetric"
-
     def __init__(self, probas_threshold: Optional[float] = None, k: Optional[int] = None):
         super().__init__("precision")
         self.probas_threshold = probas_threshold
@@ -54,9 +48,6 @@ class PrecisionMetric(Metric[ByLabelValue]):
 
 
 class RecallMetric(Metric[ByLabelValue]):
-    class Config:
-        type_alias = "evidently:metric_v2:RecallMetric"
-
     def __init__(self, probas_threshold: Optional[float] = None, k: Optional[int] = None):
         super().__init__("recall")
         self.probas_threshold = probas_threshold
@@ -77,9 +68,6 @@ class RecallMetric(Metric[ByLabelValue]):
 
 
 class RocAucMetric(Metric[ByLabelValue]):
-    class Config:
-        type_alias = "evidently:metric_v2:RocAucMetric"
-
     def __init__(self, probas_threshold: Optional[float] = None, k: Optional[int] = None):
         super().__init__("roc_auc")
         self.probas_threshold = probas_threshold

@@ -17,7 +17,6 @@ from IPython.core.display import HTML
 
 from evidently.model.dashboard import DashboardInfo
 from evidently.model.widget import BaseWidgetInfo
-from evidently.pydantic_utils import EvidentlyBaseModel
 from evidently.renderers.html_widgets import CounterData
 from evidently.renderers.html_widgets import WidgetSize
 from evidently.renderers.html_widgets import counter
@@ -156,15 +155,12 @@ def get_default_render(title: str, result: TResult) -> List[BaseWidgetInfo]:
     raise NotImplementedError(f"No default render for {type(result)}")
 
 
-class Metric(EvidentlyBaseModel, Generic[TResult]):
+class Metric(Generic[TResult]):
     """
     Base metric class.
 
     Metric is class to perform calculation over given dataset and return result.
     """
-
-    class Config:
-        is_base_type = True
 
     metric_id: MetricId
     _checks: Optional[List[Check]]

@@ -8,9 +8,6 @@ from evidently.v2.metrics import SingleValueCheck
 
 
 class ColumnMean(Metric[SingleValue]):
-    class Config:
-        type_alias = "evidently:metric_v2:ColumnMean"
-
     column: str
 
     def __init__(self, column: str, checks: Optional[List[SingleValueCheck]] = None, **data):

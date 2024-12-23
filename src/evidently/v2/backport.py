@@ -58,8 +58,6 @@ class MetricV2Adapter(MetricV1[MetricResultV2Adapter]):
     class Config:
         type_alias = "evidently:metric:MetricV2Adapter"
 
-    metric: MetricV2
-
     def calculate(self, data: InputData) -> MetricResultV2Adapter:
         pass
 

@@ -8,9 +8,6 @@ from evidently.v2.metrics import SingleValueCheck
 
 
 class ColumnMin(Metric[SingleValue]):
-    class Config:
-        type_alias = "evidently:metric_v2:ColumnMin"
-
     column: str
 
     def __init__(self, column: str, checks: Optional[List[SingleValueCheck]] = None):

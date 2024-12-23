@@ -8,9 +8,6 @@ from evidently.v2.metrics import SingleValueCheck
 
 
 class ColumnMax(Metric[SingleValue]):
-    class Config:
-        type_alias = "evidently:metric_v2:ColumnMax"
-
     def __init__(self, column: str, checks: Optional[List[SingleValueCheck]] = None):
         super().__init__(f"max:{column}", checks)
         self._column = column
