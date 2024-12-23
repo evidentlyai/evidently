@@ -1,6 +1,7 @@
 from typing import Optional
 
 from evidently.metrics import ClassificationQualityByClass
+from evidently.metrics.classification_performance.quality_by_class_metric import ClassificationQualityByClassRenderer
 from evidently.v2.datasets import Dataset
 from evidently.v2.metrics import ByLabelValue
 from evidently.v2.metrics import Metric
@@ -76,11 +77,18 @@ class RocAucMetric(Metric[ByLabelValue]):
         raise ValueError()
 
     def _call(self, context: Context) -> ByLabelValue:
-        result = context.get_legacy_metric(ClassificationQualityByClass(self.probas_threshold, self.k))
+        metric = ClassificationQualityByClass(self.probas_threshold, self.k)
+        result = context.get_legacy_metric(metric)
 
-        return ByLabelValue(
+        object.__setattr__(metric, "get_result", lambda: result)
+
+        value = ByLabelValue(
             {k: v.roc_auc for k, v in result.current.metrics.items()},
         )
+
+        value.widget = [ClassificationQualityByClassRenderer().render_html(metric)[1]]
+        value.widget[0].title = self.display_name()
+        return value
 
     def display_name(self) -> str:
         return "ROC AUC metric"
