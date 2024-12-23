@@ -5,7 +5,6 @@ from evidently.metrics.classification_performance.quality_by_class_metric import
 from evidently.v2.datasets import Dataset
 from evidently.v2.metrics import ByLabelValue
 from evidently.v2.metrics import Metric
-from evidently.v2.metrics.base import TResult
 from evidently.v2.report import Context
 
 
@@ -15,7 +14,7 @@ class F1Metric(Metric[ByLabelValue]):
         self.probas_threshold = probas_threshold
         self.k = k
 
-    def calculate(self, current_data: Dataset, reference_data: Optional[Dataset]) -> TResult:
+    def calculate(self, current_data: Dataset, reference_data: Optional[Dataset]) -> ByLabelValue:
         raise ValueError()
 
     def _call(self, context: Context) -> ByLabelValue:
@@ -34,7 +33,7 @@ class PrecisionMetric(Metric[ByLabelValue]):
         self.probas_threshold = probas_threshold
         self.k = k
 
-    def calculate(self, current_data: Dataset, reference_data: Optional[Dataset]) -> TResult:
+    def calculate(self, current_data: Dataset, reference_data: Optional[Dataset]) -> ByLabelValue:
         raise ValueError()
 
     def _call(self, context: Context) -> ByLabelValue:
@@ -53,7 +52,7 @@ class RecallMetric(Metric[ByLabelValue]):
         self.probas_threshold = probas_threshold
         self.k = k
 
-    def calculate(self, current_data: Dataset, reference_data: Optional[Dataset]) -> TResult:
+    def calculate(self, current_data: Dataset, reference_data: Optional[Dataset]) -> ByLabelValue:
         raise ValueError()
 
     def _call(self, context: Context) -> ByLabelValue:
@@ -73,7 +72,7 @@ class RocAucMetric(Metric[ByLabelValue]):
         self.probas_threshold = probas_threshold
         self.k = k
 
-    def calculate(self, current_data: Dataset, reference_data: Optional[Dataset]) -> TResult:
+    def calculate(self, current_data: Dataset, reference_data: Optional[Dataset]) -> ByLabelValue:
         raise ValueError()
 
     def _call(self, context: Context) -> ByLabelValue:
@@ -86,8 +85,8 @@ class RocAucMetric(Metric[ByLabelValue]):
             {k: v.roc_auc for k, v in result.current.metrics.items()},
         )
 
-        value.widget = [ClassificationQualityByClassRenderer().render_html(metric)[1]]
-        value.widget[0].title = self.display_name()
+        value.widget = ClassificationQualityByClassRenderer().render_html(metric)
+        value.widget[0].params["counters"][0]["label"] = self.display_name()
         return value
 
     def display_name(self) -> str:

@@ -2,11 +2,11 @@ from .base import ByLabelValue
 from .base import Metric
 from .base import MetricResult
 from .base import SingleValue
-from .base import SingleValueCheck
+from .base import SingleValueMetricTest
+from .column_summary import column_max
+from .column_summary import column_mean
+from .column_summary import column_min
 from .container import MetricContainer
-from .max import column_max
-from .mean import column_mean
-from .min import column_min
 from .presets import MetricPreset
 from .quantile import column_quantile
 
@@ -21,5 +21,5 @@ __all__ = [
     "MetricPreset",
     "MetricResult",
     "SingleValue",
-    "SingleValueCheck",
+    "SingleValueMetricTest",
 ]

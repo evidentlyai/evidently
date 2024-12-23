@@ -1,3 +1,4 @@
+import typing
 from itertools import chain
 from typing import Dict
 from typing import List
@@ -19,7 +20,7 @@ from .metrics import MetricContainer
 from .metrics import MetricPreset
 from .metrics import MetricResult
 from .metrics.base import MetricId
-from .metrics.base import checks_widget
+from .metrics.base import metric_tests_widget
 from .metrics.base import render_widgets
 
 TResultType = TypeVar("TResultType", bound=MetricResult)
@@ -76,11 +77,11 @@ class Context:
         if metric.id not in self._metrics:
             self._metrics[metric.id] = metric.call(self)
         self._current_graph_level = prev_level
-        return self._metrics[metric.id]
+        return typing.cast(TResultType, self._metrics[metric.id])
 
     def get_metric_result(self, metric: Union[MetricId, Metric[TResultType]]) -> TResultType:
         if isinstance(metric, MetricId):
-            return self._metrics[metric]
+            return typing.cast(TResultType, self._metrics[metric])
         return self.calculate_metric(metric)
 
     def get_metric(self, metric: MetricId) -> Metric[TResultType]:
@@ -100,7 +101,7 @@ class Context:
                     None,
                 )
             )
-        return self._legacy_metrics[fp]
+        return typing.cast(T, self._legacy_metrics[fp])
 
 
 class Snapshot:
@@ -148,7 +149,7 @@ class Snapshot:
             title="tabs",
             tabs=[
                 TabData("Metrics", group_widget(title="", widgets=list(chain(*[result[1] for result in results])))),
-                TabData("Checks", checks_widget(list(chain(*[result[2].checks for result in results])))),
+                TabData("Checks", metric_tests_widget(list(chain(*[result[2].tests for result in results])))),
             ],
         )
         return render_widgets(

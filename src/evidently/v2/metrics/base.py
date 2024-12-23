@@ -34,16 +34,16 @@ if typing.TYPE_CHECKING:
 class MetricResult:
     _metric: Optional["Metric"] = None
     _widget: Optional[List[BaseWidgetInfo]] = None
-    _checks: Optional[List["CheckResult"]] = None
+    _tests: Optional[List["MetricTestResult"]] = None
 
-    def set_checks(self, checks: List["CheckResult"]):
-        self._checks = checks
+    def set_tests(self, tests: List["MetricTestResult"]):
+        self._tests = tests
 
     def _repr_html_(self):
         assert self._widget
         widget = copy(self._widget)
-        if self._checks:
-            widget.append(checks_widget(self.checks))
+        if self._tests:
+            widget.append(metric_tests_widget(self.tests))
         return render_results(self, html=False)
 
     def is_widget_set(self) -> bool:
@@ -58,8 +58,8 @@ class MetricResult:
         self._widget = value
 
     @property
-    def checks(self) -> List["CheckResult"]:
-        return self._checks or []
+    def tests(self) -> List["MetricTestResult"]:
+        return self._tests or []
 
 
 def render_widgets(widgets: List[BaseWidgetInfo]):
@@ -93,12 +93,12 @@ TResult = TypeVar("TResult", bound=MetricResult)
 
 MetricReturnValue = Tuple[TResult, BaseWidgetInfo]
 
-CheckId = str
+MetricTestId = str
 
 
 @dataclasses.dataclass
-class CheckResult:
-    id: CheckId
+class MetricTestResult:
+    id: MetricTestId
     name: str
     description: str
     status: TestStatus
@@ -109,18 +109,18 @@ class SingleValue(MetricResult):
     value: Union[float, int, str]
 
 
-class Check(Protocol[TResult]):
-    def __call__(self, metric: "Metric", value: TResult) -> CheckResult: ...
+class MetricTest(Protocol[TResult]):
+    def __call__(self, metric: "Metric", value: TResult) -> MetricTestResult: ...
 
 
-class SingleValueCheck(Check[TResult], Protocol):
-    def __call__(self, metric: "Metric", value: SingleValue) -> CheckResult: ...
+class SingleValueMetricTest(MetricTest[SingleValue], Protocol):
+    def __call__(self, metric: "Metric", value: SingleValue) -> MetricTestResult: ...
 
 
 MetricId = str
 
 
-def checks_widget(checks: List[CheckResult]) -> BaseWidgetInfo:
+def metric_tests_widget(tests: List[MetricTestResult]) -> BaseWidgetInfo:
     return BaseWidgetInfo(
         title="",
         size=2,
@@ -128,12 +128,12 @@ def checks_widget(checks: List[CheckResult]) -> BaseWidgetInfo:
         params={
             "tests": [
                 dict(
-                    title=check.name,
-                    description=check.description,
-                    state=check.status.value.lower(),
+                    title=test.name,
+                    description=test.description,
+                    state=test.status.value.lower(),
                     groups=[],
                 )
-                for idx, check in enumerate(checks)
+                for idx, test in enumerate(tests)
             ],
         },
     )
@@ -145,7 +145,7 @@ def get_default_render(title: str, result: TResult) -> List[BaseWidgetInfo]:
             counter(
                 title=title,
                 size=WidgetSize.FULL,
-                counters=[CounterData(label="", value=result.value)],
+                counters=[CounterData(label="", value=str(result.value))],
             ),
         ]
     if isinstance(result, ByLabelValue):
@@ -163,11 +163,11 @@ class Metric(Generic[TResult]):
     """
 
     _metric_id: MetricId
-    _checks: Optional[List[Check]]
+    _tests: Optional[List[MetricTest[TResult]]]
 
-    def __init__(self, metric_id: MetricId, checks: Optional[List[Check]] = None) -> None:
+    def __init__(self, metric_id: MetricId) -> None:
         self._metric_id = metric_id
-        self._checks = checks
+        self._tests = None
 
     def call(self, context: "Context") -> TResult:
         """
@@ -180,8 +180,8 @@ class Metric(Generic[TResult]):
         result = self._call(context)
         if not result.is_widget_set():
             result.widget = get_default_render(self.display_name(), result)
-        if self._checks and len(self._checks) > 0:
-            result.set_checks([check(self, result) for check in self._checks])
+        if self._tests and len(self._tests) > 0:
+            result.set_tests([test(self, result) for test in self._tests])
         return result
 
     def _call(self, context: "Context") -> TResult:
@@ -191,20 +191,20 @@ class Metric(Generic[TResult]):
     def calculate(self, current_data: Dataset, reference_data: Optional[Dataset]) -> TResult:
         raise NotImplementedError()
 
-    def _default_checks(self) -> List[Check]:
+    def _default_tests(self) -> List[MetricTest[TResult]]:
         """
-        allows to redefine default checks for metric
+        allows to redefine default tests for metric
         Returns:
-            list of checks to use as default
+            list of tests to use as default
         """
         return []
 
-    def _default_checks_with_reference(self) -> Optional[List[Check]]:
+    def _default_tests_with_reference(self) -> Optional[List[MetricTest[TResult]]]:
         """
-        allows to redefine default checks for metric when calculated with reference
+        allows to redefine default tests for metric when calculated with reference
         Returns:
-            list of checks to use as default when called with reference data
-            None - if default checks should be returned
+            list of tests to use as default when called with reference data
+            None - if default tests should be returned
         """
         return None
 
@@ -216,8 +216,12 @@ class Metric(Generic[TResult]):
     def display_name(self) -> str:
         raise NotImplementedError()
 
-    def checks(self) -> List[Check]:
-        return self._checks or []
+    def with_tests(self, tests: Optional[List[MetricTest[TResult]]]):
+        self._tests = tests
+        return self
+
+    def tests(self) -> List[MetricTest[TResult]]:
+        return self._tests or []
 
     def group_by(self, group_by: Optional[str]) -> Union["Metric", List["Metric"]]:
         if group_by is None:
