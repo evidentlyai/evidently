@@ -7,6 +7,11 @@ from typing import Tuple
 from typing import TypeVar
 from typing import Union
 
+from evidently.base_metric import Metric as LegacyMetric
+from evidently.base_metric import MetricResult as LegacyMetricResult
+
+from .. import ColumnMapping
+from ..base_metric import InputData
 from .datasets import Dataset
 from .datasets import DatasetColumn
 from .metrics import Metric
@@ -17,7 +22,8 @@ from .metrics.base import MetricId
 from .metrics.base import checks_widget
 from .metrics.base import render_widgets
 
-TResultType = TypeVar("TResultType", bound="MetricResult")
+TResultType = TypeVar("TResultType", bound=MetricResult)
+T = TypeVar("T", bound=LegacyMetricResult)
 
 
 class ContextColumnData:
@@ -41,6 +47,7 @@ class Context:
     _data_columns: Dict[str, ContextColumnData]
     _input_data: Tuple[Dataset, Optional[Dataset]]
     _current_graph_level: dict
+    _legacy_metrics: Dict[str, object]
 
     def __init__(self):
         self._metrics = {}
@@ -49,6 +56,7 @@ class Context:
         self._data_columns = {}
         self._metrics_graph = {}
         self._current_graph_level = self._metrics_graph
+        self._legacy_metrics = {}
 
     def init_dataset(self, current_data: Dataset, reference_data: Optional[Dataset]):
         self._input_data = (current_data, reference_data)
@@ -77,6 +85,22 @@ class Context:
 
     def get_metric(self, metric: MetricId) -> Metric[TResultType]:
         return self._metrics_graph[metric]["_self"]
+
+    def get_legacy_metric(self, metric: LegacyMetric[T]) -> T:
+        fp = metric.get_fingerprint()
+        if fp not in self._legacy_metrics:
+            self._legacy_metrics[fp] = metric.calculate(
+                InputData(
+                    self._input_data[1].as_dataframe() if self._input_data[1] is not None else None,
+                    self._input_data[0].as_dataframe(),
+                    ColumnMapping(),
+                    None,
+                    {},
+                    None,
+                    None,
+                )
+            )
+        return self._legacy_metrics[fp]
 
 
 class Snapshot:
@@ -116,9 +140,7 @@ class Snapshot:
             (
                 metric,
                 self._context.get_metric_result(metric).widget,
-                checks_widget(self.context.get_metric_result(metric))
-                if self.context.get_metric_result(metric).checks
-                else None,
+                self._context.get_metric_result(metric),
             )
             for metric in self.context._metrics_graph.keys()
         ]
@@ -126,9 +148,7 @@ class Snapshot:
             title="tabs",
             tabs=[
                 TabData("Metrics", group_widget(title="", widgets=list(chain(*[result[1] for result in results])))),
-                TabData(
-                    "Checks", group_widget(title="", widgets=[result[2] for result in results if result[2] is not None])
-                ),
+                TabData("Checks", checks_widget(list(chain(*[result[2].checks for result in results])))),
             ],
         )
         return render_widgets(
