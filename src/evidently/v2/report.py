@@ -124,8 +124,9 @@ class Snapshot:
         self.context.init_dataset(current_data, reference_data)
         for item in self.report.items():
             if isinstance(item, (MetricPreset,)):
+                metric_results = {}
                 for metric in item.metrics():
-                    self.context.calculate_metric(metric)
+                    metric_results[metric.id] = self.context.calculate_metric(metric)
             elif isinstance(item, (MetricContainer,)):
                 for metric in item.metrics(self.context):
                     self.context.calculate_metric(metric)

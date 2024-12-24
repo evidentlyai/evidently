@@ -15,6 +15,7 @@ from typing import Union
 
 from IPython.core.display import HTML
 
+from evidently.metric_results import Label
 from evidently.model.dashboard import DashboardInfo
 from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.html_widgets import CounterData
@@ -109,6 +110,11 @@ class SingleValue(MetricResult):
     value: Union[float, int, str]
 
 
+@dataclasses.dataclass
+class ByLabelValue(MetricResult):
+    values: typing.Dict[Label, Union[float, int, bool, str]]
+
+
 class MetricTest(Protocol[TResult]):
     def __call__(self, metric: "Metric", value: TResult) -> MetricTestResult: ...
 
@@ -117,7 +123,13 @@ class SingleValueMetricTest(MetricTest[SingleValue], Protocol):
     def __call__(self, metric: "Metric", value: SingleValue) -> MetricTestResult: ...
 
 
+class ByLabelValueMetricTest(MetricTest[ByLabelValue], Protocol):
+    def __call__(self, metric: "Metric", value: ByLabelValue) -> MetricTestResult: ...
+
+
 MetricId = str
+
+ByLabelValueTests = typing.Dict[Label, List[SingleValueMetricTest]]
 
 
 def metric_tests_widget(tests: List[MetricTestResult]) -> BaseWidgetInfo:
@@ -150,7 +162,7 @@ def get_default_render(title: str, result: TResult) -> List[BaseWidgetInfo]:
         ]
     if isinstance(result, ByLabelValue):
         return [
-            table_data(title=title, column_names=["Label", "Value"], data=[(k, v) for k, v in result._values.items()])
+            table_data(title=title, column_names=["Label", "Value"], data=[(k, v) for k, v in result.values.items()])
         ]
     raise NotImplementedError(f"No default render for {type(result)}")
 
@@ -250,8 +262,3 @@ class ColumnMetric(Metric[TResult]):
     @property
     def column_name(self) -> str:
         return self._column_name
-
-
-class ByLabelValue(MetricResult):
-    def __init__(self, values: typing.Dict[str, Union[float, int, bool, str]]):
-        self._values = values
