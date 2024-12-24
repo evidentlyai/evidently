@@ -1,7 +1,9 @@
 import glob
 import os
+from collections import defaultdict
 from importlib import import_module
 from inspect import isabstract
+from typing import Dict
 from typing import Set
 from typing import Type
 from typing import TypeVar
@@ -60,6 +62,13 @@ def find_all_subclasses(
     return classes
 
 
+REGISTRY_MAPPING: Dict[Type[PolymorphicModel], str] = {
+    DashboardPanel: "evidently.ui._registry",
+    Test: "evidently.tests._registry",
+    TestParameters: "evidently.tests._registry",
+}
+
+
 def test_all_aliases_registered():
     not_registered = []
 
@@ -75,11 +84,22 @@ def test_all_aliases_registered():
         if key not in TYPE_ALIASES or TYPE_ALIASES[key] != classpath:
             not_registered.append(cls)
 
-    msg = "\n".join(
-        f'register_type_alias({get_base_class(cls).__name__}, "{cls.__get_classpath__()}", "{cls.__get_type__()}")'
-        for cls in sorted(not_registered, key=lambda c: get_base_class(c).__name__ + " " + c.__get_classpath__())
-    )
-    print(msg)
+    register_msgs = []
+    file_to_type = defaultdict(list)
+    for cls in sorted(not_registered, key=lambda c: get_base_class(c).__name__ + " " + c.__get_classpath__()):
+        base_class = get_base_class(cls)
+        msg = f'register_type_alias({base_class.__name__}, "{cls.__get_classpath__()}", "{cls.__get_type__()}")'
+        if base_class not in REGISTRY_MAPPING:
+            register_msgs.append(msg)
+            continue
+        file_to_type[REGISTRY_MAPPING[base_class]].append(msg)
+
+    for file, msgs in file_to_type.items():
+        mod = import_string(file)
+        with open(mod.__file__, "a") as f:
+            f.write("\n")
+            f.write("\n".join(msgs))
+    print("\n".join(register_msgs))
     assert len(not_registered) == 0, "Not all aliases registered"
 
 

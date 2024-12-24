@@ -1,6 +1,6 @@
-from evidently.v2.metrics.min import min_metric
+from evidently.v2.metrics.min import column_min
 
 
 def test_min_metric():
-    metric = min_metric("")
+    metric = column_min("")
     assert metric
