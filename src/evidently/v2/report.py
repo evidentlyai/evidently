@@ -147,10 +147,10 @@ class Snapshot:
             for metric in self.context._metrics_graph.keys()
         ]
         tabs = widget_tabs(
-            title="tabs",
+            title="",
             tabs=[
                 TabData("Metrics", group_widget(title="", widgets=list(chain(*[result[1] for result in results])))),
-                TabData("Checks", metric_tests_widget(list(chain(*[result[2].tests for result in results])))),
+                TabData("Tests", metric_tests_widget(list(chain(*[result[2].tests for result in results])))),
             ],
         )
         return render_widgets(
