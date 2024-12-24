@@ -10,7 +10,7 @@ from evidently.v2.datasets import Descriptor
 
 class CustomColumnDescriptor(Descriptor):
     def __init__(self, column_name: str, func: Callable[[DatasetColumn], DatasetColumn], alias: Optional[str] = None):
-        super().__init__(alias)
+        super().__init__(alias or f"custom_column_descriptor:{func.__name__}")
         self._column_name = column_name
         self._func = func
 
@@ -23,7 +23,7 @@ class CustomDescriptor(Descriptor):
     def __init__(
         self, func: Callable[[Dataset], Union[DatasetColumn, Dict[str, DatasetColumn]]], alias: Optional[str] = None
     ):
-        super().__init__(alias)
+        super().__init__(alias or f"custom_descriptor:{func.__name__}")
         self._func = func
 
     def generate_data(self, dataset: "Dataset") -> Union[DatasetColumn, Dict[str, DatasetColumn]]:

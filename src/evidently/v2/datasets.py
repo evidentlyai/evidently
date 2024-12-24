@@ -88,7 +88,7 @@ class Dataset:
     ) -> "Dataset":
         dataset = PandasDataset(data, data_definition)
         for descriptor in descriptors or []:
-            key = _determine_desccriptor_column_name(descriptor.alias, data.columns)
+            key = _determine_desccriptor_column_name(descriptor.alias, data.columns.tolist())
             new_column = descriptor.generate_data(dataset)
             if isinstance(new_column, DatasetColumn):
                 data[key] = new_column.data

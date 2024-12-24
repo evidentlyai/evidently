@@ -10,7 +10,7 @@ from evidently.v2.datasets import Descriptor
 
 class TextLength(Descriptor):
     def __init__(self, column_name: str, alias: Optional[str] = None):
-        super().__init__(alias)
+        super().__init__(alias or "text_length")
         self._column_name: str = column_name
 
     def generate_data(self, dataset: "Dataset") -> Union[DatasetColumn, Dict[str, DatasetColumn]]:
