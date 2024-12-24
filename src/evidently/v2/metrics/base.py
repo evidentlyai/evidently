@@ -241,9 +241,6 @@ class Metric(Generic[TResult]):
         raise NotImplementedError()
 
 
-MetricV2 = Metric
-
-
 class ColumnMetric(Metric[TResult]):
     def calculate(self, current_data: Dataset, reference_data: Optional[Dataset]) -> TResult:
         return self.calculate_value(

@@ -26,7 +26,6 @@ from evidently.ui.dashboards.base import PanelValue
 from evidently.ui.dashboards.base import ReportFilter
 from evidently.ui.dashboards.utils import PlotType
 from evidently.ui.type_aliases import ProjectID
-from evidently.v2.checks.numerical_checks import le
 from evidently.v2.datasets import Dataset
 from evidently.v2.metrics import Metric as MetricV2
 from evidently.v2.metrics import MetricResult as MetricResultV2
@@ -83,13 +82,13 @@ def snapshot_v2_to_v1(snapshot: SnapshotV2) -> SnapshotV1:
         metrics.append(metric_v2_to_v1(metric))
         metric_results.append(metric_result_v2_to_v1(metric_result))
 
-        for check in metric_result.checks or ():
+        for test in metric_result.tests or ():
             tests.append(TestV2Adapter())
             test_results.append(
                 TestResultV1(
-                    name=check.name,
-                    description=check.description,
-                    status=check.status,
+                    name=test.name,
+                    description=test.description,
+                    status=test.status,
                     group="",
                     parameters=TestV2Parameters(),
                 )
@@ -158,6 +157,7 @@ def main():
     from evidently.ui.workspace import Workspace
     from evidently.v2.metrics import column_mean
     from evidently.v2.report import Report as ReportV2
+    from evidently.v2.tests.numerical_checks import le
 
     def create_snapshot(i):
         df = pd.DataFrame({"col": list(range(i + 5))})
