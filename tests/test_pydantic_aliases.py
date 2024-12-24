@@ -36,7 +36,6 @@ from evidently.ui.components.base import Component
 from evidently.ui.dashboards.base import DashboardPanel
 from evidently.utils.llm.prompts import PromptBlock
 from evidently.utils.llm.prompts import PromptTemplate
-from evidently.v2.metrics import Metric as MetricV2
 
 T = TypeVar("T")
 
@@ -130,7 +129,6 @@ def test_all_aliases_correct():
         DashboardPanel: "dashboard_panel",
         PromptBlock: "prompt_block",
         PromptTemplate: "prompt_template",
-        MetricV2: "metric_v2",
     }
     skip = [Component]
     skip_literal = [EvidentlyBaseModel, WithTestAndMetricDependencies, BasePreset]
