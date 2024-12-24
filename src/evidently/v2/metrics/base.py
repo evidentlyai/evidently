@@ -1,5 +1,6 @@
 import abc
 import dataclasses
+import inspect
 import itertools
 import typing
 import uuid
@@ -13,11 +14,13 @@ from typing import Tuple
 from typing import TypeVar
 from typing import Union
 
+import typing_inspect
 from IPython.core.display import HTML
 
 from evidently.metric_results import Label
 from evidently.model.dashboard import DashboardInfo
 from evidently.model.widget import BaseWidgetInfo
+from evidently.pydantic_utils import EvidentlyBaseModel
 from evidently.renderers.html_widgets import CounterData
 from evidently.renderers.html_widgets import WidgetSize
 from evidently.renderers.html_widgets import counter
@@ -241,7 +244,64 @@ class Metric(Generic[TResult]):
         raise NotImplementedError()
 
 
-class ColumnMetric(Metric[TResult]):
+class AutoAliasMixin:
+    __alias_type__: typing.ClassVar[str]
+
+    @classmethod
+    def __get_type__(cls):
+        config = cls.__dict__.get("Config")
+        if config is not None and config.__dict__.get("type_alias") is not None:
+            return config.type_alias
+        return f"evidently:{cls.__alias_type__}:{cls.__name__}"
+
+
+class MetricConfig(AutoAliasMixin, EvidentlyBaseModel):
+    __alias_type__: typing.ClassVar[str] = "metric_config"
+
+    class Config:
+        is_base_type = True
+
+    __metric_type__: typing.Type["MetricWithConfig"]
+
+    def __get_metric_type__(self) -> typing.Type["MetricWithConfig"]:
+        if not hasattr(self, "__metric_type__"):
+            raise ValueError(f"{self.__class__.__name__} is not binded to Metric type")
+        return self.__metric_type__
+
+    def to_metric(self) -> "MetricWithConfig":
+        metric_type = self.__get_metric_type__()
+        return metric_type(self.get_metric_id(), self)
+
+    def get_metric_id(self) -> str:
+        return self.get_fingerprint()
+
+
+TConfig = TypeVar("TConfig", bound=MetricConfig)
+
+
+class MetricWithConfig(Metric[TResult], Generic[TResult, TConfig], abc.ABC):
+    def __init__(self, metric_id: MetricId, config: TConfig):
+        self.config = config
+        super().__init__(metric_id)
+
+    def __init_subclass__(cls):
+        if not inspect.isabstract(cls):
+            base = typing_inspect.get_generic_bases(cls)[0]  # fixme only works for simple cases
+            config_type = typing_inspect.get_args(base)[1]
+            if not issubclass(config_type, MetricConfig):
+                raise ValueError("Value of generic parameter TConfig should be MetricConfig subclass")
+            config_type.__metric_type__ = cls
+        super().__init_subclass__()
+
+
+class ColumnMetricConfig(MetricConfig, abc.ABC):
+    column_name: str
+
+
+TColumnConfig = TypeVar("TColumnConfig", bound=ColumnMetricConfig)
+
+
+class ColumnMetric(MetricWithConfig[TResult, TColumnConfig]):
     def calculate(self, current_data: Dataset, reference_data: Optional[Dataset]) -> TResult:
         return self.calculate_value(
             current_data.column(self.column_name),
@@ -255,10 +315,6 @@ class ColumnMetric(Metric[TResult]):
     def display_name(self) -> str:
         raise NotImplementedError()
 
-    def __init__(self, column_name: str, metric_id: MetricId):
-        super().__init__(metric_id)
-        self._column_name = column_name
-
     @property
     def column_name(self) -> str:
-        return self._column_name
+        return self.config.column_name
