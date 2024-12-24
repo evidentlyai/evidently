@@ -162,13 +162,12 @@ class Metric(Generic[TResult]):
     Metric is class to perform calculation over given dataset and return result.
     """
 
-    metric_id: MetricId
+    _metric_id: MetricId
     _checks: Optional[List[Check]]
 
-    def __init__(self, metric_id: MetricId, checks: Optional[List[Check]] = None, **data) -> None:
-        self.metric_id = metric_id
+    def __init__(self, metric_id: MetricId, checks: Optional[List[Check]] = None) -> None:
+        self._metric_id = metric_id
         self._checks = checks
-        super().__init__(**data)
 
     def call(self, context: "Context") -> TResult:
         """
@@ -211,7 +210,7 @@ class Metric(Generic[TResult]):
 
     @property
     def id(self) -> MetricId:
-        return self.metric_id
+        return self._metric_id
 
     @abc.abstractmethod
     def display_name(self) -> str:

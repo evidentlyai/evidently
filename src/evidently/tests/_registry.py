@@ -267,7 +267,6 @@ register_type_alias(
     "evidently:test_parameters:ValueListParameters",
 )
 
-register_type_alias(Test, "evidently.v2.backport.TestV2Adapter", "evidently:tests:TestV2Adapter")
 register_type_alias(
     TestParameters, "evidently.v2.backport.TestV2Parameters", "evidently:test_parameters:TestV2Parameters"
 )
