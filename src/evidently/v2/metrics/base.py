@@ -3,8 +3,10 @@ import dataclasses
 import itertools
 import typing
 import uuid
+from abc import ABC
 from abc import abstractmethod
 from copy import copy
+from typing import Generator
 from typing import Generic
 from typing import List
 from typing import Optional
@@ -99,6 +101,8 @@ MetricReturnValue = Tuple[TResult, BaseWidgetInfo]
 
 MetricTestId = str
 
+Value = Union[float, int, str]
+
 
 @dataclasses.dataclass
 class MetricTestResult:
@@ -110,12 +114,19 @@ class MetricTestResult:
 
 @dataclasses.dataclass
 class SingleValue(MetricResult):
-    value: Union[float, int, str]
+    value: Value
 
 
 @dataclasses.dataclass
 class ByLabelValue(MetricResult):
-    values: typing.Dict[Label, Union[float, int, bool, str]]
+    values: typing.Dict[Label, Value]
+
+    def labels(self) -> List[Label]:
+        return list(self.values.keys())
+
+    def get_label_result(self, label: Label) -> SingleValue:
+        value = self.values.get(label)
+        return SingleValue(value)
 
 
 class MetricTest(Protocol[TResult]):
@@ -178,11 +189,9 @@ class Metric(Generic[TResult]):
     """
 
     _metric_id: MetricId
-    _tests: Optional[List[MetricTest[TResult]]]
 
     def __init__(self, metric_id: MetricId) -> None:
         self._metric_id = metric_id
-        self._tests = None
 
     def call(self, context: "Context") -> TResult:
         """
@@ -195,8 +204,9 @@ class Metric(Generic[TResult]):
         result = self._call(context)
         if not result.is_widget_set():
             result.widget = get_default_render(self.display_name(), result)
-        if self._tests and len(self._tests) > 0:
-            result.set_tests([test(self, result) for test in self._tests])
+        test_results = list(self.get_tests(result))
+        if test_results and len(test_results) > 0:
+            result.set_tests(test_results)
         return result
 
     def _call(self, context: "Context") -> TResult:
@@ -204,6 +214,10 @@ class Metric(Generic[TResult]):
 
     @abc.abstractmethod
     def calculate(self, current_data: Dataset, reference_data: Optional[Dataset]) -> TResult:
+        raise NotImplementedError()
+
+    @abc.abstractmethod
+    def get_tests(self, value: TResult) -> Generator[MetricTestResult, None, None]:
         raise NotImplementedError()
 
     def _default_tests(self) -> List[MetricTest[TResult]]:
@@ -230,13 +244,6 @@ class Metric(Generic[TResult]):
     @abc.abstractmethod
     def display_name(self) -> str:
         raise NotImplementedError()
-
-    def with_tests(self, tests: Optional[List[MetricTest[TResult]]]):
-        self._tests = tests
-        return self
-
-    def tests(self) -> List[MetricTest[TResult]]:
-        return self._tests or []
 
     def group_by(self, group_by: Optional[str]) -> Union["Metric", List["Metric"]]:
         if group_by is None:
@@ -265,3 +272,36 @@ class ColumnMetric(Metric[TResult]):
     @property
     def column_name(self) -> str:
         return self._column_name
+
+
+class SingleValueMetric(Metric[SingleValue], ABC):
+    _tests: Optional[List[MetricTest[SingleValue]]]
+
+    def with_tests(self, tests: Optional[List[MetricTest[SingleValue]]]):
+        self._tests = tests
+        return self
+
+    def get_tests(self, value: SingleValue) -> Generator[MetricTestResult, None, None]:
+        if self._tests is None:
+            return None
+        for test in self._tests:
+            yield test(self, value)
+
+
+class ByLabelMetric(Metric[ByLabelValue], ABC):
+    _tests: Optional[typing.Dict[Label, List[SingleValueMetricTest]]]
+
+    def label_metric(self, label: Label) -> SingleValueMetric:
+        return
+
+    def with_tests(self, tests: Optional[typing.Dict[Label, List[SingleValueMetricTest]]]):
+        self._tests = tests
+        return self
+
+    def get_tests(self, value: ByLabelValue) -> Generator[MetricTestResult, None, None]:
+        if self._tests is None:
+            return None
+        for label, tests in self._tests.items():
+            label_value = value.get_label_result(label)
+            for test in tests:
+                yield test(self, label_value)
