@@ -10,6 +10,7 @@ from evidently.base_metric import InputData
 from evidently.base_metric import Metric as MetricV1
 from evidently.base_metric import MetricResult as MetricResultV1
 from evidently.core import new_id
+from evidently.metric_results import Label
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options.base import Options
 from evidently.renderers.base_renderer import MetricRenderer
@@ -27,6 +28,7 @@ from evidently.ui.dashboards.base import ReportFilter
 from evidently.ui.dashboards.utils import PlotType
 from evidently.ui.type_aliases import ProjectID
 from evidently.v2.datasets import Dataset
+from evidently.v2.metrics import ByLabelValue
 from evidently.v2.metrics import Metric as MetricV2
 from evidently.v2.metrics import MetricResult as MetricResultV2
 from evidently.v2.metrics import SingleValue
@@ -47,9 +49,18 @@ class SingleValueV1(MetricResultV2Adapter):
     value: Union[float, int, str]
 
 
+class ByLabelValueV1(MetricResultV2Adapter):
+    class Config:
+        type_alias = "evidently:metric_result:SingleValueV1"
+
+    values: Dict[Label, Union[float, int, bool, str]]
+
+
 def metric_result_v2_to_v1(metric_result: MetricResultV2) -> MetricResultV1:
     if isinstance(metric_result, SingleValue):
         return SingleValueV1(widget=[dataclasses.asdict(w) for w in metric_result.widget], value=metric_result.value)
+    if isinstance(metric_result, ByLabelValue):
+        return ByLabelValueV1(widget=[dataclasses.asdict(w) for w in metric_result.widget], values=metric_result.values)
     raise NotImplementedError(metric_result.__class__.__name__)
 
 
