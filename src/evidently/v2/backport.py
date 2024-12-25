@@ -51,7 +51,7 @@ class SingleValueV1(MetricResultV2Adapter):
 
 class ByLabelValueV1(MetricResultV2Adapter):
     class Config:
-        type_alias = "evidently:metric_result:SingleValueV1"
+        type_alias = "evidently:metric_result:ByLabelValueV1"
 
     values: Dict[Label, Union[float, int, bool, str]]
 
