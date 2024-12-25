@@ -60,8 +60,8 @@ type ExtractAction<T extends RouteExtended> = T['actions'] extends Record<
     T['lazy'] extends (args: any) => Promise<infer R>
     ? R extends RouteExtended
       ? ExtractAction<R>
-      : ProvideActionInfo<undefined, undefined>
-    : ProvideActionInfo<undefined, undefined>
+      : undefined
+    : undefined
 
 type IsIndex<T extends RouteExtended> = T['index'] extends true
   ? true
@@ -129,6 +129,14 @@ export type Match<Path extends string, L, A> = {
   action: A
   params: { [Z in ExtractParams<Path>]: string }
 }
+
+export type MatchAny = Match<
+  string,
+  // biome-ignore lint/suspicious/noExplicitAny: fine
+  ProvideLoaderInfo<Partial<Record<string, string>>, any>,
+  // biome-ignore lint/suspicious/noExplicitAny: fine
+  Record<string, ProvideActionInfo<any, any>> | undefined
+>
 
 export type MatchWithAction = Match<
   string,

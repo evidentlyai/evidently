@@ -3,13 +3,14 @@ import {
   type NavigateOptions,
   useFetchers,
   useLoaderData,
+  useMatch,
   useMatches,
   useNavigation,
   useParams,
   useRevalidator,
   useSearchParams
 } from 'react-router-dom'
-import type { MatchWithLoader } from '~/router-utils/types'
+import type { MatchAny, MatchWithLoader } from '~/router-utils/types'
 import type { CrumbDefinition, HandleWithCrumb } from '~/router-utils/utils'
 
 export const useCurrentRouteParams = <
@@ -120,4 +121,12 @@ export const useCrumbsFromHandle = () => {
     })
 
   return { crumbs }
+}
+
+export const createUseMatchRouter = <M extends MatchAny>() => {
+  const hook = <K extends M['path']>({ path }: { path: K }) => {
+    return Boolean(useMatch({ path, end: false }))
+  }
+
+  return hook
 }

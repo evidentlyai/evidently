@@ -52,6 +52,7 @@ const TABS = {
 
 export const Component = () => {
   const { loaderData: project, params } = useCurrentRouteParams<CurrentRoute>()
+
   const isReports = useMatchRouter({ path: '/:projectId/reports' })
   const isTestSuites = useMatchRouter({ path: '/:projectId/test-suites' })
 

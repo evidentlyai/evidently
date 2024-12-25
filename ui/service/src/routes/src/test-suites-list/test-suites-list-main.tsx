@@ -4,7 +4,6 @@ import type { GetRouteByPath } from '~/routes/types'
 
 import { clientAPI } from '~/api'
 
-import { createUseSubmitFetcherGeneral } from 'evidently-ui-lib/router-utils/fetchers'
 import {
   useCurrentRouteParams,
   useIsAnyLoaderOrActionRunning
@@ -15,6 +14,7 @@ import {
   getTestSuites
 } from 'evidently-ui-lib/routes-components/snapshots/data'
 import { RouterLink } from '~/routes/components'
+import { useSubmitFetcher } from '~/routes/hooks'
 
 ///////////////////
 //    ROUTE
@@ -33,21 +33,21 @@ export const loadData = ({ params }: loadDataArgs) => {
 
 export const actions = getSnapshotsActions({ api: clientAPI })
 
-const useFetcher = createUseSubmitFetcherGeneral<CurrentRoute>()
-
 export const Component = () => {
   const { loaderData: reports, params } = useCurrentRouteParams<CurrentRoute>()
 
   const { projectId } = params
 
-  const deleteSnapshotFetcher = useFetcher({
+  const deleteSnapshotFetcher = useSubmitFetcher({
+    path: '/:projectId/test-suites/?index',
     action: 'delete-snapshot',
-    actionPath: () => ({ path: '/:projectId/test-suites/?index', params: { projectId } })
+    provideParams: () => ({ projectId })
   })
 
-  const reloadSnapshotsFetcher = useFetcher({
+  const reloadSnapshotsFetcher = useSubmitFetcher({
+    path: '/:projectId/test-suites/?index',
     action: 'reload-snapshots',
-    actionPath: () => ({ path: '/:projectId/test-suites/?index', params: { projectId } })
+    provideParams: () => ({ projectId })
   })
 
   const disabled = useIsAnyLoaderOrActionRunning()

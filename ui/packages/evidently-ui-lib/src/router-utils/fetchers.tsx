@@ -1,25 +1,24 @@
 import { useCallback, useMemo } from 'react'
-import type { GetParams, MatchWithAction } from '~/router-utils/types'
+import type { GetParams, MatchAny, MatchWithAction } from '~/router-utils/types'
 import { useFetcher } from '~/shared-dependencies/react-router-dom'
 import { REST_PARAMS_FOR_FETCHER_SUBMIT } from '~/utils/index'
 import { replaceParamsInLink } from './utils'
 
 export const useSubmitFetcherGeneral = <M extends MatchWithAction, K extends keyof M['action']>({
-  actionPath,
-  action
+  action,
+  path,
+  provideParams
 }: {
   action: K
-  actionPath: ({ data }: { data: M['action'][K]['requestData'] }) => {
-    path: M['path']
-    params: GetParams<M['path']>
-  }
+  path: M['path']
+  provideParams: ({ data }: { data: M['action'][K]['requestData'] }) => GetParams<M['path']>
 }) => {
   const originalFetcher = useFetcher<M['action'][K]['returnType']>()
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: fine
   const submit = useCallback(
     (data: M['action'][K]['requestData']) => {
-      const { params, path } = actionPath({ data })
+      const params = provideParams({ data })
 
       originalFetcher.submit(
         // @ts-ignore
@@ -30,7 +29,7 @@ export const useSubmitFetcherGeneral = <M extends MatchWithAction, K extends key
         }
       )
     },
-    [originalFetcher]
+    [originalFetcher, path]
   )
 
   const fetcher = useMemo(
@@ -42,14 +41,21 @@ export const useSubmitFetcherGeneral = <M extends MatchWithAction, K extends key
 }
 
 // Helper function to infer K
-export const createUseSubmitFetcherGeneral = <M extends MatchWithAction>() => {
-  const hook = <K extends keyof M['action']>(args: {
-    action: K
-    actionPath: ({ data }: { data: M['action'][K]['requestData'] }) => {
-      path: M['path']
-      params: GetParams<M['path']>
-    }
-  }) => useSubmitFetcherGeneral<M, K>(args)
+export const createUseSubmitFetcherGeneral = <M extends MatchAny>() => {
+  type MatchesWithAction = Extract<M, MatchWithAction>
+
+  const hook = <
+    Path extends MatchesWithAction['path'],
+    ActionName extends keyof Extract<MatchesWithAction, { path: Path }>['action']
+  >(args: {
+    action: ActionName
+    path: Path
+    provideParams: ({
+      data
+    }: {
+      data: Extract<MatchesWithAction, { path: Path }>['action'][ActionName]['requestData']
+    }) => GetParams<Extract<MatchesWithAction, { path: Path }>['path']>
+  }) => useSubmitFetcherGeneral<Extract<MatchesWithAction, { path: Path }>, ActionName>(args)
 
   return hook
 }

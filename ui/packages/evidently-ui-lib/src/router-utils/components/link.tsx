@@ -8,6 +8,8 @@ import {
   type TypographyProps
 } from '@mui/material'
 import { Link as ReactRouterLink } from 'react-router-dom'
+import type { GetParams, MatchAny } from 'router-utils/types'
+import { replaceParamsInLink } from 'router-utils/utils'
 
 export type RouterLinkTemplateComponentProps =
   | ({
@@ -20,7 +22,7 @@ export type RouterLinkTemplateComponentProps =
       type: 'tab'
     } & RLT)
 
-export const RouterLinkTemplate = (props: RouterLinkTemplateComponentProps) => {
+const RouterLinkTemplate = (props: RouterLinkTemplateComponentProps) => {
   return props.type === 'button' ? (
     <RLBComponent {...props} />
   ) : props.type === 'tab' ? (
@@ -30,12 +32,12 @@ export const RouterLinkTemplate = (props: RouterLinkTemplateComponentProps) => {
   )
 }
 
-export type RLB = {
+type RLB = {
   to: string
   title?: string
 } & ButtonProps
 
-export const RLBComponent = ({ to, title, ...buttonProps }: RLB) => {
+const RLBComponent = ({ to, title, ...buttonProps }: RLB) => {
   return (
     <Button component={ReactRouterLink} to={to} {...buttonProps}>
       {title}
@@ -43,13 +45,13 @@ export const RLBComponent = ({ to, title, ...buttonProps }: RLB) => {
   )
 }
 
-export type RLL = {
+type RLL = {
   children?: React.ReactNode
   to: string
   title?: string
 } & TypographyProps
 
-export const RLLComponent = ({ children, to, title, ...typographyProps }: RLL) => {
+const RLLComponent = ({ children, to, title, ...typographyProps }: RLL) => {
   return (
     <Link component={ReactRouterLink} to={to}>
       <>
@@ -60,10 +62,37 @@ export const RLLComponent = ({ children, to, title, ...typographyProps }: RLL) =
   )
 }
 
-export type RLT = {
+type RLT = {
   to: string
 } & TabProps
 
-export const RLTComponent = ({ to, ...tabProps }: RLT) => {
+const RLTComponent = ({ to, ...tabProps }: RLT) => {
   return <Tab component={ReactRouterLink} to={to} {...tabProps} />
+}
+
+export const CreateRouterLinkComponent = <M extends MatchAny>() => {
+  const Component = <K extends M['path']>({
+    to,
+    paramsToReplace,
+    query,
+    ...props
+  }: RouterLinkTemplateComponentProps & {
+    to: K
+    paramsToReplace: GetParams<K>
+    query?: Extract<M, { path: K }>['loader']['query']
+  }) => {
+    const searchParams =
+      query &&
+      new URLSearchParams(
+        Object.fromEntries(Object.entries(query).filter(([_, v]) => v)) as Record<string, string>
+      )
+
+    const toActual = [replaceParamsInLink(paramsToReplace, to), searchParams]
+      .filter(Boolean)
+      .join('?')
+
+    return <RouterLinkTemplate {...props} to={toActual} />
+  }
+
+  return Component
 }

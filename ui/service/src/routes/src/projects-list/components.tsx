@@ -3,19 +3,17 @@ import type { StrictID } from 'evidently-ui-lib/api/types/utils'
 import { AddNewProjectButton, ProjectCard } from 'evidently-ui-lib/components/ProjectCard'
 import { useState } from 'react'
 
-import { createUseSubmitFetcherGeneral } from 'evidently-ui-lib/router-utils/fetchers'
 import { useOnSubmitEnd } from 'evidently-ui-lib/router-utils/hooks'
 import { RouterLink } from '~/routes/components'
-import type { CurrentRoute } from './projects-list-main'
-
-const useFetcher = createUseSubmitFetcherGeneral<CurrentRoute>()
+import { useSubmitFetcher } from '~/routes/hooks'
 
 export const ProjectCardWrapper = ({ project }: { project: StrictID<ProjectModel> }) => {
   const [mode, setMode] = useState<'edit' | 'view'>('view')
 
-  const deleteProjectFetcher = useFetcher({
-    actionPath: () => ({ path: '/?index', params: {} }),
-    action: 'delete-project'
+  const deleteProjectFetcher = useSubmitFetcher({
+    path: '/?index',
+    action: 'delete-project',
+    provideParams: () => ({})
   })
 
   useOnSubmitEnd({
@@ -27,9 +25,10 @@ export const ProjectCardWrapper = ({ project }: { project: StrictID<ProjectModel
     }
   })
 
-  const editProjectFetcher = useFetcher({
-    actionPath: () => ({ path: '/?index', params: {} }),
-    action: 'edit-project'
+  const editProjectFetcher = useSubmitFetcher({
+    path: '/?index',
+    action: 'edit-project',
+    provideParams: () => ({})
   })
 
   useOnSubmitEnd({
@@ -67,9 +66,10 @@ const LinkToProject = ({ name, projectId }: { name: string; projectId: string })
 )
 
 export const AddNewProjectWrapper = () => {
-  const createProjectFetcher = useFetcher({
-    actionPath: () => ({ path: '/?index', params: {} }),
-    action: 'create-project'
+  const createProjectFetcher = useSubmitFetcher({
+    path: '/?index',
+    action: 'create-project',
+    provideParams: () => ({})
   })
 
   const [opened, setOpened] = useState<boolean>(false)
