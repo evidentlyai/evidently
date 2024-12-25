@@ -13,8 +13,6 @@ from typing import Tuple
 from typing import TypeVar
 from typing import Union
 
-from IPython.core.display import HTML
-
 from evidently.metric_results import Label
 from evidently.model.dashboard import DashboardInfo
 from evidently.model.widget import BaseWidgetInfo
@@ -86,7 +84,12 @@ def render_results(results: Union[MetricResult, List[MetricResult]], html=True):
     widgets = list(itertools.chain(*[item.widget for item in data]))
     result = render_widgets(widgets)
     if html:
-        return HTML(result)
+        try:
+            from IPython.core.display import HTML
+
+            return HTML(result)
+        except ImportError as err:
+            raise Exception("Cannot import HTML from IPython.display, no way to show html") from err
     return result
 
 
