@@ -6,6 +6,7 @@ from typing import List
 from typing import Optional
 from typing import Union
 
+from evidently._pydantic_compat import Field
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric as MetricV1
 from evidently.base_metric import MetricResult as MetricResultV1
@@ -67,6 +68,9 @@ def metric_result_v2_to_v1(metric_result: MetricResultV2) -> MetricResultV1:
 class MetricV2Adapter(MetricV1[MetricResultV2Adapter]):
     class Config:
         type_alias = "evidently:metric:MetricV2Adapter"
+
+    # fixme: needed for deduplication
+    metric_id: str = Field(default_factory=lambda: str(new_id()))
 
     def calculate(self, data: InputData) -> MetricResultV2Adapter:
         pass
