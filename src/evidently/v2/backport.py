@@ -117,7 +117,7 @@ def snapshot_v2_to_v1(snapshot: SnapshotV2) -> SnapshotV1:
         tags=[],
         suite=ContextPayload(metrics=metrics, metric_results=metric_results, tests=tests, test_results=test_results),
         metrics_ids=list(range(len(metrics))) if not tests else [],
-        test_ids=list(range(len(tests))),
+        test_ids=[],
         options=Options.from_any_options(None),
     )
 
@@ -170,14 +170,14 @@ def main():
     import pandas as pd
 
     from evidently.ui.workspace import Workspace
-    from evidently.v2.metrics import column_mean
+    from evidently.v2.metrics import MeanValue
     from evidently.v2.report import Report as ReportV2
     from evidently.v2.tests.numerical_checks import le
 
     def create_snapshot(i):
         df = pd.DataFrame({"col": list(range(i + 5))})
         dataset = Dataset.from_pandas(df)
-        report = ReportV2([column_mean("col", [le(4)])])
+        report = ReportV2([MeanValue("col", [le(4)])])
         snapshot_v2 = report.run(dataset, None)
 
         snapshot_v1 = snapshot_v2_to_v1(snapshot_v2)
