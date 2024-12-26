@@ -9,6 +9,7 @@ if v == 2:
     from pydantic.v1 import BaseModel
     from pydantic.v1 import Extra
     from pydantic.v1 import Field
+    from pydantic.v1 import PositiveInt
     from pydantic.v1 import PrivateAttr
     from pydantic.v1 import SecretStr
     from pydantic.v1 import ValidationError
@@ -35,6 +36,7 @@ else:
     from pydantic import BaseModel  # type: ignore[assignment]
     from pydantic import Extra  # type: ignore[assignment]
     from pydantic import Field  # type: ignore[assignment]
+    from pydantic import PositiveInt  # type: ignore[attr-defined,no-redef]
     from pydantic import PrivateAttr
     from pydantic import SecretStr  # type: ignore[assignment]
     from pydantic import ValidationError  # type: ignore[assignment]
@@ -80,4 +82,5 @@ __all__ = [
     "PrivateAttr",
     "Extra",
     "create_model",
+    "PositiveInt",
 ]
