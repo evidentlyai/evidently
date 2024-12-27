@@ -10,6 +10,7 @@ from evidently._pydantic_compat import Field
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric as MetricV1
 from evidently.base_metric import MetricResult as MetricResultV1
+from evidently.core import ColumnType
 from evidently.core import new_id
 from evidently.metric_results import Label
 from evidently.model.widget import BaseWidgetInfo
@@ -28,6 +29,8 @@ from evidently.ui.dashboards.base import PanelValue
 from evidently.ui.dashboards.base import ReportFilter
 from evidently.ui.dashboards.utils import PlotType
 from evidently.ui.type_aliases import ProjectID
+from evidently.v2.datasets import ColumnInfo
+from evidently.v2.datasets import DataDefinition
 from evidently.v2.datasets import Dataset
 from evidently.v2.metrics import ByLabelValue
 from evidently.v2.metrics import Metric as MetricV2
@@ -57,11 +60,16 @@ class ByLabelValueV1(MetricResultV2Adapter):
     values: Dict[Label, Union[float, int, bool, str]]
 
 
+def _create_metric_result_widget(metric_result: MetricResultV2) -> List[dict]:
+    widgets = list(metric_result.widget)
+    return [dataclasses.asdict(w) for w in widgets]
+
+
 def metric_result_v2_to_v1(metric_result: MetricResultV2) -> MetricResultV1:
     if isinstance(metric_result, SingleValue):
-        return SingleValueV1(widget=[dataclasses.asdict(w) for w in metric_result.widget], value=metric_result.value)
+        return SingleValueV1(widget=_create_metric_result_widget(metric_result), value=metric_result.value)
     if isinstance(metric_result, ByLabelValue):
-        return ByLabelValueV1(widget=[dataclasses.asdict(w) for w in metric_result.widget], values=metric_result.values)
+        return ByLabelValueV1(widget=_create_metric_result_widget(metric_result), values=metric_result.values)
     raise NotImplementedError(metric_result.__class__.__name__)
 
 
@@ -109,17 +117,29 @@ def snapshot_v2_to_v1(snapshot: SnapshotV2) -> SnapshotV1:
                 )
             )
 
-    return SnapshotV1(
+    snapshot = SnapshotV1(
         id=new_id(),
         name="",
         timestamp=datetime.datetime.now(),
         metadata={},
         tags=[],
         suite=ContextPayload(metrics=metrics, metric_results=metric_results, tests=tests, test_results=test_results),
-        metrics_ids=list(range(len(metrics))) if not tests else [],
+        metrics_ids=list(range(len(metrics))),
         test_ids=[],
         options=Options.from_any_options(None),
     )
+    if len(tests) > 0:
+        test_widgets = snapshot.as_test_suite()._build_dashboard_info()[1].widgets
+        snapshot.suite.metrics.append(MetricV2Adapter())
+        widgets_dict = [dataclasses.asdict(w) for w in test_widgets]
+        for wd in widgets_dict:
+            params = wd.get("params", {})
+            params["v2_test"] = True
+            wd["params"] = params
+        snapshot.suite.metric_results.append(SingleValueV1(widget=widgets_dict, value=0))
+        snapshot.metrics_ids.append(len(metrics))
+
+    return snapshot
 
 
 class DashboardPanelV2(DashboardPanel):
@@ -153,6 +173,8 @@ class TestV2Adapter(TestV1):
 
     name: ClassVar[str] = "TestV2Adapter"
     group: ClassVar[str] = "TestV2Adapter"
+    # fixme: needed for deduplication
+    test_id: str = Field(default_factory=lambda: str(new_id()))
 
     def check(self) -> TestResultV1:
         raise NotImplementedError
@@ -176,7 +198,14 @@ def main():
 
     def create_snapshot(i):
         df = pd.DataFrame({"col": list(range(i + 5))})
-        dataset = Dataset.from_pandas(df)
+        dataset = Dataset.from_pandas(
+            df,
+            data_definition=DataDefinition(
+                {
+                    "col": ColumnInfo(ColumnType.Numerical),
+                }
+            ),
+        )
         report = ReportV2([MeanValue("col", [le(4)])])
         snapshot_v2 = report.run(dataset, None)
 
