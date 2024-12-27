@@ -129,16 +129,24 @@ class ByLabelValue(MetricResult):
         return SingleValue(value)
 
 
+@dataclasses.dataclass
+class CountValue(MetricResult):
+    count: int
+    share: float
+
+    def get_count(self) -> SingleValue:
+        return SingleValue(self.count)
+
+    def get_share(self) -> SingleValue:
+        return SingleValue(self.share)
+
+
 class MetricTest(Protocol[TResult]):
     def __call__(self, metric: "Metric", value: TResult) -> MetricTestResult: ...
 
 
 class SingleValueMetricTest(MetricTest[SingleValue], Protocol):
     def __call__(self, metric: "Metric", value: SingleValue) -> MetricTestResult: ...
-
-
-class ByLabelValueMetricTest(MetricTest[ByLabelValue], Protocol):
-    def __call__(self, metric: "Metric", value: ByLabelValue) -> MetricTestResult: ...
 
 
 MetricId = str
@@ -177,6 +185,19 @@ def get_default_render(title: str, result: TResult) -> List[BaseWidgetInfo]:
     if isinstance(result, ByLabelValue):
         return [
             table_data(title=title, column_names=["Label", "Value"], data=[(k, v) for k, v in result.values.items()])
+        ]
+    if isinstance(result, CountValue):
+        return [
+            counter(
+                title=f"{title}: count",
+                size=WidgetSize.HALF,
+                counters=[CounterData(label="", value=str(result.count))],
+            ),
+            counter(
+                title=f"{title}: share",
+                size=WidgetSize.HALF,
+                counters=[CounterData(label="", value=f"{result.share:.2f}")],
+            ),
         ]
     raise NotImplementedError(f"No default render for {type(result)}")
 
@@ -292,7 +313,7 @@ class ByLabelMetric(Metric[ByLabelValue], ABC):
     _tests: Optional[typing.Dict[Label, List[SingleValueMetricTest]]]
 
     def label_metric(self, label: Label) -> SingleValueMetric:
-        return
+        raise NotImplementedError()
 
     def with_tests(self, tests: Optional[typing.Dict[Label, List[SingleValueMetricTest]]]):
         self._tests = tests
@@ -305,3 +326,27 @@ class ByLabelMetric(Metric[ByLabelValue], ABC):
             label_value = value.get_label_result(label)
             for test in tests:
                 yield test(self, label_value)
+
+
+class CountMetric(Metric[CountValue], ABC):
+    _count_tests: Optional[List[SingleValueMetricTest]] = None
+    _share_tests: Optional[List[SingleValueMetricTest]] = None
+
+    def with_tests(
+        self,
+        count_tests: Optional[List[SingleValueMetricTest]] = None,
+        share_tests: Optional[List[SingleValueMetricTest]] = None,
+    ):
+        self._count_tests = count_tests
+        self._share_tests = share_tests
+        return self
+
+    def get_tests(self, value: CountValue) -> Generator[MetricTestResult, None, None]:
+        if self._count_tests is None and self._share_tests is None:
+            return None
+        count_value = value.get_count()
+        for test in self._count_tests or []:
+            yield test(self, count_value)
+        share_value = value.get_share()
+        for test in self._share_tests or []:
+            yield test(self, share_value)

@@ -4,6 +4,7 @@ from typing import Optional
 from typing import Union
 
 from evidently.metric_results import HistogramData
+from evidently.metric_results import Label
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options import ColorOptions
 from evidently.renderers.html_widgets import WidgetSize
@@ -14,6 +15,8 @@ from evidently.v2.datasets import Dataset
 from evidently.v2.datasets import DatasetColumn
 from evidently.v2.metrics import SingleValue
 from evidently.v2.metrics import SingleValueMetricTest
+from evidently.v2.metrics.base import CountMetric
+from evidently.v2.metrics.base import CountValue
 from evidently.v2.metrics.base import SingleValueMetric
 
 
@@ -141,3 +144,143 @@ class QuantileValue(StatisticsMetric):
 
     def display_name(self) -> str:
         return f"Quantile {self._quantile} of {self._column}"
+
+
+class CategoryCount(CountMetric):
+    def __init__(
+        self,
+        column: str,
+        category: Label,
+        count_tests: Optional[List[SingleValueMetricTest]] = None,
+        share_tests: Optional[List[SingleValueMetricTest]] = None,
+    ):
+        super().__init__(f"category_count:{column}:{category}")
+        self._column = column
+        self._category = category
+        self.with_tests(count_tests, share_tests)
+
+    def calculate(self, current_data: Dataset, reference_data: Optional[Dataset]) -> CountValue:
+        column = current_data.column(self._column)
+        value = column.data.value_counts()[self._category]
+        total = column.data.count()
+        return CountValue(value, value / total)
+
+    def display_name(self) -> str:
+        return f"Column '{self._column}' category '{self._category}'"
+
+
+class InRangeValueCount(CountMetric):
+    def __init__(
+        self,
+        column: str,
+        left: Union[int, float],
+        right: Union[int, float],
+        count_tests: Optional[List[SingleValueMetricTest]] = None,
+        share_tests: Optional[List[SingleValueMetricTest]] = None,
+    ):
+        super().__init__(f"in_range:{column}:{left}:{right}")
+        self._column = column
+        self._left = left
+        self._right = right
+        self.with_tests(count_tests, share_tests)
+
+    def calculate(self, current_data: Dataset, reference_data: Optional[Dataset]) -> CountValue:
+        column = current_data.column(self._column)
+        value = column.data.between(self._left, self._right).count()
+        total = column.data.count()
+        return CountValue(value, value / total)
+
+    def display_name(self) -> str:
+        return f"Column '{self._column}' values in range {self._left} to {self._right}"
+
+
+class OutRangeValueCount(CountMetric):
+    def __init__(
+        self,
+        column: str,
+        left: Union[int, float],
+        right: Union[int, float],
+        count_tests: Optional[List[SingleValueMetricTest]] = None,
+        share_tests: Optional[List[SingleValueMetricTest]] = None,
+    ):
+        super().__init__(f"out_range:{column}:{left}:{right}")
+        self._column = column
+        self._left = left
+        self._right = right
+        self.with_tests(count_tests, share_tests)
+
+    def calculate(self, current_data: Dataset, reference_data: Optional[Dataset]) -> CountValue:
+        column = current_data.column(self._column)
+        value = column.data.between(self._left, self._right).count()
+        total = column.data.count()
+        return CountValue(total - value, value / total)
+
+    def display_name(self) -> str:
+        return f"Column '{self._column}' values out of range {self._left} to {self._right}"
+
+
+class InListValueCount(CountMetric):
+    def __init__(
+        self,
+        column: str,
+        values: List[Label],
+        count_tests: Optional[List[SingleValueMetricTest]] = None,
+        share_tests: Optional[List[SingleValueMetricTest]] = None,
+    ):
+        super().__init__(f"in_list:{column}:{'|'.join(values)}")
+        self._column = column
+        self._values = values
+        self.with_tests(count_tests, share_tests)
+
+    def calculate(self, current_data: Dataset, reference_data: Optional[Dataset]) -> CountValue:
+        column = current_data.column(self._column)
+        value = column.data.value_counts()[self._values].sum()
+        total = column.data.count()
+        return CountValue(value, value / total)
+
+    def display_name(self) -> str:
+        return f"Column '{self._column}' values in list [{', '.join(self._values)}]"
+
+
+class OutListValueCount(CountMetric):
+    def __init__(
+        self,
+        column: str,
+        values: List[Label],
+        count_tests: Optional[List[SingleValueMetricTest]] = None,
+        share_tests: Optional[List[SingleValueMetricTest]] = None,
+    ):
+        super().__init__(f"out_list:{column}:{'|'.join(values)}")
+        self._column = column
+        self._values = values
+        self.with_tests(count_tests, share_tests)
+
+    def calculate(self, current_data: Dataset, reference_data: Optional[Dataset]) -> CountValue:
+        column = current_data.column(self._column)
+        value = column.data.value_counts()[self._values].sum()
+        total = column.data.count()
+        return CountValue(total - value, value / total)
+
+    def display_name(self) -> str:
+        return f"Column '{self._column}' values out of list [{', '.join(self._values)}]"
+
+
+class MissingValueCount(CountMetric):
+    def __init__(
+        self,
+        column: str,
+        count_tests: Optional[List[SingleValueMetricTest]] = None,
+        share_tests: Optional[List[SingleValueMetricTest]] = None,
+    ):
+        super().__init__(f"missing_values:{column}")
+        self._column = column
+        self.with_tests(count_tests, share_tests)
+
+    def calculate(self, current_data: Dataset, reference_data: Optional[Dataset]) -> CountValue:
+        column = current_data.column(self._column)
+        value = column.data.count()
+        total = len(column.data)
+        return CountValue(total - value, value / total)
+
+    def display_name(self) -> str:
+        return f"Column '{self._column}' missing values"
