@@ -36,6 +36,7 @@ from evidently.v2.metrics import ByLabelValue
 from evidently.v2.metrics import Metric as MetricV2
 from evidently.v2.metrics import MetricResult as MetricResultV2
 from evidently.v2.metrics import SingleValue
+from evidently.v2.metrics.base import CountValue
 from evidently.v2.report import Snapshot as SnapshotV2
 
 
@@ -60,6 +61,14 @@ class ByLabelValueV1(MetricResultV2Adapter):
     values: Dict[Label, Union[float, int, bool, str]]
 
 
+class CountValueV1(MetricResultV2Adapter):
+    class Config:
+        type_alias = "evidently:metric_result:CountValueV1"
+
+    count: int
+    share: float
+
+
 def _create_metric_result_widget(metric_result: MetricResultV2) -> List[dict]:
     widgets = list(metric_result.widget)
     return [dataclasses.asdict(w) for w in widgets]
@@ -70,6 +79,10 @@ def metric_result_v2_to_v1(metric_result: MetricResultV2) -> MetricResultV1:
         return SingleValueV1(widget=_create_metric_result_widget(metric_result), value=metric_result.value)
     if isinstance(metric_result, ByLabelValue):
         return ByLabelValueV1(widget=_create_metric_result_widget(metric_result), values=metric_result.values)
+    if isinstance(metric_result, CountValue):
+        return CountValueV1(
+            widget=_create_metric_result_widget(metric_result), count=metric_result.count, share=metric_result.share
+        )
     raise NotImplementedError(metric_result.__class__.__name__)
 
 
