@@ -17,15 +17,12 @@ class ColumnInfo:
     type: ColumnType
 
 
+@dataclasses.dataclass
 class DataDefinition:
-    _columns: Dict[str, ColumnInfo]
-
-    def __init__(self, columns: Dict[str, ColumnInfo]):
-        self._columns = columns
+    columns: Dict[str, ColumnInfo]
 
     def get_column_type(self, column_name: str) -> ColumnType:
-        # TODO: implement
-        return ColumnType.Unknown
+        return self.columns.get(column_name).type
 
 
 class DatasetColumn:
@@ -92,9 +89,11 @@ class Dataset:
             new_column = descriptor.generate_data(dataset)
             if isinstance(new_column, DatasetColumn):
                 data[key] = new_column.data
+                dataset._data_definition.columns[key] = ColumnInfo(new_column.type)
             elif len(new_column) > 1:
                 for col, value in new_column.items():
                     data[f"{key}.{col}"] = value.data
+                    dataset._data_definition.columns[f"{key}.{col}"] = ColumnInfo(value.type)
             else:
                 data[key] = list(new_column.values())[0].data
         return dataset

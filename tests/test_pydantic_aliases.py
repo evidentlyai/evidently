@@ -68,6 +68,7 @@ REGISTRY_MAPPING: Dict[Type[PolymorphicModel], str] = {
     Test: "evidently.tests._registry",
     TestParameters: "evidently.tests._registry",
     MetricConfig: "evidently.v2._registry",
+    MetricResult: "evidently.metrics._registry",
 }
 
 

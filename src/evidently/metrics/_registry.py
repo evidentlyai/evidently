@@ -831,3 +831,5 @@ register_type_alias(
     MetricResult, "evidently.v2.backport.MetricResultV2Adapter", "evidently:metric_result:MetricResultV2Adapter"
 )
 register_type_alias(MetricResult, "evidently.v2.backport.SingleValueV1", "evidently:metric_result:SingleValueV1")
+
+register_type_alias(MetricResult, "evidently.v2.backport.ByLabelValueV1", "evidently:metric_result:ByLabelValueV1")

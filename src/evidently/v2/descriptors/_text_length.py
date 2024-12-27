@@ -1,6 +1,9 @@
+from typing import Any
 from typing import Dict
 from typing import Optional
 from typing import Union
+
+import numpy as np
 
 from evidently import ColumnType
 from evidently.v2.datasets import Dataset
@@ -14,5 +17,11 @@ class TextLength(Descriptor):
         self._column_name: str = column_name
 
     def generate_data(self, dataset: "Dataset") -> Union[DatasetColumn, Dict[str, DatasetColumn]]:
-        column_items_lengths = dataset.as_dataframe()[self._column_name].apply(len)
+        column_items_lengths = dataset.as_dataframe()[self._column_name].apply(_apply)
         return DatasetColumn(type=ColumnType.Numerical, data=column_items_lengths)
+
+
+def _apply(value: Any):
+    if value is None or (isinstance(value, float) and np.isnan(value)):
+        return 0
+    return len(value)

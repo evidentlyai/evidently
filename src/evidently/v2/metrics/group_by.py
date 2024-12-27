@@ -1,8 +1,10 @@
+from typing import Generator
 from typing import List
 from typing import Optional
 
 from evidently.v2.datasets import Dataset
 from evidently.v2.metrics import Metric
+from evidently.v2.metrics.base import MetricTestResult
 from evidently.v2.metrics.base import TResult
 from evidently.v2.metrics.container import MetricContainer
 from evidently.v2.report import Context
@@ -22,6 +24,9 @@ class GroupByMetric(Metric):
 
     def display_name(self) -> str:
         return f"{self._metric.display_name()} group by '{self._column_name}' for label: '{self._label}'"
+
+    def get_tests(self, value: TResult) -> Generator[MetricTestResult, None, None]:
+        return self._metric.get_tests(value)
 
     @property
     def column_name(self) -> str:
