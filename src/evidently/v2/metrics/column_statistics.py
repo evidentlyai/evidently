@@ -1,6 +1,7 @@
 import abc
 from typing import List
 from typing import Optional
+from typing import TypeVar
 from typing import Union
 
 from evidently.metric_results import HistogramData
@@ -18,6 +19,7 @@ from evidently.v2.metrics import SingleValueMetricTest
 from evidently.v2.metrics.base import CountMetric
 from evidently.v2.metrics.base import CountValue
 from evidently.v2.metrics.base import SingleValueMetric
+from evidently.v2.metrics.base import SingleValueMetricConfig
 
 
 def distribution(
@@ -49,24 +51,30 @@ def distribution(
     ]
 
 
-class StatisticsMetric(SingleValueMetric):
-    def __init__(self, metric_id: str, column: str, tests: Optional[List[SingleValueMetricTest]] = None):
-        super().__init__(metric_id)
-        self.with_tests(tests)
-        self._column = column
+class StatisticsMetricConfig(SingleValueMetricConfig):
+    column: str
+
+
+TStatisticsMetricConfig = TypeVar("TStatisticsMetricConfig", bound=StatisticsMetricConfig)
+
+
+class StatisticsMetric(SingleValueMetric[TStatisticsMetricConfig]):
+    @property
+    def column(self):
+        return self.config.column
 
     def calculate(self, current_data: Dataset, reference_data: Optional[Dataset]) -> SingleValue:
-        value = self.calculate_value(current_data.column(self._column))
+        value = self.calculate_value(current_data.column(self.column))
 
         header = f"current: {value:.3f}"
         if reference_data is not None:
-            ref_value = self.calculate_value(reference_data.column(self._column))
+            ref_value = self.calculate_value(reference_data.column(self.column))
             header += f", reference: {ref_value:.3f}"
         result = SingleValue(value)
         result.widget = distribution(
             f"{self.display_name()}: {header}",
-            current_data.column(self._column),
-            None if reference_data is None else reference_data.column(self._column),
+            current_data.column(self.column),
+            None if reference_data is None else reference_data.column(self.column),
         )
         return result
 
@@ -75,75 +83,76 @@ class StatisticsMetric(SingleValueMetric):
         raise NotImplementedError()
 
 
-class MinValue(StatisticsMetric):
-    def __init__(self, column: str, tests: Optional[List[SingleValueMetricTest]] = None):
-        super().__init__(f"min:{column}", column, tests)
+class MinValueConfig(StatisticsMetricConfig):
+    pass
 
+
+class MinValue(StatisticsMetric[MinValueConfig]):
     def calculate_value(self, column: DatasetColumn) -> Union[float, int]:
         return column.data.min()
 
     def display_name(self) -> str:
-        return f"Minimal value of {self._column}"
+        return f"Minimal value of {self.column}"
 
 
-class MeanValue(StatisticsMetric):
-    def __init__(self, column: str, tests: Optional[List[SingleValueMetricTest]] = None):
-        super().__init__(f"mean:{column}", column, tests)
+class MeanValueConfig(StatisticsMetricConfig):
+    pass
 
+
+class MeanValue(StatisticsMetric[MeanValueConfig]):
     def calculate_value(self, column: DatasetColumn) -> Union[float, int]:
         return column.data.mean()
 
     def display_name(self) -> str:
-        return f"Mean value of {self._column}"
+        return f"Mean value of {self.column}"
 
 
-class MaxValue(StatisticsMetric):
-    def __init__(self, column: str, tests: Optional[List[SingleValueMetricTest]] = None):
-        super().__init__(f"max:{column}", column, tests)
+class MaxValueConfig(StatisticsMetricConfig):
+    pass
 
+
+class MaxValue(StatisticsMetric[MaxValueConfig]):
     def calculate_value(self, column: DatasetColumn) -> Union[float, int]:
         return column.data.max()
 
     def display_name(self) -> str:
-        return f"Maximum value of {self._column}"
+        return f"Maximum value of {self.column}"
 
 
-class StdValue(StatisticsMetric):
-    def __init__(self, column: str, tests: Optional[List[SingleValueMetricTest]] = None):
-        super().__init__(f"std:{column}", column, tests)
-        self.with_tests(tests)
-        self._column = column
+class StdValueConfig(StatisticsMetricConfig):
+    pass
 
+
+class StdValue(StatisticsMetric[StdValueConfig]):
     def calculate_value(self, column: DatasetColumn) -> Union[float, int]:
         return column.data.std()
 
     def display_name(self) -> str:
-        return f"Std value of {self._column}"
+        return f"Std value of {self.column}"
 
 
-class MedianValue(StatisticsMetric):
-    def __init__(self, column: str, tests: Optional[List[SingleValueMetricTest]] = None):
-        super().__init__(f"median:{column}", column, tests)
+class MedianValueConfig(StatisticsMetricConfig):
+    pass
 
+
+class MedianValue(StatisticsMetric[MedianValueConfig]):
     def calculate_value(self, column: DatasetColumn) -> Union[float, int]:
         return column.data.median()
 
     def display_name(self) -> str:
-        return f"Median value of {self._column}"
+        return f"Median value of {self.column}"
 
 
-class QuantileValue(StatisticsMetric):
-    def __init__(self, column: str, quantile: float = 0.5, tests: Optional[List[SingleValueMetricTest]] = None):
-        super().__init__(f"quantile:{quantile}:{column}", column, tests)
-        self.with_tests(tests)
-        self._quantile = quantile
-        self._column = column
+class QuantileValueConfig(StatisticsMetricConfig):
+    quantile: float = 0.5
 
+
+class QuantileValue(StatisticsMetric[QuantileValueConfig]):
     def calculate_value(self, column: DatasetColumn) -> Union[float, int]:
-        return column.data.quantile(self._quantile)
+        return column.data.quantile(self.config.quantile)
 
     def display_name(self) -> str:
-        return f"Quantile {self._quantile} of {self._column}"
+        return f"Quantile {self.config.quantile} of {self.column}"
 
 
 class CategoryCount(CountMetric):

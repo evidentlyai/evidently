@@ -30,7 +30,6 @@ from evidently.tests.base_test import TestStatus
 from evidently.utils.dashboard import TemplateParams
 from evidently.utils.dashboard import inline_iframe_html_template
 from evidently.v2.datasets import Dataset
-from evidently.v2.datasets import DatasetColumn
 
 if typing.TYPE_CHECKING:
     from evidently.v2.report import Context
@@ -241,26 +240,9 @@ class Metric(Generic[TResult]):
     def calculate(self, current_data: Dataset, reference_data: Optional[Dataset]) -> TResult:
         raise NotImplementedError()
 
-    @abc.abstractmethod
+    @abstractmethod
     def get_tests(self, value: TResult) -> Generator[MetricTestResult, None, None]:
         raise NotImplementedError()
-
-    def _default_tests(self) -> List[MetricTest[TResult]]:
-        """
-        allows to redefine default tests for metric
-        Returns:
-            list of tests to use as default
-        """
-        return []
-
-    def _default_tests_with_reference(self) -> Optional[List[MetricTest[TResult]]]:
-        """
-        allows to redefine default tests for metric when calculated with reference
-        Returns:
-            list of tests to use as default when called with reference data
-            None - if default tests should be returned
-        """
-        return None
 
     @property
     def id(self) -> MetricId:
@@ -287,25 +269,60 @@ class AutoAliasMixin:
         return f"evidently:{cls.__alias_type__}:{cls.__name__}"
 
 
-class MetricConfig(AutoAliasMixin, EvidentlyBaseModel):
+TTest = TypeVar("TTest", bound=MetricTest)
+
+
+class MetricTestConfig(AutoAliasMixin, EvidentlyBaseModel, Generic[TTest]):
+    __alias_type__: typing.ClassVar[str] = "test_config"
+
+    @abstractmethod
+    def to_test(self) -> TTest:
+        raise NotImplementedError
+
+
+TMetric = TypeVar("TMetric", bound="MetricWithConfig")
+
+
+class MetricConfig(AutoAliasMixin, EvidentlyBaseModel, Generic[TMetric]):
     __alias_type__: typing.ClassVar[str] = "metric_config"
 
     class Config:
         is_base_type = True
 
-    __metric_type__: typing.Type["MetricWithConfig"]
+    __metric_type__: typing.Type[TMetric]
 
-    def __get_metric_type__(self) -> typing.Type["MetricWithConfig"]:
+    def __get_metric_type__(self) -> typing.Type[TMetric]:
         if not hasattr(self, "__metric_type__"):
             raise ValueError(f"{self.__class__.__name__} is not binded to Metric type")
         return self.__metric_type__
 
-    def to_metric(self) -> "MetricWithConfig":
+    def to_metric(self) -> TMetric:
         metric_type = self.__get_metric_type__()
         return metric_type(self.get_metric_id(), self)
 
     def get_metric_id(self) -> str:
         return self.get_fingerprint()
+
+    @abc.abstractmethod
+    def get_tests(self, value: TResult) -> Generator[MetricTestResult, None, None]:
+        raise NotImplementedError()
+
+    def _default_tests(self) -> List[MetricTest[TResult]]:
+        """
+        allows to redefine default tests for metric
+        Returns:
+            list of tests to use as default
+        """
+        return []
+
+    def _default_tests_with_reference(self) -> Optional[List[MetricTest[TResult]]]:
+        """
+        allows to redefine default tests for metric when calculated with reference
+        Returns:
+            list of tests to use as default when called with reference data
+            None - if default tests should be returned
+        """
+        return None
 
 
 TConfig = TypeVar("TConfig", bound=MetricConfig)
@@ -317,53 +334,36 @@ class MetricWithConfig(Metric[TResult], Generic[TResult, TConfig], abc.ABC):
         super().__init__(metric_id)
 
     def __init_subclass__(cls):
-        if not inspect.isabstract(cls):
+        if not inspect.isabstract(cls) and ABC not in cls.__bases__:
             base = typing_inspect.get_generic_bases(cls)[0]  # fixme only works for simple cases
-            config_type = typing_inspect.get_args(base)[1]
-            if not issubclass(config_type, MetricConfig):
-                raise ValueError("Value of generic parameter TConfig should be MetricConfig subclass")
+            # print(base, typing_inspect.get_args(base))
+            config_type = typing_inspect.get_args(base)[-1]
+            if not isinstance(config_type, type) or not issubclass(config_type, MetricConfig):
+                raise ValueError(
+                    f"Value of generic parameter TConfig for {config_type} should be MetricConfig subclass"
+                )
             config_type.__metric_type__ = cls
         super().__init_subclass__()
 
-
-class ColumnMetricConfig(MetricConfig, abc.ABC):
-    column_name: str
-
-
-TColumnConfig = TypeVar("TColumnConfig", bound=ColumnMetricConfig)
+    def get_tests(self, value: TResult) -> Generator[MetricTestResult, None, None]:
+        yield from self.config.get_tests(value)
 
 
-class ColumnMetric(MetricWithConfig[TResult, TColumnConfig]):
-    def calculate(self, current_data: Dataset, reference_data: Optional[Dataset]) -> TResult:
-        return self.calculate_value(
-            current_data.column(self.column_name),
-            reference_data.column(self.column_name) if reference_data else None,
-        )
-
-    @abstractmethod
-    def calculate_value(self, current_data: DatasetColumn, reference_data: Optional[DatasetColumn]) -> TResult:
-        raise NotImplementedError()
-
-    def display_name(self) -> str:
-        raise NotImplementedError()
-
-    @property
-    def column_name(self) -> str:
-        return self.config.column_name
-
-
-class SingleValueMetric(Metric[SingleValue], ABC):
-    _tests: Optional[List[MetricTest[SingleValue]]]
-
-    def with_tests(self, tests: Optional[List[MetricTest[SingleValue]]]):
-        self._tests = tests
-        return self
+class SingleValueMetricConfig(MetricConfig["SingleValueMetric"]):
+    tests: List[MetricTestConfig[SingleValue]] = []
 
     def get_tests(self, value: SingleValue) -> Generator[MetricTestResult, None, None]:
-        if self._tests is None:
-            return None
-        for test in self._tests:
-            yield test(self, value)
+        # todo: do not call to_metric here
+        yield from (t.to_test()(self.to_metric(), value) for t in self.tests)
+
+
+TSingleValueMetricConfig = TypeVar("TSingleValueMetricConfig", bound=SingleValueMetricConfig)
+
+
+class SingleValueMetric(
+    MetricWithConfig[SingleValue, TSingleValueMetricConfig], Generic[TSingleValueMetricConfig], ABC
+):
+    pass
 
 
 class ByLabelMetric(Metric[ByLabelValue], ABC):
