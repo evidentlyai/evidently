@@ -63,7 +63,7 @@ class Context:
         self._input_data = (current_data, reference_data)
         self._data_columns = {
             column_name: ContextColumnData(current_data.column(column_name))
-            for column_name, info in current_data._data_definition._columns.items()
+            for column_name, info in current_data._data_definition.columns.items()
         }
 
     def column(self, column_name: str) -> ContextColumnData:

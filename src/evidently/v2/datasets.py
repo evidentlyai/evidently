@@ -17,15 +17,12 @@ class ColumnInfo:
     type: ColumnType
 
 
+@dataclasses.dataclass
 class DataDefinition:
-    _columns: Dict[str, ColumnInfo]
-
-    def __init__(self, columns: Dict[str, ColumnInfo]):
-        self._columns = columns
+    columns: Dict[str, ColumnInfo]
 
     def get_column_type(self, column_name: str) -> ColumnType:
-        # TODO: implement
-        return ColumnType.Unknown
+        return self.columns.get(column_name).type
 
 
 class DatasetColumn:
