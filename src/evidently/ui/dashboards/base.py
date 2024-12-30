@@ -261,10 +261,10 @@ class DashboardConfig(BaseModel):
 
 
 register_type_alias(
-    DashboardPanel, "evidently.v2.backport.DashboardPanelV2", "evidently:dashboard_panel:DashboardPanelV2"
+    DashboardPanel, "evidently.future.backport.DashboardPanelV2", "evidently:dashboard_panel:DashboardPanelV2"
 )
 register_type_alias(
     DashboardPanel,
-    "evidently.v2.backport.SingleValueDashboardPanel",
+    "evidently.future.backport.SingleValueDashboardPanel",
     "evidently:dashboard_panel:SingleValueDashboardPanel",
 )

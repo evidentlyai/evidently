@@ -1,4 +1,4 @@
-from evidently.v2.metrics import column_min
+from evidently.future.metrics import column_min
 
 
 def test_min_metric():

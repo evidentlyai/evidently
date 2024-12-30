@@ -9,6 +9,7 @@ from .column_statistics import MedianValue
 from .column_statistics import MinValue
 from .column_statistics import QuantileValue
 from .column_statistics import StdValue
+from .column_statistics import ValueDrift
 from .container import MetricContainer
 from .dataset_statistics import ColumnCount
 from .dataset_statistics import RowCount
@@ -24,6 +25,7 @@ __all__ = [
     "SingleValue",
     "SingleValueMetricTest",
     # column statistics metrics
+    "ValueDrift",
     "MaxValue",
     "MeanValue",
     "MedianValue",

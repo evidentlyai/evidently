@@ -29,7 +29,7 @@ from evidently.utils.dashboard import TemplateParams
 from evidently.utils.dashboard import inline_iframe_html_template
 
 if typing.TYPE_CHECKING:
-    from evidently.v2.report import Context
+    from evidently.future.report import Context
 
 
 class MetricResult:

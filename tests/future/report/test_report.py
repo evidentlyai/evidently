@@ -1,8 +1,8 @@
 from typing import Optional
 
-from evidently.v2.datasets import Dataset
-from evidently.v2.metrics.base import Metric
-from evidently.v2.report import Report
+from evidently.future.datasets import Dataset
+from evidently.future.metrics.base import Metric
+from evidently.future.report import Report
 
 
 def simple_metric():
