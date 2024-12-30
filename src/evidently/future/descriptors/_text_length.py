@@ -6,9 +6,9 @@ from typing import Union
 import numpy as np
 
 from evidently import ColumnType
-from evidently.v2.datasets import Dataset
-from evidently.v2.datasets import DatasetColumn
-from evidently.v2.datasets import Descriptor
+from evidently.future.datasets import Dataset
+from evidently.future.datasets import DatasetColumn
+from evidently.future.datasets import Descriptor
 
 
 class TextLength(Descriptor):

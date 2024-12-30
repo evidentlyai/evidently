@@ -3,6 +3,13 @@ from typing import List
 from typing import Optional
 from typing import Union
 
+from evidently.future.datasets import Dataset
+from evidently.future.datasets import DatasetColumn
+from evidently.future.metrics import SingleValue
+from evidently.future.metrics import SingleValueMetricTest
+from evidently.future.metrics.base import CountMetric
+from evidently.future.metrics.base import CountValue
+from evidently.future.metrics.base import SingleValueMetric
 from evidently.metric_results import HistogramData
 from evidently.metric_results import Label
 from evidently.model.widget import BaseWidgetInfo
@@ -11,13 +18,6 @@ from evidently.renderers.html_widgets import WidgetSize
 from evidently.renderers.html_widgets import plotly_figure
 from evidently.utils.visualizations import get_distribution_for_column
 from evidently.utils.visualizations import plot_distr_with_perc_button
-from evidently.v2.datasets import Dataset
-from evidently.v2.datasets import DatasetColumn
-from evidently.v2.metrics import SingleValue
-from evidently.v2.metrics import SingleValueMetricTest
-from evidently.v2.metrics.base import CountMetric
-from evidently.v2.metrics.base import CountValue
-from evidently.v2.metrics.base import SingleValueMetric
 
 
 def distribution(

@@ -12,6 +12,15 @@ from evidently.base_metric import Metric as MetricV1
 from evidently.base_metric import MetricResult as MetricResultV1
 from evidently.core import ColumnType
 from evidently.core import new_id
+from evidently.future.datasets import ColumnInfo
+from evidently.future.datasets import DataDefinition
+from evidently.future.datasets import Dataset
+from evidently.future.metrics import ByLabelValue
+from evidently.future.metrics import Metric as MetricV2
+from evidently.future.metrics import MetricResult as MetricResultV2
+from evidently.future.metrics import SingleValue
+from evidently.future.metrics.base import CountValue
+from evidently.future.report import Snapshot as SnapshotV2
 from evidently.metric_results import Label
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options.base import Options
@@ -29,15 +38,6 @@ from evidently.ui.dashboards.base import PanelValue
 from evidently.ui.dashboards.base import ReportFilter
 from evidently.ui.dashboards.utils import PlotType
 from evidently.ui.type_aliases import ProjectID
-from evidently.v2.datasets import ColumnInfo
-from evidently.v2.datasets import DataDefinition
-from evidently.v2.datasets import Dataset
-from evidently.v2.metrics import ByLabelValue
-from evidently.v2.metrics import Metric as MetricV2
-from evidently.v2.metrics import MetricResult as MetricResultV2
-from evidently.v2.metrics import SingleValue
-from evidently.v2.metrics.base import CountValue
-from evidently.v2.report import Snapshot as SnapshotV2
 
 
 class MetricResultV2Adapter(MetricResultV1):
@@ -204,10 +204,10 @@ class TestV2Parameters(TestParameters):
 def main():
     import pandas as pd
 
+    from evidently.future.metrics import MeanValue
+    from evidently.future.report import Report as ReportV2
+    from evidently.future.tests.numerical_checks import le
     from evidently.ui.workspace import Workspace
-    from evidently.v2.metrics import MeanValue
-    from evidently.v2.report import Report as ReportV2
-    from evidently.v2.tests.numerical_checks import le
 
     def create_snapshot(i):
         df = pd.DataFrame({"col": list(range(i + 5))})

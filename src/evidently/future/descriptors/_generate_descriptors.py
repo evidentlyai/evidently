@@ -17,8 +17,8 @@ from evidently.features.custom_feature import CustomPairColumnFeature
 from evidently.features.custom_feature import CustomSingleColumnFeature
 from evidently.features.generated_features import GeneratedFeatures
 from evidently.features.llm_judge import BaseLLMPromptTemplate
+from evidently.future.datasets import FeatureDescriptor
 from evidently.pydantic_utils import TYPE_ALIASES
-from evidently.v2.datasets import FeatureDescriptor
 
 SOURCE_FILE = "generated_descriptors.py"
 

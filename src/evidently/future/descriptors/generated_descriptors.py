@@ -37,7 +37,7 @@ from evidently.features.words_feature import IncludesWords
 from evidently.features.words_feature import WordMatch
 from evidently.features.words_feature import WordNoMatch
 from evidently.features.words_feature import WordsPresence
-from evidently.v2.datasets import FeatureDescriptor
+from evidently.future.datasets import FeatureDescriptor
 
 
 def bert_score(

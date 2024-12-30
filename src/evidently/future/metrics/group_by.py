@@ -2,12 +2,12 @@ from typing import Generator
 from typing import List
 from typing import Optional
 
-from evidently.v2.datasets import Dataset
-from evidently.v2.metrics import Metric
-from evidently.v2.metrics.base import MetricTestResult
-from evidently.v2.metrics.base import TResult
-from evidently.v2.metrics.container import MetricContainer
-from evidently.v2.report import Context
+from evidently.future.datasets import Dataset
+from evidently.future.metrics import Metric
+from evidently.future.metrics.base import MetricTestResult
+from evidently.future.metrics.base import TResult
+from evidently.future.metrics.container import MetricContainer
+from evidently.future.report import Context
 
 
 class GroupByMetric(Metric):

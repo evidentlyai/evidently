@@ -3,9 +3,9 @@ from typing import Dict
 from typing import Optional
 from typing import Union
 
-from evidently.v2.datasets import Dataset
-from evidently.v2.datasets import DatasetColumn
-from evidently.v2.datasets import Descriptor
+from evidently.future.datasets import Dataset
+from evidently.future.datasets import DatasetColumn
+from evidently.future.datasets import Descriptor
 
 
 class CustomColumnDescriptor(Descriptor):

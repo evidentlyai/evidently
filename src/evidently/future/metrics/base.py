@@ -15,6 +15,8 @@ from typing import Tuple
 from typing import TypeVar
 from typing import Union
 
+from evidently.future.datasets import Dataset
+from evidently.future.datasets import DatasetColumn
 from evidently.metric_results import Label
 from evidently.model.dashboard import DashboardInfo
 from evidently.model.widget import BaseWidgetInfo
@@ -25,8 +27,6 @@ from evidently.renderers.html_widgets import table_data
 from evidently.tests.base_test import TestStatus
 from evidently.utils.dashboard import TemplateParams
 from evidently.utils.dashboard import inline_iframe_html_template
-from evidently.v2.datasets import Dataset
-from evidently.v2.datasets import DatasetColumn
 
 if typing.TYPE_CHECKING:
     from evidently.v2.report import Context

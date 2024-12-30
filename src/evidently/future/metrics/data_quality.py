@@ -2,19 +2,19 @@ from typing import Dict
 from typing import List
 from typing import Optional
 
+from evidently.future.datasets import Dataset
+from evidently.future.metrics import ByLabelValue
+from evidently.future.metrics import Metric
+from evidently.future.metrics import MetricPreset
+from evidently.future.metrics import MetricResult
+from evidently.future.metrics.base import ByLabelMetric
+from evidently.future.metrics.base import MetricId
+from evidently.future.metrics.base import MetricTest
+from evidently.future.metrics.presets import PresetResult
+from evidently.future.report import Context
 from evidently.metric_results import Label
 from evidently.metrics import ClassificationQualityByClass
 from evidently.metrics.classification_performance.quality_by_class_metric import ClassificationQualityByClassRenderer
-from evidently.v2.datasets import Dataset
-from evidently.v2.metrics import ByLabelValue
-from evidently.v2.metrics import Metric
-from evidently.v2.metrics import MetricPreset
-from evidently.v2.metrics import MetricResult
-from evidently.v2.metrics.base import ByLabelMetric
-from evidently.v2.metrics.base import MetricId
-from evidently.v2.metrics.base import MetricTest
-from evidently.v2.metrics.presets import PresetResult
-from evidently.v2.report import Context
 
 
 class F1Metric(ByLabelMetric):

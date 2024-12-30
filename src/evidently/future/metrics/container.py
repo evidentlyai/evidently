@@ -5,13 +5,13 @@ from typing import Dict
 from typing import List
 from typing import Optional
 
+from evidently.future.metrics import Metric
+from evidently.future.metrics import MetricResult
+from evidently.future.metrics.base import MetricId
 from evidently.model.widget import BaseWidgetInfo
-from evidently.v2.metrics import Metric
-from evidently.v2.metrics import MetricResult
-from evidently.v2.metrics.base import MetricId
 
 if typing.TYPE_CHECKING:
-    from evidently.v2.report import Context
+    from evidently.future.report import Context
 
 
 class MetricContainer:
