@@ -1,6 +1,12 @@
 import { useCallback, useMemo } from 'react'
-import type { GetParams, MatchAny, MatchWithAction } from '~/router-utils/types'
-import { useFetcher } from '~/shared-dependencies/react-router-dom'
+import type { GetParams, MatchAny, MatchWithAction, MatchWithLoader } from '~/router-utils/types'
+import {
+  type SubmitOptions,
+  useActionData,
+  useFetcher,
+  useNavigation,
+  useSubmit
+} from '~/shared-dependencies/react-router-dom'
 import { REST_PARAMS_FOR_FETCHER_SUBMIT } from '~/utils/index'
 import { replaceParamsInLink } from './utils'
 
@@ -40,7 +46,6 @@ export const useSubmitFetcherGeneral = <M extends MatchWithAction, K extends key
   return fetcher
 }
 
-// Helper function to infer K
 export const createUseSubmitFetcherGeneral = <M extends MatchAny>() => {
   type MatchesWithAction = Extract<M, MatchWithAction>
 
@@ -56,6 +61,86 @@ export const createUseSubmitFetcherGeneral = <M extends MatchAny>() => {
       data: Extract<MatchesWithAction, { path: Path }>['action'][ActionName]['requestData']
     }) => GetParams<Extract<MatchesWithAction, { path: Path }>['path']>
   }) => useSubmitFetcherGeneral<Extract<MatchesWithAction, { path: Path }>, ActionName>(args)
+
+  return hook
+}
+
+export const useSubmitGeneral = <M extends MatchWithAction, K extends keyof M['action']>({
+  action,
+  path,
+  provideParams
+}: {
+  action: K
+  path: M['path']
+  provideParams: ({ data }: { data: M['action'][K]['requestData'] }) => GetParams<M['path']>
+}) => {
+  const originalSumit = useSubmit()
+  const navigattion = useNavigation()
+  const data = useActionData() as M['action'][K]['returnType'] | undefined
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies: fine
+  const submit = useCallback(
+    (data: M['action'][K]['requestData'], submitOptions?: SubmitOptions) => {
+      const params = provideParams({ data })
+
+      originalSumit(
+        // @ts-ignore
+        { data, action },
+        {
+          action: replaceParamsInLink(params, path),
+          ...submitOptions,
+          ...REST_PARAMS_FOR_FETCHER_SUBMIT
+        }
+      )
+    },
+    [originalSumit, path]
+  )
+
+  return { state: navigattion.state, submit, data }
+}
+
+export const createUseSubmitGeneral = <M extends MatchAny>() => {
+  type MatchesWithAction = Extract<M, MatchWithAction>
+
+  const hook = <
+    Path extends MatchesWithAction['path'],
+    ActionName extends keyof Extract<MatchesWithAction, { path: Path }>['action']
+  >(args: {
+    action: ActionName
+    path: Path
+    provideParams: ({
+      data
+    }: {
+      data: Extract<MatchesWithAction, { path: Path }>['action'][ActionName]['requestData']
+    }) => GetParams<Extract<MatchesWithAction, { path: Path }>['path']>
+  }) => useSubmitGeneral<Extract<MatchesWithAction, { path: Path }>, ActionName>(args)
+
+  return hook
+}
+
+export const useLoaderGeneral = <M extends MatchWithLoader>(path: M['path']) => {
+  const originalFetcher = useFetcher<M['loader']['returnType']>()
+
+  const load = useCallback(
+    ({ params }: { params: GetParams<M['path']> }) => {
+      originalFetcher.load(replaceParamsInLink(params, path))
+    },
+    [originalFetcher, path]
+  )
+
+  const fetcher = useMemo(
+    () => ({ state: originalFetcher.state, data: originalFetcher.data, load }),
+    [originalFetcher, load]
+  )
+
+  return fetcher
+}
+
+export const createUseLoaderGeneral = <M extends MatchAny>() => {
+  type MatchesWithLoader = Extract<M, MatchWithLoader>
+
+  const hook = <Path extends MatchesWithLoader['path']>(path: Path) =>
+    useLoaderGeneral<Extract<MatchesWithLoader, { path: Path }>>(path)
 
   return hook
 }

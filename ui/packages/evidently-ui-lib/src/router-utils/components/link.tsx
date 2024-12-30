@@ -8,7 +8,7 @@ import {
   type TypographyProps
 } from '@mui/material'
 import { Link as ReactRouterLink } from 'react-router-dom'
-import type { GetParams, MatchAny } from 'router-utils/types'
+import type { GetParams, MatchAny, MatchWithLoader } from 'router-utils/types'
 import { replaceParamsInLink } from 'router-utils/utils'
 
 export type RouterLinkTemplateComponentProps =
@@ -79,7 +79,7 @@ export const CreateRouterLinkComponent = <M extends MatchAny>() => {
   }: RouterLinkTemplateComponentProps & {
     to: K
     paramsToReplace: GetParams<K>
-    query?: Extract<M, { path: K }>['loader']['query']
+    query?: M extends MatchWithLoader ? M['loader']['query'] : undefined
   }) => {
     const searchParams =
       query &&

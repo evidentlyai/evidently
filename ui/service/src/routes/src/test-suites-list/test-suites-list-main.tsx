@@ -41,13 +41,13 @@ export const Component = () => {
   const deleteSnapshotFetcher = useSubmitFetcher({
     path: '/:projectId/test-suites/?index',
     action: 'delete-snapshot',
-    provideParams: () => ({ projectId })
+    provideParams: ({ data: { projectId } }) => ({ projectId })
   })
 
   const reloadSnapshotsFetcher = useSubmitFetcher({
     path: '/:projectId/test-suites/?index',
     action: 'reload-snapshots',
-    provideParams: () => ({ projectId })
+    provideParams: ({ data: { projectId } }) => ({ projectId })
   })
 
   const disabled = useIsAnyLoaderOrActionRunning()

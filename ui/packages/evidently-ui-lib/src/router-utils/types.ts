@@ -41,8 +41,8 @@ type ExtractLoader<T extends RouteExtended> = T['loadData'] extends (
     T['lazy'] extends (args: any) => Promise<infer R>
     ? R extends RouteExtended
       ? ExtractLoader<R>
-      : ProvideLoaderInfo<QueryKeysToObject<undefined>, undefined>
-    : ProvideLoaderInfo<QueryKeysToObject<undefined>, undefined>
+      : undefined
+    : undefined
 
 type ExtractAction<T extends RouteExtended> = T['actions'] extends Record<
   string,
@@ -133,7 +133,7 @@ export type Match<Path extends string, L, A> = {
 export type MatchAny = Match<
   string,
   // biome-ignore lint/suspicious/noExplicitAny: fine
-  ProvideLoaderInfo<Partial<Record<string, string>>, any>,
+  ProvideLoaderInfo<Partial<Record<string, string>>, any> | undefined,
   // biome-ignore lint/suspicious/noExplicitAny: fine
   Record<string, ProvideActionInfo<any, any>> | undefined
 >
