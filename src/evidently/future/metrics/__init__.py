@@ -10,20 +10,27 @@ from .column_statistics import MinValue
 from .column_statistics import QuantileValue
 from .column_statistics import StdValue
 from .container import MetricContainer
+from .dataset_statistics import ColumnCount
+from .dataset_statistics import RowCount
 from .presets import MetricPreset
 
 __all__ = [
+    # base classes
     "ByLabelValue",
-    "MaxValue",
-    "MeanValue",
-    "MedianValue",
-    "MinValue",
-    "QuantileValue",
-    "StdValue",
     "Metric",
     "MetricContainer",
     "MetricPreset",
     "MetricResult",
     "SingleValue",
     "SingleValueMetricTest",
+    # column statistics metrics
+    "MaxValue",
+    "MeanValue",
+    "MedianValue",
+    "MinValue",
+    "QuantileValue",
+    "StdValue",
+    # dataset statistics metrics
+    "ColumnCount",
+    "RowCount",
 ]

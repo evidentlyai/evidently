@@ -296,7 +296,7 @@ class ColumnMetric(Metric[TResult]):
 
 
 class SingleValueMetric(Metric[SingleValue], ABC):
-    _tests: Optional[List[MetricTest[SingleValue]]]
+    _tests: Optional[List[MetricTest[SingleValue]]] = None
 
     def with_tests(self, tests: Optional[List[MetricTest[SingleValue]]]):
         self._tests = tests

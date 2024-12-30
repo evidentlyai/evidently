@@ -1,5 +1,6 @@
 import abc
 import dataclasses
+from abc import abstractmethod
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -73,6 +74,12 @@ def _determine_desccriptor_column_name(alias: str, columns: List[str]):
     return key
 
 
+@dataclasses.dataclass
+class DatasetStats:
+    row_count: int
+    column_count: int
+
+
 class Dataset:
     _data_definition: DataDefinition
 
@@ -88,29 +95,35 @@ class Dataset:
             key = _determine_desccriptor_column_name(descriptor.alias, data.columns.tolist())
             new_column = descriptor.generate_data(dataset)
             if isinstance(new_column, DatasetColumn):
-                data[key] = new_column.data
-                dataset._data_definition.columns[key] = ColumnInfo(new_column.type)
+                dataset.add_column(key, new_column)
             elif len(new_column) > 1:
                 for col, value in new_column.items():
-                    data[f"{key}.{col}"] = value.data
-                    dataset._data_definition.columns[f"{key}.{col}"] = ColumnInfo(value.type)
+                    dataset.add_column(f"{key}.{col}", value)
             else:
-                data[key] = list(new_column.values())[0].data
+                dataset.add_column(key, list(new_column.values())[0])
         return dataset
 
+    @abstractmethod
     def as_dataframe(self) -> pd.DataFrame:
         raise NotImplementedError()
 
+    @abstractmethod
     def column(self, column_name: str) -> DatasetColumn:
         raise NotImplementedError()
 
+    @abstractmethod
     def subdataset(self, column_name: str, label: object) -> "Dataset":
+        raise NotImplementedError()
+
+    @abstractmethod
+    def stats(self) -> DatasetStats:
         raise NotImplementedError()
 
 
 class PandasDataset(Dataset):
     _data: pd.DataFrame
     _data_definition: DataDefinition
+    _dataset_stats: DatasetStats
 
     def __init__(
         self,
@@ -122,6 +135,8 @@ class PandasDataset(Dataset):
             self._data_definition = self._generate_data_definition(data)
         else:
             self._data_definition = data_definition
+        (rows, columns) = data.shape
+        self._dataset_stats = DatasetStats(rows, columns)
 
     def as_dataframe(self) -> pd.DataFrame:
         return self._data
@@ -134,3 +149,11 @@ class PandasDataset(Dataset):
 
     def _generate_data_definition(self, data: pd.DataFrame) -> DataDefinition:
         return DataDefinition(columns={column: ColumnInfo(ColumnType.Unknown) for column in data.columns})
+
+    def stats(self) -> DatasetStats:
+        return self._dataset_stats
+
+    def add_column(self, key: str, data: DatasetColumn):
+        self._dataset_stats.column_count += 1
+        self._data[key] = data.data
+        self._data_definition.columns[key] = ColumnInfo(data.type)
