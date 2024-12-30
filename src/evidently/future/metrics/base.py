@@ -144,17 +144,16 @@ class CountValue(MetricResult):
         return SingleValue(self.share)
 
 
-class MetricTest(Protocol[TResult]):
+class MetricTestProto(Protocol[TResult]):
     def __call__(self, metric: "MetricCalculationBase", value: TResult) -> MetricTestResult: ...
 
 
-class SingleValueMetricTest(MetricTest[SingleValue], Protocol):
-    def __call__(self, metric: "MetricCalculationBase", value: SingleValue) -> MetricTestResult: ...
+SingleValueTest = MetricTestProto[SingleValue]
 
 
 MetricId = str
 
-ByLabelValueTests = typing.Dict[Label, List[SingleValueMetricTest]]
+ByLabelValueTests = typing.Dict[Label, List[SingleValueTest]]
 
 
 def metric_tests_widget(tests: List[MetricTestResult]) -> BaseWidgetInfo:
@@ -269,10 +268,10 @@ class AutoAliasMixin:
         return f"evidently:{cls.__alias_type__}:{cls.__name__}"
 
 
-TTest = TypeVar("TTest", bound=MetricTest)
+TTest = TypeVar("TTest", bound=MetricTestProto)
 
 
-class MetricTestConfig(AutoAliasMixin, EvidentlyBaseModel, Generic[TTest]):
+class MetricTest(AutoAliasMixin, EvidentlyBaseModel, Generic[TTest]):
     __alias_type__: typing.ClassVar[str] = "test_config"
 
     @abstractmethod
@@ -307,7 +306,7 @@ class Metric(AutoAliasMixin, EvidentlyBaseModel, Generic[TMetric]):
     def get_tests(self, value: TResult) -> Generator[MetricTestResult, None, None]:
         raise NotImplementedError()
 
-    def _default_tests(self) -> List[MetricTest[TResult]]:
+    def _default_tests(self) -> List[MetricTestProto[TResult]]:
         """
         allows to redefine default tests for metric
         Returns:
@@ -315,7 +314,7 @@ class Metric(AutoAliasMixin, EvidentlyBaseModel, Generic[TMetric]):
         """
         return []
 
-    def _default_tests_with_reference(self) -> Optional[List[MetricTest[TResult]]]:
+    def _default_tests_with_reference(self) -> Optional[List[MetricTestProto[TResult]]]:
         """
         allows to redefine default tests for metric when calculated with reference
         Returns:
@@ -350,7 +349,7 @@ class MetricCalculation(MetricCalculationBase[TResult], Generic[TResult, TConfig
 
 
 class SingleValueMetric(Metric["SingleValueCalculation"]):
-    tests: List[MetricTestConfig[SingleValue]] = []
+    tests: List[MetricTest[SingleValue]] = []
 
     def get_tests(self, value: SingleValue) -> Generator[MetricTestResult, None, None]:
         # todo: do not call to_metric here
@@ -365,7 +364,7 @@ class SingleValueCalculation(MetricCalculation[SingleValue, TSingleValueMetric],
 
 
 class ByLabelMetric(Metric["ByLabelCalculation"]):
-    tests: List[MetricTestConfig[SingleValue]] = []
+    tests: List[MetricTest[SingleValue]] = []
 
     def get_tests(self, value: SingleValue) -> Generator[MetricTestResult, None, None]:
         # todo: do not call to_metric here
@@ -381,8 +380,8 @@ class ByLabelCalculation(MetricCalculation[ByLabelValue, TByLabelMetric], Generi
 
 
 class CountMetric(Metric["CountCalculation"]):
-    count_tests: List[MetricTestConfig[SingleValue]] = []
-    share_tests: List[MetricTestConfig[SingleValue]] = []
+    count_tests: List[MetricTest[SingleValue]] = []
+    share_tests: List[MetricTest[SingleValue]] = []
 
     def get_tests(self, value: CountValue) -> Generator[MetricTestResult, None, None]:
         # todo: do not call to_metric here

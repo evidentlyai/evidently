@@ -1,17 +1,16 @@
-from typing import List
 from typing import Optional
 
 from evidently.future.datasets import Dataset
 from evidently.future.metrics import SingleValue
-from evidently.future.metrics import SingleValueMetricTest
 from evidently.future.metrics.base import SingleValueCalculation
+from evidently.future.metrics.base import SingleValueMetric
 
 
-class RowCount(SingleValueCalculation):
-    def __init__(self, tests: Optional[List[SingleValueMetricTest]] = None):
-        super().__init__("row_count")
-        self.with_tests(tests)
+class RowCount(SingleValueMetric):
+    pass
 
+
+class RowCountCalculation(SingleValueCalculation[RowCount]):
     def calculate(self, current_data: Dataset, reference_data: Optional[Dataset]) -> SingleValue:
         return SingleValue(current_data.stats().row_count)
 
@@ -19,11 +18,11 @@ class RowCount(SingleValueCalculation):
         return "Row count in dataset"
 
 
-class ColumnCount(SingleValueCalculation):
-    def __init__(self, tests: Optional[List[SingleValueMetricTest]] = None):
-        super().__init__("column_count")
-        self.with_tests(tests)
+class ColumnCount(SingleValueMetric):
+    pass
 
+
+class ColumnCountCalculation(SingleValueCalculation):
     def calculate(self, current_data: Dataset, reference_data: Optional[Dataset]) -> SingleValue:
         return SingleValue(current_data.stats().column_count)
 
