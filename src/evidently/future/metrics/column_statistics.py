@@ -61,7 +61,7 @@ TStatisticsMetric = TypeVar("TStatisticsMetric", bound=StatisticsMetric)
 class StatisticsCalculation(SingleValueCalculation[TStatisticsMetric]):
     @property
     def column(self):
-        return self.config.column
+        return self.metric.column
 
     def calculate(self, current_data: Dataset, reference_data: Optional[Dataset]) -> SingleValue:
         value = self.calculate_value(current_data.column(self.column))
@@ -83,11 +83,11 @@ class StatisticsCalculation(SingleValueCalculation[TStatisticsMetric]):
         raise NotImplementedError()
 
 
-class MinValueConfig(StatisticsMetric):
+class MinValue(StatisticsMetric):
     pass
 
 
-class MinValueCalculation(StatisticsCalculation[MinValueConfig]):
+class MinValueCalculation(StatisticsCalculation[MinValue]):
     def calculate_value(self, column: DatasetColumn) -> Union[float, int]:
         return column.data.min()
 
@@ -95,11 +95,11 @@ class MinValueCalculation(StatisticsCalculation[MinValueConfig]):
         return f"Minimal value of {self.column}"
 
 
-class MeanValueConfig(StatisticsMetric):
+class MeanValue(StatisticsMetric):
     pass
 
 
-class MeanValueCalculation(StatisticsCalculation[MeanValueConfig]):
+class MeanValueCalculation(StatisticsCalculation[MeanValue]):
     def calculate_value(self, column: DatasetColumn) -> Union[float, int]:
         return column.data.mean()
 
@@ -107,11 +107,11 @@ class MeanValueCalculation(StatisticsCalculation[MeanValueConfig]):
         return f"Mean value of {self.column}"
 
 
-class MaxValueConfig(StatisticsMetric):
+class MaxValue(StatisticsMetric):
     pass
 
 
-class MaxValueCalculation(StatisticsCalculation[MaxValueConfig]):
+class MaxValueCalculation(StatisticsCalculation[MaxValue]):
     def calculate_value(self, column: DatasetColumn) -> Union[float, int]:
         return column.data.max()
 
@@ -119,11 +119,11 @@ class MaxValueCalculation(StatisticsCalculation[MaxValueConfig]):
         return f"Maximum value of {self.column}"
 
 
-class StdValueConfig(StatisticsMetric):
+class StdValue(StatisticsMetric):
     pass
 
 
-class StdValueCalculation(StatisticsCalculation[StdValueConfig]):
+class StdValueCalculation(StatisticsCalculation[StdValue]):
     def calculate_value(self, column: DatasetColumn) -> Union[float, int]:
         return column.data.std()
 
@@ -131,11 +131,11 @@ class StdValueCalculation(StatisticsCalculation[StdValueConfig]):
         return f"Std value of {self.column}"
 
 
-class MedianValueConfig(StatisticsMetric):
+class MedianValue(StatisticsMetric):
     pass
 
 
-class MedianValueCalculation(StatisticsCalculation[MedianValueConfig]):
+class MedianValueCalculation(StatisticsCalculation[MedianValue]):
     def calculate_value(self, column: DatasetColumn) -> Union[float, int]:
         return column.data.median()
 
@@ -149,10 +149,10 @@ class QuantileValue(StatisticsMetric):
 
 class QuantileValueCalculation(StatisticsCalculation[QuantileValue]):
     def calculate_value(self, column: DatasetColumn) -> Union[float, int]:
-        return column.data.quantile(self.config.quantile)
+        return column.data.quantile(self.metric.quantile)
 
     def display_name(self) -> str:
-        return f"Quantile {self.config.quantile} of {self.column}"
+        return f"Quantile {self.metric.quantile} of {self.column}"
 
 
 class CategoryCount(CountMetric):
@@ -162,13 +162,13 @@ class CategoryCount(CountMetric):
 
 class CategoryCountCalculation(CountCalculation[CategoryCount]):
     def calculate(self, current_data: Dataset, reference_data: Optional[Dataset]) -> CountValue:
-        column = current_data.column(self.config.column)
-        value = column.data.value_counts()[self.config.category]
+        column = current_data.column(self.metric.column)
+        value = column.data.value_counts()[self.metric.category]
         total = column.data.count()
         return CountValue(value, value / total)
 
     def display_name(self) -> str:
-        return f"Column '{self.config.column}' category '{self.config.category}'"
+        return f"Column '{self.metric.column}' category '{self.metric.category}'"
 
 
 class InRangeValueCount(CountMetric):
@@ -179,13 +179,13 @@ class InRangeValueCount(CountMetric):
 
 class InRangeValueCountCalculation(CountCalculation[InRangeValueCount]):
     def calculate(self, current_data: Dataset, reference_data: Optional[Dataset]) -> CountValue:
-        column = current_data.column(self.config.column)
-        value = column.data.between(self.config.left, self.config.right).count()
+        column = current_data.column(self.metric.column)
+        value = column.data.between(self.metric.left, self.metric.right).count()
         total = column.data.count()
         return CountValue(value, value / total)
 
     def display_name(self) -> str:
-        return f"Column '{self.config.column}' values in range {self.config.left} to {self.config.right}"
+        return f"Column '{self.metric.column}' values in range {self.metric.left} to {self.metric.right}"
 
 
 class OutRangeValueCount(CountMetric):
@@ -196,13 +196,13 @@ class OutRangeValueCount(CountMetric):
 
 class OutRangeValueCountCalculation(CountCalculation[OutRangeValueCount]):
     def calculate(self, current_data: Dataset, reference_data: Optional[Dataset]) -> CountValue:
-        column = current_data.column(self.config.column)
-        value = column.data.between(self.config.left, self.config.right).count()
+        column = current_data.column(self.metric.column)
+        value = column.data.between(self.metric.left, self.metric.right).count()
         total = column.data.count()
         return CountValue(total - value, value / total)
 
     def display_name(self) -> str:
-        return f"Column '{self.config.column}' values out of range {self.config.left} to {self.config.right}"
+        return f"Column '{self.metric.column}' values out of range {self.metric.left} to {self.metric.right}"
 
 
 class InListValueCount(CountMetric):
@@ -212,13 +212,13 @@ class InListValueCount(CountMetric):
 
 class InListValueCountCalculation(CountCalculation[InListValueCount]):
     def calculate(self, current_data: Dataset, reference_data: Optional[Dataset]) -> CountValue:
-        column = current_data.column(self.config.column)
-        value = column.data.value_counts()[self.config.values].sum()
+        column = current_data.column(self.metric.column)
+        value = column.data.value_counts()[self.metric.values].sum()
         total = column.data.count()
         return CountValue(value, value / total)
 
     def display_name(self) -> str:
-        return f"Column '{self.config.column}' values in list [{', '.join(self.config.values)}]"
+        return f"Column '{self.metric.column}' values in list [{', '.join(self.metric.values)}]"
 
 
 class OutListValueCount(CountMetric):
@@ -226,27 +226,27 @@ class OutListValueCount(CountMetric):
     values: List[Label]
 
 
-class OutListValueCountCalculation(CountCalculation):
+class OutListValueCountCalculation(CountCalculation[OutListValueCount]):
     def calculate(self, current_data: Dataset, reference_data: Optional[Dataset]) -> CountValue:
-        column = current_data.column(self.config.column)
-        value = column.data.value_counts()[self.config.values].sum()
+        column = current_data.column(self.metric.column)
+        value = column.data.value_counts()[self.metric.values].sum()
         total = column.data.count()
         return CountValue(total - value, value / total)
 
     def display_name(self) -> str:
-        return f"Column '{self.config.column}' values out of list [{', '.join(self.config.values)}]"
+        return f"Column '{self.metric.column}' values out of list [{', '.join(self.metric.values)}]"
 
 
 class MissingValueCount(CountMetric):
     column: str
 
 
-class MissingValueCountCalculation(CountCalculation):
+class MissingValueCountCalculation(CountCalculation[MissingValueCount]):
     def calculate(self, current_data: Dataset, reference_data: Optional[Dataset]) -> CountValue:
-        column = current_data.column(self.config.column)
+        column = current_data.column(self.metric.column)
         value = column.data.count()
         total = len(column.data)
         return CountValue(total - value, value / total)
 
     def display_name(self) -> str:
-        return f"Column '{self.config.column}' missing values"
+        return f"Column '{self.metric.column}' missing values"

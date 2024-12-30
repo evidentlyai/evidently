@@ -32,7 +32,7 @@ from evidently.utils.dashboard import TemplateParams
 from evidently.utils.dashboard import inline_iframe_html_template
 
 if typing.TYPE_CHECKING:
-    from evidently.v2.report import Context
+    from evidently.future.report import Context
 
 
 class MetricResult:
@@ -279,24 +279,24 @@ class MetricTest(AutoAliasMixin, EvidentlyBaseModel, Generic[TTest]):
         raise NotImplementedError
 
 
-TMetric = TypeVar("TMetric", bound="Metric")
+TCalculation = TypeVar("TCalculation", bound="Metric")
 
 
-class Metric(AutoAliasMixin, EvidentlyBaseModel, Generic[TMetric]):
+class Metric(AutoAliasMixin, EvidentlyBaseModel, Generic[TCalculation]):
     __alias_type__: typing.ClassVar[str] = "metric_v2"
 
     class Config:
         is_base_type = True
 
-    __metric_type__: typing.Type[TMetric]
+    __calculation_type__: typing.Type[TCalculation]
 
-    def __get_metric_type__(self) -> typing.Type[TMetric]:
-        if not hasattr(self, "__metric_type__"):
-            raise ValueError(f"{self.__class__.__name__} is not binded to Metric type")
-        return self.__metric_type__
+    def __get_calculation_type__(self) -> typing.Type[TCalculation]:
+        if not hasattr(self, "__calculation_type__"):
+            raise ValueError(f"{self.__class__.__name__} is not binded to Calculation type")
+        return self.__calculation_type__
 
-    def to_metric(self) -> TMetric:
-        metric_type = self.__get_metric_type__()
+    def to_calculation(self) -> TCalculation:
+        metric_type = self.__get_calculation_type__()
         return metric_type(self.get_metric_id(), self)
 
     def get_metric_id(self) -> str:
@@ -324,12 +324,12 @@ class Metric(AutoAliasMixin, EvidentlyBaseModel, Generic[TMetric]):
         return None
 
 
-TConfig = TypeVar("TConfig", bound=Metric)
+TMetric = TypeVar("TMetric", bound=Metric)
 
 
-class MetricCalculation(MetricCalculationBase[TResult], Generic[TResult, TConfig], abc.ABC):
-    def __init__(self, metric_id: MetricId, config: TConfig):
-        self.config = config
+class MetricCalculation(MetricCalculationBase[TResult], Generic[TResult, TMetric], abc.ABC):
+    def __init__(self, metric_id: MetricId, metric: TMetric):
+        self.metric = metric
         super().__init__(metric_id)
 
     def __init_subclass__(cls):
@@ -338,14 +338,12 @@ class MetricCalculation(MetricCalculationBase[TResult], Generic[TResult, TConfig
             # print(base, typing_inspect.get_args(base))
             config_type = typing_inspect.get_args(base)[-1]
             if not isinstance(config_type, type) or not issubclass(config_type, Metric):
-                raise ValueError(
-                    f"Value of generic parameter TConfig for {config_type} should be MetricConfig subclass"
-                )
-            config_type.__metric_type__ = cls
+                raise ValueError(f"Value of generic parameter TMetric for {config_type} should be Metric subclass")
+            config_type.__calculation_type__ = cls
         super().__init_subclass__()
 
     def get_tests(self, value: TResult) -> Generator[MetricTestResult, None, None]:
-        yield from self.config.get_tests(value)
+        yield from self.metric.get_tests(value)
 
 
 class SingleValueMetric(Metric["SingleValueCalculation"]):
@@ -353,7 +351,7 @@ class SingleValueMetric(Metric["SingleValueCalculation"]):
 
     def get_tests(self, value: SingleValue) -> Generator[MetricTestResult, None, None]:
         # todo: do not call to_metric here
-        yield from (t.to_test()(self.to_metric(), value) for t in self.tests)
+        yield from (t.to_test()(self.to_calculation(), value) for t in self.tests)
 
 
 TSingleValueMetric = TypeVar("TSingleValueMetric", bound=SingleValueMetric)
@@ -368,7 +366,7 @@ class ByLabelMetric(Metric["ByLabelCalculation"]):
 
     def get_tests(self, value: SingleValue) -> Generator[MetricTestResult, None, None]:
         # todo: do not call to_metric here
-        yield from (t.to_test()(self.to_metric(), value) for t in self.tests)
+        yield from (t.to_test()(self.to_calculation(), value) for t in self.tests)
 
 
 TByLabelMetric = TypeVar("TByLabelMetric", bound=ByLabelMetric)
@@ -385,8 +383,8 @@ class CountMetric(Metric["CountCalculation"]):
 
     def get_tests(self, value: CountValue) -> Generator[MetricTestResult, None, None]:
         # todo: do not call to_metric here
-        yield from (t.to_test()(self.to_metric(), value) for t in self.count_tests)
-        yield from (t.to_test()(self.to_metric(), value) for t in self.share_tests)
+        yield from (t.to_test()(self.to_calculation(), value) for t in self.count_tests)
+        yield from (t.to_test()(self.to_calculation(), value) for t in self.share_tests)
 
 
 TCountMetric = TypeVar("TCountMetric", bound=CountMetric)

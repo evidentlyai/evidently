@@ -26,7 +26,7 @@ class F1MetricCalculation(ByLabelCalculation[F1Metric]):
         raise ValueError()
 
     def _call(self, context: Context) -> ByLabelValue:
-        result = context.get_legacy_metric(ClassificationQualityByClass(self.config.probas_threshold, self.config.k))
+        result = context.get_legacy_metric(ClassificationQualityByClass(self.metric.probas_threshold, self.metric.k))
         return ByLabelValue(
             {k: v.f1 for k, v in result.current.metrics.items()},
         )
@@ -45,7 +45,7 @@ class PrecisionMetricCalculation(ByLabelCalculation):
         raise ValueError()
 
     def _call(self, context: Context) -> ByLabelValue:
-        result = context.get_legacy_metric(ClassificationQualityByClass(self.config.probas_threshold, self.config.k))
+        result = context.get_legacy_metric(ClassificationQualityByClass(self.metric.probas_threshold, self.metric.k))
         return ByLabelValue(
             {k: v.precision for k, v in result.current.metrics.items()},
         )
@@ -64,7 +64,7 @@ class RecallMetricCalculation(ByLabelCalculation):
         raise ValueError()
 
     def _call(self, context: Context) -> ByLabelValue:
-        result = context.get_legacy_metric(ClassificationQualityByClass(self.config.probas_threshold, self.config.k))
+        result = context.get_legacy_metric(ClassificationQualityByClass(self.metric.probas_threshold, self.metric.k))
 
         return ByLabelValue(
             {k: v.recall for k, v in result.current.metrics.items()},
@@ -84,7 +84,7 @@ class RocAucCalculation(ByLabelCalculation):
         raise ValueError()
 
     def _call(self, context: Context) -> ByLabelValue:
-        metric = ClassificationQualityByClass(self.config.probas_threshold, self.config.k)
+        metric = ClassificationQualityByClass(self.metric.probas_threshold, self.metric.k)
         result = context.get_legacy_metric(metric)
 
         object.__setattr__(metric, "get_result", lambda: result)
@@ -116,4 +116,4 @@ class QualityByClassPreset(MetricPreset):
 
     def calculate(self, metric_results: Dict[MetricId, MetricResult]) -> PresetResult:
         metric = RocAucMetric(probas_threshold=self._probas_threshold, k=self._k)
-        return PresetResult(metric_results[metric.get_fingerprint()].widget)
+        return PresetResult(metric_results[metric.to_calculation().id].widget)

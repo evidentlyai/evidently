@@ -7,7 +7,7 @@ from .column_statistics import MaxValue
 from .column_statistics import MeanValue
 from .column_statistics import MedianValue
 from .column_statistics import MinValue
-from .column_statistics import QuantileValueImpl
+from .column_statistics import QuantileValue
 from .column_statistics import StdValue
 from .container import MetricContainer
 from .dataset_statistics import ColumnCount
@@ -28,7 +28,7 @@ __all__ = [
     "MeanValue",
     "MedianValue",
     "MinValue",
-    "QuantileValueImpl",
+    "QuantileValue",
     "StdValue",
     # dataset statistics metrics
     "ColumnCount",

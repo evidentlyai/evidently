@@ -3,7 +3,7 @@ import dataclasses
 from typing import Dict
 from typing import List
 
-from evidently.future.metrics.base import MetricCalculationBase
+from evidently.future.metrics.base import Metric
 from evidently.future.metrics.base import MetricId
 from evidently.future.metrics.base import MetricResult
 from evidently.future.metrics.base import render_widgets
@@ -20,7 +20,7 @@ class PresetResult:
 
 class MetricPreset:
     @abc.abstractmethod
-    def metrics(self) -> List[MetricCalculationBase]:
+    def metrics(self) -> List[Metric]:
         raise NotImplementedError()
 
     @abc.abstractmethod

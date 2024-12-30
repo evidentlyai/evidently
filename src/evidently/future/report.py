@@ -19,6 +19,7 @@ from .metrics import MetricCalculationBase
 from .metrics import MetricContainer
 from .metrics import MetricPreset
 from .metrics import MetricResult
+from .metrics.base import Metric
 from .metrics.base import MetricId
 from .metrics.base import metric_tests_widget
 from .metrics.base import render_widgets
@@ -126,12 +127,13 @@ class Snapshot:
             if isinstance(item, (MetricPreset,)):
                 metric_results = {}
                 for metric in item.metrics():
-                    metric_results[metric.id] = self.context.calculate_metric(metric)
+                    calc = metric.to_calculation()
+                    metric_results[calc.id] = self.context.calculate_metric(calc)
             elif isinstance(item, (MetricContainer,)):
                 for metric in item.metrics(self.context):
-                    self.context.calculate_metric(metric)
+                    self.context.calculate_metric(metric.to_calculation())
             else:
-                self.context.calculate_metric(item)
+                self.context.calculate_metric(item.to_calculation())
 
     def _repr_html_(self):
         from evidently.renderers.html_widgets import TabData
@@ -159,7 +161,7 @@ class Snapshot:
 
 
 class Report:
-    def __init__(self, metrics: List[Union[MetricCalculationBase, MetricPreset, MetricContainer]]):
+    def __init__(self, metrics: List[Union[Metric, MetricPreset, MetricContainer]]):
         self._metrics = metrics
 
     def run(self, current_data: Dataset, reference_data: Optional[Dataset]) -> Snapshot:
@@ -167,5 +169,5 @@ class Report:
         snapshot.run(current_data, reference_data)
         return snapshot
 
-    def items(self) -> Sequence[Union[MetricCalculationBase, MetricPreset, MetricContainer]]:
+    def items(self) -> Sequence[Union[Metric, MetricPreset, MetricContainer]]:
         return self._metrics

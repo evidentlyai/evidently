@@ -22,7 +22,7 @@ class ColumnCount(SingleValueMetric):
     pass
 
 
-class ColumnCountCalculation(SingleValueCalculation):
+class ColumnCountCalculation(SingleValueCalculation[ColumnCount]):
     def calculate(self, current_data: Dataset, reference_data: Optional[Dataset]) -> SingleValue:
         return SingleValue(current_data.stats().column_count)
 

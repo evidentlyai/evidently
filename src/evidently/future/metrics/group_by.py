@@ -24,25 +24,25 @@ class GroupByMetric(Metric):
 
 class GroupByMetricCalculation(MetricCalculation[GroupByMetric]):
     def calculate(self, current_data: Dataset, reference_data: Optional[Dataset]) -> TResult:
-        curr = current_data.subdataset(self.config.column_name, self.config.label)
-        ref = reference_data.subdataset(self.config.column_name, self.config.label) if reference_data else None
-        return self.config.metric.calculate(curr, ref)
+        curr = current_data.subdataset(self.metric.column_name, self.metric.label)
+        ref = reference_data.subdataset(self.metric.column_name, self.metric.label) if reference_data else None
+        return self.metric.metric.calculate(curr, ref)
 
     def display_name(self) -> str:
         return (
-            f"{self.config.metric.display_name()} group by '{self.config.column_name}' for label: '{self.config.label}'"
+            f"{self.metric.metric.display_name()} group by '{self.metric.column_name}' for label: '{self.metric.label}'"
         )
 
     def get_tests(self, value: TResult) -> Generator[MetricTestResult, None, None]:
-        return self.config.metric.get_tests(value)
+        return self.metric.metric.get_tests(value)
 
     @property
     def column_name(self) -> str:
-        return self.config.column_name
+        return self.metric.column_name
 
 
 class GroupBy(MetricContainer):
-    def __init__(self, metric: MetricCalculationBase, column_name: str):
+    def __init__(self, metric: Metric, column_name: str):
         self._column_name = column_name
         self._metric = metric
 
