@@ -40,7 +40,7 @@ class PrecisionMetric(ByLabelMetric):
     k: Optional[int] = None
 
 
-class PrecisionMetricCalculation(ByLabelCalculation):
+class PrecisionMetricCalculation(ByLabelCalculation[PrecisionMetric]):
     def calculate(self, current_data: Dataset, reference_data: Optional[Dataset]) -> ByLabelValue:
         raise ValueError()
 
@@ -59,7 +59,7 @@ class RecallMetric(ByLabelMetric):
     k: Optional[int] = None
 
 
-class RecallMetricCalculation(ByLabelCalculation):
+class RecallMetricCalculation(ByLabelCalculation[RecallMetric]):
     def calculate(self, current_data: Dataset, reference_data: Optional[Dataset]) -> ByLabelValue:
         raise ValueError()
 
@@ -79,7 +79,7 @@ class RocAucMetric(ByLabelMetric):
     k: Optional[int] = None
 
 
-class RocAucCalculation(ByLabelCalculation):
+class RocAucCalculation(ByLabelCalculation[RocAucMetric]):
     def calculate(self, current_data: Dataset, reference_data: Optional[Dataset]) -> ByLabelValue:
         raise ValueError()
 

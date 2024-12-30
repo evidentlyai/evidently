@@ -64,7 +64,7 @@ class GreaterThanMetricTest(ComparisonTest):
         return value > self.threshold
 
 
-def gt(threshold: Union[int, float]) -> MetricTest[SingleValueTest]:
+def gte(threshold: Union[int, float]) -> MetricTest[SingleValueTest]:
     return GreaterThanMetricTest(threshold=threshold)
 
 
@@ -77,7 +77,7 @@ class LessThanMetricTest(ComparisonTest):
         return value < self.threshold
 
 
-def lt(threshold: Union[int, float]) -> MetricTest[SingleValueTest]:
+def lte(threshold: Union[int, float]) -> MetricTest[SingleValueTest]:
     return GreaterOrEqualMetricTest(threshold=threshold)
 
 

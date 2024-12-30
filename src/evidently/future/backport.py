@@ -2,11 +2,11 @@ import dataclasses
 import datetime
 from typing import ClassVar
 from typing import Dict
+from typing import Generator
 from typing import List
 from typing import Optional
 from typing import Union
 
-from evidently._pydantic_compat import Field
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric as MetricV1
 from evidently.base_metric import MetricResult as MetricResultV1
@@ -16,10 +16,14 @@ from evidently.future.datasets import ColumnInfo
 from evidently.future.datasets import DataDefinition
 from evidently.future.datasets import Dataset
 from evidently.future.metrics import ByLabelValue
-from evidently.future.metrics import MetricCalculationBase as MetricV2
 from evidently.future.metrics import MetricResult as MetricResultV2
 from evidently.future.metrics import SingleValue
 from evidently.future.metrics.base import CountValue
+from evidently.future.metrics.base import Metric as MetricV2
+from evidently.future.metrics.base import MetricTest
+from evidently.future.metrics.base import MetricTest as TestV2
+from evidently.future.metrics.base import MetricTestResult
+from evidently.future.metrics.base import TResult
 from evidently.future.report import Snapshot as SnapshotV2
 from evidently.metric_results import Label
 from evidently.model.widget import BaseWidgetInfo
@@ -90,8 +94,7 @@ class MetricV2Adapter(MetricV1[MetricResultV2Adapter]):
     class Config:
         type_alias = "evidently:metric:MetricV2Adapter"
 
-    # fixme: needed for deduplication
-    metric_id: str = Field(default_factory=lambda: str(new_id()))
+    metric: MetricV2
 
     def calculate(self, data: InputData) -> MetricResultV2Adapter:
         pass
@@ -111,20 +114,23 @@ def snapshot_v2_to_v1(snapshot: SnapshotV2) -> SnapshotV1:
     metrics: List[MetricV1] = []
     metric_results: List[MetricResultV1] = []
     tests: List[TestV1] = []
+    tests_v2: List[TestV2] = []
     test_results: List[TestResultV1] = []
     context = snapshot.context
     for metric_id, metric_result in context._metrics.items():
-        metric = context.get_metric(metric_id)
+        calculation = context.get_metric(metric_id)
+        metric = calculation.to_metric()
         metrics.append(metric_v2_to_v1(metric))
         metric_results.append(metric_result_v2_to_v1(metric_result))
 
-        for test in metric_result.tests or ():
-            tests.append(TestV2Adapter())
+        for test, test_result in zip(metric.tests, metric_result.tests or ()):
+            tests_v2.append(test)
+            tests.append(TestV2Adapter(test=test))
             test_results.append(
                 TestResultV1(
-                    name=test.name,
-                    description=test.description,
-                    status=test.status,
+                    name=test_result.name,
+                    description=test_result.description,
+                    status=test_result.status,
                     group="",
                     parameters=TestV2Parameters(),
                 )
@@ -143,7 +149,7 @@ def snapshot_v2_to_v1(snapshot: SnapshotV2) -> SnapshotV1:
     )
     if len(tests) > 0:
         test_widgets = snapshot.as_test_suite()._build_dashboard_info()[1].widgets
-        snapshot.suite.metrics.append(MetricV2Adapter())
+        snapshot.suite.metrics.append(MetricV2Adapter(metric=TestsConfig(tests=tests_v2)))
         widgets_dict = [dataclasses.asdict(w) for w in test_widgets]
         for wd in widgets_dict:
             params = wd.get("params", {})
@@ -187,7 +193,7 @@ class TestV2Adapter(TestV1):
     name: ClassVar[str] = "TestV2Adapter"
     group: ClassVar[str] = "TestV2Adapter"
     # fixme: needed for deduplication
-    test_id: str = Field(default_factory=lambda: str(new_id()))
+    test: TestV2
 
     def check(self) -> TestResultV1:
         raise NotImplementedError
@@ -199,6 +205,16 @@ class TestV2Adapter(TestV1):
 class TestV2Parameters(TestParameters):
     class Config:
         type_alias = "evidently:test_parameters:TestV2Parameters"
+
+
+class TestsConfig(MetricV2):
+    tests: List[MetricTest] = []
+
+    def to_calculation(self):
+        raise NotImplementedError
+
+    def get_tests(self, value: TResult) -> Generator[MetricTestResult, None, None]:
+        raise NotImplementedError
 
 
 def main():
@@ -219,7 +235,7 @@ def main():
                 }
             ),
         )
-        report = ReportV2([MeanValue("col", [lte(4)])])
+        report = ReportV2([MeanValue(column="col", tests=[lte(4)])])
         snapshot_v2 = report.run(dataset, None)
 
         snapshot_v1 = snapshot_v2_to_v1(snapshot_v2)

@@ -251,6 +251,10 @@ class MetricCalculationBase(Generic[TResult]):
     def display_name(self) -> str:
         raise NotImplementedError()
 
+    @abc.abstractmethod
+    def to_metric(self) -> "Metric":
+        raise NotImplementedError()
+
     def group_by(self, group_by: Optional[str]) -> Union["MetricCalculationBase", List["MetricCalculationBase"]]:
         if group_by is None:
             return self
@@ -288,7 +292,7 @@ class Metric(AutoAliasMixin, EvidentlyBaseModel, Generic[TCalculation]):
     class Config:
         is_base_type = True
 
-    __calculation_type__: typing.Type[TCalculation]
+    __calculation_type__: typing.ClassVar[typing.Type[TCalculation]]
 
     def __get_calculation_type__(self) -> typing.Type[TCalculation]:
         if not hasattr(self, "__calculation_type__"):
@@ -344,6 +348,9 @@ class MetricCalculation(MetricCalculationBase[TResult], Generic[TResult, TMetric
 
     def get_tests(self, value: TResult) -> Generator[MetricTestResult, None, None]:
         yield from self.metric.get_tests(value)
+
+    def to_metric(self):
+        return self.metric
 
 
 class SingleValueMetric(Metric["SingleValueCalculation"]):
