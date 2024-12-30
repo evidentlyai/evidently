@@ -1,6 +1,6 @@
 from typing import Union
 
-from ..metrics import Metric
+from ..metrics import MetricCalculationBase
 from ..metrics.base import MetricTest
 from ..metrics.base import MetricTestConfig
 from ..metrics.base import MetricTestResult
@@ -13,7 +13,7 @@ class LessOrEqualMetricTestConfig(MetricTestConfig[MetricTest[SingleValue]]):
     threshold: Union[int, float]
 
     def to_test(self) -> MetricTest[SingleValue]:
-        def func(metric: Metric, value: SingleValue):
+        def func(metric: MetricCalculationBase, value: SingleValue):
             return MetricTestResult(
                 "le",
                 f"{metric.display_name()}: Less or Equal {self.threshold}",
@@ -29,7 +29,7 @@ def le(threshold: Union[int, float]) -> MetricTestConfig[MetricTest[SingleValue]
 
 
 def ge(threshold: Union[int, float]) -> SingleValueMetricTest:
-    def func(metric: Metric, value: SingleValue):
+    def func(metric: MetricCalculationBase, value: SingleValue):
         return MetricTestResult(
             "ge",
             f"{metric.display_name()}: Greater or Equal {threshold}",

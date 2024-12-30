@@ -5,7 +5,7 @@ from typing import Dict
 from typing import List
 from typing import Optional
 
-from evidently.future.metrics import Metric
+from evidently.future.metrics import MetricCalculationBase
 from evidently.future.metrics import MetricResult
 from evidently.future.metrics.base import MetricId
 from evidently.model.widget import BaseWidgetInfo
@@ -15,13 +15,13 @@ if typing.TYPE_CHECKING:
 
 
 class MetricContainer:
-    _metrics: Optional[List[Metric]] = None
+    _metrics: Optional[List[MetricCalculationBase]] = None
 
     @abc.abstractmethod
-    def generate_metrics(self, context: "Context") -> List[Metric]:
+    def generate_metrics(self, context: "Context") -> List[MetricCalculationBase]:
         raise NotImplementedError()
 
-    def metrics(self, context: "Context") -> List[Metric]:
+    def metrics(self, context: "Context") -> List[MetricCalculationBase]:
         if self._metrics is None:
             self._metrics = self.generate_metrics(context)
         return self._metrics

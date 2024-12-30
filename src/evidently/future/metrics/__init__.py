@@ -1,5 +1,5 @@
 from .base import ByLabelValue
-from .base import Metric
+from .base import MetricCalculationBase
 from .base import MetricResult
 from .base import SingleValue
 from .base import SingleValueMetricTest
@@ -7,7 +7,7 @@ from .column_statistics import MaxValue
 from .column_statistics import MeanValue
 from .column_statistics import MedianValue
 from .column_statistics import MinValue
-from .column_statistics import QuantileValue
+from .column_statistics import QuantileValueImpl
 from .column_statistics import StdValue
 from .container import MetricContainer
 from .dataset_statistics import ColumnCount
@@ -17,7 +17,7 @@ from .presets import MetricPreset
 __all__ = [
     # base classes
     "ByLabelValue",
-    "Metric",
+    "MetricCalculationBase",
     "MetricContainer",
     "MetricPreset",
     "MetricResult",
@@ -28,7 +28,7 @@ __all__ = [
     "MeanValue",
     "MedianValue",
     "MinValue",
-    "QuantileValue",
+    "QuantileValueImpl",
     "StdValue",
     # dataset statistics metrics
     "ColumnCount",

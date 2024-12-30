@@ -16,7 +16,7 @@ from evidently.future.datasets import ColumnInfo
 from evidently.future.datasets import DataDefinition
 from evidently.future.datasets import Dataset
 from evidently.future.metrics import ByLabelValue
-from evidently.future.metrics import Metric as MetricV2
+from evidently.future.metrics import MetricCalculationBase as MetricV2
 from evidently.future.metrics import MetricResult as MetricResultV2
 from evidently.future.metrics import SingleValue
 from evidently.future.metrics.base import CountValue

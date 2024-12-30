@@ -15,7 +15,7 @@ from .. import ColumnMapping
 from ..base_metric import InputData
 from .datasets import Dataset
 from .datasets import DatasetColumn
-from .metrics import Metric
+from .metrics import MetricCalculationBase
 from .metrics import MetricContainer
 from .metrics import MetricPreset
 from .metrics import MetricResult
@@ -69,7 +69,7 @@ class Context:
     def column(self, column_name: str) -> ContextColumnData:
         return self._data_columns[column_name]
 
-    def calculate_metric(self, metric: Metric[TResultType]) -> TResultType:
+    def calculate_metric(self, metric: MetricCalculationBase[TResultType]) -> TResultType:
         if metric.id not in self._current_graph_level:
             self._current_graph_level[metric.id] = {"_self": metric}
         prev_level = self._current_graph_level
@@ -79,12 +79,12 @@ class Context:
         self._current_graph_level = prev_level
         return typing.cast(TResultType, self._metrics[metric.id])
 
-    def get_metric_result(self, metric: Union[MetricId, Metric[TResultType]]) -> TResultType:
+    def get_metric_result(self, metric: Union[MetricId, MetricCalculationBase[TResultType]]) -> TResultType:
         if isinstance(metric, MetricId):
             return typing.cast(TResultType, self._metrics[metric])
         return self.calculate_metric(metric)
 
-    def get_metric(self, metric: MetricId) -> Metric[TResultType]:
+    def get_metric(self, metric: MetricId) -> MetricCalculationBase[TResultType]:
         return self._metrics_graph[metric]["_self"]
 
     def get_legacy_metric(self, metric: LegacyMetric[T]) -> T:
@@ -159,7 +159,7 @@ class Snapshot:
 
 
 class Report:
-    def __init__(self, metrics: List[Union[Metric, MetricPreset, MetricContainer]]):
+    def __init__(self, metrics: List[Union[MetricCalculationBase, MetricPreset, MetricContainer]]):
         self._metrics = metrics
 
     def run(self, current_data: Dataset, reference_data: Optional[Dataset]) -> Snapshot:
@@ -167,5 +167,5 @@ class Report:
         snapshot.run(current_data, reference_data)
         return snapshot
 
-    def items(self) -> Sequence[Union[Metric, MetricPreset, MetricContainer]]:
+    def items(self) -> Sequence[Union[MetricCalculationBase, MetricPreset, MetricContainer]]:
         return self._metrics

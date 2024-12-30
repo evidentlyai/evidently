@@ -36,7 +36,7 @@ if typing.TYPE_CHECKING:
 
 
 class MetricResult:
-    _metric: Optional["Metric"] = None
+    _metric: Optional["MetricCalculationBase"] = None
     _widget: Optional[List[BaseWidgetInfo]] = None
     _tests: Optional[List["MetricTestResult"]] = None
 
@@ -145,11 +145,11 @@ class CountValue(MetricResult):
 
 
 class MetricTest(Protocol[TResult]):
-    def __call__(self, metric: "Metric", value: TResult) -> MetricTestResult: ...
+    def __call__(self, metric: "MetricCalculationBase", value: TResult) -> MetricTestResult: ...
 
 
 class SingleValueMetricTest(MetricTest[SingleValue], Protocol):
-    def __call__(self, metric: "Metric", value: SingleValue) -> MetricTestResult: ...
+    def __call__(self, metric: "MetricCalculationBase", value: SingleValue) -> MetricTestResult: ...
 
 
 MetricId = str
@@ -205,7 +205,7 @@ def get_default_render(title: str, result: TResult) -> List[BaseWidgetInfo]:
     raise NotImplementedError(f"No default render for {type(result)}")
 
 
-class Metric(Generic[TResult]):
+class MetricCalculationBase(Generic[TResult]):
     """
     Base metric class.
 
@@ -252,7 +252,7 @@ class Metric(Generic[TResult]):
     def display_name(self) -> str:
         raise NotImplementedError()
 
-    def group_by(self, group_by: Optional[str]) -> Union["Metric", List["Metric"]]:
+    def group_by(self, group_by: Optional[str]) -> Union["MetricCalculationBase", List["MetricCalculationBase"]]:
         if group_by is None:
             return self
         raise NotImplementedError()
@@ -280,11 +280,11 @@ class MetricTestConfig(AutoAliasMixin, EvidentlyBaseModel, Generic[TTest]):
         raise NotImplementedError
 
 
-TMetric = TypeVar("TMetric", bound="MetricWithConfig")
+TMetric = TypeVar("TMetric", bound="Metric")
 
 
-class MetricConfig(AutoAliasMixin, EvidentlyBaseModel, Generic[TMetric]):
-    __alias_type__: typing.ClassVar[str] = "metric_config"
+class Metric(AutoAliasMixin, EvidentlyBaseModel, Generic[TMetric]):
+    __alias_type__: typing.ClassVar[str] = "metric_v2"
 
     class Config:
         is_base_type = True
@@ -325,10 +325,10 @@ class MetricConfig(AutoAliasMixin, EvidentlyBaseModel, Generic[TMetric]):
         return None
 
 
-TConfig = TypeVar("TConfig", bound=MetricConfig)
+TConfig = TypeVar("TConfig", bound=Metric)
 
 
-class MetricWithConfig(Metric[TResult], Generic[TResult, TConfig], abc.ABC):
+class MetricCalculation(MetricCalculationBase[TResult], Generic[TResult, TConfig], abc.ABC):
     def __init__(self, metric_id: MetricId, config: TConfig):
         self.config = config
         super().__init__(metric_id)
@@ -338,7 +338,7 @@ class MetricWithConfig(Metric[TResult], Generic[TResult, TConfig], abc.ABC):
             base = typing_inspect.get_generic_bases(cls)[0]  # fixme only works for simple cases
             # print(base, typing_inspect.get_args(base))
             config_type = typing_inspect.get_args(base)[-1]
-            if not isinstance(config_type, type) or not issubclass(config_type, MetricConfig):
+            if not isinstance(config_type, type) or not issubclass(config_type, Metric):
                 raise ValueError(
                     f"Value of generic parameter TConfig for {config_type} should be MetricConfig subclass"
                 )
@@ -349,7 +349,7 @@ class MetricWithConfig(Metric[TResult], Generic[TResult, TConfig], abc.ABC):
         yield from self.config.get_tests(value)
 
 
-class SingleValueMetricConfig(MetricConfig["SingleValueMetric"]):
+class SingleValueMetric(Metric["SingleValueCalculation"]):
     tests: List[MetricTestConfig[SingleValue]] = []
 
     def get_tests(self, value: SingleValue) -> Generator[MetricTestResult, None, None]:
@@ -357,53 +357,41 @@ class SingleValueMetricConfig(MetricConfig["SingleValueMetric"]):
         yield from (t.to_test()(self.to_metric(), value) for t in self.tests)
 
 
-TSingleValueMetricConfig = TypeVar("TSingleValueMetricConfig", bound=SingleValueMetricConfig)
+TSingleValueMetric = TypeVar("TSingleValueMetric", bound=SingleValueMetric)
 
 
-class SingleValueMetric(
-    MetricWithConfig[SingleValue, TSingleValueMetricConfig], Generic[TSingleValueMetricConfig], ABC
-):
+class SingleValueCalculation(MetricCalculation[SingleValue, TSingleValueMetric], Generic[TSingleValueMetric], ABC):
     pass
 
 
-class ByLabelMetric(Metric[ByLabelValue], ABC):
-    _tests: Optional[typing.Dict[Label, List[SingleValueMetricTest]]]
+class ByLabelMetric(Metric["ByLabelCalculation"]):
+    tests: List[MetricTestConfig[SingleValue]] = []
 
-    def label_metric(self, label: Label) -> SingleValueMetric:
+    def get_tests(self, value: SingleValue) -> Generator[MetricTestResult, None, None]:
+        # todo: do not call to_metric here
+        yield from (t.to_test()(self.to_metric(), value) for t in self.tests)
+
+
+TByLabelMetric = TypeVar("TByLabelMetric", bound=ByLabelMetric)
+
+
+class ByLabelCalculation(MetricCalculation[ByLabelValue, TByLabelMetric], Generic[TByLabelMetric], ABC):
+    def label_metric(self, label: Label) -> SingleValueCalculation:
         raise NotImplementedError()
 
-    def with_tests(self, tests: Optional[typing.Dict[Label, List[SingleValueMetricTest]]]):
-        self._tests = tests
-        return self
 
-    def get_tests(self, value: ByLabelValue) -> Generator[MetricTestResult, None, None]:
-        if self._tests is None:
-            return None
-        for label, tests in self._tests.items():
-            label_value = value.get_label_result(label)
-            for test in tests:
-                yield test(self, label_value)
-
-
-class CountMetric(Metric[CountValue], ABC):
-    _count_tests: Optional[List[SingleValueMetricTest]] = None
-    _share_tests: Optional[List[SingleValueMetricTest]] = None
-
-    def with_tests(
-        self,
-        count_tests: Optional[List[SingleValueMetricTest]] = None,
-        share_tests: Optional[List[SingleValueMetricTest]] = None,
-    ):
-        self._count_tests = count_tests
-        self._share_tests = share_tests
-        return self
+class CountMetric(Metric["CountCalculation"]):
+    count_tests: List[MetricTestConfig[SingleValue]] = []
+    share_tests: List[MetricTestConfig[SingleValue]] = []
 
     def get_tests(self, value: CountValue) -> Generator[MetricTestResult, None, None]:
-        if self._count_tests is None and self._share_tests is None:
-            return None
-        count_value = value.get_count()
-        for test in self._count_tests or []:
-            yield test(self, count_value)
-        share_value = value.get_share()
-        for test in self._share_tests or []:
-            yield test(self, share_value)
+        # todo: do not call to_metric here
+        yield from (t.to_test()(self.to_metric(), value) for t in self.count_tests)
+        yield from (t.to_test()(self.to_metric(), value) for t in self.share_tests)
+
+
+TCountMetric = TypeVar("TCountMetric", bound=CountMetric)
+
+
+class CountCalculation(MetricCalculation[CountValue, TCountMetric], Generic[TCountMetric], ABC):
+    pass

@@ -4,10 +4,10 @@ from typing import Optional
 
 from evidently.future.datasets import Dataset
 from evidently.future.metrics import ByLabelValue
-from evidently.future.metrics import Metric
+from evidently.future.metrics import MetricCalculationBase
 from evidently.future.metrics import MetricPreset
 from evidently.future.metrics import MetricResult
-from evidently.future.metrics.base import ByLabelMetric
+from evidently.future.metrics.base import ByLabelMetricCalculationBase
 from evidently.future.metrics.base import MetricId
 from evidently.future.metrics.base import MetricTest
 from evidently.future.metrics.presets import PresetResult
@@ -17,7 +17,7 @@ from evidently.metrics import ClassificationQualityByClass
 from evidently.metrics.classification_performance.quality_by_class_metric import ClassificationQualityByClassRenderer
 
 
-class F1Metric(ByLabelMetric):
+class F1Metric(ByLabelMetricCalculationBase):
     def __init__(
         self,
         probas_threshold: Optional[float] = None,
@@ -42,7 +42,7 @@ class F1Metric(ByLabelMetric):
         return "F1 metric"
 
 
-class PrecisionMetric(ByLabelMetric):
+class PrecisionMetric(ByLabelMetricCalculationBase):
     def __init__(
         self,
         probas_threshold: Optional[float] = None,
@@ -67,7 +67,7 @@ class PrecisionMetric(ByLabelMetric):
         return "Precision metric"
 
 
-class RecallMetric(ByLabelMetric):
+class RecallMetric(ByLabelMetricCalculationBase):
     def __init__(
         self,
         probas_threshold: Optional[float] = None,
@@ -93,7 +93,7 @@ class RecallMetric(ByLabelMetric):
         return "Recall metric"
 
 
-class RocAucMetric(ByLabelMetric):
+class RocAucMetric(ByLabelMetricCalculationBase):
     def __init__(
         self,
         probas_threshold: Optional[float] = None,
@@ -131,7 +131,7 @@ class QualityByClassPreset(MetricPreset):
         self._probas_threshold = probas_threshold
         self._k = k
 
-    def metrics(self) -> List[Metric]:
+    def metrics(self) -> List[MetricCalculationBase]:
         return [
             F1Metric(self._probas_threshold, self._k),
             PrecisionMetric(self._probas_threshold, self._k),
