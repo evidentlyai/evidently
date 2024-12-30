@@ -272,3 +272,8 @@ register_type_alias(
 )
 
 register_type_alias(Test, "evidently.v2.backport.TestV2Adapter", "evidently:test:TestV2Adapter")
+
+register_type_alias(Test, "evidently.future.backport.TestV2Adapter", "evidently:test:TestV2Adapter")
+register_type_alias(
+    TestParameters, "evidently.future.backport.TestV2Parameters", "evidently:test_parameters:TestV2Parameters"
+)

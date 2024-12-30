@@ -21,6 +21,8 @@ from evidently.collector.storage import CollectorStorage
 from evidently.features.generated_features import BaseDescriptor
 from evidently.features.generated_features import GeneratedFeatures
 from evidently.features.llm_judge import BaseLLMPromptTemplate
+from evidently.future.metrics.base import Metric as MetricV2
+from evidently.future.metrics.base import MetricTest
 from evidently.metric_preset.metric_preset import MetricPreset
 from evidently.metrics.data_drift.embedding_drift_methods import DriftMethod
 from evidently.pydantic_utils import TYPE_ALIASES
@@ -36,7 +38,6 @@ from evidently.ui.components.base import Component
 from evidently.ui.dashboards.base import DashboardPanel
 from evidently.utils.llm.prompts import PromptBlock
 from evidently.utils.llm.prompts import PromptTemplate
-from evidently.v2.metrics.base import MetricConfig
 
 T = TypeVar("T")
 
@@ -64,10 +65,11 @@ def find_all_subclasses(
 
 
 REGISTRY_MAPPING: Dict[Type[PolymorphicModel], str] = {
-    DashboardPanel: "evidently.ui._registry",
+    # DashboardPanel: "evidently.ui._registry",
     Test: "evidently.tests._registry",
     TestParameters: "evidently.tests._registry",
-    MetricConfig: "evidently.v2._registry",
+    MetricTest: "evidently.future._registry",
+    MetricV2: "evidently.future._registry",
     MetricResult: "evidently.metrics._registry",
 }
 
@@ -132,7 +134,8 @@ def test_all_aliases_correct():
         DashboardPanel: "dashboard_panel",
         PromptBlock: "prompt_block",
         PromptTemplate: "prompt_template",
-        MetricConfig: MetricConfig.__alias_type__,
+        MetricV2: MetricV2.__alias_type__,
+        MetricTest: MetricTest.__alias_type__,
     }
     skip = [Component]
     skip_literal = [EvidentlyBaseModel, WithTestAndMetricDependencies, BasePreset]

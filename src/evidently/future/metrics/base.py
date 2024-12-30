@@ -276,6 +276,9 @@ TTest = TypeVar("TTest", bound=MetricTestProto)
 
 
 class MetricTest(AutoAliasMixin, EvidentlyBaseModel, Generic[TTest]):
+    class Config:
+        is_base_type = True
+
     __alias_type__: typing.ClassVar[str] = "test_config"
 
     @abstractmethod

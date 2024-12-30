@@ -3,7 +3,6 @@ from typing import List
 from typing import Optional
 
 from evidently.future.datasets import Dataset
-from evidently.future.metrics import MetricCalculationBase
 from evidently.future.metrics.base import Metric
 from evidently.future.metrics.base import MetricCalculation
 from evidently.future.metrics.base import MetricTestResult
@@ -13,7 +12,7 @@ from evidently.future.report import Context
 
 
 class GroupByMetric(Metric):
-    metric: MetricCalculationBase
+    metric: Metric
 
     column_name: str
     label: object
@@ -22,16 +21,14 @@ class GroupByMetric(Metric):
         pass
 
 
-class GroupByMetricCalculation(MetricCalculation[GroupByMetric]):
+class GroupByMetricCalculation(MetricCalculation[TResult, GroupByMetric]):
     def calculate(self, current_data: Dataset, reference_data: Optional[Dataset]) -> TResult:
         curr = current_data.subdataset(self.metric.column_name, self.metric.label)
         ref = reference_data.subdataset(self.metric.column_name, self.metric.label) if reference_data else None
-        return self.metric.metric.calculate(curr, ref)
+        return self.metric.metric.to_calculation().calculate(curr, ref)
 
     def display_name(self) -> str:
-        return (
-            f"{self.metric.metric.display_name()} group by '{self.metric.column_name}' for label: '{self.metric.label}'"
-        )
+        return f"{self.metric.metric.to_calculation().display_name()} group by '{self.metric.column_name}' for label: '{self.metric.label}'"
 
     def get_tests(self, value: TResult) -> Generator[MetricTestResult, None, None]:
         return self.metric.metric.get_tests(value)
