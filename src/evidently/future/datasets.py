@@ -4,13 +4,17 @@ from abc import abstractmethod
 from typing import Dict
 from typing import List
 from typing import Optional
+from typing import Tuple
 from typing import Union
 
+import numpy as np
 import pandas as pd
 
 from evidently import ColumnType
 from evidently.features.generated_features import GeneratedFeatures
+from evidently.metric_results import Label
 from evidently.options.base import Options
+from evidently.utils.types import Numeric
 
 
 @dataclasses.dataclass
@@ -75,9 +79,60 @@ def _determine_desccriptor_column_name(alias: str, columns: List[str]):
 
 
 @dataclasses.dataclass
+class CountValue:
+    count: int
+    share: float
+
+
+@dataclasses.dataclass
+class GeneralColumnStats:
+    missing_values: CountValue
+
+
+@dataclasses.dataclass
+class NumericalColumnStats:
+    max: Numeric
+    min: Numeric
+    mean: Numeric
+    std: Numeric
+    quantiles: Dict[str, Numeric]
+    infinite: CountValue
+
+
+@dataclasses.dataclass
+class LabelStats:
+    count: CountValue
+
+
+@dataclasses.dataclass
+class CategoricalColumnStats:
+    unique_count: int
+    label_stats: Dict[Label, LabelStats]
+
+    @property
+    def most_common(self) -> Tuple[Label, LabelStats]:
+        most_common = None
+        for key, value in self.label_stats.items():
+            if most_common is None:
+                most_common = key
+                continue
+            if self.label_stats[most_common].count < value.count:
+                most_common = key
+        return most_common, self.label_stats[most_common]
+
+
+@dataclasses.dataclass
+class ColumnStats:
+    general_stats: GeneralColumnStats
+    numerical_stats: Optional[NumericalColumnStats]
+    categorical_stats: Optional[CategoricalColumnStats]
+
+
+@dataclasses.dataclass
 class DatasetStats:
     row_count: int
     column_count: int
+    column_stats: Dict[str, ColumnStats]
 
 
 class Dataset:
@@ -136,7 +191,11 @@ class PandasDataset(Dataset):
         else:
             self._data_definition = data_definition
         (rows, columns) = data.shape
-        self._dataset_stats = DatasetStats(rows, columns)
+
+        column_stats = {}
+        for column in data.columns:
+            column_stats[column] = self._collect_stats(self._data_definition.get_column_type(column), data[column])
+        self._dataset_stats = DatasetStats(rows, columns, column_stats)
 
     def as_dataframe(self) -> pd.DataFrame:
         return self._data
@@ -155,5 +214,47 @@ class PandasDataset(Dataset):
 
     def add_column(self, key: str, data: DatasetColumn):
         self._dataset_stats.column_count += 1
+        self._dataset_stats.column_stats[key] = self._collect_stats(data.type, data.data)
         self._data[key] = data.data
         self._data_definition.columns[key] = ColumnInfo(data.type)
+
+    def _collect_stats(self, column_type: ColumnType, data: pd.Series):
+        numerical_stats = None
+        if column_type == ColumnType.Numerical:
+            numerical_stats = _collect_numerical_stats(data)
+
+        categorical_stats = None
+        if column_type == ColumnType.Categorical:
+            categorical_stats = _collect_categorical_stats(data)
+
+        return ColumnStats(
+            general_stats=GeneralColumnStats(missing_values=CountValue(0, 0)),
+            numerical_stats=numerical_stats,
+            categorical_stats=categorical_stats,
+        )
+
+
+def _collect_numerical_stats(data: pd.Series):
+    infinite_count = data.groupby(np.isinf(data)).count().get(True, 0)
+    return NumericalColumnStats(
+        max=data.max(),
+        min=data.min(),
+        mean=data.mean(),
+        std=data.std(),
+        quantiles={
+            "p25": data.quantile(0.25),
+            "p75": data.quantile(0.75),
+        },
+        infinite=CountValue(infinite_count, infinite_count / data.count()),
+    )
+
+
+def _collect_categorical_stats(data: pd.Series):
+    total_count = data.count()
+    return CategoricalColumnStats(
+        unique_count=data.nunique(),
+        label_stats={
+            label: LabelStats(count=CountValue(count, count / total_count))
+            for label, count in data.value_counts().items()
+        },
+    )
