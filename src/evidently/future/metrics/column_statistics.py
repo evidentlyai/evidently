@@ -3,6 +3,8 @@ from typing import List
 from typing import Optional
 from typing import Union
 
+from evidently import ColumnType
+from evidently.calculations.data_drift import get_one_column_drift
 from evidently.future.datasets import Dataset
 from evidently.future.datasets import DatasetColumn
 from evidently.future.metrics import SingleValue
@@ -10,10 +12,13 @@ from evidently.future.metrics import SingleValueMetricTest
 from evidently.future.metrics.base import CountMetric
 from evidently.future.metrics.base import CountValue
 from evidently.future.metrics.base import SingleValueMetric
+from evidently.metric_results import DatasetColumns
+from evidently.metric_results import DatasetUtilityColumns
 from evidently.metric_results import HistogramData
 from evidently.metric_results import Label
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options import ColorOptions
+from evidently.options.data_drift import DataDriftOptions
 from evidently.renderers.html_widgets import WidgetSize
 from evidently.renderers.html_widgets import plotly_figure
 from evidently.utils.visualizations import get_distribution_for_column
@@ -227,7 +232,7 @@ class InListValueCount(CountMetric):
         count_tests: Optional[List[SingleValueMetricTest]] = None,
         share_tests: Optional[List[SingleValueMetricTest]] = None,
     ):
-        super().__init__(f"in_list:{column}:{'|'.join(values)}")
+        super().__init__(f"in_list:{column}:{'|'.join(str(x) for x in values)}")
         self._column = column
         self._values = values
         self.with_tests(count_tests, share_tests)
@@ -284,3 +289,39 @@ class MissingValueCount(CountMetric):
 
     def display_name(self) -> str:
         return f"Column '{self._column}' missing values"
+
+
+class ValueDrift(SingleValueMetric):
+    def __init__(
+        self,
+        column: str,
+        method: Optional[str] = None,
+        tests: Optional[List[SingleValueMetricTest]] = None,
+    ):
+        super().__init__(f"value_drift:{column}:{method}")
+        self._column = column
+        self._method = method
+        self.with_tests(tests)
+
+    def calculate(self, current_data: Dataset, reference_data: Optional[Dataset]) -> SingleValue:
+        column_type = current_data.column(self._column).type
+        drift = get_one_column_drift(
+            current_data=current_data.as_dataframe(),
+            reference_data=reference_data.as_dataframe(),
+            column_name=self._column,
+            options=DataDriftOptions(all_features_stattest=self._method),
+            dataset_columns=DatasetColumns(
+                utility_columns=DatasetUtilityColumns(),
+                num_feature_names=[self._column] if column_type == ColumnType.Numerical else [],
+                cat_feature_names=[self._column] if column_type == ColumnType.Categorical else [],
+                text_feature_names=[self._column] if column_type == ColumnType.Text else [],
+                datetime_feature_names=[self._column] if column_type == ColumnType.Datetime else [],
+            ),
+            column_type=column_type,
+            agg_data=True,
+        )
+
+        return SingleValue(drift.drift_score)
+
+    def display_name(self) -> str:
+        return f"Value drift for {self._column}"
