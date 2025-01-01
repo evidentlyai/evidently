@@ -26,7 +26,7 @@ class MetricContainer:
             self._metrics = self.generate_metrics(context)
         return self._metrics
 
-    def render(self, results: Dict[MetricId, MetricResult]) -> List[BaseWidgetInfo]:
+    def render(self, context: "Context", results: Dict[MetricId, MetricResult]) -> List[BaseWidgetInfo]:
         if self._metrics is None:
             raise ValueError("Metrics weren't composed in container")
         return list(itertools.chain(*[results[metric.id].widget for metric in self._metrics]))

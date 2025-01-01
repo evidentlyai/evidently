@@ -12,7 +12,9 @@ from evidently.base_metric import Metric as LegacyMetric
 from evidently.base_metric import MetricResult as LegacyMetricResult
 
 from .. import ColumnMapping
+from .. import ColumnType
 from ..base_metric import InputData
+from ..model.widget import BaseWidgetInfo
 from .datasets import Dataset
 from .datasets import DatasetColumn
 from .metrics import Metric
@@ -39,6 +41,10 @@ class ContextColumnData:
         if self._labels is None:
             self._labels = list(self._column.data.unique())
         return self._labels
+
+    @property
+    def column_type(self) -> ColumnType:
+        return self._column.type
 
 
 class Context:
@@ -107,6 +113,8 @@ class Context:
 class Snapshot:
     _report: "Report"
     _context: Context  # stores report calculation progress
+    _metrics: Dict[MetricId, MetricResult]
+    _widgets: List[BaseWidgetInfo]
 
     def __init__(self, report: "Report"):
         self._report = report
@@ -122,16 +130,21 @@ class Snapshot:
 
     def run(self, current_data: Dataset, reference_data: Optional[Dataset]):
         self.context.init_dataset(current_data, reference_data)
+        metric_results = {}
+        widgets = []
         for item in self.report.items():
             if isinstance(item, (MetricPreset,)):
-                metric_results = {}
                 for metric in item.metrics():
                     metric_results[metric.id] = self.context.calculate_metric(metric)
+                widgets.extend(item.calculate(metric_results).widget)
             elif isinstance(item, (MetricContainer,)):
                 for metric in item.metrics(self.context):
-                    self.context.calculate_metric(metric)
+                    metric_results[metric.id] = self.context.calculate_metric(metric)
+                widgets.extend(item.render(self.context, results=metric_results))
             else:
-                self.context.calculate_metric(item)
+                metric_results[item.id] = self.context.calculate_metric(item)
+                widgets.append(metric_results[item.id].widget)
+        self._widgets = widgets
 
     def _repr_html_(self):
         from evidently.renderers.html_widgets import TabData
@@ -149,7 +162,7 @@ class Snapshot:
         tabs = widget_tabs(
             title="",
             tabs=[
-                TabData("Metrics", group_widget(title="", widgets=list(chain(*[result[1] for result in results])))),
+                TabData("Metrics", group_widget(title="", widgets=self._widgets)),
                 TabData("Tests", metric_tests_widget(list(chain(*[result[2].tests for result in results])))),
             ],
         )

@@ -12,6 +12,7 @@ from .column_statistics import StdValue
 from .column_statistics import ValueDrift
 from .container import MetricContainer
 from .dataset_statistics import ColumnCount
+from .dataset_statistics import DuplicatedRowCount
 from .dataset_statistics import RowCount
 from .presets import MetricPreset
 
@@ -35,4 +36,5 @@ __all__ = [
     # dataset statistics metrics
     "ColumnCount",
     "RowCount",
+    "DuplicatedRowCount",
 ]
