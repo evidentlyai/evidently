@@ -62,6 +62,10 @@ class MetricResult:
     def tests(self) -> List["MetricTestResult"]:
         return self._tests or []
 
+    @abc.abstractmethod
+    def dict(self) -> object:
+        raise NotImplementedError()
+
 
 def render_widgets(widgets: List[BaseWidgetInfo]):
     dashboard_id, dashboard_info, graphs = (
@@ -111,10 +115,21 @@ class MetricTestResult:
     description: str
     status: TestStatus
 
+    def dict(self) -> dict:
+        return {
+            "id": self.id,
+            "name": self.name,
+            "description": self.description,
+            "status": self.status.value,
+        }
+
 
 @dataclasses.dataclass
 class SingleValue(MetricResult):
     value: Value
+
+    def dict(self) -> object:
+        return self.value
 
 
 @dataclasses.dataclass
@@ -128,6 +143,9 @@ class ByLabelValue(MetricResult):
         value = self.values.get(label)
         return SingleValue(value)
 
+    def dict(self) -> object:
+        return self.values
+
 
 @dataclasses.dataclass
 class CountValue(MetricResult):
@@ -139,6 +157,12 @@ class CountValue(MetricResult):
 
     def get_share(self) -> SingleValue:
         return SingleValue(self.share)
+
+    def dict(self) -> object:
+        return {
+            "count": self.count,
+            "share": self.share,
+        }
 
 
 class MetricTest(Protocol[TResult]):

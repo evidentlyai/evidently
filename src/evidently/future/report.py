@@ -1,3 +1,4 @@
+import json
 import typing
 from itertools import chain
 from typing import Dict
@@ -169,6 +170,21 @@ class Snapshot:
         return render_widgets(
             [tabs],
         )
+
+    def dict(self) -> dict:
+        return {
+            "metrics": {
+                metric: self.context.get_metric_result(metric).dict() for metric in self.context._metrics_graph.keys()
+            },
+            "tests": {
+                test.id: test.dict()
+                for metric in self.context._metrics_graph.keys()
+                for test in self.context.get_metric_result(metric).tests
+            },
+        }
+
+    def json(self) -> str:
+        return json.dumps(self.dict())
 
 
 class Report:
