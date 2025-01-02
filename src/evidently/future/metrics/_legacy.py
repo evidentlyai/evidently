@@ -17,10 +17,11 @@ if typing.TYPE_CHECKING:
     from evidently.future.report import Context
 
 TLegacyResult = TypeVar("TLegacyResult", bound=LegacyMetricResult)
+TLegacyMetric = TypeVar("TLegacyMetric", bound=LegacyMetric)
 
 
-class LegacyBasedMetric(Metric[TResult], Generic[TResult, TLegacyResult], abc.ABC):
-    def __init__(self, metric_id: MetricId, metric: LegacyMetric[TLegacyResult]):
+class LegacyBasedMetric(Metric[TResult], Generic[TResult, TLegacyMetric, TLegacyResult], abc.ABC):
+    def __init__(self, metric_id: MetricId, metric: TLegacyMetric):
         super().__init__(metric_id)
         self._metric = metric
 

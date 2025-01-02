@@ -61,7 +61,9 @@ class ColumnCount(SingleValueMetric):
 TLegacyResult = TypeVar("TLegacyResult", bound=LegacyMetricResult)
 
 
-class DatasetSummaryBasedMetric(LegacyBasedMetric[TResult, DatasetSummaryMetricResult], Generic[TResult], abc.ABC):
+class DatasetSummaryBasedMetric(
+    LegacyBasedMetric[TResult, DatasetSummaryMetric, DatasetSummaryMetricResult], Generic[TResult], abc.ABC
+):
     def __init__(self, metric_id: MetricId):
         super().__init__(metric_id, DatasetSummaryMetric())
 
@@ -85,3 +87,129 @@ class DuplicatedRowCount(DatasetSummaryBasedMetric[SingleValue]):
 
     def display_name(self) -> str:
         return "Duplicated row count in dataset"
+
+
+class DuplicatedColumnsCount(DatasetSummaryBasedMetric[SingleValue]):
+    def __init__(self):
+        super().__init__("duplicated_columns")
+
+    def calculate_value(
+        self,
+        context: "Context",
+        legacy_result: DatasetSummaryMetricResult,
+        render: List[BaseWidgetInfo],
+    ) -> SingleValue:
+        value = legacy_result.current.number_of_duplicated_columns
+        return SingleValue(value)
+
+    def get_tests(self, value: TResult) -> Generator[MetricTestResult, None, None]:
+        return
+        yield
+
+    def display_name(self) -> str:
+        return "Duplicated column count in dataset"
+
+
+class AlmostDuplicatedColumnsCount(DatasetSummaryBasedMetric[SingleValue]):
+    def __init__(self):
+        super().__init__("almost_duplicated_columns")
+
+    def calculate_value(
+        self,
+        context: "Context",
+        legacy_result: DatasetSummaryMetricResult,
+        render: List[BaseWidgetInfo],
+    ) -> SingleValue:
+        value = legacy_result.current.number_of_almost_duplicated_columns
+        return SingleValue(value)
+
+    def get_tests(self, value: TResult) -> Generator[MetricTestResult, None, None]:
+        return
+        yield
+
+    def display_name(self) -> str:
+        return f"Almost duplicated column count in dataset (eps={self._metric.almost_duplicated_threshold})"
+
+
+class AlmostConstantColumnsCount(DatasetSummaryBasedMetric[SingleValue]):
+    def __init__(self):
+        super().__init__("almost_constant_columns")
+
+    def calculate_value(
+        self,
+        context: "Context",
+        legacy_result: DatasetSummaryMetricResult,
+        render: List[BaseWidgetInfo],
+    ) -> SingleValue:
+        value = legacy_result.current.number_of_almost_constant_columns
+        return SingleValue(value)
+
+    def get_tests(self, value: TResult) -> Generator[MetricTestResult, None, None]:
+        return
+        yield
+
+    def display_name(self) -> str:
+        return f"Almost constant column count in dataset (eps={self._metric.almost_constant_threshold})"
+
+
+class EmptyRowsCount(DatasetSummaryBasedMetric[SingleValue]):
+    def __init__(self):
+        super().__init__("empty_rows_count")
+
+    def calculate_value(
+        self,
+        context: "Context",
+        legacy_result: DatasetSummaryMetricResult,
+        render: List[BaseWidgetInfo],
+    ) -> SingleValue:
+        value = legacy_result.current.number_of_empty_rows
+        return SingleValue(value)
+
+    def get_tests(self, value: TResult) -> Generator[MetricTestResult, None, None]:
+        return
+        yield
+
+    def display_name(self) -> str:
+        return "Count of empty rows in dataset"
+
+
+class EmptyColumnsCount(DatasetSummaryBasedMetric[SingleValue]):
+    def __init__(self):
+        super().__init__("empty_columns_count")
+
+    def calculate_value(
+        self,
+        context: "Context",
+        legacy_result: DatasetSummaryMetricResult,
+        render: List[BaseWidgetInfo],
+    ) -> SingleValue:
+        value = legacy_result.current.number_of_empty_columns
+        return SingleValue(value)
+
+    def get_tests(self, value: TResult) -> Generator[MetricTestResult, None, None]:
+        return
+        yield
+
+    def display_name(self) -> str:
+        return "Count of empty columns in dataset"
+
+
+class ConstantColumnsCount(DatasetSummaryBasedMetric[SingleValue]):
+    def __init__(self):
+        super().__init__("constant_columns_count")
+
+    def calculate_value(
+        self,
+        context: "Context",
+        legacy_result: DatasetSummaryMetricResult,
+        render: List[BaseWidgetInfo],
+    ) -> SingleValue:
+        value = legacy_result.current.number_of_constant_columns
+        return SingleValue(value)
+
+    def get_tests(self, value: TResult) -> Generator[MetricTestResult, None, None]:
+        return
+        yield
+
+    def display_name(self) -> str:
+        return "Count of constant columns in dataset"
