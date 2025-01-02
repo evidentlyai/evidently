@@ -12,6 +12,7 @@ from evidently.future.metrics.base import MetricId
 from evidently.future.metrics.dataset_statistics import AlmostConstantColumnsCount
 from evidently.future.metrics.dataset_statistics import AlmostDuplicatedColumnsCount
 from evidently.future.metrics.dataset_statistics import ConstantColumnsCount
+from evidently.future.metrics.dataset_statistics import DatasetMissingValueCount
 from evidently.future.metrics.dataset_statistics import DuplicatedColumnsCount
 from evidently.future.metrics.dataset_statistics import EmptyColumnsCount
 from evidently.future.metrics.dataset_statistics import EmptyRowsCount
@@ -36,6 +37,7 @@ class DatasetStats(MetricContainer):
             EmptyRowsCount(),
             EmptyColumnsCount(),
             ConstantColumnsCount(),
+            DatasetMissingValueCount(),
         ]
 
     def render(self, context: Context, results: Dict[MetricId, MetricResult]) -> List[BaseWidgetInfo]:

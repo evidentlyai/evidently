@@ -213,3 +213,24 @@ class ConstantColumnsCount(DatasetSummaryBasedMetric[SingleValue]):
 
     def display_name(self) -> str:
         return "Count of constant columns in dataset"
+
+
+class DatasetMissingValueCount(DatasetSummaryBasedMetric[SingleValue]):
+    def __init__(self):
+        super().__init__("dataset_missing_values_count")
+
+    def calculate_value(
+        self,
+        context: "Context",
+        legacy_result: DatasetSummaryMetricResult,
+        render: List[BaseWidgetInfo],
+    ) -> SingleValue:
+        value = legacy_result.current.number_of_missing_values
+        return SingleValue(value)
+
+    def get_tests(self, value: TResult) -> Generator[MetricTestResult, None, None]:
+        return
+        yield
+
+    def display_name(self) -> str:
+        return "Count of missing values in dataset"
