@@ -7,18 +7,18 @@ from typing import Optional
 from typing import TypeVar
 
 from evidently import ColumnType
-from evidently.base_metric import Metric as LegacyMetric
 from evidently.base_metric import MetricResult as LegacyMetricResult
 from evidently.future.datasets import Dataset
-from evidently.future.metrics import Metric
 from evidently.future.metrics import SingleValue
 from evidently.future.metrics import SingleValueMetricTest
+from evidently.future.metrics._legacy import LegacyBasedMetric
 from evidently.future.metrics.base import MetricId
 from evidently.future.metrics.base import MetricTestResult
 from evidently.future.metrics.base import SingleValueMetric
 from evidently.future.metrics.base import TResult
 from evidently.metrics import DatasetSummaryMetric
 from evidently.metrics.data_integrity.dataset_summary_metric import DatasetSummaryMetricResult
+from evidently.model.widget import BaseWidgetInfo
 
 if typing.TYPE_CHECKING:
     from evidently.future.report import Context
@@ -61,27 +61,21 @@ class ColumnCount(SingleValueMetric):
 TLegacyResult = TypeVar("TLegacyResult", bound=LegacyMetricResult)
 
 
-class DatasetSummaryBasedMetric(Metric[TResult], Generic[TResult, TLegacyResult], abc.ABC):
-    def __init__(self, metric_id: MetricId, metric: LegacyMetric[TLegacyResult]):
-        super().__init__(metric_id)
-        self._metric = metric
-
-    def calculate(self, current_data: Dataset, reference_data: Optional[Dataset]) -> TResult:
-        raise NotImplementedError()
-
-    def _call(self, context: "Context") -> TResult:
-        return self.calculate_value(context, context.get_legacy_metric(self._metric))
-
-    @abc.abstractmethod
-    def calculate_value(self, context: "Context", legacy_result: TLegacyResult) -> TResult:
-        raise NotImplementedError()
+class DatasetSummaryBasedMetric(LegacyBasedMetric[TResult, DatasetSummaryMetricResult], Generic[TResult], abc.ABC):
+    def __init__(self, metric_id: MetricId):
+        super().__init__(metric_id, DatasetSummaryMetric())
 
 
-class DuplicatedRowCount(DatasetSummaryBasedMetric[SingleValue, DatasetSummaryMetricResult]):
+class DuplicatedRowCount(DatasetSummaryBasedMetric[SingleValue]):
     def __init__(self):
-        super().__init__("duplicated_rows", DatasetSummaryMetric())
+        super().__init__("duplicated_rows")
 
-    def calculate_value(self, context: "Context", legacy_result: DatasetSummaryMetricResult) -> SingleValue:
+    def calculate_value(
+        self,
+        context: "Context",
+        legacy_result: DatasetSummaryMetricResult,
+        render: List[BaseWidgetInfo],
+    ) -> SingleValue:
         value = legacy_result.current.number_of_duplicated_rows
         return SingleValue(value)
 

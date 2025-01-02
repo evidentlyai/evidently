@@ -16,6 +16,8 @@ from .. import ColumnMapping
 from .. import ColumnType
 from ..base_metric import InputData
 from ..model.widget import BaseWidgetInfo
+from ..renderers.base_renderer import DEFAULT_RENDERERS
+from ..suite.base_suite import find_metric_renderer
 from .datasets import Dataset
 from .datasets import DatasetColumn
 from .metrics import Metric
@@ -55,7 +57,7 @@ class Context:
     _data_columns: Dict[str, ContextColumnData]
     _input_data: Tuple[Dataset, Optional[Dataset]]
     _current_graph_level: dict
-    _legacy_metrics: Dict[str, object]
+    _legacy_metrics: Dict[str, Tuple[object, List[BaseWidgetInfo]]]
 
     def __init__(self):
         self._metrics = {}
@@ -94,10 +96,10 @@ class Context:
     def get_metric(self, metric: MetricId) -> Metric[TResultType]:
         return self._metrics_graph[metric]["_self"]
 
-    def get_legacy_metric(self, metric: LegacyMetric[T]) -> T:
+    def get_legacy_metric(self, metric: LegacyMetric[T]) -> Tuple[T, List[BaseWidgetInfo]]:
         fp = metric.get_fingerprint()
         if fp not in self._legacy_metrics:
-            self._legacy_metrics[fp] = metric.calculate(
+            result = metric.calculate(
                 InputData(
                     self._input_data[1].as_dataframe() if self._input_data[1] is not None else None,
                     self._input_data[0].as_dataframe(),
@@ -108,7 +110,10 @@ class Context:
                     None,
                 )
             )
-        return typing.cast(T, self._legacy_metrics[fp])
+            renderer = find_metric_renderer(type(metric), DEFAULT_RENDERERS)
+            object.__setattr__(metric, "get_result", lambda: result)
+            self._legacy_metrics[fp] = (result, renderer.render_html(metric))
+        return typing.cast(T, self._legacy_metrics[fp][0]), self._legacy_metrics[fp][1]
 
 
 class Snapshot:
@@ -144,7 +149,7 @@ class Snapshot:
                 widgets.extend(item.render(self.context, results=metric_results))
             else:
                 metric_results[item.id] = self.context.calculate_metric(item)
-                widgets.append(metric_results[item.id].widget)
+                widgets.extend(metric_results[item.id].widget)
         self._widgets = widgets
 
     def _repr_html_(self):

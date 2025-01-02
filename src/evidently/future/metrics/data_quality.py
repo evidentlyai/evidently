@@ -33,7 +33,7 @@ class F1Metric(ByLabelMetric):
         raise ValueError()
 
     def _call(self, context: Context) -> ByLabelValue:
-        result = context.get_legacy_metric(ClassificationQualityByClass(self.probas_threshold, self.k))
+        result, _ = context.get_legacy_metric(ClassificationQualityByClass(self.probas_threshold, self.k))
         return ByLabelValue(
             {k: v.f1 for k, v in result.current.metrics.items()},
         )
@@ -58,7 +58,7 @@ class PrecisionMetric(ByLabelMetric):
         raise ValueError()
 
     def _call(self, context: Context) -> ByLabelValue:
-        result = context.get_legacy_metric(ClassificationQualityByClass(self.probas_threshold, self.k))
+        result, _ = context.get_legacy_metric(ClassificationQualityByClass(self.probas_threshold, self.k))
         return ByLabelValue(
             {k: v.precision for k, v in result.current.metrics.items()},
         )
@@ -83,7 +83,7 @@ class RecallMetric(ByLabelMetric):
         raise ValueError()
 
     def _call(self, context: Context) -> ByLabelValue:
-        result = context.get_legacy_metric(ClassificationQualityByClass(self.probas_threshold, self.k))
+        result, _ = context.get_legacy_metric(ClassificationQualityByClass(self.probas_threshold, self.k))
 
         return ByLabelValue(
             {k: v.recall for k, v in result.current.metrics.items()},
@@ -110,7 +110,7 @@ class RocAucMetric(ByLabelMetric):
 
     def _call(self, context: Context) -> ByLabelValue:
         metric = ClassificationQualityByClass(self.probas_threshold, self.k)
-        result = context.get_legacy_metric(metric)
+        result, _ = context.get_legacy_metric(metric)
 
         object.__setattr__(metric, "get_result", lambda: result)
 

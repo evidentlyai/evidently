@@ -18,7 +18,7 @@ class ValueStats(MetricContainer):
         self._column = column
 
     def generate_metrics(self, context: Context) -> List[Metric]:
-        metrics = [
+        metrics: List[Metric] = [
             RowCount(),
             MissingValueCount(self._column),
         ]
