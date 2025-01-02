@@ -4,6 +4,8 @@ from typing import Optional
 from typing import TypeVar
 from typing import Union
 
+from evidently import ColumnType
+from evidently.calculations.data_drift import get_one_column_drift
 from evidently.future.datasets import Dataset
 from evidently.future.datasets import DatasetColumn
 from evidently.future.metrics import SingleValue
@@ -12,10 +14,13 @@ from evidently.future.metrics.base import CountMetric
 from evidently.future.metrics.base import CountValue
 from evidently.future.metrics.base import SingleValueCalculation
 from evidently.future.metrics.base import SingleValueMetric
+from evidently.metric_results import DatasetColumns
+from evidently.metric_results import DatasetUtilityColumns
 from evidently.metric_results import HistogramData
 from evidently.metric_results import Label
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options import ColorOptions
+from evidently.options.data_drift import DataDriftOptions
 from evidently.renderers.html_widgets import WidgetSize
 from evidently.renderers.html_widgets import plotly_figure
 from evidently.utils.visualizations import get_distribution_for_column
@@ -250,3 +255,34 @@ class MissingValueCountCalculation(CountCalculation[MissingValueCount]):
 
     def display_name(self) -> str:
         return f"Column '{self.metric.column}' missing values"
+
+
+class ValueDrift(SingleValueMetric):
+    column: str
+    method: Optional[str] = None
+
+
+class ValueDriftCalculation(SingleValueCalculation[ValueDrift]):
+    def calculate(self, current_data: Dataset, reference_data: Optional[Dataset]) -> SingleValue:
+        column = self.metric.column
+        column_type = current_data.column(column).type
+        drift = get_one_column_drift(
+            current_data=current_data.as_dataframe(),
+            reference_data=reference_data.as_dataframe(),
+            column_name=column,
+            options=DataDriftOptions(all_features_stattest=column),
+            dataset_columns=DatasetColumns(
+                utility_columns=DatasetUtilityColumns(),
+                num_feature_names=[column] if column_type == ColumnType.Numerical else [],
+                cat_feature_names=[column] if column_type == ColumnType.Categorical else [],
+                text_feature_names=[column] if column_type == ColumnType.Text else [],
+                datetime_feature_names=[column] if column_type == ColumnType.Datetime else [],
+            ),
+            column_type=column_type,
+            agg_data=True,
+        )
+
+        return SingleValue(drift.drift_score)
+
+    def display_name(self) -> str:
+        return f"Value drift for {self.metric.column}"

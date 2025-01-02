@@ -26,7 +26,7 @@ class F1MetricCalculation(ByLabelCalculation[F1Metric]):
         raise ValueError()
 
     def _call(self, context: Context) -> ByLabelValue:
-        result = context.get_legacy_metric(ClassificationQualityByClass(self.metric.probas_threshold, self.metric.k))
+        result, _ = context.get_legacy_metric(ClassificationQualityByClass(self.metric.probas_threshold, self.metric.k))
         return ByLabelValue(
             {k: v.f1 for k, v in result.current.metrics.items()},
         )
@@ -45,7 +45,7 @@ class PrecisionMetricCalculation(ByLabelCalculation[PrecisionMetric]):
         raise ValueError()
 
     def _call(self, context: Context) -> ByLabelValue:
-        result = context.get_legacy_metric(ClassificationQualityByClass(self.metric.probas_threshold, self.metric.k))
+        result, _ = context.get_legacy_metric(ClassificationQualityByClass(self.metric.probas_threshold, self.metric.k))
         return ByLabelValue(
             {k: v.precision for k, v in result.current.metrics.items()},
         )
@@ -64,7 +64,7 @@ class RecallMetricCalculation(ByLabelCalculation[RecallMetric]):
         raise ValueError()
 
     def _call(self, context: Context) -> ByLabelValue:
-        result = context.get_legacy_metric(ClassificationQualityByClass(self.metric.probas_threshold, self.metric.k))
+        result, _ = context.get_legacy_metric(ClassificationQualityByClass(self.metric.probas_threshold, self.metric.k))
 
         return ByLabelValue(
             {k: v.recall for k, v in result.current.metrics.items()},
@@ -85,7 +85,7 @@ class RocAucCalculation(ByLabelCalculation[RocAucMetric]):
 
     def _call(self, context: Context) -> ByLabelValue:
         metric = ClassificationQualityByClass(self.metric.probas_threshold, self.metric.k)
-        result = context.get_legacy_metric(metric)
+        result, _ = context.get_legacy_metric(metric)
 
         object.__setattr__(metric, "get_result", lambda: result)
 

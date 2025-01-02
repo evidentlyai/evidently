@@ -1,3 +1,4 @@
+import json
 import typing
 from itertools import chain
 from typing import Dict
@@ -12,7 +13,11 @@ from evidently.base_metric import Metric as LegacyMetric
 from evidently.base_metric import MetricResult as LegacyMetricResult
 
 from .. import ColumnMapping
+from .. import ColumnType
 from ..base_metric import InputData
+from ..model.widget import BaseWidgetInfo
+from ..renderers.base_renderer import DEFAULT_RENDERERS
+from ..suite.base_suite import find_metric_renderer
 from .datasets import Dataset
 from .datasets import DatasetColumn
 from .metrics import MetricCalculationBase
@@ -41,6 +46,10 @@ class ContextColumnData:
             self._labels = list(self._column.data.unique())
         return self._labels
 
+    @property
+    def column_type(self) -> ColumnType:
+        return self._column.type
+
 
 class Context:
     _configuration: Optional["Report"]
@@ -49,7 +58,7 @@ class Context:
     _data_columns: Dict[str, ContextColumnData]
     _input_data: Tuple[Dataset, Optional[Dataset]]
     _current_graph_level: dict
-    _legacy_metrics: Dict[str, object]
+    _legacy_metrics: Dict[str, Tuple[object, List[BaseWidgetInfo]]]
 
     def __init__(self):
         self._metrics = {}
@@ -88,10 +97,10 @@ class Context:
     def get_metric(self, metric: MetricId) -> MetricCalculationBase[TResultType]:
         return self._metrics_graph[metric]["_self"]
 
-    def get_legacy_metric(self, metric: LegacyMetric[T]) -> T:
+    def get_legacy_metric(self, metric: LegacyMetric[T]) -> Tuple[T, List[BaseWidgetInfo]]:
         fp = metric.get_fingerprint()
         if fp not in self._legacy_metrics:
-            self._legacy_metrics[fp] = metric.calculate(
+            result = metric.calculate(
                 InputData(
                     self._input_data[1].as_dataframe() if self._input_data[1] is not None else None,
                     self._input_data[0].as_dataframe(),
@@ -102,12 +111,17 @@ class Context:
                     None,
                 )
             )
-        return typing.cast(T, self._legacy_metrics[fp])
+            renderer = find_metric_renderer(type(metric), DEFAULT_RENDERERS)
+            object.__setattr__(metric, "get_result", lambda: result)
+            self._legacy_metrics[fp] = (result, renderer.render_html(metric))
+        return typing.cast(T, self._legacy_metrics[fp][0]), self._legacy_metrics[fp][1]
 
 
 class Snapshot:
     _report: "Report"
     _context: Context  # stores report calculation progress
+    _metrics: Dict[MetricId, MetricResult]
+    _widgets: List[BaseWidgetInfo]
 
     def __init__(self, report: "Report"):
         self._report = report
@@ -123,17 +137,24 @@ class Snapshot:
 
     def run(self, current_data: Dataset, reference_data: Optional[Dataset]):
         self.context.init_dataset(current_data, reference_data)
+        metric_results = {}
+        widgets = []
         for item in self.report.items():
             if isinstance(item, (MetricPreset,)):
-                metric_results = {}
                 for metric in item.metrics():
                     calc = metric.to_calculation()
                     metric_results[calc.id] = self.context.calculate_metric(calc)
+                widgets.extend(item.calculate(metric_results).widget)
             elif isinstance(item, (MetricContainer,)):
                 for metric in item.metrics(self.context):
-                    self.context.calculate_metric(metric.to_calculation())
+                    calc = metric.to_calculation()
+                    metric_results[calc.id] = self.context.calculate_metric(calc)
+                widgets.extend(item.render(self.context, results=metric_results))
             else:
-                self.context.calculate_metric(item.to_calculation())
+                calc = item.to_calculation()
+                metric_results[calc.id] = self.context.calculate_metric(calc)
+                widgets.extend(metric_results[calc.id].widget)
+        self._widgets = widgets
 
     def _repr_html_(self):
         from evidently.renderers.html_widgets import TabData
@@ -151,13 +172,28 @@ class Snapshot:
         tabs = widget_tabs(
             title="",
             tabs=[
-                TabData("Metrics", group_widget(title="", widgets=list(chain(*[result[1] for result in results])))),
+                TabData("Metrics", group_widget(title="", widgets=self._widgets)),
                 TabData("Tests", metric_tests_widget(list(chain(*[result[2].tests for result in results])))),
             ],
         )
         return render_widgets(
             [tabs],
         )
+
+    def dict(self) -> dict:
+        return {
+            "metrics": {
+                metric: self.context.get_metric_result(metric).dict() for metric in self.context._metrics_graph.keys()
+            },
+            "tests": {
+                test.id: test.dict()
+                for metric in self.context._metrics_graph.keys()
+                for test in self.context.get_metric_result(metric).tests
+            },
+        }
+
+    def json(self) -> str:
+        return json.dumps(self.dict())
 
 
 class Report:
