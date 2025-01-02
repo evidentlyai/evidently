@@ -1,6 +1,4 @@
 import inspect
-import os.path
-import re
 from itertools import chain
 from pathlib import Path
 from typing import Any
@@ -85,11 +83,11 @@ def get_args_kwargs(feature_class: Type[GeneratedFeatures]) -> Tuple[Dict[str, s
 
 def create_descriptor_function(feature_class: Type[GeneratedFeatures]):
     class_name = feature_class.__name__
-    cmpx = os.path.commonprefix([class_name, class_name.upper()])[:-2]
-    name = cmpx.lower() + re.sub(r"(?<!^)(?=[A-Z])", "_", class_name[len(cmpx) :]).lower()
+    name = class_name
+    # name = cmpx.lower() + re.sub(r"(?<!^)(?=[A-Z])", "_", class_name[len(cmpx) :]).lower()
     name = NAME_MAPPING.get(name, name)
-    if name.endswith("_feature"):
-        name = name[: -len("_feature")]
+    if name.endswith("Feature"):
+        name = name[: -len("Feature")]
 
     args, kwargs = get_args_kwargs(feature_class)
     kwargs["alias"] = ("Optional[str]", "None")
@@ -102,9 +100,12 @@ def create_descriptor_function(feature_class: Type[GeneratedFeatures]):
 
     class_args = ", ".join(f"{k}={k}" for k in chain(args, kwargs) if k != "alias")
     res = f"""
-def {name}({args_str}{kwargs_str}):
-    feature = {class_name}({class_args})
-    return FeatureScorer(feature, alias=alias)"""
+class {name}(FeatureDescriptor):
+    def __init__(self, {args_str}{kwargs_str}):
+        from {feature_class.__module__} import {feature_class.__name__} as {feature_class.__name__}V1
+        feature = {class_name}V1({class_args})
+        super().__init__(feature, alias=alias)
+"""
     for substr, repl in REPLACES.items():
         res = res.replace(substr, repl)
     return res, name
@@ -135,7 +136,7 @@ def main():
         src, fname = create_descriptor_function(feature_class)
         fnames.append(fname)
         srcs.append(src)
-        imports.append(feature_class)
+        # imports.append(feature_class)
     with open(Path(__file__).parent / SOURCE_FILE, "w") as f:
         f.write("\n".join(f"from {t.__module__} import {t.__name__}" for t in imports) + "\n\n")
         f.write("\n\n".join(srcs))
