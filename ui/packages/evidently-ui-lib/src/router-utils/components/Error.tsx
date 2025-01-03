@@ -136,15 +136,3 @@ export const handleFetchersActionErrors = ({ Component }: { Component: React.Com
     </>
   )
 })
-
-// use this on every route
-export const handleSubmitActionErrors = (OriginalComponent: React.ComponentType) => {
-  const Component = () => (
-    <>
-      <ActionsErrorSnackbar />
-      <OriginalComponent />
-    </>
-  )
-
-  return Component
-}

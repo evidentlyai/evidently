@@ -1,9 +1,5 @@
 import { expectJsonRequest } from '~/api/utils'
-import {
-  GenericErrorBoundary,
-  handleFetchersActionErrors,
-  handleSubmitActionErrors
-} from '~/router-utils/components/Error'
+import { GenericErrorBoundary, handleFetchersActionErrors } from '~/router-utils/components/Error'
 import type { ActionArgs, RouteExtended, loadDataArgs } from '~/router-utils/types'
 import type {
   ActionFunction,
@@ -56,7 +52,6 @@ export const decorateAllRoutes = (
     return {
       ...r,
       lazy: (() => r.lazy?.().then(decorateAllRoutes)) as LazyRouteFunction<RouteObject>,
-      Component: r.Component ? handleSubmitActionErrors(r.Component) : undefined,
       loader: r.loadData ? replaceloadData(r.loadData) : undefined,
       action: r.actions ? replaceActions(r.actions) : undefined,
       ErrorBoundary: r.ErrorBoundary ? r.ErrorBoundary : ErrorBoundary,
@@ -66,7 +61,6 @@ export const decorateAllRoutes = (
 
   return {
     ...r,
-    Component: r.Component ? handleSubmitActionErrors(r.Component) : undefined,
     loader: r.loadData ? replaceloadData(r.loadData) : undefined,
     action: r.actions ? replaceActions(r.actions) : undefined,
     ErrorBoundary: r.ErrorBoundary ? r.ErrorBoundary : ErrorBoundary,
