@@ -1,6 +1,7 @@
 import abc
 from typing import List
 from typing import Optional
+from typing import TypeVar
 from typing import Union
 
 from evidently import ColumnType
@@ -8,9 +9,10 @@ from evidently.calculations.data_drift import get_one_column_drift
 from evidently.future.datasets import Dataset
 from evidently.future.datasets import DatasetColumn
 from evidently.future.metrics import SingleValue
-from evidently.future.metrics import SingleValueMetricTest
+from evidently.future.metrics.base import CountCalculation
 from evidently.future.metrics.base import CountMetric
 from evidently.future.metrics.base import CountValue
+from evidently.future.metrics.base import SingleValueCalculation
 from evidently.future.metrics.base import SingleValueMetric
 from evidently.metric_results import DatasetColumns
 from evidently.metric_results import DatasetUtilityColumns
@@ -55,23 +57,29 @@ def distribution(
 
 
 class StatisticsMetric(SingleValueMetric):
-    def __init__(self, metric_id: str, column: str, tests: Optional[List[SingleValueMetricTest]] = None):
-        super().__init__(metric_id)
-        self.with_tests(tests)
-        self._column = column
+    column: str
+
+
+TStatisticsMetric = TypeVar("TStatisticsMetric", bound=StatisticsMetric)
+
+
+class StatisticsCalculation(SingleValueCalculation[TStatisticsMetric]):
+    @property
+    def column(self):
+        return self.metric.column
 
     def calculate(self, current_data: Dataset, reference_data: Optional[Dataset]) -> SingleValue:
-        value = self.calculate_value(current_data.column(self._column))
+        value = self.calculate_value(current_data.column(self.column))
 
         header = f"current: {value:.3f}"
         if reference_data is not None:
-            ref_value = self.calculate_value(reference_data.column(self._column))
+            ref_value = self.calculate_value(reference_data.column(self.column))
             header += f", reference: {ref_value:.3f}"
         result = SingleValue(value)
         result.widget = distribution(
             f"{self.display_name()}: {header}",
-            current_data.column(self._column),
-            None if reference_data is None else reference_data.column(self._column),
+            current_data.column(self.column),
+            None if reference_data is None else reference_data.column(self.column),
         )
         return result
 
@@ -81,241 +89,194 @@ class StatisticsMetric(SingleValueMetric):
 
 
 class MinValue(StatisticsMetric):
-    def __init__(self, column: str, tests: Optional[List[SingleValueMetricTest]] = None):
-        super().__init__(f"min:{column}", column, tests)
+    pass
 
+
+class MinValueCalculation(StatisticsCalculation[MinValue]):
     def calculate_value(self, column: DatasetColumn) -> Union[float, int]:
         return column.data.min()
 
     def display_name(self) -> str:
-        return f"Minimal value of {self._column}"
+        return f"Minimal value of {self.column}"
 
 
 class MeanValue(StatisticsMetric):
-    def __init__(self, column: str, tests: Optional[List[SingleValueMetricTest]] = None):
-        super().__init__(f"mean:{column}", column, tests)
+    pass
 
+
+class MeanValueCalculation(StatisticsCalculation[MeanValue]):
     def calculate_value(self, column: DatasetColumn) -> Union[float, int]:
         return column.data.mean()
 
     def display_name(self) -> str:
-        return f"Mean value of {self._column}"
+        return f"Mean value of {self.column}"
 
 
 class MaxValue(StatisticsMetric):
-    def __init__(self, column: str, tests: Optional[List[SingleValueMetricTest]] = None):
-        super().__init__(f"max:{column}", column, tests)
+    pass
 
+
+class MaxValueCalculation(StatisticsCalculation[MaxValue]):
     def calculate_value(self, column: DatasetColumn) -> Union[float, int]:
         return column.data.max()
 
     def display_name(self) -> str:
-        return f"Maximum value of {self._column}"
+        return f"Maximum value of {self.column}"
 
 
 class StdValue(StatisticsMetric):
-    def __init__(self, column: str, tests: Optional[List[SingleValueMetricTest]] = None):
-        super().__init__(f"std:{column}", column, tests)
-        self.with_tests(tests)
-        self._column = column
+    pass
 
+
+class StdValueCalculation(StatisticsCalculation[StdValue]):
     def calculate_value(self, column: DatasetColumn) -> Union[float, int]:
         return column.data.std()
 
     def display_name(self) -> str:
-        return f"Std value of {self._column}"
+        return f"Std value of {self.column}"
 
 
 class MedianValue(StatisticsMetric):
-    def __init__(self, column: str, tests: Optional[List[SingleValueMetricTest]] = None):
-        super().__init__(f"median:{column}", column, tests)
+    pass
 
+
+class MedianValueCalculation(StatisticsCalculation[MedianValue]):
     def calculate_value(self, column: DatasetColumn) -> Union[float, int]:
         return column.data.median()
 
     def display_name(self) -> str:
-        return f"Median value of {self._column}"
+        return f"Median value of {self.column}"
 
 
 class QuantileValue(StatisticsMetric):
-    def __init__(self, column: str, quantile: float = 0.5, tests: Optional[List[SingleValueMetricTest]] = None):
-        super().__init__(f"quantile:{quantile}:{column}", column, tests)
-        self.with_tests(tests)
-        self._quantile = quantile
-        self._column = column
+    quantile: float = 0.5
 
+
+class QuantileValueCalculation(StatisticsCalculation[QuantileValue]):
     def calculate_value(self, column: DatasetColumn) -> Union[float, int]:
-        return column.data.quantile(self._quantile)
+        return column.data.quantile(self.metric.quantile)
 
     def display_name(self) -> str:
-        return f"Quantile {self._quantile} of {self._column}"
+        return f"Quantile {self.metric.quantile} of {self.column}"
 
 
 class CategoryCount(CountMetric):
-    def __init__(
-        self,
-        column: str,
-        category: Label,
-        count_tests: Optional[List[SingleValueMetricTest]] = None,
-        share_tests: Optional[List[SingleValueMetricTest]] = None,
-    ):
-        super().__init__(f"category_count:{column}:{category}")
-        self._column = column
-        self._category = category
-        self.with_tests(count_tests, share_tests)
+    column: str
+    category: Label
 
+
+class CategoryCountCalculation(CountCalculation[CategoryCount]):
     def calculate(self, current_data: Dataset, reference_data: Optional[Dataset]) -> CountValue:
-        column = current_data.column(self._column)
-        value = column.data.value_counts()[self._category]
+        column = current_data.column(self.metric.column)
+        value = column.data.value_counts()[self.metric.category]
         total = column.data.count()
         return CountValue(value, value / total)
 
     def display_name(self) -> str:
-        return f"Column '{self._column}' category '{self._category}'"
+        return f"Column '{self.metric.column}' category '{self.metric.category}'"
 
 
 class InRangeValueCount(CountMetric):
-    def __init__(
-        self,
-        column: str,
-        left: Union[int, float],
-        right: Union[int, float],
-        count_tests: Optional[List[SingleValueMetricTest]] = None,
-        share_tests: Optional[List[SingleValueMetricTest]] = None,
-    ):
-        super().__init__(f"in_range:{column}:{left}:{right}")
-        self._column = column
-        self._left = left
-        self._right = right
-        self.with_tests(count_tests, share_tests)
+    column: str
+    left: Union[int, float]
+    right: Union[int, float]
 
+
+class InRangeValueCountCalculation(CountCalculation[InRangeValueCount]):
     def calculate(self, current_data: Dataset, reference_data: Optional[Dataset]) -> CountValue:
-        column = current_data.column(self._column)
-        value = column.data.between(self._left, self._right).count()
+        column = current_data.column(self.metric.column)
+        value = column.data.between(self.metric.left, self.metric.right).count()
         total = column.data.count()
         return CountValue(value, value / total)
 
     def display_name(self) -> str:
-        return f"Column '{self._column}' values in range {self._left} to {self._right}"
+        return f"Column '{self.metric.column}' values in range {self.metric.left} to {self.metric.right}"
 
 
 class OutRangeValueCount(CountMetric):
-    def __init__(
-        self,
-        column: str,
-        left: Union[int, float],
-        right: Union[int, float],
-        count_tests: Optional[List[SingleValueMetricTest]] = None,
-        share_tests: Optional[List[SingleValueMetricTest]] = None,
-    ):
-        super().__init__(f"out_range:{column}:{left}:{right}")
-        self._column = column
-        self._left = left
-        self._right = right
-        self.with_tests(count_tests, share_tests)
+    column: str
+    left: Union[int, float]
+    right: Union[int, float]
 
+
+class OutRangeValueCountCalculation(CountCalculation[OutRangeValueCount]):
     def calculate(self, current_data: Dataset, reference_data: Optional[Dataset]) -> CountValue:
-        column = current_data.column(self._column)
-        value = column.data.between(self._left, self._right).count()
+        column = current_data.column(self.metric.column)
+        value = column.data.between(self.metric.left, self.metric.right).count()
         total = column.data.count()
         return CountValue(total - value, value / total)
 
     def display_name(self) -> str:
-        return f"Column '{self._column}' values out of range {self._left} to {self._right}"
+        return f"Column '{self.metric.column}' values out of range {self.metric.left} to {self.metric.right}"
 
 
 class InListValueCount(CountMetric):
-    def __init__(
-        self,
-        column: str,
-        values: List[Label],
-        count_tests: Optional[List[SingleValueMetricTest]] = None,
-        share_tests: Optional[List[SingleValueMetricTest]] = None,
-    ):
-        super().__init__(f"in_list:{column}:{'|'.join(str(x) for x in values)}")
-        self._column = column
-        self._values = values
-        self.with_tests(count_tests, share_tests)
+    column: str
+    values: List[Label]
 
+
+class InListValueCountCalculation(CountCalculation[InListValueCount]):
     def calculate(self, current_data: Dataset, reference_data: Optional[Dataset]) -> CountValue:
-        column = current_data.column(self._column)
-        value = column.data.value_counts()[self._values].sum()
+        column = current_data.column(self.metric.column)
+        value = column.data.value_counts()[self.metric.values].sum()
         total = column.data.count()
         return CountValue(value, value / total)
 
     def display_name(self) -> str:
-        return f"Column '{self._column}' values in list [{', '.join(self._values)}]"
+        return f"Column '{self.metric.column}' values in list [{', '.join(self.metric.values)}]"
 
 
 class OutListValueCount(CountMetric):
-    def __init__(
-        self,
-        column: str,
-        values: List[Label],
-        count_tests: Optional[List[SingleValueMetricTest]] = None,
-        share_tests: Optional[List[SingleValueMetricTest]] = None,
-    ):
-        super().__init__(f"out_list:{column}:{'|'.join(values)}")
-        self._column = column
-        self._values = values
-        self.with_tests(count_tests, share_tests)
+    column: str
+    values: List[Label]
 
+
+class OutListValueCountCalculation(CountCalculation[OutListValueCount]):
     def calculate(self, current_data: Dataset, reference_data: Optional[Dataset]) -> CountValue:
-        column = current_data.column(self._column)
-        value = column.data.value_counts()[self._values].sum()
+        column = current_data.column(self.metric.column)
+        value = column.data.value_counts()[self.metric.values].sum()
         total = column.data.count()
         return CountValue(total - value, value / total)
 
     def display_name(self) -> str:
-        return f"Column '{self._column}' values out of list [{', '.join(self._values)}]"
+        return f"Column '{self.metric.column}' values out of list [{', '.join(self.metric.values)}]"
 
 
 class MissingValueCount(CountMetric):
-    def __init__(
-        self,
-        column: str,
-        count_tests: Optional[List[SingleValueMetricTest]] = None,
-        share_tests: Optional[List[SingleValueMetricTest]] = None,
-    ):
-        super().__init__(f"missing_values:{column}")
-        self._column = column
-        self.with_tests(count_tests, share_tests)
+    column: str
 
+
+class MissingValueCountCalculation(CountCalculation[MissingValueCount]):
     def calculate(self, current_data: Dataset, reference_data: Optional[Dataset]) -> CountValue:
-        column = current_data.column(self._column)
+        column = current_data.column(self.metric.column)
         value = column.data.count()
         total = len(column.data)
         return CountValue(total - value, value / total)
 
     def display_name(self) -> str:
-        return f"Column '{self._column}' missing values"
+        return f"Column '{self.metric.column}' missing values"
 
 
 class ValueDrift(SingleValueMetric):
-    def __init__(
-        self,
-        column: str,
-        method: Optional[str] = None,
-        tests: Optional[List[SingleValueMetricTest]] = None,
-    ):
-        super().__init__(f"value_drift:{column}:{method}")
-        self._column = column
-        self._method = method
-        self.with_tests(tests)
+    column: str
+    method: Optional[str] = None
 
+
+class ValueDriftCalculation(SingleValueCalculation[ValueDrift]):
     def calculate(self, current_data: Dataset, reference_data: Optional[Dataset]) -> SingleValue:
-        column_type = current_data.column(self._column).type
+        column = self.metric.column
+        column_type = current_data.column(column).type
         drift = get_one_column_drift(
             current_data=current_data.as_dataframe(),
             reference_data=reference_data.as_dataframe(),
-            column_name=self._column,
-            options=DataDriftOptions(all_features_stattest=self._method),
+            column_name=column,
+            options=DataDriftOptions(all_features_stattest=self.metric.method),
             dataset_columns=DatasetColumns(
                 utility_columns=DatasetUtilityColumns(),
-                num_feature_names=[self._column] if column_type == ColumnType.Numerical else [],
-                cat_feature_names=[self._column] if column_type == ColumnType.Categorical else [],
-                text_feature_names=[self._column] if column_type == ColumnType.Text else [],
-                datetime_feature_names=[self._column] if column_type == ColumnType.Datetime else [],
+                num_feature_names=[column] if column_type == ColumnType.Numerical else [],
+                cat_feature_names=[column] if column_type == ColumnType.Categorical else [],
+                text_feature_names=[column] if column_type == ColumnType.Text else [],
+                datetime_feature_names=[column] if column_type == ColumnType.Datetime else [],
             ),
             column_type=column_type,
             agg_data=True,
@@ -324,4 +285,4 @@ class ValueDrift(SingleValueMetric):
         return SingleValue(drift.drift_score)
 
     def display_name(self) -> str:
-        return f"Value drift for {self._column}"
+        return f"Value drift for {self.metric.column}"

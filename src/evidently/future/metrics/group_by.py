@@ -3,7 +3,8 @@ from typing import List
 from typing import Optional
 
 from evidently.future.datasets import Dataset
-from evidently.future.metrics import Metric
+from evidently.future.metrics.base import Metric
+from evidently.future.metrics.base import MetricCalculation
 from evidently.future.metrics.base import MetricTestResult
 from evidently.future.metrics.base import TResult
 from evidently.future.metrics.container import MetricContainer
@@ -11,26 +12,30 @@ from evidently.future.report import Context
 
 
 class GroupByMetric(Metric):
-    def __init__(self, metric: Metric, column_name: str, label: object):
-        super().__init__(f"{metric.id}:group_by:{label}")
-        self._metric = metric
-        self._column_name = column_name
-        self._label = label
+    metric: Metric
 
-    def calculate(self, current_data: Dataset, reference_data: Optional[Dataset]) -> TResult:
-        curr = current_data.subdataset(self._column_name, self._label)
-        ref = reference_data.subdataset(self._column_name, self._label) if reference_data else None
-        return self._metric.calculate(curr, ref)
-
-    def display_name(self) -> str:
-        return f"{self._metric.display_name()} group by '{self._column_name}' for label: '{self._label}'"
+    column_name: str
+    label: object
 
     def get_tests(self, value: TResult) -> Generator[MetricTestResult, None, None]:
-        return self._metric.get_tests(value)
+        pass
+
+
+class GroupByMetricCalculation(MetricCalculation[TResult, GroupByMetric]):
+    def calculate(self, current_data: Dataset, reference_data: Optional[Dataset]) -> TResult:
+        curr = current_data.subdataset(self.metric.column_name, self.metric.label)
+        ref = reference_data.subdataset(self.metric.column_name, self.metric.label) if reference_data else None
+        return self.metric.metric.to_calculation().calculate(curr, ref)
+
+    def display_name(self) -> str:
+        return f"{self.metric.metric.to_calculation().display_name()} group by '{self.metric.column_name}' for label: '{self.metric.label}'"
+
+    def get_tests(self, value: TResult) -> Generator[MetricTestResult, None, None]:
+        return self.metric.metric.get_tests(value)
 
     @property
     def column_name(self) -> str:
-        return self._column_name
+        return self.metric.column_name
 
 
 class GroupBy(MetricContainer):
@@ -40,7 +45,7 @@ class GroupBy(MetricContainer):
 
     def generate_metrics(self, context: Context) -> List[Metric]:
         labels = context.column(self._column_name).labels()
-        return [GroupByMetric(self._metric, self._column_name, label) for label in labels]
+        return [GroupByMetric(metric=self._metric, column_name=self._column_name, label=label) for label in labels]
 
     def label_metric(self, label: object) -> Metric:
-        return GroupByMetric(self._metric, self._column_name, label)
+        return GroupByMetric(metric=self._metric, column_name=self._column_name, label=label)

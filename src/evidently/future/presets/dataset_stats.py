@@ -4,10 +4,10 @@ from typing import List
 from evidently import ColumnType
 from evidently.future.metrics import ColumnCount
 from evidently.future.metrics import DuplicatedRowCount
-from evidently.future.metrics import Metric
 from evidently.future.metrics import MetricContainer
 from evidently.future.metrics import MetricResult
 from evidently.future.metrics import RowCount
+from evidently.future.metrics.base import Metric
 from evidently.future.metrics.base import MetricId
 from evidently.future.metrics.dataset_statistics import AlmostConstantColumnsCount
 from evidently.future.metrics.dataset_statistics import AlmostDuplicatedColumnsCount
@@ -26,10 +26,10 @@ class DatasetStats(MetricContainer):
         return [
             RowCount(),
             ColumnCount(),
-            ColumnCount(ColumnType.Numerical),
-            ColumnCount(ColumnType.Categorical),
-            ColumnCount(ColumnType.Datetime),
-            ColumnCount(ColumnType.Text),
+            ColumnCount(column_type=ColumnType.Numerical),
+            ColumnCount(column_type=ColumnType.Categorical),
+            ColumnCount(column_type=ColumnType.Datetime),
+            ColumnCount(column_type=ColumnType.Text),
             DuplicatedRowCount(),
             DuplicatedColumnsCount(),
             AlmostDuplicatedColumnsCount(),

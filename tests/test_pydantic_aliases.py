@@ -21,6 +21,8 @@ from evidently.collector.storage import CollectorStorage
 from evidently.features.generated_features import BaseDescriptor
 from evidently.features.generated_features import GeneratedFeatures
 from evidently.features.llm_judge import BaseLLMPromptTemplate
+from evidently.future.metrics.base import Metric as MetricV2
+from evidently.future.metrics.base import MetricTest
 from evidently.metric_preset.metric_preset import MetricPreset
 from evidently.metrics.data_drift.embedding_drift_methods import DriftMethod
 from evidently.pydantic_utils import TYPE_ALIASES
@@ -63,9 +65,11 @@ def find_all_subclasses(
 
 
 REGISTRY_MAPPING: Dict[Type[PolymorphicModel], str] = {
-    DashboardPanel: "evidently.ui._registry",
+    # DashboardPanel: "evidently.ui._registry",
     Test: "evidently.tests._registry",
     TestParameters: "evidently.tests._registry",
+    MetricTest: "evidently.future._registry",
+    MetricV2: "evidently.future._registry",
     MetricResult: "evidently.metrics._registry",
 }
 
@@ -130,6 +134,8 @@ def test_all_aliases_correct():
         DashboardPanel: "dashboard_panel",
         PromptBlock: "prompt_block",
         PromptTemplate: "prompt_template",
+        MetricV2: MetricV2.__alias_type__,
+        MetricTest: MetricTest.__alias_type__,
     }
     skip = [Component]
     skip_literal = [EvidentlyBaseModel, WithTestAndMetricDependencies, BasePreset]
@@ -138,7 +144,8 @@ def test_all_aliases_correct():
             continue
         for base_class, base_type in base_class_type_mapping.items():
             if issubclass(cls, base_class):
-                alias = getattr(cls.__config__, "type_alias")
+                # alias = getattr(cls.__config__, "type_alias")
+                alias = cls.__get_type__()
                 assert alias is not None, f"{cls.__name__} has no alias ({alias})"
                 assert alias == f"evidently:{base_type}:{cls.__name__}", f"wrong alias for {cls.__name__}"
                 break

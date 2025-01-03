@@ -4,36 +4,29 @@ from typing import Optional
 
 from evidently.future.datasets import Dataset
 from evidently.future.metrics import ByLabelValue
-from evidently.future.metrics import Metric
 from evidently.future.metrics import MetricPreset
 from evidently.future.metrics import MetricResult
+from evidently.future.metrics.base import ByLabelCalculation
 from evidently.future.metrics.base import ByLabelMetric
+from evidently.future.metrics.base import Metric
 from evidently.future.metrics.base import MetricId
-from evidently.future.metrics.base import MetricTest
 from evidently.future.metrics.presets import PresetResult
 from evidently.future.report import Context
-from evidently.metric_results import Label
 from evidently.metrics import ClassificationQualityByClass
 from evidently.metrics.classification_performance.quality_by_class_metric import ClassificationQualityByClassRenderer
 
 
 class F1Metric(ByLabelMetric):
-    def __init__(
-        self,
-        probas_threshold: Optional[float] = None,
-        k: Optional[int] = None,
-        tests: Optional[Dict[Label, List[MetricTest]]] = None,
-    ):
-        super().__init__("f1")
-        self.with_tests(tests)
-        self.probas_threshold = probas_threshold
-        self.k = k
+    probas_threshold: Optional[float] = None
+    k: Optional[int] = None
 
+
+class F1MetricCalculation(ByLabelCalculation[F1Metric]):
     def calculate(self, current_data: Dataset, reference_data: Optional[Dataset]) -> ByLabelValue:
         raise ValueError()
 
     def _call(self, context: Context) -> ByLabelValue:
-        result, _ = context.get_legacy_metric(ClassificationQualityByClass(self.probas_threshold, self.k))
+        result, _ = context.get_legacy_metric(ClassificationQualityByClass(self.metric.probas_threshold, self.metric.k))
         return ByLabelValue(
             {k: v.f1 for k, v in result.current.metrics.items()},
         )
@@ -43,22 +36,16 @@ class F1Metric(ByLabelMetric):
 
 
 class PrecisionMetric(ByLabelMetric):
-    def __init__(
-        self,
-        probas_threshold: Optional[float] = None,
-        k: Optional[int] = None,
-        tests: Optional[Dict[Label, List[MetricTest]]] = None,
-    ):
-        super().__init__("precision")
-        self.with_tests(tests)
-        self.probas_threshold = probas_threshold
-        self.k = k
+    probas_threshold: Optional[float] = None
+    k: Optional[int] = None
 
+
+class PrecisionMetricCalculation(ByLabelCalculation[PrecisionMetric]):
     def calculate(self, current_data: Dataset, reference_data: Optional[Dataset]) -> ByLabelValue:
         raise ValueError()
 
     def _call(self, context: Context) -> ByLabelValue:
-        result, _ = context.get_legacy_metric(ClassificationQualityByClass(self.probas_threshold, self.k))
+        result, _ = context.get_legacy_metric(ClassificationQualityByClass(self.metric.probas_threshold, self.metric.k))
         return ByLabelValue(
             {k: v.precision for k, v in result.current.metrics.items()},
         )
@@ -68,22 +55,16 @@ class PrecisionMetric(ByLabelMetric):
 
 
 class RecallMetric(ByLabelMetric):
-    def __init__(
-        self,
-        probas_threshold: Optional[float] = None,
-        k: Optional[int] = None,
-        tests: Optional[Dict[Label, List[MetricTest]]] = None,
-    ):
-        super().__init__("recall")
-        self.with_tests(tests)
-        self.probas_threshold = probas_threshold
-        self.k = k
+    probas_threshold: Optional[float] = None
+    k: Optional[int] = None
 
+
+class RecallMetricCalculation(ByLabelCalculation[RecallMetric]):
     def calculate(self, current_data: Dataset, reference_data: Optional[Dataset]) -> ByLabelValue:
         raise ValueError()
 
     def _call(self, context: Context) -> ByLabelValue:
-        result, _ = context.get_legacy_metric(ClassificationQualityByClass(self.probas_threshold, self.k))
+        result, _ = context.get_legacy_metric(ClassificationQualityByClass(self.metric.probas_threshold, self.metric.k))
 
         return ByLabelValue(
             {k: v.recall for k, v in result.current.metrics.items()},
@@ -94,22 +75,16 @@ class RecallMetric(ByLabelMetric):
 
 
 class RocAucMetric(ByLabelMetric):
-    def __init__(
-        self,
-        probas_threshold: Optional[float] = None,
-        k: Optional[int] = None,
-        tests: Optional[Dict[Label, List[MetricTest]]] = None,
-    ):
-        super().__init__("roc_auc")
-        self.with_tests(tests)
-        self.probas_threshold = probas_threshold
-        self.k = k
+    probas_threshold: Optional[float] = None
+    k: Optional[int] = None
 
+
+class RocAucCalculation(ByLabelCalculation[RocAucMetric]):
     def calculate(self, current_data: Dataset, reference_data: Optional[Dataset]) -> ByLabelValue:
         raise ValueError()
 
     def _call(self, context: Context) -> ByLabelValue:
-        metric = ClassificationQualityByClass(self.probas_threshold, self.k)
+        metric = ClassificationQualityByClass(self.metric.probas_threshold, self.metric.k)
         result, _ = context.get_legacy_metric(metric)
 
         object.__setattr__(metric, "get_result", lambda: result)
@@ -133,11 +108,12 @@ class QualityByClassPreset(MetricPreset):
 
     def metrics(self) -> List[Metric]:
         return [
-            F1Metric(self._probas_threshold, self._k),
-            PrecisionMetric(self._probas_threshold, self._k),
-            RecallMetric(self._probas_threshold, self._k),
-            RocAucMetric(self._probas_threshold, self._k),
+            F1Metric(probas_threshold=self._probas_threshold, k=self._k),
+            PrecisionMetric(probas_threshold=self._probas_threshold, k=self._k),
+            RecallMetric(probas_threshold=self._probas_threshold, k=self._k),
+            RocAucMetric(probas_threshold=self._probas_threshold, k=self._k),
         ]
 
     def calculate(self, metric_results: Dict[MetricId, MetricResult]) -> PresetResult:
-        return PresetResult(metric_results[RocAucMetric(self._probas_threshold, self._k).id].widget)
+        metric = RocAucMetric(probas_threshold=self._probas_threshold, k=self._k)
+        return PresetResult(metric_results[metric.to_calculation().id].widget)

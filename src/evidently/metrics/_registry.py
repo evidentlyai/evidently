@@ -833,3 +833,5 @@ register_type_alias(
 register_type_alias(MetricResult, "evidently.future.backport.SingleValueV1", "evidently:metric_result:SingleValueV1")
 
 register_type_alias(MetricResult, "evidently.future.backport.ByLabelValueV1", "evidently:metric_result:ByLabelValueV1")
+
+register_type_alias(MetricResult, "evidently.future.backport.CountValueV1", "evidently:metric_result:CountValueV1")

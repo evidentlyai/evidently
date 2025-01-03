@@ -20,10 +20,11 @@ from ..renderers.base_renderer import DEFAULT_RENDERERS
 from ..suite.base_suite import find_metric_renderer
 from .datasets import Dataset
 from .datasets import DatasetColumn
-from .metrics import Metric
+from .metrics import MetricCalculationBase
 from .metrics import MetricContainer
 from .metrics import MetricPreset
 from .metrics import MetricResult
+from .metrics.base import Metric
 from .metrics.base import MetricId
 from .metrics.base import metric_tests_widget
 from .metrics.base import render_widgets
@@ -78,7 +79,7 @@ class Context:
     def column(self, column_name: str) -> ContextColumnData:
         return self._data_columns[column_name]
 
-    def calculate_metric(self, metric: Metric[TResultType]) -> TResultType:
+    def calculate_metric(self, metric: MetricCalculationBase[TResultType]) -> TResultType:
         if metric.id not in self._current_graph_level:
             self._current_graph_level[metric.id] = {"_self": metric}
         prev_level = self._current_graph_level
@@ -88,12 +89,12 @@ class Context:
         self._current_graph_level = prev_level
         return typing.cast(TResultType, self._metrics[metric.id])
 
-    def get_metric_result(self, metric: Union[MetricId, Metric[TResultType]]) -> TResultType:
+    def get_metric_result(self, metric: Union[MetricId, MetricCalculationBase[TResultType]]) -> TResultType:
         if isinstance(metric, MetricId):
             return typing.cast(TResultType, self._metrics[metric])
         return self.calculate_metric(metric)
 
-    def get_metric(self, metric: MetricId) -> Metric[TResultType]:
+    def get_metric(self, metric: MetricId) -> MetricCalculationBase[TResultType]:
         return self._metrics_graph[metric]["_self"]
 
     def get_legacy_metric(self, metric: LegacyMetric[T]) -> Tuple[T, List[BaseWidgetInfo]]:
@@ -141,15 +142,18 @@ class Snapshot:
         for item in self.report.items():
             if isinstance(item, (MetricPreset,)):
                 for metric in item.metrics():
-                    metric_results[metric.id] = self.context.calculate_metric(metric)
+                    calc = metric.to_calculation()
+                    metric_results[calc.id] = self.context.calculate_metric(calc)
                 widgets.extend(item.calculate(metric_results).widget)
             elif isinstance(item, (MetricContainer,)):
                 for metric in item.metrics(self.context):
-                    metric_results[metric.id] = self.context.calculate_metric(metric)
+                    calc = metric.to_calculation()
+                    metric_results[calc.id] = self.context.calculate_metric(calc)
                 widgets.extend(item.render(self.context, results=metric_results))
             else:
-                metric_results[item.id] = self.context.calculate_metric(item)
-                widgets.extend(metric_results[item.id].widget)
+                calc = item.to_calculation()
+                metric_results[calc.id] = self.context.calculate_metric(calc)
+                widgets.extend(metric_results[calc.id].widget)
         self._widgets = widgets
 
     def _repr_html_(self):

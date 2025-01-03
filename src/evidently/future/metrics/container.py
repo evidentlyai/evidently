@@ -5,8 +5,8 @@ from typing import Dict
 from typing import List
 from typing import Optional
 
-from evidently.future.metrics import Metric
 from evidently.future.metrics import MetricResult
+from evidently.future.metrics.base import Metric
 from evidently.future.metrics.base import MetricId
 from evidently.model.widget import BaseWidgetInfo
 
@@ -29,4 +29,4 @@ class MetricContainer:
     def render(self, context: "Context", results: Dict[MetricId, MetricResult]) -> List[BaseWidgetInfo]:
         if self._metrics is None:
             raise ValueError("Metrics weren't composed in container")
-        return list(itertools.chain(*[results[metric.id].widget for metric in self._metrics]))
+        return list(itertools.chain(*[results[metric.to_calculation().id].widget for metric in self._metrics]))
