@@ -12,8 +12,8 @@ import { clientAPI } from '~/api'
 ///////////////////
 
 export const currentRoutePath = (!0 as boolean)
-  ? '/:projectId/reports/:snapshotId'
-  : '/:projectId/test-suites/:snapshotId'
+  ? '/projects/:projectId/reports/:snapshotId'
+  : '/projects/:projectId/test-suites/:snapshotId'
 
 type CurrentRoute = GetRouteByPath<typeof currentRoutePath>
 type Params = GetParams<typeof currentRoutePath>

@@ -8,6 +8,7 @@ import { DashboardLazy } from './src/dashboard/import'
 import { Route } from 'evidently-ui-lib/router-utils/utils'
 import { Home } from './src/home/import'
 import { Project } from './src/project/import'
+import { ProjectsLayout } from './src/projects-layout/import'
 import { ProjectsList } from './src/projects-list/import'
 import { ReportsLayout } from './src/reports-layout/import'
 import { ReportsList } from './src/reports-list/import'
@@ -18,22 +19,27 @@ export const routes = [
   Route(Home, {
     children: [
       Route(ProjectsList, { index: true } as const),
-      Route(Project, {
-        path: ':projectId',
+      Route(ProjectsLayout, {
+        path: 'projects',
         children: [
-          Route(DashboardLazy, { index: true } as const),
-          Route(ReportsLayout, {
-            path: 'reports',
+          Route(Project, {
+            path: ':projectId',
             children: [
-              Route(ReportsList, { index: true } as const),
-              Route(SnapshotIdLazy, { path: ':snapshotId' } as const)
-            ]
-          } as const),
-          Route(TestSuitesLayout, {
-            path: 'test-suites',
-            children: [
-              Route(TestSuitesList, { index: true } as const),
-              Route(SnapshotIdLazy, { path: ':snapshotId' } as const)
+              Route(DashboardLazy, { index: true } as const),
+              Route(ReportsLayout, {
+                path: 'reports',
+                children: [
+                  Route(ReportsList, { index: true } as const),
+                  Route(SnapshotIdLazy, { path: ':snapshotId' } as const)
+                ]
+              } as const),
+              Route(TestSuitesLayout, {
+                path: 'test-suites',
+                children: [
+                  Route(TestSuitesList, { index: true } as const),
+                  Route(SnapshotIdLazy, { path: ':snapshotId' } as const)
+                ]
+              } as const)
             ]
           } as const)
         ]

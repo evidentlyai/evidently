@@ -20,7 +20,7 @@ import { useSubmitFetcher } from '~/routes/hooks'
 //    ROUTE
 ///////////////////
 
-export const currentRoutePath = '/:projectId/test-suites/?index'
+export const currentRoutePath = '/projects/:projectId/test-suites/?index'
 
 type Params = GetParams<typeof currentRoutePath>
 type CurrentRoute = GetRouteByPath<typeof currentRoutePath>
@@ -39,13 +39,13 @@ export const Component = () => {
   const { projectId } = params
 
   const deleteSnapshotFetcher = useSubmitFetcher({
-    path: '/:projectId/test-suites/?index',
+    path: '/projects/:projectId/test-suites/?index',
     action: 'delete-snapshot',
     provideParams: ({ data: { projectId } }) => ({ projectId })
   })
 
   const reloadSnapshotsFetcher = useSubmitFetcher({
-    path: '/:projectId/test-suites/?index',
+    path: '/projects/:projectId/test-suites/?index',
     action: 'reload-snapshots',
     provideParams: ({ data: { projectId } }) => ({ projectId })
   })
@@ -77,7 +77,7 @@ const LinkToSnapshot = ({ snapshotId, projectId }: { snapshotId: string; project
       type='button'
       // type safe!
       disabled={disabled}
-      to={'/:projectId/test-suites/:snapshotId'}
+      to={'/projects/:projectId/test-suites/:snapshotId'}
       paramsToReplace={{ projectId, snapshotId }}
       title={'View'}
     />

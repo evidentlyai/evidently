@@ -60,7 +60,7 @@ const LinkToProject = ({ name, projectId }: { name: string; projectId: string })
     type='link'
     variant='h6'
     title={name}
-    to={'/:projectId'}
+    to={'/projects/:projectId'}
     paramsToReplace={{ projectId }}
   />
 )

@@ -23,7 +23,7 @@ import { RouterLink, useMatchRouter } from '~/routes/components'
 //    ROUTE
 ///////////////////
 
-export const currentRoutePath = '/:projectId'
+export const currentRoutePath = '/projects/:projectId'
 
 type CurrentRoute = GetRouteByPath<typeof currentRoutePath>
 type Params = GetParams<typeof currentRoutePath>
@@ -53,8 +53,8 @@ const TABS = {
 export const Component = () => {
   const { loaderData: project, params } = useCurrentRouteParams<CurrentRoute>()
 
-  const isReports = useMatchRouter({ path: '/:projectId/reports' })
-  const isTestSuites = useMatchRouter({ path: '/:projectId/test-suites' })
+  const isReports = useMatchRouter({ path: '/projects/:projectId/reports' })
+  const isTestSuites = useMatchRouter({ path: '/projects/:projectId/test-suites' })
 
   const { projectId } = params
 
@@ -82,7 +82,7 @@ export const Component = () => {
           type='tab'
           value={TABS.index}
           label={'Dashboard'}
-          to='/:projectId/?index'
+          to='/projects/:projectId/?index'
           paramsToReplace={{ projectId }}
         />
 
@@ -90,7 +90,7 @@ export const Component = () => {
           type='tab'
           value={TABS.reports}
           label={'Reports'}
-          to='/:projectId/reports'
+          to='/projects/:projectId/reports'
           paramsToReplace={{ projectId }}
         />
 
@@ -98,7 +98,7 @@ export const Component = () => {
           type='tab'
           value={TABS['test-suites']}
           label={'Test suites'}
-          to='/:projectId/test-suites'
+          to='/projects/:projectId/test-suites'
           paramsToReplace={{ projectId }}
         />
       </Tabs>

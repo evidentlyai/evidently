@@ -22,7 +22,7 @@ import { clientAPI } from '~/api'
 //    ROUTE
 ///////////////////
 
-export const currentRoutePath = '/:projectId/?index'
+export const currentRoutePath = '/projects/:projectId/?index'
 
 type CurrentRoute = GetRouteByPath<typeof currentRoutePath>
 type Params = GetParams<typeof currentRoutePath>
