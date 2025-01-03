@@ -222,7 +222,7 @@ def main():
 
     from evidently.future.metrics import MeanValue
     from evidently.future.report import Report as ReportV2
-    from evidently.future.tests import le
+    from evidently.future.tests import lte
     from evidently.ui.workspace import Workspace
 
     def create_snapshot(i):
@@ -235,7 +235,7 @@ def main():
                 }
             ),
         )
-        report = ReportV2([MeanValue(column="col", tests=[le(4)])])
+        report = ReportV2([MeanValue(column="col", tests=[lte(4)])])
         snapshot_v2 = report.run(dataset, None)
 
         snapshot_v1 = snapshot_v2_to_v1(snapshot_v2)
