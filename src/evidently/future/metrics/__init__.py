@@ -1,4 +1,5 @@
 from .base import ByLabelValue
+from .base import Metric
 from .base import MetricCalculationBase
 from .base import MetricResult
 from .base import SingleValue
@@ -24,6 +25,7 @@ from .dataset_statistics import RowCount
 from .presets import MetricPreset
 
 __all__ = [
+    "Metric",
     # base classes
     "ByLabelValue",
     "MetricCalculationBase",

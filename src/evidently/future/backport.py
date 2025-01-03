@@ -28,7 +28,6 @@ from evidently.future.report import Snapshot as SnapshotV2
 from evidently.metric_results import Label
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options.base import Options
-from evidently.pydantic_utils import BaseModel
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.suite.base_suite import ContextPayload
@@ -91,13 +90,6 @@ def metric_result_v2_to_v1(metric_result: MetricResultV2) -> MetricResultV1:
     raise NotImplementedError(metric_result.__class__.__name__)
 
 
-class MetricV2Config(BaseModel):
-    metric_id: str
-
-    def __hash__(self):
-        return self.metric_id.__hash__()
-
-
 class MetricV2Adapter(MetricV1[MetricResultV2Adapter]):
     class Config:
         type_alias = "evidently:metric:MetricV2Adapter"
@@ -107,10 +99,6 @@ class MetricV2Adapter(MetricV1[MetricResultV2Adapter]):
     def calculate(self, data: InputData) -> MetricResultV2Adapter:
         pass
 
-    @property
-    def metric_id(self):
-        return self.metric.metric_id or str(new_id())
-
 
 @default_renderer(MetricV2Adapter)
 class MetricV2AdapterRenderer(MetricRenderer):
@@ -119,7 +107,7 @@ class MetricV2AdapterRenderer(MetricRenderer):
 
 
 def metric_v2_to_v1(metric: MetricV2) -> MetricV1:
-    return MetricV2Adapter(metric=MetricV2Config(metric_id=metric.id))
+    return MetricV2Adapter(metric=metric)
 
 
 def snapshot_v2_to_v1(snapshot: SnapshotV2) -> SnapshotV1:
@@ -234,7 +222,7 @@ def main():
 
     from evidently.future.metrics import MeanValue
     from evidently.future.report import Report as ReportV2
-    from evidently.future.tests import lte
+    from evidently.future.tests import le
     from evidently.ui.workspace import Workspace
 
     def create_snapshot(i):
@@ -247,7 +235,7 @@ def main():
                 }
             ),
         )
-        report = ReportV2([MeanValue(column="col", tests=[lte(4)])])
+        report = ReportV2([MeanValue(column="col", tests=[le(4)])])
         snapshot_v2 = report.run(dataset, None)
 
         snapshot_v1 = snapshot_v2_to_v1(snapshot_v2)
