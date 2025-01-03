@@ -1,5 +1,9 @@
 import { expectJsonRequest } from '~/api/utils'
-import { GenericErrorBoundary, handleActionFetchersErrors } from '~/router-utils/components/Error'
+import {
+  GenericErrorBoundary,
+  handleFetchersActionErrors,
+  handleSubmitActionErrors
+} from '~/router-utils/components/Error'
 import type { ActionArgs, RouteExtended, loadDataArgs } from '~/router-utils/types'
 import type {
   ActionFunction,
@@ -52,6 +56,7 @@ export const decorateAllRoutes = (
     return {
       ...r,
       lazy: (() => r.lazy?.().then(decorateAllRoutes)) as LazyRouteFunction<RouteObject>,
+      Component: r.Component ? handleSubmitActionErrors(r.Component) : undefined,
       loader: r.loadData ? replaceloadData(r.loadData) : undefined,
       action: r.actions ? replaceActions(r.actions) : undefined,
       ErrorBoundary: r.ErrorBoundary ? r.ErrorBoundary : ErrorBoundary,
@@ -61,6 +66,7 @@ export const decorateAllRoutes = (
 
   return {
     ...r,
+    Component: r.Component ? handleSubmitActionErrors(r.Component) : undefined,
     loader: r.loadData ? replaceloadData(r.loadData) : undefined,
     action: r.actions ? replaceActions(r.actions) : undefined,
     ErrorBoundary: r.ErrorBoundary ? r.ErrorBoundary : ErrorBoundary,
@@ -77,14 +83,22 @@ export const decorateTopLevelRoutes = (r: RouteExtended): RouteExtended => {
   }
 
   if (r.Component) {
-    return { ...r, ...handleActionFetchersErrors({ Component: r.Component }) }
+    return { ...r, ...handleFetchersActionErrors({ Component: r.Component }) }
   }
 
   return r
 }
 
-export const replaceParamsInLink = (paramsToReplace: Record<string, string>, path: string) => {
-  const result = path
+export const makeRouteUrl = ({
+  path,
+  paramsToReplace,
+  query
+}: {
+  paramsToReplace: Record<string, string>
+  path: string
+  query?: Record<string, string | undefined>
+}) => {
+  const pathWithReplacedParams = path
     .split('/')
     .map((part) => {
       if (part.startsWith(':')) {
@@ -97,6 +111,17 @@ export const replaceParamsInLink = (paramsToReplace: Record<string, string>, pat
       return part
     })
     .join('/')
+
+  const searchParams =
+    query &&
+    new URLSearchParams(
+      Object.fromEntries(Object.entries(query).filter(([_, v]) => Boolean(v))) as Record<
+        string,
+        string
+      >
+    )
+
+  const result = [pathWithReplacedParams, searchParams].filter(Boolean).join('?')
 
   return result
 }

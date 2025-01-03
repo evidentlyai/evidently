@@ -1,5 +1,6 @@
 import { useCallback, useMemo } from 'react'
 import type { GetParams, MatchAny, MatchWithAction, MatchWithLoader } from '~/router-utils/types'
+import { makeRouteUrl } from '~/router-utils/utils'
 import {
   type SubmitOptions,
   useActionData,
@@ -8,7 +9,6 @@ import {
   useSubmit
 } from '~/shared-dependencies/react-router-dom'
 import { REST_PARAMS_FOR_FETCHER_SUBMIT } from '~/utils/index'
-import { replaceParamsInLink } from './utils'
 
 export const useSubmitFetcherGeneral = <M extends MatchWithAction, K extends keyof M['action']>({
   action,
@@ -30,7 +30,7 @@ export const useSubmitFetcherGeneral = <M extends MatchWithAction, K extends key
         // @ts-ignore
         { data, action },
         {
-          action: replaceParamsInLink(params, path),
+          action: makeRouteUrl({ paramsToReplace: params, path }),
           ...REST_PARAMS_FOR_FETCHER_SUBMIT
         }
       )
@@ -87,7 +87,7 @@ export const useSubmitGeneral = <M extends MatchWithAction, K extends keyof M['a
         // @ts-ignore
         { data, action },
         {
-          action: replaceParamsInLink(params, path),
+          action: makeRouteUrl({ paramsToReplace: params, path }),
           ...submitOptions,
           ...REST_PARAMS_FOR_FETCHER_SUBMIT
         }
@@ -122,9 +122,8 @@ export const useLoaderGeneral = <M extends MatchWithLoader>(path: M['path']) => 
   const originalFetcher = useFetcher<M['loader']['returnType']>()
 
   const load = useCallback(
-    ({ params }: { params: GetParams<M['path']> }) => {
-      originalFetcher.load(replaceParamsInLink(params, path))
-    },
+    ({ params, query }: { params: GetParams<M['path']>; query?: M['loader']['query'] }) =>
+      originalFetcher.load(makeRouteUrl({ paramsToReplace: params, path, query: query })),
     [originalFetcher, path]
   )
 

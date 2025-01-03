@@ -128,12 +128,23 @@ export const FetchersErrorSnackbar = () => {
 }
 
 // use this only on top level routes
-export const handleActionFetchersErrors = ({ Component }: { Component: React.ComponentType }) => ({
+export const handleFetchersActionErrors = ({ Component }: { Component: React.ComponentType }) => ({
   Component: () => (
     <>
-      <ActionsErrorSnackbar />
       <FetchersErrorSnackbar />
       <Component />
     </>
   )
 })
+
+// use this on every route
+export const handleSubmitActionErrors = (OriginalComponent: React.ComponentType) => {
+  const Component = () => (
+    <>
+      <ActionsErrorSnackbar />
+      <OriginalComponent />
+    </>
+  )
+
+  return Component
+}

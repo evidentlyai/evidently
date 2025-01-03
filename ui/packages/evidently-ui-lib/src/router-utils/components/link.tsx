@@ -9,7 +9,7 @@ import {
 } from '@mui/material'
 import { Link as ReactRouterLink } from 'react-router-dom'
 import type { GetParams, MatchAny, MatchWithLoader } from 'router-utils/types'
-import { replaceParamsInLink } from 'router-utils/utils'
+import { makeRouteUrl } from 'router-utils/utils'
 
 export type RouterLinkTemplateComponentProps =
   | ({
@@ -81,15 +81,7 @@ export const CreateRouterLinkComponent = <M extends MatchAny>() => {
     paramsToReplace: GetParams<K>
     query?: M extends MatchWithLoader ? M['loader']['query'] : undefined
   }) => {
-    const searchParams =
-      query &&
-      new URLSearchParams(
-        Object.fromEntries(Object.entries(query).filter(([_, v]) => v)) as Record<string, string>
-      )
-
-    const toActual = [replaceParamsInLink(paramsToReplace, to), searchParams]
-      .filter(Boolean)
-      .join('?')
+    const toActual = makeRouteUrl({ paramsToReplace, query, path: to })
 
     return <RouterLinkTemplate {...props} to={toActual} />
   }
