@@ -270,7 +270,7 @@ class ValueDriftCalculation(SingleValueCalculation[ValueDrift]):
             current_data=current_data.as_dataframe(),
             reference_data=reference_data.as_dataframe(),
             column_name=column,
-            options=DataDriftOptions(all_features_stattest=column),
+            options=DataDriftOptions(all_features_stattest=self.metric.method),
             dataset_columns=DatasetColumns(
                 utility_columns=DatasetUtilityColumns(),
                 num_feature_names=[column] if column_type == ColumnType.Numerical else [],

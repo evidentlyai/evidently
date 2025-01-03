@@ -310,7 +310,7 @@ class MetricTest(AutoAliasMixin, EvidentlyBaseModel, Generic[TTest]):
         raise NotImplementedError
 
 
-TCalculation = TypeVar("TCalculation", bound="Metric")
+TCalculation = TypeVar("TCalculation", bound="MetricCalculation")
 
 
 class Metric(AutoAliasMixin, EvidentlyBaseModel, Generic[TCalculation]):
@@ -354,6 +354,9 @@ class Metric(AutoAliasMixin, EvidentlyBaseModel, Generic[TCalculation]):
         """
         return None
 
+    def call(self, context: "Context"):
+        return self.to_calculation().call(context)
+
 
 TMetric = TypeVar("TMetric", bound=Metric)
 
@@ -396,11 +399,14 @@ class SingleValueCalculation(MetricCalculation[SingleValue, TSingleValueMetric],
 
 
 class ByLabelMetric(Metric["ByLabelCalculation"]):
-    tests: List[MetricTest[SingleValue]] = []
+    tests: typing.Dict[Label, List[MetricTest[SingleValue]]] = {}
 
-    def get_tests(self, value: SingleValue) -> Generator[MetricTestResult, None, None]:
-        # todo: do not call to_metric here
-        yield from (t.to_test()(self.to_calculation(), value) for t in self.tests)
+    def get_tests(self, value: ByLabelValue) -> Generator[MetricTestResult, None, None]:
+        for label, tests in self.tests.items():
+            label_value = value.get_label_result(label)
+            for test in tests:
+                # todo: do not call to_calculation here
+                yield test.to_test()(self.to_calculation(), label_value)
 
 
 TByLabelMetric = TypeVar("TByLabelMetric", bound=ByLabelMetric)
@@ -417,8 +423,8 @@ class CountMetric(Metric["CountCalculation"]):
 
     def get_tests(self, value: CountValue) -> Generator[MetricTestResult, None, None]:
         # todo: do not call to_metric here
-        yield from (t.to_test()(self.to_calculation(), value) for t in self.count_tests)
-        yield from (t.to_test()(self.to_calculation(), value) for t in self.share_tests)
+        yield from (t.to_test()(self.to_calculation(), value.get_count()) for t in self.count_tests)
+        yield from (t.to_test()(self.to_calculation(), value.get_share()) for t in self.share_tests)
 
 
 TCountMetric = TypeVar("TCountMetric", bound=CountMetric)
