@@ -4,6 +4,11 @@ from .base import MetricCalculationBase
 from .base import MetricResult
 from .base import SingleValue
 from .base import SingleValueTest
+from .classification import ClassificationQualityByClass
+from .classification import F1ByLabel
+from .classification import PrecisionByLabel
+from .classification import RecallByLabel
+from .classification import RocAucByLabel
 from .column_statistics import MaxValue
 from .column_statistics import MeanValue
 from .column_statistics import MedianValue
@@ -53,4 +58,10 @@ __all__ = [
     "ConstantColumnsCount",
     "EmptyRowsCount",
     "EmptyColumnsCount",
+    # classification
+    "F1ByLabel",
+    "PrecisionByLabel",
+    "RecallByLabel",
+    "RocAucByLabel",
+    "ClassificationQualityByClass",
 ]
