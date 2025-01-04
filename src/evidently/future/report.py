@@ -26,6 +26,7 @@ from evidently.future.metric_types import render_widgets
 from evidently.future.preset_types import MetricPreset
 from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import DEFAULT_RENDERERS
+from evidently.suite.base_suite import _discover_dependencies
 from evidently.suite.base_suite import find_metric_renderer
 
 TResultType = TypeVar("TResultType", bound=MetricResult)
@@ -97,19 +98,24 @@ class Context:
         return self._metrics_graph[metric]["_self"]
 
     def get_legacy_metric(self, metric: LegacyMetric[T]) -> Tuple[T, List[BaseWidgetInfo]]:
+        input_data = InputData(
+            self._input_data[1].as_dataframe() if self._input_data[1] is not None else None,
+            self._input_data[0].as_dataframe(),
+            ColumnMapping(),
+            None,
+            {},
+            None,
+            None,
+        )
+        for _, obj in _discover_dependencies(metric):
+            dep_fp = obj.get_fingerprint()
+            if dep_fp not in self._legacy_metrics:
+                result = obj.calculate(input_data)
+                object.__setattr__(obj, "get_result", lambda: result)
+                self._legacy_metrics[obj.get_fingerprint()] = (result, [])
         fp = metric.get_fingerprint()
         if fp not in self._legacy_metrics:
-            result = metric.calculate(
-                InputData(
-                    self._input_data[1].as_dataframe() if self._input_data[1] is not None else None,
-                    self._input_data[0].as_dataframe(),
-                    ColumnMapping(),
-                    None,
-                    {},
-                    None,
-                    None,
-                )
-            )
+            result = metric.calculate(input_data)
             renderer = find_metric_renderer(type(metric), DEFAULT_RENDERERS)
             object.__setattr__(metric, "get_result", lambda: result)
             self._legacy_metrics[fp] = (result, renderer.render_html(metric))

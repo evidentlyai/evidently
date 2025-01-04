@@ -1,6 +1,14 @@
+from .classification import FNR
+from .classification import FPR
+from .classification import TNR
+from .classification import TPR
+from .classification import Accuracy
 from .classification import ClassificationQualityByClass
 from .classification import F1ByLabel
+from .classification import F1Score
+from .classification import Precision
 from .classification import PrecisionByLabel
+from .classification import Recall
 from .classification import RecallByLabel
 from .classification import RocAucByLabel
 from .column_statistics import MaxValue
@@ -42,6 +50,14 @@ __all__ = [
     "EmptyRowsCount",
     "EmptyColumnsCount",
     # classification
+    "F1Score",
+    "Accuracy",
+    "Precision",
+    "Recall",
+    "TPR",
+    "TNR",
+    "FPR",
+    "FNR",
     "F1ByLabel",
     "PrecisionByLabel",
     "RecallByLabel",
