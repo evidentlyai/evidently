@@ -5,9 +5,9 @@ from typing import Dict
 from typing import List
 from typing import Optional
 
-from evidently.future.metrics import MetricResult
-from evidently.future.metrics.base import Metric
-from evidently.future.metrics.base import MetricId
+from evidently.future.metric_types import Metric
+from evidently.future.metric_types import MetricId
+from evidently.future.metric_types import MetricResult
 from evidently.model.widget import BaseWidgetInfo
 
 if typing.TYPE_CHECKING:

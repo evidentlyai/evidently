@@ -15,15 +15,15 @@ from evidently.core import new_id
 from evidently.future.datasets import ColumnInfo
 from evidently.future.datasets import DataDefinition
 from evidently.future.datasets import Dataset
-from evidently.future.metrics import ByLabelValue
-from evidently.future.metrics import MetricResult as MetricResultV2
-from evidently.future.metrics import SingleValue
-from evidently.future.metrics.base import CountValue
-from evidently.future.metrics.base import Metric as MetricV2
-from evidently.future.metrics.base import MetricTest
-from evidently.future.metrics.base import MetricTest as TestV2
-from evidently.future.metrics.base import MetricTestResult
-from evidently.future.metrics.base import TResult
+from evidently.future.metric_types import ByLabelValue
+from evidently.future.metric_types import CountValue
+from evidently.future.metric_types import Metric as MetricV2
+from evidently.future.metric_types import MetricResult as MetricResultV2
+from evidently.future.metric_types import MetricTest
+from evidently.future.metric_types import MetricTest as TestV2
+from evidently.future.metric_types import MetricTestResult
+from evidently.future.metric_types import SingleValue
+from evidently.future.metric_types import TResult
 from evidently.future.report import Snapshot as SnapshotV2
 from evidently.metric_results import Label
 from evidently.model.widget import BaseWidgetInfo

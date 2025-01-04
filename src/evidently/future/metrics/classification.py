@@ -3,16 +3,18 @@ from typing import Dict
 from typing import List
 from typing import Optional
 
+from typing_extensions import Generic
+
 from evidently.future.datasets import Dataset
-from evidently.future.metrics import ByLabelValue
-from evidently.future.metrics import MetricPreset
-from evidently.future.metrics import MetricResult
+from evidently.future.metric_types import ByLabelMetric
+from evidently.future.metric_types import ByLabelValue
+from evidently.future.metric_types import Metric
+from evidently.future.metric_types import MetricId
+from evidently.future.metric_types import MetricResult
+from evidently.future.metric_types import TMetric
 from evidently.future.metrics._legacy import LegacyMetricCalculation
-from evidently.future.metrics.base import ByLabelMetric
-from evidently.future.metrics.base import Metric
-from evidently.future.metrics.base import MetricId
-from evidently.future.metrics.base import TResult
-from evidently.future.metrics.presets import PresetResult
+from evidently.future.preset_types import MetricPreset
+from evidently.future.preset_types import PresetResult
 from evidently.future.report import Context
 from evidently.metrics import ClassificationQualityByClass as _ClassificationQualityByClass
 from evidently.metrics.classification_performance.quality_by_class_metric import ClassificationQualityByClassResult
@@ -25,7 +27,8 @@ class F1ByLabel(ByLabelMetric):
 
 
 class LegacyClassificationQualityByClass(
-    LegacyMetricCalculation[ByLabelValue, F1ByLabel, ClassificationQualityByClassResult, _ClassificationQualityByClass],
+    LegacyMetricCalculation[ByLabelValue, TMetric, ClassificationQualityByClassResult, _ClassificationQualityByClass],
+    Generic[TMetric],
     abc.ABC,
 ):
     _legacy_metric = None
@@ -35,7 +38,7 @@ class LegacyClassificationQualityByClass(
             self._legacy_metric = _ClassificationQualityByClass(self.metric.probas_threshold, self.metric.k)
         return self._legacy_metric
 
-    def calculate(self, current_data: Dataset, reference_data: Optional[Dataset]) -> TResult:
+    def calculate(self, current_data: Dataset, reference_data: Optional[Dataset]) -> ByLabelValue:
         raise NotImplementedError()
 
     def calculate_value(
@@ -47,7 +50,7 @@ class LegacyClassificationQualityByClass(
         raise NotImplementedError()
 
 
-class F1ByLabelCalculation(LegacyClassificationQualityByClass):
+class F1ByLabelCalculation(LegacyClassificationQualityByClass[F1ByLabel]):
     def calculate_value(
         self,
         context: "Context",
@@ -65,7 +68,7 @@ class PrecisionByLabel(ByLabelMetric):
     k: Optional[int] = None
 
 
-class PrecisionByLabelCalculation(LegacyClassificationQualityByClass):
+class PrecisionByLabelCalculation(LegacyClassificationQualityByClass[PrecisionByLabel]):
     def calculate_value(
         self,
         context: "Context",
@@ -85,7 +88,7 @@ class RecallByLabel(ByLabelMetric):
     k: Optional[int] = None
 
 
-class RecallByLabelCalculation(LegacyClassificationQualityByClass):
+class RecallByLabelCalculation(LegacyClassificationQualityByClass[RecallByLabel]):
     def calculate_value(
         self,
         context: "Context",
@@ -105,7 +108,7 @@ class RocAucByLabel(ByLabelMetric):
     k: Optional[int] = None
 
 
-class RocAucByLabelCalculation(LegacyClassificationQualityByClass):
+class RocAucByLabelCalculation(LegacyClassificationQualityByClass[RocAucByLabel]):
     def calculate_value(
         self,
         context: "Context",

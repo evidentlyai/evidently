@@ -8,9 +8,9 @@ from typing import TypeVar
 from evidently.base_metric import Metric as LegacyMetric
 from evidently.base_metric import MetricResult as LegacyMetricResult
 from evidently.future.datasets import Dataset
-from evidently.future.metrics.base import MetricCalculation
-from evidently.future.metrics.base import TMetric
-from evidently.future.metrics.base import TResult
+from evidently.future.metric_types import MetricCalculation
+from evidently.future.metric_types import TMetric
+from evidently.future.metric_types import TResult
 from evidently.model.widget import BaseWidgetInfo
 
 if typing.TYPE_CHECKING:

@@ -1,11 +1,11 @@
 from typing import List
 from typing import Union
 
-from evidently.future.metrics import MetricCalculationBase
-from evidently.future.metrics import SingleValue
-from evidently.future.metrics import SingleValueTest
-from evidently.future.metrics.base import MetricTest
-from evidently.future.metrics.base import MetricTestResult
+from evidently.future.metric_types import MetricCalculationBase
+from evidently.future.metric_types import MetricTest
+from evidently.future.metric_types import MetricTestResult
+from evidently.future.metric_types import SingleValue
+from evidently.future.metric_types import SingleValueTest
 from evidently.tests.base_test import TestStatus
 
 

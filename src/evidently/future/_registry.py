@@ -1,11 +1,11 @@
-from evidently.future.metrics.base import Metric
-from evidently.future.metrics.base import MetricTest
+from evidently.future.metric_types import Metric
+from evidently.future.metric_types import MetricTest
 from evidently.pydantic_utils import register_type_alias
 
 register_type_alias(Metric, "evidently.future.backport.TestsConfig", "evidently:metric_v2:TestsConfig")
-register_type_alias(Metric, "evidently.future.metrics.base.ByLabelMetric", "evidently:metric_v2:ByLabelMetric")
-register_type_alias(Metric, "evidently.future.metrics.base.CountMetric", "evidently:metric_v2:CountMetric")
-register_type_alias(Metric, "evidently.future.metrics.base.SingleValueMetric", "evidently:metric_v2:SingleValueMetric")
+register_type_alias(Metric, "evidently.future.metric_types.ByLabelMetric", "evidently:metric_v2:ByLabelMetric")
+register_type_alias(Metric, "evidently.future.metric_types.CountMetric", "evidently:metric_v2:CountMetric")
+register_type_alias(Metric, "evidently.future.metric_types.SingleValueMetric", "evidently:metric_v2:SingleValueMetric")
 register_type_alias(
     Metric, "evidently.future.metrics.column_statistics.CategoryCount", "evidently:metric_v2:CategoryCount"
 )

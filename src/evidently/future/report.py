@@ -9,25 +9,24 @@ from typing import Tuple
 from typing import TypeVar
 from typing import Union
 
+from evidently import ColumnMapping
+from evidently import ColumnType
+from evidently.base_metric import InputData
 from evidently.base_metric import Metric as LegacyMetric
 from evidently.base_metric import MetricResult as LegacyMetricResult
-
-from .. import ColumnMapping
-from .. import ColumnType
-from ..base_metric import InputData
-from ..model.widget import BaseWidgetInfo
-from ..renderers.base_renderer import DEFAULT_RENDERERS
-from ..suite.base_suite import find_metric_renderer
-from .datasets import Dataset
-from .datasets import DatasetColumn
-from .metrics import MetricCalculationBase
-from .metrics import MetricContainer
-from .metrics import MetricPreset
-from .metrics import MetricResult
-from .metrics.base import Metric
-from .metrics.base import MetricId
-from .metrics.base import metric_tests_widget
-from .metrics.base import render_widgets
+from evidently.future.container import MetricContainer
+from evidently.future.datasets import Dataset
+from evidently.future.datasets import DatasetColumn
+from evidently.future.metric_types import Metric
+from evidently.future.metric_types import MetricCalculationBase
+from evidently.future.metric_types import MetricId
+from evidently.future.metric_types import MetricResult
+from evidently.future.metric_types import metric_tests_widget
+from evidently.future.metric_types import render_widgets
+from evidently.future.preset_types import MetricPreset
+from evidently.model.widget import BaseWidgetInfo
+from evidently.renderers.base_renderer import DEFAULT_RENDERERS
+from evidently.suite.base_suite import find_metric_renderer
 
 TResultType = TypeVar("TResultType", bound=MetricResult)
 T = TypeVar("T", bound=LegacyMetricResult)

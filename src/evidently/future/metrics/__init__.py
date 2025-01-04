@@ -1,9 +1,3 @@
-from .base import ByLabelValue
-from .base import Metric
-from .base import MetricCalculationBase
-from .base import MetricResult
-from .base import SingleValue
-from .base import SingleValueTest
 from .classification import ClassificationQualityByClass
 from .classification import F1ByLabel
 from .classification import PrecisionByLabel
@@ -16,7 +10,6 @@ from .column_statistics import MinValue
 from .column_statistics import QuantileValue
 from .column_statistics import StdValue
 from .column_statistics import ValueDrift
-from .container import MetricContainer
 from .dataset_statistics import AlmostConstantColumnsCount
 from .dataset_statistics import AlmostDuplicatedColumnsCount
 from .dataset_statistics import ColumnCount
@@ -27,18 +20,8 @@ from .dataset_statistics import DuplicatedRowCount
 from .dataset_statistics import EmptyColumnsCount
 from .dataset_statistics import EmptyRowsCount
 from .dataset_statistics import RowCount
-from .presets import MetricPreset
 
 __all__ = [
-    "Metric",
-    # base classes
-    "ByLabelValue",
-    "MetricCalculationBase",
-    "MetricContainer",
-    "MetricPreset",
-    "MetricResult",
-    "SingleValue",
-    "SingleValueTest",
     # column statistics metrics
     "ValueDrift",
     "MaxValue",

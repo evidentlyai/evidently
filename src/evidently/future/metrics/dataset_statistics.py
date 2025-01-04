@@ -8,13 +8,13 @@ from typing import TypeVar
 from evidently import ColumnType
 from evidently.base_metric import MetricResult as LegacyMetricResult
 from evidently.future.datasets import Dataset
+from evidently.future.metric_types import SingleValue
+from evidently.future.metric_types import SingleValueCalculation
+from evidently.future.metric_types import SingleValueMetric
+from evidently.future.metric_types import TMetric
+from evidently.future.metric_types import TResult
 from evidently.future.metrics._legacy import LegacyMetricCalculation
 from evidently.future.metrics._legacy import TLegacyMetric
-from evidently.future.metrics.base import SingleValue
-from evidently.future.metrics.base import SingleValueCalculation
-from evidently.future.metrics.base import SingleValueMetric
-from evidently.future.metrics.base import TMetric
-from evidently.future.metrics.base import TResult
 from evidently.metrics import DatasetSummaryMetric
 from evidently.metrics.data_integrity.dataset_summary_metric import DatasetSummaryMetricResult
 from evidently.model.widget import BaseWidgetInfo

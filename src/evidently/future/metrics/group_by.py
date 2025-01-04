@@ -2,12 +2,12 @@ from typing import Generator
 from typing import List
 from typing import Optional
 
+from evidently.future.container import MetricContainer
 from evidently.future.datasets import Dataset
-from evidently.future.metrics.base import Metric
-from evidently.future.metrics.base import MetricCalculation
-from evidently.future.metrics.base import MetricTestResult
-from evidently.future.metrics.base import TResult
-from evidently.future.metrics.container import MetricContainer
+from evidently.future.metric_types import Metric
+from evidently.future.metric_types import MetricCalculation
+from evidently.future.metric_types import MetricTestResult
+from evidently.future.metric_types import TResult
 from evidently.future.report import Context
 
 

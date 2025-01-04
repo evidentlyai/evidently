@@ -3,10 +3,10 @@ import dataclasses
 from typing import Dict
 from typing import List
 
-from evidently.future.metrics.base import Metric
-from evidently.future.metrics.base import MetricId
-from evidently.future.metrics.base import MetricResult
-from evidently.future.metrics.base import render_widgets
+from evidently.future.metric_types import Metric
+from evidently.future.metric_types import MetricId
+from evidently.future.metric_types import MetricResult
+from evidently.future.metric_types import render_widgets
 from evidently.model.widget import BaseWidgetInfo
 
 

@@ -1,14 +1,14 @@
 from typing import List
 
 from evidently import ColumnType
+from evidently.future.container import MetricContainer
+from evidently.future.metric_types import Metric
 from evidently.future.metrics import MaxValue
 from evidently.future.metrics import MeanValue
-from evidently.future.metrics import MetricContainer
 from evidently.future.metrics import MinValue
 from evidently.future.metrics import QuantileValue
 from evidently.future.metrics import RowCount
 from evidently.future.metrics import StdValue
-from evidently.future.metrics.base import Metric
 from evidently.future.metrics.column_statistics import MissingValueCount
 from evidently.future.report import Context
 

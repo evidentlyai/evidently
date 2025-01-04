@@ -3,13 +3,13 @@ from typing import ClassVar
 from typing import Optional
 from typing import Union
 
-from ..metrics import MetricCalculationBase
-from ..metrics.base import MetricTest
-from ..metrics.base import MetricTestResult
-from ..metrics.base import SingleValue
-from ..metrics.base import SingleValueTest
-from ..metrics.base import TestStatus
-from ..metrics.base import Value
+from evidently.future.metric_types import MetricCalculationBase
+from evidently.future.metric_types import MetricTest
+from evidently.future.metric_types import MetricTestResult
+from evidently.future.metric_types import SingleValue
+from evidently.future.metric_types import SingleValueTest
+from evidently.future.metric_types import TestStatus
+from evidently.future.metric_types import Value
 
 
 class ComparisonTest(MetricTest[SingleValueTest]):

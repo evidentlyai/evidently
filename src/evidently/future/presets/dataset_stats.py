@@ -2,13 +2,13 @@ from typing import Dict
 from typing import List
 
 from evidently import ColumnType
+from evidently.future.container import MetricContainer
+from evidently.future.metric_types import Metric
+from evidently.future.metric_types import MetricId
+from evidently.future.metric_types import MetricResult
 from evidently.future.metrics import ColumnCount
 from evidently.future.metrics import DuplicatedRowCount
-from evidently.future.metrics import MetricContainer
-from evidently.future.metrics import MetricResult
 from evidently.future.metrics import RowCount
-from evidently.future.metrics.base import Metric
-from evidently.future.metrics.base import MetricId
 from evidently.future.metrics.dataset_statistics import AlmostConstantColumnsCount
 from evidently.future.metrics.dataset_statistics import AlmostDuplicatedColumnsCount
 from evidently.future.metrics.dataset_statistics import ConstantColumnsCount
