@@ -8,11 +8,12 @@ from typing import TypeVar
 from evidently import ColumnType
 from evidently.base_metric import MetricResult as LegacyMetricResult
 from evidently.future.datasets import Dataset
-from evidently.future.metrics._legacy import LegacyBasedMetric
 from evidently.future.metrics._legacy import LegacyMetricCalculation
+from evidently.future.metrics._legacy import TLegacyMetric
 from evidently.future.metrics.base import SingleValue
 from evidently.future.metrics.base import SingleValueCalculation
 from evidently.future.metrics.base import SingleValueMetric
+from evidently.future.metrics.base import TMetric
 from evidently.future.metrics.base import TResult
 from evidently.metrics import DatasetSummaryMetric
 from evidently.metrics.data_integrity.dataset_summary_metric import DatasetSummaryMetricResult
@@ -60,25 +61,20 @@ class ColumnCountCalculation(SingleValueCalculation[ColumnCount]):
 TLegacyResult = TypeVar("TLegacyResult", bound=LegacyMetricResult)
 
 
-class DatasetSummaryBasedMetric(
-    LegacyBasedMetric[TResult, DatasetSummaryMetric, DatasetSummaryMetricResult], Generic[TResult], abc.ABC
-):
-    def _get_legacy_metric(self) -> DatasetSummaryMetric:
-        return DatasetSummaryMetric()
-
-
-TDatasetSummaryBasedMetric = TypeVar("TDatasetSummaryBasedMetric", bound=DatasetSummaryBasedMetric)
-
-
 class DatasetSummaryBasedMetricCalculation(
-    LegacyMetricCalculation[TResult, DatasetSummaryMetric, DatasetSummaryMetricResult, TDatasetSummaryBasedMetric],
-    Generic[TResult, TDatasetSummaryBasedMetric],
+    LegacyMetricCalculation[TResult, TMetric, DatasetSummaryMetricResult, DatasetSummaryMetric],
+    Generic[TResult, TMetric],
     abc.ABC,
 ):
-    pass
+    _legacy_metric: Optional[TLegacyMetric] = None
+
+    def legacy_metric(self) -> DatasetSummaryMetric:
+        if self._legacy_metric is None:
+            self._legacy_metric = DatasetSummaryMetric()
+        return self._legacy_metric
 
 
-class DuplicatedRowCount(DatasetSummaryBasedMetric[SingleValue]):
+class DuplicatedRowCount(SingleValueMetric):
     pass
 
 
@@ -96,7 +92,7 @@ class DuplicatedRowCountCalculation(DatasetSummaryBasedMetricCalculation[SingleV
         return "Duplicated row count in dataset"
 
 
-class DuplicatedColumnsCount(DatasetSummaryBasedMetric[SingleValue]):
+class DuplicatedColumnsCount(SingleValueMetric):
     pass
 
 
@@ -114,7 +110,7 @@ class DuplicatedColumnsCountCalculation(DatasetSummaryBasedMetricCalculation[Sin
         return "Duplicated column count in dataset"
 
 
-class AlmostDuplicatedColumnsCount(DatasetSummaryBasedMetric[SingleValue]):
+class AlmostDuplicatedColumnsCount(SingleValueMetric):
     pass
 
 
@@ -131,10 +127,10 @@ class AlmostDuplicatedColumnsCountCalculation(
         return SingleValue(value)
 
     def display_name(self) -> str:
-        return f"Almost duplicated column count in dataset (eps={self.legacy_metric.almost_duplicated_threshold})"
+        return f"Almost duplicated column count in dataset (eps={self.legacy_metric().almost_duplicated_threshold})"
 
 
-class AlmostConstantColumnsCount(DatasetSummaryBasedMetric[SingleValue]):
+class AlmostConstantColumnsCount(SingleValueMetric):
     pass
 
 
@@ -151,10 +147,10 @@ class AlmostConstantColumnsCountCalculation(
         return SingleValue(value)
 
     def display_name(self) -> str:
-        return f"Almost constant column count in dataset (eps={self.legacy_metric.almost_constant_threshold})"
+        return f"Almost constant column count in dataset (eps={self.legacy_metric().almost_constant_threshold})"
 
 
-class EmptyRowsCount(DatasetSummaryBasedMetric[SingleValue]):
+class EmptyRowsCount(SingleValueMetric):
     pass
 
 
@@ -172,7 +168,7 @@ class EmptyRowsCountCalculation(DatasetSummaryBasedMetricCalculation[SingleValue
         return "Count of empty rows in dataset"
 
 
-class EmptyColumnsCount(DatasetSummaryBasedMetric[SingleValue]):
+class EmptyColumnsCount(SingleValueMetric):
     pass
 
 
@@ -190,7 +186,7 @@ class EmptyColumnsCountCalculation(DatasetSummaryBasedMetricCalculation[SingleVa
         return "Count of empty columns in dataset"
 
 
-class ConstantColumnsCount(DatasetSummaryBasedMetric[SingleValue]):
+class ConstantColumnsCount(SingleValueMetric):
     pass
 
 
@@ -208,7 +204,7 @@ class ConstantColumnsCountCalculation(DatasetSummaryBasedMetricCalculation[Singl
         return "Count of constant columns in dataset"
 
 
-class DatasetMissingValueCount(DatasetSummaryBasedMetric[SingleValue]):
+class DatasetMissingValueCount(SingleValueMetric):
     pass
 
 
@@ -224,3 +220,7 @@ class DatasetMissingValueCountCalculation(DatasetSummaryBasedMetricCalculation[S
 
     def display_name(self) -> str:
         return "Count of missing values in dataset"
+
+
+class RowsWithMissingValuesCount:
+    pass
