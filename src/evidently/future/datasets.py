@@ -1,6 +1,8 @@
 import abc
 import dataclasses
 from abc import abstractmethod
+from dataclasses import field
+from enum import Enum
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -17,17 +19,107 @@ from evidently.options.base import Options
 from evidently.utils.types import Numeric
 
 
+class ColumnRole(Enum):
+    Unset = "Unset"
+    Target = "target"
+    Output = "output"
+    Feature = "feature"
+    Descriptor = "descriptor"
+    UserId = "user_id"
+    ItemId = "item_id"
+    Input = "input"
+    Context = "context"
+    Example = "example"
+
+
 @dataclasses.dataclass
 class ColumnInfo:
     type: ColumnType
+    role: ColumnRole = ColumnRole.Unset
+
+
+@dataclasses.dataclass
+class BinaryClassification:
+    name: str = "default"
+    target: str = "target"
+    prediction_labels: Optional[str] = None
+    prediction_probas: str = "prediction"
+    pos_label: Label = 1
+    labels: Optional[Dict[Label, str]] = None
+
+
+@dataclasses.dataclass
+class MulticlassClassification:
+    name: str = "default"
+    target: str = "target"
+    prediction: str = "prediction"
+    labels: Optional[Dict[Label, str]] = None
+
+
+Classification = Union[BinaryClassification, MulticlassClassification]
+
+
+@dataclasses.dataclass
+class Regression:
+    pass
+
+
+@dataclasses.dataclass
+class Completion:
+    pass
+
+
+@dataclasses.dataclass
+class RAG:
+    pass
+
+
+LLMDefinition = Union[Completion, RAG]
 
 
 @dataclasses.dataclass
 class DataDefinition:
-    columns: Dict[str, ColumnInfo]
+    id_column: Optional[str] = None
+    timestamp: Optional[str] = None
+    numerical_features: Optional[List[str]] = None
+    categorical_features: Optional[List[str]] = None
+    text_features: Optional[List[str]] = None
+    datetime_features: Optional[List[str]] = None
+    classifications: Optional[List[Classification]] = None
+    regressions: Optional[List[Regression]] = None
+    llm: Optional[LLMDefinition] = None
+    numerical_descriptors: List[str] = field(default_factory=list)
+    categorical_descriptors: List[str] = field(default_factory=list)
+
+    def get_numerical_features(self):
+        return (self.numerical_features or []) + (self.numerical_descriptors or [])
+
+    def get_categorical_features(self):
+        return (self.categorical_features or []) + (self.categorical_descriptors or [])
+
+    def get_text_features(self):
+        return self.text_features or []
+
+    def get_datetime_features(self):
+        return self.datetime_features or []
 
     def get_column_type(self, column_name: str) -> ColumnType:
-        return self.columns.get(column_name).type
+        if column_name in self.get_numerical_features():
+            return ColumnType.Numerical
+        if column_name in self.get_categorical_features():
+            return ColumnType.Categorical
+        if column_name in self.get_text_features():
+            return ColumnType.Text
+        if column_name in self.get_datetime_features():
+            return ColumnType.Datetime
+
+    def get_classification(self, classification_id: str) -> Classification:
+        item_list = list(filter(lambda x: x.name == classification_id, self.classifications))
+        if len(item_list) == 0:
+            raise ValueError("No classification with id {}".format(classification_id))
+        if len(item_list) > 1:
+            raise ValueError("More than one classification with id {}".format(classification_id))
+        return item_list[0]
 
 
 class DatasetColumn:
@@ -207,7 +299,7 @@ class PandasDataset(Dataset):
         return PandasDataset(self._data[self._data[column_name] == label], self._data_definition)
 
     def _generate_data_definition(self, data: pd.DataFrame) -> DataDefinition:
-        return DataDefinition(columns={column: ColumnInfo(ColumnType.Unknown) for column in data.columns})
+        raise NotImplementedError()
 
     def stats(self) -> DatasetStats:
         return self._dataset_stats
@@ -216,7 +308,10 @@ class PandasDataset(Dataset):
         self._dataset_stats.column_count += 1
         self._dataset_stats.column_stats[key] = self._collect_stats(data.type, data.data)
         self._data[key] = data.data
-        self._data_definition.columns[key] = ColumnInfo(data.type)
+        if data.type == ColumnType.Numerical:
+            self._data_definition.numerical_descriptors.append(key)
+        if data.type == ColumnType.Categorical:
+            self._data_definition.categorical_descriptors.append(key)
 
     def _collect_stats(self, column_type: ColumnType, data: pd.Series):
         numerical_stats = None

@@ -55,7 +55,6 @@ class Context:
     _configuration: Optional["Report"]
     _metrics: Dict[MetricId, MetricResult]
     _metrics_graph: dict
-    _data_columns: Dict[str, ContextColumnData]
     _input_data: Tuple[Dataset, Optional[Dataset]]
     _current_graph_level: dict
     _legacy_metrics: Dict[str, Tuple[object, List[BaseWidgetInfo]]]
@@ -71,13 +70,9 @@ class Context:
 
     def init_dataset(self, current_data: Dataset, reference_data: Optional[Dataset]):
         self._input_data = (current_data, reference_data)
-        self._data_columns = {
-            column_name: ContextColumnData(current_data.column(column_name))
-            for column_name, info in current_data._data_definition.columns.items()
-        }
 
     def column(self, column_name: str) -> ContextColumnData:
-        return self._data_columns[column_name]
+        return ContextColumnData(self._input_data[0].column(column_name))
 
     def calculate_metric(self, metric: MetricCalculationBase[TResultType]) -> TResultType:
         if metric.id not in self._current_graph_level:
@@ -98,10 +93,16 @@ class Context:
         return self._metrics_graph[metric]["_self"]
 
     def get_legacy_metric(self, metric: LegacyMetric[T]) -> Tuple[T, List[BaseWidgetInfo]]:
+        classification = self._input_data[0]._data_definition.get_classification("default")
         input_data = InputData(
             self._input_data[1].as_dataframe() if self._input_data[1] is not None else None,
             self._input_data[0].as_dataframe(),
-            ColumnMapping(),
+            ColumnMapping(
+                target=classification.target,
+                prediction=classification.prediction_probas,
+                pos_label=classification.pos_label,
+                target_names=classification.labels,
+            ),
             None,
             {},
             None,
