@@ -1,5 +1,6 @@
 import abc
 import typing
+from typing import Generator
 from typing import Generic
 from typing import List
 from typing import Optional
@@ -8,13 +9,13 @@ from typing import TypeVar
 from evidently import ColumnType
 from evidently.base_metric import MetricResult as LegacyMetricResult
 from evidently.future.datasets import Dataset
+from evidently.future.metric_types import MetricTestResult
 from evidently.future.metric_types import SingleValue
 from evidently.future.metric_types import SingleValueCalculation
 from evidently.future.metric_types import SingleValueMetric
 from evidently.future.metric_types import TMetric
 from evidently.future.metric_types import TResult
 from evidently.future.metrics._legacy import LegacyMetricCalculation
-from evidently.future.metrics._legacy import TLegacyMetric
 from evidently.metrics import DatasetSummaryMetric
 from evidently.metrics.data_integrity.dataset_summary_metric import DatasetSummaryMetricResult
 from evidently.model.widget import BaseWidgetInfo
@@ -65,12 +66,16 @@ class DatasetSummaryBasedMetricCalculation(
     Generic[TResult, TMetric],
     abc.ABC,
 ):
-    _legacy_metric: Optional[TLegacyMetric] = None
+    _legacy_metric: Optional[DatasetSummaryMetric] = None
 
     def legacy_metric(self) -> DatasetSummaryMetric:
         if self._legacy_metric is None:
             self._legacy_metric = DatasetSummaryMetric()
         return self._legacy_metric
+
+    def get_tests(self, value: TResult) -> Generator[MetricTestResult, None, None]:
+        return
+        yield
 
 
 class DuplicatedRowCount(SingleValueMetric):

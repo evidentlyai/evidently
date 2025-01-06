@@ -17,25 +17,32 @@ class GroupByMetric(Metric):
     column_name: str
     label: object
 
-    def get_tests(self, value: TResult) -> Generator[MetricTestResult, None, None]:
-        pass
-
 
 class GroupByMetricCalculation(MetricCalculation[TResult, GroupByMetric]):
+    _calculation: Optional[MetricCalculation] = None
+
     def calculate(self, current_data: Dataset, reference_data: Optional[Dataset]) -> TResult:
         curr = current_data.subdataset(self.metric.column_name, self.metric.label)
         ref = reference_data.subdataset(self.metric.column_name, self.metric.label) if reference_data else None
-        return self.metric.metric.to_calculation().calculate(curr, ref)
+        return self.calculation.calculate(curr, ref)
 
     def display_name(self) -> str:
-        return f"{self.metric.metric.to_calculation().display_name()} group by '{self.metric.column_name}' for label: '{self.metric.label}'"
+        return (
+            f"{self.calculation.display_name()} group by '{self.metric.column_name}' for label: '{self.metric.label}'"
+        )
 
     def get_tests(self, value: TResult) -> Generator[MetricTestResult, None, None]:
-        return self.metric.metric.get_tests(value)
+        yield from self.calculation.get_tests(value)
 
     @property
     def column_name(self) -> str:
         return self.metric.column_name
+
+    @property
+    def calculation(self) -> MetricCalculation:
+        if self._calculation is None:
+            self._calculation = self.metric.metric.to_calculation()
+        return self._calculation
 
 
 class GroupBy(MetricContainer):

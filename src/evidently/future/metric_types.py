@@ -18,6 +18,7 @@ from typing import Union
 
 import typing_inspect
 
+from evidently.future._utils import not_implemented
 from evidently.future.datasets import Dataset
 from evidently.metric_results import Label
 from evidently.model.dashboard import DashboardInfo
@@ -248,24 +249,28 @@ class MetricCalculationBase(Generic[TResult]):
         Returns:
 
         """
-        result = self._call(context)
-        if not result.is_widget_set():
-            result.widget = get_default_render(self.display_name(), result)
-        test_results = list(self.get_tests(result))
-        if test_results and len(test_results) > 0:
-            result.set_tests(test_results)
-        return result
+        try:
+            result = self._call(context)
+            if not result.is_widget_set():
+                result.widget = get_default_render(self.display_name(), result)
+            test_results = list(self.get_tests(result))
+            if test_results and len(test_results) > 0:
+                result.set_tests(test_results)
+            return result
+        except Exception as e:
+            e.add_note(f"metric_type: {type(self).__name__}")
+            raise
 
     def _call(self, context: "Context") -> TResult:
         return self.calculate(*context._input_data)
 
     @abc.abstractmethod
     def calculate(self, current_data: Dataset, reference_data: Optional[Dataset]) -> TResult:
-        raise NotImplementedError()
+        raise not_implemented(self)
 
     @abstractmethod
     def get_tests(self, value: TResult) -> Generator[MetricTestResult, None, None]:
-        raise NotImplementedError()
+        raise not_implemented(self)
 
     @property
     def id(self) -> MetricId:
@@ -273,16 +278,16 @@ class MetricCalculationBase(Generic[TResult]):
 
     @abc.abstractmethod
     def display_name(self) -> str:
-        raise NotImplementedError()
+        raise not_implemented(self)
 
     @abc.abstractmethod
     def to_metric(self) -> "Metric":
-        raise NotImplementedError()
+        raise not_implemented(self)
 
     def group_by(self, group_by: Optional[str]) -> Union["MetricCalculationBase", List["MetricCalculationBase"]]:
         if group_by is None:
             return self
-        raise NotImplementedError()
+        raise not_implemented(self)
 
 
 class AutoAliasMixin:
@@ -307,7 +312,7 @@ class MetricTest(AutoAliasMixin, EvidentlyBaseModel, Generic[TTest]):
 
     @abstractmethod
     def to_test(self) -> TTest:
-        raise NotImplementedError
+        raise not_implemented(self)
 
 
 TCalculation = TypeVar("TCalculation", bound="MetricCalculation")
@@ -399,7 +404,6 @@ TSingleValueMetric = TypeVar("TSingleValueMetric", bound=SingleValueMetric)
 
 class SingleValueCalculation(MetricCalculation[SingleValue, TSingleValueMetric], Generic[TSingleValueMetric], ABC):
     def get_tests(self, value: SingleValue) -> Generator[MetricTestResult, None, None]:
-        # todo: do not call to_metric here
         yield from (t.to_test()(self, value) for t in self.metric.tests)
 
 

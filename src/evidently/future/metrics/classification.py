@@ -1,8 +1,10 @@
 import abc
 from typing import Dict
+from typing import Generator
 from typing import Generic
 from typing import List
 from typing import Optional
+from typing import TypeVar
 
 from evidently.future.datasets import Dataset
 from evidently.future.metric_types import ByLabelMetric
@@ -10,9 +12,9 @@ from evidently.future.metric_types import ByLabelValue
 from evidently.future.metric_types import Metric
 from evidently.future.metric_types import MetricId
 from evidently.future.metric_types import MetricResult
+from evidently.future.metric_types import MetricTestResult
 from evidently.future.metric_types import SingleValue
 from evidently.future.metric_types import SingleValueMetric
-from evidently.future.metric_types import TMetric
 from evidently.future.metrics._legacy import LegacyMetricCalculation
 from evidently.future.preset_types import MetricPreset
 from evidently.future.preset_types import PresetResult
@@ -24,14 +26,28 @@ from evidently.metrics.classification_performance.quality_by_class_metric import
 from evidently.model.widget import BaseWidgetInfo
 
 
-class F1ByLabel(ByLabelMetric):
+class ClassificationQualityByLabel(ByLabelMetric):
     probas_threshold: Optional[float] = None
     k: Optional[int] = None
 
 
+class ClassificationQuality(SingleValueMetric):
+    probas_threshold: Optional[float] = None
+    k: Optional[int] = None
+
+
+TByLabelMetric = TypeVar("TByLabelMetric", bound=ClassificationQualityByLabel)
+TSingleValueMetric = TypeVar("TSingleValueMetric", bound=ClassificationQuality)
+
+
 class LegacyClassificationQualityByClass(
-    LegacyMetricCalculation[ByLabelValue, TMetric, ClassificationQualityByClassResult, _ClassificationQualityByClass],
-    Generic[TMetric],
+    LegacyMetricCalculation[
+        ByLabelValue,
+        TByLabelMetric,
+        ClassificationQualityByClassResult,
+        _ClassificationQualityByClass,
+    ],
+    Generic[TByLabelMetric],
     abc.ABC,
 ):
     _legacy_metric = None
@@ -52,6 +68,16 @@ class LegacyClassificationQualityByClass(
     ) -> ByLabelValue:
         raise NotImplementedError()
 
+    def get_tests(self, value: ByLabelValue) -> Generator[MetricTestResult, None, None]:
+        for label, tests in self.metric.tests.items():
+            label_value = value.get_label_result(label)
+            for test in tests:
+                yield test.to_test()(self, label_value)
+
+
+class F1ByLabel(ClassificationQualityByLabel):
+    pass
+
 
 class F1ByLabelCalculation(LegacyClassificationQualityByClass[F1ByLabel]):
     def calculate_value(
@@ -66,9 +92,8 @@ class F1ByLabelCalculation(LegacyClassificationQualityByClass[F1ByLabel]):
         return "F1 by Label metric"
 
 
-class PrecisionByLabel(ByLabelMetric):
-    probas_threshold: Optional[float] = None
-    k: Optional[int] = None
+class PrecisionByLabel(ClassificationQualityByLabel):
+    pass
 
 
 class PrecisionByLabelCalculation(LegacyClassificationQualityByClass[PrecisionByLabel]):
@@ -86,9 +111,8 @@ class PrecisionByLabelCalculation(LegacyClassificationQualityByClass[PrecisionBy
         return "Precision by Label metric"
 
 
-class RecallByLabel(ByLabelMetric):
-    probas_threshold: Optional[float] = None
-    k: Optional[int] = None
+class RecallByLabel(ClassificationQualityByLabel):
+    pass
 
 
 class RecallByLabelCalculation(LegacyClassificationQualityByClass[RecallByLabel]):
@@ -106,9 +130,8 @@ class RecallByLabelCalculation(LegacyClassificationQualityByClass[RecallByLabel]
         return "Recall by Label metric"
 
 
-class RocAucByLabel(ByLabelMetric):
-    probas_threshold: Optional[float] = None
-    k: Optional[int] = None
+class RocAucByLabel(ClassificationQualityByLabel):
+    pass
 
 
 class RocAucByLabelCalculation(LegacyClassificationQualityByClass[RocAucByLabel]):
@@ -148,8 +171,13 @@ class ClassificationQualityByClass(MetricPreset):
 
 
 class LegacyClassificationQuality(
-    LegacyMetricCalculation[ByLabelValue, TMetric, ClassificationQualityMetricResult, ClassificationQualityMetric],
-    Generic[TMetric],
+    LegacyMetricCalculation[
+        SingleValue,
+        TSingleValueMetric,
+        ClassificationQualityMetricResult,
+        ClassificationQualityMetric,
+    ],
+    Generic[TSingleValueMetric],
     abc.ABC,
 ):
     _legacy_metric = None
@@ -170,6 +198,9 @@ class LegacyClassificationQuality(
         render: List[BaseWidgetInfo],
     ) -> SingleValue:
         raise NotImplementedError()
+
+    def get_tests(self, value: SingleValue) -> Generator[MetricTestResult, None, None]:
+        yield from (t.to_test()(self, value) for t in self.metric.tests)
 
 
 class F1Score(SingleValueMetric):
