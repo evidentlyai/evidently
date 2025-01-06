@@ -53,7 +53,7 @@ type RLL = {
 
 const RLLComponent = ({ children, to, title, ...typographyProps }: RLL) => {
   return (
-    <Link component={ReactRouterLink} to={to}>
+    <Link component={ReactRouterLink} to={to} sx={typographyProps.sx}>
       <>
         {title && <Typography {...typographyProps}>{title}</Typography>}
         {children}
