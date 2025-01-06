@@ -67,7 +67,8 @@ const BigGraphWidgetContent: React.FunctionComponent<BigGraphWidgetProps> = (pro
             },
             // text: [],
             // textposition: 'top center',
-            name: `selected point <br>${clickEvent.points[0].x}: ${roundPoint2Digit(clickEvent.points[0].y)}`
+            name: `selected point <br>${clickEvent.points[0].x}: ${roundPoint2Digit(clickEvent.points[0].y)}`,
+            hoverinfo: 'skip'
           } satisfies Plotly.Data
         ]
       : []
