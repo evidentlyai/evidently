@@ -363,3 +363,21 @@ class RocAucCalculation(LegacyClassificationQuality[RocAuc]):
 
     def display_name(self) -> str:
         return "RocAuc metric"
+
+
+class LogLoss(ClassificationQuality):
+    probas_threshold: Optional[float] = None
+    k: Optional[int] = None
+
+
+class LogLossCalculation(LegacyClassificationQuality[LogLoss]):
+    def calculate_value(
+        self,
+        context: "Context",
+        legacy_result: ClassificationQualityMetricResult,
+        render: List[BaseWidgetInfo],
+    ) -> SingleValue:
+        return SingleValue(legacy_result.current.log_loss)
+
+    def display_name(self) -> str:
+        return "LogLoss metric"
