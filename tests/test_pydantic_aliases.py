@@ -21,8 +21,8 @@ from evidently.collector.storage import CollectorStorage
 from evidently.features.generated_features import BaseDescriptor
 from evidently.features.generated_features import GeneratedFeatures
 from evidently.features.llm_judge import BaseLLMPromptTemplate
-from evidently.future.metrics.base import Metric as MetricV2
-from evidently.future.metrics.base import MetricTest
+from evidently.future.metric_types import Metric as MetricV2
+from evidently.future.metric_types import MetricTest
 from evidently.metric_preset.metric_preset import MetricPreset
 from evidently.metrics.data_drift.embedding_drift_methods import DriftMethod
 from evidently.pydantic_utils import TYPE_ALIASES

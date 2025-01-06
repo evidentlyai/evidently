@@ -1,7 +1,7 @@
 from typing import Optional
 
 from evidently.future.datasets import Dataset
-from evidently.future.metrics.base import Metric
+from evidently.future.metric_types import Metric
 from evidently.future.report import Report
 
 
