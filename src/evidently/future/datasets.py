@@ -43,7 +43,7 @@ class BinaryClassification:
     name: str = "default"
     target: str = "target"
     prediction_labels: Optional[str] = None
-    prediction_probas: str = "prediction"
+    prediction_probas: Optional[str] = "prediction"
     pos_label: Label = 1
     labels: Optional[Dict[Label, str]] = None
 
@@ -52,7 +52,8 @@ class BinaryClassification:
 class MulticlassClassification:
     name: str = "default"
     target: str = "target"
-    prediction: str = "prediction"
+    prediction_labels: str = "prediction"
+    prediction_probas: Optional[List[str]] = None
     labels: Optional[Dict[Label, str]] = None
 
 

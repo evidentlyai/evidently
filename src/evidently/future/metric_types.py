@@ -169,6 +169,24 @@ class CountValue(MetricResult):
         }
 
 
+@dataclasses.dataclass
+class MeanStdValue(MetricResult):
+    mean: float
+    std: float
+
+    def get_mean(self) -> SingleValue:
+        return SingleValue(self.mean)
+
+    def get_std(self) -> SingleValue:
+        return SingleValue(self.std)
+
+    def dict(self) -> object:
+        return {
+            "mean": self.mean,
+            "std": self.std,
+        }
+
+
 class MetricTestProto(Protocol[TResult]):
     def __call__(self, metric: "MetricCalculationBase", value: TResult) -> MetricTestResult: ...
 

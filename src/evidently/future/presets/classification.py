@@ -1,0 +1,95 @@
+from typing import Dict
+from typing import List
+from typing import Optional
+
+from evidently.future.container import MetricContainer
+from evidently.future.datasets import BinaryClassification
+from evidently.future.metric_types import Metric
+from evidently.future.metric_types import MetricId
+from evidently.future.metric_types import MetricResult
+from evidently.future.metrics import FNR
+from evidently.future.metrics import FPR
+from evidently.future.metrics import TNR
+from evidently.future.metrics import TPR
+from evidently.future.metrics import Accuracy
+from evidently.future.metrics import F1ByLabel
+from evidently.future.metrics import F1Score
+from evidently.future.metrics import LogLoss
+from evidently.future.metrics import Precision
+from evidently.future.metrics import PrecisionByLabel
+from evidently.future.metrics import Recall
+from evidently.future.metrics import RecallByLabel
+from evidently.future.metrics import RocAuc
+from evidently.future.metrics import RocAucByLabel
+from evidently.future.preset_types import MetricPreset
+from evidently.future.preset_types import PresetResult
+from evidently.future.report import Context
+from evidently.metrics import ClassificationQualityMetric
+from evidently.model.widget import BaseWidgetInfo
+
+
+class ClassificationQuality(MetricContainer):
+    def generate_metrics(self, context: "Context") -> List[Metric]:
+        classification = context.data_definition.get_classification("default")
+        if classification is None:
+            raise ValueError("Cannot use ClassificationQuality without a classification data")
+
+        if isinstance(classification, BinaryClassification):
+            metrics = [
+                Accuracy(),
+                Precision(),
+                Recall(),
+                F1Score(),
+            ]
+            if classification.prediction_probas is not None:
+                metrics.extend(
+                    [
+                        RocAuc(),
+                        LogLoss(),
+                    ]
+                )
+            metrics.extend(
+                [
+                    TPR(),
+                    TNR(),
+                    FPR(),
+                    FNR(),
+                ]
+            )
+        else:
+            metrics = [
+                Accuracy(),
+                Precision(),
+                Recall(),
+                F1Score(),
+            ]
+            if classification.prediction_probas is not None:
+                metrics.extend(
+                    [
+                        RocAuc(),
+                        LogLoss(),
+                    ]
+                )
+        return metrics
+
+    def render(self, context: "Context", results: Dict[MetricId, MetricResult]) -> List[BaseWidgetInfo]:
+        _, render = context.get_legacy_metric(ClassificationQualityMetric())
+        return render
+
+
+class ClassificationQualityByLabel(MetricPreset):
+    def __init__(self, probas_threshold: Optional[float] = None, k: Optional[int] = None):
+        self._probas_threshold = probas_threshold
+        self._k = k
+
+    def metrics(self) -> List[Metric]:
+        return [
+            F1ByLabel(probas_threshold=self._probas_threshold, k=self._k),
+            PrecisionByLabel(probas_threshold=self._probas_threshold, k=self._k),
+            RecallByLabel(probas_threshold=self._probas_threshold, k=self._k),
+            RocAucByLabel(probas_threshold=self._probas_threshold, k=self._k),
+        ]
+
+    def calculate(self, metric_results: Dict[MetricId, MetricResult]) -> PresetResult:
+        metric = RocAucByLabel(probas_threshold=self._probas_threshold, k=self._k)
+        return PresetResult(metric_results[metric.to_calculation().id].widget)

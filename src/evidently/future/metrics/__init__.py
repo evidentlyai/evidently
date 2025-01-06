@@ -3,7 +3,6 @@ from .classification import FPR
 from .classification import TNR
 from .classification import TPR
 from .classification import Accuracy
-from .classification import ClassificationQualityByClass
 from .classification import F1ByLabel
 from .classification import F1Score
 from .classification import LogLoss
@@ -66,5 +65,4 @@ __all__ = [
     "PrecisionByLabel",
     "RecallByLabel",
     "RocAucByLabel",
-    "ClassificationQualityByClass",
 ]

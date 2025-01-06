@@ -15,6 +15,8 @@ from evidently.base_metric import InputData
 from evidently.base_metric import Metric as LegacyMetric
 from evidently.base_metric import MetricResult as LegacyMetricResult
 from evidently.future.container import MetricContainer
+from evidently.future.datasets import BinaryClassification
+from evidently.future.datasets import DataDefinition
 from evidently.future.datasets import Dataset
 from evidently.future.datasets import DatasetColumn
 from evidently.future.metric_types import Metric
@@ -102,7 +104,7 @@ class Context:
             ColumnMapping(
                 target=classification.target,
                 prediction=classification.prediction_probas,
-                pos_label=classification.pos_label,
+                pos_label=classification.pos_label if isinstance(classification, BinaryClassification) else None,
                 target_names=classification.labels,
             ),
             None,
@@ -123,6 +125,10 @@ class Context:
             object.__setattr__(metric, "get_result", lambda: result)
             self._legacy_metrics[fp] = (result, renderer.render_html(metric))
         return typing.cast(T, self._legacy_metrics[fp][0]), self._legacy_metrics[fp][1]
+
+    @property
+    def data_definition(self) -> DataDefinition:
+        return self._input_data[0]._data_definition
 
 
 class Snapshot:
