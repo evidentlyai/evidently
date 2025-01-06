@@ -10,6 +10,7 @@ from .classification import Precision
 from .classification import PrecisionByLabel
 from .classification import Recall
 from .classification import RecallByLabel
+from .classification import RocAuc
 from .classification import RocAucByLabel
 from .column_statistics import MaxValue
 from .column_statistics import MeanValue
@@ -58,6 +59,7 @@ __all__ = [
     "TNR",
     "FPR",
     "FNR",
+    "RocAuc",
     "F1ByLabel",
     "PrecisionByLabel",
     "RecallByLabel",

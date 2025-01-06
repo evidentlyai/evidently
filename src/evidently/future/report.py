@@ -28,6 +28,7 @@ from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import DEFAULT_RENDERERS
 from evidently.suite.base_suite import _discover_dependencies
 from evidently.suite.base_suite import find_metric_renderer
+from evidently.utils import NumpyEncoder
 
 TResultType = TypeVar("TResultType", bound=MetricResult)
 T = TypeVar("T", bound=LegacyMetricResult)
@@ -81,6 +82,7 @@ class Context:
         self._current_graph_level = prev_level[metric.id]
         if metric.id not in self._metrics:
             self._metrics[metric.id] = metric.call(self)
+            self._metrics[metric.id]._metric = metric
         self._current_graph_level = prev_level
         return typing.cast(TResultType, self._metrics[metric.id])
 
@@ -199,7 +201,7 @@ class Snapshot:
         }
 
     def json(self) -> str:
-        return json.dumps(self.dict())
+        return json.dumps(self.dict(), cls=NumpyEncoder)
 
 
 class Report:

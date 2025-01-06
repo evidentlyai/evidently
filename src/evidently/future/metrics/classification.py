@@ -203,7 +203,7 @@ class LegacyClassificationQuality(
         yield from (t.to_test()(self, value) for t in self.metric.tests)
 
 
-class F1Score(SingleValueMetric):
+class F1Score(ClassificationQuality):
     probas_threshold: Optional[float] = None
     k: Optional[int] = None
 
@@ -221,7 +221,7 @@ class F1ScoreCalculation(LegacyClassificationQuality[F1Score]):
         return "F1 score metric"
 
 
-class Accuracy(SingleValueMetric):
+class Accuracy(ClassificationQuality):
     probas_threshold: Optional[float] = None
     k: Optional[int] = None
 
@@ -239,7 +239,7 @@ class AccuracyCalculation(LegacyClassificationQuality[Accuracy]):
         return "Accuracy metric"
 
 
-class Precision(SingleValueMetric):
+class Precision(ClassificationQuality):
     probas_threshold: Optional[float] = None
     k: Optional[int] = None
 
@@ -257,7 +257,7 @@ class PrecisionCalculation(LegacyClassificationQuality[Precision]):
         return "Precision metric"
 
 
-class Recall(SingleValueMetric):
+class Recall(ClassificationQuality):
     probas_threshold: Optional[float] = None
     k: Optional[int] = None
 
@@ -275,7 +275,7 @@ class RecallCalculation(LegacyClassificationQuality[Recall]):
         return "Recall metric"
 
 
-class TPR(SingleValueMetric):
+class TPR(ClassificationQuality):
     probas_threshold: Optional[float] = None
     k: Optional[int] = None
 
@@ -293,7 +293,7 @@ class TPRCalculation(LegacyClassificationQuality[TPR]):
         return "TPR metric"
 
 
-class TNR(SingleValueMetric):
+class TNR(ClassificationQuality):
     probas_threshold: Optional[float] = None
     k: Optional[int] = None
 
@@ -311,7 +311,7 @@ class TNRCalculation(LegacyClassificationQuality[TNR]):
         return "TNR metric"
 
 
-class FPR(SingleValueMetric):
+class FPR(ClassificationQuality):
     probas_threshold: Optional[float] = None
     k: Optional[int] = None
 
@@ -329,7 +329,7 @@ class FPRCalculation(LegacyClassificationQuality[FPR]):
         return "FPR metric"
 
 
-class FNR(SingleValueMetric):
+class FNR(ClassificationQuality):
     probas_threshold: Optional[float] = None
     k: Optional[int] = None
 
@@ -345,3 +345,21 @@ class FNRCalculation(LegacyClassificationQuality[FNR]):
 
     def display_name(self) -> str:
         return "FNR metric"
+
+
+class RocAuc(ClassificationQuality):
+    probas_threshold: Optional[float] = None
+    k: Optional[int] = None
+
+
+class RocAucCalculation(LegacyClassificationQuality[RocAuc]):
+    def calculate_value(
+        self,
+        context: "Context",
+        legacy_result: ClassificationQualityMetricResult,
+        render: List[BaseWidgetInfo],
+    ) -> SingleValue:
+        return SingleValue(legacy_result.current.roc_auc)
+
+    def display_name(self) -> str:
+        return "RocAuc metric"
