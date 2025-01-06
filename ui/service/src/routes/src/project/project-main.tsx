@@ -17,7 +17,8 @@ import type { GetRouteByPath } from '~/routes/types'
 
 import { useCurrentRouteParams } from 'evidently-ui-lib/router-utils/hooks'
 import { clientAPI } from '~/api'
-import { RouterLink, useMatchRouter } from '~/routes/components'
+import { RouterLink } from '~/routes/components'
+import { useMatchRouter } from '~/routes/hooks'
 
 ///////////////////
 //    ROUTE
