@@ -268,7 +268,7 @@ class ValueDriftCalculation(SingleValueCalculation[ValueDrift]):
         column_type = current_data.column(column).type
         drift = get_one_column_drift(
             current_data=current_data.as_dataframe(),
-            reference_data=reference_data.as_dataframe(),
+            reference_data=reference_data.as_dataframe() if reference_data is not None else None,
             column_name=column,
             options=DataDriftOptions(all_features_stattest=self.metric.method),
             dataset_columns=DatasetColumns(
