@@ -108,7 +108,7 @@ MetricReturnValue = Tuple[TResult, BaseWidgetInfo]
 
 MetricTestId = str
 
-Value = Union[float, int, str]
+Value = Union[float, int]
 
 
 @dataclasses.dataclass
@@ -143,7 +143,7 @@ class ByLabelValue(MetricResult):
         return list(self.values.keys())
 
     def get_label_result(self, label: Label) -> SingleValue:
-        value = self.values.get(label)
+        value = self.values[label]
         return SingleValue(value)
 
     def dict(self) -> object:
@@ -333,10 +333,6 @@ class Metric(AutoAliasMixin, EvidentlyBaseModel, Generic[TCalculation]):
     def get_metric_id(self) -> str:
         return self.get_fingerprint()
 
-    @abc.abstractmethod
-    def get_tests(self, value: TResult) -> Generator[MetricTestResult, None, None]:
-        raise NotImplementedError()
-
     def _default_tests(self) -> List[MetricTestProto[TResult]]:
         """
         allows to redefine default tests for metric
@@ -358,6 +354,17 @@ class Metric(AutoAliasMixin, EvidentlyBaseModel, Generic[TCalculation]):
         return self.to_calculation().call(context)
 
 
+Render = List[BaseWidgetInfo]
+
+
+@dataclasses.dataclass
+class MetricResultValue:
+    metric: Metric
+    attributes: typing.Dict[str, str]
+    value: Value
+    render: Render
+
+
 TMetric = TypeVar("TMetric", bound=Metric)
 
 
@@ -376,37 +383,28 @@ class MetricCalculation(MetricCalculationBase[TResult], Generic[TResult, TMetric
             config_type.__calculation_type__ = cls
         super().__init_subclass__()
 
-    def get_tests(self, value: TResult) -> Generator[MetricTestResult, None, None]:
-        yield from self.metric.get_tests(value)
-
     def to_metric(self):
         return self.metric
 
 
-class SingleValueMetric(Metric["SingleValueCalculation"]):
-    tests: List[MetricTest[SingleValue]] = []
+TSingleValueMetricCalculation = TypeVar("TSingleValueMetricCalculation", bound="SingleValueCalculation")
 
-    def get_tests(self, value: SingleValue) -> Generator[MetricTestResult, None, None]:
-        # todo: do not call to_metric here
-        yield from (t.to_test()(self.to_calculation(), value) for t in self.tests)
+
+class SingleValueMetric(Metric[TSingleValueMetricCalculation]):
+    tests: List[MetricTest[SingleValue]] = []
 
 
 TSingleValueMetric = TypeVar("TSingleValueMetric", bound=SingleValueMetric)
 
 
 class SingleValueCalculation(MetricCalculation[SingleValue, TSingleValueMetric], Generic[TSingleValueMetric], ABC):
-    pass
+    def get_tests(self, value: SingleValue) -> Generator[MetricTestResult, None, None]:
+        # todo: do not call to_metric here
+        yield from (t.to_test()(self, value) for t in self.metric.tests)
 
 
 class ByLabelMetric(Metric["ByLabelCalculation"]):
     tests: typing.Dict[Label, List[MetricTest[SingleValue]]] = {}
-
-    def get_tests(self, value: ByLabelValue) -> Generator[MetricTestResult, None, None]:
-        for label, tests in self.tests.items():
-            label_value = value.get_label_result(label)
-            for test in tests:
-                # todo: do not call to_calculation here
-                yield test.to_test()(self.to_calculation(), label_value)
 
 
 TByLabelMetric = TypeVar("TByLabelMetric", bound=ByLabelMetric)
@@ -416,19 +414,23 @@ class ByLabelCalculation(MetricCalculation[ByLabelValue, TByLabelMetric], Generi
     def label_metric(self, label: Label) -> SingleValueCalculation:
         raise NotImplementedError()
 
+    def get_tests(self, value: ByLabelValue) -> Generator[MetricTestResult, None, None]:
+        for label, tests in self.metric.tests.items():
+            label_value = value.get_label_result(label)
+            for test in tests:
+                yield test.to_test()(self, label_value)
+
 
 class CountMetric(Metric["CountCalculation"]):
     count_tests: List[MetricTest[SingleValue]] = []
     share_tests: List[MetricTest[SingleValue]] = []
-
-    def get_tests(self, value: CountValue) -> Generator[MetricTestResult, None, None]:
-        # todo: do not call to_metric here
-        yield from (t.to_test()(self.to_calculation(), value.get_count()) for t in self.count_tests)
-        yield from (t.to_test()(self.to_calculation(), value.get_share()) for t in self.share_tests)
 
 
 TCountMetric = TypeVar("TCountMetric", bound=CountMetric)
 
 
 class CountCalculation(MetricCalculation[CountValue, TCountMetric], Generic[TCountMetric], ABC):
-    pass
+    def get_tests(self, value: CountValue) -> Generator[MetricTestResult, None, None]:
+        # todo: do not call to_metric here
+        yield from (t.to_test()(self, value.get_count()) for t in self.metric.count_tests)
+        yield from (t.to_test()(self, value.get_share()) for t in self.metric.share_tests)
