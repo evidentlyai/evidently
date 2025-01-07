@@ -3,14 +3,20 @@ import dataclasses
 import inspect
 import itertools
 import uuid
-from typing import Dict
-from typing import List, Union, TypeVar, Tuple, Protocol, Generic, ClassVar, Type
-
-from typing import Optional
 from abc import ABC
 from abc import abstractmethod
 from copy import copy
 from typing import TYPE_CHECKING
+from typing import ClassVar
+from typing import Dict
+from typing import Generic
+from typing import List
+from typing import Optional
+from typing import Protocol
+from typing import Tuple
+from typing import Type
+from typing import TypeVar
+from typing import Union
 
 import typing_inspect
 
@@ -20,6 +26,7 @@ from evidently.metric_results import Label
 from evidently.model.dashboard import DashboardInfo
 from evidently.model.widget import BaseWidgetInfo
 from evidently.pydantic_utils import EvidentlyBaseModel
+from evidently.pydantic_utils import Fingerprint
 from evidently.renderers.html_widgets import CounterData
 from evidently.renderers.html_widgets import WidgetSize
 from evidently.renderers.html_widgets import counter
@@ -35,9 +42,9 @@ if TYPE_CHECKING:
 class MetricResult:
     _metric: Optional["MetricCalculationBase"] = None
     _widget: Optional[List[BaseWidgetInfo]] = None
-    _tests: Optional[Dict["TestConfig", "MetricTestResult"]] = None
+    _tests: Optional[Dict["BoundTest", "MetricTestResult"]] = None
 
-    def set_tests(self, tests: List["MetricTestResult"]):
+    def set_tests(self, tests: Dict["BoundTest", "MetricTestResult"]):
         self._tests = tests
 
     def _repr_html_(self):
@@ -249,7 +256,7 @@ class MetricCalculationBase(Generic[TResult]):
             result = self._call(context)
             if not result.is_widget_set():
                 result.widget = get_default_render(self.display_name(), result)
-            test_results = {tc: tc for tc in self.}
+            test_results = {tc: tc.run_test(self, result) for tc in self.to_metric().get_bound_tests()}
             if test_results and len(test_results) > 0:
                 result.set_tests(test_results)
             return result
@@ -263,7 +270,6 @@ class MetricCalculationBase(Generic[TResult]):
     @abc.abstractmethod
     def calculate(self, current_data: Dataset, reference_data: Optional[Dataset]) -> TResult:
         raise not_implemented(self)
-
 
     @property
     def id(self) -> MetricId:
@@ -308,12 +314,14 @@ class MetricTest(AutoAliasMixin, EvidentlyBaseModel, Generic[TTestFunc]):
         raise not_implemented(self)
 
 
-class TestConfig(AutoAliasMixin, EvidentlyBaseModel, Generic[TResult], ABC):
+class BoundTest(AutoAliasMixin, EvidentlyBaseModel, Generic[TResult], ABC):
     class Config:
         is_base_type = True
 
-    __alias_type__ : ClassVar[str]= "test_config"
-    test: MetricTest[TResult]
+    __alias_type__: ClassVar[str] = "bound_test"
+    test: MetricTest
+    metric_fingerprint: Fingerprint
+
     @abstractmethod
     def run_test(self, calculation: MetricCalculationBase, metric_result: TResult):
         raise NotImplementedError(self.__class__)
@@ -363,7 +371,7 @@ class Metric(AutoAliasMixin, EvidentlyBaseModel, Generic[TCalculation]):
         return self.to_calculation().call(context)
 
     @abstractmethod
-    def get_test_configs(self) -> List[TestConfig]:
+    def get_bound_tests(self) -> List[BoundTest]:
         raise not_implemented(self)
 
 
@@ -402,15 +410,17 @@ class MetricCalculation(MetricCalculationBase[TResult], Generic[TResult, TMetric
 
 TSingleValueMetricCalculation = TypeVar("TSingleValueMetricCalculation", bound="SingleValueCalculation")
 
-class SingleValueTestConfig(TestConfig[SingleValue]):
+
+class SingleValueBoundTest(BoundTest[SingleValue]):
     def run_test(self, calculation: "SingleValueCalculation", metric_result: SingleValue) -> MetricTestResult:
         return self.test.to_test()(calculation, metric_result)
+
 
 class SingleValueMetric(Metric[TSingleValueMetricCalculation]):
     tests: List[MetricTest[SingleValue]] = []
 
-    def get_test_configs(self) -> List[TestConfig]:
-        return [SingleValueTestConfig(test=t) for t in self.tests]
+    def get_bound_tests(self) -> List[BoundTest]:
+        return [SingleValueBoundTest(test=t, metric_fingerprint=self.get_fingerprint()) for t in self.tests]
 
 
 TSingleValueMetric = TypeVar("TSingleValueMetric", bound=SingleValueMetric)
@@ -419,7 +429,8 @@ TSingleValueMetric = TypeVar("TSingleValueMetric", bound=SingleValueMetric)
 class SingleValueCalculation(MetricCalculation[SingleValue, TSingleValueMetric], Generic[TSingleValueMetric], ABC):
     pass
 
-class ByLabelTestConfig(TestConfig[ByLabelValue]):
+
+class ByLabelBoundTest(BoundTest[ByLabelValue]):
     label: Label
 
     def run_test(self, calculation: MetricCalculationBase, metric_result: ByLabelValue) -> MetricTestResult:
@@ -430,8 +441,13 @@ class ByLabelTestConfig(TestConfig[ByLabelValue]):
 class ByLabelMetric(Metric["ByLabelCalculation"]):
     tests: Dict[Label, List[MetricTest[SingleValue]]] = {}
 
-    def get_test_configs(self) -> List[TestConfig]:
-        return [ByLabelTestConfig(test=t, label=label) for label, tests in self.tests.items() for t in tests]
+    def get_bound_tests(self) -> List[BoundTest]:
+        return [
+            ByLabelBoundTest(test=t, label=label, metric_fingerprint=self.get_fingerprint())
+            for label, tests in self.tests.items()
+            for t in tests
+        ]
+
 
 TByLabelMetric = TypeVar("TByLabelMetric", bound=ByLabelMetric)
 
@@ -441,20 +457,25 @@ class ByLabelCalculation(MetricCalculation[ByLabelValue, TByLabelMetric], Generi
         raise NotImplementedError
 
 
-
-class CountTestConfig(TestConfig[CountValue]):
+class CountBoundTest(BoundTest[CountValue]):
     is_count: bool
 
     def run_test(self, calculation: MetricCalculationBase, metric_result: CountValue) -> MetricTestResult:
-        return self.test.to_test()(calculation, metric_result.get_count() if self.is_count else metric_result.get_share())
+        return self.test.to_test()(
+            calculation, metric_result.get_count() if self.is_count else metric_result.get_share()
+        )
+
 
 class CountMetric(Metric["CountCalculation"]):
     count_tests: List[MetricTest[SingleValue]] = []
     share_tests: List[MetricTest[SingleValue]] = []
 
-    def get_test_configs(self) -> List[TestConfig]:
-        return [CountTestConfig(is_count=True, test=t) for t in self.count_tests] +\
-         [CountTestConfig(is_count=False, test=t) for t in self.share_tests]
+    def get_bound_tests(self) -> List[BoundTest]:
+        return [
+            CountBoundTest(is_count=True, test=t, metric_fingerprint=self.get_fingerprint()) for t in self.count_tests
+        ] + [
+            CountBoundTest(is_count=False, test=t, metric_fingerprint=self.get_fingerprint()) for t in self.share_tests
+        ]
 
 
 TCountMetric = TypeVar("TCountMetric", bound=CountMetric)
