@@ -239,7 +239,8 @@ class Dataset:
         descriptors: Optional[List[Descriptor]] = None,
     ) -> "Dataset":
         dataset = PandasDataset(data, data_definition)
-        dataset.add_descriptors(descriptors)
+        if descriptors is not None:
+            dataset.add_descriptors(descriptors)
         return dataset
 
     @abstractmethod
