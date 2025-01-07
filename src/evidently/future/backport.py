@@ -1,5 +1,6 @@
 import dataclasses
 import datetime
+from itertools import chain
 from typing import ClassVar
 from typing import Dict
 from typing import Generator
@@ -15,7 +16,7 @@ from evidently.core import new_id
 from evidently.future.datasets import ColumnInfo
 from evidently.future.datasets import DataDefinition
 from evidently.future.datasets import Dataset
-from evidently.future.metric_types import ByLabelValue
+from evidently.future.metric_types import ByLabelMetric, ByLabelValue, CountMetric, SingleValueMetric
 from evidently.future.metric_types import CountValue
 from evidently.future.metric_types import Metric as MetricV2
 from evidently.future.metric_types import MetricResult as MetricResultV2
@@ -41,7 +42,9 @@ from evidently.ui.dashboards.base import DashboardPanel
 from evidently.ui.dashboards.base import PanelValue
 from evidently.ui.dashboards.base import ReportFilter
 from evidently.ui.dashboards.utils import PlotType
+from evidently.ui.errors import EvidentlyServiceError
 from evidently.ui.type_aliases import ProjectID
+from evidently.ui.workspace import RemoteWorkspace
 
 
 class MetricResultV2Adapter(MetricResultV1):
@@ -123,7 +126,16 @@ def snapshot_v2_to_v1(snapshot: SnapshotV2) -> SnapshotV1:
         metrics.append(metric_v2_to_v1(metric))
         metric_results.append(metric_result_v2_to_v1(metric_result))
 
-        for test, test_result in zip(metric.tests, metric_result.tests or ()):
+        if isinstance(metric, SingleValueMetric):
+            test_list = list(metric.tests)
+        elif isinstance(metric, ByLabelMetric):
+            test_list = [t for ts in metric.tests.values() for t in ts]
+        elif isinstance(metric, CountMetric):
+            test_list = list(chain(metric.count_tests, metric.share_tests))
+        else:
+            raise NotImplementedError(f"Unknown metric type {metric}")
+        test_dict = {t.get_fingerprint(): t for t in test_list}
+        for test, test_result in zip(test_list, metric_result.tests or ()):
             tests_v2.append(test)
             tests.append(TestV2Adapter(test=test))
             test_results.append(
@@ -230,9 +242,7 @@ def main():
         dataset = Dataset.from_pandas(
             df,
             data_definition=DataDefinition(
-                {
-                    "col": ColumnInfo(ColumnType.Numerical),
-                }
+                numerical_features=["col"]
             ),
         )
         report = ReportV2([MeanValue(column="col", tests=[lte(4)])])
@@ -245,10 +255,13 @@ def main():
         snapshot_v1.timestamp = datetime.datetime.now() - datetime.timedelta(days=1)
         return snapshot_v1
 
-    ws = Workspace.create("./workspace")
+    ws = RemoteWorkspace("http://127.0.0.1:8000")
+    # ws = Workspace.create("./workspace")
     from evidently.ui.type_aliases import ZERO_UUID
-
-    project = ws.get_project(ZERO_UUID)
+    try:
+        project = ws.get_project(ZERO_UUID)
+    except EvidentlyServiceError:
+        project = None
     if project is None:
         from evidently.ui.base import Project
 
