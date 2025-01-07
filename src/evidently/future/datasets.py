@@ -239,8 +239,7 @@ class Dataset:
         descriptors: Optional[List[Descriptor]] = None,
     ) -> "Dataset":
         dataset = PandasDataset(data, data_definition)
-        for descriptor in descriptors or []:
-            dataset.add_descriptor(descriptor)
+        dataset.add_descriptors(descriptors)
         return dataset
 
     @abstractmethod
@@ -316,6 +315,10 @@ class PandasDataset(Dataset):
                 self.add_column(f"{key}.{col}", value)
         else:
             self.add_column(key, list(new_column.values())[0])
+
+    def add_descriptors(self, descriptors: List[Descriptor]):
+        for descriptor in descriptors:
+            self.add_descriptor(descriptor)
 
     def _collect_stats(self, column_type: ColumnType, data: pd.Series):
         numerical_stats = None
