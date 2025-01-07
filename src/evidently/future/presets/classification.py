@@ -21,9 +21,13 @@ from evidently.future.metrics import Recall
 from evidently.future.metrics import RecallByLabel
 from evidently.future.metrics import RocAuc
 from evidently.future.metrics import RocAucByLabel
+from evidently.future.metrics.classification import DummyF1Score
+from evidently.future.metrics.classification import DummyPrecision
+from evidently.future.metrics.classification import DummyRecall
 from evidently.future.preset_types import MetricPreset
 from evidently.future.preset_types import PresetResult
 from evidently.future.report import Context
+from evidently.metrics import ClassificationDummyMetric
 from evidently.metrics import ClassificationQualityMetric
 from evidently.model.widget import BaseWidgetInfo
 
@@ -33,6 +37,8 @@ class ClassificationQuality(MetricContainer):
         classification = context.data_definition.get_classification("default")
         if classification is None:
             raise ValueError("Cannot use ClassificationQuality without a classification data")
+
+        metrics: List[Metric]
 
         if isinstance(classification, BinaryClassification):
             metrics = [
@@ -93,3 +99,20 @@ class ClassificationQualityByLabel(MetricPreset):
     def calculate(self, metric_results: Dict[MetricId, MetricResult]) -> PresetResult:
         metric = RocAucByLabel(probas_threshold=self._probas_threshold, k=self._k)
         return PresetResult(metric_results[metric.to_calculation().id].widget)
+
+
+class ClassificationDummyQuality(MetricContainer):
+    def __init__(self, probas_threshold: Optional[float] = None, k: Optional[int] = None):
+        self._probas_threshold = probas_threshold
+        self._k = k
+
+    def generate_metrics(self, context: "Context") -> List[Metric]:
+        return [
+            DummyPrecision(),
+            DummyRecall(),
+            DummyF1Score(),
+        ]
+
+    def render(self, context: "Context", results: Dict[MetricId, MetricResult]) -> List[BaseWidgetInfo]:
+        _, widgets = context.get_legacy_metric(ClassificationDummyMetric(self._probas_threshold, self._k))
+        return widgets

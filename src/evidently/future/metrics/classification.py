@@ -13,7 +13,9 @@ from evidently.future.metric_types import SingleValue
 from evidently.future.metric_types import SingleValueMetric
 from evidently.future.metrics._legacy import LegacyMetricCalculation
 from evidently.future.report import Context
+from evidently.metrics import ClassificationDummyMetric
 from evidently.metrics import ClassificationQualityByClass as _ClassificationQualityByClass
+from evidently.metrics.classification_performance.classification_dummy_metric import ClassificationDummyMetricResults
 from evidently.metrics.classification_performance.classification_quality_metric import ClassificationQualityMetric
 from evidently.metrics.classification_performance.classification_quality_metric import ClassificationQualityMetricResult
 from evidently.metrics.classification_performance.quality_by_class_metric import ClassificationQualityByClassResult
@@ -347,3 +349,78 @@ class LogLossCalculation(LegacyClassificationQuality[LogLoss]):
 
     def display_name(self) -> str:
         return "LogLoss metric"
+
+
+class LegacyClassificationDummy(
+    LegacyMetricCalculation[
+        SingleValue,
+        TSingleValueMetric,
+        ClassificationDummyMetricResults,
+        ClassificationDummyMetric,
+    ],
+    Generic[TSingleValueMetric],
+    abc.ABC,
+):
+    _legacy_metric = None
+
+    def legacy_metric(self) -> ClassificationDummyMetric:
+        if self._legacy_metric is None:
+            self._legacy_metric = ClassificationDummyMetric(self.metric.probas_threshold, self.metric.k)
+        return self._legacy_metric
+
+    def calculate(self, current_data: Dataset, reference_data: Optional[Dataset]) -> SingleValue:
+        raise NotImplementedError()
+
+    @abc.abstractmethod
+    def calculate_value(
+        self,
+        context: "Context",
+        legacy_result: ClassificationDummyMetricResults,
+        render: List[BaseWidgetInfo],
+    ) -> SingleValue:
+        raise NotImplementedError()
+
+    def get_tests(self, value: SingleValue) -> Generator[MetricTestResult, None, None]:
+        yield from (t.to_test()(self, value) for t in self.metric.tests)
+
+
+class DummyPrecision(ClassificationQuality):
+    pass
+
+
+class DummyPrecisionCalculation(LegacyClassificationDummy[DummyPrecision]):
+    def calculate_value(
+        self, context: "Context", legacy_result: ClassificationDummyMetricResults, render: List[BaseWidgetInfo]
+    ) -> SingleValue:
+        return SingleValue(legacy_result.dummy.precision)
+
+    def display_name(self) -> str:
+        return "Dummy precision metric"
+
+
+class DummyRecall(ClassificationQuality):
+    pass
+
+
+class DummyRecallCalculation(LegacyClassificationDummy[DummyRecall]):
+    def calculate_value(
+        self, context: "Context", legacy_result: ClassificationDummyMetricResults, render: List[BaseWidgetInfo]
+    ) -> SingleValue:
+        return SingleValue(legacy_result.dummy.recall)
+
+    def display_name(self) -> str:
+        return "Dummy recall metric"
+
+
+class DummyF1Score(ClassificationQuality):
+    pass
+
+
+class DummyF1ScoreCalculation(LegacyClassificationDummy[DummyF1Score]):
+    def calculate_value(
+        self, context: "Context", legacy_result: ClassificationDummyMetricResults, render: List[BaseWidgetInfo]
+    ) -> SingleValue:
+        return SingleValue(legacy_result.dummy.f1)
+
+    def display_name(self) -> str:
+        return "Dummy F1 score metric"

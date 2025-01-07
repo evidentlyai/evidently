@@ -112,12 +112,9 @@ class Context:
             None,
             None,
         )
-        for _, obj in _discover_dependencies(metric):
-            dep_fp = obj.get_fingerprint()
-            if dep_fp not in self._legacy_metrics:
-                result = obj.calculate(input_data)
-                object.__setattr__(obj, "get_result", lambda: result)
-                self._legacy_metrics[obj.get_fingerprint()] = (result, [])
+        dependencies = _discover_dependencies(metric)
+        for _, obj in dependencies:
+            (result, render) = self.get_legacy_metric(obj)
         fp = metric.get_fingerprint()
         if fp not in self._legacy_metrics:
             result = metric.calculate(input_data)

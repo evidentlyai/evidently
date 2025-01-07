@@ -3,6 +3,9 @@ from .classification import FPR
 from .classification import TNR
 from .classification import TPR
 from .classification import Accuracy
+from .classification import DummyF1Score
+from .classification import DummyPrecision
+from .classification import DummyRecall
 from .classification import F1ByLabel
 from .classification import F1Score
 from .classification import LogLoss
@@ -51,6 +54,9 @@ __all__ = [
     "EmptyRowsCount",
     "EmptyColumnsCount",
     # classification
+    "DummyF1Score",
+    "DummyPrecision",
+    "DummyRecall",
     "F1Score",
     "Accuracy",
     "Precision",
