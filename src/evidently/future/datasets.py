@@ -240,15 +240,7 @@ class Dataset:
     ) -> "Dataset":
         dataset = PandasDataset(data, data_definition)
         for descriptor in descriptors or []:
-            key = _determine_desccriptor_column_name(descriptor.alias, data.columns.tolist())
-            new_column = descriptor.generate_data(dataset)
-            if isinstance(new_column, DatasetColumn):
-                dataset.add_column(key, new_column)
-            elif len(new_column) > 1:
-                for col, value in new_column.items():
-                    dataset.add_column(f"{key}.{col}", value)
-            else:
-                dataset.add_column(key, list(new_column.values())[0])
+            dataset.add_descriptor(descriptor)
         return dataset
 
     @abstractmethod
@@ -313,6 +305,17 @@ class PandasDataset(Dataset):
             self._data_definition.numerical_descriptors.append(key)
         if data.type == ColumnType.Categorical:
             self._data_definition.categorical_descriptors.append(key)
+
+    def add_descriptor(self, descriptor: Descriptor):
+        key = _determine_desccriptor_column_name(descriptor.alias, self._data.columns.tolist())
+        new_column = descriptor.generate_data(self)
+        if isinstance(new_column, DatasetColumn):
+            self.add_column(key, new_column)
+        elif len(new_column) > 1:
+            for col, value in new_column.items():
+                self.add_column(f"{key}.{col}", value)
+        else:
+            self.add_column(key, list(new_column.values())[0])
 
     def _collect_stats(self, column_type: ColumnType, data: pd.Series):
         numerical_stats = None
