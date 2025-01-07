@@ -71,6 +71,8 @@ const RLTComponent = ({ to, ...tabProps }: RLT) => {
 }
 
 export const CreateRouterLinkComponent = <M extends MatchAny>() => {
+  type GetMatch<K> = Extract<M, { path: K }>
+
   const Component = <K extends M['path']>({
     to,
     paramsToReplace,
@@ -79,7 +81,7 @@ export const CreateRouterLinkComponent = <M extends MatchAny>() => {
   }: RouterLinkTemplateComponentProps & {
     to: K
     paramsToReplace: GetParams<K>
-    query?: M extends MatchWithLoader ? M['loader']['query'] : undefined
+    query?: GetMatch<K> extends MatchWithLoader ? GetMatch<K>['loader']['query'] : undefined
   }) => {
     const toActual = makeRouteUrl({ paramsToReplace, query, path: to })
 
