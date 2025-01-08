@@ -47,7 +47,7 @@ def ui(
 
     demos = demo_projects.split(",") if demo_projects else []
     if "all" in demos:
-        demos = list(DEMO_PROJECTS.keys())
+        demos = DEMO_PROJECTS_NAMES
     missing = [dp for dp in demos if dp not in DEMO_PROJECTS]
     if missing:
         raise BadParameter(f"Unknown demo project name '{missing[0]}'")
