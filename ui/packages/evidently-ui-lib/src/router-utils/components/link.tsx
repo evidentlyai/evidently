@@ -7,7 +7,7 @@ import {
   Typography,
   type TypographyProps
 } from '@mui/material'
-import { Link as ReactRouterLink } from 'react-router-dom'
+import { Navigate, type NavigateProps, Link as ReactRouterLink } from 'react-router-dom'
 import type { GetParams, MatchAny, MatchWithLoader } from 'router-utils/types'
 import { makeRouteUrl } from 'router-utils/utils'
 
@@ -70,22 +70,41 @@ const RLTComponent = ({ to, ...tabProps }: RLT) => {
   return <Tab component={ReactRouterLink} to={to} {...tabProps} />
 }
 
-export const CreateRouterLinkComponent = <M extends MatchAny>() => {
-  type GetMatch<K> = Extract<M, { path: K }>
+type ExtractMatch<K extends string, M> = Extract<M, { path: K }>
 
+type GetLinkParams<K extends string, Matches> = {
+  to: K
+  paramsToReplace: GetParams<K>
+  query?: ExtractMatch<K, Matches> extends MatchWithLoader
+    ? ExtractMatch<K, Matches>['loader']['query']
+    : undefined
+}
+
+export const CreateRouterLinkComponent = <M extends MatchAny>() => {
   const Component = <K extends M['path']>({
     to,
     paramsToReplace,
     query,
     ...props
-  }: RouterLinkTemplateComponentProps & {
-    to: K
-    paramsToReplace: GetParams<K>
-    query?: GetMatch<K> extends MatchWithLoader ? GetMatch<K>['loader']['query'] : undefined
-  }) => {
+  }: GetLinkParams<K, M> & RouterLinkTemplateComponentProps) => {
     const toActual = makeRouteUrl({ paramsToReplace, query, path: to })
 
     return <RouterLinkTemplate {...props} to={toActual} />
+  }
+
+  return Component
+}
+
+export const CreateRouterNavigate = <M extends MatchAny>() => {
+  const Component = <K extends M['path']>({
+    to,
+    paramsToReplace,
+    query,
+    ...props
+  }: GetLinkParams<K, M> & Omit<NavigateProps, 'to'>) => {
+    const toActual = makeRouteUrl({ paramsToReplace, query, path: to })
+
+    return <Navigate to={toActual} {...props} />
   }
 
   return Component
