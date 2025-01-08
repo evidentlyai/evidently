@@ -187,7 +187,7 @@ class Snapshot:
             title="",
             tabs=[
                 TabData("Metrics", group_widget(title="", widgets=self._widgets)),
-                TabData("Tests", metric_tests_widget(list(chain(*[result[2].tests for result in results])))),
+                TabData("Tests", metric_tests_widget(list(chain(*[result[2].tests.values() for result in results])))),
             ],
         )
         return render_widgets(

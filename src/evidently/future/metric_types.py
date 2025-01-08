@@ -66,8 +66,8 @@ class MetricResult:
         self._widget = value
 
     @property
-    def tests(self) -> List["MetricTestResult"]:
-        return self._tests or []
+    def tests(self) -> Dict["BoundTest", "MetricTestResult"]:
+        return self._tests or {}
 
     @abc.abstractmethod
     def dict(self) -> object:
@@ -291,7 +291,7 @@ class MetricCalculationBase(Generic[TResult]):
             if test_results and len(test_results) > 0:
                 result.set_tests(test_results)
             return result
-        except Exception as e:
+        except BaseException as e:
             e.add_note(f"metric_type: {type(self).__name__}")
             raise
 
