@@ -3,7 +3,9 @@ from .classification import FPR
 from .classification import TNR
 from .classification import TPR
 from .classification import Accuracy
-from .classification import ClassificationQualityByClass
+from .classification import DummyF1Score
+from .classification import DummyPrecision
+from .classification import DummyRecall
 from .classification import F1ByLabel
 from .classification import F1Score
 from .classification import LogLoss
@@ -30,6 +32,12 @@ from .dataset_statistics import DuplicatedRowCount
 from .dataset_statistics import EmptyColumnsCount
 from .dataset_statistics import EmptyRowsCount
 from .dataset_statistics import RowCount
+from .regression import MAE
+from .regression import MAPE
+from .regression import RMSE
+from .regression import AbsMaxError
+from .regression import MeanError
+from .regression import R2Score
 
 __all__ = [
     # column statistics metrics
@@ -52,6 +60,9 @@ __all__ = [
     "EmptyRowsCount",
     "EmptyColumnsCount",
     # classification
+    "DummyF1Score",
+    "DummyPrecision",
+    "DummyRecall",
     "F1Score",
     "Accuracy",
     "Precision",
@@ -66,5 +77,11 @@ __all__ = [
     "PrecisionByLabel",
     "RecallByLabel",
     "RocAucByLabel",
-    "ClassificationQualityByClass",
+    # regression
+    "MeanError",
+    "MAE",
+    "MAPE",
+    "RMSE",
+    "R2Score",
+    "AbsMaxError",
 ]

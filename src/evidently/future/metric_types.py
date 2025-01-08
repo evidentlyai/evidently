@@ -172,6 +172,24 @@ class CountValue(MetricResult):
         }
 
 
+@dataclasses.dataclass
+class MeanStdValue(MetricResult):
+    mean: float
+    std: float
+
+    def get_mean(self) -> SingleValue:
+        return SingleValue(self.mean)
+
+    def get_std(self) -> SingleValue:
+        return SingleValue(self.std)
+
+    def dict(self) -> object:
+        return {
+            "mean": self.mean,
+            "std": self.std,
+        }
+
+
 class MetricTestProto(Protocol[TResult]):
     def __call__(self, metric: "MetricCalculationBase", value: TResult) -> MetricTestResult: ...
 
@@ -227,6 +245,19 @@ def get_default_render(title: str, result: TResult) -> List[BaseWidgetInfo]:
                 title=f"{title}: share",
                 size=WidgetSize.HALF,
                 counters=[CounterData(label="", value=f"{result.share:.2f}")],
+            ),
+        ]
+    if isinstance(result, MeanStdValue):
+        return [
+            counter(
+                title=f"{title}: mean",
+                size=WidgetSize.HALF,
+                counters=[CounterData(label="", value=str(result.mean))],
+            ),
+            counter(
+                title=f"{title}: std",
+                size=WidgetSize.HALF,
+                counters=[CounterData(label="", value=f"{result.std:.2f}")],
             ),
         ]
     raise NotImplementedError(f"No default render for {type(result)}")
@@ -348,6 +379,10 @@ class Metric(AutoAliasMixin, EvidentlyBaseModel, Generic[TCalculation]):
         return metric_type(self.get_metric_id(), self)
 
     def get_metric_id(self) -> str:
+        return self.get_fingerprint()
+
+    @property
+    def metric_id(self) -> str:
         return self.get_fingerprint()
 
     def _default_tests(self) -> List[MetricTestProto[TResult]]:
@@ -482,4 +517,30 @@ TCountMetric = TypeVar("TCountMetric", bound=CountMetric)
 
 
 class CountCalculation(MetricCalculation[CountValue, TCountMetric], Generic[TCountMetric], ABC):
+    pass
+
+
+class MeanStdBoundTest(BoundTest[MeanStdValue]):
+    is_mean: bool
+
+    def run_test(self, calculation: MetricCalculationBase, metric_result: MeanStdValue) -> MetricTestResult:
+        return self.test.to_test()(calculation, metric_result.get_mean() if self.is_mean else metric_result.get_std())
+
+
+class MeanStdMetric(Metric["MeanStdCalculation"]):
+    mean_tests: List[MetricTest[SingleValue]] = []
+    std_tests: List[MetricTest[SingleValue]] = []
+
+    def get_bound_tests(self) -> List[BoundTest]:
+        return [
+            MeanStdBoundTest(is_mean=True, test=t, metric_fingerprint=self.get_fingerprint()) for t in self.mean_tests
+        ] + [
+            MeanStdBoundTest(is_mean=False, test=t, metric_fingerprint=self.get_fingerprint()) for t in self.mean_tests
+        ]
+
+
+TMeanStdMetric = TypeVar("TMeanStdMetric", bound=MeanStdMetric)
+
+
+class MeanStdCalculation(MetricCalculation[MeanStdValue, TMeanStdMetric], Generic[TMeanStdMetric], ABC):
     pass

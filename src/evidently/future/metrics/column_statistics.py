@@ -168,7 +168,10 @@ class CategoryCount(CountMetric):
 class CategoryCountCalculation(CountCalculation[CategoryCount]):
     def calculate(self, current_data: Dataset, reference_data: Optional[Dataset]) -> CountValue:
         column = current_data.column(self.metric.column)
-        value = column.data.value_counts()[self.metric.category]
+        try:
+            value = column.data.value_counts()[self.metric.category]
+        except KeyError:
+            value = 0
         total = column.data.count()
         return CountValue(value, value / total)
 

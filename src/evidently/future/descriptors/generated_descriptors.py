@@ -5,6 +5,7 @@ from typing import Optional
 
 from evidently.core import ColumnType
 from evidently.features.llm_judge import BaseLLMPromptTemplate
+from evidently.features.llm_judge import Uncertainty
 from evidently.future.datasets import FeatureDescriptor
 
 
@@ -369,4 +370,218 @@ class WordsPresence(FeatureDescriptor):
         from evidently.features.words_feature import WordsPresence as WordsPresenceV1
 
         feature = WordsPresenceV1(column_name=column_name, words_list=words_list, mode=mode, lemmatize=lemmatize)
+        super().__init__(feature, alias=alias)
+
+
+class BiasLLMEval(FeatureDescriptor):
+    def __init__(
+        self,
+        column_name: str,
+        provider: str = "openai",
+        model: str = "gpt-4o-mini",
+        additional_columns: Optional[Dict[str, str]] = None,
+        include_category: Optional[bool] = None,
+        include_score: Optional[bool] = None,
+        include_reasoning: Optional[bool] = None,
+        uncertainty: Optional[Uncertainty] = None,
+        alias: Optional[str] = None,
+    ):
+        from evidently.descriptors.llm_judges import BiasLLMEval as BiasLLMEvalV1
+
+        feature = BiasLLMEvalV1(
+            provider=provider,
+            model=model,
+            additional_columns=additional_columns,
+            include_category=include_category,
+            include_score=include_score,
+            include_reasoning=include_reasoning,
+            uncertainty=uncertainty,
+        ).feature(column_name)
+        super().__init__(feature, alias=alias)
+
+
+class BinaryClassificationLLMEval(FeatureDescriptor):
+    def __init__(
+        self,
+        column_name: str,
+        provider: str,
+        model: str,
+        additional_columns: Optional[Dict[str, str]] = None,
+        include_category: Optional[bool] = None,
+        include_score: Optional[bool] = None,
+        include_reasoning: Optional[bool] = None,
+        uncertainty: Optional[Uncertainty] = None,
+        alias: Optional[str] = None,
+    ):
+        from evidently.descriptors.llm_judges import BinaryClassificationLLMEval as BinaryClassificationLLMEvalV1
+
+        feature = BinaryClassificationLLMEvalV1(
+            provider=provider,
+            model=model,
+            additional_columns=additional_columns,
+            include_category=include_category,
+            include_score=include_score,
+            include_reasoning=include_reasoning,
+            uncertainty=uncertainty,
+        ).feature(column_name)
+        super().__init__(feature, alias=alias)
+
+
+class ContextQualityLLMEval(FeatureDescriptor):
+    def __init__(
+        self,
+        column_name: str,
+        question: str,
+        provider: str = "openai",
+        model: str = "gpt-4o-mini",
+        additional_columns: Optional[Dict[str, str]] = None,
+        include_category: Optional[bool] = None,
+        include_score: Optional[bool] = None,
+        include_reasoning: Optional[bool] = None,
+        uncertainty: Optional[Uncertainty] = None,
+        alias: Optional[str] = None,
+    ):
+        from evidently.descriptors.llm_judges import ContextQualityLLMEval as ContextQualityLLMEvalV1
+
+        feature = ContextQualityLLMEvalV1(
+            question=question,
+            provider=provider,
+            model=model,
+            additional_columns=additional_columns,
+            include_category=include_category,
+            include_score=include_score,
+            include_reasoning=include_reasoning,
+            uncertainty=uncertainty,
+        ).feature(column_name)
+        super().__init__(feature, alias=alias)
+
+
+class DeclineLLMEval(FeatureDescriptor):
+    def __init__(
+        self,
+        column_name: str,
+        provider: str = "openai",
+        model: str = "gpt-4o-mini",
+        additional_columns: Optional[Dict[str, str]] = None,
+        include_category: Optional[bool] = None,
+        include_score: Optional[bool] = None,
+        include_reasoning: Optional[bool] = None,
+        uncertainty: Optional[Uncertainty] = None,
+        alias: Optional[str] = None,
+    ):
+        from evidently.descriptors.llm_judges import DeclineLLMEval as DeclineLLMEvalV1
+
+        feature = DeclineLLMEvalV1(
+            provider=provider,
+            model=model,
+            additional_columns=additional_columns,
+            include_category=include_category,
+            include_score=include_score,
+            include_reasoning=include_reasoning,
+            uncertainty=uncertainty,
+        ).feature(column_name)
+        super().__init__(feature, alias=alias)
+
+
+class LLMEval(FeatureDescriptor):
+    def __init__(
+        self,
+        column_name: str,
+        provider: str,
+        model: str,
+        template: BaseLLMPromptTemplate,
+        additional_columns: Optional[Dict[str, str]] = None,
+        subcolumn: Optional[str] = None,
+        alias: Optional[str] = None,
+    ):
+        from evidently.descriptors.llm_judges import LLMEval as LLMEvalV1
+
+        feature = LLMEvalV1(
+            provider=provider,
+            model=model,
+            template=template,
+            additional_columns=additional_columns,
+            subcolumn=subcolumn,
+        ).feature(column_name)
+        super().__init__(feature, alias=alias)
+
+
+class NegativityLLMEval(FeatureDescriptor):
+    def __init__(
+        self,
+        column_name: str,
+        provider: str = "openai",
+        model: str = "gpt-4o-mini",
+        additional_columns: Optional[Dict[str, str]] = None,
+        include_category: Optional[bool] = None,
+        include_score: Optional[bool] = None,
+        include_reasoning: Optional[bool] = None,
+        uncertainty: Optional[Uncertainty] = None,
+        alias: Optional[str] = None,
+    ):
+        from evidently.descriptors.llm_judges import NegativityLLMEval as NegativityLLMEvalV1
+
+        feature = NegativityLLMEvalV1(
+            provider=provider,
+            model=model,
+            additional_columns=additional_columns,
+            include_category=include_category,
+            include_score=include_score,
+            include_reasoning=include_reasoning,
+            uncertainty=uncertainty,
+        ).feature(column_name)
+        super().__init__(feature, alias=alias)
+
+
+class PIILLMEval(FeatureDescriptor):
+    def __init__(
+        self,
+        column_name: str,
+        provider: str = "openai",
+        model: str = "gpt-4o-mini",
+        additional_columns: Optional[Dict[str, str]] = None,
+        include_category: Optional[bool] = None,
+        include_score: Optional[bool] = None,
+        include_reasoning: Optional[bool] = None,
+        uncertainty: Optional[Uncertainty] = None,
+        alias: Optional[str] = None,
+    ):
+        from evidently.descriptors.llm_judges import PIILLMEval as PIILLMEvalV1
+
+        feature = PIILLMEvalV1(
+            provider=provider,
+            model=model,
+            additional_columns=additional_columns,
+            include_category=include_category,
+            include_score=include_score,
+            include_reasoning=include_reasoning,
+            uncertainty=uncertainty,
+        ).feature(column_name)
+        super().__init__(feature, alias=alias)
+
+
+class ToxicityLLMEval(FeatureDescriptor):
+    def __init__(
+        self,
+        column_name: str,
+        provider: str = "openai",
+        model: str = "gpt-4o-mini",
+        additional_columns: Optional[Dict[str, str]] = None,
+        include_category: Optional[bool] = None,
+        include_score: Optional[bool] = None,
+        include_reasoning: Optional[bool] = None,
+        uncertainty: Optional[Uncertainty] = None,
+        alias: Optional[str] = None,
+    ):
+        from evidently.descriptors.llm_judges import ToxicityLLMEval as ToxicityLLMEvalV1
+
+        feature = ToxicityLLMEvalV1(
+            provider=provider,
+            model=model,
+            additional_columns=additional_columns,
+            include_category=include_category,
+            include_score=include_score,
+            include_reasoning=include_reasoning,
+            uncertainty=uncertainty,
+        ).feature(column_name)
         super().__init__(feature, alias=alias)

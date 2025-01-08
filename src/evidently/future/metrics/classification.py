@@ -1,5 +1,4 @@
 import abc
-from typing import Dict
 from typing import Generator
 from typing import Generic
 from typing import List
@@ -9,17 +8,14 @@ from typing import TypeVar
 from evidently.future.datasets import Dataset
 from evidently.future.metric_types import ByLabelMetric
 from evidently.future.metric_types import ByLabelValue
-from evidently.future.metric_types import Metric
-from evidently.future.metric_types import MetricId
-from evidently.future.metric_types import MetricResult
 from evidently.future.metric_types import MetricTestResult
 from evidently.future.metric_types import SingleValue
 from evidently.future.metric_types import SingleValueMetric
 from evidently.future.metrics._legacy import LegacyMetricCalculation
-from evidently.future.preset_types import MetricPreset
-from evidently.future.preset_types import PresetResult
 from evidently.future.report import Context
+from evidently.metrics import ClassificationDummyMetric
 from evidently.metrics import ClassificationQualityByClass as _ClassificationQualityByClass
+from evidently.metrics.classification_performance.classification_dummy_metric import ClassificationDummyMetricResults
 from evidently.metrics.classification_performance.classification_quality_metric import ClassificationQualityMetric
 from evidently.metrics.classification_performance.classification_quality_metric import ClassificationQualityMetricResult
 from evidently.metrics.classification_performance.quality_by_class_metric import ClassificationQualityByClassResult
@@ -152,24 +148,6 @@ class RocAucByLabelCalculation(LegacyClassificationQualityByClass[RocAucByLabel]
         return "ROC AUC by Label metric"
 
 
-class ClassificationQualityByClass(MetricPreset):
-    def __init__(self, probas_threshold: Optional[float] = None, k: Optional[int] = None):
-        self._probas_threshold = probas_threshold
-        self._k = k
-
-    def metrics(self) -> List[Metric]:
-        return [
-            F1ByLabel(probas_threshold=self._probas_threshold, k=self._k),
-            PrecisionByLabel(probas_threshold=self._probas_threshold, k=self._k),
-            RecallByLabel(probas_threshold=self._probas_threshold, k=self._k),
-            RocAucByLabel(probas_threshold=self._probas_threshold, k=self._k),
-        ]
-
-    def calculate(self, metric_results: Dict[MetricId, MetricResult]) -> PresetResult:
-        metric = RocAucByLabel(probas_threshold=self._probas_threshold, k=self._k)
-        return PresetResult(metric_results[metric.to_calculation().id].widget)
-
-
 class LegacyClassificationQuality(
     LegacyMetricCalculation[
         SingleValue,
@@ -204,8 +182,7 @@ class LegacyClassificationQuality(
 
 
 class F1Score(ClassificationQuality):
-    probas_threshold: Optional[float] = None
-    k: Optional[int] = None
+    pass
 
 
 class F1ScoreCalculation(LegacyClassificationQuality[F1Score]):
@@ -222,8 +199,7 @@ class F1ScoreCalculation(LegacyClassificationQuality[F1Score]):
 
 
 class Accuracy(ClassificationQuality):
-    probas_threshold: Optional[float] = None
-    k: Optional[int] = None
+    pass
 
 
 class AccuracyCalculation(LegacyClassificationQuality[Accuracy]):
@@ -240,8 +216,7 @@ class AccuracyCalculation(LegacyClassificationQuality[Accuracy]):
 
 
 class Precision(ClassificationQuality):
-    probas_threshold: Optional[float] = None
-    k: Optional[int] = None
+    pass
 
 
 class PrecisionCalculation(LegacyClassificationQuality[Precision]):
@@ -258,8 +233,7 @@ class PrecisionCalculation(LegacyClassificationQuality[Precision]):
 
 
 class Recall(ClassificationQuality):
-    probas_threshold: Optional[float] = None
-    k: Optional[int] = None
+    pass
 
 
 class RecallCalculation(LegacyClassificationQuality[Recall]):
@@ -276,8 +250,7 @@ class RecallCalculation(LegacyClassificationQuality[Recall]):
 
 
 class TPR(ClassificationQuality):
-    probas_threshold: Optional[float] = None
-    k: Optional[int] = None
+    pass
 
 
 class TPRCalculation(LegacyClassificationQuality[TPR]):
@@ -294,8 +267,7 @@ class TPRCalculation(LegacyClassificationQuality[TPR]):
 
 
 class TNR(ClassificationQuality):
-    probas_threshold: Optional[float] = None
-    k: Optional[int] = None
+    pass
 
 
 class TNRCalculation(LegacyClassificationQuality[TNR]):
@@ -312,8 +284,7 @@ class TNRCalculation(LegacyClassificationQuality[TNR]):
 
 
 class FPR(ClassificationQuality):
-    probas_threshold: Optional[float] = None
-    k: Optional[int] = None
+    pass
 
 
 class FPRCalculation(LegacyClassificationQuality[FPR]):
@@ -330,8 +301,7 @@ class FPRCalculation(LegacyClassificationQuality[FPR]):
 
 
 class FNR(ClassificationQuality):
-    probas_threshold: Optional[float] = None
-    k: Optional[int] = None
+    pass
 
 
 class FNRCalculation(LegacyClassificationQuality[FNR]):
@@ -348,8 +318,7 @@ class FNRCalculation(LegacyClassificationQuality[FNR]):
 
 
 class RocAuc(ClassificationQuality):
-    probas_threshold: Optional[float] = None
-    k: Optional[int] = None
+    pass
 
 
 class RocAucCalculation(LegacyClassificationQuality[RocAuc]):
@@ -366,8 +335,7 @@ class RocAucCalculation(LegacyClassificationQuality[RocAuc]):
 
 
 class LogLoss(ClassificationQuality):
-    probas_threshold: Optional[float] = None
-    k: Optional[int] = None
+    pass
 
 
 class LogLossCalculation(LegacyClassificationQuality[LogLoss]):
@@ -381,3 +349,78 @@ class LogLossCalculation(LegacyClassificationQuality[LogLoss]):
 
     def display_name(self) -> str:
         return "LogLoss metric"
+
+
+class LegacyClassificationDummy(
+    LegacyMetricCalculation[
+        SingleValue,
+        TSingleValueMetric,
+        ClassificationDummyMetricResults,
+        ClassificationDummyMetric,
+    ],
+    Generic[TSingleValueMetric],
+    abc.ABC,
+):
+    _legacy_metric = None
+
+    def legacy_metric(self) -> ClassificationDummyMetric:
+        if self._legacy_metric is None:
+            self._legacy_metric = ClassificationDummyMetric(self.metric.probas_threshold, self.metric.k)
+        return self._legacy_metric
+
+    def calculate(self, current_data: Dataset, reference_data: Optional[Dataset]) -> SingleValue:
+        raise NotImplementedError()
+
+    @abc.abstractmethod
+    def calculate_value(
+        self,
+        context: "Context",
+        legacy_result: ClassificationDummyMetricResults,
+        render: List[BaseWidgetInfo],
+    ) -> SingleValue:
+        raise NotImplementedError()
+
+    def get_tests(self, value: SingleValue) -> Generator[MetricTestResult, None, None]:
+        yield from (t.to_test()(self, value) for t in self.metric.tests)
+
+
+class DummyPrecision(ClassificationQuality):
+    pass
+
+
+class DummyPrecisionCalculation(LegacyClassificationDummy[DummyPrecision]):
+    def calculate_value(
+        self, context: "Context", legacy_result: ClassificationDummyMetricResults, render: List[BaseWidgetInfo]
+    ) -> SingleValue:
+        return SingleValue(legacy_result.dummy.precision)
+
+    def display_name(self) -> str:
+        return "Dummy precision metric"
+
+
+class DummyRecall(ClassificationQuality):
+    pass
+
+
+class DummyRecallCalculation(LegacyClassificationDummy[DummyRecall]):
+    def calculate_value(
+        self, context: "Context", legacy_result: ClassificationDummyMetricResults, render: List[BaseWidgetInfo]
+    ) -> SingleValue:
+        return SingleValue(legacy_result.dummy.recall)
+
+    def display_name(self) -> str:
+        return "Dummy recall metric"
+
+
+class DummyF1Score(ClassificationQuality):
+    pass
+
+
+class DummyF1ScoreCalculation(LegacyClassificationDummy[DummyF1Score]):
+    def calculate_value(
+        self, context: "Context", legacy_result: ClassificationDummyMetricResults, render: List[BaseWidgetInfo]
+    ) -> SingleValue:
+        return SingleValue(legacy_result.dummy.f1)
+
+    def display_name(self) -> str:
+        return "Dummy F1 score metric"

@@ -514,6 +514,7 @@ class Snapshot(BaseModel):
     test_ids: List[int] = []
     options: Options
     links: SnapshotLinks = SnapshotLinks()
+    version: str = "1"
 
     def save(self, filename):
         with open(filename, "w") as f:

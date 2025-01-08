@@ -15,6 +15,8 @@ from evidently.base_metric import InputData
 from evidently.base_metric import Metric as LegacyMetric
 from evidently.base_metric import MetricResult as LegacyMetricResult
 from evidently.future.container import MetricContainer
+from evidently.future.datasets import BinaryClassification
+from evidently.future.datasets import DataDefinition
 from evidently.future.datasets import Dataset
 from evidently.future.datasets import DatasetColumn
 from evidently.future.metric_types import Metric
@@ -100,22 +102,22 @@ class Context:
             self._input_data[1].as_dataframe() if self._input_data[1] is not None else None,
             self._input_data[0].as_dataframe(),
             ColumnMapping(
-                target=classification.target,
-                prediction=classification.prediction_probas,
-                pos_label=classification.pos_label,
-                target_names=classification.labels,
+                target=classification.target if classification is not None else None,
+                prediction=(classification.prediction_probas or classification.prediction_labels)
+                if classification is not None
+                else None,
+                pos_label=classification.pos_label if isinstance(classification, BinaryClassification) else None,
+                target_names=classification.labels if classification is not None else None,
             ),
             None,
             {},
             None,
             None,
         )
-        for _, obj in _discover_dependencies(metric):
-            dep_fp = obj.get_fingerprint()
-            if dep_fp not in self._legacy_metrics:
-                result = obj.calculate(input_data)
-                object.__setattr__(obj, "get_result", lambda: result)
-                self._legacy_metrics[obj.get_fingerprint()] = (result, [])
+        dependencies = _discover_dependencies(metric)
+        for _, obj in dependencies:
+            (result, render) = self.get_legacy_metric(obj)
+            object.__setattr__(obj, "get_result", lambda: result)
         fp = metric.get_fingerprint()
         if fp not in self._legacy_metrics:
             result = metric.calculate(input_data)
@@ -123,6 +125,10 @@ class Context:
             object.__setattr__(metric, "get_result", lambda: result)
             self._legacy_metrics[fp] = (result, renderer.render_html(metric))
         return typing.cast(T, self._legacy_metrics[fp][0]), self._legacy_metrics[fp][1]
+
+    @property
+    def data_definition(self) -> DataDefinition:
+        return self._input_data[0]._data_definition
 
 
 class Snapshot:

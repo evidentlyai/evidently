@@ -13,7 +13,7 @@ from evidently.future.metric_types import Value
 
 
 class ComparisonTest(MetricTest[SingleValueTest]):
-    threshold: Union[int, float]
+    threshold: Union[float, int]
     __short_name__: ClassVar[str]
     __full_name__: ClassVar[str]
 
