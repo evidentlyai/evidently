@@ -1,5 +1,6 @@
 # ruff: noqa: E501
 # fmt: off
+from evidently.future.metric_types import BoundTest
 from evidently.future.metric_types import Metric
 from evidently.future.metric_types import MetricTest
 from evidently.pydantic_utils import register_type_alias
@@ -55,3 +56,28 @@ register_type_alias(MetricTest, "evidently.future.tests.numerical_tests.GreaterO
 register_type_alias(MetricTest, "evidently.future.tests.numerical_tests.GreaterThanMetricTest", "evidently:test_config:GreaterThanMetricTest")
 register_type_alias(MetricTest, "evidently.future.tests.numerical_tests.LessOrEqualMetricTest", "evidently:test_config:LessOrEqualMetricTest")
 register_type_alias(MetricTest, "evidently.future.tests.numerical_tests.LessThanMetricTest", "evidently:test_config:LessThanMetricTest")
+
+register_type_alias(Metric, "evidently.future.metric_types.MeanStdMetric", "evidently:metric_v2:MeanStdMetric")
+register_type_alias(Metric, "evidently.future.metrics.classification.DummyF1Score", "evidently:metric_v2:DummyF1Score")
+register_type_alias(Metric, "evidently.future.metrics.classification.DummyPrecision", "evidently:metric_v2:DummyPrecision")
+register_type_alias(Metric, "evidently.future.metrics.classification.DummyRecall", "evidently:metric_v2:DummyRecall")
+register_type_alias(Metric, "evidently.future.metrics.classification.LogLoss", "evidently:metric_v2:LogLoss")
+register_type_alias(Metric, "evidently.future.metrics.classification.RocAuc", "evidently:metric_v2:RocAuc")
+register_type_alias(Metric, "evidently.future.metrics.regression.AbsMaxError", "evidently:metric_v2:AbsMaxError")
+register_type_alias(Metric, "evidently.future.metrics.regression.MAE", "evidently:metric_v2:MAE")
+register_type_alias(Metric, "evidently.future.metrics.regression.MAPE", "evidently:metric_v2:MAPE")
+register_type_alias(Metric, "evidently.future.metrics.regression.MeanError", "evidently:metric_v2:MeanError")
+register_type_alias(Metric, "evidently.future.metrics.regression.R2Score", "evidently:metric_v2:R2Score")
+register_type_alias(Metric, "evidently.future.metrics.regression.RMSE", "evidently:metric_v2:RMSE")
+register_type_alias(MetricTest, "evidently.future.tests.categorical_tests.IsInMetricTest", "evidently:test_v2:IsInMetricTest")
+register_type_alias(MetricTest, "evidently.future.tests.categorical_tests.NotInMetricTest", "evidently:test_v2:NotInMetricTest")
+register_type_alias(MetricTest, "evidently.future.tests.numerical_tests.ComparisonTest", "evidently:test_v2:ComparisonTest")
+register_type_alias(MetricTest, "evidently.future.tests.numerical_tests.EqualMetricTest", "evidently:test_v2:EqualMetricTest")
+register_type_alias(MetricTest, "evidently.future.tests.numerical_tests.GreaterOrEqualMetricTest", "evidently:test_v2:GreaterOrEqualMetricTest")
+register_type_alias(MetricTest, "evidently.future.tests.numerical_tests.GreaterThanMetricTest", "evidently:test_v2:GreaterThanMetricTest")
+register_type_alias(MetricTest, "evidently.future.tests.numerical_tests.LessOrEqualMetricTest", "evidently:test_v2:LessOrEqualMetricTest")
+register_type_alias(MetricTest, "evidently.future.tests.numerical_tests.LessThanMetricTest", "evidently:test_v2:LessThanMetricTest")
+register_type_alias(BoundTest, "evidently.future.metric_types.ByLabelBoundTest", "evidently:bound_test:ByLabelBoundTest")
+register_type_alias(BoundTest, "evidently.future.metric_types.CountBoundTest", "evidently:bound_test:CountBoundTest")
+register_type_alias(BoundTest, "evidently.future.metric_types.MeanStdBoundTest", "evidently:bound_test:MeanStdBoundTest")
+register_type_alias(BoundTest, "evidently.future.metric_types.SingleValueBoundTest", "evidently:bound_test:SingleValueBoundTest")
