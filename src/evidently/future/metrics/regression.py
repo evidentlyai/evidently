@@ -11,18 +11,18 @@ from evidently.future.metric_types import SingleValueMetric
 from evidently.future.metric_types import TMetric
 from evidently.future.metrics._legacy import LegacyMetricCalculation
 from evidently.future.report import Context
-from evidently.metrics import RegressionPerformanceMetrics
-from evidently.metrics.regression_performance.regression_performance_metrics import RegressionPerformanceMetricsResults
+from evidently.metrics.regression_performance.regression_quality import RegressionQualityMetric
+from evidently.metrics.regression_performance.regression_quality import RegressionQualityMetricResults
 from evidently.model.widget import BaseWidgetInfo
 
 
 class LegacyRegressionMeanStdMetric(
-    LegacyMetricCalculation[MeanStdValue, TMetric, RegressionPerformanceMetricsResults, RegressionPerformanceMetrics],
+    LegacyMetricCalculation[MeanStdValue, TMetric, RegressionQualityMetricResults, RegressionQualityMetric],
     Generic[TMetric],
     abc.ABC,
 ):
-    def legacy_metric(self) -> RegressionPerformanceMetrics:
-        return RegressionPerformanceMetrics()
+    def legacy_metric(self) -> RegressionQualityMetric:
+        return RegressionQualityMetric()
 
     def get_tests(self, value: MeanStdValue) -> Generator[MetricTestResult, None, None]:
         # todo: do not call to_metric here
@@ -31,12 +31,12 @@ class LegacyRegressionMeanStdMetric(
 
 
 class LegacyRegressionSingleValueMetric(
-    LegacyMetricCalculation[SingleValue, TMetric, RegressionPerformanceMetricsResults, RegressionPerformanceMetrics],
+    LegacyMetricCalculation[SingleValue, TMetric, RegressionQualityMetricResults, RegressionQualityMetric],
     Generic[TMetric],
     abc.ABC,
 ):
-    def legacy_metric(self) -> RegressionPerformanceMetrics:
-        return RegressionPerformanceMetrics()
+    def legacy_metric(self) -> RegressionQualityMetric:
+        return RegressionQualityMetric()
 
     def get_tests(self, value: SingleValue) -> Generator[MetricTestResult, None, None]:
         yield from (t.to_test()(self, value) for t in self.metric.tests)
@@ -48,9 +48,9 @@ class MeanError(MeanStdMetric):
 
 class MeanErrorCalculation(LegacyRegressionMeanStdMetric[MeanError]):
     def calculate_value(
-        self, context: Context, legacy_result: RegressionPerformanceMetricsResults, render: List[BaseWidgetInfo]
+        self, context: Context, legacy_result: RegressionQualityMetricResults, render: List[BaseWidgetInfo]
     ) -> MeanStdValue:
-        return MeanStdValue(legacy_result.current.mean_error, 0)
+        return MeanStdValue(legacy_result.current.mean_error, legacy_result.current.error_std)
 
     def display_name(self) -> str:
         return "Mean Error"
@@ -62,9 +62,9 @@ class MAE(MeanStdMetric):
 
 class MAECalculation(LegacyRegressionMeanStdMetric[MAE]):
     def calculate_value(
-        self, context: Context, legacy_result: RegressionPerformanceMetricsResults, render: List[BaseWidgetInfo]
+        self, context: Context, legacy_result: RegressionQualityMetricResults, render: List[BaseWidgetInfo]
     ) -> MeanStdValue:
-        return MeanStdValue(legacy_result.current.mean_abs_error, 0)
+        return MeanStdValue(legacy_result.current.mean_abs_error, legacy_result.current.abs_error_std)
 
     def display_name(self) -> str:
         return "Mean Absolute Error"
@@ -76,7 +76,7 @@ class RMSE(SingleValueMetric):
 
 class RMSECalculation(LegacyRegressionSingleValueMetric[RMSE]):
     def calculate_value(
-        self, context: Context, legacy_result: RegressionPerformanceMetricsResults, render: List[BaseWidgetInfo]
+        self, context: Context, legacy_result: RegressionQualityMetricResults, render: List[BaseWidgetInfo]
     ) -> SingleValue:
         return SingleValue(legacy_result.current.rmse)
 
@@ -90,9 +90,9 @@ class MAPE(MeanStdMetric):
 
 class MAPECalculation(LegacyRegressionMeanStdMetric[MAPE]):
     def calculate_value(
-        self, context: Context, legacy_result: RegressionPerformanceMetricsResults, render: List[BaseWidgetInfo]
+        self, context: Context, legacy_result: RegressionQualityMetricResults, render: List[BaseWidgetInfo]
     ) -> MeanStdValue:
-        return MeanStdValue(legacy_result.current.mean_abs_perc_error, 0)
+        return MeanStdValue(legacy_result.current.mean_abs_perc_error, legacy_result.current.abs_perc_error_std)
 
     def display_name(self) -> str:
         return "Mean Absolute Percentage Error"
@@ -104,7 +104,7 @@ class R2Score(SingleValueMetric):
 
 class R2ScoreCalculation(LegacyRegressionSingleValueMetric[R2Score]):
     def calculate_value(
-        self, context: Context, legacy_result: RegressionPerformanceMetricsResults, render: List[BaseWidgetInfo]
+        self, context: Context, legacy_result: RegressionQualityMetricResults, render: List[BaseWidgetInfo]
     ) -> SingleValue:
         return SingleValue(legacy_result.current.r2_score)
 
@@ -118,7 +118,7 @@ class AbsMaxError(SingleValueMetric):
 
 class AbsMaxErrorCalculation(LegacyRegressionSingleValueMetric[AbsMaxError]):
     def calculate_value(
-        self, context: Context, legacy_result: RegressionPerformanceMetricsResults, render: List[BaseWidgetInfo]
+        self, context: Context, legacy_result: RegressionQualityMetricResults, render: List[BaseWidgetInfo]
     ) -> SingleValue:
         return SingleValue(legacy_result.current.abs_error_max)
 

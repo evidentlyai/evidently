@@ -252,7 +252,7 @@ def get_default_render(title: str, result: TResult) -> List[BaseWidgetInfo]:
                 counters=[CounterData(label="", value=str(result.mean))],
             ),
             counter(
-                title=f"{title}: stds",
+                title=f"{title}: std",
                 size=WidgetSize.HALF,
                 counters=[CounterData(label="", value=f"{result.std:.2f}")],
             ),
