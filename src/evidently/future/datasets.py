@@ -114,10 +114,10 @@ class DataDefinition:
         if column_name in self.get_datetime_features():
             return ColumnType.Datetime
 
-    def get_classification(self, classification_id: str) -> Classification:
+    def get_classification(self, classification_id: str) -> Optional[Classification]:
         item_list = list(filter(lambda x: x.name == classification_id, self.classifications))
         if len(item_list) == 0:
-            raise ValueError("No classification with id {}".format(classification_id))
+            return None
         if len(item_list) > 1:
             raise ValueError("More than one classification with id {}".format(classification_id))
         return item_list[0]

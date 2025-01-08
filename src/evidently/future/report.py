@@ -102,8 +102,10 @@ class Context:
             self._input_data[1].as_dataframe() if self._input_data[1] is not None else None,
             self._input_data[0].as_dataframe(),
             ColumnMapping(
-                target=classification.target,
-                prediction=classification.prediction_probas,
+                target=classification.target if classification is not None else None,
+                prediction=(classification.prediction_probas or classification.prediction_labels)
+                if classification is not None
+                else None,
                 pos_label=classification.pos_label if isinstance(classification, BinaryClassification) else None,
                 target_names=classification.labels,
             ),
