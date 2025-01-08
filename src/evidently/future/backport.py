@@ -146,6 +146,7 @@ def snapshot_v2_to_v1(snapshot: SnapshotV2) -> SnapshotV1:
         metrics_ids=list(range(len(metrics))),
         test_ids=[],
         options=Options.from_any_options(None),
+        version="2",
     )
     if len(tests) > 0:
         test_widgets = snapshot.as_test_suite()._build_dashboard_info()[1].widgets
