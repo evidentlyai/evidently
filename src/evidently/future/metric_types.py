@@ -369,6 +369,10 @@ class Metric(AutoAliasMixin, EvidentlyBaseModel, Generic[TCalculation]):
     def get_metric_id(self) -> str:
         return self.get_fingerprint()
 
+    @property
+    def metric_id(self) -> str:
+        return self.get_fingerprint()
+
     def _default_tests(self) -> List[MetricTestProto[TResult]]:
         """
         allows to redefine default tests for metric
