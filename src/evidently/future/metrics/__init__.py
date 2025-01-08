@@ -32,6 +32,12 @@ from .dataset_statistics import DuplicatedRowCount
 from .dataset_statistics import EmptyColumnsCount
 from .dataset_statistics import EmptyRowsCount
 from .dataset_statistics import RowCount
+from .regression import MAE
+from .regression import MAPE
+from .regression import RMSE
+from .regression import AbsMaxError
+from .regression import MeanError
+from .regression import R2Score
 
 __all__ = [
     # column statistics metrics
@@ -71,4 +77,11 @@ __all__ = [
     "PrecisionByLabel",
     "RecallByLabel",
     "RocAucByLabel",
+    # regression
+    "MeanError",
+    "MAE",
+    "MAPE",
+    "RMSE",
+    "R2Score",
+    "AbsMaxError",
 ]

@@ -244,6 +244,19 @@ def get_default_render(title: str, result: TResult) -> List[BaseWidgetInfo]:
                 counters=[CounterData(label="", value=f"{result.share:.2f}")],
             ),
         ]
+    if isinstance(result, MeanStdValue):
+        return [
+            counter(
+                title=f"{title}: mean",
+                size=WidgetSize.HALF,
+                counters=[CounterData(label="", value=str(result.mean))],
+            ),
+            counter(
+                title=f"{title}: stds",
+                size=WidgetSize.HALF,
+                counters=[CounterData(label="", value=f"{result.std:.2f}")],
+            ),
+        ]
     raise NotImplementedError(f"No default render for {type(result)}")
 
 
@@ -456,3 +469,18 @@ class CountCalculation(MetricCalculation[CountValue, TCountMetric], Generic[TCou
         # todo: do not call to_metric here
         yield from (t.to_test()(self, value.get_count()) for t in self.metric.count_tests)
         yield from (t.to_test()(self, value.get_share()) for t in self.metric.share_tests)
+
+
+class MeanStdMetric(Metric["MeanStdCalculation"]):
+    mean_tests: List[MetricTest[SingleValue]] = []
+    std_tests: List[MetricTest[SingleValue]] = []
+
+
+TMeanStdMetric = TypeVar("TMeanStdMetric", bound=MeanStdMetric)
+
+
+class MeanStdCalculation(MetricCalculation[MeanStdValue, TMeanStdMetric], Generic[TMeanStdMetric], ABC):
+    def get_tests(self, value: MeanStdValue) -> Generator[MetricTestResult, None, None]:
+        # todo: do not call to_metric here
+        yield from (t.to_test()(self, value.get_mean()) for t in self.metric.mean_tests)
+        yield from (t.to_test()(self, value.get_std()) for t in self.metric.std_tests)
