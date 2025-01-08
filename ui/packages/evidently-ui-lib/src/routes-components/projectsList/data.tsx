@@ -15,9 +15,14 @@ export const getProjectsListActions = ({ api }: API) => ({
         params: { path: { project_id: args.data.project_id } }
       })
       .then(responseParser({ notThrowExc: true })),
-  'create-project': (args: ActionArgs<{ data: { project: ProjectModel } }>) =>
+  'create-project': (
+    args: ActionArgs<{ data: { project: ProjectModel; orgId?: string | null } }>
+  ) =>
     api
-      .POST('/api/projects', { body: args.data.project })
+      .POST('/api/projects', {
+        body: args.data.project,
+        params: { query: { org_id: args.data.orgId } }
+      })
       .then(responseParser({ notThrowExc: true })),
   'edit-project': (args: ActionArgs<{ data: { project: StrictID<ProjectModel> } }>) =>
     api

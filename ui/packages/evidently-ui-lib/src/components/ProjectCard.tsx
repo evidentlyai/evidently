@@ -1,6 +1,7 @@
 import {
   Box,
   Button,
+  Collapse,
   IconButton,
   Paper,
   TextField,
@@ -232,7 +233,7 @@ export const AddNewProjectButton = ({
         </Tooltip>
       </Box>
 
-      {opened && (
+      <Collapse in={opened} unmountOnExit>
         <Box p={3} display={'flex'} flexDirection={'column'} rowGap={1}>
           <EditProjectInfoForm
             disabled={disabled}
@@ -240,7 +241,7 @@ export const AddNewProjectButton = ({
             onSuccess={onEditProject}
           />
         </Box>
-      )}
+      </Collapse>
     </Box>
   )
 }
