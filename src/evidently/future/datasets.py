@@ -115,7 +115,7 @@ class DataDefinition:
             return ColumnType.Datetime
 
     def get_classification(self, classification_id: str) -> Optional[Classification]:
-        item_list = list(filter(lambda x: x.name == classification_id, self.classifications))
+        item_list = list(filter(lambda x: x.name == classification_id, self.classifications or []))
         if len(item_list) == 0:
             return None
         if len(item_list) > 1:

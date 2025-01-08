@@ -107,7 +107,7 @@ class Context:
                 if classification is not None
                 else None,
                 pos_label=classification.pos_label if isinstance(classification, BinaryClassification) else None,
-                target_names=classification.labels,
+                target_names=classification.labels if classification is not None else None,
             ),
             None,
             {},
