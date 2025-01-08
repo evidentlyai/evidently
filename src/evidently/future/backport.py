@@ -10,17 +10,14 @@ from typing import Union
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric as MetricV1
 from evidently.base_metric import MetricResult as MetricResultV1
-from evidently.core import ColumnType
 from evidently.core import new_id
-from evidently.future.datasets import ColumnInfo
 from evidently.future.datasets import DataDefinition
 from evidently.future.datasets import Dataset
+from evidently.future.metric_types import BoundTest
 from evidently.future.metric_types import ByLabelValue
 from evidently.future.metric_types import CountValue
 from evidently.future.metric_types import Metric as MetricV2
 from evidently.future.metric_types import MetricResult as MetricResultV2
-from evidently.future.metric_types import MetricTest
-from evidently.future.metric_types import MetricTest as TestV2
 from evidently.future.metric_types import MetricTestResult
 from evidently.future.metric_types import SingleValue
 from evidently.future.metric_types import TResult
@@ -41,7 +38,9 @@ from evidently.ui.dashboards.base import DashboardPanel
 from evidently.ui.dashboards.base import PanelValue
 from evidently.ui.dashboards.base import ReportFilter
 from evidently.ui.dashboards.utils import PlotType
+from evidently.ui.errors import EvidentlyServiceError
 from evidently.ui.type_aliases import ProjectID
+from evidently.ui.workspace import RemoteWorkspace
 
 
 class MetricResultV2Adapter(MetricResultV1):
@@ -114,7 +113,7 @@ def snapshot_v2_to_v1(snapshot: SnapshotV2) -> SnapshotV1:
     metrics: List[MetricV1] = []
     metric_results: List[MetricResultV1] = []
     tests: List[TestV1] = []
-    tests_v2: List[TestV2] = []
+    tests_v2: List[BoundTest] = []
     test_results: List[TestResultV1] = []
     context = snapshot.context
     for metric_id, metric_result in context._metrics.items():
@@ -123,9 +122,9 @@ def snapshot_v2_to_v1(snapshot: SnapshotV2) -> SnapshotV1:
         metrics.append(metric_v2_to_v1(metric))
         metric_results.append(metric_result_v2_to_v1(metric_result))
 
-        for test, test_result in zip(metric.tests, metric_result.tests or ()):
-            tests_v2.append(test)
-            tests.append(TestV2Adapter(test=test))
+        for test_config, test_result in (metric_result._tests or {}).items():
+            tests_v2.append(test_config)
+            tests.append(TestV2Adapter(test=test_config))
             test_results.append(
                 TestResultV1(
                     name=test_result.name,
@@ -194,7 +193,7 @@ class TestV2Adapter(TestV1):
     name: ClassVar[str] = "TestV2Adapter"
     group: ClassVar[str] = "TestV2Adapter"
     # fixme: needed for deduplication
-    test: TestV2
+    test: BoundTest
 
     def check(self) -> TestResultV1:
         raise NotImplementedError
@@ -209,13 +208,16 @@ class TestV2Parameters(TestParameters):
 
 
 class TestsConfig(MetricV2):
-    tests: List[MetricTest] = []
+    tests: List[BoundTest] = []
 
     def to_calculation(self):
         raise NotImplementedError
 
     def get_tests(self, value: TResult) -> Generator[MetricTestResult, None, None]:
         raise NotImplementedError
+
+    def get_bound_tests(self) -> List[BoundTest]:
+        return self.tests
 
 
 def main():
@@ -224,17 +226,12 @@ def main():
     from evidently.future.metrics import MeanValue
     from evidently.future.report import Report as ReportV2
     from evidently.future.tests import lte
-    from evidently.ui.workspace import Workspace
 
     def create_snapshot(i):
         df = pd.DataFrame({"col": list(range(i + 5))})
         dataset = Dataset.from_pandas(
             df,
-            data_definition=DataDefinition(
-                {
-                    "col": ColumnInfo(ColumnType.Numerical),
-                }
-            ),
+            data_definition=DataDefinition(numerical_features=["col"]),
         )
         report = ReportV2([MeanValue(column="col", tests=[lte(4)])])
         snapshot_v2 = report.run(dataset, None)
@@ -246,10 +243,14 @@ def main():
         snapshot_v1.timestamp = datetime.datetime.now() - datetime.timedelta(days=1)
         return snapshot_v1
 
-    ws = Workspace.create("./workspace")
+    ws = RemoteWorkspace("http://127.0.0.1:8000")
+    # ws = Workspace.create("./workspace")
     from evidently.ui.type_aliases import ZERO_UUID
 
-    project = ws.get_project(ZERO_UUID)
+    try:
+        project = ws.get_project(ZERO_UUID)
+    except EvidentlyServiceError:
+        project = None
     if project is None:
         from evidently.ui.base import Project
 
