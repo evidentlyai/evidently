@@ -36,6 +36,9 @@ from .regression import MAE
 from .regression import MAPE
 from .regression import RMSE
 from .regression import AbsMaxError
+from .regression import DummyMAE
+from .regression import DummyMAPE
+from .regression import DummyRMSE
 from .regression import MeanError
 from .regression import R2Score
 
@@ -84,4 +87,7 @@ __all__ = [
     "RMSE",
     "R2Score",
     "AbsMaxError",
+    "DummyMAE",
+    "DummyMAPE",
+    "DummyRMSE",
 ]
