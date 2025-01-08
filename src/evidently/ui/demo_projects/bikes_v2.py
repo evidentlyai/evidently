@@ -30,7 +30,7 @@ from evidently.ui.demo_projects.bikes import create_data
 from evidently.ui.workspace.base import WorkspaceBase
 
 
-def create_report(i: int, data: Tuple[DataFrame, DataFrame, ColumnMapping]):
+def create_snapshot(i: int, data: Tuple[DataFrame, DataFrame, ColumnMapping]):
     current, reference, column_mapping = data
 
     report = Report(
@@ -60,7 +60,7 @@ def create_report(i: int, data: Tuple[DataFrame, DataFrame, ColumnMapping]):
 
     snapshot = report.run(dataset, None)
 
-    return snapshot_v2_to_v1(snapshot).as_report()
+    return snapshot_v2_to_v1(snapshot)
 
 
 def noop():
@@ -204,8 +204,9 @@ def create_project(workspace: WorkspaceBase, name: str):
 bikes_v2_demo_project = DemoProject(
     name="Demo project - Bikes v2",
     create_data=create_data,
-    create_report=create_report,
-    create_project=create_project,
+    create_snapshot=create_snapshot,
+    create_report=None,
     create_test_suite=None,
+    create_project=create_project,
     count=28,
 )
