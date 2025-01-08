@@ -1,3 +1,4 @@
+from itertools import chain
 from typing import Dict
 from typing import List
 
@@ -8,7 +9,13 @@ from evidently.future.metric_types import MetricId
 from evidently.future.metric_types import MetricResult
 from evidently.future.metrics import ColumnCount
 from evidently.future.metrics import DuplicatedRowCount
+from evidently.future.metrics import MaxValue
+from evidently.future.metrics import MeanValue
+from evidently.future.metrics import MinValue
+from evidently.future.metrics import QuantileValue
 from evidently.future.metrics import RowCount
+from evidently.future.metrics import StdValue
+from evidently.future.metrics.column_statistics import MissingValueCount
 from evidently.future.metrics.dataset_statistics import AlmostConstantColumnsCount
 from evidently.future.metrics.dataset_statistics import AlmostDuplicatedColumnsCount
 from evidently.future.metrics.dataset_statistics import ConstantColumnsCount
@@ -19,6 +26,36 @@ from evidently.future.metrics.dataset_statistics import EmptyRowsCount
 from evidently.future.report import Context
 from evidently.metrics import DatasetSummaryMetric
 from evidently.model.widget import BaseWidgetInfo
+
+
+class ValueStats(MetricContainer):
+    def __init__(self, column: str):
+        self._column = column
+
+    def generate_metrics(self, context: Context) -> List[Metric]:
+        metrics: List[Metric] = [
+            RowCount(),
+            MissingValueCount(column=self._column),
+        ]
+        column_type = context.column(self._column).column_type
+        if column_type == ColumnType.Numerical:
+            metrics += [
+                MinValue(column=self._column),
+                MaxValue(column=self._column),
+                MeanValue(column=self._column),
+                StdValue(column=self._column),
+                QuantileValue(column=self._column, quantile=0.25),
+                QuantileValue(column=self._column, quantile=0.5),
+                QuantileValue(column=self._column, quantile=0.75),
+            ]
+        if column_type == ColumnType.Categorical:
+            metrics += []
+        if column_type == ColumnType.Datetime:
+            metrics += [
+                MinValue(column=self._column),
+                MaxValue(column=self._column),
+            ]
+        return metrics
 
 
 class DatasetStats(MetricContainer):
@@ -44,3 +81,10 @@ class DatasetStats(MetricContainer):
         metric = DatasetSummaryMetric()
         _, render = context.get_legacy_metric(metric)
         return render
+
+
+class TextEvals(MetricContainer):
+    def generate_metrics(self, context: Context) -> List[Metric]:
+        descriptors = context.data_definition.numerical_descriptors + context.data_definition.categorical_descriptors
+        metrics = list(chain(*[ValueStats(column).metrics(context) for column in descriptors]))
+        return metrics
