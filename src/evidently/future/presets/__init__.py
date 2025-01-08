@@ -2,6 +2,7 @@ from .classification import ClassificationDummyQuality
 from .classification import ClassificationQuality
 from .classification import ClassificationQualityByLabel
 from .dataset_stats import DatasetStats
+from .drift import DataDriftPreset
 from .regression import RegressionDummyQuality
 from .regression import RegressionQuality
 from .value_stats import ValueStats
@@ -14,4 +15,5 @@ __all__ = [
     "DatasetStats",
     "RegressionDummyQuality",
     "RegressionQuality",
+    "DataDriftPreset",
 ]

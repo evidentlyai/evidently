@@ -66,7 +66,6 @@ class Context:
         self._metrics = {}
         self._metric_defs = {}
         self._configuration = None
-        self._data_columns = {}
         self._metrics_graph = {}
         self._current_graph_level = self._metrics_graph
         self._legacy_metrics = {}

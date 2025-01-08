@@ -15,6 +15,7 @@ from .classification import Recall
 from .classification import RecallByLabel
 from .classification import RocAuc
 from .classification import RocAucByLabel
+from .column_statistics import DriftedColumnsCount
 from .column_statistics import MaxValue
 from .column_statistics import MeanValue
 from .column_statistics import MedianValue
@@ -45,6 +46,7 @@ from .regression import R2Score
 __all__ = [
     # column statistics metrics
     "ValueDrift",
+    "DriftedColumnsCount",
     "MaxValue",
     "MeanValue",
     "MedianValue",
