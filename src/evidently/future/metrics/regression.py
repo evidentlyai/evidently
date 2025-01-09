@@ -11,6 +11,8 @@ from evidently.future.metric_types import SingleValueMetric
 from evidently.future.metric_types import TMetric
 from evidently.future.metrics._legacy import LegacyMetricCalculation
 from evidently.future.report import Context
+from evidently.metrics import RegressionDummyMetric
+from evidently.metrics.regression_performance.regression_dummy_metric import RegressionDummyMetricResults
 from evidently.metrics.regression_performance.regression_quality import RegressionQualityMetric
 from evidently.metrics.regression_performance.regression_quality import RegressionQualityMetricResults
 from evidently.model.widget import BaseWidgetInfo
@@ -124,3 +126,80 @@ class AbsMaxErrorCalculation(LegacyRegressionSingleValueMetric[AbsMaxError]):
 
     def display_name(self) -> str:
         return "Absolute Max Error"
+
+
+class LegacyRegressionDummyMeanStdMetric(
+    LegacyMetricCalculation[MeanStdValue, TMetric, RegressionDummyMetricResults, RegressionDummyMetric],
+    Generic[TMetric],
+    abc.ABC,
+):
+    def legacy_metric(self) -> RegressionDummyMetric:
+        return RegressionDummyMetric()
+
+    def get_tests(self, value: MeanStdValue) -> Generator[MetricTestResult, None, None]:
+        # todo: do not call to_metric here
+        yield from (t.to_test()(self, value.get_mean()) for t in self.metric.mean_tests)
+        yield from (t.to_test()(self, value.get_std()) for t in self.metric.std_tests)
+
+
+class LegacyRegressionDummyValueMetric(
+    LegacyMetricCalculation[SingleValue, TMetric, RegressionDummyMetricResults, RegressionDummyMetric],
+    Generic[TMetric],
+    abc.ABC,
+):
+    def legacy_metric(self) -> RegressionDummyMetric:
+        return RegressionDummyMetric()
+
+    def get_tests(self, value: SingleValue) -> Generator[MetricTestResult, None, None]:
+        yield from (t.to_test()(self, value) for t in self.metric.tests)
+
+
+class DummyMAE(SingleValueMetric):
+    pass
+
+
+class DummyMAECalculation(LegacyRegressionDummyValueMetric[DummyMAE]):
+    def calculate_value(
+        self,
+        context: "Context",
+        legacy_result: RegressionDummyMetricResults,
+        render: List[BaseWidgetInfo],
+    ) -> SingleValue:
+        return SingleValue(legacy_result.mean_abs_error)
+
+    def display_name(self) -> str:
+        return "Dummy Mean Absolute Error"
+
+
+class DummyMAPE(SingleValueMetric):
+    pass
+
+
+class DummyMAPECalculation(LegacyRegressionDummyValueMetric[DummyMAPE]):
+    def calculate_value(
+        self,
+        context: "Context",
+        legacy_result: RegressionDummyMetricResults,
+        render: List[BaseWidgetInfo],
+    ) -> SingleValue:
+        return SingleValue(legacy_result.mean_abs_perc_error)
+
+    def display_name(self) -> str:
+        return "Dummy Mean Absolute Percentage Error"
+
+
+class DummyRMSE(SingleValueMetric):
+    pass
+
+
+class DummyRMSECalculation(LegacyRegressionDummyValueMetric[DummyRMSE]):
+    def calculate_value(
+        self,
+        context: "Context",
+        legacy_result: RegressionDummyMetricResults,
+        render: List[BaseWidgetInfo],
+    ) -> SingleValue:
+        return SingleValue(legacy_result.rmse)
+
+    def display_name(self) -> str:
+        return "Dummy RMSE"

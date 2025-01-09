@@ -12,7 +12,7 @@ const TabbedWidgetContent: React.FunctionComponent<
     <AutoTabs
       tabs={props.tabs.map((g) => ({
         title: g.title,
-        tab: WidgetRenderer(`${props.id}1`, g.widget)
+        tab: <WidgetRenderer info={g.widget} />
       }))}
     />
   )

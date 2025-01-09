@@ -4,6 +4,7 @@ from abc import abstractmethod
 from dataclasses import field
 from enum import Enum
 from typing import Dict
+from typing import Generator
 from typing import List
 from typing import Optional
 from typing import Tuple
@@ -122,6 +123,14 @@ class DataDefinition:
             raise ValueError("More than one classification with id {}".format(classification_id))
         return item_list[0]
 
+    def get_columns(self, types: List[ColumnType]) -> Generator[str, None, None]:
+        if ColumnType.Numerical in types:
+            yield from self.get_numerical_features()
+        if ColumnType.Categorical in types:
+            yield from self.get_categorical_features()
+        if ColumnType.Text in types:
+            yield from self.get_text_features()
+
 
 class DatasetColumn:
     type: ColumnType
@@ -203,7 +212,7 @@ class CategoricalColumnStats:
     label_stats: Dict[Label, LabelStats]
 
     @property
-    def most_common(self) -> Tuple[Label, LabelStats]:
+    def most_common(self) -> Optional[Tuple[Label, LabelStats]]:
         most_common = None
         for key, value in self.label_stats.items():
             if most_common is None:
@@ -211,6 +220,8 @@ class CategoricalColumnStats:
                 continue
             if self.label_stats[most_common].count < value.count:
                 most_common = key
+        if most_common is None:
+            return None
         return most_common, self.label_stats[most_common]
 
 

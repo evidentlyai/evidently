@@ -208,6 +208,7 @@ def metric_tests_widget(tests: List[MetricTestResult]) -> BaseWidgetInfo:
         size=2,
         type="test_suite",
         params={
+            "v2_test": True,
             "tests": [
                 dict(
                     title=test.name,

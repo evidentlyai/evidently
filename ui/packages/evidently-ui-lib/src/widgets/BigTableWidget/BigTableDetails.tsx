@@ -2,13 +2,7 @@ import type React from 'react'
 
 import { Box } from '@mui/material'
 
-import type {
-  AdditionalGraphInfo,
-  BigTableRowDetails,
-  DetailsPart,
-  WidgetInfo,
-  WidgetSize
-} from '~/api'
+import type { AdditionalGraphInfo, BigTableRowDetails, DetailsPart, WidgetSize } from '~/api'
 
 import DashboardContext, { type DashboardContextState } from '~/contexts/DashboardContext'
 
@@ -38,8 +32,7 @@ const RenderPart = (context: DashboardContextState, part: DetailsPart, widgetSiz
     }
     case 'widget': {
       const get = () => context.getAdditionWidgetData(part.id)
-      const render = (params: WidgetInfo) => WidgetRenderer(part.id, params)
-      return <LoadableView func={get}>{render}</LoadableView>
+      return <LoadableView func={get}>{(wi) => <WidgetRenderer info={wi} />}</LoadableView>
     }
     default:
       return <NotImplementedWidgetContent />

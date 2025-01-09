@@ -15,6 +15,7 @@ from .classification import Recall
 from .classification import RecallByLabel
 from .classification import RocAuc
 from .classification import RocAucByLabel
+from .column_statistics import DriftedColumnsCount
 from .column_statistics import MaxValue
 from .column_statistics import MeanValue
 from .column_statistics import MedianValue
@@ -36,12 +37,16 @@ from .regression import MAE
 from .regression import MAPE
 from .regression import RMSE
 from .regression import AbsMaxError
+from .regression import DummyMAE
+from .regression import DummyMAPE
+from .regression import DummyRMSE
 from .regression import MeanError
 from .regression import R2Score
 
 __all__ = [
     # column statistics metrics
     "ValueDrift",
+    "DriftedColumnsCount",
     "MaxValue",
     "MeanValue",
     "MedianValue",
@@ -84,4 +89,7 @@ __all__ = [
     "RMSE",
     "R2Score",
     "AbsMaxError",
+    "DummyMAE",
+    "DummyMAPE",
+    "DummyRMSE",
 ]

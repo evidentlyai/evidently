@@ -1,4 +1,6 @@
 import abc
+from typing import Dict
+from typing import Generic
 from typing import List
 from typing import Optional
 from typing import TypeVar
@@ -6,6 +8,7 @@ from typing import Union
 
 from evidently import ColumnType
 from evidently.calculations.data_drift import get_one_column_drift
+from evidently.calculations.stattests import PossibleStatTestType
 from evidently.future.datasets import Dataset
 from evidently.future.datasets import DatasetColumn
 from evidently.future.metric_types import CountCalculation
@@ -14,10 +17,16 @@ from evidently.future.metric_types import CountValue
 from evidently.future.metric_types import SingleValue
 from evidently.future.metric_types import SingleValueCalculation
 from evidently.future.metric_types import SingleValueMetric
+from evidently.future.metric_types import TMetric
+from evidently.future.metrics._legacy import LegacyMetricCalculation
+from evidently.future.report import Context
 from evidently.metric_results import DatasetColumns
 from evidently.metric_results import DatasetUtilityColumns
 from evidently.metric_results import HistogramData
 from evidently.metric_results import Label
+from evidently.metrics import DatasetDriftMetric
+from evidently.metrics.data_drift.dataset_drift_metric import DatasetDriftMetricResults
+from evidently.metrics.data_drift.embedding_drift_methods import DriftMethod
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options import ColorOptions
 from evidently.options.data_drift import DataDriftOptions
@@ -289,3 +298,53 @@ class ValueDriftCalculation(SingleValueCalculation[ValueDrift]):
 
     def display_name(self) -> str:
         return f"Value drift for {self.metric.column}"
+
+
+class DriftedColumnsCount(CountMetric):
+    columns: Optional[List[str]] = None
+    embeddings: Optional[List[str]] = None
+    embeddings_drift_method: Optional[Dict[str, DriftMethod]] = None
+    drift_share: float = 0.5
+    stattest: Optional[PossibleStatTestType] = None
+    cat_stattest: Optional[PossibleStatTestType] = None
+    num_stattest: Optional[PossibleStatTestType] = None
+    text_stattest: Optional[PossibleStatTestType] = None
+    per_column_stattest: Optional[Dict[str, PossibleStatTestType]] = None
+    stattest_threshold: Optional[float] = None
+    cat_stattest_threshold: Optional[float] = None
+    num_stattest_threshold: Optional[float] = None
+    text_stattest_threshold: Optional[float] = None
+    per_column_stattest_threshold: Optional[Dict[str, float]] = None
+
+
+class LegacyDriftedColumnsMetric(
+    LegacyMetricCalculation[CountValue, TMetric, DatasetDriftMetricResults, DatasetDriftMetric],
+    Generic[TMetric],
+    abc.ABC,
+):
+    def legacy_metric(self) -> DatasetDriftMetric:
+        return DatasetDriftMetric(
+            columns=self.metric.columns,
+            drift_share=self.metric.drift_share,
+            stattest=self.metric.stattest,
+            cat_stattest=self.metric.cat_stattest,
+            num_stattest=self.metric.num_stattest,
+            text_stattest=self.metric.text_stattest,
+            per_column_stattest=self.metric.per_column_stattest,
+            stattest_threshold=self.metric.stattest_threshold,
+            cat_stattest_threshold=self.metric.cat_stattest_threshold,
+            num_stattest_threshold=self.metric.num_stattest_threshold,
+            text_stattest_threshold=self.metric.text_stattest_threshold,
+            per_column_stattest_threshold=self.metric.per_column_stattest_threshold,
+        )
+
+
+class DriftedColumnCalculation(LegacyDriftedColumnsMetric[DriftedColumnsCount]):
+    def calculate_value(
+        self, context: Context, legacy_result: DatasetDriftMetricResults, render: List[BaseWidgetInfo]
+    ) -> CountValue:
+        result = CountValue(legacy_result.number_of_drifted_columns, legacy_result.share_of_drifted_columns)
+        return result
+
+    def display_name(self) -> str:
+        return "Count of Drifted Columns"

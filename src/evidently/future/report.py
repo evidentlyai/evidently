@@ -66,7 +66,6 @@ class Context:
         self._metrics = {}
         self._metric_defs = {}
         self._configuration = None
-        self._data_columns = {}
         self._metrics_graph = {}
         self._current_graph_level = self._metrics_graph
         self._legacy_metrics = {}
@@ -171,9 +170,7 @@ class Snapshot:
         self._widgets = widgets
 
     def _repr_html_(self):
-        from evidently.renderers.html_widgets import TabData
         from evidently.renderers.html_widgets import group_widget
-        from evidently.renderers.html_widgets import widget_tabs
 
         results = [
             (
@@ -183,16 +180,14 @@ class Snapshot:
             )
             for metric in self.context._metrics_graph.keys()
         ]
-        tabs = widget_tabs(
-            title="",
-            tabs=[
-                TabData("Metrics", group_widget(title="", widgets=self._widgets)),
-                TabData("Tests", metric_tests_widget(list(chain(*[result[2].tests.values() for result in results])))),
-            ],
-        )
-        return render_widgets(
-            [tabs],
-        )
+
+        tests = list(chain(*[result[2].tests.values() for result in results]))
+        widgets_to_render: List[BaseWidgetInfo] = [group_widget(title="", widgets=self._widgets)]
+
+        if len(tests) > 0:
+            widgets_to_render.append(metric_tests_widget(tests))
+
+        return render_widgets(widgets_to_render)
 
     def dict(self) -> dict:
         return {
