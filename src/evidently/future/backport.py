@@ -25,6 +25,7 @@ from evidently.future.report import Snapshot as SnapshotV2
 from evidently.metric_results import Label
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options.base import Options
+from evidently.pydantic_utils import Fingerprint
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.suite.base_suite import ContextPayload
@@ -97,6 +98,9 @@ class MetricV2Adapter(MetricV1[MetricResultV2Adapter]):
 
     def calculate(self, data: InputData) -> MetricResultV2Adapter:
         pass
+
+    def get_fingerprint(self) -> Fingerprint:
+        return self.metric.get_fingerprint()
 
 
 @default_renderer(MetricV2Adapter)
