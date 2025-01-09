@@ -271,6 +271,10 @@ class Dataset:
     def stats(self) -> DatasetStats:
         raise NotImplementedError()
 
+    @property
+    def data_definition(self) -> DataDefinition:
+        return self._data_definition
+
 
 class PandasDataset(Dataset):
     _data: pd.DataFrame
