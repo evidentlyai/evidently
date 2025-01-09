@@ -10,6 +10,7 @@ from typing import Union
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric as MetricV1
 from evidently.base_metric import MetricResult as MetricResultV1
+from evidently.core import ColumnType
 from evidently.core import new_id
 from evidently.future.datasets import DataDefinition
 from evidently.future.datasets import Dataset
@@ -25,6 +26,8 @@ from evidently.future.report import Snapshot as SnapshotV2
 from evidently.metric_results import Label
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options.base import Options
+from evidently.pipeline.column_mapping import RecomType
+from evidently.pipeline.column_mapping import TargetNames
 from evidently.pydantic_utils import Fingerprint
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
@@ -42,6 +45,9 @@ from evidently.ui.dashboards.utils import PlotType
 from evidently.ui.errors import EvidentlyServiceError
 from evidently.ui.type_aliases import ProjectID
 from evidently.ui.workspace import RemoteWorkspace
+from evidently.utils.data_preprocessing import ColumnDefinition
+from evidently.utils.data_preprocessing import DataDefinition as DataDefinitionV1
+from evidently.utils.data_preprocessing import PredictionColumns
 
 
 class MetricResultV2Adapter(MetricResultV1):
@@ -113,6 +119,40 @@ def metric_v2_to_v1(metric: MetricV2) -> MetricV1:
     return MetricV2Adapter(metric=metric)
 
 
+def data_definition_v2_to_v1(dd: DataDefinition, reference_present: bool) -> DataDefinitionV1:
+    """For now, only columns field is used"""
+    columns: Dict[str, ColumnDefinition] = {
+        **{col: ColumnDefinition(col, ColumnType.Numerical) for col in dd.get_numerical_features()},
+        **{col: ColumnDefinition(col, ColumnType.Text) for col in dd.get_text_features()},
+        **{col: ColumnDefinition(col, ColumnType.Categorical) for col in dd.get_categorical_features()},
+    }
+    target: Optional[ColumnDefinition] = None
+    prediction_columns: Optional[PredictionColumns] = None
+    id_column: Optional[ColumnDefinition] = None
+    datetime_column: Optional[ColumnDefinition] = None
+    embeddings: Optional[Dict[str, List[str]]] = None
+    user_id: Optional[ColumnDefinition] = None
+    item_id: Optional[ColumnDefinition] = None
+
+    task: Optional[str] = None
+    classification_labels: Optional[TargetNames] = None
+    recommendations_type: Optional[RecomType] = None
+    return DataDefinitionV1(
+        columns=columns,
+        target=target,
+        prediction_columns=prediction_columns,
+        id_column=id_column,
+        datetime_column=datetime_column,
+        embeddings=embeddings,
+        user_id=user_id,
+        item_id=item_id,
+        task=task,
+        classification_labels=classification_labels,
+        reference_present=reference_present,
+        recommendations_type=recommendations_type,
+    )
+
+
 def snapshot_v2_to_v1(snapshot: SnapshotV2) -> SnapshotV1:
     metrics: List[MetricV1] = []
     metric_results: List[MetricResultV1] = []
@@ -145,7 +185,13 @@ def snapshot_v2_to_v1(snapshot: SnapshotV2) -> SnapshotV1:
         timestamp=datetime.datetime.now(),
         metadata={},
         tags=[],
-        suite=ContextPayload(metrics=metrics, metric_results=metric_results, tests=tests, test_results=test_results),
+        suite=ContextPayload(
+            metrics=metrics,
+            metric_results=metric_results,
+            tests=tests,
+            test_results=test_results,
+            data_definition=data_definition_v2_to_v1(context.data_definition, context._input_data[1] is not None),
+        ),
         metrics_ids=list(range(len(metrics))),
         test_ids=[],
         options=Options.from_any_options(None),
