@@ -114,6 +114,7 @@ class DataDefinition:
             return ColumnType.Text
         if column_name in self.get_datetime_features():
             return ColumnType.Datetime
+        raise ValueError()
 
     def get_classification(self, classification_id: str) -> Optional[Classification]:
         item_list = list(filter(lambda x: x.name == classification_id, self.classifications or []))
@@ -290,7 +291,7 @@ class PandasDataset(Dataset):
         if data_definition is None:
             self._data_definition = self._generate_data_definition(data)
         else:
-            self._data_definition = dataclasses.replace(data_definition)
+            self._data_definition = DataDefinition(**dataclasses.asdict(data_definition))
         (rows, columns) = data.shape
 
         column_stats = {}
