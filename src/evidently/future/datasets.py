@@ -1,4 +1,5 @@
 import abc
+import copy
 import dataclasses
 from abc import abstractmethod
 from dataclasses import field
@@ -291,7 +292,7 @@ class PandasDataset(Dataset):
         if data_definition is None:
             self._data_definition = self._generate_data_definition(data)
         else:
-            self._data_definition = DataDefinition(**dataclasses.asdict(data_definition))
+            self._data_definition = copy.deepcopy(data_definition)
         (rows, columns) = data.shape
 
         column_stats = {}
