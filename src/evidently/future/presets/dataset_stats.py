@@ -1,6 +1,7 @@
 from itertools import chain
 from typing import Dict
 from typing import List
+from typing import Optional
 
 from evidently import ColumnType
 from evidently.future.container import MetricContainer
@@ -84,7 +85,14 @@ class DatasetStats(MetricContainer):
 
 
 class TextEvals(MetricContainer):
+    def __init__(self, columns: Optional[List[str]] = None):
+        self._columns = columns
+
     def generate_metrics(self, context: Context) -> List[Metric]:
-        descriptors = context.data_definition.numerical_descriptors + context.data_definition.categorical_descriptors
-        metrics = list(chain(*[ValueStats(column).metrics(context) for column in descriptors]))
+        if self._columns is None:
+            cols = context.data_definition.numerical_descriptors + context.data_definition.categorical_descriptors
+        else:
+            cols = self._columns
+        metrics = [RowCount()]
+        metrics.extend(list(chain(*[ValueStats(column).metrics(context)[1:] for column in cols])))
         return metrics
