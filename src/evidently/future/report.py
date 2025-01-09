@@ -1,5 +1,6 @@
 import json
 import typing
+from datetime import datetime
 from itertools import chain
 from typing import Dict
 from typing import List
@@ -28,6 +29,7 @@ from evidently.future.metric_types import render_widgets
 from evidently.future.preset_types import MetricPreset
 from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import DEFAULT_RENDERERS
+from evidently.suite.base_suite import MetadataValueType
 from evidently.suite.base_suite import _discover_dependencies
 from evidently.suite.base_suite import find_metric_renderer
 from evidently.utils import NumpyEncoder
@@ -206,13 +208,55 @@ class Snapshot:
 
 
 class Report:
-    def __init__(self, metrics: List[Union[Metric, MetricPreset, MetricContainer]]):
+    def __init__(
+        self,
+        metrics: List[Union[Metric, MetricPreset, MetricContainer]],
+        metadata: Dict[str, MetadataValueType] = None,
+        tags: List[str] = None,
+        model_id: str = None,
+        reference_id: str = None,
+        batch_size: str = None,
+        dataset_id: str = None,
+    ):
         self._metrics = metrics
+        self.metadata = metadata or {}
+        self.tags = tags or []
+        self._timestamp: Optional[datetime] = None
+        if model_id is not None:
+            self.set_model_id(model_id)
+        if batch_size is not None:
+            self.set_batch_size(batch_size)
+        if reference_id is not None:
+            self.set_reference_id(reference_id)
+        if dataset_id is not None:
+            self.set_dataset_id(dataset_id)
 
-    def run(self, current_data: Dataset, reference_data: Optional[Dataset]) -> Snapshot:
+    def run(
+        self,
+        current_data: Dataset,
+        reference_data: Optional[Dataset],
+        timestamp: Optional[datetime] = None,
+    ) -> Snapshot:
+        self._timestamp = timestamp
         snapshot = Snapshot(self)
         snapshot.run(current_data, reference_data)
         return snapshot
 
     def items(self) -> Sequence[Union[Metric, MetricPreset, MetricContainer]]:
         return self._metrics
+
+    def set_batch_size(self, batch_size: str):
+        self.metadata["batch_size"] = batch_size
+        return self
+
+    def set_model_id(self, model_id: str):
+        self.metadata["model_id"] = model_id
+        return self
+
+    def set_reference_id(self, reference_id: str):
+        self.metadata["reference_id"] = reference_id
+        return self
+
+    def set_dataset_id(self, dataset_id: str):
+        self.metadata["dataset_id"] = dataset_id
+        return self

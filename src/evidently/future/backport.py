@@ -1,5 +1,6 @@
 import dataclasses
 import datetime
+from typing import TYPE_CHECKING
 from typing import ClassVar
 from typing import Dict
 from typing import Generator
@@ -36,7 +37,6 @@ from evidently.suite.base_suite import Snapshot as SnapshotV1
 from evidently.tests.base_test import Test as TestV1
 from evidently.tests.base_test import TestParameters
 from evidently.tests.base_test import TestResult as TestResultV1
-from evidently.ui.base import DataStorage
 from evidently.ui.dashboards import DashboardPanelPlot
 from evidently.ui.dashboards.base import DashboardPanel
 from evidently.ui.dashboards.base import PanelValue
@@ -44,10 +44,12 @@ from evidently.ui.dashboards.base import ReportFilter
 from evidently.ui.dashboards.utils import PlotType
 from evidently.ui.errors import EvidentlyServiceError
 from evidently.ui.type_aliases import ProjectID
-from evidently.ui.workspace import RemoteWorkspace
 from evidently.utils.data_preprocessing import ColumnDefinition
 from evidently.utils.data_preprocessing import DataDefinition as DataDefinitionV1
 from evidently.utils.data_preprocessing import PredictionColumns
+
+if TYPE_CHECKING:
+    from evidently.ui.base import DataStorage
 
 
 class MetricResultV2Adapter(MetricResultV1):
@@ -182,9 +184,9 @@ def snapshot_v2_to_v1(snapshot: SnapshotV2) -> SnapshotV1:
     snapshot = SnapshotV1(
         id=new_id(),
         name="",
-        timestamp=datetime.datetime.now(),
-        metadata={},
-        tags=[],
+        timestamp=snapshot.report._timestamp,
+        metadata=snapshot.report.metadata,
+        tags=snapshot.report.tags,
         suite=ContextPayload(
             metrics=metrics,
             metric_results=metric_results,
@@ -276,6 +278,7 @@ def main():
     from evidently.future.metrics import MeanValue
     from evidently.future.report import Report as ReportV2
     from evidently.future.tests import lte
+    from evidently.ui.workspace import Workspace
 
     def create_snapshot(i):
         df = pd.DataFrame({"col": list(range(i + 5))})
@@ -284,17 +287,12 @@ def main():
             data_definition=DataDefinition(numerical_features=["col"]),
         )
         report = ReportV2([MeanValue(column="col", tests=[lte(4)])])
-        snapshot_v2 = report.run(dataset, None)
+        snapshot_v2 = report.run(dataset, None, timestamp=datetime.datetime.now() - datetime.timedelta(days=1))
 
-        snapshot_v1 = snapshot_v2_to_v1(snapshot_v2)
-        import uuid6
+        return snapshot_v2
 
-        snapshot_v1.id = uuid6.UUID(int=i, version=7)
-        snapshot_v1.timestamp = datetime.datetime.now() - datetime.timedelta(days=1)
-        return snapshot_v1
-
-    ws = RemoteWorkspace("http://127.0.0.1:8000")
-    # ws = Workspace.create("./workspace")
+    # ws = RemoteWorkspace("http://127.0.0.1:8000")
+    ws = Workspace.create("./workspace")
     from evidently.ui.type_aliases import ZERO_UUID
 
     try:
@@ -309,9 +307,9 @@ def main():
         project.dashboard.add_panel(SingleValueDashboardPanel(metric_id="mean:col"))
         project.save()
 
-    snapshot_v1 = create_snapshot(0)
-    snapshot_v1.save("snapshot_v1.json")
-    SnapshotV1.load("snapshot_v1.json")
+    # snapshot_v1 = create_snapshot(0)
+    # snapshot_v1.save("snapshot_v1.json")
+    # SnapshotV1.load("snapshot_v1.json")
 
     for i in range(10):
         project.add_snapshot(create_snapshot(i))

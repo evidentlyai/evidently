@@ -233,7 +233,8 @@ class PolymorphicModel(BaseModel):
         type_field.type_ = type_field.outer_type_ = literal_typename
 
         base_class = get_base_class(cls)
-        register_loaded_alias(base_class, cls, typename)
+        if (base_class, typename) not in LOADED_TYPE_ALIASES:
+            register_loaded_alias(base_class, cls, typename)
         if base_class != cls:
             base_typefield = base_class.__fields__["type"]
             base_typefield_type = base_typefield.type_
