@@ -1,12 +1,8 @@
-import { Grid, Typography } from '@mui/material'
+import { Typography } from '@mui/material'
 import type { WidgetInfo } from '~/api'
-import { DashboardContentWidgets } from '~/components/DashboardContent'
+import { DrawWidgets } from '~/components/WidgetsContent'
 
-export const DashboardWidgets = ({
-  widgets
-}: {
-  widgets: WidgetInfo[]
-}) => {
+export const DashboardWidgets = ({ widgets }: { widgets: WidgetInfo[] }) => {
   if (widgets.length === 0) {
     return (
       <Typography my={3} align='center' variant='h4'>
@@ -15,11 +11,5 @@ export const DashboardWidgets = ({
     )
   }
 
-  return (
-    <>
-      <Grid container spacing={3} direction='row' alignItems='stretch'>
-        <DashboardContentWidgets widgets={widgets} />
-      </Grid>
-    </>
-  )
+  return <DrawWidgets widgets={widgets} />
 }
