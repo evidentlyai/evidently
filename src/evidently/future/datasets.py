@@ -114,7 +114,7 @@ class DataDefinition:
             return ColumnType.Text
         if column_name in self.get_datetime_features():
             return ColumnType.Datetime
-        raise ValueError()
+        return ColumnType.Unknown
 
     def get_classification(self, classification_id: str) -> Optional[Classification]:
         item_list = list(filter(lambda x: x.name == classification_id, self.classifications or []))
