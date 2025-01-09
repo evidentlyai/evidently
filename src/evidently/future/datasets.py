@@ -156,7 +156,8 @@ class Descriptor:
 
 class FeatureDescriptor(Descriptor):
     def __init__(self, feature: GeneratedFeatures, alias: Optional[str] = None):
-        super().__init__(alias or f"{feature.as_column().display_name}")
+        feature_columns = feature.list_columns()
+        super().__init__(alias or f"{feature_columns[0].display_name}")
         self._feature = feature
 
     def generate_data(self, dataset: "Dataset") -> Union[DatasetColumn, Dict[str, DatasetColumn]]:
