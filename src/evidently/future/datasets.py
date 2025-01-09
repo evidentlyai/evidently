@@ -285,7 +285,7 @@ class PandasDataset(Dataset):
         if data_definition is None:
             self._data_definition = self._generate_data_definition(data)
         else:
-            self._data_definition = data_definition
+            self._data_definition = dataclasses.replace(data_definition)
         (rows, columns) = data.shape
 
         column_stats = {}
