@@ -101,26 +101,19 @@ class ExcludesWords(FeatureDescriptor):
 
 
 class HuggingFace(FeatureDescriptor):
-    def __init__(self, column_name: str, model: str, params: dict, display_name: str, alias: Optional[str] = None):
+    def __init__(self, column_name: str, model: str, params: dict, alias: str):
         from evidently.features.hf_feature import HuggingFaceFeature as HuggingFaceFeatureV1
 
-        feature = HuggingFaceFeatureV1(column_name=column_name, model=model, params=params, display_name=display_name)
+        feature = HuggingFaceFeatureV1(column_name=column_name, model=model, params=params, display_name=alias)
         super().__init__(feature, alias=alias)
 
 
 class HuggingFaceToxicity(FeatureDescriptor):
-    def __init__(
-        self,
-        column_name: str,
-        display_name: str,
-        model: Optional[str] = None,
-        toxic_label: Optional[str] = None,
-        alias: Optional[str] = None,
-    ):
+    def __init__(self, column_name: str, alias: str, model: Optional[str] = None, toxic_label: Optional[str] = None):
         from evidently.features.hf_feature import HuggingFaceToxicityFeature as HuggingFaceToxicityFeatureV1
 
         feature = HuggingFaceToxicityFeatureV1(
-            column_name=column_name, display_name=display_name, model=model, toxic_label=toxic_label
+            column_name=column_name, model=model, toxic_label=toxic_label, display_name=alias
         )
         super().__init__(feature, alias=alias)
 

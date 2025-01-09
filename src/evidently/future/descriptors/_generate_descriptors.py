@@ -93,8 +93,13 @@ def create_descriptor_function(feature_class: Type[GeneratedFeatures]):
         name = name[: -len("Feature")]
 
     args, kwargs = get_args_kwargs(feature_class)
-    kwargs["alias"] = ("Optional[str]", "None")
-    kwargs.pop("display_name", None)
+    display_name_required = "display_name" in args
+    if not display_name_required:
+        kwargs["alias"] = ("Optional[str]", "None")
+        kwargs.pop("display_name", None)
+    else:
+        args["alias"] = "str"
+        args.pop("display_name")
     args_str = ", ".join(f"{a}: {t}" for a, t in args.items())
     if len(kwargs) > 0:
         kwargs_str = ", " + ", ".join(f"{a}: {t} = {d}" for a, (t, d) in kwargs.items())
@@ -102,6 +107,8 @@ def create_descriptor_function(feature_class: Type[GeneratedFeatures]):
         kwargs_str = ""
 
     class_args = ", ".join(f"{k}={k}" for k in chain(args, kwargs) if k != "alias")
+    if display_name_required:
+        class_args += ", display_name=alias"
     res = f"""
 class {name}(FeatureDescriptor):
     def __init__(self, {args_str}{kwargs_str}):
