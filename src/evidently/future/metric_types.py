@@ -13,6 +13,7 @@ from typing import Generic
 from typing import List
 from typing import Optional
 from typing import Protocol
+from typing import Sequence
 from typing import Tuple
 from typing import Type
 from typing import TypeVar
@@ -51,7 +52,7 @@ class MetricResult:
         assert self._widget
         widget = copy(self._widget)
         if self._tests:
-            widget.append(metric_tests_widget(self.tests))
+            widget.append(metric_tests_widget(list(self.tests.values())))
         return render_results(self, html=False)
 
     def is_widget_set(self) -> bool:
@@ -75,15 +76,14 @@ class MetricResult:
 
 
 def render_widgets(widgets: List[BaseWidgetInfo]):
-    dashboard_id, dashboard_info, graphs = (
+    dashboard_id, dashboard_info = (
         "metric_" + str(uuid.uuid4()).replace("-", ""),
         DashboardInfo("Report", widgets=widgets),
-        {},
     )
     template_params = TemplateParams(
         dashboard_id=dashboard_id,
         dashboard_info=dashboard_info,
-        additional_graphs=graphs,
+        additional_graphs={},
     )
     return inline_iframe_html_template(template_params)
 
@@ -284,17 +284,13 @@ class MetricCalculationBase(Generic[TResult]):
         Returns:
 
         """
-        try:
-            result = self._call(context)
-            if not result.is_widget_set():
-                result.widget = get_default_render(self.display_name(), result)
-            test_results = {tc: tc.run_test(self, result) for tc in self.to_metric().get_bound_tests()}
-            if test_results and len(test_results) > 0:
-                result.set_tests(test_results)
-            return result
-        except BaseException as e:
-            e.add_note(f"metric_type: {type(self).__name__}")
-            raise
+        result = self._call(context)
+        if not result.is_widget_set():
+            result.widget = get_default_render(self.display_name(), result)
+        test_results = {tc: tc.run_test(self, result) for tc in self.to_metric().get_bound_tests()}
+        if test_results and len(test_results) > 0:
+            result.set_tests(test_results)
+        return result
 
     def _call(self, context: "Context") -> TResult:
         return self.calculate(*context._input_data)
@@ -352,7 +348,7 @@ class BoundTest(AutoAliasMixin, EvidentlyBaseModel, Generic[TResult], ABC):
     metric_fingerprint: Fingerprint
 
     @abstractmethod
-    def run_test(self, calculation: MetricCalculationBase, metric_result: TResult):
+    def run_test(self, calculation: MetricCalculationBase[TResult], metric_result: TResult):
         raise NotImplementedError(self.__class__)
 
 
@@ -404,7 +400,7 @@ class Metric(AutoAliasMixin, EvidentlyBaseModel, Generic[TCalculation]):
         return self.to_calculation().call(context)
 
     @abstractmethod
-    def get_bound_tests(self) -> List[BoundTest]:
+    def get_bound_tests(self) -> Sequence[BoundTest]:
         raise not_implemented(self)
 
 
@@ -445,7 +441,7 @@ TSingleValueMetricCalculation = TypeVar("TSingleValueMetricCalculation", bound="
 
 
 class SingleValueBoundTest(BoundTest[SingleValue]):
-    def run_test(self, calculation: "SingleValueCalculation", metric_result: SingleValue) -> MetricTestResult:
+    def run_test(self, calculation: MetricCalculationBase[SingleValue], metric_result: SingleValue) -> MetricTestResult:
         return self.test.to_test()(calculation, metric_result)
 
 
@@ -503,7 +499,7 @@ class CountMetric(Metric["CountCalculation"]):
     count_tests: List[MetricTest] = []
     share_tests: List[MetricTest] = []
 
-    def get_bound_tests(self) -> List[BoundTest]:
+    def get_bound_tests(self) -> Sequence[BoundTest]:
         return [
             CountBoundTest(is_count=True, test=t, metric_fingerprint=self.get_fingerprint()) for t in self.count_tests
         ] + [
@@ -529,7 +525,7 @@ class MeanStdMetric(Metric["MeanStdCalculation"]):
     mean_tests: List[MetricTest] = []
     std_tests: List[MetricTest] = []
 
-    def get_bound_tests(self) -> List[BoundTest]:
+    def get_bound_tests(self) -> Sequence[BoundTest]:
         return [
             MeanStdBoundTest(is_mean=True, test=t, metric_fingerprint=self.get_fingerprint()) for t in self.mean_tests
         ] + [

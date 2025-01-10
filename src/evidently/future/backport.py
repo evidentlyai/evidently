@@ -19,6 +19,7 @@ from evidently.future.metric_types import BoundTest
 from evidently.future.metric_types import ByLabelValue
 from evidently.future.metric_types import CountValue
 from evidently.future.metric_types import Metric as MetricV2
+from evidently.future.metric_types import MetricCalculationBase
 from evidently.future.metric_types import MetricResult as MetricResultV2
 from evidently.future.metric_types import MetricTestResult
 from evidently.future.metric_types import SingleValue
@@ -105,7 +106,7 @@ class MetricV2Adapter(MetricV1[MetricResultV2Adapter]):
     metric: MetricV2
 
     def calculate(self, data: InputData) -> MetricResultV2Adapter:
-        pass
+        raise NotImplementedError()
 
     def get_fingerprint(self) -> Fingerprint:
         return self.metric.get_fingerprint()
@@ -163,7 +164,7 @@ def snapshot_v2_to_v1(snapshot: SnapshotV2) -> SnapshotV1:
     test_results: List[TestResultV1] = []
     context = snapshot.context
     for metric_id, metric_result in context._metrics.items():
-        calculation = context.get_metric(metric_id)
+        calculation: MetricCalculationBase = context.get_metric(metric_id)
         metric = calculation.to_metric()
         metrics.append(metric_v2_to_v1(metric))
         metric_results.append(metric_result_v2_to_v1(metric_result))

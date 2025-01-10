@@ -17,7 +17,7 @@ class IsInMetricTest(MetricTest[SingleValueTest]):
             check_value = value.value in self.values
             return MetricTestResult(
                 "is_in",
-                f"{metric.display_name()}: Value in list [{', '.join(self.values)}]",
+                f"{metric.display_name()}: Value in list [{', '.join(str(x) for x in self.values)}]",
                 f"Actual value: {value.value}",
                 TestStatus.SUCCESS if check_value else TestStatus.FAIL,
             )
@@ -37,7 +37,7 @@ class NotInMetricTest(MetricTest[SingleValueTest]):
             check_value = value.value not in self.values
             return MetricTestResult(
                 "not_in",
-                f"{metric.display_name()}: Value not in list [{', '.join(self.values)}]",
+                f"{metric.display_name()}: Value not in list [{', '.join(str(x) for x in self.values)}]",
                 f"Actual value: {value.value}",
                 TestStatus.SUCCESS if check_value else TestStatus.FAIL,
             )

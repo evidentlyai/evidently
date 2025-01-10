@@ -260,6 +260,8 @@ class TPRCalculation(LegacyClassificationQuality[TPR]):
         legacy_result: ClassificationQualityMetricResult,
         render: List[BaseWidgetInfo],
     ) -> SingleValue:
+        if legacy_result.current.tpr is None:
+            raise ValueError("Failed to calculate TPR value")
         return SingleValue(legacy_result.current.tpr)
 
     def display_name(self) -> str:
@@ -277,6 +279,8 @@ class TNRCalculation(LegacyClassificationQuality[TNR]):
         legacy_result: ClassificationQualityMetricResult,
         render: List[BaseWidgetInfo],
     ) -> SingleValue:
+        if legacy_result.current.tnr is None:
+            raise ValueError("Failed to calculate TNR value")
         return SingleValue(legacy_result.current.tnr)
 
     def display_name(self) -> str:
@@ -294,6 +298,8 @@ class FPRCalculation(LegacyClassificationQuality[FPR]):
         legacy_result: ClassificationQualityMetricResult,
         render: List[BaseWidgetInfo],
     ) -> SingleValue:
+        if legacy_result.current.fpr is None:
+            raise ValueError("Failed to calculate FPR value")
         return SingleValue(legacy_result.current.fpr)
 
     def display_name(self) -> str:
@@ -311,6 +317,8 @@ class FNRCalculation(LegacyClassificationQuality[FNR]):
         legacy_result: ClassificationQualityMetricResult,
         render: List[BaseWidgetInfo],
     ) -> SingleValue:
+        if legacy_result.current.fnr is None:
+            raise ValueError("Failed to calculate FNR value")
         return SingleValue(legacy_result.current.fnr)
 
     def display_name(self) -> str:
@@ -328,6 +336,8 @@ class RocAucCalculation(LegacyClassificationQuality[RocAuc]):
         legacy_result: ClassificationQualityMetricResult,
         render: List[BaseWidgetInfo],
     ) -> SingleValue:
+        if legacy_result.current.roc_auc is None:
+            raise ValueError("Failed to calculate RocAuc value")
         return SingleValue(legacy_result.current.roc_auc)
 
     def display_name(self) -> str:
@@ -345,6 +355,8 @@ class LogLossCalculation(LegacyClassificationQuality[LogLoss]):
         legacy_result: ClassificationQualityMetricResult,
         render: List[BaseWidgetInfo],
     ) -> SingleValue:
+        if legacy_result.current.log_loss is None:
+            raise ValueError("Failed to calculate LogLoss value")
         return SingleValue(legacy_result.current.log_loss)
 
     def display_name(self) -> str:

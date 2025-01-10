@@ -93,6 +93,6 @@ class TextEvals(MetricContainer):
             cols = context.data_definition.numerical_descriptors + context.data_definition.categorical_descriptors
         else:
             cols = self._columns
-        metrics = [RowCount()]
+        metrics: List[Metric] = [RowCount()]
         metrics.extend(list(chain(*[ValueStats(column).metrics(context)[1:] for column in cols])))
         return metrics
