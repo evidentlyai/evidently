@@ -11,6 +11,9 @@ from evidently.calculations.data_drift import get_one_column_drift
 from evidently.calculations.stattests import PossibleStatTestType
 from evidently.future.datasets import Dataset
 from evidently.future.datasets import DatasetColumn
+from evidently.future.metric_types import ByLabelCalculation
+from evidently.future.metric_types import ByLabelMetric
+from evidently.future.metric_types import ByLabelValue
 from evidently.future.metric_types import CountCalculation
 from evidently.future.metric_types import CountMetric
 from evidently.future.metric_types import CountValue
@@ -322,6 +325,10 @@ class LegacyDriftedColumnsMetric(
     Generic[TMetric],
     abc.ABC,
 ):
+    pass
+
+
+class DriftedColumnCalculation(LegacyDriftedColumnsMetric[DriftedColumnsCount]):
     def legacy_metric(self) -> DatasetDriftMetric:
         return DatasetDriftMetric(
             columns=self.metric.columns,
@@ -338,8 +345,6 @@ class LegacyDriftedColumnsMetric(
             per_column_stattest_threshold=self.metric.per_column_stattest_threshold,
         )
 
-
-class DriftedColumnCalculation(LegacyDriftedColumnsMetric[DriftedColumnsCount]):
     def calculate_value(
         self, context: Context, legacy_result: DatasetDriftMetricResults, render: List[BaseWidgetInfo]
     ) -> CountValue:
@@ -348,3 +353,16 @@ class DriftedColumnCalculation(LegacyDriftedColumnsMetric[DriftedColumnsCount]):
 
     def display_name(self) -> str:
         return "Count of Drifted Columns"
+
+
+class UniqueValueCount(ByLabelMetric):
+    column: str
+
+
+class UniqueValueCountCalculation(ByLabelCalculation[UniqueValueCount]):
+    def calculate(self, current_data: Dataset, reference_data: Optional[Dataset]) -> ByLabelValue:
+        value_counts = current_data.as_dataframe()[self.metric.column].value_counts()
+        return ByLabelValue(value_counts.to_dict())
+
+    def display_name(self) -> str:
+        return "Unique Value Count"

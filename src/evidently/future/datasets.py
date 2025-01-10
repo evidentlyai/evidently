@@ -64,7 +64,8 @@ Classification = Union[BinaryClassification, MulticlassClassification]
 
 @dataclasses.dataclass
 class Regression:
-    pass
+    target: str = "target"
+    prediction: str = "prediction"
 
 
 @dataclasses.dataclass
