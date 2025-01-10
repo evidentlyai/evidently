@@ -124,9 +124,9 @@ def metric_v2_to_v1(metric: MetricV2) -> MetricV1:
 def data_definition_v2_to_v1(dd: DataDefinition, reference_present: bool) -> DataDefinitionV1:
     """For now, only columns field is used"""
     columns: Dict[str, ColumnDefinition] = {
-        **{col: ColumnDefinition(col, ColumnType.Numerical) for col in dd.get_numerical_features()},
-        **{col: ColumnDefinition(col, ColumnType.Text) for col in dd.get_text_features()},
-        **{col: ColumnDefinition(col, ColumnType.Categorical) for col in dd.get_categorical_features()},
+        **{col: ColumnDefinition(col, ColumnType.Numerical) for col in dd.get_numerical_columns()},
+        **{col: ColumnDefinition(col, ColumnType.Text) for col in dd.get_text_columns()},
+        **{col: ColumnDefinition(col, ColumnType.Categorical) for col in dd.get_categorical_columns()},
     }
     target: Optional[ColumnDefinition] = None
     prediction_columns: Optional[PredictionColumns] = None
@@ -284,7 +284,7 @@ def main():
         df = pd.DataFrame({"col": list(range(i + 5))})
         dataset = Dataset.from_pandas(
             df,
-            data_definition=DataDefinition(numerical_features=["col"]),
+            data_definition=DataDefinition(numerical_columns=["col"]),
         )
         report = ReportV2([MeanValue(column="col", tests=[lte(4)])])
         snapshot_v2 = report.run(dataset, None, timestamp=datetime.datetime.now() - datetime.timedelta(days=1))

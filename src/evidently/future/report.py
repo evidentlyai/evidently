@@ -188,7 +188,6 @@ class Snapshot:
 
         if len(tests) > 0:
             widgets_to_render.append(metric_tests_widget(tests))
-
         return render_widgets(widgets_to_render)
 
     def dict(self) -> dict:
@@ -197,14 +196,24 @@ class Snapshot:
                 metric: self.context.get_metric_result(metric).dict() for metric in self.context._metrics_graph.keys()
             },
             "tests": {
-                test.id: test.dict()
+                test.get_fingerprint(): test_result.dict()
                 for metric in self.context._metrics_graph.keys()
-                for test in self.context.get_metric_result(metric).tests
+                for test, test_result in self.context.get_metric_result(metric).tests.items()
             },
         }
 
     def json(self) -> str:
         return json.dumps(self.dict(), cls=NumpyEncoder)
+
+    def save_html(self, filename: Union[str, typing.IO]):
+        if isinstance(filename, str):
+            with open(filename, "w", encoding="utf-8") as out_file:
+                out_file.write(self._repr_html_())
+
+    def save_json(self, filename: Union[str, typing.IO]):
+        if isinstance(filename, str):
+            with open(filename, "w", encoding="utf-8") as out_file:
+                json.dump(self.dict(), out_file, cls=NumpyEncoder)
 
 
 class Report:

@@ -85,41 +85,41 @@ LLMDefinition = Union[Completion, RAG]
 class DataDefinition:
     id_column: Optional[str] = None
     timestamp: Optional[str] = None
-    numerical_features: Optional[List[str]] = None
-    categorical_features: Optional[List[str]] = None
-    text_features: Optional[List[str]] = None
-    datetime_features: Optional[List[str]] = None
-    classifications: Optional[List[Classification]] = None
-    regressions: Optional[List[Regression]] = None
+    numerical_columns: Optional[List[str]] = None
+    categorical_columns: Optional[List[str]] = None
+    text_columns: Optional[List[str]] = None
+    datetime_columns: Optional[List[str]] = None
+    classification: Optional[List[Classification]] = None
+    regression: Optional[List[Regression]] = None
     llm: Optional[LLMDefinition] = None
     numerical_descriptors: List[str] = field(default_factory=list)
     categorical_descriptors: List[str] = field(default_factory=list)
 
-    def get_numerical_features(self):
-        return (self.numerical_features or []) + (self.numerical_descriptors or [])
+    def get_numerical_columns(self):
+        return (self.numerical_columns or []) + (self.numerical_descriptors or [])
 
-    def get_categorical_features(self):
-        return (self.categorical_features or []) + (self.categorical_descriptors or [])
+    def get_categorical_columns(self):
+        return (self.categorical_columns or []) + (self.categorical_descriptors or [])
 
-    def get_text_features(self):
-        return self.text_features or []
+    def get_text_columns(self):
+        return self.text_columns or []
 
-    def get_datetime_features(self):
-        return self.datetime_features or []
+    def get_datetime_columns(self):
+        return self.datetime_columns or []
 
     def get_column_type(self, column_name: str) -> ColumnType:
-        if column_name in self.get_numerical_features():
+        if column_name in self.get_numerical_columns():
             return ColumnType.Numerical
-        if column_name in self.get_categorical_features():
+        if column_name in self.get_categorical_columns():
             return ColumnType.Categorical
-        if column_name in self.get_text_features():
+        if column_name in self.get_text_columns():
             return ColumnType.Text
-        if column_name in self.get_datetime_features():
+        if column_name in self.get_datetime_columns():
             return ColumnType.Datetime
         return ColumnType.Unknown
 
     def get_classification(self, classification_id: str) -> Optional[Classification]:
-        item_list = list(filter(lambda x: x.name == classification_id, self.classifications or []))
+        item_list = list(filter(lambda x: x.name == classification_id, self.classification or []))
         if len(item_list) == 0:
             return None
         if len(item_list) > 1:
@@ -128,11 +128,11 @@ class DataDefinition:
 
     def get_columns(self, types: List[ColumnType]) -> Generator[str, None, None]:
         if ColumnType.Numerical in types:
-            yield from self.get_numerical_features()
+            yield from self.get_numerical_columns()
         if ColumnType.Categorical in types:
-            yield from self.get_categorical_features()
+            yield from self.get_categorical_columns()
         if ColumnType.Text in types:
-            yield from self.get_text_features()
+            yield from self.get_text_columns()
 
 
 class DatasetColumn:
