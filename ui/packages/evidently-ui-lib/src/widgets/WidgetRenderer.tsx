@@ -46,7 +46,7 @@ function sizeTransform(size: WidgetSize): 1 | 3 | 6 | 12 {
   return 12
 }
 
-export function WidgetRenderer(key: string, info: WidgetInfo) {
+export function WidgetRenderer({ info }: { info: WidgetInfo }) {
   let content = <NotImplementedWidgetContent />
   if (info.type === 'counter') {
     content = <CounterWidgetContent {...(info.params as CounterWidgetParams)} />
@@ -80,9 +80,9 @@ export function WidgetRenderer(key: string, info: WidgetInfo) {
   } else if (info.type === 'group') {
     content = (
       <WidgetPanel>
-        {(info as unknown as WidgetGroupParams).widgets.map((wi, idx) =>
-          WidgetRenderer(`wi_${idx}`, wi)
-        )}
+        {(info as unknown as WidgetGroupParams).widgets.map((wi) => (
+          <WidgetRenderer key={wi.id} info={wi} />
+        ))}
       </WidgetPanel>
     )
   } else if (info.type === 'rich_data') {
@@ -98,7 +98,7 @@ export function WidgetRenderer(key: string, info: WidgetInfo) {
     content = <TestSuiteWidgetContent {...(info.params as TestSuiteWidgetParams)} />
   }
   return (
-    <Widget key={key} size={sizeTransform(info.size)}>
+    <Widget size={sizeTransform(info.size)}>
       {{
         ...info,
         content: content

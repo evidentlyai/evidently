@@ -418,6 +418,7 @@ def create_project(workspace: WorkspaceBase, name: str):
 
 reviews_demo_project = DemoProject(
     name="Demo project - Reviews",
+    create_snapshot=None,
     create_data=create_data,
     create_report=create_report,
     create_project=create_project,

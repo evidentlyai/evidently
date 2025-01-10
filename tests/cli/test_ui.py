@@ -3,7 +3,7 @@ import inspect
 import pytest
 
 from evidently.cli import app
-from evidently.ui.demo_projects import DEMO_PROJECTS
+from evidently.ui.demo_projects import DEMO_PROJECTS_NAMES
 
 
 @pytest.fixture()
@@ -13,6 +13,6 @@ def ui_command():
     return dict(zip(argspec.annotations.keys(), argspec.defaults))
 
 
-@pytest.mark.parametrize("demo_project", list(DEMO_PROJECTS.keys()))
+@pytest.mark.parametrize("demo_project", DEMO_PROJECTS_NAMES)
 def test_all_demo_projects_in_help(demo_project, ui_command):
     assert demo_project in ui_command["demo_projects"].help

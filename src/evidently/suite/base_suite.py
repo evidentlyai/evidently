@@ -531,6 +531,10 @@ class Snapshot(BaseModel):
     def is_report(self):
         return len(self.metrics_ids) > 0
 
+    @property
+    def is_new_report(self):
+        return self.metadata.get("version", "1").startswith("2")
+
     def as_report(self):
         from evidently.report import Report
 
