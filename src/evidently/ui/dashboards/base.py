@@ -22,6 +22,7 @@ from evidently.pydantic_utils import EnumValueMixin
 from evidently.pydantic_utils import EvidentlyBaseModel
 from evidently.pydantic_utils import FieldPath
 from evidently.pydantic_utils import PolymorphicModel
+from evidently.pydantic_utils import register_type_alias
 from evidently.renderers.html_widgets import CounterData
 from evidently.renderers.html_widgets import WidgetSize
 from evidently.renderers.html_widgets import counter
@@ -257,3 +258,13 @@ class DashboardConfig(BaseModel):
         widgets = [await p.safe_build(data_storage, project_id, timestamp_start, timestamp_end) for p in self.panels]
 
         return DashboardInfo(name=self.name, widgets=widgets)
+
+
+register_type_alias(
+    DashboardPanel, "evidently.future.backport.DashboardPanelV2", "evidently:dashboard_panel:DashboardPanelV2"
+)
+register_type_alias(
+    DashboardPanel,
+    "evidently.future.backport.SingleValueDashboardPanel",
+    "evidently:dashboard_panel:SingleValueDashboardPanel",
+)

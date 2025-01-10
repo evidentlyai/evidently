@@ -1,9 +1,9 @@
-import { Grid } from '@mui/material'
+import { Box } from '@mui/material'
 import type { AdditionalGraphInfo, WidgetInfo } from '~/api'
 import { JSONParseExtended } from '~/api/JsonParser'
 import { type API_CLIENT_TYPE, responseParser } from '~/api/client-heplers'
 import type { DashboardInfoModel } from '~/api/types'
-import { DashboardContentWidgets } from '~/components/DashboardContent'
+import { SnapshotWidgets } from '~/components/WidgetsContent'
 import DashboardContext, { CreateDashboardContextState } from '~/contexts/DashboardContext'
 
 export const SnapshotTemplateComponent = ({
@@ -46,9 +46,9 @@ export const SnapshotTemplateComponent = ({
               .then(JSONParseExtended<WidgetInfo>)
         })}
       >
-        <Grid container spacing={3} direction='row' alignItems='stretch'>
-          <DashboardContentWidgets widgets={data.widgets} />
-        </Grid>
+        <Box py={2}>
+          <SnapshotWidgets widgets={data.widgets} />
+        </Box>
       </DashboardContext.Provider>
     </>
   )

@@ -824,3 +824,14 @@ register_type_alias(
     MetricResult, "evidently.metrics.regression_performance.top_error.TopData", "evidently:metric_result:TopData"
 )
 register_type_alias(MetricResult, "evidently.tests.base_test.TestResult", "evidently:metric_result:TestResult")
+
+
+register_type_alias(Metric, "evidently.future.backport.MetricV2Adapter", "evidently:metric:MetricV2Adapter")
+register_type_alias(
+    MetricResult, "evidently.future.backport.MetricResultV2Adapter", "evidently:metric_result:MetricResultV2Adapter"
+)
+register_type_alias(MetricResult, "evidently.future.backport.SingleValueV1", "evidently:metric_result:SingleValueV1")
+
+register_type_alias(MetricResult, "evidently.future.backport.ByLabelValueV1", "evidently:metric_result:ByLabelValueV1")
+
+register_type_alias(MetricResult, "evidently.future.backport.CountValueV1", "evidently:metric_result:CountValueV1")

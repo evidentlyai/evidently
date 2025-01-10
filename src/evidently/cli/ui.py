@@ -7,6 +7,7 @@ from typer import Option
 from typer import echo
 
 from evidently.cli.main import app
+from evidently.ui.demo_projects import DEMO_PROJECTS_NAMES
 
 
 def setup_deterministic_generation_uuid(seed: int = 8754):
@@ -32,7 +33,7 @@ def ui(
     demo_projects: str = Option(
         "",
         "--demo-projects",
-        help="Comma-separated list of demo projects to generate. Possible values: [all|bikes|reviews|adult]",
+        help=f"Comma-separated list of demo projects to generate. Possible values: [{'|'.join(['all'] + DEMO_PROJECTS_NAMES)}]",
     ),
     secret: Optional[str] = Option(None, help="Secret for writing operations"),
 ):
@@ -46,7 +47,7 @@ def ui(
 
     demos = demo_projects.split(",") if demo_projects else []
     if "all" in demos:
-        demos = list(DEMO_PROJECTS.keys())
+        demos = DEMO_PROJECTS_NAMES
     missing = [dp for dp in demos if dp not in DEMO_PROJECTS]
     if missing:
         raise BadParameter(f"Unknown demo project name '{missing[0]}'")

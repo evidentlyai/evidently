@@ -106,6 +106,8 @@ def plot_distr_with_perc_button(
     color_options: ColorOptions,
     subplots: bool = True,
     to_json: bool = True,
+    current_name: str = "current",
+    reference_name: str = "reference",
 ):
     if not same_color:
         curr_color = color_options.get_current_data_color()
@@ -121,13 +123,13 @@ def plot_distr_with_perc_button(
 
     if is_subplots:
         cols = 2
-        subplot_titles = ["current", "reference"]
+        subplot_titles = [current_name, reference_name]
     fig = make_subplots(rows=1, cols=cols, shared_yaxes=True, subplot_titles=subplot_titles)
 
-    fig = add_traces_with_perc(fig, hist_curr, 1, 1, curr_color, "current")
+    fig = add_traces_with_perc(fig, hist_curr, 1, 1, curr_color, current_name)
     fig.update_xaxes(title_text=xaxis_name, row=1, col=1)
     if hist_ref is not None:
-        fig = add_traces_with_perc(fig, hist_ref, 1, int(is_subplots) + 1, ref_color, "reference")
+        fig = add_traces_with_perc(fig, hist_ref, 1, int(is_subplots) + 1, ref_color, reference_name)
         fig.update_xaxes(title_text=xaxis_name, row=1, col=2)
         visible += [True, False]
 

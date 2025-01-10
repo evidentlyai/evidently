@@ -1,8 +1,9 @@
 import DashboardContext, { CreateDashboardContextState } from '~/contexts/DashboardContext'
 
+import { Box } from '@mui/material'
 import type { AdditionalGraphInfo, WidgetInfo } from '~/api'
 import type { DashboardInfoModel } from '~/api/types'
-import { DashboardWidgets } from '~/components/DashboardWidgets'
+import { SnapshotWidgets } from '~/components/WidgetsContent'
 
 export function StandaloneSnapshotWidgets({
   dashboard: { widgets },
@@ -32,7 +33,9 @@ export function StandaloneSnapshotWidgets({
         }
       })}
     >
-      <DashboardWidgets widgets={widgets} />
+      <Box px={3}>
+        <SnapshotWidgets widgets={widgets} />
+      </Box>
     </DashboardContext.Provider>
   )
 }

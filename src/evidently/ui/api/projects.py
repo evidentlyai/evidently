@@ -1,3 +1,4 @@
+import asyncio
 import datetime
 import json
 from dataclasses import asdict
@@ -203,8 +204,9 @@ async def get_snapshot_data(
     snapshot_metadata: Annotated[SnapshotMetadata, Dependency()],
     log_event: Callable,
 ) -> str:
-    info = DashboardInfoModel.from_dashboard_info(await snapshot_metadata.get_dashboard_info())
-    snapshot = await snapshot_metadata.load()
+    dashboard_info, snapshot = await asyncio.gather(snapshot_metadata.get_dashboard_info(), snapshot_metadata.load())
+    info = DashboardInfoModel.from_dashboard_info(dashboard_info=dashboard_info)
+
     log_event(
         "get_snapshot_data",
         snapshot_type="report" if snapshot.is_report else "test_suite",

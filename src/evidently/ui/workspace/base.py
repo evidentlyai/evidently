@@ -8,8 +8,8 @@ import pandas as pd
 from evidently import ColumnMapping
 from evidently.report import Report
 from evidently.suite.base_suite import ReportBase
-from evidently.suite.base_suite import Snapshot
 from evidently.test_suite import TestSuite
+from evidently.ui.base import AnySnapshot
 from evidently.ui.base import Project
 from evidently.ui.datasets import DatasetSourceType
 from evidently.ui.datasets import get_dataset_name_output_current
@@ -82,7 +82,7 @@ class WorkspaceBase(abc.ABC):
         self._add_report_base(project_id, test_suite, include_data)
 
     @abc.abstractmethod
-    def add_snapshot(self, project_id: STR_UUID, snapshot: Snapshot):
+    def add_snapshot(self, project_id: STR_UUID, snapshot: AnySnapshot):
         raise NotImplementedError
 
     @abc.abstractmethod
