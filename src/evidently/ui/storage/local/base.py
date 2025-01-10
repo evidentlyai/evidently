@@ -300,7 +300,11 @@ class InMemoryDataStorage(DataStorage):
         timestamp_end: Optional[datetime.datetime],
     ) -> TestResultPoints:
         points: Dict[datetime.datetime, Dict[Test, TestInfo]] = defaultdict(dict)
-        for report in (s.as_test_suite() for s in self.state.snapshot_data[project_id].values() if not s.is_report):
+        for report in (
+            s.as_test_suite()
+            for s in self.state.snapshot_data[project_id].values()
+            if not s.is_report or s.is_new_report
+        ):
             if not (
                 filter.filter(report)
                 and isinstance(report, TestSuite)
