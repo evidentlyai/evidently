@@ -22,6 +22,7 @@ from .column_statistics import MedianValue
 from .column_statistics import MinValue
 from .column_statistics import QuantileValue
 from .column_statistics import StdValue
+from .column_statistics import UniqueValueCount
 from .column_statistics import ValueDrift
 from .dataset_statistics import AlmostConstantColumnsCount
 from .dataset_statistics import AlmostDuplicatedColumnsCount
@@ -53,6 +54,7 @@ __all__ = [
     "MinValue",
     "QuantileValue",
     "StdValue",
+    "UniqueValueCount",
     # dataset statistics metrics
     "ColumnCount",
     "RowCount",
