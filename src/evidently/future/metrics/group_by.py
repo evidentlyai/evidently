@@ -4,6 +4,7 @@ from typing import Optional
 
 from evidently.future.container import MetricContainer
 from evidently.future.datasets import Dataset
+from evidently.future.metric_types import BoundTest
 from evidently.future.metric_types import Metric
 from evidently.future.metric_types import MetricCalculation
 from evidently.future.metric_types import MetricTestResult
@@ -16,6 +17,9 @@ class GroupByMetric(Metric):
 
     column_name: str
     label: object
+
+    def get_bound_tests(self) -> List[BoundTest]:
+        return self.metric.get_bound_tests()
 
 
 class GroupByMetricCalculation(MetricCalculation[TResult, GroupByMetric]):
