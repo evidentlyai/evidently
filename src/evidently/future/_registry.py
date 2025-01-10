@@ -81,3 +81,9 @@ register_type_alias(BoundTest, "evidently.future.metric_types.ByLabelBoundTest",
 register_type_alias(BoundTest, "evidently.future.metric_types.CountBoundTest", "evidently:bound_test:CountBoundTest")
 register_type_alias(BoundTest, "evidently.future.metric_types.MeanStdBoundTest", "evidently:bound_test:MeanStdBoundTest")
 register_type_alias(BoundTest, "evidently.future.metric_types.SingleValueBoundTest", "evidently:bound_test:SingleValueBoundTest")
+
+register_type_alias(Metric, "evidently.future.metrics.column_statistics.DriftedColumnsCount", "evidently:metric_v2:DriftedColumnsCount")
+register_type_alias(Metric, "evidently.future.metrics.column_statistics.UniqueValueCount", "evidently:metric_v2:UniqueValueCount")
+register_type_alias(Metric, "evidently.future.metrics.regression.DummyMAE", "evidently:metric_v2:DummyMAE")
+register_type_alias(Metric, "evidently.future.metrics.regression.DummyMAPE", "evidently:metric_v2:DummyMAPE")
+register_type_alias(Metric, "evidently.future.metrics.regression.DummyRMSE", "evidently:metric_v2:DummyRMSE")
