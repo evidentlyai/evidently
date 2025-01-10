@@ -237,7 +237,7 @@ class Report:
         reference_data: Optional[Dataset],
         timestamp: Optional[datetime] = None,
     ) -> Snapshot:
-        self._timestamp = timestamp
+        self._timestamp = timestamp or datetime.now()
         snapshot = Snapshot(self)
         snapshot.run(current_data, reference_data)
         return snapshot
