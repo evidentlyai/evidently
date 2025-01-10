@@ -46,13 +46,13 @@ class ColumnCountCalculation(SingleValueCalculation[ColumnCount]):
         if self.metric.column_type is None:
             return SingleValue(current_data.stats().column_count)
         elif self.metric.column_type == ColumnType.Numerical:
-            return SingleValue(len([col for col in definition.get_numerical_features() if current_data.column(col)]))
+            return SingleValue(len([col for col in definition.get_numerical_columns() if current_data.column(col)]))
         elif self.metric.column_type == ColumnType.Categorical:
-            return SingleValue(len([col for col in definition.get_categorical_features() if current_data.column(col)]))
+            return SingleValue(len([col for col in definition.get_categorical_columns() if current_data.column(col)]))
         elif self.metric.column_type == ColumnType.Text:
-            return SingleValue(len([col for col in definition.get_text_features() if current_data.column(col)]))
+            return SingleValue(len([col for col in definition.get_text_columns() if current_data.column(col)]))
         elif self.metric.column_type == ColumnType.Datetime:
-            return SingleValue(len([col for col in definition.get_datetime_features() if current_data.column(col)]))
+            return SingleValue(len([col for col in definition.get_datetime_columns() if current_data.column(col)]))
 
     def display_name(self) -> str:
         return f"Column {f'of type {self.metric.column_type.value} ' if self.metric.column_type is not None else ''}count in dataset"
