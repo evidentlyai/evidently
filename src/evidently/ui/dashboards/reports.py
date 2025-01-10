@@ -277,8 +277,8 @@ class DistributionPanel(DashboardPanel):
         )
 
         timestamps: List[datetime.datetime] = []
-        names: Set[str] = set()
-        values: List[Dict[str, Any]] = []
+        names: Set[Label] = set()
+        values: List[Dict[Label, Union[float, int]]] = []
         snapshot_ids = []
 
         for timestamp, snapshot_id, data in point_values:
@@ -288,8 +288,8 @@ class DistributionPanel(DashboardPanel):
             snapshot_ids.append(snapshot_id)
 
         names_sorted = list(sorted(names))
-        name_to_date_value: Dict[str, List[Any]] = defaultdict(list)
-        name_to_snapshot_id: Dict[str, List[SnapshotID]] = defaultdict(list)
+        name_to_date_value: Dict[Label, List[Any]] = defaultdict(list)
+        name_to_snapshot_id: Dict[Label, List[SnapshotID]] = defaultdict(list)
         for timestamp, snapshot_id, data in zip(timestamps, snapshot_ids, values):
             for name in names_sorted:
                 name_to_date_value[name].append(data.get(name))

@@ -117,7 +117,7 @@ class ClassificationQualityByClass(ThresholdClassificationMetric[ClassificationQ
                 reference_roc_aucs = sklearn.metrics.roc_auc_score(
                     binaraized_target, ref_prediction.prediction_probas, average=None
                 ).tolist()
-                for idx, item in enumerate(list(prediction.prediction_probas.columns)):
+                for idx, item in enumerate(list(ref_prediction.prediction_probas.columns)):
                     ref_metrics[item].roc_auc = reference_roc_aucs[idx]
             reference = ClassificationQuality(metrics=ref_metrics, roc_aucs=reference_roc_aucs)
         return ClassificationQualityByClassResult(

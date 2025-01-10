@@ -4,6 +4,7 @@ from datetime import timedelta
 import numpy as np
 from sklearn import datasets
 
+from evidently import ColumnMapping
 from evidently.future.backport import snapshot_v2_to_v1
 from evidently.future.datasets import DataDefinition
 from evidently.future.datasets import Dataset
@@ -68,8 +69,8 @@ def create_snapshot(i: int, data):
         current_df_batch = current_df.iloc[1000 * i : 1000 * (i + 1), :]
 
         data_definition = DataDefinition(
-            text_features=["Review_Text", "Title"],
-            numerical_features=[
+            text_columns=["Review_Text", "Title"],
+            numerical_columns=[
                 "Age",
                 "Positive_Feedback_Count",
                 "Rating",
@@ -79,8 +80,8 @@ def create_snapshot(i: int, data):
                 "urls",
                 "TextLength in the Range",
             ],
-            categorical_features=["Division_Name", "Department_Name", "Class_Name", "OOV"],
-            classifications=[MulticlassClassification(target="Rating", prediction_labels="prediction")],
+            categorical_columns=["Division_Name", "Department_Name", "Class_Name", "OOV"],
+            classification=[MulticlassClassification(target="Rating", prediction_labels="prediction")],
         )
 
         current_batch_dataset = Dataset.from_pandas(current_df_batch, data_definition=data_definition)
@@ -95,8 +96,8 @@ def create_snapshot(i: int, data):
         current_df_batch = current_df[(current_df.Rating < 5)]
 
         data_definition = DataDefinition(
-            text_features=["Review_Text", "Title"],
-            numerical_features=[
+            text_columns=["Review_Text", "Title"],
+            numerical_columns=[
                 "Age",
                 "Positive_Feedback_Count",
                 "Rating",
@@ -106,8 +107,8 @@ def create_snapshot(i: int, data):
                 "urls",
                 "TextLength in the Range",
             ],
-            categorical_features=["Division_Name", "Department_Name", "Class_Name", "OOV"],
-            classifications=[MulticlassClassification(target="Rating", prediction_labels="prediction")],
+            categorical_columns=["Division_Name", "Department_Name", "Class_Name", "OOV"],
+            classification=[MulticlassClassification(target="Rating", prediction_labels="prediction")],
         )
 
         current_batch_dataset = Dataset.from_pandas(current_df_batch, data_definition=data_definition)
@@ -428,10 +429,10 @@ def create_data():
     current = reviews.sample(n=5000, replace=True, ignore_index=True, random_state=142)
 
     data_definition = DataDefinition(
-        text_features=["Review_Text", "Title"],
-        numerical_features=["Age", "Positive_Feedback_Count", "Rating", "prediction"],
-        categorical_features=["Division_Name", "Department_Name", "Class_Name"],
-        classifications=[MulticlassClassification(target="Rating", prediction_labels="prediction")],
+        text_columns=["Review_Text", "Title"],
+        numerical_columns=["Age", "Positive_Feedback_Count", "Rating", "prediction"],
+        categorical_columns=["Division_Name", "Department_Name", "Class_Name"],
+        classification=[MulticlassClassification(target="Rating", prediction_labels="prediction")],
     )
 
     ref_dataset = Dataset.from_pandas(
@@ -453,10 +454,10 @@ def create_data():
     )
 
     data_definition = DataDefinition(
-        text_features=["Review_Text", "Title"],
-        numerical_features=["Age", "Positive_Feedback_Count", "Rating", "prediction"],
-        categorical_features=["Division_Name", "Department_Name", "Class_Name"],
-        classifications=[MulticlassClassification(target="Rating", prediction_labels="prediction")],
+        text_columns=["Review_Text", "Title"],
+        numerical_columns=["Age", "Positive_Feedback_Count", "Rating", "prediction"],
+        categorical_columns=["Division_Name", "Department_Name", "Class_Name"],
+        classification=[MulticlassClassification(target="Rating", prediction_labels="prediction")],
     )
 
     cur_dataset = Dataset.from_pandas(
@@ -477,7 +478,7 @@ def create_data():
         ],
     )
 
-    return ref_dataset, cur_dataset
+    return ref_dataset, cur_dataset, ColumnMapping()
 
 
 reviews_v2_demo_project = DemoProject(

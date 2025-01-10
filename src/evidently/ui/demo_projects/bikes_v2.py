@@ -32,6 +32,8 @@ from evidently.ui.workspace.base import WorkspaceBase
 
 def create_snapshot(i: int, data: Tuple[DataFrame, DataFrame, ColumnMapping]):
     current, reference, column_mapping = data
+    if column_mapping.numerical_features is None or len(column_mapping.numerical_features) < 1:
+        raise ValueError("ColumnMapping must have at least one numerical feature")
 
     report = Report(
         [
@@ -52,9 +54,9 @@ def create_snapshot(i: int, data: Tuple[DataFrame, DataFrame, ColumnMapping]):
     dataset = Dataset.from_pandas(
         data=data_chunk,
         data_definition=DataDefinition(
-            numerical_features=column_mapping.numerical_features,
-            categorical_features=column_mapping.categorical_features,
-            text_features=column_mapping.text_features,
+            numerical_columns=column_mapping.numerical_features,
+            categorical_columns=column_mapping.categorical_features,
+            text_columns=column_mapping.text_features,
         ),
     )
 
