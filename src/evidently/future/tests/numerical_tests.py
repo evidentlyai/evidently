@@ -12,7 +12,7 @@ from evidently.future.metric_types import TestStatus
 from evidently.future.metric_types import Value
 
 
-class ComparisonTest(MetricTest[SingleValueTest]):
+class ComparisonTest(MetricTest):
     threshold: Union[float, int]
     __short_name__: ClassVar[str]
     __full_name__: ClassVar[str]
@@ -41,7 +41,7 @@ class LessOrEqualMetricTest(ComparisonTest):
         return value <= self.threshold
 
 
-def lte(threshold: Union[int, float]) -> MetricTest[SingleValueTest]:
+def lte(threshold: Union[int, float]) -> MetricTest:
     return LessOrEqualMetricTest(threshold=threshold)
 
 
@@ -53,7 +53,7 @@ class GreaterOrEqualMetricTest(ComparisonTest):
         return value >= self.threshold
 
 
-def gte(threshold: Union[int, float]) -> MetricTest[SingleValueTest]:
+def gte(threshold: Union[int, float]) -> MetricTest:
     return GreaterOrEqualMetricTest(threshold=threshold)
 
 
@@ -65,7 +65,7 @@ class GreaterThanMetricTest(ComparisonTest):
         return value > self.threshold
 
 
-def gt(threshold: Union[int, float]) -> MetricTest[SingleValueTest]:
+def gt(threshold: Union[int, float]) -> MetricTest:
     return GreaterThanMetricTest(threshold=threshold)
 
 
@@ -78,7 +78,7 @@ class LessThanMetricTest(ComparisonTest):
         return value < self.threshold
 
 
-def lt(threshold: Union[int, float]) -> MetricTest[SingleValueTest]:
+def lt(threshold: Union[int, float]) -> MetricTest:
     return GreaterOrEqualMetricTest(threshold=threshold)
 
 
@@ -107,5 +107,5 @@ class EqualMetricTest(MetricTest):
         return func
 
 
-def eq(expected: Union[int, float, str], epsilon: Optional[float] = None) -> MetricTest[SingleValueTest]:
+def eq(expected: Union[int, float, str], epsilon: Optional[float] = None) -> MetricTest:
     return EqualMetricTest(expected=expected, epsilon=epsilon)

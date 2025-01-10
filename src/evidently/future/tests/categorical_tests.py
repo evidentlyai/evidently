@@ -9,7 +9,7 @@ from evidently.future.metric_types import SingleValueTest
 from evidently.tests.base_test import TestStatus
 
 
-class IsInMetricTest(MetricTest[SingleValueTest]):
+class IsInMetricTest(MetricTest):
     values: List[Union[int, str]]
 
     def to_test(self) -> SingleValueTest:
@@ -25,11 +25,11 @@ class IsInMetricTest(MetricTest[SingleValueTest]):
         return func
 
 
-def is_in(values: List[Union[int, str]]) -> MetricTest[SingleValueTest]:
+def is_in(values: List[Union[int, str]]) -> MetricTest:
     return IsInMetricTest(values=values)
 
 
-class NotInMetricTest(MetricTest[SingleValueTest]):
+class NotInMetricTest(MetricTest):
     values: List[Union[int, str]]
 
     def to_test(self) -> SingleValueTest:
@@ -45,5 +45,5 @@ class NotInMetricTest(MetricTest[SingleValueTest]):
         return func
 
 
-def not_in(values: List[Union[int, str]]) -> MetricTest[SingleValueTest]:
+def not_in(values: List[Union[int, str]]) -> MetricTest:
     return NotInMetricTest(values=values)
