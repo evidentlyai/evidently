@@ -14,10 +14,12 @@ from typing import Union
 import numpy as np
 import pandas as pd
 
+from evidently import ColumnMapping
 from evidently import ColumnType
 from evidently.features.generated_features import GeneratedFeatures
 from evidently.metric_results import Label
 from evidently.options.base import Options
+from evidently.utils.data_preprocessing import create_data_definition
 from evidently.utils.types import Numeric
 
 
@@ -164,7 +166,11 @@ class FeatureDescriptor(Descriptor):
         self._feature = feature
 
     def generate_data(self, dataset: "Dataset") -> Union[DatasetColumn, Dict[str, DatasetColumn]]:
-        feature = self._feature.generate_features(dataset.as_dataframe(), None, Options())
+        feature = self._feature.generate_features(
+            dataset.as_dataframe(),
+            create_data_definition(None, dataset.as_dataframe(), ColumnMapping()),
+            Options(),
+        )
         if len(feature.columns) > 1:
             return {
                 col: DatasetColumn(

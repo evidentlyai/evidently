@@ -66,7 +66,7 @@ def get_args_kwargs(feature_class: Type[GeneratedFeatures]) -> Tuple[Dict[str, s
     # get from constructor
     sig = inspect.getfullargspec(feature_class.__init__)
 
-    defaults = sig.defaults or []
+    defaults = sig.defaults or tuple()
     args = {a: _get_type_name(sig.annotations.get(a, Any)) for a in sig.args[1 : -len(defaults)]}
     kwargs = {
         a: (_get_type_name(sig.annotations.get(a, Any)), _get_value_str(d))

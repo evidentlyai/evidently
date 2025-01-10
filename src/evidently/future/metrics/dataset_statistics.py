@@ -53,6 +53,7 @@ class ColumnCountCalculation(SingleValueCalculation[ColumnCount]):
             return SingleValue(len([col for col in definition.get_text_columns() if current_data.column(col)]))
         elif self.metric.column_type == ColumnType.Datetime:
             return SingleValue(len([col for col in definition.get_datetime_columns() if current_data.column(col)]))
+        raise ValueError(f"Column count does not support {self.metric.column_type} type")
 
     def display_name(self) -> str:
         return f"Column {f'of type {self.metric.column_type.value} ' if self.metric.column_type is not None else ''}count in dataset"

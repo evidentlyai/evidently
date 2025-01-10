@@ -83,7 +83,7 @@ def lt(threshold: Union[int, float]) -> MetricTest[SingleValueTest]:
 
 
 class EqualMetricTest(MetricTest):
-    expected: Union[int, float, str]
+    expected: Union[int, float]
     epsilon: Optional[float] = None
 
     def to_test(self) -> SingleValueTest:

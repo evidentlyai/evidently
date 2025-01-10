@@ -1,13 +1,12 @@
-from typing import Generator
 from typing import List
 from typing import Optional
+from typing import Sequence
 
 from evidently.future.container import MetricContainer
 from evidently.future.datasets import Dataset
 from evidently.future.metric_types import BoundTest
 from evidently.future.metric_types import Metric
 from evidently.future.metric_types import MetricCalculation
-from evidently.future.metric_types import MetricTestResult
 from evidently.future.metric_types import TResult
 from evidently.future.report import Context
 
@@ -18,7 +17,7 @@ class GroupByMetric(Metric):
     column_name: str
     label: object
 
-    def get_bound_tests(self) -> List[BoundTest]:
+    def get_bound_tests(self) -> Sequence[BoundTest]:
         return self.metric.get_bound_tests()
 
 
@@ -34,9 +33,6 @@ class GroupByMetricCalculation(MetricCalculation[TResult, GroupByMetric]):
         return (
             f"{self.calculation.display_name()} group by '{self.metric.column_name}' for label: '{self.metric.label}'"
         )
-
-    def get_tests(self, value: TResult) -> Generator[MetricTestResult, None, None]:
-        yield from self.calculation.get_tests(value)
 
     @property
     def column_name(self) -> str:

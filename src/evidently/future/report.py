@@ -33,6 +33,7 @@ from evidently.suite.base_suite import MetadataValueType
 from evidently.suite.base_suite import _discover_dependencies
 from evidently.suite.base_suite import find_metric_renderer
 from evidently.utils import NumpyEncoder
+from evidently.utils.data_preprocessing import create_data_definition
 
 TResultType = TypeVar("TResultType", bound=MetricResult)
 T = TypeVar("T", bound=LegacyMetricResult)
@@ -99,26 +100,37 @@ class Context:
 
     def get_legacy_metric(self, metric: LegacyMetric[T]) -> Tuple[T, List[BaseWidgetInfo]]:
         classification = self._input_data[0]._data_definition.get_classification("default")
+        reference = self._input_data[1].as_dataframe() if self._input_data[1] is not None else None
+        current = self._input_data[0].as_dataframe()
+        mapping = ColumnMapping(
+            target=classification.target if classification is not None else None,
+            prediction=(classification.prediction_probas or classification.prediction_labels)
+            if classification is not None
+            else None,
+            pos_label=classification.pos_label if isinstance(classification, BinaryClassification) else None,
+            target_names=classification.labels if classification is not None else None,
+        )
+        definition = create_data_definition(
+            reference,
+            current,
+            mapping,
+        )
         input_data = InputData(
-            self._input_data[1].as_dataframe() if self._input_data[1] is not None else None,
-            self._input_data[0].as_dataframe(),
-            ColumnMapping(
-                target=classification.target if classification is not None else None,
-                prediction=(classification.prediction_probas or classification.prediction_labels)
-                if classification is not None
-                else None,
-                pos_label=classification.pos_label if isinstance(classification, BinaryClassification) else None,
-                target_names=classification.labels if classification is not None else None,
-            ),
-            None,
+            reference,
+            current,
+            mapping,
+            definition,
             {},
             None,
             None,
         )
         dependencies = _discover_dependencies(metric)
         for _, obj in dependencies:
-            (result, render) = self.get_legacy_metric(obj)
-            object.__setattr__(obj, "get_result", lambda: result)
+            if isinstance(obj, LegacyMetric):
+                (result, render) = self.get_legacy_metric(obj)
+                object.__setattr__(obj, "get_result", lambda: result)
+            else:
+                raise ValueError(f"unexpected type {type(obj)}")
         fp = metric.get_fingerprint()
         if fp not in self._legacy_metrics:
             result = metric.calculate(input_data)
@@ -153,7 +165,7 @@ class Snapshot:
     def run(self, current_data: Dataset, reference_data: Optional[Dataset]):
         self.context.init_dataset(current_data, reference_data)
         metric_results = {}
-        widgets = []
+        widgets: List[BaseWidgetInfo] = []
         for item in self.report.items():
             if isinstance(item, (MetricPreset,)):
                 for metric in item.metrics():
@@ -193,12 +205,13 @@ class Snapshot:
     def dict(self) -> dict:
         return {
             "metrics": {
-                metric: self.context.get_metric_result(metric).dict() for metric in self.context._metrics_graph.keys()
+                metric: self.context.get_metric_result(metric).dict()
+                for metric in self.context._metrics_graph.keys()  # type: ignore[attr-defined]
             },
             "tests": {
                 test.get_fingerprint(): test_result.dict()
                 for metric in self.context._metrics_graph.keys()
-                for test, test_result in self.context.get_metric_result(metric).tests.items()
+                for test, test_result in self.context.get_metric_result(metric).tests.items()  # type: ignore[attr-defined]
             },
         }
 

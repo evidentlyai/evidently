@@ -233,12 +233,12 @@ class InListValueCount(CountMetric):
 class InListValueCountCalculation(CountCalculation[InListValueCount]):
     def calculate(self, current_data: Dataset, reference_data: Optional[Dataset]) -> CountValue:
         column = current_data.column(self.metric.column)
-        value = column.data.value_counts()[self.metric.values].sum()
+        value = column.data.value_counts()[self.metric.values].sum()  # type: ignore[index]
         total = column.data.count()
         return CountValue(value, value / total)
 
     def display_name(self) -> str:
-        return f"Column '{self.metric.column}' values in list [{', '.join(self.metric.values)}]"
+        return f"Column '{self.metric.column}' values in list [{', '.join(str(x) for x in self.metric.values)}]"
 
 
 class OutListValueCount(CountMetric):
@@ -249,12 +249,12 @@ class OutListValueCount(CountMetric):
 class OutListValueCountCalculation(CountCalculation[OutListValueCount]):
     def calculate(self, current_data: Dataset, reference_data: Optional[Dataset]) -> CountValue:
         column = current_data.column(self.metric.column)
-        value = column.data.value_counts()[self.metric.values].sum()
+        value = column.data.value_counts()[self.metric.values].sum()  # type: ignore[index]
         total = column.data.count()
         return CountValue(total - value, value / total)
 
     def display_name(self) -> str:
-        return f"Column '{self.metric.column}' values out of list [{', '.join(self.metric.values)}]"
+        return f"Column '{self.metric.column}' values out of list [{', '.join(str(x) for x in self.metric.values)}]"
 
 
 class MissingValueCount(CountMetric):
@@ -281,9 +281,11 @@ class ValueDriftCalculation(SingleValueCalculation[ValueDrift]):
     def calculate(self, current_data: Dataset, reference_data: Optional[Dataset]) -> SingleValue:
         column = self.metric.column
         column_type = current_data.column(column).type
+        if reference_data is None:
+            raise ValueError("Reference data is required for Value Drift")
         drift = get_one_column_drift(
             current_data=current_data.as_dataframe(),
-            reference_data=reference_data.as_dataframe() if reference_data is not None else None,
+            reference_data=reference_data.as_dataframe(),
             column_name=column,
             options=DataDriftOptions(all_features_stattest=self.metric.method),
             dataset_columns=DatasetColumns(
@@ -362,7 +364,7 @@ class UniqueValueCount(ByLabelMetric):
 class UniqueValueCountCalculation(ByLabelCalculation[UniqueValueCount]):
     def calculate(self, current_data: Dataset, reference_data: Optional[Dataset]) -> ByLabelValue:
         value_counts = current_data.as_dataframe()[self.metric.column].value_counts()
-        return ByLabelValue(value_counts.to_dict())
+        return ByLabelValue(value_counts.to_dict())  # type: ignore[arg-type]
 
     def display_name(self) -> str:
         return "Unique Value Count"

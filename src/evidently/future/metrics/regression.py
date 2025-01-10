@@ -8,7 +8,8 @@ from evidently.future.metric_types import MeanStdValue
 from evidently.future.metric_types import MetricTestResult
 from evidently.future.metric_types import SingleValue
 from evidently.future.metric_types import SingleValueMetric
-from evidently.future.metric_types import TMetric
+from evidently.future.metric_types import TMeanStdMetric
+from evidently.future.metric_types import TSingleValueMetric
 from evidently.future.metrics._legacy import LegacyMetricCalculation
 from evidently.future.report import Context
 from evidently.metrics import RegressionDummyMetric
@@ -19,8 +20,8 @@ from evidently.model.widget import BaseWidgetInfo
 
 
 class LegacyRegressionMeanStdMetric(
-    LegacyMetricCalculation[MeanStdValue, TMetric, RegressionQualityMetricResults, RegressionQualityMetric],
-    Generic[TMetric],
+    LegacyMetricCalculation[MeanStdValue, TMeanStdMetric, RegressionQualityMetricResults, RegressionQualityMetric],
+    Generic[TMeanStdMetric],
     abc.ABC,
 ):
     def legacy_metric(self) -> RegressionQualityMetric:
@@ -33,8 +34,8 @@ class LegacyRegressionMeanStdMetric(
 
 
 class LegacyRegressionSingleValueMetric(
-    LegacyMetricCalculation[SingleValue, TMetric, RegressionQualityMetricResults, RegressionQualityMetric],
-    Generic[TMetric],
+    LegacyMetricCalculation[SingleValue, TSingleValueMetric, RegressionQualityMetricResults, RegressionQualityMetric],
+    Generic[TSingleValueMetric],
     abc.ABC,
 ):
     def legacy_metric(self) -> RegressionQualityMetric:
@@ -129,8 +130,8 @@ class AbsMaxErrorCalculation(LegacyRegressionSingleValueMetric[AbsMaxError]):
 
 
 class LegacyRegressionDummyMeanStdMetric(
-    LegacyMetricCalculation[MeanStdValue, TMetric, RegressionDummyMetricResults, RegressionDummyMetric],
-    Generic[TMetric],
+    LegacyMetricCalculation[MeanStdValue, TMeanStdMetric, RegressionDummyMetricResults, RegressionDummyMetric],
+    Generic[TMeanStdMetric],
     abc.ABC,
 ):
     def legacy_metric(self) -> RegressionDummyMetric:
@@ -143,8 +144,8 @@ class LegacyRegressionDummyMeanStdMetric(
 
 
 class LegacyRegressionDummyValueMetric(
-    LegacyMetricCalculation[SingleValue, TMetric, RegressionDummyMetricResults, RegressionDummyMetric],
-    Generic[TMetric],
+    LegacyMetricCalculation[SingleValue, TSingleValueMetric, RegressionDummyMetricResults, RegressionDummyMetric],
+    Generic[TSingleValueMetric],
     abc.ABC,
 ):
     def legacy_metric(self) -> RegressionDummyMetric:
@@ -165,6 +166,8 @@ class DummyMAECalculation(LegacyRegressionDummyValueMetric[DummyMAE]):
         legacy_result: RegressionDummyMetricResults,
         render: List[BaseWidgetInfo],
     ) -> SingleValue:
+        if legacy_result.mean_abs_error is None:
+            raise ValueError("No mean absolute error was calculated")
         return SingleValue(legacy_result.mean_abs_error)
 
     def display_name(self) -> str:
@@ -182,6 +185,8 @@ class DummyMAPECalculation(LegacyRegressionDummyValueMetric[DummyMAPE]):
         legacy_result: RegressionDummyMetricResults,
         render: List[BaseWidgetInfo],
     ) -> SingleValue:
+        if legacy_result.mean_abs_perc_error is None:
+            raise ValueError("No mean absolute percentage error was calculated")
         return SingleValue(legacy_result.mean_abs_perc_error)
 
     def display_name(self) -> str:
@@ -199,6 +204,8 @@ class DummyRMSECalculation(LegacyRegressionDummyValueMetric[DummyRMSE]):
         legacy_result: RegressionDummyMetricResults,
         render: List[BaseWidgetInfo],
     ) -> SingleValue:
+        if legacy_result.rmse is None:
+            raise ValueError("No RMSE was calculated")
         return SingleValue(legacy_result.rmse)
 
     def display_name(self) -> str:
