@@ -205,7 +205,9 @@ async def get_snapshot_data(
     log_event: Callable,
 ) -> str:
     dashboard_info, snapshot = await asyncio.gather(snapshot_metadata.get_dashboard_info(), snapshot_metadata.load())
-    info = DashboardInfoModel.from_dashboard_info(dashboard_info=dashboard_info, version=snapshot.version)
+    info = DashboardInfoModel.from_dashboard_info(
+        dashboard_info=dashboard_info, version=snapshot.metadata.get("version", "1")
+    )
 
     log_event(
         "get_snapshot_data",

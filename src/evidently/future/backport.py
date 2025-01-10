@@ -185,7 +185,7 @@ def snapshot_v2_to_v1(snapshot: SnapshotV2) -> SnapshotV1:
         id=new_id(),
         name="",
         timestamp=snapshot.report._timestamp,
-        metadata=snapshot.report.metadata,
+        metadata=dict(snapshot.report.metadata),
         tags=snapshot.report.tags,
         suite=ContextPayload(
             metrics=metrics,
@@ -197,8 +197,8 @@ def snapshot_v2_to_v1(snapshot: SnapshotV2) -> SnapshotV1:
         metrics_ids=list(range(len(metrics))),
         test_ids=[],
         options=Options.from_any_options(None),
-        version="2",
     )
+    snapshot.metadata["version"] = "2"
     if len(tests) > 0:
         test_widgets = snapshot.as_test_suite()._build_dashboard_info()[1].widgets
         snapshot.suite.metrics.append(MetricV2Adapter(metric=TestsConfig(tests=tests_v2)))
