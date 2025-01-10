@@ -332,17 +332,14 @@ class AutoAliasMixin:
         return f"evidently:{cls.__alias_type__}:{cls.__name__}"
 
 
-TTestFunc = TypeVar("TTestFunc", bound=MetricTestProto)
-
-
-class MetricTest(AutoAliasMixin, EvidentlyBaseModel, Generic[TTestFunc]):
+class MetricTest(AutoAliasMixin, EvidentlyBaseModel):
     class Config:
         is_base_type = True
 
     __alias_type__: ClassVar[str] = "test_v2"
 
     @abstractmethod
-    def to_test(self) -> TTestFunc:
+    def to_test(self) -> MetricTestProto:
         raise not_implemented(self)
 
 
@@ -453,7 +450,7 @@ class SingleValueBoundTest(BoundTest[SingleValue]):
 
 
 class SingleValueMetric(Metric[TSingleValueMetricCalculation]):
-    tests: List[MetricTest[SingleValue]] = []
+    tests: List[MetricTest] = []
 
     def get_bound_tests(self) -> List[BoundTest]:
         return [SingleValueBoundTest(test=t, metric_fingerprint=self.get_fingerprint()) for t in self.tests]
@@ -475,7 +472,7 @@ class ByLabelBoundTest(BoundTest[ByLabelValue]):
 
 
 class ByLabelMetric(Metric["ByLabelCalculation"]):
-    tests: Dict[Label, List[MetricTest[SingleValue]]] = {}
+    tests: Dict[Label, List[MetricTest]] = {}
 
     def get_bound_tests(self) -> List[BoundTest]:
         return [
@@ -503,8 +500,8 @@ class CountBoundTest(BoundTest[CountValue]):
 
 
 class CountMetric(Metric["CountCalculation"]):
-    count_tests: List[MetricTest[SingleValue]] = []
-    share_tests: List[MetricTest[SingleValue]] = []
+    count_tests: List[MetricTest] = []
+    share_tests: List[MetricTest] = []
 
     def get_bound_tests(self) -> List[BoundTest]:
         return [
@@ -529,8 +526,8 @@ class MeanStdBoundTest(BoundTest[MeanStdValue]):
 
 
 class MeanStdMetric(Metric["MeanStdCalculation"]):
-    mean_tests: List[MetricTest[SingleValue]] = []
-    std_tests: List[MetricTest[SingleValue]] = []
+    mean_tests: List[MetricTest] = []
+    std_tests: List[MetricTest] = []
 
     def get_bound_tests(self) -> List[BoundTest]:
         return [
