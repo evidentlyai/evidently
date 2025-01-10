@@ -1,8 +1,15 @@
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 import { Box, Chip, Grid, IconButton, Stack, Tab, Tabs, Tooltip } from '@mui/material'
+import React from 'react'
 import { useState } from 'react'
 import type { WidgetInfo } from '~/api'
 import { WidgetRenderer } from '~/widgets/WidgetRenderer'
+
+export const AdditionalComponents = React.createContext<{
+  Component?: ({ variant }: { variant: VARIANTS }) => JSX.Element
+}>({})
+
+const useAdditionalComponents = () => React.useContext(AdditionalComponents)
 
 export const DrawWidgets: React.FC<{ widgets: WidgetInfo[] }> = ({ widgets }) => (
   <Grid container spacing={3} direction='row' alignItems='stretch'>
@@ -26,13 +33,29 @@ const SnapshotWidgetsDispatcher: React.FC<{ widgets: WidgetInfo[] }> = ({ widget
   return <SnapshotWidgetsV1 widgets={widgets} />
 }
 
-type V2_TABS = 'metrics' | 'tests'
+export type VARIANTS = 'metrics' | 'tests'
+
+const SnapshotWidgetsV1: React.FC<{ widgets: WidgetInfo[] }> = ({ widgets }) => {
+  const { Component } = useAdditionalComponents()
+
+  const isTestSuite = widgets.some(isTestSuitePredicate)
+
+  return (
+    <>
+      {Component && <Component variant={isTestSuite ? 'tests' : 'metrics'} />}
+
+      <DrawWidgets widgets={widgets} />
+    </>
+  )
+}
 
 const SnapshotWidgetsV2: React.FC<{ widgets: WidgetInfo[] }> = ({ widgets }) => {
-  const [v2Tab, setV2Tab] = useState<V2_TABS>('metrics')
+  const [v2Tab, setV2Tab] = useState<VARIANTS>('metrics')
 
   const metrics = widgets.filter((w) => !testIsV2TestPredicate(w))
   const tests = widgets.filter((w) => testIsV2TestPredicate(w))
+
+  const { Component } = useAdditionalComponents()
 
   return (
     <Box>
@@ -53,24 +76,23 @@ const SnapshotWidgetsV2: React.FC<{ widgets: WidgetInfo[] }> = ({ widgets }) => 
 
         <Tabs
           value={v2Tab}
-          onChange={(_, v2Tab) => setV2Tab(v2Tab as V2_TABS)}
+          onChange={(_, v2Tab) => setV2Tab(v2Tab as VARIANTS)}
           textColor='secondary'
           indicatorColor='secondary'
           aria-label='secondary tabs example'
         >
-          <Tab value={'metrics' satisfies V2_TABS} label='Metrics' />
-          <Tab value={'tests' satisfies V2_TABS} label='Tests' />
+          <Tab value={'metrics' satisfies VARIANTS} label='Metrics' />
+          <Tab value={'tests' satisfies VARIANTS} label='Tests' />
         </Tabs>
       </Stack>
 
-      {v2Tab === 'metrics' && <SnapshotWidgetsV1 widgets={metrics} />}
-      {v2Tab === 'tests' && <SnapshotWidgetsV1 widgets={tests} />}
+      {Component && <Component variant={v2Tab} />}
+
+      {v2Tab === 'metrics' && <DrawWidgets widgets={metrics} />}
+      {v2Tab === 'tests' && <DrawWidgets widgets={tests} />}
     </Box>
   )
 }
 
-const SnapshotWidgetsV1: React.FC<{ widgets: WidgetInfo[] }> = ({ widgets }) => (
-  <DrawWidgets widgets={widgets} />
-)
-
 const testIsV2TestPredicate = (w: WidgetInfo) => w.params && 'v2_test' in w.params
+const isTestSuitePredicate = (w: WidgetInfo) => w.type === 'test_suite'
