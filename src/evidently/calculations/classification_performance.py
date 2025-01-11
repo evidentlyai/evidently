@@ -101,9 +101,12 @@ def get_prediction_data(
     target = data_columns.utility_columns.target
 
     if isinstance(prediction, list) and len(prediction) > 2:
+        pred_data = data[prediction].idxmax(axis=1)
+        if is_integer_dtype(data[target]):
+            pred_data = pred_data.apply(lambda x: int(x) if x is not None else None)
         # list of columns with prediction probas, should be same as target labels
         return PredictionData(
-            predictions=data[prediction].idxmax(axis=1),
+            predictions=pred_data,
             prediction_probas=data[prediction],
             labels=prediction,
         )

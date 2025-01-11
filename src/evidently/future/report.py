@@ -104,7 +104,9 @@ class Context:
         current = self._input_data[0].as_dataframe()
         prediction: Optional[Union[str, List[str]]]
         if classification is not None:
-            if classification.prediction_probas not in current.columns:
+            if isinstance(classification.prediction_probas, list):
+                prediction = classification.prediction_probas
+            elif classification.prediction_probas not in current.columns:
                 prediction = classification.prediction_labels
             else:
                 prediction = classification.prediction_probas
