@@ -82,7 +82,7 @@ class MetricResult:
                 continue
             elif isinstance(value, list):
                 if len(value) > 0:
-                    config_items.append(f"{field}={",".join(str(x) for x in value)}")
+                    config_items.append(f"{field}={','.join(str(x) for x in value)}")
                 continue
             elif isinstance(value, dict):
                 continue
