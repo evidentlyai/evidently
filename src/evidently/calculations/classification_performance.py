@@ -154,25 +154,21 @@ def get_prediction_data(
         and is_float_dtype(data[prediction])
     ):
         pos_label = _check_pos_labels(pos_label, labels)
-        if prediction not in labels:
-            raise ValueError(
-                "No prediction for the target labels were found. "
-                "Consider to rename columns with the prediction to match target labels."
-            )
 
         # get negative label for binary classification
-        labels = pd.Series(labels)
-        neg_label = labels[labels != pos_label].iloc[0]
-        if pos_label == prediction:
-            pos_preds = data[prediction]
-
-        else:
-            pos_preds = data[prediction].apply(lambda x: 1.0 - x)
+        neg_label = None
+        for label in labels:
+            if label != pos_label:
+                neg_label = label
+        if neg_label is None:
+            raise ValueError("Failed to determine negative label")
+        pos_preds = data[prediction]
+        neg_preds = data[prediction].apply(lambda x: 1.0 - x)
 
         prediction_probas = pd.DataFrame.from_dict(
             {
                 pos_label: pos_preds,
-                neg_label: pos_preds.apply(lambda x: 1.0 - x),
+                neg_label: neg_preds,
             }
         )
         predictions = threshold_probability_labels(prediction_probas, pos_label, neg_label, threshold)
