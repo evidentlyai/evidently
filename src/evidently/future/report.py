@@ -210,10 +210,10 @@ class Snapshot:
 
     def dict(self) -> dict:
         return {
-            "metrics": {
-                metric: self.context.get_metric_result(metric).dict()  # type: ignore[attr-defined]
+            "metrics": [
+                self.context.get_metric_result(metric).to_dict()  # type: ignore[attr-defined]
                 for metric in self.context._metrics_graph.keys()
-            },
+            ],
             "tests": {
                 test.get_fingerprint(): test_result.dict()
                 for metric in self.context._metrics_graph.keys()
