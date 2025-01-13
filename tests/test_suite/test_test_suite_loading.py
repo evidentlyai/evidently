@@ -1,5 +1,8 @@
+import pathlib
+
 import numpy as np
 import numpy.testing
+import pandas as pd
 import pytest
 from sklearn import datasets
 from sklearn import ensemble
@@ -18,8 +21,9 @@ from tests.conftest import slow
 
 @pytest.fixture
 def adult():
-    adult_data = datasets.fetch_openml(name="adult", version=2, as_frame=True)
-    adult = adult_data.frame
+    adult = pd.read_parquet(
+        pathlib.Path(__file__).parent.joinpath("../../test_data/adults.parquet"),
+    )
 
     adult_ref = adult[~adult.education.isin(["Some-college", "HS-grad", "Bachelors"])]
     adult_cur = adult[adult.education.isin(["Some-college", "HS-grad", "Bachelors"])]
