@@ -1,6 +1,9 @@
+import os
+import pathlib
 from datetime import datetime
 from datetime import timedelta
 
+import pandas as pd
 from sklearn import datasets
 
 from evidently import ColumnMapping
@@ -16,8 +19,11 @@ from evidently.ui.workspace import WorkspaceBase
 
 
 def create_data():
-    adult_data = datasets.fetch_openml(name="adult", version=2, as_frame="auto")
-    adult = adult_data.frame
+    if os.environ.get("EVIDENTLY_TEST_ENVIRONMENT", "0") != "1":
+        adult_data = datasets.fetch_openml(name="adult", version=2, as_frame="auto")
+        adult = adult_data.frame
+    else:
+        adult = pd.read_parquet(pathlib.Path(__file__).parent.joinpath("../../../../test_data/adults.parquet"))
 
     reference = adult[~adult.education.isin(["Some-college", "HS-grad", "Bachelors"])]
     current = adult[adult.education.isin(["Some-college", "HS-grad", "Bachelors"])]
