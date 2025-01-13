@@ -102,11 +102,19 @@ class Context:
         classification = self._input_data[0]._data_definition.get_classification("default")
         reference = self._input_data[1].as_dataframe() if self._input_data[1] is not None else None
         current = self._input_data[0].as_dataframe()
+        prediction: Optional[Union[str, List[str]]]
+        if classification is not None:
+            if isinstance(classification.prediction_probas, list):
+                prediction = classification.prediction_probas
+            elif classification.prediction_probas not in current.columns:
+                prediction = classification.prediction_labels
+            else:
+                prediction = classification.prediction_probas
+        else:
+            prediction = None
         mapping = ColumnMapping(
             target=classification.target if classification is not None else None,
-            prediction=(classification.prediction_probas or classification.prediction_labels)
-            if classification is not None
-            else None,
+            prediction=prediction,
             pos_label=classification.pos_label if isinstance(classification, BinaryClassification) else None,
             target_names=classification.labels if classification is not None else None,
         )
@@ -204,10 +212,10 @@ class Snapshot:
 
     def dict(self) -> dict:
         return {
-            "metrics": {
-                metric: self.context.get_metric_result(metric).dict()  # type: ignore[attr-defined]
+            "metrics": [
+                self.context.get_metric_result(metric).to_dict()  # type: ignore[attr-defined]
                 for metric in self.context._metrics_graph.keys()
-            },
+            ],
             "tests": {
                 test.get_fingerprint(): test_result.dict()
                 for metric in self.context._metrics_graph.keys()

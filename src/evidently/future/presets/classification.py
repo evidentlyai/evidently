@@ -98,7 +98,9 @@ class ClassificationQualityByLabel(MetricPreset):
 
     def calculate(self, metric_results: Dict[MetricId, MetricResult]) -> PresetResult:
         metric = RocAucByLabel(probas_threshold=self._probas_threshold, k=self._k)
-        return PresetResult(metric_results[metric.to_calculation().id].widget)
+        widget = metric_results[metric.to_calculation().id].widget[:]
+        widget[0].params["counters"][0]["label"] = "Classification Quality by Label"
+        return PresetResult(widget)
 
 
 class ClassificationDummyQuality(MetricContainer):
