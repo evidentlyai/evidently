@@ -90,7 +90,7 @@ class MetricResult:
                 config_items.append(f"{field}={str(value)}")
         return {
             "id": self._metric.id,
-            "metric_id": f"{type}({",".join(config_items)})",
+            "metric_id": f"{type}({','.join(config_items)})",
             "value": self.dict(),
         }
 
