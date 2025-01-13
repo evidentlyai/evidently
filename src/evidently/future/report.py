@@ -60,6 +60,7 @@ class ContextColumnData:
 class Context:
     _configuration: Optional["Report"]
     _metrics: Dict[MetricId, MetricResult]
+    _reference_metrics: Dict[MetricId, MetricResult]
     _metrics_graph: dict
     _input_data: Tuple[Dataset, Optional[Dataset]]
     _current_graph_level: dict
@@ -67,6 +68,7 @@ class Context:
 
     def __init__(self):
         self._metrics = {}
+        self._reference_metrics = {}
         self._metric_defs = {}
         self._configuration = None
         self._metrics_graph = {}
@@ -85,7 +87,7 @@ class Context:
         prev_level = self._current_graph_level
         self._current_graph_level = prev_level[metric.id]
         if metric.id not in self._metrics:
-            self._metrics[metric.id] = metric.call(self)
+            self._metrics[metric.id], self._reference_metrics[metric.id] = metric.call(self)
             self._metrics[metric.id]._metric = metric
         self._current_graph_level = prev_level
         return typing.cast(TResultType, self._metrics[metric.id])

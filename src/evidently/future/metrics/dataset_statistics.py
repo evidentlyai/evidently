@@ -29,8 +29,11 @@ class RowCount(SingleValueMetric):
 
 
 class RowCountCalculation(SingleValueCalculation[RowCount]):
-    def calculate(self, current_data: Dataset, reference_data: Optional[Dataset]) -> SingleValue:
-        return SingleValue(current_data.stats().row_count)
+    def calculate(self, context: "Context", current_data: Dataset, reference_data: Optional[Dataset]):
+        return (
+            SingleValue(current_data.stats().row_count),
+            None if reference_data is None else SingleValue(reference_data.stats().row_count),
+        )
 
     def display_name(self) -> str:
         return "Row count in dataset"
@@ -41,22 +44,28 @@ class ColumnCount(SingleValueMetric):
 
 
 class ColumnCountCalculation(SingleValueCalculation[ColumnCount]):
-    def calculate(self, current_data: Dataset, reference_data: Optional[Dataset]) -> SingleValue:
-        definition = current_data._data_definition
-        if self.metric.column_type is None:
-            return SingleValue(current_data.stats().column_count)
-        elif self.metric.column_type == ColumnType.Numerical:
-            return SingleValue(len([col for col in definition.get_numerical_columns() if current_data.column(col)]))
-        elif self.metric.column_type == ColumnType.Categorical:
-            return SingleValue(len([col for col in definition.get_categorical_columns() if current_data.column(col)]))
-        elif self.metric.column_type == ColumnType.Text:
-            return SingleValue(len([col for col in definition.get_text_columns() if current_data.column(col)]))
-        elif self.metric.column_type == ColumnType.Datetime:
-            return SingleValue(len([col for col in definition.get_datetime_columns() if current_data.column(col)]))
-        raise ValueError(f"Column count does not support {self.metric.column_type} type")
+    def calculate(self, context: "Context", current_data: Dataset, reference_data: Optional[Dataset]):
+        return (
+            self._calculate_for_dataset(current_data),
+            None if reference_data is None else self._calculate_for_dataset(reference_data),
+        )
 
     def display_name(self) -> str:
         return f"Column {f'of type {self.metric.column_type.value} ' if self.metric.column_type is not None else ''}count in dataset"
+
+    def _calculate_for_dataset(self, dataset: Dataset) -> SingleValue:
+        definition = dataset._data_definition
+        if self.metric.column_type is None:
+            return SingleValue(dataset.stats().column_count)
+        elif self.metric.column_type == ColumnType.Numerical:
+            return SingleValue(len([col for col in definition.get_numerical_columns() if dataset.column(col)]))
+        elif self.metric.column_type == ColumnType.Categorical:
+            return SingleValue(len([col for col in definition.get_categorical_columns() if dataset.column(col)]))
+        elif self.metric.column_type == ColumnType.Text:
+            return SingleValue(len([col for col in definition.get_text_columns() if dataset.column(col)]))
+        elif self.metric.column_type == ColumnType.Datetime:
+            return SingleValue(len([col for col in definition.get_datetime_columns() if dataset.column(col)]))
+        raise ValueError(f"Column count does not support {self.metric.column_type} type")
 
 
 TLegacyResult = TypeVar("TLegacyResult", bound=LegacyMetricResult)

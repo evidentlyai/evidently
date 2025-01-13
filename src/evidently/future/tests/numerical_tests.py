@@ -32,6 +32,10 @@ class ComparisonTest(MetricTest):
 
         return func
 
+    def get_threshold(self, context, metric) -> Union[float, int]:
+        if self.threshold == "reference":
+            return context.get_reference_value(metric).value
+
 
 class LessOrEqualMetricTest(ComparisonTest):
     __short_name__: ClassVar[str] = "le"

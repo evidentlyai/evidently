@@ -222,6 +222,74 @@ def metric_tests_widget(tests: List[MetricTestResult]) -> BaseWidgetInfo:
     )
 
 
+def get_default_render_ref(title: str, result: MetricResult, ref_result: MetricResult) -> List[BaseWidgetInfo]:
+    if isinstance(result, SingleValue):
+        assert isinstance(ref_result, SingleValue)
+        return [
+            counter(
+                title=title + " (current)",
+                size=WidgetSize.HALF,
+                counters=[CounterData(label="", value=f"{result.value:0.3f}")],
+            ),
+            counter(
+                title=title + " (reference)",
+                size=WidgetSize.HALF,
+                counters=[CounterData(label="", value=f"{result.value:0.3f}")],
+            ),
+        ]
+    if isinstance(result, ByLabelValue):
+        assert isinstance(ref_result, ByLabelValue)
+        return [
+            table_data(
+                title=title,
+                size=WidgetSize.FULL,
+                column_names=["Label", "Current value", "Reference value"],
+                data=[(k, f"{v:0.3f}", f"{ref_result.values[k]}") for k, v in result.values.items()],
+            )
+        ]
+    if isinstance(result, CountValue):
+        assert isinstance(ref_result, CountValue)
+        return [
+            counter(
+                title=f"{title}: Current",
+                size=WidgetSize.HALF,
+                counters=[
+                    CounterData(label="Count", value=str(result.count)),
+                    CounterData(label="Share", value=str(result.share)),
+                ],
+            ),
+            counter(
+                title=f"{title}: Reference",
+                size=WidgetSize.HALF,
+                counters=[
+                    CounterData(label="Count", value=str(ref_result.count)),
+                    CounterData(label="Share", value=str(ref_result.share)),
+                ],
+            ),
+        ]
+    if isinstance(result, MeanStdValue):
+        assert isinstance(ref_result, MeanStdValue)
+        return [
+            counter(
+                title=f"{title}: Current",
+                size=WidgetSize.HALF,
+                counters=[
+                    CounterData(label="Mean", value=str(result.mean)),
+                    CounterData(label="Std", value=str(result.std)),
+                ],
+            ),
+            counter(
+                title=f"{title}: Reference",
+                size=WidgetSize.HALF,
+                counters=[
+                    CounterData(label="Mean", value=str(ref_result.mean)),
+                    CounterData(label="Std", value=str(ref_result.std)),
+                ],
+            ),
+        ]
+    raise NotImplementedError(f"No default render for {type(result)}")
+
+
 def get_default_render(title: str, result: TResult) -> List[BaseWidgetInfo]:
     if isinstance(result, SingleValue):
         return [
@@ -264,6 +332,9 @@ def get_default_render(title: str, result: TResult) -> List[BaseWidgetInfo]:
     raise NotImplementedError(f"No default render for {type(result)}")
 
 
+TMetricResult = Union[TResult, Tuple[TResult, Optional[TResult]]]
+
+
 class MetricCalculationBase(Generic[TResult]):
     """
     Base metric class.
@@ -276,7 +347,7 @@ class MetricCalculationBase(Generic[TResult]):
     def __init__(self, metric_id: MetricId) -> None:
         self._metric_id = metric_id
 
-    def call(self, context: "Context") -> TResult:
+    def call(self, context: "Context") -> Tuple[TResult, Optional[TResult]]:
         """
         main method is used for executing metric
         Args:
@@ -284,19 +355,24 @@ class MetricCalculationBase(Generic[TResult]):
         Returns:
 
         """
-        result = self._call(context)
-        if not result.is_widget_set():
-            result.widget = get_default_render(self.display_name(), result)
-        test_results = {tc: tc.run_test(self, result) for tc in self.to_metric().get_bound_tests()}
-        if test_results and len(test_results) > 0:
-            result.set_tests(test_results)
-        return result
+        result = self.calculate(context, *context._input_data)
+        if isinstance(result, tuple):
+            curr_result, ref_result = result
+        else:
+            curr_result, ref_result = result, None
+        if not curr_result.is_widget_set():
+            if ref_result is None:
+                curr_result.widget = get_default_render(self.display_name(), curr_result)
+            else:
+                curr_result.widget = get_default_render_ref(self.display_name(), curr_result, ref_result)
 
-    def _call(self, context: "Context") -> TResult:
-        return self.calculate(*context._input_data)
+        test_results = {tc: tc.run_test(self, curr_result) for tc in self.to_metric().get_bound_tests()}
+        if test_results and len(test_results) > 0:
+            curr_result.set_tests(test_results)
+        return curr_result, ref_result
 
     @abc.abstractmethod
-    def calculate(self, current_data: Dataset, reference_data: Optional[Dataset]) -> TResult:
+    def calculate(self, context: "Context", current_data: Dataset, reference_data: Optional[Dataset]) -> TMetricResult:
         raise not_implemented(self)
 
     @property
