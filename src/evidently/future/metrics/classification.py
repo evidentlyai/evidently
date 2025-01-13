@@ -72,7 +72,10 @@ class LegacyClassificationQualityByClass(
                 yield test.to_test()(self, label_value)
 
     def _relabel(self, context: "Context", label: Label):
-        labels = context.data_definition.get_classification("default").labels
+        classification = context.data_definition.get_classification("default")
+        if classification is None:
+            return label
+        labels = classification.labels
         if labels is not None:
             return labels[label]
         return label
