@@ -98,6 +98,8 @@ jobs:
       - changed_files
       - prepare-cache-data
     if: ${{ github.event.pull_request.draft == false && needs.changed_files.outputs.evidently_any_modified == 'true' }}
+    env:
+      EVIDENTLY_TEST_ENVIRONMENT: 1
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
