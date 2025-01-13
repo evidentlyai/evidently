@@ -123,6 +123,8 @@ jobs:
   test:
     # The type of runner that the job will run on
     name: Test ${{ matrix.os }} with py${{ matrix.python }}
+    env:
+      EVIDENTLY_TEST_ENVIRONMENT: 1
     needs:
       - linter
       - prepare-cache-data
