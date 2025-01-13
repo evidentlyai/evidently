@@ -191,7 +191,7 @@ class MeanStdValue(MetricResult):
 
 
 class MetricTestProto(Protocol[TResult]):
-    def __call__(self, metric: "MetricCalculationBase", value: TResult) -> MetricTestResult: ...
+    def __call__(self, context: "Context", metric: "MetricCalculationBase", value: TResult) -> MetricTestResult: ...
 
 
 SingleValueTest = MetricTestProto[SingleValue]
@@ -366,9 +366,6 @@ class MetricCalculationBase(Generic[TResult]):
             else:
                 curr_result.widget = get_default_render_ref(self.display_name(), curr_result, ref_result)
 
-        test_results = {tc: tc.run_test(self, curr_result) for tc in self.to_metric().get_bound_tests()}
-        if test_results and len(test_results) > 0:
-            curr_result.set_tests(test_results)
         return curr_result, ref_result
 
     @abc.abstractmethod
@@ -404,6 +401,17 @@ class AutoAliasMixin:
         return f"evidently:{cls.__alias_type__}:{cls.__name__}"
 
 
+class Reference(AutoAliasMixin, EvidentlyBaseModel):
+    __alias_type__: ClassVar[str] = "bound_test"
+
+    relative: Optional[float] = None
+    absolute: Optional[float] = None
+
+    def apply(self, value: Value) -> Value:
+        if self.relative is not None:
+            return value
+
+
 class MetricTest(AutoAliasMixin, EvidentlyBaseModel):
     class Config:
         is_base_type = True
@@ -424,7 +432,7 @@ class BoundTest(AutoAliasMixin, EvidentlyBaseModel, Generic[TResult], ABC):
     metric_fingerprint: Fingerprint
 
     @abstractmethod
-    def run_test(self, calculation: MetricCalculationBase[TResult], metric_result: TResult):
+    def run_test(self, context: "Context", calculation: MetricCalculationBase[TResult], metric_result: TResult):
         raise NotImplementedError(self.__class__)
 
 
@@ -517,8 +525,13 @@ TSingleValueMetricCalculation = TypeVar("TSingleValueMetricCalculation", bound="
 
 
 class SingleValueBoundTest(BoundTest[SingleValue]):
-    def run_test(self, calculation: MetricCalculationBase[SingleValue], metric_result: SingleValue) -> MetricTestResult:
-        return self.test.to_test()(calculation, metric_result)
+    def run_test(
+        self,
+        context: "Context",
+        calculation: MetricCalculationBase[SingleValue],
+        metric_result: SingleValue,
+    ) -> MetricTestResult:
+        return self.test.to_test()(context, calculation, metric_result)
 
 
 class SingleValueMetric(Metric[TSingleValueMetricCalculation]):
@@ -538,9 +551,14 @@ class SingleValueCalculation(MetricCalculation[SingleValue, TSingleValueMetric],
 class ByLabelBoundTest(BoundTest[ByLabelValue]):
     label: Label
 
-    def run_test(self, calculation: MetricCalculationBase, metric_result: ByLabelValue) -> MetricTestResult:
+    def run_test(
+        self,
+        context: "Context",
+        calculation: MetricCalculationBase,
+        metric_result: ByLabelValue,
+    ) -> MetricTestResult:
         value = metric_result.get_label_result(self.label)
-        return self.test.to_test()(calculation, value)
+        return self.test.to_test()(context, calculation, value)
 
 
 class ByLabelMetric(Metric["ByLabelCalculation"]):
@@ -565,9 +583,16 @@ class ByLabelCalculation(MetricCalculation[ByLabelValue, TByLabelMetric], Generi
 class CountBoundTest(BoundTest[CountValue]):
     is_count: bool
 
-    def run_test(self, calculation: MetricCalculationBase, metric_result: CountValue) -> MetricTestResult:
+    def run_test(
+        self,
+        context: "Context",
+        calculation: MetricCalculationBase,
+        metric_result: CountValue,
+    ) -> MetricTestResult:
         return self.test.to_test()(
-            calculation, metric_result.get_count() if self.is_count else metric_result.get_share()
+            context,
+            calculation,
+            metric_result.get_count() if self.is_count else metric_result.get_share(),
         )
 
 
@@ -593,8 +618,17 @@ class CountCalculation(MetricCalculation[CountValue, TCountMetric], Generic[TCou
 class MeanStdBoundTest(BoundTest[MeanStdValue]):
     is_mean: bool
 
-    def run_test(self, calculation: MetricCalculationBase, metric_result: MeanStdValue) -> MetricTestResult:
-        return self.test.to_test()(calculation, metric_result.get_mean() if self.is_mean else metric_result.get_std())
+    def run_test(
+        self,
+        context: "Context",
+        calculation: MetricCalculationBase,
+        metric_result: MeanStdValue,
+    ) -> MetricTestResult:
+        return self.test.to_test()(
+            context,
+            calculation,
+            metric_result.get_mean() if self.is_mean else metric_result.get_std(),
+        )
 
 
 class MeanStdMetric(Metric["MeanStdCalculation"]):

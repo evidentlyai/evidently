@@ -89,6 +89,11 @@ class Context:
         if metric.id not in self._metrics:
             self._metrics[metric.id], self._reference_metrics[metric.id] = metric.call(self)
             self._metrics[metric.id]._metric = metric
+            test_results = {
+                tc: tc.run_test(self, metric, self._metrics[metric.id]) for tc in metric.to_metric().get_bound_tests()
+            }
+            if test_results and len(test_results) > 0:
+                self._metrics[metric.id].set_tests(test_results)
         self._current_graph_level = prev_level
         return typing.cast(TResultType, self._metrics[metric.id])
 
@@ -99,6 +104,9 @@ class Context:
 
     def get_metric(self, metric: MetricId) -> MetricCalculationBase[TResultType]:
         return self._metrics_graph[metric]["_self"]
+
+    def get_reference_metric_result(self, metric: MetricId) -> TResultType:
+        return self._reference_metrics[metric]
 
     def get_legacy_metric(self, metric: LegacyMetric[T]) -> Tuple[T, List[BaseWidgetInfo]]:
         classification = self._input_data[0]._data_definition.get_classification("default")
