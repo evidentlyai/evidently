@@ -16,6 +16,7 @@ class ClassMetric(MetricResult):
     precision: float
     recall: float
     f1: float
+    roc_auc: Optional[float] = None
     support: Optional[float] = None
 
 

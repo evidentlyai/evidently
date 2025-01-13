@@ -25,6 +25,7 @@ from typing import TypeVar
 from typing import Union
 from typing import get_args
 
+import numpy as np
 from typing_inspect import is_union_type
 
 from evidently._pydantic_compat import SHAPE_DICT
@@ -232,7 +233,8 @@ class PolymorphicModel(BaseModel):
         type_field.type_ = type_field.outer_type_ = literal_typename
 
         base_class = get_base_class(cls)
-        register_loaded_alias(base_class, cls, typename)
+        if (base_class, typename) not in LOADED_TYPE_ALIASES:
+            register_loaded_alias(base_class, cls, typename)
         if base_class != cls:
             base_typefield = base_class.__fields__["type"]
             base_typefield_type = base_typefield.type_
@@ -280,6 +282,8 @@ class PolymorphicModel(BaseModel):
 def get_value_fingerprint(value: Any) -> FingerprintPart:
     if isinstance(value, EvidentlyBaseModel):
         return value.get_fingerprint()
+    if isinstance(value, np.int64):
+        return int(value)
     if isinstance(value, BaseModel):
         return get_value_fingerprint(value.dict())
     if dataclasses.is_dataclass(value):

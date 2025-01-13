@@ -24,6 +24,7 @@ from evidently._pydantic_compat import Field
 from evidently._pydantic_compat import PrivateAttr
 from evidently._pydantic_compat import parse_obj_as
 from evidently.core import new_id
+from evidently.future.report import Snapshot as SnapshotV2
 from evidently.model.dashboard import DashboardInfo
 from evidently.suite.base_suite import MetadataValueType
 from evidently.suite.base_suite import ReportBase
@@ -51,6 +52,8 @@ from evidently.utils.sync import sync_api
 
 if TYPE_CHECKING:
     from evidently.ui.managers.projects import ProjectManager
+
+AnySnapshot = Union[Snapshot, SnapshotV2]
 
 
 class BlobMetadata(BaseModel):
@@ -197,7 +200,11 @@ class Project(Entity):
     async def load_snapshot_async(self, snapshot_id: SnapshotID) -> Snapshot:
         return await self.project_manager.load_snapshot(self._user_id, self.id, snapshot_id)
 
-    async def add_snapshot_async(self, snapshot: Snapshot):
+    async def add_snapshot_async(self, snapshot: AnySnapshot):
+        if not isinstance(snapshot, Snapshot):
+            from evidently.future.backport import snapshot_v2_to_v1
+
+            snapshot = snapshot_v2_to_v1(snapshot)
         await self.project_manager.add_snapshot(self._user_id, self.id, snapshot)
 
     async def delete_snapshot_async(self, snapshot_id: Union[str, SnapshotID]):

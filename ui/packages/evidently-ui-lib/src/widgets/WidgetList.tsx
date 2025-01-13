@@ -15,7 +15,9 @@ const WidgetList: React.FunctionComponent<WidgetListParams & { widgetSize: numbe
   )
   return (
     <WidgetPanel>
-      {drawWidgets.map((wi, idx) => WidgetRenderer(`wi_${idx}`, wi))}
+      {drawWidgets.map((wi) => (
+        <WidgetRenderer key={wi.id} info={wi} />
+      ))}
       <Grid item xs={12}>
         <Button
           startIcon={<ArrowLeftIcon />}
