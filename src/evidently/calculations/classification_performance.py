@@ -158,15 +158,23 @@ def get_prediction_data(
     ):
         pos_label = _check_pos_labels(pos_label, labels)
 
-        # get negative label for binary classification
         neg_label = None
-        for label in labels:
-            if label != pos_label:
-                neg_label = label
+        if prediction in labels and pos_label != prediction:
+            neg_label = prediction
+        # get negative label for binary classification
+
+        if neg_label is None:
+            for label in labels:
+                if label != pos_label:
+                    neg_label = label
         if neg_label is None:
             raise ValueError("Failed to determine negative label")
-        pos_preds = data[prediction]
-        neg_preds = data[prediction].apply(lambda x: 1.0 - x)
+        if prediction in labels and neg_label == prediction:
+            neg_preds = data[prediction]
+            pos_preds = data[prediction].apply(lambda x: 1.0 - x)
+        else:
+            pos_preds = data[prediction]
+            neg_preds = data[prediction].apply(lambda x: 1.0 - x)
 
         prediction_probas = pd.DataFrame.from_dict(
             {
