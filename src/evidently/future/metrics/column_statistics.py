@@ -296,7 +296,7 @@ class MissingValueCount(CountMetric):
 
 
 class MissingValueCountCalculation(CountCalculation[MissingValueCount]):
-    def calculate(self, context: "Context", current_data: Dataset, reference_data: Optional[Dataset]) -> CountValue:
+    def calculate(self, context: "Context", current_data: Dataset, reference_data: Optional[Dataset]):
         return (
             self._calculate_value(current_data),
             None if reference_data is None else self._calculate_value(reference_data),
