@@ -1,5 +1,4 @@
 import abc
-from typing import Generator
 from typing import Generic
 from typing import List
 from typing import Optional
@@ -9,7 +8,6 @@ from typing import Union
 
 from evidently.future.metric_types import ByLabelMetric
 from evidently.future.metric_types import ByLabelValue
-from evidently.future.metric_types import MetricTestResult
 from evidently.future.metric_types import SingleValue
 from evidently.future.metric_types import SingleValueMetric
 from evidently.future.metrics._legacy import LegacyMetricCalculation
@@ -60,14 +58,8 @@ class LegacyClassificationQualityByClass(
         context: "Context",
         legacy_result: ClassificationQualityByClassResult,
         render: List[BaseWidgetInfo],
-    ) -> ByLabelValue:
+    ):
         raise NotImplementedError()
-
-    def get_tests(self, value: ByLabelValue) -> Generator[MetricTestResult, None, None]:
-        for label, tests in self.metric.tests.items():
-            label_value = value.get_label_result(label)
-            for test in tests:
-                yield test.to_test()(self, label_value)
 
     def _relabel(self, context: "Context", label: Label):
         classification = context.data_definition.get_classification("default")
@@ -204,9 +196,6 @@ class LegacyClassificationQuality(
     ) -> Union[SingleValue, Tuple[SingleValue, Optional[SingleValue]]]:
         raise NotImplementedError()
 
-    def get_tests(self, value: SingleValue) -> Generator[MetricTestResult, None, None]:
-        yield from (t.to_test()(self, value) for t in self.metric.tests)
-
 
 class F1Score(ClassificationQuality):
     pass
@@ -303,7 +292,9 @@ class TPRCalculation(LegacyClassificationQuality[TPR]):
             raise ValueError("Failed to calculate TPR value")
         return (
             SingleValue(legacy_result.current.tpr),
-            None if legacy_result.reference is None else SingleValue(legacy_result.reference.tpr),
+            None
+            if legacy_result.reference is None or legacy_result.reference.tpr is None
+            else SingleValue(legacy_result.reference.tpr),
         )
 
     def display_name(self) -> str:
@@ -325,7 +316,9 @@ class TNRCalculation(LegacyClassificationQuality[TNR]):
             raise ValueError("Failed to calculate TNR value")
         return (
             SingleValue(legacy_result.current.tnr),
-            None if legacy_result.reference is None else SingleValue(legacy_result.reference.tnr),
+            None
+            if legacy_result.reference is None or legacy_result.reference.tnr is None
+            else SingleValue(legacy_result.reference.tnr),
         )
 
     def display_name(self) -> str:
@@ -347,7 +340,9 @@ class FPRCalculation(LegacyClassificationQuality[FPR]):
             raise ValueError("Failed to calculate FPR value")
         return (
             SingleValue(legacy_result.current.fpr),
-            None if legacy_result.reference is None else SingleValue(legacy_result.reference.fpr),
+            None
+            if legacy_result.reference is None or legacy_result.reference.fpr is None
+            else SingleValue(legacy_result.reference.fpr),
         )
 
     def display_name(self) -> str:
@@ -369,7 +364,9 @@ class FNRCalculation(LegacyClassificationQuality[FNR]):
             raise ValueError("Failed to calculate FNR value")
         return (
             SingleValue(legacy_result.current.fnr),
-            None if legacy_result.reference is None else SingleValue(legacy_result.reference.fnr),
+            None
+            if legacy_result.reference is None or legacy_result.reference.fnr is None
+            else SingleValue(legacy_result.reference.fnr),
         )
 
     def display_name(self) -> str:
@@ -391,7 +388,9 @@ class RocAucCalculation(LegacyClassificationQuality[RocAuc]):
             raise ValueError("Failed to calculate RocAuc value")
         return (
             SingleValue(legacy_result.current.roc_auc),
-            None if legacy_result.reference is None else SingleValue(legacy_result.reference.roc_auc),
+            None
+            if legacy_result.reference is None or legacy_result.reference.roc_auc is None
+            else SingleValue(legacy_result.reference.roc_auc),
         )
 
     def display_name(self) -> str:
@@ -413,7 +412,9 @@ class LogLossCalculation(LegacyClassificationQuality[LogLoss]):
             raise ValueError("Failed to calculate LogLoss value")
         return (
             SingleValue(legacy_result.current.log_loss),
-            None if legacy_result.reference is None else SingleValue(legacy_result.reference.log_loss),
+            None
+            if legacy_result.reference is None or legacy_result.reference.log_loss is None
+            else SingleValue(legacy_result.reference.log_loss),
         )
 
     def display_name(self) -> str:
@@ -445,9 +446,6 @@ class LegacyClassificationDummy(
         render: List[BaseWidgetInfo],
     ) -> SingleValue:
         raise NotImplementedError()
-
-    def get_tests(self, value: SingleValue) -> Generator[MetricTestResult, None, None]:
-        yield from (t.to_test()(self, value) for t in self.metric.tests)
 
 
 class DummyPrecision(ClassificationQuality):

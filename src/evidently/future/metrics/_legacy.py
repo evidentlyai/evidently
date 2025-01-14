@@ -41,5 +41,5 @@ class LegacyMetricCalculation(
         context: "Context",
         legacy_result: TLegacyResult,
         render: List[BaseWidgetInfo],
-    ) -> TResult:
+    ) -> TMetricResult:
         raise NotImplementedError()

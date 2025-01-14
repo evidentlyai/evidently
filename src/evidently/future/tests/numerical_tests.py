@@ -3,10 +3,11 @@ from typing import ClassVar
 from typing import Optional
 from typing import Union
 
+from evidently.future.metric_types import DatasetType
 from evidently.future.metric_types import MetricCalculationBase
-from evidently.future.metric_types import MetricId
 from evidently.future.metric_types import MetricTest
 from evidently.future.metric_types import MetricTestResult
+from evidently.future.metric_types import MetricValueLocation
 from evidently.future.metric_types import Reference
 from evidently.future.metric_types import SingleValue
 from evidently.future.metric_types import SingleValueTest
@@ -27,7 +28,7 @@ class ComparisonTest(MetricTest):
 
     def to_test(self) -> SingleValueTest:
         def func(context: Context, metric: MetricCalculationBase, value: SingleValue):
-            threshold = self.get_threshold(context, metric.id)
+            threshold = self.get_threshold(context, value.metric_value_location)
             return MetricTestResult(
                 self.__short_name__,
                 f"{metric.display_name()}: {self.__full_name__} {self.threshold}",
@@ -37,9 +38,12 @@ class ComparisonTest(MetricTest):
 
         return func
 
-    def get_threshold(self, context: Context, metric: MetricId) -> Union[float, int]:
+    def get_threshold(self, context: Context, metric_location: MetricValueLocation) -> Union[float, int]:
         if isinstance(self.threshold, Reference):
-            return self.apply_reference(self.threshold, context.get_reference_metric_result(metric).value)
+            if context._input_data[1] is None:
+                raise ValueError("No Reference dataset provided, but tests contains Reference thresholds")
+            value = metric_location.value(context, DatasetType.Reference).value
+            return self.apply_reference(self.threshold, value)
         return self.threshold
 
     def apply_reference(self, reference: Reference, value: Value) -> Value:
@@ -47,6 +51,7 @@ class ComparisonTest(MetricTest):
             return value + (1 if self.__reference_relation__ == "less" else -1) * (reference.relative * value)
         if reference.absolute is not None:
             return value + (1 if self.__reference_relation__ == "less" else -1) * reference.absolute
+        return value
 
 
 class LessOrEqualMetricTest(ComparisonTest):
@@ -108,17 +113,20 @@ class EqualMetricTest(MetricTest):
 
     def to_test(self) -> SingleValueTest:
         def func(context: Context, metric: MetricCalculationBase, value: SingleValue):
+            if self.epsilon is None:
+                eps = 1e-5
+            else:
+                eps = self.epsilon
             if isinstance(self.expected, Reference):
-                expected = context.get_reference_metric_result(metric.id).value
+                result = context.get_reference_metric_result(metric.to_metric())
+                assert isinstance(result, SingleValue)
+                expected = result.value
                 if self.expected.relative is not None:
-                    eps = self.epsilon + abs(expected * self.expected.relative)
+                    eps = eps + abs(expected * self.expected.relative)
                 elif self.expected.absolute is not None:
-                    eps = self.epsilon + abs(self.expected.absolute)
-                else:
-                    eps = self.epsilon
+                    eps = eps + abs(self.expected.absolute)
             else:
                 expected = self.expected
-                eps = self.epsilon
             if eps is not None and (isinstance(expected, str) or isinstance(value.value, str)):
                 raise ValueError("eq test cannot accept epsilon if value is string")
             if eps is None and isinstance(value.value, float):

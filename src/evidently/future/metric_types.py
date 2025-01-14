@@ -1,5 +1,6 @@
 import abc
 import dataclasses
+import enum
 import inspect
 import itertools
 import uuid
@@ -26,6 +27,7 @@ from evidently.future.datasets import Dataset
 from evidently.metric_results import Label
 from evidently.model.dashboard import DashboardInfo
 from evidently.model.widget import BaseWidgetInfo
+from evidently.pydantic_utils import BaseModel
 from evidently.pydantic_utils import EvidentlyBaseModel
 from evidently.pydantic_utils import Fingerprint
 from evidently.renderers.html_widgets import CounterData
@@ -42,6 +44,7 @@ if TYPE_CHECKING:
 
 class MetricResult:
     _metric: Optional["MetricCalculationBase"] = None
+    _metric_value_location: Optional["MetricValueLocation"] = None
     _widget: Optional[List[BaseWidgetInfo]] = None
     _tests: Optional[Dict["BoundTest", "MetricTestResult"]] = None
 
@@ -53,7 +56,7 @@ class MetricResult:
         widget = copy(self._widget)
         if self._tests:
             widget.append(metric_tests_widget(list(self.tests.values())))
-        return render_results(self, html=False)
+        return render_results((self, None), html=False)
 
     def is_widget_set(self) -> bool:
         return self._widget is not None
@@ -71,7 +74,7 @@ class MetricResult:
         return self._tests or {}
 
     def to_dict(self):
-        config = self._metric.metric.dict()  # type: ignore[attr-defined]
+        config = self.metric.metric.dict()
         config_items = []
         type = None
         for field, value in config.items():
@@ -98,6 +101,16 @@ class MetricResult:
     def dict(self) -> object:
         raise NotImplementedError()
 
+    @property
+    def metric(self) -> "MetricCalculationBase":
+        assert self._metric
+        return self._metric
+
+    @property
+    def metric_value_location(self) -> "MetricValueLocation":
+        assert self._metric_value_location
+        return self._metric_value_location
+
 
 def render_widgets(widgets: List[BaseWidgetInfo]):
     dashboard_id, dashboard_info = (
@@ -112,13 +125,16 @@ def render_widgets(widgets: List[BaseWidgetInfo]):
     return inline_iframe_html_template(template_params)
 
 
-def render_results(results: Union[MetricResult, List[MetricResult]], html=True):
+TMetricReturn = Tuple[MetricResult, Optional[MetricResult]]
+
+
+def render_results(results: Union[TMetricReturn, List[TMetricReturn]], html=True):
     data = []
-    if isinstance(results, MetricResult):
+    if isinstance(results, tuple):
         data = [results]
     else:
         data = results
-    widgets = list(itertools.chain(*[item.widget for item in data]))
+    widgets = list(itertools.chain(*[item[0].widget + [] if item[1] is None else item[1].widget for item in data]))
     result = render_widgets(widgets)
     if html:
         try:
@@ -171,8 +187,10 @@ class ByLabelValue(MetricResult):
         return list(self.values.keys())
 
     def get_label_result(self, label: Label) -> SingleValue:
-        value = self.values[label]
-        return SingleValue(value)
+        value = SingleValue(self.values[label])
+        value._metric = self.metric
+        value._metric_value_location = ByLabelValueLocation(self.metric.to_metric(), label)
+        return value
 
     def dict(self) -> object:
         return self.values
@@ -184,10 +202,16 @@ class CountValue(MetricResult):
     share: float
 
     def get_count(self) -> SingleValue:
-        return SingleValue(self.count)
+        value = SingleValue(self.count)
+        value._metric = self.metric
+        value._metric_value_location = CountValueLocation(self.metric.to_metric(), True)
+        return value
 
     def get_share(self) -> SingleValue:
-        return SingleValue(self.share)
+        value = SingleValue(self.share)
+        value._metric = self.metric
+        value._metric_value_location = CountValueLocation(self.metric.to_metric(), False)
+        return value
 
     def dict(self) -> object:
         return {
@@ -202,16 +226,99 @@ class MeanStdValue(MetricResult):
     std: float
 
     def get_mean(self) -> SingleValue:
-        return SingleValue(self.mean)
+        value = SingleValue(self.mean)
+        value._metric = self.metric
+        value._metric_value_location = MeanStdValueLocation(self.metric.to_metric(), True)
+        return value
 
     def get_std(self) -> SingleValue:
-        return SingleValue(self.std)
+        value = SingleValue(self.std)
+        value._metric = self.metric
+        value._metric_value_location = MeanStdValueLocation(self.metric.to_metric(), False)
+        return value
 
     def dict(self) -> object:
         return {
             "mean": self.mean,
             "std": self.std,
         }
+
+
+class DatasetType(enum.Enum):
+    Current = "current"
+    Reference = "reference"
+
+
+@dataclasses.dataclass
+class MetricValueLocation:
+    metric: "Metric"
+
+    def value(self, context: "Context", dataset_type: DatasetType) -> SingleValue:
+        value = self._metric_value_by_dataset(context, dataset_type)
+        return self.extract_value(value)
+
+    def _metric_value_by_dataset(self, context: "Context", dataset_type: DatasetType) -> SingleValue:
+        if dataset_type == DatasetType.Current:
+            return context.get_metric_result(self.metric.metric_id)
+        if dataset_type == DatasetType.Reference:
+            value = context.get_reference_metric_result(self.metric)
+            assert isinstance(value, SingleValue)
+            return value
+        raise ValueError(f"Unknown dataset type {dataset_type}")
+
+    @abc.abstractmethod
+    def extract_value(self, value: MetricResult) -> SingleValue:
+        raise NotImplementedError()
+
+
+@dataclasses.dataclass
+class SingleValueLocation(MetricValueLocation):
+    def extract_value(self, value: MetricResult) -> SingleValue:
+        if not isinstance(value, SingleValue):
+            raise ValueError(
+                f"Unexpected type of metric result for metric[{str(value.metric)}]:"
+                f" expected: {SingleValue.__name__}, actual: {type(value).__name__}"
+            )
+        return value
+
+
+@dataclasses.dataclass
+class ByLabelValueLocation(MetricValueLocation):
+    label: Label
+
+    def extract_value(self, value: MetricResult) -> SingleValue:
+        if not isinstance(value, ByLabelValue):
+            raise ValueError(
+                f"Unexpected type of metric result for metric[{str(value.metric)}]:"
+                f" expected: {ByLabelValue.__name__}, actual: {type(value).__name__}"
+            )
+        return value.get_label_result(self.label)
+
+
+@dataclasses.dataclass
+class CountValueLocation(MetricValueLocation):
+    is_count: bool
+
+    def extract_value(self, value: MetricResult) -> SingleValue:
+        if not isinstance(value, CountValue):
+            raise ValueError(
+                f"Unexpected type of metric result for metric[{str(value.metric)}]:"
+                f" expected: {CountValue.__name__}, actual: {type(value).__name__}"
+            )
+        return value.get_count() if self.is_count else value.get_share()
+
+
+@dataclasses.dataclass
+class MeanStdValueLocation(MetricValueLocation):
+    is_mean: bool
+
+    def extract_value(self, value: MetricResult) -> SingleValue:
+        if not isinstance(value, MeanStdValue):
+            raise ValueError(
+                f"Unexpected type of metric result for metric[{str(value.metric)}]:"
+                f" expected: {MeanStdValue.__name__}, actual: {type(value).__name__}"
+            )
+        return value.get_mean() if self.is_mean else value.get_std()
 
 
 class MetricTestProto(Protocol[TResult]):
@@ -429,15 +536,20 @@ class AutoAliasMixin:
         return f"evidently:{cls.__alias_type__}:{cls.__name__}"
 
 
-class Reference(AutoAliasMixin, EvidentlyBaseModel):
-    __alias_type__: ClassVar[str] = "bound_test"
-
+class Reference(BaseModel):
     relative: Optional[float] = None
     absolute: Optional[float] = None
 
-    def apply(self, value: Value) -> Value:
+    def __hash__(self) -> int:
+        return hash(self.relative) + hash(self.absolute)
+
+    def __str__(self):
+        boundaries = ""
+        if self.absolute is not None:
+            boundaries = f"absolute={self.absolute:.3f}"
         if self.relative is not None:
-            return value
+            boundaries = f"relative={self.relative:.3f}"
+        return f"Reference({boundaries})"
 
 
 class MetricTest(AutoAliasMixin, EvidentlyBaseModel):

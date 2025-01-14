@@ -96,7 +96,7 @@ class StatisticsCalculation(SingleValueCalculation[TStatisticsMetric]):
         )
         return (
             result,
-            None if reference_data is None else SingleValue(ref_value),
+            None if ref_value is None else SingleValue(ref_value),
         )
 
     @abc.abstractmethod

@@ -26,7 +26,7 @@ _code_cache: Dict[str, List[str]] = {}
 if hasattr(dataclasses, "KW_ONLY"):
     dec = dataclasses.dataclass(kw_only=True)
 else:
-    dec = dataclasses.dataclass
+    dec = dataclasses.dataclass()
 
 
 @dec
