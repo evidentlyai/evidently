@@ -123,7 +123,7 @@ class BinaryClassificationPromptTemplate(BaseLLMPromptTemplate, EnumValueMixin):
         if self.include_score:
             fields["score"] = ("<score here>", self.output_score_column)
         if self.include_reasoning:
-            fields["reasoning"] = ('"<reasoning here>"', self.output_reasoning_column)
+            fields["reasoning"] = ("<reasoning here>", self.output_reasoning_column)
         return [
             PromptBlock.simple(self.criteria),
             PromptBlock.simple(
