@@ -1,5 +1,4 @@
 import abc
-from typing import Generator
 from typing import Generic
 from typing import List
 from typing import Optional
@@ -8,7 +7,6 @@ from typing import TypeVar
 from evidently.future.datasets import Dataset
 from evidently.future.metric_types import ByLabelMetric
 from evidently.future.metric_types import ByLabelValue
-from evidently.future.metric_types import MetricTestResult
 from evidently.future.metric_types import SingleValue
 from evidently.future.metric_types import SingleValueMetric
 from evidently.future.metrics._legacy import LegacyMetricCalculation
@@ -64,12 +62,6 @@ class LegacyClassificationQualityByClass(
         render: List[BaseWidgetInfo],
     ) -> ByLabelValue:
         raise NotImplementedError()
-
-    def get_tests(self, value: ByLabelValue) -> Generator[MetricTestResult, None, None]:
-        for label, tests in self.metric.tests.items():
-            label_value = value.get_label_result(label)
-            for test in tests:
-                yield test.to_test()(self, label_value)
 
     def _relabel(self, context: "Context", label: Label):
         classification = context.data_definition.get_classification("default")
@@ -186,9 +178,6 @@ class LegacyClassificationQuality(
         render: List[BaseWidgetInfo],
     ) -> SingleValue:
         raise NotImplementedError()
-
-    def get_tests(self, value: SingleValue) -> Generator[MetricTestResult, None, None]:
-        yield from (t.to_test()(self, value) for t in self.metric.tests)
 
 
 class F1Score(ClassificationQuality):
@@ -401,9 +390,6 @@ class LegacyClassificationDummy(
         render: List[BaseWidgetInfo],
     ) -> SingleValue:
         raise NotImplementedError()
-
-    def get_tests(self, value: SingleValue) -> Generator[MetricTestResult, None, None]:
-        yield from (t.to_test()(self, value) for t in self.metric.tests)
 
 
 class DummyPrecision(ClassificationQuality):

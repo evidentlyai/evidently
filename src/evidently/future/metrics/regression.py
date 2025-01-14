@@ -1,11 +1,9 @@
 import abc
-from typing import Generator
 from typing import Generic
 from typing import List
 
 from evidently.future.metric_types import MeanStdMetric
 from evidently.future.metric_types import MeanStdValue
-from evidently.future.metric_types import MetricTestResult
 from evidently.future.metric_types import SingleValue
 from evidently.future.metric_types import SingleValueMetric
 from evidently.future.metric_types import TMeanStdMetric
@@ -27,11 +25,6 @@ class LegacyRegressionMeanStdMetric(
     def legacy_metric(self) -> RegressionQualityMetric:
         return RegressionQualityMetric()
 
-    def get_tests(self, value: MeanStdValue) -> Generator[MetricTestResult, None, None]:
-        # todo: do not call to_metric here
-        yield from (t.to_test()(self, value.get_mean()) for t in self.metric.mean_tests)
-        yield from (t.to_test()(self, value.get_std()) for t in self.metric.std_tests)
-
 
 class LegacyRegressionSingleValueMetric(
     LegacyMetricCalculation[SingleValue, TSingleValueMetric, RegressionQualityMetricResults, RegressionQualityMetric],
@@ -40,9 +33,6 @@ class LegacyRegressionSingleValueMetric(
 ):
     def legacy_metric(self) -> RegressionQualityMetric:
         return RegressionQualityMetric()
-
-    def get_tests(self, value: SingleValue) -> Generator[MetricTestResult, None, None]:
-        yield from (t.to_test()(self, value) for t in self.metric.tests)
 
 
 class MeanError(MeanStdMetric):
@@ -137,11 +127,6 @@ class LegacyRegressionDummyMeanStdMetric(
     def legacy_metric(self) -> RegressionDummyMetric:
         return RegressionDummyMetric()
 
-    def get_tests(self, value: MeanStdValue) -> Generator[MetricTestResult, None, None]:
-        # todo: do not call to_metric here
-        yield from (t.to_test()(self, value.get_mean()) for t in self.metric.mean_tests)
-        yield from (t.to_test()(self, value.get_std()) for t in self.metric.std_tests)
-
 
 class LegacyRegressionDummyValueMetric(
     LegacyMetricCalculation[SingleValue, TSingleValueMetric, RegressionDummyMetricResults, RegressionDummyMetric],
@@ -150,9 +135,6 @@ class LegacyRegressionDummyValueMetric(
 ):
     def legacy_metric(self) -> RegressionDummyMetric:
         return RegressionDummyMetric()
-
-    def get_tests(self, value: SingleValue) -> Generator[MetricTestResult, None, None]:
-        yield from (t.to_test()(self, value) for t in self.metric.tests)
 
 
 class DummyMAE(SingleValueMetric):

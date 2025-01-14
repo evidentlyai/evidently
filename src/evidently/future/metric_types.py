@@ -315,7 +315,7 @@ class MetricCalculationBase(Generic[TResult]):
         result = self._call(context)
         if not result.is_widget_set():
             result.widget = get_default_render(self.display_name(), result)
-        test_results = {tc: tc.run_test(self, result) for tc in self.to_metric().get_bound_tests()}
+        test_results = {tc: tc.run_test(self, result) for tc in self.to_metric().get_bound_tests(context)}
         if test_results and len(test_results) > 0:
             result.set_tests(test_results)
         return result
@@ -361,10 +361,17 @@ class MetricTest(AutoAliasMixin, EvidentlyBaseModel):
         is_base_type = True
 
     __alias_type__: ClassVar[str] = "test_v2"
+    is_critical: bool = True
 
     @abstractmethod
     def to_test(self) -> MetricTestProto:
         raise not_implemented(self)
+
+    def run(self, metric: "MetricCalculationBase", value: MetricResult) -> MetricTestResult:
+        result: MetricTestResult = self.to_test()(metric, value)
+        if result.status == TestStatus.FAIL and not self.is_critical:
+            result.status = TestStatus.WARNING
+        return result
 
 
 class BoundTest(AutoAliasMixin, EvidentlyBaseModel, Generic[TResult], ABC):
@@ -476,7 +483,7 @@ TSingleValueMetricCalculation = TypeVar("TSingleValueMetricCalculation", bound="
 
 class SingleValueBoundTest(BoundTest[SingleValue]):
     def run_test(self, calculation: MetricCalculationBase[SingleValue], metric_result: SingleValue) -> MetricTestResult:
-        return self.test.to_test()(calculation, metric_result)
+        return self.test.run(calculation, metric_result)
 
 
 class SingleValueMetric(Metric[TSingleValueMetricCalculation]):
@@ -500,7 +507,7 @@ class ByLabelBoundTest(BoundTest[ByLabelValue]):
 
     def run_test(self, calculation: MetricCalculationBase, metric_result: ByLabelValue) -> MetricTestResult:
         value = metric_result.get_label_result(self.label)
-        return self.test.to_test()(calculation, value)
+        return self.test.run(calculation, value)
 
 
 class ByLabelMetric(Metric["ByLabelCalculation"]):
@@ -529,9 +536,7 @@ class CountBoundTest(BoundTest[CountValue]):
     is_count: bool
 
     def run_test(self, calculation: MetricCalculationBase, metric_result: CountValue) -> MetricTestResult:
-        return self.test.to_test()(
-            calculation, metric_result.get_count() if self.is_count else metric_result.get_share()
-        )
+        return self.test.run(calculation, metric_result.get_count() if self.is_count else metric_result.get_share())
 
 
 class CountMetric(Metric["CountCalculation"]):
@@ -561,7 +566,7 @@ class MeanStdBoundTest(BoundTest[MeanStdValue]):
     is_mean: bool
 
     def run_test(self, calculation: MetricCalculationBase, metric_result: MeanStdValue) -> MetricTestResult:
-        return self.test.to_test()(calculation, metric_result.get_mean() if self.is_mean else metric_result.get_std())
+        return self.test.run(calculation, metric_result.get_mean() if self.is_mean else metric_result.get_std())
 
 
 class MeanStdMetric(Metric["MeanStdCalculation"]):
