@@ -24,6 +24,7 @@ from evidently.future.metric_types import Metric
 from evidently.future.metric_types import MetricCalculationBase
 from evidently.future.metric_types import MetricId
 from evidently.future.metric_types import MetricResult
+from evidently.future.metric_types import SingleValueLocation
 from evidently.future.metric_types import metric_tests_widget
 from evidently.future.metric_types import render_widgets
 from evidently.future.preset_types import MetricPreset
@@ -57,9 +58,18 @@ class ContextColumnData:
         return self._column.type
 
 
+class ReferenceMetricNotFound(BaseException):
+    def __init__(self, metric: Metric):
+        self.metric = metric
+
+    def __str__(self):
+        return f"Reference data not found for {str(self.metric)} ({self.metric.metric_id})"
+
+
 class Context:
     _configuration: "Report"
     _metrics: Dict[MetricId, MetricResult]
+    _reference_metrics: Dict[MetricId, MetricResult]
     _metrics_graph: dict
     _input_data: Tuple[Dataset, Optional[Dataset]]
     _current_graph_level: dict
@@ -69,6 +79,7 @@ class Context:
         self._metrics = {}
         # self._metric_defs = {}
         self._configuration = report
+        self._reference_metrics = {}
         self._metrics_graph = {}
         self._current_graph_level = self._metrics_graph
         self._legacy_metrics = {}
@@ -85,8 +96,19 @@ class Context:
         prev_level = self._current_graph_level
         self._current_graph_level = prev_level[metric.id]
         if metric.id not in self._metrics:
-            self._metrics[metric.id] = metric.call(self)
-            self._metrics[metric.id]._metric = metric
+            current_result, reference_result = metric.call(self)
+            current_result._metric = metric
+            current_result._metric_value_location = SingleValueLocation(metric.to_metric())
+            self._metrics[metric.id] = current_result
+            if reference_result is not None:
+                reference_result._metric = metric
+                reference_result._metric_value_location = SingleValueLocation(metric.to_metric())
+                self._reference_metrics[metric.id] = reference_result
+            test_results = {
+                tc: tc.run_test(self, metric, current_result) for tc in metric.to_metric().get_bound_tests()
+            }
+            if test_results and len(test_results) > 0:
+                current_result.set_tests(test_results)
         self._current_graph_level = prev_level
         return typing.cast(TResultType, self._metrics[metric.id])
 
@@ -98,8 +120,13 @@ class Context:
     def get_metric(self, metric: MetricId) -> MetricCalculationBase[TResultType]:
         return self._metrics_graph[metric]["_self"]
 
+    def get_reference_metric_result(self, metric: Metric) -> MetricResult:
+        if metric.metric_id not in self._reference_metrics:
+            raise ReferenceMetricNotFound(metric)
+        return self._reference_metrics[metric.metric_id]
+
     def get_legacy_metric(self, metric: LegacyMetric[T]) -> Tuple[T, List[BaseWidgetInfo]]:
-        classification = self._input_data[0]._data_definition.get_classification("default")
+        classification = self.data_definition.get_classification("default")
         reference = self._input_data[1].as_dataframe() if self._input_data[1] is not None else None
         current = self._input_data[0].as_dataframe()
         prediction: Optional[Union[str, List[str]]]

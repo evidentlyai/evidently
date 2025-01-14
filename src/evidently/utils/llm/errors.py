@@ -11,3 +11,7 @@ class LLMResponseParseError(EvidentlyLLMError):
 
 class LLMRequestError(EvidentlyLLMError):
     pass
+
+
+class LLMRateLimitError(EvidentlyLLMError):
+    pass

@@ -165,6 +165,13 @@ class FeatureDescriptor(Descriptor):
         super().__init__(alias or f"{feature_columns[0].display_name}")
         self._feature = feature
 
+    def get_dataset_column(self, column_name: str, values: pd.Series) -> DatasetColumn:
+        column_type = self._feature.get_type(f"{self._feature.get_fingerprint()}.{column_name}")
+        if column_type == ColumnType.Numerical:
+            values = pd.to_numeric(values, errors="coerce")
+        dataset_column = DatasetColumn(type=column_type, data=values)
+        return dataset_column
+
     def generate_data(self, dataset: "Dataset") -> Union[DatasetColumn, Dict[str, DatasetColumn]]:
         feature = self._feature.generate_features(
             dataset.as_dataframe(),
@@ -172,13 +179,9 @@ class FeatureDescriptor(Descriptor):
             Options(),
         )
         if len(feature.columns) > 1:
-            return {
-                col: DatasetColumn(
-                    type=self._feature.get_type(f"{self._feature.get_fingerprint()}.{col}"), data=feature[col]
-                )
-                for col in feature.columns
-            }
-        return DatasetColumn(type=self._feature.get_type(), data=feature[feature.columns[0]])
+            return {col: self.get_dataset_column(col, feature[col]) for col in feature.columns}
+        col = feature.columns[0]
+        return self.get_dataset_column(col, feature[col])
 
 
 def _determine_desccriptor_column_name(alias: str, columns: List[str]):
