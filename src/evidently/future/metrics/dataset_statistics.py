@@ -9,6 +9,8 @@ from typing import TypeVar
 from evidently import ColumnType
 from evidently.base_metric import MetricResult as LegacyMetricResult
 from evidently.future.datasets import Dataset
+from evidently.future.metric_types import BoundTest
+from evidently.future.metric_types import CountBoundTest
 from evidently.future.metric_types import MetricTestResult
 from evidently.future.metric_types import SingleValue
 from evidently.future.metric_types import SingleValueCalculation
@@ -16,6 +18,8 @@ from evidently.future.metric_types import SingleValueMetric
 from evidently.future.metric_types import TMetric
 from evidently.future.metric_types import TResult
 from evidently.future.metrics._legacy import LegacyMetricCalculation
+from evidently.future.tests import eq
+from evidently.future.tests import gt
 from evidently.metrics import DatasetSummaryMetric
 from evidently.metrics.data_integrity.dataset_summary_metric import DatasetSummaryMetricResult
 from evidently.model.widget import BaseWidgetInfo
@@ -25,7 +29,8 @@ if typing.TYPE_CHECKING:
 
 
 class RowCount(SingleValueMetric):
-    pass
+    def _default_tests(self) -> List[BoundTest]:
+        return [CountBoundTest(test=gt(0), is_count=True)]
 
 
 class RowCountCalculation(SingleValueCalculation[RowCount]):
@@ -38,6 +43,9 @@ class RowCountCalculation(SingleValueCalculation[RowCount]):
 
 class ColumnCount(SingleValueMetric):
     column_type: Optional[ColumnType] = None
+
+    def _default_tests(self) -> List[BoundTest]:
+        return [CountBoundTest(test=gt(0), is_count=True)]
 
 
 class ColumnCountCalculation(SingleValueCalculation[ColumnCount]):
@@ -80,7 +88,8 @@ class DatasetSummaryBasedMetricCalculation(
 
 
 class DuplicatedRowCount(SingleValueMetric):
-    pass
+    def _default_tests(self) -> List[BoundTest]:
+        return [CountBoundTest(test=eq(0), is_count=True)]
 
 
 class DuplicatedRowCountCalculation(DatasetSummaryBasedMetricCalculation[SingleValue, DuplicatedRowCount]):
@@ -98,7 +107,8 @@ class DuplicatedRowCountCalculation(DatasetSummaryBasedMetricCalculation[SingleV
 
 
 class DuplicatedColumnsCount(SingleValueMetric):
-    pass
+    def _default_tests(self) -> List[BoundTest]:
+        return [CountBoundTest(test=eq(0), is_count=True)]
 
 
 class DuplicatedColumnsCountCalculation(DatasetSummaryBasedMetricCalculation[SingleValue, DuplicatedColumnsCount]):
@@ -136,7 +146,8 @@ class AlmostDuplicatedColumnsCountCalculation(
 
 
 class AlmostConstantColumnsCount(SingleValueMetric):
-    pass
+    def _default_tests(self) -> List[BoundTest]:
+        return [CountBoundTest(test=eq(0), is_count=True)]
 
 
 class AlmostConstantColumnsCountCalculation(
@@ -156,7 +167,8 @@ class AlmostConstantColumnsCountCalculation(
 
 
 class EmptyRowsCount(SingleValueMetric):
-    pass
+    def _default_tests(self) -> List[BoundTest]:
+        return [CountBoundTest(test=eq(0), is_count=True)]
 
 
 class EmptyRowsCountCalculation(DatasetSummaryBasedMetricCalculation[SingleValue, EmptyRowsCount]):
@@ -174,7 +186,8 @@ class EmptyRowsCountCalculation(DatasetSummaryBasedMetricCalculation[SingleValue
 
 
 class EmptyColumnsCount(SingleValueMetric):
-    pass
+    def _default_tests(self) -> List[BoundTest]:
+        return [CountBoundTest(test=eq(0), is_count=True)]
 
 
 class EmptyColumnsCountCalculation(DatasetSummaryBasedMetricCalculation[SingleValue, EmptyColumnsCount]):
@@ -192,7 +205,8 @@ class EmptyColumnsCountCalculation(DatasetSummaryBasedMetricCalculation[SingleVa
 
 
 class ConstantColumnsCount(SingleValueMetric):
-    pass
+    def _default_tests(self) -> List[BoundTest]:
+        return [CountBoundTest(test=eq(0), is_count=True)]
 
 
 class ConstantColumnsCountCalculation(DatasetSummaryBasedMetricCalculation[SingleValue, ConstantColumnsCount]):
@@ -210,7 +224,8 @@ class ConstantColumnsCountCalculation(DatasetSummaryBasedMetricCalculation[Singl
 
 
 class DatasetMissingValueCount(SingleValueMetric):
-    pass
+    def _default_tests(self) -> List[BoundTest]:
+        return [CountBoundTest(test=eq(0), is_count=True)]
 
 
 class DatasetMissingValueCountCalculation(DatasetSummaryBasedMetricCalculation[SingleValue, DatasetMissingValueCount]):
