@@ -489,7 +489,7 @@ class SingleValueBoundTest(BoundTest[SingleValue]):
 class SingleValueMetric(Metric[TSingleValueMetricCalculation]):
     tests: Optional[List[MetricTest]] = None
 
-    def get_bound_tests(self, context: Context) -> List[BoundTest]:
+    def get_bound_tests(self, context: "Context") -> List[BoundTest]:
         if self.tests is None and context.configuration.include_tests:
             return self._get_all_default_tests(context)
         return [SingleValueBoundTest(test=t, metric_fingerprint=self.get_fingerprint()) for t in (self.tests or [])]
@@ -513,7 +513,7 @@ class ByLabelBoundTest(BoundTest[ByLabelValue]):
 class ByLabelMetric(Metric["ByLabelCalculation"]):
     tests: Optional[Dict[Label, List[MetricTest]]] = None
 
-    def get_bound_tests(self, context: Context) -> List[BoundTest]:
+    def get_bound_tests(self, context: "Context") -> List[BoundTest]:
         if self.tests is None and context.configuration.include_tests:
             return self._get_all_default_tests(context)
 
@@ -543,7 +543,7 @@ class CountMetric(Metric["CountCalculation"]):
     count_tests: Optional[List[MetricTest]] = None
     share_tests: Optional[List[MetricTest]] = None
 
-    def get_bound_tests(self, context: Context) -> Sequence[BoundTest]:
+    def get_bound_tests(self, context: "Context") -> Sequence[BoundTest]:
         if self.count_tests is None and self.share_tests is None and context.configuration.include_tests:
             return self._get_all_default_tests(context)
         return [
@@ -573,7 +573,7 @@ class MeanStdMetric(Metric["MeanStdCalculation"]):
     mean_tests: Optional[List[MetricTest]] = None
     std_tests: Optional[List[MetricTest]] = None
 
-    def get_bound_tests(self, context: Context) -> Sequence[BoundTest]:
+    def get_bound_tests(self, context: "Context") -> Sequence[BoundTest]:
         if self.mean_tests is None and self.mean_tests is None and context.configuration.include_tests:
             return self._get_all_default_tests(context)
         return [
