@@ -105,7 +105,7 @@ class Context:
                 reference_result._metric_value_location = SingleValueLocation(metric.to_metric())
                 self._reference_metrics[metric.id] = reference_result
             test_results = {
-                tc: tc.run_test(self, metric, current_result) for tc in metric.to_metric().get_bound_tests()
+                tc: tc.run_test(self, metric, current_result) for tc in metric.to_metric().get_bound_tests(self)
             }
             if test_results and len(test_results) > 0:
                 current_result.set_tests(test_results)
