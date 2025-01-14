@@ -298,7 +298,7 @@ class MissingValueCount(CountMetric):
     column: str
 
     def _default_tests(self) -> List[BoundTest]:
-        return [CountBoundTest(test=eq(0), is_count=True)]
+        return [CountBoundTest(metric_fingerprint=self.get_fingerprint(), test=eq(0), is_count=True)]
 
 
 class MissingValueCountCalculation(CountCalculation[MissingValueCount]):
