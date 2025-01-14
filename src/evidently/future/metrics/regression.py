@@ -42,8 +42,13 @@ class MeanError(MeanStdMetric):
 class MeanErrorCalculation(LegacyRegressionMeanStdMetric[MeanError]):
     def calculate_value(
         self, context: Context, legacy_result: RegressionQualityMetricResults, render: List[BaseWidgetInfo]
-    ) -> MeanStdValue:
-        return MeanStdValue(legacy_result.current.mean_error, legacy_result.current.error_std)
+    ):
+        return (
+            MeanStdValue(legacy_result.current.mean_error, legacy_result.current.error_std),
+            None
+            if legacy_result.reference is None
+            else MeanStdValue(legacy_result.reference.mean_error, legacy_result.reference.error_std),
+        )
 
     def display_name(self) -> str:
         return "Mean Error"
@@ -56,8 +61,13 @@ class MAE(MeanStdMetric):
 class MAECalculation(LegacyRegressionMeanStdMetric[MAE]):
     def calculate_value(
         self, context: Context, legacy_result: RegressionQualityMetricResults, render: List[BaseWidgetInfo]
-    ) -> MeanStdValue:
-        return MeanStdValue(legacy_result.current.mean_abs_error, legacy_result.current.abs_error_std)
+    ):
+        return (
+            MeanStdValue(legacy_result.current.mean_abs_error, legacy_result.current.abs_error_std),
+            None
+            if legacy_result.reference is None
+            else MeanStdValue(legacy_result.reference.mean_abs_error, legacy_result.reference.abs_error_std),
+        )
 
     def display_name(self) -> str:
         return "Mean Absolute Error"
@@ -70,8 +80,11 @@ class RMSE(SingleValueMetric):
 class RMSECalculation(LegacyRegressionSingleValueMetric[RMSE]):
     def calculate_value(
         self, context: Context, legacy_result: RegressionQualityMetricResults, render: List[BaseWidgetInfo]
-    ) -> SingleValue:
-        return SingleValue(legacy_result.current.rmse)
+    ):
+        return (
+            SingleValue(legacy_result.current.rmse),
+            None if legacy_result.reference is None else SingleValue(legacy_result.reference.rmse),
+        )
 
     def display_name(self) -> str:
         return "RMSE"
@@ -84,8 +97,13 @@ class MAPE(MeanStdMetric):
 class MAPECalculation(LegacyRegressionMeanStdMetric[MAPE]):
     def calculate_value(
         self, context: Context, legacy_result: RegressionQualityMetricResults, render: List[BaseWidgetInfo]
-    ) -> MeanStdValue:
-        return MeanStdValue(legacy_result.current.mean_abs_perc_error, legacy_result.current.abs_perc_error_std)
+    ):
+        return (
+            MeanStdValue(legacy_result.current.mean_abs_perc_error, legacy_result.current.abs_perc_error_std),
+            None
+            if legacy_result.reference is None
+            else MeanStdValue(legacy_result.reference.mean_abs_perc_error, legacy_result.reference.abs_perc_error_std),
+        )
 
     def display_name(self) -> str:
         return "Mean Absolute Percentage Error"
@@ -98,8 +116,11 @@ class R2Score(SingleValueMetric):
 class R2ScoreCalculation(LegacyRegressionSingleValueMetric[R2Score]):
     def calculate_value(
         self, context: Context, legacy_result: RegressionQualityMetricResults, render: List[BaseWidgetInfo]
-    ) -> SingleValue:
-        return SingleValue(legacy_result.current.r2_score)
+    ):
+        return (
+            SingleValue(legacy_result.current.r2_score),
+            None if legacy_result.reference is None else SingleValue(legacy_result.reference.r2_score),
+        )
 
     def display_name(self) -> str:
         return "R2 Score"
@@ -112,8 +133,11 @@ class AbsMaxError(SingleValueMetric):
 class AbsMaxErrorCalculation(LegacyRegressionSingleValueMetric[AbsMaxError]):
     def calculate_value(
         self, context: Context, legacy_result: RegressionQualityMetricResults, render: List[BaseWidgetInfo]
-    ) -> SingleValue:
-        return SingleValue(legacy_result.current.abs_error_max)
+    ):
+        return (
+            SingleValue(legacy_result.current.abs_error_max),
+            None if legacy_result.reference is None else SingleValue(legacy_result.reference.abs_error_max),
+        )
 
     def display_name(self) -> str:
         return "Absolute Max Error"
