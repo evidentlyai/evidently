@@ -67,7 +67,7 @@ class Context:
 
     def __init__(self, report: "Report"):
         self._metrics = {}
-        self._metric_defs = {}
+        # self._metric_defs = {}
         self._configuration = report
         self._metrics_graph = {}
         self._current_graph_level = self._metrics_graph
