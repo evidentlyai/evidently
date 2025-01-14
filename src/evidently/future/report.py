@@ -151,6 +151,14 @@ class Context:
     def data_definition(self) -> DataDefinition:
         return self._input_data[0]._data_definition
 
+    @property
+    def configuration(self) -> "Report":
+        return self._configuration
+
+    @property
+    def has_reference(self) -> bool:
+        return self._input_data[1] is not None
+
 
 class Snapshot:
     _report: "Report"
@@ -247,6 +255,7 @@ class Report:
         reference_id: str = None,
         batch_size: str = None,
         dataset_id: str = None,
+        include_tests: bool = True,
     ):
         self._metrics = metrics
         self.metadata = metadata or {}
@@ -260,6 +269,7 @@ class Report:
             self.set_reference_id(reference_id)
         if dataset_id is not None:
             self.set_dataset_id(dataset_id)
+        self.include_tests = include_tests
 
     def run(
         self,

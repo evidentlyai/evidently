@@ -407,7 +407,7 @@ class Metric(AutoAliasMixin, EvidentlyBaseModel, Generic[TCalculation]):
     def metric_id(self) -> str:
         return self.get_fingerprint()
 
-    def _default_tests(self) -> List[MetricTestProto[TResult]]:
+    def _default_tests(self) -> List[BoundTest]:
         """
         allows to redefine default tests for metric
         Returns:
@@ -415,20 +415,26 @@ class Metric(AutoAliasMixin, EvidentlyBaseModel, Generic[TCalculation]):
         """
         return []
 
-    def _default_tests_with_reference(self) -> Optional[List[MetricTestProto[TResult]]]:
+    def _default_tests_with_reference(self) -> List[BoundTest]:
         """
         allows to redefine default tests for metric when calculated with reference
         Returns:
             list of tests to use as default when called with reference data
             None - if default tests should be returned
         """
-        return None
+        return []
+
+    def _get_all_default_tests(self, context: "Context") -> List[BoundTest]:
+        tests = self._default_tests()
+        if context.has_reference:
+            tests.extend(self._default_tests_with_reference())
+        return tests
 
     def call(self, context: "Context"):
         return self.to_calculation().call(context)
 
     @abstractmethod
-    def get_bound_tests(self) -> Sequence[BoundTest]:
+    def get_bound_tests(self, context: Context) -> Sequence[BoundTest]:
         raise not_implemented(self)
 
 
@@ -474,10 +480,12 @@ class SingleValueBoundTest(BoundTest[SingleValue]):
 
 
 class SingleValueMetric(Metric[TSingleValueMetricCalculation]):
-    tests: List[MetricTest] = []
+    tests: Optional[List[MetricTest]] = None
 
-    def get_bound_tests(self) -> List[BoundTest]:
-        return [SingleValueBoundTest(test=t, metric_fingerprint=self.get_fingerprint()) for t in self.tests]
+    def get_bound_tests(self, context: Context) -> List[BoundTest]:
+        if self.tests is None and context.configuration.include_tests:
+            return self._get_all_default_tests(context)
+        return [SingleValueBoundTest(test=t, metric_fingerprint=self.get_fingerprint()) for t in (self.tests or [])]
 
 
 TSingleValueMetric = TypeVar("TSingleValueMetric", bound=SingleValueMetric)
@@ -496,12 +504,15 @@ class ByLabelBoundTest(BoundTest[ByLabelValue]):
 
 
 class ByLabelMetric(Metric["ByLabelCalculation"]):
-    tests: Dict[Label, List[MetricTest]] = {}
+    tests: Optional[Dict[Label, List[MetricTest]]] = None
 
-    def get_bound_tests(self) -> List[BoundTest]:
+    def get_bound_tests(self, context: Context) -> List[BoundTest]:
+        if self.tests is None and context.configuration.include_tests:
+            return self._get_all_default_tests(context)
+
         return [
             ByLabelBoundTest(test=t, label=label, metric_fingerprint=self.get_fingerprint())
-            for label, tests in self.tests.items()
+            for label, tests in (self.tests or {}).items()
             for t in tests
         ]
 
@@ -524,14 +535,18 @@ class CountBoundTest(BoundTest[CountValue]):
 
 
 class CountMetric(Metric["CountCalculation"]):
-    count_tests: List[MetricTest] = []
-    share_tests: List[MetricTest] = []
+    count_tests: Optional[List[MetricTest]] = None
+    share_tests: Optional[List[MetricTest]] = None
 
-    def get_bound_tests(self) -> Sequence[BoundTest]:
+    def get_bound_tests(self, context: Context) -> Sequence[BoundTest]:
+        if self.count_tests is None and self.share_tests is None and context.configuration.include_tests:
+            return self._get_all_default_tests(context)
         return [
-            CountBoundTest(is_count=True, test=t, metric_fingerprint=self.get_fingerprint()) for t in self.count_tests
+            CountBoundTest(is_count=True, test=t, metric_fingerprint=self.get_fingerprint())
+            for t in (self.count_tests or [])
         ] + [
-            CountBoundTest(is_count=False, test=t, metric_fingerprint=self.get_fingerprint()) for t in self.share_tests
+            CountBoundTest(is_count=False, test=t, metric_fingerprint=self.get_fingerprint())
+            for t in (self.share_tests or [])
         ]
 
 
@@ -550,14 +565,18 @@ class MeanStdBoundTest(BoundTest[MeanStdValue]):
 
 
 class MeanStdMetric(Metric["MeanStdCalculation"]):
-    mean_tests: List[MetricTest] = []
-    std_tests: List[MetricTest] = []
+    mean_tests: Optional[List[MetricTest]] = None
+    std_tests: Optional[List[MetricTest]] = None
 
-    def get_bound_tests(self) -> Sequence[BoundTest]:
+    def get_bound_tests(self, context: Context) -> Sequence[BoundTest]:
+        if self.mean_tests is None and self.mean_tests is None and context.configuration.include_tests:
+            return self._get_all_default_tests(context)
         return [
-            MeanStdBoundTest(is_mean=True, test=t, metric_fingerprint=self.get_fingerprint()) for t in self.mean_tests
+            MeanStdBoundTest(is_mean=True, test=t, metric_fingerprint=self.get_fingerprint())
+            for t in (self.mean_tests or [])
         ] + [
-            MeanStdBoundTest(is_mean=False, test=t, metric_fingerprint=self.get_fingerprint()) for t in self.mean_tests
+            MeanStdBoundTest(is_mean=False, test=t, metric_fingerprint=self.get_fingerprint())
+            for t in (self.mean_tests or [])
         ]
 
 
