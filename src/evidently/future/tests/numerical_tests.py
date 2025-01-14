@@ -63,8 +63,8 @@ class LessOrEqualMetricTest(ComparisonTest):
         return value <= threshold
 
 
-def lte(threshold: Union[int, float, Reference]) -> MetricTest:
-    return LessOrEqualMetricTest(threshold=threshold)
+def lte(threshold: Union[int, float, Reference], is_critical: bool = True) -> MetricTest:
+    return LessOrEqualMetricTest(threshold=threshold, is_critical=is_critical)
 
 
 class GreaterOrEqualMetricTest(ComparisonTest):
@@ -76,8 +76,8 @@ class GreaterOrEqualMetricTest(ComparisonTest):
         return value >= threshold
 
 
-def gte(threshold: Union[int, float, Reference]) -> MetricTest:
-    return GreaterOrEqualMetricTest(threshold=threshold)
+def gte(threshold: Union[int, float, Reference], is_critical: bool = True) -> MetricTest:
+    return GreaterOrEqualMetricTest(threshold=threshold, is_critical=is_critical)
 
 
 class GreaterThanMetricTest(ComparisonTest):
@@ -89,8 +89,8 @@ class GreaterThanMetricTest(ComparisonTest):
         return value > threshold
 
 
-def gt(threshold: Union[int, float, Reference]) -> MetricTest:
-    return GreaterThanMetricTest(threshold=threshold)
+def gt(threshold: Union[int, float, Reference], is_critical: bool = True) -> MetricTest:
+    return GreaterThanMetricTest(threshold=threshold, is_critical=is_critical)
 
 
 class LessThanMetricTest(ComparisonTest):
@@ -103,8 +103,8 @@ class LessThanMetricTest(ComparisonTest):
         return value < threshold
 
 
-def lt(threshold: Union[int, float, Reference]) -> MetricTest:
-    return GreaterOrEqualMetricTest(threshold=threshold)
+def lt(threshold: Union[int, float, Reference], is_critical: bool = True) -> MetricTest:
+    return GreaterOrEqualMetricTest(threshold=threshold, is_critical=is_critical)
 
 
 class EqualMetricTest(MetricTest):
@@ -146,5 +146,7 @@ class EqualMetricTest(MetricTest):
         return func
 
 
-def eq(expected: Union[int, float, str, Reference], epsilon: Optional[float] = None) -> MetricTest:
-    return EqualMetricTest(expected=expected, epsilon=epsilon)
+def eq(
+    expected: Union[int, float, str, Reference], epsilon: Optional[float] = None, is_critical: bool = True
+) -> MetricTest:
+    return EqualMetricTest(expected=expected, epsilon=epsilon, is_critical=is_critical)

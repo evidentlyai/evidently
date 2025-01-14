@@ -26,8 +26,8 @@ class IsInMetricTest(MetricTest):
         return func
 
 
-def is_in(values: List[Union[int, str]]) -> MetricTest:
-    return IsInMetricTest(values=values)
+def is_in(values: List[Union[int, str]], is_critical: bool = True) -> MetricTest:
+    return IsInMetricTest(values=values, is_critical=is_critical)
 
 
 class NotInMetricTest(MetricTest):
@@ -46,5 +46,5 @@ class NotInMetricTest(MetricTest):
         return func
 
 
-def not_in(values: List[Union[int, str]]) -> MetricTest:
-    return NotInMetricTest(values=values)
+def not_in(values: List[Union[int, str]], is_critical: bool = True) -> MetricTest:
+    return NotInMetricTest(values=values, is_critical=is_critical)
