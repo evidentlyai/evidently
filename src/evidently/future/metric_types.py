@@ -74,7 +74,7 @@ class MetricResult:
         return self._tests or {}
 
     def to_dict(self):
-        config = self.metric.metric.dict()
+        config = self.metric.to_metric().dict()
         config_items = []
         type = None
         for field, value in config.items():
@@ -563,8 +563,8 @@ class MetricTest(AutoAliasMixin, EvidentlyBaseModel):
     def to_test(self) -> MetricTestProto:
         raise not_implemented(self)
 
-    def run(self, metric: "MetricCalculationBase", value: MetricResult) -> MetricTestResult:
-        result: MetricTestResult = self.to_test()(metric, value)
+    def run(self, context: "Context", metric: "MetricCalculationBase", value: MetricResult) -> MetricTestResult:
+        result: MetricTestResult = self.to_test()(context, metric, value)
         if result.status == TestStatus.FAIL and not self.is_critical:
             result.status = TestStatus.WARNING
         return result
