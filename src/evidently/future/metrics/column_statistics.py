@@ -11,9 +11,11 @@ from evidently.calculations.data_drift import get_one_column_drift
 from evidently.calculations.stattests import PossibleStatTestType
 from evidently.future.datasets import Dataset
 from evidently.future.datasets import DatasetColumn
+from evidently.future.metric_types import BoundTest
 from evidently.future.metric_types import ByLabelCalculation
 from evidently.future.metric_types import ByLabelMetric
 from evidently.future.metric_types import ByLabelValue
+from evidently.future.metric_types import CountBoundTest
 from evidently.future.metric_types import CountCalculation
 from evidently.future.metric_types import CountMetric
 from evidently.future.metric_types import CountValue
@@ -23,6 +25,7 @@ from evidently.future.metric_types import SingleValueMetric
 from evidently.future.metric_types import TMetric
 from evidently.future.metrics._legacy import LegacyMetricCalculation
 from evidently.future.report import Context
+from evidently.future.tests import eq
 from evidently.metric_results import DatasetColumns
 from evidently.metric_results import DatasetUtilityColumns
 from evidently.metric_results import HistogramData
@@ -293,6 +296,9 @@ class OutListValueCountCalculation(CountCalculation[OutListValueCount]):
 
 class MissingValueCount(CountMetric):
     column: str
+
+    def _default_tests(self) -> List[BoundTest]:
+        return [CountBoundTest(test=eq(0), is_count=True)]
 
 
 class MissingValueCountCalculation(CountCalculation[MissingValueCount]):

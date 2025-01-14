@@ -67,7 +67,7 @@ class ReferenceMetricNotFound(BaseException):
 
 
 class Context:
-    _configuration: Optional["Report"]
+    _configuration: "Report"
     _metrics: Dict[MetricId, MetricResult]
     _reference_metrics: Dict[MetricId, MetricResult]
     _metrics_graph: dict
@@ -75,11 +75,11 @@ class Context:
     _current_graph_level: dict
     _legacy_metrics: Dict[str, Tuple[object, List[BaseWidgetInfo]]]
 
-    def __init__(self):
+    def __init__(self, report: "Report"):
         self._metrics = {}
+        # self._metric_defs = {}
+        self._configuration = report
         self._reference_metrics = {}
-        self._metric_defs = {}
-        self._configuration = None
         self._metrics_graph = {}
         self._current_graph_level = self._metrics_graph
         self._legacy_metrics = {}
@@ -105,7 +105,7 @@ class Context:
                 reference_result._metric_value_location = SingleValueLocation(metric.to_metric())
                 self._reference_metrics[metric.id] = reference_result
             test_results = {
-                tc: tc.run_test(self, metric, current_result) for tc in metric.to_metric().get_bound_tests()
+                tc: tc.run_test(self, metric, current_result) for tc in metric.to_metric().get_bound_tests(self)
             }
             if test_results and len(test_results) > 0:
                 current_result.set_tests(test_results)
@@ -178,6 +178,14 @@ class Context:
     def data_definition(self) -> DataDefinition:
         return self._input_data[0]._data_definition
 
+    @property
+    def configuration(self) -> "Report":
+        return self._configuration
+
+    @property
+    def has_reference(self) -> bool:
+        return self._input_data[1] is not None
+
 
 class Snapshot:
     _report: "Report"
@@ -187,7 +195,7 @@ class Snapshot:
 
     def __init__(self, report: "Report"):
         self._report = report
-        self._context = Context()
+        self._context = Context(report)
 
     @property
     def context(self) -> Context:
@@ -274,6 +282,7 @@ class Report:
         reference_id: str = None,
         batch_size: str = None,
         dataset_id: str = None,
+        include_tests: bool = True,
     ):
         self._metrics = metrics
         self.metadata = metadata or {}
@@ -287,6 +296,7 @@ class Report:
             self.set_reference_id(reference_id)
         if dataset_id is not None:
             self.set_dataset_id(dataset_id)
+        self.include_tests = include_tests
 
     def run(
         self,

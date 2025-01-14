@@ -17,8 +17,8 @@ class GroupByMetric(Metric):
     column_name: str
     label: object
 
-    def get_bound_tests(self) -> Sequence[BoundTest]:
-        return self.metric.get_bound_tests()
+    def get_bound_tests(self, context: Context) -> Sequence[BoundTest]:
+        return self.metric.get_bound_tests(context)
 
 
 class GroupByMetricCalculation(MetricCalculation[TResult, GroupByMetric]):
