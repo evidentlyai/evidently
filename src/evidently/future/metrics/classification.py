@@ -14,6 +14,7 @@ from evidently.future.metric_types import SingleValue
 from evidently.future.metric_types import SingleValueMetric
 from evidently.future.metrics._legacy import LegacyMetricCalculation
 from evidently.future.report import Context
+from evidently.metric_results import Label
 from evidently.metrics import ClassificationDummyMetric
 from evidently.metrics import ClassificationQualityByClass as _ClassificationQualityByClass
 from evidently.metrics.classification_performance.classification_dummy_metric import ClassificationDummyMetricResults
@@ -68,6 +69,15 @@ class LegacyClassificationQualityByClass(
             for test in tests:
                 yield test.to_test()(self, label_value)
 
+    def _relabel(self, context: "Context", label: Label):
+        classification = context.data_definition.get_classification("default")
+        if classification is None:
+            return label
+        labels = classification.labels
+        if labels is not None:
+            return labels[label]
+        return label
+
 
 class F1ByLabel(ClassificationQualityByLabel):
     pass
@@ -81,7 +91,7 @@ class F1ByLabelCalculation(LegacyClassificationQualityByClass[F1ByLabel]):
         render: List[BaseWidgetInfo],
     ) -> Tuple[ByLabelValue, Optional[ByLabelValue]]:
         return (
-            ByLabelValue({k: v.f1 for k, v in legacy_result.current.metrics.items()}),
+            ByLabelValue({self._relabel(context, k): v.f1 for k, v in legacy_result.current.metrics.items()}),
             None
             if legacy_result.reference is None
             else ByLabelValue({self._relabel(context, k): v.f1 for k, v in legacy_result.reference.metrics.items()}),
@@ -103,7 +113,7 @@ class PrecisionByLabelCalculation(LegacyClassificationQualityByClass[PrecisionBy
         render: List[BaseWidgetInfo],
     ) -> Tuple[ByLabelValue, Optional[ByLabelValue]]:
         return (
-            ByLabelValue({k: v.precision for k, v in legacy_result.current.metrics.items()}),
+            ByLabelValue({self._relabel(context, k): v.precision for k, v in legacy_result.current.metrics.items()}),
             None
             if legacy_result.reference is None
             else ByLabelValue(
@@ -127,7 +137,7 @@ class RecallByLabelCalculation(LegacyClassificationQualityByClass[RecallByLabel]
         render: List[BaseWidgetInfo],
     ) -> Tuple[ByLabelValue, Optional[ByLabelValue]]:
         return (
-            ByLabelValue({k: v.recall for k, v in legacy_result.current.metrics.items()}),
+            ByLabelValue({self._relabel(context, k): v.recall for k, v in legacy_result.current.metrics.items()}),
             None
             if legacy_result.reference is None
             else ByLabelValue(
@@ -151,7 +161,7 @@ class RocAucByLabelCalculation(LegacyClassificationQualityByClass[RocAucByLabel]
         render: List[BaseWidgetInfo],
     ) -> Tuple[ByLabelValue, Optional[ByLabelValue]]:
         value = ByLabelValue(
-            {k: v.roc_auc for k, v in legacy_result.current.metrics.items()},
+            {self._relabel(context, k): v.roc_auc for k, v in legacy_result.current.metrics.items()},
         )
         value.widget = render
         value.widget[0].params["counters"][0]["label"] = self.display_name()

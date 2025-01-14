@@ -1,3 +1,4 @@
+import pathlib
 from datetime import datetime
 from datetime import timedelta
 
@@ -48,8 +49,10 @@ from evidently.renderers.html_widgets import WidgetSize
 
 
 def create_data():
-    reviews_data = datasets.fetch_openml(name="Womens-E-Commerce-Clothing-Reviews", version=2, as_frame="auto")
-    reviews = reviews_data.frame
+    reviews = pd.read_parquet(
+        pathlib.Path(__file__).parent.joinpath("../../test_data/reviews.parquet"),
+        dtype_backend="numpy_nullable",
+    )
     for name, rs in (
         ("TheOtherStore", 0),
         ("AMajorCompetitor", 42),

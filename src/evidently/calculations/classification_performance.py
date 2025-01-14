@@ -101,9 +101,12 @@ def get_prediction_data(
     target = data_columns.utility_columns.target
 
     if isinstance(prediction, list) and len(prediction) > 2:
+        pred_data = data[prediction].idxmax(axis=1)
+        if is_integer_dtype(data[target]):
+            pred_data = pred_data.apply(lambda x: int(x) if x is not None else None)
         # list of columns with prediction probas, should be same as target labels
         return PredictionData(
-            predictions=data[prediction].idxmax(axis=1),
+            predictions=pred_data,
             prediction_probas=data[prediction],
             labels=prediction,
         )
@@ -154,25 +157,29 @@ def get_prediction_data(
         and is_float_dtype(data[prediction])
     ):
         pos_label = _check_pos_labels(pos_label, labels)
-        if prediction not in labels:
-            raise ValueError(
-                "No prediction for the target labels were found. "
-                "Consider to rename columns with the prediction to match target labels."
-            )
 
+        neg_label = None
+        if prediction in labels and pos_label != prediction:
+            neg_label = prediction
         # get negative label for binary classification
-        labels = pd.Series(labels)
-        neg_label = labels[labels != pos_label].iloc[0]
-        if pos_label == prediction:
-            pos_preds = data[prediction]
 
-        else:
+        if neg_label is None:
+            for label in labels:
+                if label != pos_label:
+                    neg_label = label
+        if neg_label is None:
+            raise ValueError("Failed to determine negative label")
+        if prediction in labels and neg_label == prediction:
+            neg_preds = data[prediction]
             pos_preds = data[prediction].apply(lambda x: 1.0 - x)
+        else:
+            pos_preds = data[prediction]
+            neg_preds = data[prediction].apply(lambda x: 1.0 - x)
 
         prediction_probas = pd.DataFrame.from_dict(
             {
                 pos_label: pos_preds,
-                neg_label: pos_preds.apply(lambda x: 1.0 - x),
+                neg_label: neg_preds,
             }
         )
         predictions = threshold_probability_labels(prediction_probas, pos_label, neg_label, threshold)

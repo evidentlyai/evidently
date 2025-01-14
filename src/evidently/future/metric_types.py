@@ -70,6 +70,30 @@ class MetricResult:
     def tests(self) -> Dict["BoundTest", "MetricTestResult"]:
         return self._tests or {}
 
+    def to_dict(self):
+        config = self._metric.metric.dict()  # type: ignore[attr-defined]
+        config_items = []
+        type = None
+        for field, value in config.items():
+            if field == "type":
+                type = value.split(":")[-1]
+                continue
+            elif value is None:
+                continue
+            elif isinstance(value, list):
+                if len(value) > 0:
+                    config_items.append(f"{field}={','.join(str(x) for x in value)}")
+                continue
+            elif isinstance(value, dict):
+                continue
+            else:
+                config_items.append(f"{field}={str(value)}")
+        return {
+            "id": self._metric.id,
+            "metric_id": f"{type}({','.join(config_items)})",
+            "value": self.dict(),
+        }
+
     @abc.abstractmethod
     def dict(self) -> object:
         raise NotImplementedError()
@@ -296,12 +320,16 @@ def get_default_render(title: str, result: TResult) -> List[BaseWidgetInfo]:
             counter(
                 title=title,
                 size=WidgetSize.FULL,
-                counters=[CounterData(label="", value=str(result.value))],
+                counters=[CounterData(label="", value=f"{result.value:0.3f}")],
             ),
         ]
     if isinstance(result, ByLabelValue):
         return [
-            table_data(title=title, column_names=["Label", "Value"], data=[(k, v) for k, v in result.values.items()])
+            table_data(
+                title=title,
+                column_names=["Label", "Value"],
+                data=[(k, f"{v:0.3f}") for k, v in result.values.items()],
+            )
         ]
     if isinstance(result, CountValue):
         return [
