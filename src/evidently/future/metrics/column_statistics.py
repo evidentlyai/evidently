@@ -80,10 +80,11 @@ class StatisticsCalculation(SingleValueCalculation[TStatisticsMetric]):
     def column(self):
         return self.metric.column
 
-    def calculate(self, current_data: Dataset, reference_data: Optional[Dataset]) -> SingleValue:
+    def calculate(self, context: "Context", current_data: Dataset, reference_data: Optional[Dataset]):
         value = self.calculate_value(current_data.column(self.column))
 
         header = f"current: {value:.3f}"
+        ref_value = None
         if reference_data is not None:
             ref_value = self.calculate_value(reference_data.column(self.column))
             header += f", reference: {ref_value:.3f}"
@@ -93,7 +94,10 @@ class StatisticsCalculation(SingleValueCalculation[TStatisticsMetric]):
             current_data.column(self.column),
             None if reference_data is None else reference_data.column(self.column),
         )
-        return result
+        return (
+            result,
+            None if ref_value is None else SingleValue(ref_value),
+        )
 
     @abc.abstractmethod
     def calculate_value(self, column: DatasetColumn) -> Union[float, int]:
@@ -178,17 +182,23 @@ class CategoryCount(CountMetric):
 
 
 class CategoryCountCalculation(CountCalculation[CategoryCount]):
-    def calculate(self, current_data: Dataset, reference_data: Optional[Dataset]) -> CountValue:
-        column = current_data.column(self.metric.column)
+    def calculate(self, context: "Context", current_data: Dataset, reference_data: Optional[Dataset]):
+        return (
+            self._calculate_value(current_data),
+            None if reference_data is None else self._calculate_value(reference_data),
+        )
+
+    def display_name(self) -> str:
+        return f"Column '{self.metric.column}' category '{self.metric.category}'"
+
+    def _calculate_value(self, dataset: Dataset):
+        column = dataset.column(self.metric.column)
         try:
             value = column.data.value_counts()[self.metric.category]
         except KeyError:
             value = 0
         total = column.data.count()
         return CountValue(value, value / total)
-
-    def display_name(self) -> str:
-        return f"Column '{self.metric.column}' category '{self.metric.category}'"
 
 
 class InRangeValueCount(CountMetric):
@@ -198,7 +208,7 @@ class InRangeValueCount(CountMetric):
 
 
 class InRangeValueCountCalculation(CountCalculation[InRangeValueCount]):
-    def calculate(self, current_data: Dataset, reference_data: Optional[Dataset]) -> CountValue:
+    def calculate(self, context: "Context", current_data: Dataset, reference_data: Optional[Dataset]) -> CountValue:
         column = current_data.column(self.metric.column)
         value = column.data.between(self.metric.left, self.metric.right).count()
         total = column.data.count()
@@ -215,7 +225,7 @@ class OutRangeValueCount(CountMetric):
 
 
 class OutRangeValueCountCalculation(CountCalculation[OutRangeValueCount]):
-    def calculate(self, current_data: Dataset, reference_data: Optional[Dataset]) -> CountValue:
+    def calculate(self, context: "Context", current_data: Dataset, reference_data: Optional[Dataset]) -> CountValue:
         column = current_data.column(self.metric.column)
         value = column.data.between(self.metric.left, self.metric.right).count()
         total = column.data.count()
@@ -231,7 +241,7 @@ class InListValueCount(CountMetric):
 
 
 class InListValueCountCalculation(CountCalculation[InListValueCount]):
-    def calculate(self, current_data: Dataset, reference_data: Optional[Dataset]) -> CountValue:
+    def calculate(self, context: "Context", current_data: Dataset, reference_data: Optional[Dataset]) -> CountValue:
         column = current_data.column(self.metric.column)
         value = column.data.value_counts()[self.metric.values].sum()  # type: ignore[index]
         total = column.data.count()
@@ -247,7 +257,7 @@ class OutListValueCount(CountMetric):
 
 
 class OutListValueCountCalculation(CountCalculation[OutListValueCount]):
-    def calculate(self, current_data: Dataset, reference_data: Optional[Dataset]) -> CountValue:
+    def calculate(self, context: "Context", current_data: Dataset, reference_data: Optional[Dataset]) -> CountValue:
         column = current_data.column(self.metric.column)
         value = column.data.value_counts()[self.metric.values].sum()  # type: ignore[index]
         total = column.data.count()
@@ -262,7 +272,7 @@ class MissingValueCount(CountMetric):
 
 
 class MissingValueCountCalculation(CountCalculation[MissingValueCount]):
-    def calculate(self, current_data: Dataset, reference_data: Optional[Dataset]) -> CountValue:
+    def calculate(self, context: "Context", current_data: Dataset, reference_data: Optional[Dataset]) -> CountValue:
         column = current_data.column(self.metric.column)
         value = column.data.count()
         total = len(column.data)
@@ -278,7 +288,7 @@ class ValueDrift(SingleValueMetric):
 
 
 class ValueDriftCalculation(SingleValueCalculation[ValueDrift]):
-    def calculate(self, current_data: Dataset, reference_data: Optional[Dataset]) -> SingleValue:
+    def calculate(self, context: "Context", current_data: Dataset, reference_data: Optional[Dataset]) -> SingleValue:
         column = self.metric.column
         column_type = current_data.column(column).type
         if reference_data is None:
@@ -362,7 +372,7 @@ class UniqueValueCount(ByLabelMetric):
 
 
 class UniqueValueCountCalculation(ByLabelCalculation[UniqueValueCount]):
-    def calculate(self, current_data: Dataset, reference_data: Optional[Dataset]) -> ByLabelValue:
+    def calculate(self, context: "Context", current_data: Dataset, reference_data: Optional[Dataset]) -> ByLabelValue:
         value_counts = current_data.as_dataframe()[self.metric.column].value_counts()
         return ByLabelValue(value_counts.to_dict())  # type: ignore[arg-type]
 

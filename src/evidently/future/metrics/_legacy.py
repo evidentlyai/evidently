@@ -10,6 +10,7 @@ from evidently.base_metric import MetricResult as LegacyMetricResult
 from evidently.future.datasets import Dataset
 from evidently.future.metric_types import MetricCalculation
 from evidently.future.metric_types import TMetric
+from evidently.future.metric_types import TMetricResult
 from evidently.future.metric_types import TResult
 from evidently.model.widget import BaseWidgetInfo
 
@@ -30,10 +31,7 @@ class LegacyMetricCalculation(
     def legacy_metric(self) -> TLegacyMetric:
         raise NotImplementedError()
 
-    def calculate(self, current_data: Dataset, reference_data: Optional[Dataset]) -> TResult:
-        raise NotImplementedError()
-
-    def _call(self, context: "Context") -> TResult:
+    def calculate(self, context: "Context", current_data: Dataset, reference_data: Optional[Dataset]) -> TMetricResult:
         result, render = context.get_legacy_metric(self.legacy_metric())
         return self.calculate_value(context, result, render)
 
@@ -43,5 +41,5 @@ class LegacyMetricCalculation(
         context: "Context",
         legacy_result: TLegacyResult,
         render: List[BaseWidgetInfo],
-    ) -> TResult:
+    ) -> TMetricResult:
         raise NotImplementedError()

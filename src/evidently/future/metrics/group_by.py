@@ -22,12 +22,12 @@ class GroupByMetric(Metric):
 
 
 class GroupByMetricCalculation(MetricCalculation[TResult, GroupByMetric]):
-    _calculation: Optional[MetricCalculation] = None
+    _calculation: Optional[MetricCalculation[TResult, GroupByMetric]] = None
 
-    def calculate(self, current_data: Dataset, reference_data: Optional[Dataset]) -> TResult:
+    def calculate(self, context: "Context", current_data: Dataset, reference_data: Optional[Dataset]):
         curr = current_data.subdataset(self.metric.column_name, self.metric.label)
         ref = reference_data.subdataset(self.metric.column_name, self.metric.label) if reference_data else None
-        return self.calculation.calculate(curr, ref)
+        return self.calculation.calculate(context, curr, ref)
 
     def display_name(self) -> str:
         return (

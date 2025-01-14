@@ -1,14 +1,13 @@
 import abc
-from typing import Generator
 from typing import Generic
 from typing import List
 from typing import Optional
+from typing import Tuple
 from typing import TypeVar
+from typing import Union
 
-from evidently.future.datasets import Dataset
 from evidently.future.metric_types import ByLabelMetric
 from evidently.future.metric_types import ByLabelValue
-from evidently.future.metric_types import MetricTestResult
 from evidently.future.metric_types import SingleValue
 from evidently.future.metric_types import SingleValueMetric
 from evidently.future.metrics._legacy import LegacyMetricCalculation
@@ -54,22 +53,13 @@ class LegacyClassificationQualityByClass(
             self._legacy_metric = _ClassificationQualityByClass(self.metric.probas_threshold, self.metric.k)
         return self._legacy_metric
 
-    def calculate(self, current_data: Dataset, reference_data: Optional[Dataset]) -> ByLabelValue:
-        raise NotImplementedError()
-
     def calculate_value(
         self,
         context: "Context",
         legacy_result: ClassificationQualityByClassResult,
         render: List[BaseWidgetInfo],
-    ) -> ByLabelValue:
+    ):
         raise NotImplementedError()
-
-    def get_tests(self, value: ByLabelValue) -> Generator[MetricTestResult, None, None]:
-        for label, tests in self.metric.tests.items():
-            label_value = value.get_label_result(label)
-            for test in tests:
-                yield test.to_test()(self, label_value)
 
     def _relabel(self, context: "Context", label: Label):
         classification = context.data_definition.get_classification("default")
@@ -91,8 +81,13 @@ class F1ByLabelCalculation(LegacyClassificationQualityByClass[F1ByLabel]):
         context: "Context",
         legacy_result: ClassificationQualityByClassResult,
         render: List[BaseWidgetInfo],
-    ) -> ByLabelValue:
-        return ByLabelValue({self._relabel(context, k): v.f1 for k, v in legacy_result.current.metrics.items()})
+    ) -> Tuple[ByLabelValue, Optional[ByLabelValue]]:
+        return (
+            ByLabelValue({self._relabel(context, k): v.f1 for k, v in legacy_result.current.metrics.items()}),
+            None
+            if legacy_result.reference is None
+            else ByLabelValue({self._relabel(context, k): v.f1 for k, v in legacy_result.reference.metrics.items()}),
+        )
 
     def display_name(self) -> str:
         return "F1 by Label metric"
@@ -108,9 +103,14 @@ class PrecisionByLabelCalculation(LegacyClassificationQualityByClass[PrecisionBy
         context: "Context",
         legacy_result: ClassificationQualityByClassResult,
         render: List[BaseWidgetInfo],
-    ) -> ByLabelValue:
-        return ByLabelValue(
-            {self._relabel(context, k): v.precision for k, v in legacy_result.current.metrics.items()},
+    ) -> Tuple[ByLabelValue, Optional[ByLabelValue]]:
+        return (
+            ByLabelValue({self._relabel(context, k): v.precision for k, v in legacy_result.current.metrics.items()}),
+            None
+            if legacy_result.reference is None
+            else ByLabelValue(
+                {self._relabel(context, k): v.precision for k, v in legacy_result.reference.metrics.items()}
+            ),
         )
 
     def display_name(self) -> str:
@@ -127,9 +127,14 @@ class RecallByLabelCalculation(LegacyClassificationQualityByClass[RecallByLabel]
         context: "Context",
         legacy_result: ClassificationQualityByClassResult,
         render: List[BaseWidgetInfo],
-    ) -> ByLabelValue:
-        return ByLabelValue(
-            {self._relabel(context, k): v.recall for k, v in legacy_result.current.metrics.items()},
+    ) -> Tuple[ByLabelValue, Optional[ByLabelValue]]:
+        return (
+            ByLabelValue({self._relabel(context, k): v.recall for k, v in legacy_result.current.metrics.items()}),
+            None
+            if legacy_result.reference is None
+            else ByLabelValue(
+                {self._relabel(context, k): v.recall for k, v in legacy_result.reference.metrics.items()}
+            ),
         )
 
     def display_name(self) -> str:
@@ -146,13 +151,20 @@ class RocAucByLabelCalculation(LegacyClassificationQualityByClass[RocAucByLabel]
         context: "Context",
         legacy_result: ClassificationQualityByClassResult,
         render: List[BaseWidgetInfo],
-    ) -> ByLabelValue:
+    ) -> Tuple[ByLabelValue, Optional[ByLabelValue]]:
         value = ByLabelValue(
             {self._relabel(context, k): v.roc_auc for k, v in legacy_result.current.metrics.items()},
         )
         value.widget = render
         value.widget[0].params["counters"][0]["label"] = self.display_name()
-        return value
+        return (
+            value,
+            None
+            if legacy_result.reference is None
+            else ByLabelValue(
+                {self._relabel(context, k): v.roc_auc for k, v in legacy_result.reference.metrics.items()}
+            ),
+        )
 
     def display_name(self) -> str:
         return "ROC AUC by Label metric"
@@ -175,20 +187,14 @@ class LegacyClassificationQuality(
             self._legacy_metric = ClassificationQualityMetric(self.metric.probas_threshold, self.metric.k)
         return self._legacy_metric
 
-    def calculate(self, current_data: Dataset, reference_data: Optional[Dataset]) -> SingleValue:
-        raise NotImplementedError()
-
     @abc.abstractmethod
     def calculate_value(
         self,
         context: "Context",
         legacy_result: ClassificationQualityMetricResult,
         render: List[BaseWidgetInfo],
-    ) -> SingleValue:
+    ) -> Union[SingleValue, Tuple[SingleValue, Optional[SingleValue]]]:
         raise NotImplementedError()
-
-    def get_tests(self, value: SingleValue) -> Generator[MetricTestResult, None, None]:
-        yield from (t.to_test()(self, value) for t in self.metric.tests)
 
 
 class F1Score(ClassificationQuality):
@@ -201,8 +207,11 @@ class F1ScoreCalculation(LegacyClassificationQuality[F1Score]):
         context: "Context",
         legacy_result: ClassificationQualityMetricResult,
         render: List[BaseWidgetInfo],
-    ) -> SingleValue:
-        return SingleValue(legacy_result.current.f1)
+    ) -> Tuple[SingleValue, Optional[SingleValue]]:
+        return (
+            SingleValue(legacy_result.current.f1),
+            None if legacy_result.reference is None else SingleValue(legacy_result.reference.f1),
+        )
 
     def display_name(self) -> str:
         return "F1 score metric"
@@ -218,8 +227,11 @@ class AccuracyCalculation(LegacyClassificationQuality[Accuracy]):
         context: "Context",
         legacy_result: ClassificationQualityMetricResult,
         render: List[BaseWidgetInfo],
-    ) -> SingleValue:
-        return SingleValue(legacy_result.current.accuracy)
+    ) -> Tuple[SingleValue, Optional[SingleValue]]:
+        return (
+            SingleValue(legacy_result.current.accuracy),
+            None if legacy_result.reference is None else SingleValue(legacy_result.reference.accuracy),
+        )
 
     def display_name(self) -> str:
         return "Accuracy metric"
@@ -235,8 +247,11 @@ class PrecisionCalculation(LegacyClassificationQuality[Precision]):
         context: "Context",
         legacy_result: ClassificationQualityMetricResult,
         render: List[BaseWidgetInfo],
-    ) -> SingleValue:
-        return SingleValue(legacy_result.current.precision)
+    ) -> Tuple[SingleValue, Optional[SingleValue]]:
+        return (
+            SingleValue(legacy_result.current.precision),
+            None if legacy_result.reference is None else SingleValue(legacy_result.reference.precision),
+        )
 
     def display_name(self) -> str:
         return "Precision metric"
@@ -252,8 +267,11 @@ class RecallCalculation(LegacyClassificationQuality[Recall]):
         context: "Context",
         legacy_result: ClassificationQualityMetricResult,
         render: List[BaseWidgetInfo],
-    ) -> SingleValue:
-        return SingleValue(legacy_result.current.recall)
+    ) -> Tuple[SingleValue, Optional[SingleValue]]:
+        return (
+            SingleValue(legacy_result.current.recall),
+            None if legacy_result.reference is None else SingleValue(legacy_result.reference.recall),
+        )
 
     def display_name(self) -> str:
         return "Recall metric"
@@ -269,10 +287,15 @@ class TPRCalculation(LegacyClassificationQuality[TPR]):
         context: "Context",
         legacy_result: ClassificationQualityMetricResult,
         render: List[BaseWidgetInfo],
-    ) -> SingleValue:
+    ) -> Tuple[SingleValue, Optional[SingleValue]]:
         if legacy_result.current.tpr is None:
             raise ValueError("Failed to calculate TPR value")
-        return SingleValue(legacy_result.current.tpr)
+        return (
+            SingleValue(legacy_result.current.tpr),
+            None
+            if legacy_result.reference is None or legacy_result.reference.tpr is None
+            else SingleValue(legacy_result.reference.tpr),
+        )
 
     def display_name(self) -> str:
         return "TPR metric"
@@ -288,10 +311,15 @@ class TNRCalculation(LegacyClassificationQuality[TNR]):
         context: "Context",
         legacy_result: ClassificationQualityMetricResult,
         render: List[BaseWidgetInfo],
-    ) -> SingleValue:
+    ) -> Tuple[SingleValue, Optional[SingleValue]]:
         if legacy_result.current.tnr is None:
             raise ValueError("Failed to calculate TNR value")
-        return SingleValue(legacy_result.current.tnr)
+        return (
+            SingleValue(legacy_result.current.tnr),
+            None
+            if legacy_result.reference is None or legacy_result.reference.tnr is None
+            else SingleValue(legacy_result.reference.tnr),
+        )
 
     def display_name(self) -> str:
         return "TNR metric"
@@ -307,10 +335,15 @@ class FPRCalculation(LegacyClassificationQuality[FPR]):
         context: "Context",
         legacy_result: ClassificationQualityMetricResult,
         render: List[BaseWidgetInfo],
-    ) -> SingleValue:
+    ) -> Tuple[SingleValue, Optional[SingleValue]]:
         if legacy_result.current.fpr is None:
             raise ValueError("Failed to calculate FPR value")
-        return SingleValue(legacy_result.current.fpr)
+        return (
+            SingleValue(legacy_result.current.fpr),
+            None
+            if legacy_result.reference is None or legacy_result.reference.fpr is None
+            else SingleValue(legacy_result.reference.fpr),
+        )
 
     def display_name(self) -> str:
         return "FPR metric"
@@ -326,10 +359,15 @@ class FNRCalculation(LegacyClassificationQuality[FNR]):
         context: "Context",
         legacy_result: ClassificationQualityMetricResult,
         render: List[BaseWidgetInfo],
-    ) -> SingleValue:
+    ) -> Tuple[SingleValue, Optional[SingleValue]]:
         if legacy_result.current.fnr is None:
             raise ValueError("Failed to calculate FNR value")
-        return SingleValue(legacy_result.current.fnr)
+        return (
+            SingleValue(legacy_result.current.fnr),
+            None
+            if legacy_result.reference is None or legacy_result.reference.fnr is None
+            else SingleValue(legacy_result.reference.fnr),
+        )
 
     def display_name(self) -> str:
         return "FNR metric"
@@ -345,10 +383,15 @@ class RocAucCalculation(LegacyClassificationQuality[RocAuc]):
         context: "Context",
         legacy_result: ClassificationQualityMetricResult,
         render: List[BaseWidgetInfo],
-    ) -> SingleValue:
+    ) -> Tuple[SingleValue, Optional[SingleValue]]:
         if legacy_result.current.roc_auc is None:
             raise ValueError("Failed to calculate RocAuc value")
-        return SingleValue(legacy_result.current.roc_auc)
+        return (
+            SingleValue(legacy_result.current.roc_auc),
+            None
+            if legacy_result.reference is None or legacy_result.reference.roc_auc is None
+            else SingleValue(legacy_result.reference.roc_auc),
+        )
 
     def display_name(self) -> str:
         return "RocAuc metric"
@@ -364,10 +407,15 @@ class LogLossCalculation(LegacyClassificationQuality[LogLoss]):
         context: "Context",
         legacy_result: ClassificationQualityMetricResult,
         render: List[BaseWidgetInfo],
-    ) -> SingleValue:
+    ) -> Tuple[SingleValue, Optional[SingleValue]]:
         if legacy_result.current.log_loss is None:
             raise ValueError("Failed to calculate LogLoss value")
-        return SingleValue(legacy_result.current.log_loss)
+        return (
+            SingleValue(legacy_result.current.log_loss),
+            None
+            if legacy_result.reference is None or legacy_result.reference.log_loss is None
+            else SingleValue(legacy_result.reference.log_loss),
+        )
 
     def display_name(self) -> str:
         return "LogLoss metric"
@@ -390,9 +438,6 @@ class LegacyClassificationDummy(
             self._legacy_metric = ClassificationDummyMetric(self.metric.probas_threshold, self.metric.k)
         return self._legacy_metric
 
-    def calculate(self, current_data: Dataset, reference_data: Optional[Dataset]) -> SingleValue:
-        raise NotImplementedError()
-
     @abc.abstractmethod
     def calculate_value(
         self,
@@ -401,9 +446,6 @@ class LegacyClassificationDummy(
         render: List[BaseWidgetInfo],
     ) -> SingleValue:
         raise NotImplementedError()
-
-    def get_tests(self, value: SingleValue) -> Generator[MetricTestResult, None, None]:
-        yield from (t.to_test()(self, value) for t in self.metric.tests)
 
 
 class DummyPrecision(ClassificationQuality):
