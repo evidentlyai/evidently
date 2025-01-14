@@ -441,7 +441,7 @@ class Metric(AutoAliasMixin, EvidentlyBaseModel, Generic[TCalculation]):
         return self.to_calculation().call(context)
 
     @abstractmethod
-    def get_bound_tests(self, context: Context) -> Sequence[BoundTest]:
+    def get_bound_tests(self, context: "Context") -> Sequence[BoundTest]:
         raise not_implemented(self)
 
 

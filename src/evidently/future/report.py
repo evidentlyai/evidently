@@ -58,17 +58,17 @@ class ContextColumnData:
 
 
 class Context:
-    _configuration: Optional["Report"]
+    _configuration: "Report"
     _metrics: Dict[MetricId, MetricResult]
     _metrics_graph: dict
     _input_data: Tuple[Dataset, Optional[Dataset]]
     _current_graph_level: dict
     _legacy_metrics: Dict[str, Tuple[object, List[BaseWidgetInfo]]]
 
-    def __init__(self):
+    def __init__(self, report: "Report"):
         self._metrics = {}
         self._metric_defs = {}
-        self._configuration = None
+        self._configuration = report
         self._metrics_graph = {}
         self._current_graph_level = self._metrics_graph
         self._legacy_metrics = {}
@@ -168,7 +168,7 @@ class Snapshot:
 
     def __init__(self, report: "Report"):
         self._report = report
-        self._context = Context()
+        self._context = Context(report)
 
     @property
     def context(self) -> Context:
