@@ -1,4 +1,3 @@
-import { EvidentlyLogoSvg } from 'evidently-ui-lib/components/LogoSvg'
 import { NavigationProgress } from 'evidently-ui-lib/components/NavigationProgress'
 import { ServiceHeader } from 'evidently-ui-lib/components/ServiceHeader'
 import { BreadCrumbs } from 'evidently-ui-lib/router-utils/components/breadcrumbs'
@@ -11,6 +10,7 @@ import type { GetRouteByPath } from '~/routes/types'
 import { useCrumbsFromHandle, useCurrentRouteParams } from 'evidently-ui-lib/router-utils/hooks'
 import type { CrumbDefinition } from 'evidently-ui-lib/router-utils/router-builder'
 import { clientAPI } from '~/api'
+import { HomeLink } from './components'
 
 ///////////////////
 //    ROUTE
@@ -34,7 +34,7 @@ export const Component = () => {
     <>
       <NavigationProgress />
       <ScrollRestoration />
-      <ServiceHeader version={loaderData.version} LogoSvg={EvidentlyLogoSvg} />
+      <ServiceHeader version={loaderData.version} HomeLink={HomeLink} />
       <Box p={3}>
         <BreadCrumbs crumbs={crumbs} />
         <Outlet />

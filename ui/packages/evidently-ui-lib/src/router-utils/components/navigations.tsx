@@ -1,6 +1,8 @@
 import {
   Button,
   type ButtonProps,
+  IconButton,
+  type IconButtonProps,
   Link,
   Tab,
   type TabProps,
@@ -10,6 +12,7 @@ import {
 import { Navigate, type NavigateProps, Link as ReactRouterLink } from 'react-router-dom'
 import { makeRouteUrl } from 'router-utils/router-builder'
 import type { GetLinkParams, MatchAny } from 'router-utils/types'
+import { assertNever } from '~/utils'
 
 export type RouterLinkTemplateComponentProps =
   | ({
@@ -21,14 +24,22 @@ export type RouterLinkTemplateComponentProps =
   | ({
       type: 'tab'
     } & RLT)
+  | ({
+      type: 'icon'
+    } & RLI)
 
 const RouterLinkTemplate = (props: RouterLinkTemplateComponentProps) => {
-  return props.type === 'button' ? (
+  const type = props.type
+  return type === 'button' ? (
     <RLBComponent {...props} />
-  ) : props.type === 'tab' ? (
+  ) : type === 'tab' ? (
     <RLTComponent {...props} />
-  ) : (
+  ) : type === 'link' ? (
     <RLLComponent {...props} />
+  ) : type === 'icon' ? (
+    <RLIComponent {...props} />
+  ) : (
+    assertNever(type)
   )
 }
 
@@ -68,6 +79,12 @@ type RLT = {
 
 const RLTComponent = ({ to, ...tabProps }: RLT) => {
   return <Tab component={ReactRouterLink} to={to} {...tabProps} />
+}
+
+type RLI = { to: string; IconButtonProps?: IconButtonProps }
+
+const RLIComponent = ({ to, IconButtonProps }: RLI) => {
+  return <IconButton component={ReactRouterLink} to={to} {...IconButtonProps} />
 }
 
 export const CreateRouterLinkComponent = <M extends MatchAny>() => {
