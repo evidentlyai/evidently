@@ -26,10 +26,12 @@ from evidently.future._utils import not_implemented
 from evidently.future.datasets import Dataset
 from evidently.metric_results import Label
 from evidently.model.dashboard import DashboardInfo
+from evidently.model.widget import AdditionalGraphInfo
 from evidently.model.widget import BaseWidgetInfo
 from evidently.pydantic_utils import BaseModel
 from evidently.pydantic_utils import EvidentlyBaseModel
 from evidently.pydantic_utils import Fingerprint
+from evidently.renderers.base_renderer import DetailsInfo
 from evidently.renderers.html_widgets import CounterData
 from evidently.renderers.html_widgets import WidgetSize
 from evidently.renderers.html_widgets import counter
@@ -113,6 +115,17 @@ class MetricResult:
 
 
 def render_widgets(widgets: List[BaseWidgetInfo]):
+    items = []
+    for info_item in widgets:
+        for additional_graph in info_item.get_additional_graphs():
+            if isinstance(additional_graph, AdditionalGraphInfo):
+                items.append(DetailsInfo("", additional_graph.params, additional_graph.id))
+            else:
+                items.append(DetailsInfo("", additional_graph, additional_graph.id))
+    additional_graphs = {
+        f"{item.id}": dataclasses.asdict(item.info) if dataclasses.is_dataclass(item.info) else item.info
+        for item in items
+    }
     dashboard_id, dashboard_info = (
         "metric_" + str(uuid.uuid4()).replace("-", ""),
         DashboardInfo("Report", widgets=widgets),
@@ -120,7 +133,7 @@ def render_widgets(widgets: List[BaseWidgetInfo]):
     template_params = TemplateParams(
         dashboard_id=dashboard_id,
         dashboard_info=dashboard_info,
-        additional_graphs={},
+        additional_graphs=additional_graphs,
     )
     return inline_iframe_html_template(template_params)
 

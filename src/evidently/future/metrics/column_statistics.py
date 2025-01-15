@@ -7,6 +7,7 @@ from typing import TypeVar
 from typing import Union
 
 from evidently import ColumnType
+from evidently.calculations.data_drift import ColumnDataDriftMetrics
 from evidently.calculations.data_drift import get_one_column_drift
 from evidently.calculations.stattests import PossibleStatTestType
 from evidently.future.datasets import Dataset
@@ -30,16 +31,25 @@ from evidently.metric_results import DatasetColumns
 from evidently.metric_results import DatasetUtilityColumns
 from evidently.metric_results import HistogramData
 from evidently.metric_results import Label
+from evidently.metric_results import ScatterField
 from evidently.metrics import DatasetDriftMetric
 from evidently.metrics.data_drift.dataset_drift_metric import DatasetDriftMetricResults
 from evidently.metrics.data_drift.embedding_drift_methods import DriftMethod
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options import ColorOptions
+from evidently.options.base import Options
 from evidently.options.data_drift import DataDriftOptions
+from evidently.renderers.html_widgets import CounterData
+from evidently.renderers.html_widgets import TabData
 from evidently.renderers.html_widgets import WidgetSize
+from evidently.renderers.html_widgets import counter
 from evidently.renderers.html_widgets import plotly_figure
+from evidently.renderers.html_widgets import table_data
+from evidently.renderers.html_widgets import widget_tabs
 from evidently.utils.visualizations import get_distribution_for_column
+from evidently.utils.visualizations import plot_agg_line_data
 from evidently.utils.visualizations import plot_distr_with_perc_button
+from evidently.utils.visualizations import plot_scatter_for_data_drift
 
 
 def distribution(
@@ -329,11 +339,12 @@ class ValueDriftCalculation(SingleValueCalculation[ValueDrift]):
         column_type = current_data.column(column).type
         if reference_data is None:
             raise ValueError("Reference data is required for Value Drift")
+        options = DataDriftOptions(all_features_stattest=self.metric.method)
         drift = get_one_column_drift(
             current_data=current_data.as_dataframe(),
             reference_data=reference_data.as_dataframe(),
             column_name=column,
-            options=DataDriftOptions(all_features_stattest=self.metric.method),
+            options=options,
             dataset_columns=DatasetColumns(
                 utility_columns=DatasetUtilityColumns(),
                 num_feature_names=[column] if column_type == ColumnType.Numerical else [],
@@ -345,10 +356,129 @@ class ValueDriftCalculation(SingleValueCalculation[ValueDrift]):
             agg_data=True,
         )
 
-        return SingleValue(drift.drift_score)
+        result = SingleValue(drift.drift_score)
+        result.widget = self._render(drift, Options(), ColorOptions())
+        return result
 
     def display_name(self) -> str:
         return f"Value drift for {self.metric.column}"
+
+    def _render(self, result: ColumnDataDriftMetrics, options, color_options):
+        if result.drift_detected:
+            drift = "detected"
+
+        else:
+            drift = "not detected"
+
+        drift_score = round(result.drift_score, 3)
+        tabs = []
+        if result.scatter is not None:
+            if options.render_options.raw_data:
+                if not isinstance(result.scatter, ScatterField):
+                    raise ValueError("Result have incompatible type")
+                scatter_fig = plot_scatter_for_data_drift(
+                    curr_y=result.scatter.scatter[result.column_name].tolist(),
+                    curr_x=result.scatter.scatter[result.scatter.x_name].tolist(),
+                    y0=result.scatter.plot_shape["y0"],
+                    y1=result.scatter.plot_shape["y1"],
+                    y_name=result.column_name,
+                    x_name=result.scatter.x_name,
+                    color_options=color_options,
+                )
+            else:
+                scatter_fig = plot_agg_line_data(
+                    curr_data=result.scatter.scatter,
+                    ref_data=None,
+                    line=(result.scatter.plot_shape["y0"] + result.scatter.plot_shape["y1"]) / 2,
+                    std=(result.scatter.plot_shape["y0"] - result.scatter.plot_shape["y1"]) / 2,
+                    xaxis_name=result.scatter.x_name,
+                    xaxis_name_ref=None,
+                    yaxis_name=f"{result.column_name} (mean +/- std)",
+                    color_options=color_options,
+                    return_json=False,
+                    line_name="reference (mean)",
+                )
+            tabs.append(TabData("DATA DRIFT", plotly_figure(title="", figure=scatter_fig)))
+
+        if result.current.distribution is not None and result.reference.distribution is not None:
+            distr_fig = plot_distr_with_perc_button(
+                hist_curr=HistogramData.from_distribution(result.current.distribution),
+                hist_ref=HistogramData.from_distribution(result.reference.distribution),
+                xaxis_name="",
+                yaxis_name="Count",
+                yaxis_name_perc="Percent",
+                same_color=False,
+                color_options=color_options,
+                subplots=False,
+                to_json=False,
+            )
+            tabs.append(TabData("DATA DISTRIBUTION", plotly_figure(title="", figure=distr_fig)))
+
+        if (
+            result.current.characteristic_examples is not None
+            and result.reference.characteristic_examples is not None
+            and result.current.characteristic_words is not None
+            and result.reference.characteristic_words is not None
+        ):
+            current_table_words = table_data(
+                title="",
+                column_names=["", ""],
+                data=[[el, ""] for el in result.current.characteristic_words],
+            )
+            reference_table_words = table_data(
+                title="",
+                column_names=["", ""],
+                data=[[el, ""] for el in result.reference.characteristic_words],
+            )
+            current_table_examples = table_data(
+                title="",
+                column_names=["", ""],
+                data=[[el, ""] for el in result.current.characteristic_examples],
+            )
+            reference_table_examples = table_data(
+                title="",
+                column_names=["", ""],
+                data=[[el, ""] for el in result.reference.characteristic_examples],
+            )
+
+            tabs = [
+                TabData(title="current: characteristic words", widget=current_table_words),
+                TabData(
+                    title="reference: characteristic words",
+                    widget=reference_table_words,
+                ),
+                TabData(
+                    title="current: characteristic examples",
+                    widget=current_table_examples,
+                ),
+                TabData(
+                    title="reference: characteristic examples",
+                    widget=reference_table_examples,
+                ),
+            ]
+        render_result = [
+            counter(
+                counters=[
+                    CounterData(
+                        (
+                            f"Data drift {drift}. "
+                            f"Drift detection method: {result.stattest_name}. "
+                            f"Drift score: {drift_score}"
+                        ),
+                        f"Drift in column '{result.column_name}'",
+                    )
+                ],
+                title="",
+            )
+        ]
+        if len(tabs) > 0:
+            render_result.append(
+                widget_tabs(
+                    title="",
+                    tabs=tabs,
+                )
+            )
+        return render_result
 
 
 class DriftedColumnsCount(CountMetric):
