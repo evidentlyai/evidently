@@ -24,6 +24,7 @@ from evidently.future.metric_types import MetricResult as MetricResultV2
 from evidently.future.metric_types import MetricTestResult
 from evidently.future.metric_types import SingleValue
 from evidently.future.metric_types import TResult
+from evidently.future.report import Context
 from evidently.future.report import Snapshot as SnapshotV2
 from evidently.metric_results import Label
 from evidently.model.widget import BaseWidgetInfo
@@ -269,7 +270,7 @@ class TestsConfig(MetricV2):
     def get_tests(self, value: TResult) -> Generator[MetricTestResult, None, None]:
         raise NotImplementedError
 
-    def get_bound_tests(self) -> List[BoundTest]:
+    def get_bound_tests(self, context: Context) -> List[BoundTest]:
         return self.tests
 
 

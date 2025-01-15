@@ -6,6 +6,7 @@ from evidently.future.metric_types import MetricTest
 from evidently.future.metric_types import MetricTestResult
 from evidently.future.metric_types import SingleValue
 from evidently.future.metric_types import SingleValueTest
+from evidently.future.report import Context
 from evidently.tests.base_test import TestStatus
 
 
@@ -13,7 +14,7 @@ class IsInMetricTest(MetricTest):
     values: List[Union[int, str]]
 
     def to_test(self) -> SingleValueTest:
-        def func(metric: MetricCalculationBase, value: SingleValue) -> MetricTestResult:
+        def func(context: Context, metric: MetricCalculationBase, value: SingleValue) -> MetricTestResult:
             check_value = value.value in self.values
             return MetricTestResult(
                 "is_in",
@@ -25,15 +26,15 @@ class IsInMetricTest(MetricTest):
         return func
 
 
-def is_in(values: List[Union[int, str]]) -> MetricTest:
-    return IsInMetricTest(values=values)
+def is_in(values: List[Union[int, str]], is_critical: bool = True) -> MetricTest:
+    return IsInMetricTest(values=values, is_critical=is_critical)
 
 
 class NotInMetricTest(MetricTest):
     values: List[Union[int, str]]
 
     def to_test(self) -> SingleValueTest:
-        def func(metric: MetricCalculationBase, value: SingleValue) -> MetricTestResult:
+        def func(context: Context, metric: MetricCalculationBase, value: SingleValue) -> MetricTestResult:
             check_value = value.value not in self.values
             return MetricTestResult(
                 "not_in",
@@ -45,5 +46,5 @@ class NotInMetricTest(MetricTest):
         return func
 
 
-def not_in(values: List[Union[int, str]]) -> MetricTest:
-    return NotInMetricTest(values=values)
+def not_in(values: List[Union[int, str]], is_critical: bool = True) -> MetricTest:
+    return NotInMetricTest(values=values, is_critical=is_critical)

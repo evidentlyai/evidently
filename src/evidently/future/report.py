@@ -24,6 +24,7 @@ from evidently.future.metric_types import Metric
 from evidently.future.metric_types import MetricCalculationBase
 from evidently.future.metric_types import MetricId
 from evidently.future.metric_types import MetricResult
+from evidently.future.metric_types import SingleValueLocation
 from evidently.future.metric_types import metric_tests_widget
 from evidently.future.metric_types import render_widgets
 from evidently.future.preset_types import MetricPreset
@@ -57,18 +58,28 @@ class ContextColumnData:
         return self._column.type
 
 
+class ReferenceMetricNotFound(BaseException):
+    def __init__(self, metric: Metric):
+        self.metric = metric
+
+    def __str__(self):
+        return f"Reference data not found for {str(self.metric)} ({self.metric.metric_id})"
+
+
 class Context:
-    _configuration: Optional["Report"]
+    _configuration: "Report"
     _metrics: Dict[MetricId, MetricResult]
+    _reference_metrics: Dict[MetricId, MetricResult]
     _metrics_graph: dict
     _input_data: Tuple[Dataset, Optional[Dataset]]
     _current_graph_level: dict
     _legacy_metrics: Dict[str, Tuple[object, List[BaseWidgetInfo]]]
 
-    def __init__(self):
+    def __init__(self, report: "Report"):
         self._metrics = {}
-        self._metric_defs = {}
-        self._configuration = None
+        # self._metric_defs = {}
+        self._configuration = report
+        self._reference_metrics = {}
         self._metrics_graph = {}
         self._current_graph_level = self._metrics_graph
         self._legacy_metrics = {}
@@ -85,8 +96,19 @@ class Context:
         prev_level = self._current_graph_level
         self._current_graph_level = prev_level[metric.id]
         if metric.id not in self._metrics:
-            self._metrics[metric.id] = metric.call(self)
-            self._metrics[metric.id]._metric = metric
+            current_result, reference_result = metric.call(self)
+            current_result._metric = metric
+            current_result._metric_value_location = SingleValueLocation(metric.to_metric())
+            self._metrics[metric.id] = current_result
+            if reference_result is not None:
+                reference_result._metric = metric
+                reference_result._metric_value_location = SingleValueLocation(metric.to_metric())
+                self._reference_metrics[metric.id] = reference_result
+            test_results = {
+                tc: tc.run_test(self, metric, current_result) for tc in metric.to_metric().get_bound_tests(self)
+            }
+            if test_results and len(test_results) > 0:
+                current_result.set_tests(test_results)
         self._current_graph_level = prev_level
         return typing.cast(TResultType, self._metrics[metric.id])
 
@@ -98,15 +120,28 @@ class Context:
     def get_metric(self, metric: MetricId) -> MetricCalculationBase[TResultType]:
         return self._metrics_graph[metric]["_self"]
 
+    def get_reference_metric_result(self, metric: Metric) -> MetricResult:
+        if metric.metric_id not in self._reference_metrics:
+            raise ReferenceMetricNotFound(metric)
+        return self._reference_metrics[metric.metric_id]
+
     def get_legacy_metric(self, metric: LegacyMetric[T]) -> Tuple[T, List[BaseWidgetInfo]]:
-        classification = self._input_data[0]._data_definition.get_classification("default")
+        classification = self.data_definition.get_classification("default")
         reference = self._input_data[1].as_dataframe() if self._input_data[1] is not None else None
         current = self._input_data[0].as_dataframe()
+        prediction: Optional[Union[str, List[str]]]
+        if classification is not None:
+            if isinstance(classification.prediction_probas, list):
+                prediction = classification.prediction_probas
+            elif classification.prediction_probas not in current.columns:
+                prediction = classification.prediction_labels
+            else:
+                prediction = classification.prediction_probas
+        else:
+            prediction = None
         mapping = ColumnMapping(
             target=classification.target if classification is not None else None,
-            prediction=(classification.prediction_probas or classification.prediction_labels)
-            if classification is not None
-            else None,
+            prediction=prediction,
             pos_label=classification.pos_label if isinstance(classification, BinaryClassification) else None,
             target_names=classification.labels if classification is not None else None,
         )
@@ -143,6 +178,14 @@ class Context:
     def data_definition(self) -> DataDefinition:
         return self._input_data[0]._data_definition
 
+    @property
+    def configuration(self) -> "Report":
+        return self._configuration
+
+    @property
+    def has_reference(self) -> bool:
+        return self._input_data[1] is not None
+
 
 class Snapshot:
     _report: "Report"
@@ -152,7 +195,7 @@ class Snapshot:
 
     def __init__(self, report: "Report"):
         self._report = report
-        self._context = Context()
+        self._context = Context(report)
 
     @property
     def context(self) -> Context:
@@ -204,10 +247,10 @@ class Snapshot:
 
     def dict(self) -> dict:
         return {
-            "metrics": {
-                metric: self.context.get_metric_result(metric).dict()  # type: ignore[attr-defined]
+            "metrics": [
+                self.context.get_metric_result(metric).to_dict()  # type: ignore[attr-defined]
                 for metric in self.context._metrics_graph.keys()
-            },
+            ],
             "tests": {
                 test.get_fingerprint(): test_result.dict()
                 for metric in self.context._metrics_graph.keys()
@@ -239,6 +282,7 @@ class Report:
         reference_id: str = None,
         batch_size: str = None,
         dataset_id: str = None,
+        include_tests: bool = True,
     ):
         self._metrics = metrics
         self.metadata = metadata or {}
@@ -252,6 +296,7 @@ class Report:
             self.set_reference_id(reference_id)
         if dataset_id is not None:
             self.set_dataset_id(dataset_id)
+        self.include_tests = include_tests
 
     def run(
         self,

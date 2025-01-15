@@ -15,11 +15,17 @@ from .classification import Recall
 from .classification import RecallByLabel
 from .classification import RocAuc
 from .classification import RocAucByLabel
+from .column_statistics import CategoryCount
 from .column_statistics import DriftedColumnsCount
+from .column_statistics import InListValueCount
+from .column_statistics import InRangeValueCount
 from .column_statistics import MaxValue
 from .column_statistics import MeanValue
 from .column_statistics import MedianValue
 from .column_statistics import MinValue
+from .column_statistics import MissingValueCount
+from .column_statistics import OutListValueCount
+from .column_statistics import OutRangeValueCount
 from .column_statistics import QuantileValue
 from .column_statistics import StdValue
 from .column_statistics import UniqueValueCount
@@ -46,12 +52,18 @@ from .regression import R2Score
 
 __all__ = [
     # column statistics metrics
+    "CategoryCount",
     "ValueDrift",
     "DriftedColumnsCount",
     "MaxValue",
     "MeanValue",
     "MedianValue",
     "MinValue",
+    "MissingValueCount",
+    "InListValueCount",
+    "InRangeValueCount",
+    "OutListValueCount",
+    "OutRangeValueCount",
     "QuantileValue",
     "StdValue",
     "UniqueValueCount",
