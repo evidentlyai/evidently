@@ -5,7 +5,7 @@ import { SnapshotIdLazy } from './src/snapshot-view/import'
 
 import { DashboardLazy } from './src/dashboard/import'
 
-import { Route } from 'evidently-ui-lib/router-utils/utils'
+import { Route } from 'evidently-ui-lib/router-utils/router-builder'
 import { Home } from './src/home/import'
 import { Project } from './src/project/import'
 import { ProjectsLayout } from './src/projects-layout/import'

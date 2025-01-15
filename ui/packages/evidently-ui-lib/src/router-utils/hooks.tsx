@@ -10,8 +10,8 @@ import {
   useRevalidator,
   useSearchParams
 } from 'react-router-dom'
+import type { CrumbDefinition, HandleWithCrumb } from '~/router-utils/router-builder'
 import type { MatchAny, MatchWithLoader } from '~/router-utils/types'
-import type { CrumbDefinition, HandleWithCrumb } from '~/router-utils/utils'
 
 export const useCurrentRouteParams = <
   K extends MatchWithLoader &

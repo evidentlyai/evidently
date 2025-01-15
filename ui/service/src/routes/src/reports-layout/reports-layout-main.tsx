@@ -1,4 +1,4 @@
-import type { CrumbDefinition } from 'evidently-ui-lib/router-utils/utils'
+import type { CrumbDefinition } from 'evidently-ui-lib/router-utils/router-builder'
 
 ///////////////////
 //    ROUTE

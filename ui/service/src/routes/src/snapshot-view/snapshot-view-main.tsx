@@ -1,8 +1,8 @@
 import type { GetRouteByPath } from '~/routes/types'
 
 import { useCurrentRouteParams } from 'evidently-ui-lib/router-utils/hooks'
+import type { CrumbDefinition } from 'evidently-ui-lib/router-utils/router-builder'
 import type { GetParams, loadDataArgs } from 'evidently-ui-lib/router-utils/types'
-import type { CrumbDefinition } from 'evidently-ui-lib/router-utils/utils'
 import { SnapshotTemplateComponent } from 'evidently-ui-lib/routes-components/snapshotId'
 import { getSnapshotInfo } from 'evidently-ui-lib/routes-components/snapshotId/data'
 import { clientAPI } from '~/api'

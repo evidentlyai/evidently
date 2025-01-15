@@ -9,7 +9,7 @@ import { Outlet, ScrollRestoration } from 'evidently-ui-lib/shared-dependencies/
 import type { GetRouteByPath } from '~/routes/types'
 
 import { useCrumbsFromHandle, useCurrentRouteParams } from 'evidently-ui-lib/router-utils/hooks'
-import type { CrumbDefinition } from 'evidently-ui-lib/router-utils/utils'
+import type { CrumbDefinition } from 'evidently-ui-lib/router-utils/router-builder'
 import { clientAPI } from '~/api'
 
 ///////////////////

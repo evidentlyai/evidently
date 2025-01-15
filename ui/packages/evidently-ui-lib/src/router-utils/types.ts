@@ -155,3 +155,22 @@ export type MatchWithLoader = Match<
 >
 
 export type GetParams<K extends string> = { [Z in ExtractParams<K>]: string }
+
+type ExtractMatch<K extends string, M> = Extract<M, { path: K }>
+
+type ExtractQuery<K extends string, M> = ExtractMatch<K, M> extends MatchWithLoader
+  ? ExtractMatch<K, M>['loader']['query']
+  : undefined
+
+export type GetLinkParams<K extends string, Matches> = keyof GetParams<K> extends never
+  ? {
+      to: K
+      query?: ExtractQuery<K, Matches>
+      // biome-ignore lint/complexity/noBannedTypes: fine
+      paramsToReplace?: {}
+    }
+  : {
+      to: K
+      query?: ExtractQuery<K, Matches>
+      paramsToReplace: GetParams<K>
+    }

@@ -1,6 +1,6 @@
 import { useCallback, useMemo } from 'react'
+import { makeRouteUrl } from '~/router-utils/router-builder'
 import type { GetParams, MatchAny, MatchWithAction, MatchWithLoader } from '~/router-utils/types'
-import { makeRouteUrl } from '~/router-utils/utils'
 import {
   type SubmitOptions,
   useActionData,
