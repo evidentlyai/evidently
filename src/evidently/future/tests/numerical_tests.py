@@ -107,7 +107,7 @@ def lt(threshold: Union[int, float, Reference], is_critical: bool = True) -> Met
     return GreaterOrEqualMetricTest(threshold=threshold, is_critical=is_critical)
 
 
-class EqualMetricTestBase(MetricTest):
+class EqualMetricTestBase(MetricTest, abc.ABC):
     expected: Union[int, float, Reference]
     epsilon: Optional[float] = None
 

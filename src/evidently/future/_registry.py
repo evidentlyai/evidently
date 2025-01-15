@@ -87,3 +87,6 @@ register_type_alias(Metric, "evidently.future.metrics.column_statistics.UniqueVa
 register_type_alias(Metric, "evidently.future.metrics.regression.DummyMAE", "evidently:metric_v2:DummyMAE")
 register_type_alias(Metric, "evidently.future.metrics.regression.DummyMAPE", "evidently:metric_v2:DummyMAPE")
 register_type_alias(Metric, "evidently.future.metrics.regression.DummyRMSE", "evidently:metric_v2:DummyRMSE")
+
+register_type_alias(MetricTest, "evidently.future.tests.numerical_tests.NotEqualMetricTest", "evidently:test_v2:NotEqualMetricTest")
+register_type_alias(MetricTest, "evidently.future.tests.numerical_tests.EqualMetricTestBase", "evidently:test_v2:EqualMetricTestBase")
