@@ -21,6 +21,8 @@ from evidently.metrics import PrecisionTopKMetric
 from evidently.metrics import RecallTopKMetric
 from evidently.metrics.recsys.base_top_k import TopKMetric
 from evidently.metrics.recsys.base_top_k import TopKMetricResult
+from evidently.metrics.recsys.scores_distribution import ScoreDistribution as ScoreDistributionLegacy
+from evidently.metrics.recsys.scores_distribution import ScoreDistributionResult
 from evidently.model.widget import BaseWidgetInfo
 
 
@@ -142,6 +144,28 @@ class FBetaTopKCalculation(LegacyTopKCalculation[FBetaTopK]):
         )
 
 
+class ScoreDistribution(SingleValueMetric):
+    k: int
+
+
+class ScoreDistributionCalculation(
+    LegacyMetricCalculation[ScoreDistribution, SingleValue, ScoreDistributionResult, ScoreDistributionLegacy]
+):
+    def legacy_metric(self) -> ScoreDistributionLegacy:
+        return ScoreDistributionLegacy(k=self.metric.k)
+
+    def calculate_value(
+        self, context: "Context", legacy_result: ScoreDistributionResult, render: List[BaseWidgetInfo]
+    ) -> TMetricResult:
+        current = SingleValue(legacy_result.current_entropy)
+        if legacy_result.reference_entropy is None:
+            return current
+        return current, SingleValue(legacy_result.reference_entropy)
+
+    def display_name(self) -> str:
+        return "Score distribution"
+
+
 def main():
     import pandas as pd
 
@@ -165,7 +189,7 @@ def main():
                 NDCG(k=3, no_feedback_users=True),
                 MRR(k=3),
                 HitRate(k=3),
-                # ScoreDistribution(),
+                ScoreDistribution(k=3),
                 MAP(k=3),
                 RecallTopK(k=3),
                 PrecisionTopK(k=3),
