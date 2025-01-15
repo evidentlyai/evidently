@@ -1,7 +1,9 @@
 from abc import ABC
+from typing import ClassVar
 from typing import Generic
 from typing import List
 from typing import Optional
+from typing import Type
 from typing import TypeVar
 
 from evidently.future.metric_types import SingleValue
@@ -41,7 +43,20 @@ class LegacyTopKCalculation(
     Generic[TTopKBase],
     ABC,
 ):
-    pass
+    __legacy_metric_type__: ClassVar[Type[TopKMetric]]
+
+    def legacy_metric(self):
+        return self.__legacy_metric_type__(
+            k=self.metric.k, min_rel_score=self.metric.min_rel_score, no_feedback_users=self.metric.no_feedback_users
+        )
+
+    def calculate_value(
+        self, context: "Context", legacy_result: TopKMetricResult, render: List[BaseWidgetInfo]
+    ) -> TMetricResult:
+        current = SingleValue(legacy_result.current[legacy_result.k - 1])
+        if legacy_result.reference is None:
+            return current
+        return current, SingleValue(legacy_result.reference[legacy_result.k - 1])
 
 
 class NDCG(TopKBase):
@@ -49,21 +64,10 @@ class NDCG(TopKBase):
 
 
 class NDCGCalculation(LegacyTopKCalculation[NDCG]):
+    __legacy_metric_type__: ClassVar[Type[TopKMetric]] = NDCGKMetric
+
     def display_name(self) -> str:
         return "NDCG@k"
-
-    def calculate_value(
-        self, context: "Context", legacy_result: TopKMetricResult, render: List[BaseWidgetInfo]
-    ) -> TMetricResult:
-        current = SingleValue(legacy_result.current[legacy_result.k - 1])
-        if legacy_result.reference is None:
-            return current
-        return current, SingleValue(legacy_result.reference[legacy_result.k - 1])
-
-    def legacy_metric(self):
-        return NDCGKMetric(
-            k=self.metric.k, min_rel_score=self.metric.min_rel_score, no_feedback_users=self.metric.no_feedback_users
-        )
 
 
 class MRR(TopKBase):
@@ -71,21 +75,10 @@ class MRR(TopKBase):
 
 
 class MRRCalculation(LegacyTopKCalculation[MRR]):
+    __legacy_metric_type__: ClassVar[Type[TopKMetric]] = MRRKMetric
+
     def display_name(self) -> str:
         return "MRR@k"
-
-    def calculate_value(
-        self, context: "Context", legacy_result: TopKMetricResult, render: List[BaseWidgetInfo]
-    ) -> TMetricResult:
-        current = SingleValue(legacy_result.current[legacy_result.k - 1])
-        if legacy_result.reference is None:
-            return current
-        return current, SingleValue(legacy_result.reference[legacy_result.k - 1])
-
-    def legacy_metric(self):
-        return MRRKMetric(
-            k=self.metric.k, min_rel_score=self.metric.min_rel_score, no_feedback_users=self.metric.no_feedback_users
-        )
 
 
 class HitRate(TopKBase):
@@ -93,21 +86,10 @@ class HitRate(TopKBase):
 
 
 class HitRateCalculation(LegacyTopKCalculation[HitRate]):
+    __legacy_metric_type__: ClassVar[Type[TopKMetric]] = HitRateKMetric
+
     def display_name(self) -> str:
         return "HitRate@k"
-
-    def calculate_value(
-        self, context: "Context", legacy_result: TopKMetricResult, render: List[BaseWidgetInfo]
-    ) -> TMetricResult:
-        current = SingleValue(legacy_result.current[legacy_result.k - 1])
-        if legacy_result.reference is None:
-            return current
-        return current, SingleValue(legacy_result.reference[legacy_result.k - 1])
-
-    def legacy_metric(self):
-        return HitRateKMetric(
-            k=self.metric.k, min_rel_score=self.metric.min_rel_score, no_feedback_users=self.metric.no_feedback_users
-        )
 
 
 class MAP(TopKBase):
@@ -115,21 +97,10 @@ class MAP(TopKBase):
 
 
 class MAPCalculation(LegacyTopKCalculation[MAP]):
+    __legacy_metric_type__: ClassVar[Type[TopKMetric]] = MAPKMetric
+
     def display_name(self) -> str:
         return "MAP@k"
-
-    def calculate_value(
-        self, context: "Context", legacy_result: TopKMetricResult, render: List[BaseWidgetInfo]
-    ) -> TMetricResult:
-        current = SingleValue(legacy_result.current[legacy_result.k - 1])
-        if legacy_result.reference is None:
-            return current
-        return current, SingleValue(legacy_result.reference[legacy_result.k - 1])
-
-    def legacy_metric(self):
-        return MAPKMetric(
-            k=self.metric.k, min_rel_score=self.metric.min_rel_score, no_feedback_users=self.metric.no_feedback_users
-        )
 
 
 class RecallTopK(TopKBase):
@@ -137,21 +108,10 @@ class RecallTopK(TopKBase):
 
 
 class RecallTopKCalculation(LegacyTopKCalculation[RecallTopK]):
+    __legacy_metric_type__: ClassVar[Type[TopKMetric]] = RecallTopKMetric
+
     def display_name(self) -> str:
         return "Recall@k"
-
-    def calculate_value(
-        self, context: "Context", legacy_result: TopKMetricResult, render: List[BaseWidgetInfo]
-    ) -> TMetricResult:
-        current = SingleValue(legacy_result.current[legacy_result.k - 1])
-        if legacy_result.reference is None:
-            return current
-        return current, SingleValue(legacy_result.reference[legacy_result.k - 1])
-
-    def legacy_metric(self):
-        return RecallTopKMetric(
-            k=self.metric.k, min_rel_score=self.metric.min_rel_score, no_feedback_users=self.metric.no_feedback_users
-        )
 
 
 class PrecisionTopK(TopKBase):
@@ -159,21 +119,10 @@ class PrecisionTopK(TopKBase):
 
 
 class PrecisionTopKCalculation(LegacyTopKCalculation[PrecisionTopK]):
+    __legacy_metric_type__: ClassVar[Type[TopKMetric]] = PrecisionTopKMetric
+
     def display_name(self) -> str:
         return "Precision@k"
-
-    def calculate_value(
-        self, context: "Context", legacy_result: TopKMetricResult, render: List[BaseWidgetInfo]
-    ) -> TMetricResult:
-        current = SingleValue(legacy_result.current[legacy_result.k - 1])
-        if legacy_result.reference is None:
-            return current
-        return current, SingleValue(legacy_result.reference[legacy_result.k - 1])
-
-    def legacy_metric(self):
-        return PrecisionTopKMetric(
-            k=self.metric.k, min_rel_score=self.metric.min_rel_score, no_feedback_users=self.metric.no_feedback_users
-        )
 
 
 class FBetaTopK(TopKBase):
@@ -183,14 +132,6 @@ class FBetaTopK(TopKBase):
 class FBetaTopKCalculation(LegacyTopKCalculation[FBetaTopK]):
     def display_name(self) -> str:
         return f"F{self.metric.beta}@k"
-
-    def calculate_value(
-        self, context: "Context", legacy_result: TopKMetricResult, render: List[BaseWidgetInfo]
-    ) -> TMetricResult:
-        current = SingleValue(legacy_result.current[legacy_result.k - 1])
-        if legacy_result.reference is None:
-            return current
-        return current, SingleValue(legacy_result.reference[legacy_result.k - 1])
 
     def legacy_metric(self):
         return FBetaTopKMetric(
