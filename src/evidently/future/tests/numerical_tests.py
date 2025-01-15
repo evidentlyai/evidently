@@ -107,34 +107,38 @@ def lt(threshold: Union[int, float, Reference], is_critical: bool = True) -> Met
     return GreaterOrEqualMetricTest(threshold=threshold, is_critical=is_critical)
 
 
-class EqualMetricTest(MetricTest):
+class EqualMetricTestBase(MetricTest):
     expected: Union[int, float, Reference]
     epsilon: Optional[float] = None
 
+    def is_equal(self, context: Context, metric: MetricCalculationBase, value: SingleValue):
+        if self.epsilon is None:
+            eps = 1e-5
+        else:
+            eps = self.epsilon
+        if isinstance(self.expected, Reference):
+            result = context.get_reference_metric_result(metric.to_metric())
+            assert isinstance(result, SingleValue)
+            expected = result.value
+            if self.expected.relative is not None:
+                eps = eps + abs(expected * self.expected.relative)
+            elif self.expected.absolute is not None:
+                eps = eps + abs(self.expected.absolute)
+        else:
+            expected = self.expected
+        if eps is not None and (isinstance(expected, str) or isinstance(value.value, str)):
+            raise ValueError("eq test cannot accept epsilon if value is string")
+        if eps is None and isinstance(value.value, float):
+            eps = 1e-5
+        if eps is None:
+            return value.value == expected
+        return expected, abs(value.value - self.expected) <= eps
+
+
+class EqualMetricTest(EqualMetricTestBase):
     def to_test(self) -> SingleValueTest:
         def func(context: Context, metric: MetricCalculationBase, value: SingleValue):
-            if self.epsilon is None:
-                eps = 1e-5
-            else:
-                eps = self.epsilon
-            if isinstance(self.expected, Reference):
-                result = context.get_reference_metric_result(metric.to_metric())
-                assert isinstance(result, SingleValue)
-                expected = result.value
-                if self.expected.relative is not None:
-                    eps = eps + abs(expected * self.expected.relative)
-                elif self.expected.absolute is not None:
-                    eps = eps + abs(self.expected.absolute)
-            else:
-                expected = self.expected
-            if eps is not None and (isinstance(expected, str) or isinstance(value.value, str)):
-                raise ValueError("eq test cannot accept epsilon if value is string")
-            if eps is None and isinstance(value.value, float):
-                eps = 1e-5
-            if eps is None:
-                is_equal = value.value == expected
-            else:
-                is_equal = abs(value.value - self.expected) <= eps
+            expected, is_equal = self.is_equal(context, metric, value)
             return MetricTestResult(
                 "eq",
                 f"{metric.display_name()}: Equal {self.expected}"
@@ -150,3 +154,24 @@ def eq(
     expected: Union[int, float, str, Reference], epsilon: Optional[float] = None, is_critical: bool = True
 ) -> MetricTest:
     return EqualMetricTest(expected=expected, epsilon=epsilon, is_critical=is_critical)
+
+
+class NotEqualMetricTest(EqualMetricTestBase):
+    def to_test(self) -> SingleValueTest:
+        def func(context: Context, metric: MetricCalculationBase, value: SingleValue):
+            expected, is_equal = self.is_equal(context, metric, value)
+            return MetricTestResult(
+                "not_eq",
+                f"{metric.display_name()}: Not equal {self.expected}"
+                + (f" with epsilon {self.epsilon}" if self.epsilon is not None else ""),
+                f"Actual value {value.value} {f', but expected not {expected}' if is_equal else ''}",
+                TestStatus.SUCCESS if not is_equal else TestStatus.FAIL,
+            )
+
+        return func
+
+
+def not_eq(
+    expected: Union[int, float, str, Reference], epsilon: Optional[float] = None, is_critical: bool = True
+) -> MetricTest:
+    return NotEqualMetricTest(expected=expected, epsilon=epsilon, is_critical=is_critical)
