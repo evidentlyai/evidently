@@ -71,6 +71,14 @@ class Regression:
 
 
 @dataclasses.dataclass
+class Recsys:
+    name: str = "default"
+    user_id: str = "user_id"
+    target: str = "target"
+    prediction: str = "prediction"
+
+
+@dataclasses.dataclass
 class Completion:
     pass
 
@@ -96,6 +104,7 @@ class DataDefinition:
     llm: Optional[LLMDefinition] = None
     numerical_descriptors: List[str] = field(default_factory=list)
     categorical_descriptors: List[str] = field(default_factory=list)
+    ranking: Optional[List[Recsys]] = None
 
     def get_numerical_columns(self):
         return (self.numerical_columns or []) + (self.numerical_descriptors or [])
@@ -126,6 +135,14 @@ class DataDefinition:
             return None
         if len(item_list) > 1:
             raise ValueError("More than one classification with id {}".format(classification_id))
+        return item_list[0]
+
+    def get_ranking(self, ranking_id: str):
+        item_list = list(filter(lambda x: x.name == ranking_id, self.ranking or []))
+        if len(item_list) == 0:
+            return None
+        if len(item_list) > 1:
+            raise ValueError("More than one ranking with id {}".format(ranking_id))
         return item_list[0]
 
     def get_columns(self, types: List[ColumnType]) -> Generator[str, None, None]:
