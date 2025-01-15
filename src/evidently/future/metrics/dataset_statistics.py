@@ -1,6 +1,5 @@
 import abc
 import typing
-from typing import Generator
 from typing import Generic
 from typing import List
 from typing import Optional
@@ -10,9 +9,8 @@ from evidently import ColumnType
 from evidently.base_metric import MetricResult as LegacyMetricResult
 from evidently.future.datasets import Dataset
 from evidently.future.metric_types import BoundTest
-from evidently.future.metric_types import CountBoundTest
-from evidently.future.metric_types import MetricTestResult
 from evidently.future.metric_types import SingleValue
+from evidently.future.metric_types import SingleValueBoundTest
 from evidently.future.metric_types import SingleValueCalculation
 from evidently.future.metric_types import SingleValueMetric
 from evidently.future.metric_types import TMetric
@@ -30,7 +28,7 @@ if typing.TYPE_CHECKING:
 
 class RowCount(SingleValueMetric):
     def _default_tests(self) -> List[BoundTest]:
-        return [CountBoundTest(test=gt(0), is_count=True)]
+        return [SingleValueBoundTest(metric_fingerprint=self.get_fingerprint(), test=gt(0))]
 
 
 class RowCountCalculation(SingleValueCalculation[RowCount]):
@@ -48,7 +46,7 @@ class ColumnCount(SingleValueMetric):
     column_type: Optional[ColumnType] = None
 
     def _default_tests(self) -> List[BoundTest]:
-        return [CountBoundTest(test=gt(0), is_count=True)]
+        return [SingleValueBoundTest(metric_fingerprint=self.get_fingerprint(), test=gt(0))]
 
 
 class ColumnCountCalculation(SingleValueCalculation[ColumnCount]):
@@ -91,14 +89,10 @@ class DatasetSummaryBasedMetricCalculation(
             self._legacy_metric = DatasetSummaryMetric()
         return self._legacy_metric
 
-    def get_tests(self, value: TResult) -> Generator[MetricTestResult, None, None]:
-        return
-        yield
-
 
 class DuplicatedRowCount(SingleValueMetric):
     def _default_tests(self) -> List[BoundTest]:
-        return [CountBoundTest(test=eq(0), is_count=True)]
+        return [SingleValueBoundTest(metric_fingerprint=self.get_fingerprint(), test=eq(0))]
 
 
 class DuplicatedRowCountCalculation(DatasetSummaryBasedMetricCalculation[SingleValue, DuplicatedRowCount]):
@@ -107,9 +101,12 @@ class DuplicatedRowCountCalculation(DatasetSummaryBasedMetricCalculation[SingleV
         context: "Context",
         legacy_result: DatasetSummaryMetricResult,
         render: List[BaseWidgetInfo],
-    ) -> SingleValue:
+    ):
         value = legacy_result.current.number_of_duplicated_rows
-        return SingleValue(value)
+        return (
+            SingleValue(value),
+            None if legacy_result.reference is None else SingleValue(legacy_result.reference.number_of_duplicated_rows),
+        )
 
     def display_name(self) -> str:
         return "Duplicated row count in dataset"
@@ -117,7 +114,7 @@ class DuplicatedRowCountCalculation(DatasetSummaryBasedMetricCalculation[SingleV
 
 class DuplicatedColumnsCount(SingleValueMetric):
     def _default_tests(self) -> List[BoundTest]:
-        return [CountBoundTest(test=eq(0), is_count=True)]
+        return [SingleValueBoundTest(metric_fingerprint=self.get_fingerprint(), test=eq(0))]
 
 
 class DuplicatedColumnsCountCalculation(DatasetSummaryBasedMetricCalculation[SingleValue, DuplicatedColumnsCount]):
@@ -126,9 +123,14 @@ class DuplicatedColumnsCountCalculation(DatasetSummaryBasedMetricCalculation[Sin
         context: "Context",
         legacy_result: DatasetSummaryMetricResult,
         render: List[BaseWidgetInfo],
-    ) -> SingleValue:
+    ):
         value = legacy_result.current.number_of_duplicated_columns
-        return SingleValue(value)
+        return (
+            SingleValue(value),
+            None
+            if legacy_result.reference is None
+            else SingleValue(legacy_result.reference.number_of_duplicated_columns),
+        )
 
     def display_name(self) -> str:
         return "Duplicated column count in dataset"
@@ -146,9 +148,14 @@ class AlmostDuplicatedColumnsCountCalculation(
         context: "Context",
         legacy_result: DatasetSummaryMetricResult,
         render: List[BaseWidgetInfo],
-    ) -> SingleValue:
+    ):
         value = legacy_result.current.number_of_almost_duplicated_columns
-        return SingleValue(value)
+        return (
+            SingleValue(value),
+            None
+            if legacy_result.reference is None
+            else SingleValue(legacy_result.reference.number_of_almost_duplicated_columns),
+        )
 
     def display_name(self) -> str:
         return f"Almost duplicated column count in dataset (eps={self.legacy_metric().almost_duplicated_threshold})"
@@ -156,7 +163,7 @@ class AlmostDuplicatedColumnsCountCalculation(
 
 class AlmostConstantColumnsCount(SingleValueMetric):
     def _default_tests(self) -> List[BoundTest]:
-        return [CountBoundTest(test=eq(0), is_count=True)]
+        return [SingleValueBoundTest(metric_fingerprint=self.get_fingerprint(), test=eq(0))]
 
 
 class AlmostConstantColumnsCountCalculation(
@@ -167,9 +174,14 @@ class AlmostConstantColumnsCountCalculation(
         context: "Context",
         legacy_result: DatasetSummaryMetricResult,
         render: List[BaseWidgetInfo],
-    ) -> SingleValue:
+    ):
         value = legacy_result.current.number_of_almost_constant_columns
-        return SingleValue(value)
+        return (
+            SingleValue(value),
+            None
+            if legacy_result.reference is None
+            else SingleValue(legacy_result.reference.number_of_almost_constant_columns),
+        )
 
     def display_name(self) -> str:
         return f"Almost constant column count in dataset (eps={self.legacy_metric().almost_constant_threshold})"
@@ -177,7 +189,7 @@ class AlmostConstantColumnsCountCalculation(
 
 class EmptyRowsCount(SingleValueMetric):
     def _default_tests(self) -> List[BoundTest]:
-        return [CountBoundTest(test=eq(0), is_count=True)]
+        return [SingleValueBoundTest(metric_fingerprint=self.get_fingerprint(), test=eq(0))]
 
 
 class EmptyRowsCountCalculation(DatasetSummaryBasedMetricCalculation[SingleValue, EmptyRowsCount]):
@@ -186,9 +198,12 @@ class EmptyRowsCountCalculation(DatasetSummaryBasedMetricCalculation[SingleValue
         context: "Context",
         legacy_result: DatasetSummaryMetricResult,
         render: List[BaseWidgetInfo],
-    ) -> SingleValue:
+    ):
         value = legacy_result.current.number_of_empty_rows
-        return SingleValue(value)
+        return (
+            SingleValue(value),
+            None if legacy_result.reference is None else SingleValue(legacy_result.reference.number_of_empty_rows),
+        )
 
     def display_name(self) -> str:
         return "Count of empty rows in dataset"
@@ -196,7 +211,7 @@ class EmptyRowsCountCalculation(DatasetSummaryBasedMetricCalculation[SingleValue
 
 class EmptyColumnsCount(SingleValueMetric):
     def _default_tests(self) -> List[BoundTest]:
-        return [CountBoundTest(test=eq(0), is_count=True)]
+        return [SingleValueBoundTest(metric_fingerprint=self.get_fingerprint(), test=eq(0))]
 
 
 class EmptyColumnsCountCalculation(DatasetSummaryBasedMetricCalculation[SingleValue, EmptyColumnsCount]):
@@ -205,9 +220,12 @@ class EmptyColumnsCountCalculation(DatasetSummaryBasedMetricCalculation[SingleVa
         context: "Context",
         legacy_result: DatasetSummaryMetricResult,
         render: List[BaseWidgetInfo],
-    ) -> SingleValue:
+    ):
         value = legacy_result.current.number_of_empty_columns
-        return SingleValue(value)
+        return (
+            SingleValue(value),
+            None if legacy_result.reference is None else SingleValue(legacy_result.reference.number_of_empty_columns),
+        )
 
     def display_name(self) -> str:
         return "Count of empty columns in dataset"
@@ -215,7 +233,7 @@ class EmptyColumnsCountCalculation(DatasetSummaryBasedMetricCalculation[SingleVa
 
 class ConstantColumnsCount(SingleValueMetric):
     def _default_tests(self) -> List[BoundTest]:
-        return [CountBoundTest(test=eq(0), is_count=True)]
+        return [SingleValueBoundTest(metric_fingerprint=self.get_fingerprint(), test=eq(0))]
 
 
 class ConstantColumnsCountCalculation(DatasetSummaryBasedMetricCalculation[SingleValue, ConstantColumnsCount]):
@@ -224,9 +242,14 @@ class ConstantColumnsCountCalculation(DatasetSummaryBasedMetricCalculation[Singl
         context: "Context",
         legacy_result: DatasetSummaryMetricResult,
         render: List[BaseWidgetInfo],
-    ) -> SingleValue:
+    ):
         value = legacy_result.current.number_of_constant_columns
-        return SingleValue(value)
+        return (
+            SingleValue(value),
+            None
+            if legacy_result.reference is None
+            else SingleValue(legacy_result.reference.number_of_constant_columns),
+        )
 
     def display_name(self) -> str:
         return "Count of constant columns in dataset"
@@ -234,7 +257,7 @@ class ConstantColumnsCountCalculation(DatasetSummaryBasedMetricCalculation[Singl
 
 class DatasetMissingValueCount(SingleValueMetric):
     def _default_tests(self) -> List[BoundTest]:
-        return [CountBoundTest(test=eq(0), is_count=True)]
+        return [SingleValueBoundTest(metric_fingerprint=self.get_fingerprint(), test=eq(0))]
 
 
 class DatasetMissingValueCountCalculation(DatasetSummaryBasedMetricCalculation[SingleValue, DatasetMissingValueCount]):
@@ -243,13 +266,12 @@ class DatasetMissingValueCountCalculation(DatasetSummaryBasedMetricCalculation[S
         context: "Context",
         legacy_result: DatasetSummaryMetricResult,
         render: List[BaseWidgetInfo],
-    ) -> SingleValue:
+    ):
         value = legacy_result.current.number_of_missing_values
-        return SingleValue(value)
+        return (
+            SingleValue(value),
+            None if legacy_result.reference is None else SingleValue(legacy_result.reference.number_of_missing_values),
+        )
 
     def display_name(self) -> str:
         return "Count of missing values in dataset"
-
-
-class RowsWithMissingValuesCount:
-    pass

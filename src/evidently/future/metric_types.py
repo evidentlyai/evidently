@@ -257,12 +257,11 @@ class MetricValueLocation:
         value = self._metric_value_by_dataset(context, dataset_type)
         return self.extract_value(value)
 
-    def _metric_value_by_dataset(self, context: "Context", dataset_type: DatasetType) -> SingleValue:
+    def _metric_value_by_dataset(self, context: "Context", dataset_type: DatasetType) -> MetricResult:
         if dataset_type == DatasetType.Current:
             return context.get_metric_result(self.metric.metric_id)
         if dataset_type == DatasetType.Reference:
             value = context.get_reference_metric_result(self.metric)
-            assert isinstance(value, SingleValue)
             return value
         raise ValueError(f"Unknown dataset type {dataset_type}")
 
@@ -386,7 +385,7 @@ def get_default_render_ref(title: str, result: MetricResult, ref_result: MetricR
                 size=WidgetSize.HALF,
                 counters=[
                     CounterData(label="Count", value=str(result.count)),
-                    CounterData(label="Share", value=str(result.share)),
+                    CounterData(label="Share", value=f"{result.share:.2f}"),
                 ],
             ),
             counter(
@@ -394,7 +393,7 @@ def get_default_render_ref(title: str, result: MetricResult, ref_result: MetricR
                 size=WidgetSize.HALF,
                 counters=[
                     CounterData(label="Count", value=str(ref_result.count)),
-                    CounterData(label="Share", value=str(ref_result.share)),
+                    CounterData(label="Share", value=f"{ref_result.share:.2f}"),
                 ],
             ),
         ]
@@ -405,16 +404,16 @@ def get_default_render_ref(title: str, result: MetricResult, ref_result: MetricR
                 title=f"{title}: Current",
                 size=WidgetSize.HALF,
                 counters=[
-                    CounterData(label="Mean", value=str(result.mean)),
-                    CounterData(label="Std", value=str(result.std)),
+                    CounterData(label="Mean", value=f"{result.mean:.2f}"),
+                    CounterData(label="Std", value=f"{result.std:.2f}"),
                 ],
             ),
             counter(
                 title=f"{title}: Reference",
                 size=WidgetSize.HALF,
                 counters=[
-                    CounterData(label="Mean", value=str(ref_result.mean)),
-                    CounterData(label="Std", value=str(ref_result.std)),
+                    CounterData(label="Mean", value=f"{ref_result.mean:.2f}"),
+                    CounterData(label="Std", value=f"{ref_result.std:.2f}"),
                 ],
             ),
         ]
@@ -456,7 +455,7 @@ def get_default_render(title: str, result: TResult) -> List[BaseWidgetInfo]:
             counter(
                 title=f"{title}: mean",
                 size=WidgetSize.HALF,
-                counters=[CounterData(label="", value=str(result.mean))],
+                counters=[CounterData(label="", value=f"{result.mean:.2f}")],
             ),
             counter(
                 title=f"{title}: std",

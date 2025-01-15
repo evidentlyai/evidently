@@ -211,14 +211,20 @@ class InRangeValueCount(CountMetric):
 
 
 class InRangeValueCountCalculation(CountCalculation[InRangeValueCount]):
-    def calculate(self, context: "Context", current_data: Dataset, reference_data: Optional[Dataset]) -> CountValue:
-        column = current_data.column(self.metric.column)
-        value = column.data.between(self.metric.left, self.metric.right).count()
-        total = column.data.count()
-        return CountValue(value, value / total)
+    def calculate(self, context: "Context", current_data: Dataset, reference_data: Optional[Dataset]):
+        return (
+            self._calculate_value(current_data),
+            None if reference_data is None else self._calculate_value(reference_data),
+        )
 
     def display_name(self) -> str:
         return f"Column '{self.metric.column}' values in range {self.metric.left} to {self.metric.right}"
+
+    def _calculate_value(self, dataset: Dataset):
+        column = dataset.column(self.metric.column)
+        value = column.data.between(self.metric.left, self.metric.right).count()
+        total = column.data.count()
+        return CountValue(value, value / total)
 
 
 class OutRangeValueCount(CountMetric):
@@ -228,14 +234,20 @@ class OutRangeValueCount(CountMetric):
 
 
 class OutRangeValueCountCalculation(CountCalculation[OutRangeValueCount]):
-    def calculate(self, context: "Context", current_data: Dataset, reference_data: Optional[Dataset]) -> CountValue:
-        column = current_data.column(self.metric.column)
-        value = column.data.between(self.metric.left, self.metric.right).count()
-        total = column.data.count()
-        return CountValue(total - value, value / total)
+    def calculate(self, context: "Context", current_data: Dataset, reference_data: Optional[Dataset]):
+        return (
+            self._calculate_value(current_data),
+            None if reference_data is None else self._calculate_value(reference_data),
+        )
 
     def display_name(self) -> str:
         return f"Column '{self.metric.column}' values out of range {self.metric.left} to {self.metric.right}"
+
+    def _calculate_value(self, dataset: Dataset):
+        column = dataset.column(self.metric.column)
+        value = column.data.between(self.metric.left, self.metric.right).count()
+        total = column.data.count()
+        return CountValue(total - value, value / total)
 
 
 class InListValueCount(CountMetric):
@@ -244,14 +256,20 @@ class InListValueCount(CountMetric):
 
 
 class InListValueCountCalculation(CountCalculation[InListValueCount]):
-    def calculate(self, context: "Context", current_data: Dataset, reference_data: Optional[Dataset]) -> CountValue:
-        column = current_data.column(self.metric.column)
-        value = column.data.value_counts()[self.metric.values].sum()  # type: ignore[index]
-        total = column.data.count()
-        return CountValue(value, value / total)
+    def calculate(self, context: "Context", current_data: Dataset, reference_data: Optional[Dataset]):
+        return (
+            self._calculate_value(current_data),
+            None if reference_data is None else self._calculate_value(reference_data),
+        )
 
     def display_name(self) -> str:
         return f"Column '{self.metric.column}' values in list [{', '.join(str(x) for x in self.metric.values)}]"
+
+    def _calculate_value(self, dataset: Dataset):
+        column = dataset.column(self.metric.column)
+        value = column.data.value_counts()[self.metric.values].sum()  # type: ignore[index]
+        total = column.data.count()
+        return CountValue(value, value / total)
 
 
 class OutListValueCount(CountMetric):
@@ -260,32 +278,44 @@ class OutListValueCount(CountMetric):
 
 
 class OutListValueCountCalculation(CountCalculation[OutListValueCount]):
-    def calculate(self, context: "Context", current_data: Dataset, reference_data: Optional[Dataset]) -> CountValue:
-        column = current_data.column(self.metric.column)
-        value = column.data.value_counts()[self.metric.values].sum()  # type: ignore[index]
-        total = column.data.count()
-        return CountValue(total - value, value / total)
+    def calculate(self, context: "Context", current_data: Dataset, reference_data: Optional[Dataset]):
+        return (
+            self._calculate_value(current_data),
+            None if reference_data is None else self._calculate_value(reference_data),
+        )
 
     def display_name(self) -> str:
         return f"Column '{self.metric.column}' values out of list [{', '.join(str(x) for x in self.metric.values)}]"
+
+    def _calculate_value(self, dataset: Dataset):
+        column = dataset.column(self.metric.column)
+        value = column.data.value_counts()[self.metric.values].sum()  # type: ignore[index]
+        total = column.data.count()
+        return CountValue(total - value, value / total)
 
 
 class MissingValueCount(CountMetric):
     column: str
 
     def _default_tests(self) -> List[BoundTest]:
-        return [CountBoundTest(test=eq(0), is_count=True)]
+        return [CountBoundTest(metric_fingerprint=self.get_fingerprint(), test=eq(0), is_count=True)]
 
 
 class MissingValueCountCalculation(CountCalculation[MissingValueCount]):
-    def calculate(self, context: "Context", current_data: Dataset, reference_data: Optional[Dataset]) -> CountValue:
-        column = current_data.column(self.metric.column)
-        value = column.data.count()
-        total = len(column.data)
-        return CountValue(total - value, value / total)
+    def calculate(self, context: "Context", current_data: Dataset, reference_data: Optional[Dataset]):
+        return (
+            self._calculate_value(current_data),
+            None if reference_data is None else self._calculate_value(reference_data),
+        )
 
     def display_name(self) -> str:
         return f"Column '{self.metric.column}' missing values"
+
+    def _calculate_value(self, dataset: Dataset):
+        column = dataset.column(self.metric.column)
+        value = column.data.count()
+        total = len(column.data)
+        return CountValue(total - value, value / total)
 
 
 class ValueDrift(SingleValueMetric):
@@ -378,9 +408,15 @@ class UniqueValueCount(ByLabelMetric):
 
 
 class UniqueValueCountCalculation(ByLabelCalculation[UniqueValueCount]):
-    def calculate(self, context: "Context", current_data: Dataset, reference_data: Optional[Dataset]) -> ByLabelValue:
-        value_counts = current_data.as_dataframe()[self.metric.column].value_counts()
-        return ByLabelValue(value_counts.to_dict())  # type: ignore[arg-type]
+    def calculate(self, context: "Context", current_data: Dataset, reference_data: Optional[Dataset]):
+        return (
+            self._calculate_value(current_data),
+            None if reference_data is None else self._calculate_value(reference_data),
+        )
 
     def display_name(self) -> str:
         return "Unique Value Count"
+
+    def _calculate_value(self, dataset: Dataset):
+        value_counts = dataset.as_dataframe()[self.metric.column].value_counts()
+        return ByLabelValue(value_counts.to_dict())  # type: ignore[arg-type]
