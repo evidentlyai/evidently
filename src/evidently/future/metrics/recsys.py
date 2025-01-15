@@ -66,7 +66,7 @@ class NDCG(TopKBase):
 
 
 class NDCGCalculation(LegacyTopKCalculation[NDCG]):
-    __legacy_metric_type__: ClassVar[Type[TopKMetric]] = NDCGKMetric
+    __legacy_metric_type__: ClassVar = NDCGKMetric
 
     def display_name(self) -> str:
         return "NDCG@k"
@@ -77,7 +77,7 @@ class MRR(TopKBase):
 
 
 class MRRCalculation(LegacyTopKCalculation[MRR]):
-    __legacy_metric_type__: ClassVar[Type[TopKMetric]] = MRRKMetric
+    __legacy_metric_type__: ClassVar = MRRKMetric
 
     def display_name(self) -> str:
         return "MRR@k"
@@ -88,7 +88,7 @@ class HitRate(TopKBase):
 
 
 class HitRateCalculation(LegacyTopKCalculation[HitRate]):
-    __legacy_metric_type__: ClassVar[Type[TopKMetric]] = HitRateKMetric
+    __legacy_metric_type__: ClassVar = HitRateKMetric
 
     def display_name(self) -> str:
         return "HitRate@k"
@@ -99,7 +99,7 @@ class MAP(TopKBase):
 
 
 class MAPCalculation(LegacyTopKCalculation[MAP]):
-    __legacy_metric_type__: ClassVar[Type[TopKMetric]] = MAPKMetric
+    __legacy_metric_type__: ClassVar = MAPKMetric
 
     def display_name(self) -> str:
         return "MAP@k"
@@ -110,7 +110,7 @@ class RecallTopK(TopKBase):
 
 
 class RecallTopKCalculation(LegacyTopKCalculation[RecallTopK]):
-    __legacy_metric_type__: ClassVar[Type[TopKMetric]] = RecallTopKMetric
+    __legacy_metric_type__: ClassVar = RecallTopKMetric
 
     def display_name(self) -> str:
         return "Recall@k"
@@ -121,7 +121,7 @@ class PrecisionTopK(TopKBase):
 
 
 class PrecisionTopKCalculation(LegacyTopKCalculation[PrecisionTopK]):
-    __legacy_metric_type__: ClassVar[Type[TopKMetric]] = PrecisionTopKMetric
+    __legacy_metric_type__: ClassVar = PrecisionTopKMetric
 
     def display_name(self) -> str:
         return "Precision@k"
@@ -149,7 +149,7 @@ class ScoreDistribution(SingleValueMetric):
 
 
 class ScoreDistributionCalculation(
-    LegacyMetricCalculation[ScoreDistribution, SingleValue, ScoreDistributionResult, ScoreDistributionLegacy]
+    LegacyMetricCalculation[SingleValue, ScoreDistribution, ScoreDistributionResult, ScoreDistributionLegacy]
 ):
     def legacy_metric(self) -> ScoreDistributionLegacy:
         return ScoreDistributionLegacy(k=self.metric.k)
