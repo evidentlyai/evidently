@@ -1,5 +1,5 @@
 import { expectJsonRequest } from '~/api/utils'
-import { GenericErrorBoundary, handleFetchersActionErrors } from '~/router-utils/components/Error'
+import { GenericErrorBoundary, handleFetchersActionErrors } from '~/router-utils/components/Error-a'
 import type { ActionArgs, RouteExtended, loadDataArgs } from '~/router-utils/types'
 import type {
   ActionFunction,
