@@ -207,7 +207,7 @@ class CategoryCountCalculation(CountCalculation[CategoryCount]):
     def _calculate_value(self, dataset: Dataset):
         column = dataset.column(self.metric.column)
         try:
-            value = column.data.value_counts()[self.metric.category]
+            value = column.data.value_counts().loc[self.metric.category]
         except KeyError:
             value = 0
         total = column.data.count()
@@ -277,7 +277,7 @@ class InListValueCountCalculation(CountCalculation[InListValueCount]):
 
     def _calculate_value(self, dataset: Dataset):
         column = dataset.column(self.metric.column)
-        value = column.data.value_counts()[self.metric.values].sum()  # type: ignore[index]
+        value = column.data.value_counts().loc[self.metric.values].sum()  # type: ignore[index]
         total = column.data.count()
         return CountValue(value, value / total)
 
@@ -299,7 +299,7 @@ class OutListValueCountCalculation(CountCalculation[OutListValueCount]):
 
     def _calculate_value(self, dataset: Dataset):
         column = dataset.column(self.metric.column)
-        value = column.data.value_counts()[self.metric.values].sum()  # type: ignore[index]
+        value = column.data.value_counts().loc[self.metric.values].sum()  # type: ignore[index]
         total = column.data.count()
         return CountValue(total - value, (total - value) / total)
 
