@@ -257,7 +257,7 @@ class OutRangeValueCountCalculation(CountCalculation[OutRangeValueCount]):
         column = dataset.column(self.metric.column)
         value = column.data.between(self.metric.left, self.metric.right).count()
         total = column.data.count()
-        return CountValue(total - value, value / total)
+        return CountValue(total - value, (total - value) / total)
 
 
 class InListValueCount(CountMetric):
@@ -301,7 +301,7 @@ class OutListValueCountCalculation(CountCalculation[OutListValueCount]):
         column = dataset.column(self.metric.column)
         value = column.data.value_counts()[self.metric.values].sum()  # type: ignore[index]
         total = column.data.count()
-        return CountValue(total - value, value / total)
+        return CountValue(total - value, (total - value) / total)
 
 
 class MissingValueCount(CountMetric):

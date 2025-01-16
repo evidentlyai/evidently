@@ -123,7 +123,7 @@ class EqualMetricTestBase(MetricTest, abc.ABC):
             title_expected = "Reference"
             if isinstance(expected, ApproxValue):
                 title_expected += f" ± {expected.tolerance}"
-        return expected, title_expected, expected == value
+        return expected, title_expected, expected == value.value
 
 
 class EqualMetricTest(EqualMetricTestBase):
