@@ -40,6 +40,14 @@ from .dataset_statistics import DuplicatedRowCount
 from .dataset_statistics import EmptyColumnsCount
 from .dataset_statistics import EmptyRowsCount
 from .dataset_statistics import RowCount
+from .recsys import MAP
+from .recsys import MRR
+from .recsys import NDCG
+from .recsys import FBetaTopK
+from .recsys import HitRate
+from .recsys import PrecisionTopK
+from .recsys import RecallTopK
+from .recsys import ScoreDistribution
 from .regression import MAE
 from .regression import MAPE
 from .regression import RMSE
@@ -106,4 +114,12 @@ __all__ = [
     "DummyMAE",
     "DummyMAPE",
     "DummyRMSE",
+    "ScoreDistribution",
+    "NDCG",
+    "FBetaTopK",
+    "HitRate",
+    "MAP",
+    "MRR",
+    "PrecisionTopK",
+    "RecallTopK",
 ]
