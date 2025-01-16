@@ -377,7 +377,7 @@ def get_default_render_ref(title: str, result: MetricResult, ref_result: MetricR
             counter(
                 title=title + " (reference)",
                 size=WidgetSize.HALF,
-                counters=[CounterData(label="", value=f"{result.value:0.3f}")],
+                counters=[CounterData(label="", value=f"{ref_result.value:0.3f}")],
             ),
         ]
     if isinstance(result, ByLabelValue):
@@ -554,14 +554,6 @@ class Reference(BaseModel):
 
     def __hash__(self) -> int:
         return hash(self.relative) + hash(self.absolute)
-
-    def __str__(self):
-        boundaries = ""
-        if self.absolute is not None:
-            boundaries = f"absolute={self.absolute:.3f}"
-        if self.relative is not None:
-            boundaries = f"relative={self.relative:.3f}"
-        return f"Reference({boundaries})"
 
 
 class MetricTest(AutoAliasMixin, EvidentlyBaseModel):
@@ -767,15 +759,14 @@ class CountBoundTest(BoundTest[CountValue]):
 
 
 class CountMetric(Metric["CountCalculation"]):
-    count_tests: Optional[List[MetricTest]] = None
+    tests: Optional[List[MetricTest]] = None
     share_tests: Optional[List[MetricTest]] = None
 
     def get_bound_tests(self, context: "Context") -> Sequence[BoundTest]:
-        if self.count_tests is None and self.share_tests is None and context.configuration.include_tests:
+        if self.tests is None and self.share_tests is None and context.configuration.include_tests:
             return self._get_all_default_tests(context)
         return [
-            CountBoundTest(is_count=True, test=t, metric_fingerprint=self.get_fingerprint())
-            for t in (self.count_tests or [])
+            CountBoundTest(is_count=True, test=t, metric_fingerprint=self.get_fingerprint()) for t in (self.tests or [])
         ] + [
             CountBoundTest(is_count=False, test=t, metric_fingerprint=self.get_fingerprint())
             for t in (self.share_tests or [])
