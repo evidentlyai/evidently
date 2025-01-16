@@ -66,6 +66,7 @@ Classification = Union[BinaryClassification, MulticlassClassification]
 
 @dataclasses.dataclass
 class Regression:
+    name: str = "default"
     target: str = "target"
     prediction: str = "prediction"
 
@@ -152,6 +153,14 @@ class DataDefinition:
             yield from self.get_categorical_columns()
         if ColumnType.Text in types:
             yield from self.get_text_columns()
+
+    def get_regression(self, regression_id: str) -> Optional[Regression]:
+        item_list = list(filter(lambda x: x.name == regression_id, self.regression or []))
+        if len(item_list) == 0:
+            return None
+        if len(item_list) > 1:
+            raise ValueError("More than one regression with id {}".format(regression_id))
+        return item_list[0]
 
 
 class DatasetColumn:
