@@ -174,3 +174,14 @@ export type GetLinkParams<K extends string, Matches> = keyof GetParams<K> extend
       query?: ExtractQuery<K, Matches>
       paramsToReplace: GetParams<K>
     }
+
+export type GetLinkParamsByPath<K extends string> = keyof GetParams<K> extends never
+  ? {
+      to: K
+      // biome-ignore lint/complexity/noBannedTypes: fine
+      paramsToReplace?: {}
+    }
+  : {
+      to: K
+      paramsToReplace: GetParams<K>
+    }
