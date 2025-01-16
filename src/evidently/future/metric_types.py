@@ -682,7 +682,7 @@ class SingleValueBoundTest(BoundTest[SingleValue]):
         calculation: MetricCalculationBase[SingleValue],
         metric_result: SingleValue,
     ) -> MetricTestResult:
-        return self.test.to_test()(context, calculation, metric_result)
+        return self.test.run(context, calculation, metric_result)
 
 
 class SingleValueMetric(Metric[TSingleValueMetricCalculation]):
