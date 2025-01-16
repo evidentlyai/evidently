@@ -325,7 +325,7 @@ class MissingValueCountCalculation(CountCalculation[MissingValueCount]):
         column = dataset.column(self.metric.column)
         value = column.data.count()
         total = len(column.data)
-        return CountValue(total - value, value / total)
+        return CountValue(total - value, (total - value) / total)
 
 
 class ValueDrift(SingleValueMetric):
