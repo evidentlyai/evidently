@@ -668,9 +668,12 @@ class MetricCalculation(MetricCalculationBase[TResult], Generic[TResult, TMetric
         if not inspect.isabstract(cls) and ABC not in cls.__bases__:
             base = typing_inspect.get_generic_bases(cls)[0]  # fixme only works for simple cases
             # print(base, typing_inspect.get_args(base))
-            config_type = typing_inspect.get_args(base)[-1]
-            if not isinstance(config_type, type) or not issubclass(config_type, Metric):
-                raise ValueError(f"Value of generic parameter TMetric for {config_type} should be Metric subclass")
+            try:
+                config_type = next(
+                    b for b in typing_inspect.get_args(base) if isinstance(b, type) and issubclass(b, Metric)
+                )
+            except StopIteration:
+                raise ValueError(f"Cannot find generic parameter of type Metric for {cls}")
             config_type.__calculation_type__ = cls
         super().__init_subclass__()
 

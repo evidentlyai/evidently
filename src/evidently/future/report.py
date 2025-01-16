@@ -127,9 +127,12 @@ class Context:
 
     def get_legacy_metric(self, metric: LegacyMetric[T]) -> Tuple[T, List[BaseWidgetInfo]]:
         classification = self.data_definition.get_classification("default")
+        ranking = self.data_definition.get_ranking("default")
         reference = self._input_data[1].as_dataframe() if self._input_data[1] is not None else None
         current = self._input_data[0].as_dataframe()
         prediction: Optional[Union[str, List[str]]]
+        user_id: Optional[str] = None
+        target: Optional[str] = None
         if classification is not None:
             if isinstance(classification.prediction_probas, list):
                 prediction = classification.prediction_probas
@@ -137,13 +140,19 @@ class Context:
                 prediction = classification.prediction_labels
             else:
                 prediction = classification.prediction_probas
+            target = classification.target
         else:
             prediction = None
+        if ranking is not None:
+            user_id = ranking.user_id
+            prediction = ranking.prediction
+            target = ranking.target
         mapping = ColumnMapping(
-            target=classification.target if classification is not None else None,
+            target=target,
             prediction=prediction,
             pos_label=classification.pos_label if isinstance(classification, BinaryClassification) else None,
             target_names=classification.labels if classification is not None else None,
+            user_id=user_id,
         )
         definition = create_data_definition(
             reference,
