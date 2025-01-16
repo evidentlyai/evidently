@@ -97,3 +97,6 @@ register_type_alias(Metric, "evidently.future.metrics.recsys.PrecisionTopK", "ev
 register_type_alias(Metric, "evidently.future.metrics.recsys.RecallTopK", "evidently:metric_v2:RecallTopK")
 register_type_alias(Metric, "evidently.future.metrics.recsys.ScoreDistribution", "evidently:metric_v2:ScoreDistribution")
 register_type_alias(Metric, "evidently.future.metrics.recsys.TopKBase", "evidently:metric_v2:TopKBase")
+
+register_type_alias(MetricTest, "evidently.future.tests.numerical_tests.NotEqualMetricTest", "evidently:test_v2:NotEqualMetricTest")
+register_type_alias(MetricTest, "evidently.future.tests.numerical_tests.EqualMetricTestBase", "evidently:test_v2:EqualMetricTestBase")

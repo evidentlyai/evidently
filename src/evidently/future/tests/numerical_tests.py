@@ -19,7 +19,7 @@ ThresholdType = Union[float, int, ApproxValue, Reference]
 
 
 class ComparisonTest(MetricTest):
-    threshold: Union[float, int, ApproxValue, Reference]
+    threshold: ThresholdType
     __short_name__: ClassVar[str]
     __full_name__: ClassVar[str]
     __reference_relation__: ClassVar[str]
@@ -107,32 +107,58 @@ def lt(threshold: ThresholdType, is_critical: bool = True) -> MetricTest:
     return GreaterOrEqualMetricTest(threshold=threshold, is_critical=is_critical)
 
 
-class EqualMetricTest(MetricTest):
+class EqualMetricTestBase(MetricTest, abc.ABC):
+    expected: ThresholdType
+
+    def is_equal(self, context: Context, metric: MetricCalculationBase, value: SingleValue):
+        expected: Union[float, int, ApproxValue]
+        if isinstance(self.expected, Reference):
+            result = context.get_reference_metric_result(metric.to_metric())
+            assert isinstance(result, SingleValue)
+            expected = ApproxValue(result.value, self.expected.relative, self.expected.absolute)
+        else:
+            expected = self.expected
+        title_expected = f"{expected:0.2f}"
+        if isinstance(self.expected, Reference):
+            title_expected = "Reference"
+            if isinstance(expected, ApproxValue):
+                title_expected += f" ± {expected.tolerance}"
+        return expected, title_expected, expected == value
+
+
+class EqualMetricTest(EqualMetricTestBase):
     expected: ThresholdType
 
     def to_test(self) -> SingleValueTest:
         def func(context: Context, metric: MetricCalculationBase, value: SingleValue):
-            expected: Union[float, int, ApproxValue]
-            if isinstance(self.expected, Reference):
-                result = context.get_reference_metric_result(metric.to_metric())
-                assert isinstance(result, SingleValue)
-                expected = ApproxValue(result.value, self.expected.relative, self.expected.absolute)
-            else:
-                expected = self.expected
-            title_expected = f"{expected:0.2f}"
-            if isinstance(self.expected, Reference):
-                title_expected = "Reference"
-                if isinstance(expected, ApproxValue):
-                    title_expected += f" ± {expected.tolerance}"
+            expected, title_expected, is_equal = self.is_equal(context, metric, value)
             return MetricTestResult(
                 "eq",
                 f"{metric.display_name()}: Equal {title_expected}",
-                f"Actual value {value.value} {f', but expected {expected}' if not expected == value.value else ''}",
-                TestStatus.SUCCESS if expected == value.value else TestStatus.FAIL,
+                f"Actual value {value.value} {f', but expected {expected}' if not is_equal else ''}",
+                TestStatus.SUCCESS if is_equal else TestStatus.FAIL,
             )
 
         return func
 
 
-def eq(expected: Union[int, float, str, ApproxValue, Reference], is_critical: bool = True) -> MetricTest:
+def eq(expected: ThresholdType, is_critical: bool = True) -> MetricTest:
     return EqualMetricTest(expected=expected, is_critical=is_critical)
+
+
+class NotEqualMetricTest(EqualMetricTestBase):
+    def to_test(self) -> SingleValueTest:
+        def func(context: Context, metric: MetricCalculationBase, value: SingleValue):
+            expected, title_expected, is_equal = self.is_equal(context, metric, value)
+            return MetricTestResult(
+                "not_eq",
+                f"{metric.display_name()}: Not equal {title_expected}",
+                f"Actual value {value.value} {f', but expected not {expected}' if is_equal else ''}",
+                TestStatus.SUCCESS if not is_equal else TestStatus.FAIL,
+            )
+
+        return func
+
+
+def not_eq(expected: ThresholdType, is_critical: bool = True) -> MetricTest:
+    return NotEqualMetricTest(expected=expected, is_critical=is_critical)
