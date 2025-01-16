@@ -6,12 +6,15 @@ from typing import Optional
 from typing import Type
 from typing import TypeVar
 
+from evidently.future.metric_types import BoundTest
 from evidently.future.metric_types import SingleValue
 from evidently.future.metric_types import SingleValueMetric
 from evidently.future.metric_types import TMetricResult
 from evidently.future.metrics._legacy import LegacyMetricCalculation
 from evidently.future.report import Context
 from evidently.future.report import Report
+from evidently.future.tests import Reference
+from evidently.future.tests import eq
 from evidently.metrics import FBetaTopKMetric
 from evidently.metrics import HitRateKMetric
 from evidently.metrics import MAPKMetric
@@ -30,6 +33,11 @@ class TopKBase(SingleValueMetric):
     k: int
     min_rel_score: Optional[int] = None
     no_feedback_users: bool = False
+
+    def _default_tests_with_reference(self) -> List[BoundTest]:
+        return [
+            eq(Reference(relative=0.1)).bind_single(self.get_fingerprint()),
+        ]
 
 
 TTopKBase = TypeVar("TTopKBase", bound=TopKBase)
@@ -146,6 +154,11 @@ class FBetaTopKCalculation(LegacyTopKCalculation[FBetaTopK]):
 
 class ScoreDistribution(SingleValueMetric):
     k: int
+
+    def _default_tests_with_reference(self) -> List[BoundTest]:
+        return [
+            eq(Reference(relative=0.1)).bind_single(self.get_fingerprint()),
+        ]
 
 
 class ScoreDistributionCalculation(

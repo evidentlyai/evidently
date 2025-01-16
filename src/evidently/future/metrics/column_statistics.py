@@ -16,7 +16,6 @@ from evidently.future.metric_types import BoundTest
 from evidently.future.metric_types import ByLabelCalculation
 from evidently.future.metric_types import ByLabelMetric
 from evidently.future.metric_types import ByLabelValue
-from evidently.future.metric_types import CountBoundTest
 from evidently.future.metric_types import CountCalculation
 from evidently.future.metric_types import CountMetric
 from evidently.future.metric_types import CountValue
@@ -26,6 +25,7 @@ from evidently.future.metric_types import SingleValueMetric
 from evidently.future.metric_types import TMetric
 from evidently.future.metrics._legacy import LegacyMetricCalculation
 from evidently.future.report import Context
+from evidently.future.tests import Reference
 from evidently.future.tests import eq
 from evidently.metric_results import DatasetColumns
 from evidently.metric_results import DatasetUtilityColumns
@@ -83,6 +83,9 @@ def distribution(
 
 class StatisticsMetric(SingleValueMetric):
     column: str
+
+    def _default_tests_with_reference(self) -> List[BoundTest]:
+        return [eq(Reference(relative=0.1)).bind_single(self.get_fingerprint())]
 
 
 TStatisticsMetric = TypeVar("TStatisticsMetric", bound=StatisticsMetric)
@@ -193,6 +196,12 @@ class CategoryCount(CountMetric):
     column: str
     category: Label
 
+    def _default_tests_with_reference(self) -> List[BoundTest]:
+        return [
+            eq(Reference(relative=0.1)).bind_count(self.get_fingerprint(), True),
+            eq(Reference(relative=0.1)).bind_count(self.get_fingerprint(), False),
+        ]
+
 
 class CategoryCountCalculation(CountCalculation[CategoryCount]):
     def calculate(self, context: "Context", current_data: Dataset, reference_data: Optional[Dataset]):
@@ -219,6 +228,12 @@ class InRangeValueCount(CountMetric):
     left: Union[int, float]
     right: Union[int, float]
 
+    def _default_tests_with_reference(self) -> List[BoundTest]:
+        return [
+            eq(Reference(relative=0.1)).bind_count(self.get_fingerprint(), True),
+            eq(Reference(relative=0.1)).bind_count(self.get_fingerprint(), False),
+        ]
+
 
 class InRangeValueCountCalculation(CountCalculation[InRangeValueCount]):
     def calculate(self, context: "Context", current_data: Dataset, reference_data: Optional[Dataset]):
@@ -242,6 +257,12 @@ class OutRangeValueCount(CountMetric):
     left: Union[int, float]
     right: Union[int, float]
 
+    def _default_tests_with_reference(self) -> List[BoundTest]:
+        return [
+            eq(Reference(relative=0.1)).bind_count(self.get_fingerprint(), True),
+            eq(Reference(relative=0.1)).bind_count(self.get_fingerprint(), False),
+        ]
+
 
 class OutRangeValueCountCalculation(CountCalculation[OutRangeValueCount]):
     def calculate(self, context: "Context", current_data: Dataset, reference_data: Optional[Dataset]):
@@ -263,6 +284,12 @@ class OutRangeValueCountCalculation(CountCalculation[OutRangeValueCount]):
 class InListValueCount(CountMetric):
     column: str
     values: List[Label]
+
+    def _default_tests_with_reference(self) -> List[BoundTest]:
+        return [
+            eq(Reference(relative=0.1)).bind_count(self.get_fingerprint(), True),
+            eq(Reference(relative=0.1)).bind_count(self.get_fingerprint(), False),
+        ]
 
 
 class InListValueCountCalculation(CountCalculation[InListValueCount]):
@@ -286,6 +313,12 @@ class OutListValueCount(CountMetric):
     column: str
     values: List[Label]
 
+    def _default_tests_with_reference(self) -> List[BoundTest]:
+        return [
+            eq(Reference(relative=0.1)).bind_count(self.get_fingerprint(), True),
+            eq(Reference(relative=0.1)).bind_count(self.get_fingerprint(), False),
+        ]
+
 
 class OutListValueCountCalculation(CountCalculation[OutListValueCount]):
     def calculate(self, context: "Context", current_data: Dataset, reference_data: Optional[Dataset]):
@@ -308,7 +341,13 @@ class MissingValueCount(CountMetric):
     column: str
 
     def _default_tests(self) -> List[BoundTest]:
-        return [CountBoundTest(metric_fingerprint=self.get_fingerprint(), test=eq(0), is_count=True)]
+        return [eq(0).bind_count(self.get_fingerprint(), is_count=True)]
+
+    def _default_tests_with_reference(self) -> List[BoundTest]:
+        return [
+            eq(Reference(relative=0.1)).bind_count(self.get_fingerprint(), True),
+            eq(Reference(relative=0.1)).bind_count(self.get_fingerprint(), False),
+        ]
 
 
 class MissingValueCountCalculation(CountCalculation[MissingValueCount]):
@@ -496,6 +535,11 @@ class DriftedColumnsCount(CountMetric):
     num_stattest_threshold: Optional[float] = None
     text_stattest_threshold: Optional[float] = None
     per_column_stattest_threshold: Optional[Dict[str, float]] = None
+
+    def _default_tests_with_reference(self) -> List[BoundTest]:
+        return [
+            eq(0).bind_count(self.get_fingerprint(), True),
+        ]
 
 
 class LegacyDriftedColumnsMetric(
