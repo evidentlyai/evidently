@@ -87,3 +87,13 @@ register_type_alias(Metric, "evidently.future.metrics.column_statistics.UniqueVa
 register_type_alias(Metric, "evidently.future.metrics.regression.DummyMAE", "evidently:metric_v2:DummyMAE")
 register_type_alias(Metric, "evidently.future.metrics.regression.DummyMAPE", "evidently:metric_v2:DummyMAPE")
 register_type_alias(Metric, "evidently.future.metrics.regression.DummyRMSE", "evidently:metric_v2:DummyRMSE")
+
+register_type_alias(Metric, "evidently.future.metrics.recsys.FBetaTopK", "evidently:metric_v2:FBetaTopK")
+register_type_alias(Metric, "evidently.future.metrics.recsys.HitRate", "evidently:metric_v2:HitRate")
+register_type_alias(Metric, "evidently.future.metrics.recsys.MAP", "evidently:metric_v2:MAP")
+register_type_alias(Metric, "evidently.future.metrics.recsys.MRR", "evidently:metric_v2:MRR")
+register_type_alias(Metric, "evidently.future.metrics.recsys.NDCG", "evidently:metric_v2:NDCG")
+register_type_alias(Metric, "evidently.future.metrics.recsys.PrecisionTopK", "evidently:metric_v2:PrecisionTopK")
+register_type_alias(Metric, "evidently.future.metrics.recsys.RecallTopK", "evidently:metric_v2:RecallTopK")
+register_type_alias(Metric, "evidently.future.metrics.recsys.ScoreDistribution", "evidently:metric_v2:ScoreDistribution")
+register_type_alias(Metric, "evidently.future.metrics.recsys.TopKBase", "evidently:metric_v2:TopKBase")
