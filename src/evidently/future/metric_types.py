@@ -377,7 +377,7 @@ def get_default_render_ref(title: str, result: MetricResult, ref_result: MetricR
             counter(
                 title=title + " (reference)",
                 size=WidgetSize.HALF,
-                counters=[CounterData(label="", value=f"{result.value:0.3f}")],
+                counters=[CounterData(label="", value=f"{ref_result.value:0.3f}")],
             ),
         ]
     if isinstance(result, ByLabelValue):
