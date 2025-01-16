@@ -28,7 +28,6 @@ from evidently.metric_results import Label
 from evidently.model.dashboard import DashboardInfo
 from evidently.model.widget import AdditionalGraphInfo
 from evidently.model.widget import BaseWidgetInfo
-from evidently.pydantic_utils import BaseModel
 from evidently.pydantic_utils import EvidentlyBaseModel
 from evidently.pydantic_utils import Fingerprint
 from evidently.renderers.base_renderer import DetailsInfo
@@ -546,14 +545,6 @@ class AutoAliasMixin:
         if config is not None and config.__dict__.get("type_alias") is not None:
             return config.type_alias
         return f"evidently:{cls.__alias_type__}:{cls.__name__}"
-
-
-class Reference(BaseModel):
-    relative: Optional[float] = None
-    absolute: Optional[float] = None
-
-    def __hash__(self) -> int:
-        return hash(self.relative) + hash(self.absolute)
 
 
 class MetricTest(AutoAliasMixin, EvidentlyBaseModel):

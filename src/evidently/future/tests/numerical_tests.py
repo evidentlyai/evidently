@@ -7,12 +7,12 @@ from evidently.future.metric_types import MetricCalculationBase
 from evidently.future.metric_types import MetricTest
 from evidently.future.metric_types import MetricTestResult
 from evidently.future.metric_types import MetricValueLocation
-from evidently.future.metric_types import Reference
 from evidently.future.metric_types import SingleValue
 from evidently.future.metric_types import SingleValueTest
 from evidently.future.metric_types import TestStatus
 from evidently.future.metric_types import Value
 from evidently.future.report import Context
+from evidently.future.tests.reference import Reference
 from evidently.utils.types import ApproxValue
 
 ThresholdType = Union[float, int, ApproxValue, Reference]
