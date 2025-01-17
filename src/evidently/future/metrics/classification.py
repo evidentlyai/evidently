@@ -6,9 +6,11 @@ from typing import Tuple
 from typing import TypeVar
 from typing import Union
 
+from evidently.future.metric_types import ByLabelCalculation
 from evidently.future.metric_types import ByLabelMetric
 from evidently.future.metric_types import ByLabelValue
 from evidently.future.metric_types import SingleValue
+from evidently.future.metric_types import SingleValueCalculation
 from evidently.future.metric_types import SingleValueMetric
 from evidently.future.metrics._legacy import LegacyMetricCalculation
 from evidently.future.report import Context
@@ -37,6 +39,7 @@ TSingleValueMetric = TypeVar("TSingleValueMetric", bound=ClassificationQuality)
 
 
 class LegacyClassificationQualityByClass(
+    ByLabelCalculation[TByLabelMetric],
     LegacyMetricCalculation[
         ByLabelValue,
         TByLabelMetric,
@@ -171,6 +174,7 @@ class RocAucByLabelCalculation(LegacyClassificationQualityByClass[RocAucByLabel]
 
 
 class LegacyClassificationQuality(
+    SingleValueCalculation[TSingleValueMetric],
     LegacyMetricCalculation[
         SingleValue,
         TSingleValueMetric,
