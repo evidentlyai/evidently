@@ -31,6 +31,7 @@ from evidently.future.metric_types import TMetric
 from evidently.future.metrics._legacy import LegacyMetricCalculation
 from evidently.future.report import Context
 from evidently.future.tests import eq
+from evidently.future.tests import lt
 from evidently.metric_results import DatasetColumns
 from evidently.metric_results import DatasetUtilityColumns
 from evidently.metric_results import HistogramData
@@ -527,6 +528,9 @@ class DriftedColumnsCount(CountMetric):
     text_stattest_threshold: Optional[float] = None
     per_column_stattest_threshold: Optional[Dict[str, float]] = None
 
+    def _default_tests(self) -> List[BoundTest]:
+        return [CountBoundTest(metric_fingerprint=self.get_fingerprint(), test=lt(0.5), is_count=False)]
+
 
 class LegacyDriftedColumnsMetric(
     LegacyMetricCalculation[CountValue, TMetric, DatasetDriftMetricResults, DatasetDriftMetric],
@@ -536,7 +540,7 @@ class LegacyDriftedColumnsMetric(
     pass
 
 
-class DriftedColumnCalculation(LegacyDriftedColumnsMetric[DriftedColumnsCount]):
+class DriftedColumnCalculation(CountCalculation[DriftedColumnsCount], LegacyDriftedColumnsMetric[DriftedColumnsCount]):
     def legacy_metric(self) -> DatasetDriftMetric:
         return DatasetDriftMetric(
             columns=self.metric.columns,
@@ -561,6 +565,9 @@ class DriftedColumnCalculation(LegacyDriftedColumnsMetric[DriftedColumnsCount]):
 
     def display_name(self) -> str:
         return "Count of Drifted Columns"
+
+    def share_display_name(self) -> str:
+        return "Share of Drifted Columns"
 
 
 class UniqueValueCount(ByLabelMetric):
