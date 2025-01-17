@@ -98,11 +98,13 @@ class Context:
         self._current_graph_level = prev_level[metric.id]
         if metric.id not in self._metrics:
             current_result, reference_result = metric.call(self)
+            current_result.set_display_name(metric.display_name())
             current_result._metric = metric
             current_result._metric_value_location = SingleValueLocation(metric.to_metric())
             self._metrics[metric.id] = current_result
             if reference_result is not None:
                 reference_result._metric = metric
+                reference_result.set_display_name(metric.display_name())
                 reference_result._metric_value_location = SingleValueLocation(metric.to_metric())
                 self._reference_metrics[metric.id] = reference_result
             test_results = {

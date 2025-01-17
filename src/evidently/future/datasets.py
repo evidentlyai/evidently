@@ -220,14 +220,14 @@ def _determine_desccriptor_column_name(alias: str, columns: List[str]):
 
 
 @dataclasses.dataclass
-class CountValue:
+class StatCountValue:
     count: int
     share: float
 
 
 @dataclasses.dataclass
 class GeneralColumnStats:
-    missing_values: CountValue
+    missing_values: StatCountValue
 
 
 @dataclasses.dataclass
@@ -237,12 +237,12 @@ class NumericalColumnStats:
     mean: Numeric
     std: Numeric
     quantiles: Dict[str, Numeric]
-    infinite: CountValue
+    infinite: StatCountValue
 
 
 @dataclasses.dataclass
 class LabelStats:
-    count: CountValue
+    count: StatCountValue
 
 
 @dataclasses.dataclass
@@ -385,7 +385,7 @@ class PandasDataset(Dataset):
             categorical_stats = _collect_categorical_stats(data)
 
         return ColumnStats(
-            general_stats=GeneralColumnStats(missing_values=CountValue(0, 0)),
+            general_stats=GeneralColumnStats(missing_values=StatCountValue(0, 0)),
             numerical_stats=numerical_stats,
             categorical_stats=categorical_stats,
         )
@@ -402,7 +402,7 @@ def _collect_numerical_stats(data: pd.Series):
             "p25": data.quantile(0.25),
             "p75": data.quantile(0.75),
         },
-        infinite=CountValue(infinite_count, infinite_count / data.count()),
+        infinite=StatCountValue(infinite_count, infinite_count / data.count()),
     )
 
 
@@ -411,7 +411,7 @@ def _collect_categorical_stats(data: pd.Series):
     return CategoricalColumnStats(
         unique_count=data.nunique(),
         label_stats={
-            label: LabelStats(count=CountValue(count, count / total_count))
+            label: LabelStats(count=StatCountValue(count, count / total_count))
             for label, count in data.value_counts().items()
         },
     )
