@@ -3,9 +3,11 @@ from typing import Generic
 from typing import List
 
 from evidently.base_metric import InputData
+from evidently.future.metric_types import MeanStdCalculation
 from evidently.future.metric_types import MeanStdMetric
 from evidently.future.metric_types import MeanStdValue
 from evidently.future.metric_types import SingleValue
+from evidently.future.metric_types import SingleValueCalculation
 from evidently.future.metric_types import SingleValueMetric
 from evidently.future.metric_types import TMeanStdMetric
 from evidently.future.metric_types import TSingleValueMetric
@@ -20,6 +22,7 @@ from evidently.utils.data_preprocessing import create_data_definition
 
 
 class LegacyRegressionMeanStdMetric(
+    MeanStdCalculation[TMeanStdMetric],
     LegacyMetricCalculation[MeanStdValue, TMeanStdMetric, RegressionQualityMetricResults, RegressionQualityMetric],
     Generic[TMeanStdMetric],
     abc.ABC,
@@ -45,6 +48,7 @@ class LegacyRegressionMeanStdMetric(
 
 
 class LegacyRegressionSingleValueMetric(
+    SingleValueCalculation[TSingleValueMetric],
     LegacyMetricCalculation[SingleValue, TSingleValueMetric, RegressionQualityMetricResults, RegressionQualityMetric],
     Generic[TSingleValueMetric],
     abc.ABC,
@@ -178,6 +182,7 @@ class AbsMaxErrorCalculation(LegacyRegressionSingleValueMetric[AbsMaxError]):
 
 
 class LegacyRegressionDummyMeanStdMetric(
+    MeanStdCalculation[TMeanStdMetric],
     LegacyMetricCalculation[MeanStdValue, TMeanStdMetric, RegressionDummyMetricResults, RegressionDummyMetric],
     Generic[TMeanStdMetric],
     abc.ABC,
@@ -203,6 +208,7 @@ class LegacyRegressionDummyMeanStdMetric(
 
 
 class LegacyRegressionDummyValueMetric(
+    SingleValueCalculation[TSingleValueMetric],
     LegacyMetricCalculation[SingleValue, TSingleValueMetric, RegressionDummyMetricResults, RegressionDummyMetric],
     Generic[TSingleValueMetric],
     abc.ABC,

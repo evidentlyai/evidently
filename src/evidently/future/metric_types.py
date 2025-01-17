@@ -207,8 +207,12 @@ class ByLabelValue(MetricResult):
 
     def get_label_result(self, label: Label) -> SingleValue:
         value = SingleValue(self.values[label])
-        value._metric = self.metric
-        value._metric_value_location = ByLabelValueLocation(self.metric.to_metric(), label)
+        metric = self.metric
+        value._metric = metric
+        if not isinstance(metric, ByLabelCalculation):
+            raise ValueError(f"Metric {type(metric)} isn't ByLabelCalculation")
+        value.set_display_name(metric.label_display_name(label))
+        value._metric_value_location = ByLabelValueLocation(metric.to_metric(), label)
         return value
 
     def dict(self) -> object:
@@ -254,14 +258,22 @@ class MeanStdValue(MetricResult):
 
     def get_mean(self) -> SingleValue:
         value = SingleValue(self.mean)
-        value._metric = self.metric
-        value._metric_value_location = MeanStdValueLocation(self.metric.to_metric(), True)
+        metric = self.metric
+        value._metric = metric
+        if not isinstance(metric, MeanStdCalculation):
+            raise ValueError(f"Metric {type(metric)} is not MeanStdCalculation")
+        value.set_display_name(metric.mean_display_name())
+        value._metric_value_location = MeanStdValueLocation(metric.to_metric(), True)
         return value
 
     def get_std(self) -> SingleValue:
         value = SingleValue(self.std)
-        value._metric = self.metric
-        value._metric_value_location = MeanStdValueLocation(self.metric.to_metric(), False)
+        metric = self.metric
+        if not isinstance(metric, MeanStdCalculation):
+            raise ValueError(f"Metric {type(metric)} is not MeanStdCalculation")
+        value._metric = metric
+        value.set_display_name(metric.std_display_name())
+        value._metric_value_location = MeanStdValueLocation(metric.to_metric(), False)
         return value
 
     def dict(self) -> object:
@@ -755,6 +767,9 @@ class ByLabelCalculation(MetricCalculation[ByLabelValue, TByLabelMetric], Generi
     def label_metric(self, label: Label) -> SingleValueCalculation:
         raise NotImplementedError
 
+    def label_display_name(self, label: Label) -> str:
+        return self.display_name() + f" for label {label}"
+
 
 class CountBoundTest(BoundTest[CountValue]):
     is_count: bool
@@ -834,4 +849,8 @@ TMeanStdMetric = TypeVar("TMeanStdMetric", bound=MeanStdMetric)
 
 
 class MeanStdCalculation(MetricCalculation[MeanStdValue, TMeanStdMetric], Generic[TMeanStdMetric], ABC):
-    pass
+    def mean_display_name(self) -> str:
+        return self.display_name()
+
+    def std_display_name(self) -> str:
+        return self.display_name()
