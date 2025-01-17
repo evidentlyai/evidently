@@ -488,3 +488,146 @@ class DummyF1ScoreCalculation(LegacyClassificationDummy[DummyF1Score]):
 
     def display_name(self) -> str:
         return "Dummy F1 score metric"
+
+
+class DummyAccuracy(ClassificationQuality):
+    pass
+
+
+class DummyAccuracyCalculation(LegacyClassificationDummy[DummyAccuracy]):
+    def calculate_value(
+        self, context: "Context", legacy_result: ClassificationDummyMetricResults, render: List[BaseWidgetInfo]
+    ) -> SingleValue:
+        return SingleValue(legacy_result.dummy.accuracy)
+
+    def display_name(self) -> str:
+        return "Dummy accuracy metric"
+
+
+class DummyTPR(ClassificationQuality):
+    pass
+
+
+class DummyTPRCalculation(LegacyClassificationDummy[DummyTPR]):
+    def calculate_value(
+        self, context: "Context", legacy_result: ClassificationDummyMetricResults, render: List[BaseWidgetInfo]
+    ) -> SingleValue:
+        if legacy_result.dummy.tpr is None:
+            raise ValueError("Failed to calculate dummy TPR value")
+        return SingleValue(legacy_result.dummy.tpr)
+
+    def display_name(self) -> str:
+        return "Dummy TPR metric"
+
+
+class DummyTNR(ClassificationQuality):
+    pass
+
+
+class DummyTNRCalculation(LegacyClassificationDummy[DummyTNR]):
+    def calculate_value(
+        self, context: "Context", legacy_result: ClassificationDummyMetricResults, render: List[BaseWidgetInfo]
+    ) -> SingleValue:
+        if legacy_result.dummy.tnr is None:
+            raise ValueError("Failed to calculate dummy TNR value")
+        return SingleValue(legacy_result.dummy.tnr)
+
+    def display_name(self) -> str:
+        return "Dummy TNR metric"
+
+
+class DummyFPR(ClassificationQuality):
+    pass
+
+
+class DummyFPRCalculation(LegacyClassificationDummy[DummyFPR]):
+    def calculate_value(
+        self, context: "Context", legacy_result: ClassificationDummyMetricResults, render: List[BaseWidgetInfo]
+    ) -> SingleValue:
+        if legacy_result.dummy.fpr is None:
+            raise ValueError("Failed to calculate dummy FPR value")
+        return SingleValue(legacy_result.dummy.fpr)
+
+    def display_name(self) -> str:
+        return "Dummy FPR metric"
+
+
+class DummyFNR(ClassificationQuality):
+    pass
+
+
+class DummyFNRCalculation(LegacyClassificationDummy[DummyFNR]):
+    def calculate_value(
+        self, context: "Context", legacy_result: ClassificationDummyMetricResults, render: List[BaseWidgetInfo]
+    ) -> SingleValue:
+        if legacy_result.dummy.fnr is None:
+            raise ValueError("Failed to calculate dummy FNR value")
+        return SingleValue(legacy_result.dummy.fnr)
+
+    def display_name(self) -> str:
+        return "Dummy FNR metric"
+
+
+class DummyLogLoss(ClassificationQuality):
+    pass
+
+
+class DummyLogLossCalculation(LegacyClassificationDummy[DummyLogLoss]):
+    def calculate_value(
+        self, context: "Context", legacy_result: ClassificationDummyMetricResults, render: List[BaseWidgetInfo]
+    ) -> SingleValue:
+        if legacy_result.dummy.log_loss is None:
+            raise ValueError("Failed to calculate dummy LogLoss value")
+        return SingleValue(legacy_result.dummy.log_loss)
+
+    def display_name(self) -> str:
+        return "Dummy LogLoss metric"
+
+
+class DummyRocAuc(ClassificationQuality):
+    pass
+
+
+class DummyRocAucCalculation(LegacyClassificationDummy[DummyRocAuc]):
+    def calculate_value(
+        self, context: "Context", legacy_result: ClassificationDummyMetricResults, render: List[BaseWidgetInfo]
+    ) -> SingleValue:
+        if legacy_result.dummy.roc_auc is None:
+            raise ValueError("Failed to calculate dummy RocAuc value")
+        return SingleValue(legacy_result.dummy.roc_auc)
+
+    def display_name(self) -> str:
+        return "Dummy RocAuc metric"
+
+
+#
+# class DummyMeanError(ClassificationQuality):
+#     pass
+#
+#
+# class DummyMeanErrorCalculation(LegacyClassificationDummy[DummyMeanError]):
+#     def calculate_value(
+#         self, context: "Context", legacy_result: ClassificationDummyMetricResults, render: List[BaseWidgetInfo]
+#     ) -> SingleValue:
+#         if legacy_result.dummy.mean_error is None:
+#             raise ValueError("Failed to calculate dummy MeanError value")
+#         return SingleValue(legacy_result.dummy.mean_error)
+#
+#     def display_name(self) -> str:
+#         return "Dummy MeanError metric"
+#
+#
+# class DummyR2(ClassificationQuality):
+#     pass
+#
+#
+# class DummyR2Calculation(LegacyClassificationDummy[DummyR2]):
+#     def calculate_value(
+#         self, context: "Context", legacy_result: ClassificationDummyMetricResults, render: List[BaseWidgetInfo]
+#     ) -> SingleValue:
+#         if legacy_result.dummy.r2 is None:
+#             raise ValueError("Failed to calculate dummy R2 value")
+#         return SingleValue(legacy_result.dummy.r2)
+#
+#     def display_name(self) -> str:
+#         return "Dummy R2 metric"
