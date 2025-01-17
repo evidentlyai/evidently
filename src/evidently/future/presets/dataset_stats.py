@@ -62,20 +62,20 @@ class ValueStats(MetricContainer):
 class DatasetStats(MetricContainer):
     def generate_metrics(self, context: Context) -> List[Metric]:
         return [
-            RowCount(),
-            ColumnCount(),
-            ColumnCount(column_type=ColumnType.Numerical),
-            ColumnCount(column_type=ColumnType.Categorical),
-            ColumnCount(column_type=ColumnType.Datetime),
-            ColumnCount(column_type=ColumnType.Text),
-            DuplicatedRowCount(),
-            DuplicatedColumnsCount(),
-            AlmostDuplicatedColumnsCount(),
-            AlmostConstantColumnsCount(),
-            EmptyRowsCount(),
-            EmptyColumnsCount(),
-            ConstantColumnsCount(),
-            DatasetMissingValueCount(),
+            RowCount(tests=[]),
+            ColumnCount(tests=[]),
+            ColumnCount(column_type=ColumnType.Numerical, tests=[]),
+            ColumnCount(column_type=ColumnType.Categorical, tests=[]),
+            ColumnCount(column_type=ColumnType.Datetime, tests=[]),
+            ColumnCount(column_type=ColumnType.Text, tests=[]),
+            DuplicatedRowCount(tests=[]),
+            DuplicatedColumnsCount(tests=[]),
+            AlmostDuplicatedColumnsCount(tests=[]),
+            AlmostConstantColumnsCount(tests=[]),
+            EmptyRowsCount(tests=[]),
+            EmptyColumnsCount(tests=[]),
+            ConstantColumnsCount(tests=[]),
+            DatasetMissingValueCount(tests=[]),
         ]
 
     def render(self, context: Context, results: Dict[MetricId, MetricResult]) -> List[BaseWidgetInfo]:

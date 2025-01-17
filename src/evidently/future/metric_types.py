@@ -579,6 +579,12 @@ class MetricTest(AutoAliasMixin, EvidentlyBaseModel):
             result.status = TestStatus.WARNING
         return result
 
+    def bind_single(self, fingerprint: Fingerprint) -> "BoundTest":
+        return SingleValueBoundTest(test=self, metric_fingerprint=fingerprint)
+
+    def bind_count(self, fingerprint: Fingerprint, is_count: bool) -> "BoundTest":
+        return CountBoundTest(test=self, metric_fingerprint=fingerprint, is_count=is_count)
+
 
 class BoundTest(AutoAliasMixin, EvidentlyBaseModel, Generic[TResult], ABC):
     class Config:
@@ -638,10 +644,9 @@ class Metric(AutoAliasMixin, EvidentlyBaseModel, Generic[TCalculation]):
         return []
 
     def _get_all_default_tests(self, context: "Context") -> List[BoundTest]:
-        tests = self._default_tests()
         if context.has_reference:
-            tests.extend(self._default_tests_with_reference())
-        return tests
+            return self._default_tests_with_reference()
+        return self._default_tests()
 
     def call(self, context: "Context"):
         return self.to_calculation().call(context)
