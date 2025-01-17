@@ -20,7 +20,11 @@ from evidently.future.metric_types import CountBoundTest
 from evidently.future.metric_types import CountCalculation
 from evidently.future.metric_types import CountMetric
 from evidently.future.metric_types import CountValue
+from evidently.future.metric_types import MetricTest
+from evidently.future.metric_types import MetricTestProto
+from evidently.future.metric_types import MetricTestResult
 from evidently.future.metric_types import SingleValue
+from evidently.future.metric_types import SingleValueBoundTest
 from evidently.future.metric_types import SingleValueCalculation
 from evidently.future.metric_types import SingleValueMetric
 from evidently.future.metric_types import TMetric
@@ -46,6 +50,7 @@ from evidently.renderers.html_widgets import counter
 from evidently.renderers.html_widgets import plotly_figure
 from evidently.renderers.html_widgets import table_data
 from evidently.renderers.html_widgets import widget_tabs
+from evidently.tests.base_test import TestStatus
 from evidently.utils.visualizations import get_distribution_for_column
 from evidently.utils.visualizations import plot_agg_line_data
 from evidently.utils.visualizations import plot_distr_with_perc_button
@@ -331,6 +336,12 @@ class MissingValueCountCalculation(CountCalculation[MissingValueCount]):
 class ValueDrift(SingleValueMetric):
     column: str
     method: Optional[str] = None
+    threshold: Optional[float] = None
+
+
+class ValueDriftTest(MetricTest):
+    def to_test(self) -> MetricTestProto:
+        raise NotImplementedError()
 
 
 class ValueDriftCalculation(SingleValueCalculation[ValueDrift]):
@@ -339,7 +350,11 @@ class ValueDriftCalculation(SingleValueCalculation[ValueDrift]):
         column_type = current_data.column(column).type
         if reference_data is None:
             raise ValueError("Reference data is required for Value Drift")
-        options = DataDriftOptions(all_features_stattest=self.metric.method)
+        options = DataDriftOptions(
+            all_features_stattest=self.metric.method,
+            all_features_threshold=self.metric.threshold,
+        )
+
         drift = get_one_column_drift(
             current_data=current_data.as_dataframe(),
             reference_data=reference_data.as_dataframe(),
@@ -358,6 +373,21 @@ class ValueDriftCalculation(SingleValueCalculation[ValueDrift]):
 
         result = SingleValue(drift.drift_score)
         result.widget = self._render(drift, Options(), ColorOptions())
+        if self.metric.tests is None:
+            result.set_tests(
+                {
+                    SingleValueBoundTest(
+                        metric_fingerprint=self.metric.get_fingerprint(), test=ValueDriftTest()
+                    ): MetricTestResult(
+                        "drift",
+                        f"Value Drift for column {self.metric.column}",
+                        f"Drift score is {drift.drift_score:0.2f}. "
+                        f"The drift detection method is {drift.stattest_name}. "
+                        f"The drift threshold is {drift.stattest_threshold:0.2f}.",
+                        status=TestStatus.FAIL if drift.drift_detected else TestStatus.SUCCESS,
+                    )
+                }
+            )
         return result
 
     def display_name(self) -> str:
