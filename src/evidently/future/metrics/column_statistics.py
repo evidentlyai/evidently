@@ -19,7 +19,11 @@ from evidently.future.metric_types import ByLabelValue
 from evidently.future.metric_types import CountCalculation
 from evidently.future.metric_types import CountMetric
 from evidently.future.metric_types import CountValue
+from evidently.future.metric_types import MetricTest
+from evidently.future.metric_types import MetricTestProto
+from evidently.future.metric_types import MetricTestResult
 from evidently.future.metric_types import SingleValue
+from evidently.future.metric_types import SingleValueBoundTest
 from evidently.future.metric_types import SingleValueCalculation
 from evidently.future.metric_types import SingleValueMetric
 from evidently.future.metric_types import TMetric
@@ -27,6 +31,7 @@ from evidently.future.metrics._legacy import LegacyMetricCalculation
 from evidently.future.report import Context
 from evidently.future.tests import Reference
 from evidently.future.tests import eq
+from evidently.future.tests import lt
 from evidently.metric_results import DatasetColumns
 from evidently.metric_results import DatasetUtilityColumns
 from evidently.metric_results import HistogramData
@@ -46,6 +51,7 @@ from evidently.renderers.html_widgets import counter
 from evidently.renderers.html_widgets import plotly_figure
 from evidently.renderers.html_widgets import table_data
 from evidently.renderers.html_widgets import widget_tabs
+from evidently.tests.base_test import TestStatus
 from evidently.utils.visualizations import get_distribution_for_column
 from evidently.utils.visualizations import plot_agg_line_data
 from evidently.utils.visualizations import plot_distr_with_perc_button
@@ -216,7 +222,7 @@ class CategoryCountCalculation(CountCalculation[CategoryCount]):
     def _calculate_value(self, dataset: Dataset):
         column = dataset.column(self.metric.column)
         try:
-            value = column.data.value_counts()[self.metric.category]
+            value = column.data.value_counts().loc[self.metric.category]
         except KeyError:
             value = 0
         total = column.data.count()
@@ -304,7 +310,7 @@ class InListValueCountCalculation(CountCalculation[InListValueCount]):
 
     def _calculate_value(self, dataset: Dataset):
         column = dataset.column(self.metric.column)
-        value = column.data.value_counts()[self.metric.values].sum()  # type: ignore[index]
+        value = column.data.value_counts().loc[self.metric.values].sum()  # type: ignore[index]
         total = column.data.count()
         return CountValue(value, value / total)
 
@@ -332,7 +338,7 @@ class OutListValueCountCalculation(CountCalculation[OutListValueCount]):
 
     def _calculate_value(self, dataset: Dataset):
         column = dataset.column(self.metric.column)
-        value = column.data.value_counts()[self.metric.values].sum()  # type: ignore[index]
+        value = column.data.value_counts().loc[self.metric.values].sum()  # type: ignore[index]
         total = column.data.count()
         return CountValue(total - value, (total - value) / total)
 
@@ -370,6 +376,12 @@ class MissingValueCountCalculation(CountCalculation[MissingValueCount]):
 class ValueDrift(SingleValueMetric):
     column: str
     method: Optional[str] = None
+    threshold: Optional[float] = None
+
+
+class ValueDriftTest(MetricTest):
+    def to_test(self) -> MetricTestProto:
+        raise NotImplementedError()
 
 
 class ValueDriftCalculation(SingleValueCalculation[ValueDrift]):
@@ -378,7 +390,11 @@ class ValueDriftCalculation(SingleValueCalculation[ValueDrift]):
         column_type = current_data.column(column).type
         if reference_data is None:
             raise ValueError("Reference data is required for Value Drift")
-        options = DataDriftOptions(all_features_stattest=self.metric.method)
+        options = DataDriftOptions(
+            all_features_stattest=self.metric.method,
+            all_features_threshold=self.metric.threshold,
+        )
+
         drift = get_one_column_drift(
             current_data=current_data.as_dataframe(),
             reference_data=reference_data.as_dataframe(),
@@ -397,6 +413,21 @@ class ValueDriftCalculation(SingleValueCalculation[ValueDrift]):
 
         result = SingleValue(drift.drift_score)
         result.widget = self._render(drift, Options(), ColorOptions())
+        if self.metric.tests is None:
+            result.set_tests(
+                {
+                    SingleValueBoundTest(
+                        metric_fingerprint=self.metric.get_fingerprint(), test=ValueDriftTest()
+                    ): MetricTestResult(
+                        "drift",
+                        f"Value Drift for column {self.metric.column}",
+                        f"Drift score is {drift.drift_score:0.2f}. "
+                        f"The drift detection method is {drift.stattest_name}. "
+                        f"The drift threshold is {drift.stattest_threshold:0.2f}.",
+                        status=TestStatus.FAIL if drift.drift_detected else TestStatus.SUCCESS,
+                    )
+                }
+            )
         return result
 
     def display_name(self) -> str:
@@ -541,6 +572,9 @@ class DriftedColumnsCount(CountMetric):
             eq(0).bind_count(self.get_fingerprint(), True),
         ]
 
+    def _default_tests(self) -> List[BoundTest]:
+        return [lt(0.5).bind_count(self.get_fingerprint(), is_count=False)]
+
 
 class LegacyDriftedColumnsMetric(
     LegacyMetricCalculation[CountValue, TMetric, DatasetDriftMetricResults, DatasetDriftMetric],
@@ -550,7 +584,7 @@ class LegacyDriftedColumnsMetric(
     pass
 
 
-class DriftedColumnCalculation(LegacyDriftedColumnsMetric[DriftedColumnsCount]):
+class DriftedColumnCalculation(CountCalculation[DriftedColumnsCount], LegacyDriftedColumnsMetric[DriftedColumnsCount]):
     def legacy_metric(self) -> DatasetDriftMetric:
         return DatasetDriftMetric(
             columns=self.metric.columns,
@@ -575,6 +609,9 @@ class DriftedColumnCalculation(LegacyDriftedColumnsMetric[DriftedColumnsCount]):
 
     def display_name(self) -> str:
         return "Count of Drifted Columns"
+
+    def share_display_name(self) -> str:
+        return "Share of Drifted Columns"
 
 
 class UniqueValueCount(ByLabelMetric):

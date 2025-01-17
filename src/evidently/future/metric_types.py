@@ -44,6 +44,7 @@ if TYPE_CHECKING:
 
 
 class MetricResult:
+    _display_name: str = "<unset>"
     _metric: Optional["MetricCalculationBase"] = None
     _metric_value_location: Optional["MetricValueLocation"] = None
     _widget: Optional[List[BaseWidgetInfo]] = None
@@ -73,6 +74,12 @@ class MetricResult:
     @property
     def tests(self) -> Dict["BoundTest", "MetricTestResult"]:
         return self._tests or {}
+
+    def set_display_name(self, value: str):
+        self._display_name = value
+
+    def display_name(self) -> str:
+        return self._display_name
 
     def to_dict(self):
         config = self.metric.to_metric().dict()
@@ -215,14 +222,22 @@ class CountValue(MetricResult):
 
     def get_count(self) -> SingleValue:
         value = SingleValue(self.count)
-        value._metric = self.metric
-        value._metric_value_location = CountValueLocation(self.metric.to_metric(), True)
+        metric = self.metric
+        value._metric = metric
+        if not isinstance(metric, CountCalculation):
+            raise ValueError(f"Metric {type(metric)} is not Count")
+        value.set_display_name(metric.count_display_name())
+        value._metric_value_location = CountValueLocation(metric.to_metric(), True)
         return value
 
     def get_share(self) -> SingleValue:
         value = SingleValue(self.share)
-        value._metric = self.metric
-        value._metric_value_location = CountValueLocation(self.metric.to_metric(), False)
+        metric = self.metric
+        value._metric = metric
+        if not isinstance(metric, CountCalculation):
+            raise ValueError(f"Metric {type(metric)} is not Count")
+        value.set_display_name(metric.share_display_name())
+        value._metric_value_location = CountValueLocation(metric.to_metric(), False)
         return value
 
     def dict(self) -> object:
@@ -776,7 +791,11 @@ TCountMetric = TypeVar("TCountMetric", bound=CountMetric)
 
 
 class CountCalculation(MetricCalculation[CountValue, TCountMetric], Generic[TCountMetric], ABC):
-    pass
+    def count_display_name(self) -> str:
+        return self.display_name()
+
+    def share_display_name(self) -> str:
+        return self.display_name()
 
 
 class MeanStdBoundTest(BoundTest[MeanStdValue]):

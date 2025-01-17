@@ -100,3 +100,5 @@ register_type_alias(Metric, "evidently.future.metrics.recsys.TopKBase", "evident
 
 register_type_alias(MetricTest, "evidently.future.tests.numerical_tests.NotEqualMetricTest", "evidently:test_v2:NotEqualMetricTest")
 register_type_alias(MetricTest, "evidently.future.tests.numerical_tests.EqualMetricTestBase", "evidently:test_v2:EqualMetricTestBase")
+
+register_type_alias(MetricTest, "evidently.future.metrics.column_statistics.ValueDriftTest", "evidently:test_v2:ValueDriftTest")

@@ -38,7 +38,7 @@ class ComparisonTest(MetricTest):
                     title_threshold += f" ± {threshold.tolerance}"
             return MetricTestResult(
                 self.__short_name__,
-                f"{metric.display_name()}: {self.__full_name__} {title_threshold}",
+                f"{value.display_name()}: {self.__full_name__} {title_threshold}",
                 f"Actual value {value.value} {'<' if value.value < threshold else '>='} {threshold}",
                 TestStatus.SUCCESS if self.check(value.value, threshold) else TestStatus.FAIL,
             )
@@ -104,7 +104,7 @@ class LessThanMetricTest(ComparisonTest):
 
 
 def lt(threshold: ThresholdType, is_critical: bool = True) -> MetricTest:
-    return GreaterOrEqualMetricTest(threshold=threshold, is_critical=is_critical)
+    return LessThanMetricTest(threshold=threshold, is_critical=is_critical)
 
 
 class EqualMetricTestBase(MetricTest, abc.ABC):

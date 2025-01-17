@@ -2,6 +2,7 @@ import json
 import typing
 from datetime import datetime
 from itertools import chain
+from typing import Callable
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -97,11 +98,13 @@ class Context:
         self._current_graph_level = prev_level[metric.id]
         if metric.id not in self._metrics:
             current_result, reference_result = metric.call(self)
+            current_result.set_display_name(metric.display_name())
             current_result._metric = metric
             current_result._metric_value_location = SingleValueLocation(metric.to_metric())
             self._metrics[metric.id] = current_result
             if reference_result is not None:
                 reference_result._metric = metric
+                reference_result.set_display_name(metric.display_name())
                 reference_result._metric_value_location = SingleValueLocation(metric.to_metric())
                 self._reference_metrics[metric.id] = reference_result
             test_results = {
@@ -125,49 +128,14 @@ class Context:
             raise ReferenceMetricNotFound(metric)
         return self._reference_metrics[metric.metric_id]
 
-    def get_legacy_metric(self, metric: LegacyMetric[T]) -> Tuple[T, List[BaseWidgetInfo]]:
-        classification = self.data_definition.get_classification("default")
-        ranking = self.data_definition.get_ranking("default")
-        reference = self._input_data[1].as_dataframe() if self._input_data[1] is not None else None
-        current = self._input_data[0].as_dataframe()
-        prediction: Optional[Union[str, List[str]]]
-        user_id: Optional[str] = None
-        target: Optional[str] = None
-        if classification is not None:
-            if isinstance(classification.prediction_probas, list):
-                prediction = classification.prediction_probas
-            elif classification.prediction_probas not in current.columns:
-                prediction = classification.prediction_labels
-            else:
-                prediction = classification.prediction_probas
-            target = classification.target
-        else:
-            prediction = None
-        if ranking is not None:
-            user_id = ranking.user_id
-            prediction = ranking.prediction
-            target = ranking.target
-        mapping = ColumnMapping(
-            target=target,
-            prediction=prediction,
-            pos_label=classification.pos_label if isinstance(classification, BinaryClassification) else None,
-            target_names=classification.labels if classification is not None else None,
-            user_id=user_id,
-        )
-        definition = create_data_definition(
-            reference,
-            current,
-            mapping,
-        )
-        input_data = InputData(
-            reference,
-            current,
-            mapping,
-            definition,
-            {},
-            None,
-            None,
-        )
+    def get_legacy_metric(
+        self,
+        metric: LegacyMetric[T],
+        input_data_generator: Optional[Callable[["Context"], InputData]] = None,
+    ) -> Tuple[T, List[BaseWidgetInfo]]:
+        if input_data_generator is None:
+            input_data_generator = _default_input_data_generator
+        input_data = input_data_generator(self)
         dependencies = _discover_dependencies(metric)
         for _, obj in dependencies:
             if isinstance(obj, LegacyMetric):
@@ -194,6 +162,52 @@ class Context:
     @property
     def has_reference(self) -> bool:
         return self._input_data[1] is not None
+
+
+def _default_input_data_generator(context: "Context") -> InputData:
+    classification = context.data_definition.get_classification("default")
+    ranking = context.data_definition.get_ranking("default")
+    reference = context._input_data[1].as_dataframe() if context._input_data[1] is not None else None
+    current = context._input_data[0].as_dataframe()
+    prediction: Optional[Union[str, List[str]]]
+    user_id: Optional[str] = None
+    target: Optional[str] = None
+    if classification is not None:
+        if isinstance(classification.prediction_probas, list):
+            prediction = classification.prediction_probas
+        elif classification.prediction_probas not in current.columns:
+            prediction = classification.prediction_labels
+        else:
+            prediction = classification.prediction_probas
+        target = classification.target
+    else:
+        prediction = None
+    if ranking is not None:
+        user_id = ranking.user_id
+        prediction = ranking.prediction
+        target = ranking.target
+    mapping = ColumnMapping(
+        target=target,
+        prediction=prediction,
+        pos_label=classification.pos_label if isinstance(classification, BinaryClassification) else None,
+        target_names=classification.labels if classification is not None else None,
+        user_id=user_id,
+    )
+    definition = create_data_definition(
+        reference,
+        current,
+        mapping,
+    )
+    input_data = InputData(
+        reference,
+        current,
+        mapping,
+        definition,
+        {},
+        None,
+        None,
+    )
+    return input_data
 
 
 class Snapshot:
