@@ -620,9 +620,16 @@ class UniqueValueCount(ByLabelMetric):
 
 class UniqueValueCountCalculation(ByLabelCalculation[UniqueValueCount]):
     def calculate(self, context: "Context", current_data: Dataset, reference_data: Optional[Dataset]):
+        current_result = self._calculate_value(current_data)
+        current_result.widget = distribution(
+            f"Unique value count: {self.metric.column}",
+            current_data.column(self.metric.column),
+            None if reference_data is None else reference_data.column(self.metric.column),
+        )
+        reference_result = None if reference_data is None else self._calculate_value(reference_data)
         return (
-            self._calculate_value(current_data),
-            None if reference_data is None else self._calculate_value(reference_data),
+            current_result,
+            reference_result,
         )
 
     def display_name(self) -> str:
@@ -630,4 +637,5 @@ class UniqueValueCountCalculation(ByLabelCalculation[UniqueValueCount]):
 
     def _calculate_value(self, dataset: Dataset):
         value_counts = dataset.as_dataframe()[self.metric.column].value_counts()
-        return ByLabelValue(value_counts.to_dict())  # type: ignore[arg-type]
+        result = ByLabelValue(value_counts.to_dict())  # type: ignore[arg-type]
+        return result
