@@ -119,6 +119,9 @@ class MetricResult:
         assert self._metric_value_location
         return self._metric_value_location
 
+    def __format__(self, format_spec):
+        return str(self)
+
 
 def render_widgets(widgets: List[BaseWidgetInfo]):
     items = []
