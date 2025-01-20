@@ -28,6 +28,7 @@ from evidently.future.metrics.dataset_statistics import DuplicatedColumnsCount
 from evidently.future.metrics.dataset_statistics import EmptyColumnsCount
 from evidently.future.metrics.dataset_statistics import EmptyRowsCount
 from evidently.future.report import Context
+from evidently.metric_results import Label
 from evidently.metrics import DatasetSummaryMetric
 from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.html_widgets import rich_data
@@ -69,7 +70,10 @@ class ValueStats(MetricContainer):
         if column_type == ColumnType.Numerical:
             return self._render_numerical(context)
         if column_type == ColumnType.Categorical:
-            return self._render_categorical(context)
+            if len(context.column(self._column).labels()) <= 2:
+                return self._render_categorical_binary(context)
+            else:
+                return self._render_categorical(context)
         if column_type == ColumnType.Datetime:
             return self._render_datetime(context)
         if column_type == ColumnType.Text:
@@ -118,6 +122,28 @@ class ValueStats(MetricContainer):
             )
         ]
 
+    def _render_categorical_binary(self, context: "Context") -> List[BaseWidgetInfo]:
+        result = context.get_metric_result(UniqueValueCount(column=self._column)).widget[0]
+        return [
+            rich_data(
+                title=self._column,
+                description=context.column(self._column).column_type.value,
+                header=["current", "reference"] if context.has_reference else ["current"],
+                metrics=[
+                    {"label": "count", "values": self._get_metric(context, RowCount(column=self._column))},
+                    {"label": "missing", "values": self._get_metric(context, MissingValueCount(column=self._column))},
+                ]
+                + [
+                    {
+                        "label": f"{label}",
+                        "values": self._label_count(context, UniqueValueCount(column=self._column), label),
+                    }
+                    for label in context.column(self._column).labels()
+                ],
+                graph=result.params,
+            )
+        ]
+
     def _render_text(self, context: "Context") -> List[BaseWidgetInfo]:
         raise NotImplementedError()
 
@@ -156,6 +182,25 @@ class ValueStats(MetricContainer):
             raise ValueError("Most common value must be of type 'ByLabelValue'")
         first = sorted(unique_value.values.items(), key=lambda x: x[1], reverse=True)[0]
         return f"Label: {first[0]} count: {first[1]}"
+
+    def _label_count(
+        self,
+        context: "Context",
+        metric: UniqueValueCount,
+        label: Label,
+    ):
+        result = context.get_metric_result(metric)
+        assert isinstance(result, ByLabelValue)
+        if context.has_reference:
+            ref_result = context.get_reference_metric_result(metric)
+            assert isinstance(ref_result, ByLabelValue)
+            return [
+                str(result.values[label]),
+                str(ref_result.values[label]),
+            ]
+        return [
+            str(result.values[label]),
+        ]
 
 
 class DatasetStats(MetricContainer):
