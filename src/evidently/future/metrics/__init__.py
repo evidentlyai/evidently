@@ -3,9 +3,16 @@ from .classification import FPR
 from .classification import TNR
 from .classification import TPR
 from .classification import Accuracy
+from .classification import DummyAccuracy
 from .classification import DummyF1Score
+from .classification import DummyFNR
+from .classification import DummyFPR
+from .classification import DummyLogLoss
 from .classification import DummyPrecision
 from .classification import DummyRecall
+from .classification import DummyRocAuc
+from .classification import DummyTNR
+from .classification import DummyTPR
 from .classification import F1ByLabel
 from .classification import F1Score
 from .classification import LogLoss
@@ -122,4 +129,11 @@ __all__ = [
     "MRR",
     "PrecisionTopK",
     "RecallTopK",
+    "DummyTPR",
+    "DummyTNR",
+    "DummyRocAuc",
+    "DummyLogLoss",
+    "DummyFPR",
+    "DummyFNR",
+    "DummyAccuracy",
 ]

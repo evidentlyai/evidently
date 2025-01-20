@@ -305,7 +305,7 @@ class Report:
         reference_id: str = None,
         batch_size: str = None,
         dataset_id: str = None,
-        include_tests: bool = True,
+        include_tests: bool = False,
     ):
         self._metrics = metrics
         self.metadata = metadata or {}

@@ -102,3 +102,11 @@ register_type_alias(MetricTest, "evidently.future.tests.numerical_tests.NotEqual
 register_type_alias(MetricTest, "evidently.future.tests.numerical_tests.EqualMetricTestBase", "evidently:test_v2:EqualMetricTestBase")
 
 register_type_alias(MetricTest, "evidently.future.metrics.column_statistics.ValueDriftTest", "evidently:test_v2:ValueDriftTest")
+
+register_type_alias(Metric, "evidently.future.metrics.classification.DummyAccuracy", "evidently:metric_v2:DummyAccuracy")
+register_type_alias(Metric, "evidently.future.metrics.classification.DummyFNR", "evidently:metric_v2:DummyFNR")
+register_type_alias(Metric, "evidently.future.metrics.classification.DummyFPR", "evidently:metric_v2:DummyFPR")
+register_type_alias(Metric, "evidently.future.metrics.classification.DummyLogLoss", "evidently:metric_v2:DummyLogLoss")
+register_type_alias(Metric, "evidently.future.metrics.classification.DummyRocAuc", "evidently:metric_v2:DummyRocAuc")
+register_type_alias(Metric, "evidently.future.metrics.classification.DummyTNR", "evidently:metric_v2:DummyTNR")
+register_type_alias(Metric, "evidently.future.metrics.classification.DummyTPR", "evidently:metric_v2:DummyTPR")
