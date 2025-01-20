@@ -1,4 +1,5 @@
 import abc
+from typing import ClassVar
 from typing import Generic
 from typing import List
 from typing import Optional
@@ -10,6 +11,7 @@ from evidently.future.metric_types import ByLabelMetric
 from evidently.future.metric_types import ByLabelValue
 from evidently.future.metric_types import SingleValue
 from evidently.future.metric_types import SingleValueMetric
+from evidently.future.metric_types import TMetricResult
 from evidently.future.metrics._legacy import LegacyMetricCalculation
 from evidently.future.report import Context
 from evidently.metric_results import Label
@@ -432,20 +434,26 @@ class LegacyClassificationDummy(
     abc.ABC,
 ):
     _legacy_metric = None
+    __legacy_field_name__: ClassVar[str]
 
     def legacy_metric(self) -> ClassificationDummyMetric:
         if self._legacy_metric is None:
             self._legacy_metric = ClassificationDummyMetric(self.metric.probas_threshold, self.metric.k)
         return self._legacy_metric
 
-    @abc.abstractmethod
     def calculate_value(
         self,
         context: "Context",
         legacy_result: ClassificationDummyMetricResults,
         render: List[BaseWidgetInfo],
-    ) -> SingleValue:
-        raise NotImplementedError()
+    ) -> TMetricResult:
+        current_value = getattr(legacy_result.dummy, self.__legacy_field_name__)
+        if current_value is None:
+            raise ValueError(f"Failed to calculate {self.display_name()}")
+        if legacy_result.by_reference_dummy is None:
+            return SingleValue(current_value)
+        reference_value = getattr(legacy_result.by_reference_dummy, self.__legacy_field_name__)
+        return SingleValue(current_value), SingleValue(reference_value)
 
 
 class DummyPrecision(ClassificationQuality):
@@ -453,10 +461,7 @@ class DummyPrecision(ClassificationQuality):
 
 
 class DummyPrecisionCalculation(LegacyClassificationDummy[DummyPrecision]):
-    def calculate_value(
-        self, context: "Context", legacy_result: ClassificationDummyMetricResults, render: List[BaseWidgetInfo]
-    ) -> SingleValue:
-        return SingleValue(legacy_result.dummy.precision)
+    __legacy_field_name__ = "precision"
 
     def display_name(self) -> str:
         return "Dummy precision metric"
@@ -467,10 +472,7 @@ class DummyRecall(ClassificationQuality):
 
 
 class DummyRecallCalculation(LegacyClassificationDummy[DummyRecall]):
-    def calculate_value(
-        self, context: "Context", legacy_result: ClassificationDummyMetricResults, render: List[BaseWidgetInfo]
-    ) -> SingleValue:
-        return SingleValue(legacy_result.dummy.recall)
+    __legacy_field_name__ = "recall"
 
     def display_name(self) -> str:
         return "Dummy recall metric"
@@ -481,10 +483,7 @@ class DummyF1Score(ClassificationQuality):
 
 
 class DummyF1ScoreCalculation(LegacyClassificationDummy[DummyF1Score]):
-    def calculate_value(
-        self, context: "Context", legacy_result: ClassificationDummyMetricResults, render: List[BaseWidgetInfo]
-    ) -> SingleValue:
-        return SingleValue(legacy_result.dummy.f1)
+    __legacy_field_name__ = "f1"
 
     def display_name(self) -> str:
         return "Dummy F1 score metric"
@@ -495,10 +494,7 @@ class DummyAccuracy(ClassificationQuality):
 
 
 class DummyAccuracyCalculation(LegacyClassificationDummy[DummyAccuracy]):
-    def calculate_value(
-        self, context: "Context", legacy_result: ClassificationDummyMetricResults, render: List[BaseWidgetInfo]
-    ) -> SingleValue:
-        return SingleValue(legacy_result.dummy.accuracy)
+    __legacy_field_name__ = "accuracy"
 
     def display_name(self) -> str:
         return "Dummy accuracy metric"
@@ -509,12 +505,7 @@ class DummyTPR(ClassificationQuality):
 
 
 class DummyTPRCalculation(LegacyClassificationDummy[DummyTPR]):
-    def calculate_value(
-        self, context: "Context", legacy_result: ClassificationDummyMetricResults, render: List[BaseWidgetInfo]
-    ) -> SingleValue:
-        if legacy_result.dummy.tpr is None:
-            raise ValueError("Failed to calculate dummy TPR value")
-        return SingleValue(legacy_result.dummy.tpr)
+    __legacy_field_name__ = "tpr"
 
     def display_name(self) -> str:
         return "Dummy TPR metric"
@@ -525,12 +516,7 @@ class DummyTNR(ClassificationQuality):
 
 
 class DummyTNRCalculation(LegacyClassificationDummy[DummyTNR]):
-    def calculate_value(
-        self, context: "Context", legacy_result: ClassificationDummyMetricResults, render: List[BaseWidgetInfo]
-    ) -> SingleValue:
-        if legacy_result.dummy.tnr is None:
-            raise ValueError("Failed to calculate dummy TNR value")
-        return SingleValue(legacy_result.dummy.tnr)
+    __legacy_field_name__ = "tnr"
 
     def display_name(self) -> str:
         return "Dummy TNR metric"
@@ -541,12 +527,7 @@ class DummyFPR(ClassificationQuality):
 
 
 class DummyFPRCalculation(LegacyClassificationDummy[DummyFPR]):
-    def calculate_value(
-        self, context: "Context", legacy_result: ClassificationDummyMetricResults, render: List[BaseWidgetInfo]
-    ) -> SingleValue:
-        if legacy_result.dummy.fpr is None:
-            raise ValueError("Failed to calculate dummy FPR value")
-        return SingleValue(legacy_result.dummy.fpr)
+    __legacy_field_name__ = "fpr"
 
     def display_name(self) -> str:
         return "Dummy FPR metric"
@@ -557,12 +538,7 @@ class DummyFNR(ClassificationQuality):
 
 
 class DummyFNRCalculation(LegacyClassificationDummy[DummyFNR]):
-    def calculate_value(
-        self, context: "Context", legacy_result: ClassificationDummyMetricResults, render: List[BaseWidgetInfo]
-    ) -> SingleValue:
-        if legacy_result.dummy.fnr is None:
-            raise ValueError("Failed to calculate dummy FNR value")
-        return SingleValue(legacy_result.dummy.fnr)
+    __legacy_field_name__ = "fnr"
 
     def display_name(self) -> str:
         return "Dummy FNR metric"
@@ -573,12 +549,7 @@ class DummyLogLoss(ClassificationQuality):
 
 
 class DummyLogLossCalculation(LegacyClassificationDummy[DummyLogLoss]):
-    def calculate_value(
-        self, context: "Context", legacy_result: ClassificationDummyMetricResults, render: List[BaseWidgetInfo]
-    ) -> SingleValue:
-        if legacy_result.dummy.log_loss is None:
-            raise ValueError("Failed to calculate dummy LogLoss value")
-        return SingleValue(legacy_result.dummy.log_loss)
+    __legacy_field_name__ = "log_loss"
 
     def display_name(self) -> str:
         return "Dummy LogLoss metric"
@@ -589,45 +560,7 @@ class DummyRocAuc(ClassificationQuality):
 
 
 class DummyRocAucCalculation(LegacyClassificationDummy[DummyRocAuc]):
-    def calculate_value(
-        self, context: "Context", legacy_result: ClassificationDummyMetricResults, render: List[BaseWidgetInfo]
-    ) -> SingleValue:
-        if legacy_result.dummy.roc_auc is None:
-            raise ValueError("Failed to calculate dummy RocAuc value")
-        return SingleValue(legacy_result.dummy.roc_auc)
+    __legacy_field_name__ = "roc_auc"
 
     def display_name(self) -> str:
         return "Dummy RocAuc metric"
-
-
-#
-# class DummyMeanError(ClassificationQuality):
-#     pass
-#
-#
-# class DummyMeanErrorCalculation(LegacyClassificationDummy[DummyMeanError]):
-#     def calculate_value(
-#         self, context: "Context", legacy_result: ClassificationDummyMetricResults, render: List[BaseWidgetInfo]
-#     ) -> SingleValue:
-#         if legacy_result.dummy.mean_error is None:
-#             raise ValueError("Failed to calculate dummy MeanError value")
-#         return SingleValue(legacy_result.dummy.mean_error)
-#
-#     def display_name(self) -> str:
-#         return "Dummy MeanError metric"
-#
-#
-# class DummyR2(ClassificationQuality):
-#     pass
-#
-#
-# class DummyR2Calculation(LegacyClassificationDummy[DummyR2]):
-#     def calculate_value(
-#         self, context: "Context", legacy_result: ClassificationDummyMetricResults, render: List[BaseWidgetInfo]
-#     ) -> SingleValue:
-#         if legacy_result.dummy.r2 is None:
-#             raise ValueError("Failed to calculate dummy R2 value")
-#         return SingleValue(legacy_result.dummy.r2)
-#
-#     def display_name(self) -> str:
-#         return "Dummy R2 metric"
