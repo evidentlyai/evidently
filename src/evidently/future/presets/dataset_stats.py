@@ -70,7 +70,7 @@ class ValueStats(MetricContainer):
         if column_type == ColumnType.Numerical:
             return self._render_numerical(context)
         if column_type == ColumnType.Categorical:
-            if len(context.column(self._column).labels()) <= 2:
+            if len(context.column(self._column).labels()) <= 3:
                 return self._render_categorical_binary(context)
             else:
                 return self._render_categorical(context)
