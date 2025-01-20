@@ -197,6 +197,9 @@ class SingleValue(MetricResult):
     def dict(self) -> object:
         return self.value
 
+    def __format__(self, format_spec):
+        return format(self.value, format_spec)
+
 
 @dataclasses.dataclass
 class ByLabelValue(MetricResult):
@@ -250,6 +253,9 @@ class CountValue(MetricResult):
             "share": self.share,
         }
 
+    def __format__(self, format_spec):
+        return f"{format(self.count, format_spec)} ({format(self.share * 100, format_spec)}%)"
+
 
 @dataclasses.dataclass
 class MeanStdValue(MetricResult):
@@ -281,6 +287,9 @@ class MeanStdValue(MetricResult):
             "mean": self.mean,
             "std": self.std,
         }
+
+    def __format__(self, format_spec):
+        return f"{format(self.mean, format_spec)} (std: {format(self.std, format_spec)})"
 
 
 class DatasetType(enum.Enum):
