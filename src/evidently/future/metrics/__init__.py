@@ -3,9 +3,16 @@ from .classification import FPR
 from .classification import TNR
 from .classification import TPR
 from .classification import Accuracy
+from .classification import DummyAccuracy
 from .classification import DummyF1Score
+from .classification import DummyFNR
+from .classification import DummyFPR
+from .classification import DummyLogLoss
 from .classification import DummyPrecision
 from .classification import DummyRecall
+from .classification import DummyRocAuc
+from .classification import DummyTNR
+from .classification import DummyTPR
 from .classification import F1ByLabel
 from .classification import F1Score
 from .classification import LogLoss
@@ -40,6 +47,14 @@ from .dataset_statistics import DuplicatedRowCount
 from .dataset_statistics import EmptyColumnsCount
 from .dataset_statistics import EmptyRowsCount
 from .dataset_statistics import RowCount
+from .recsys import MAP
+from .recsys import MRR
+from .recsys import NDCG
+from .recsys import FBetaTopK
+from .recsys import HitRate
+from .recsys import PrecisionTopK
+from .recsys import RecallTopK
+from .recsys import ScoreDistribution
 from .regression import MAE
 from .regression import MAPE
 from .regression import RMSE
@@ -106,4 +121,19 @@ __all__ = [
     "DummyMAE",
     "DummyMAPE",
     "DummyRMSE",
+    "ScoreDistribution",
+    "NDCG",
+    "FBetaTopK",
+    "HitRate",
+    "MAP",
+    "MRR",
+    "PrecisionTopK",
+    "RecallTopK",
+    "DummyTPR",
+    "DummyTNR",
+    "DummyRocAuc",
+    "DummyLogLoss",
+    "DummyFPR",
+    "DummyFNR",
+    "DummyAccuracy",
 ]

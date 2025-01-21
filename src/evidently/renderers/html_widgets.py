@@ -926,3 +926,27 @@ def group_widget(
         widgets=widgets,
         size=2,
     )
+
+
+def rich_data(
+    *,
+    title: str,
+    description: str,
+    header: List[str],
+    metrics: List[dict],
+    graph: Optional[PlotlyGraphInfo],
+):
+    return BaseWidgetInfo(
+        type=WidgetType.RICH_DATA.value,
+        title="",
+        size=2,
+        params={
+            "header": title,
+            "description": description,
+            "metricsValuesHeaders": header,
+            "metrics": metrics,
+            "graph": graph,
+            "details": {"parts": [], "insights": []},
+        },
+        additionalGraphs=[],
+    )

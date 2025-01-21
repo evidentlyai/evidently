@@ -28,7 +28,6 @@ from evidently.metric_results import Label
 from evidently.model.dashboard import DashboardInfo
 from evidently.model.widget import AdditionalGraphInfo
 from evidently.model.widget import BaseWidgetInfo
-from evidently.pydantic_utils import BaseModel
 from evidently.pydantic_utils import EvidentlyBaseModel
 from evidently.pydantic_utils import Fingerprint
 from evidently.renderers.base_renderer import DetailsInfo
@@ -45,6 +44,7 @@ if TYPE_CHECKING:
 
 
 class MetricResult:
+    _display_name: str = "<unset>"
     _metric: Optional["MetricCalculationBase"] = None
     _metric_value_location: Optional["MetricValueLocation"] = None
     _widget: Optional[List[BaseWidgetInfo]] = None
@@ -74,6 +74,12 @@ class MetricResult:
     @property
     def tests(self) -> Dict["BoundTest", "MetricTestResult"]:
         return self._tests or {}
+
+    def set_display_name(self, value: str):
+        self._display_name = value
+
+    def display_name(self) -> str:
+        return self._display_name
 
     def to_dict(self):
         config = self.metric.to_metric().dict()
@@ -112,6 +118,9 @@ class MetricResult:
     def metric_value_location(self) -> "MetricValueLocation":
         assert self._metric_value_location
         return self._metric_value_location
+
+    def __format__(self, format_spec):
+        return str(self)
 
 
 def render_widgets(widgets: List[BaseWidgetInfo]):
@@ -191,6 +200,9 @@ class SingleValue(MetricResult):
     def dict(self) -> object:
         return self.value
 
+    def __format__(self, format_spec):
+        return format(self.value, format_spec)
+
 
 @dataclasses.dataclass
 class ByLabelValue(MetricResult):
@@ -201,8 +213,12 @@ class ByLabelValue(MetricResult):
 
     def get_label_result(self, label: Label) -> SingleValue:
         value = SingleValue(self.values[label])
-        value._metric = self.metric
-        value._metric_value_location = ByLabelValueLocation(self.metric.to_metric(), label)
+        metric = self.metric
+        value._metric = metric
+        if not isinstance(metric, ByLabelCalculation):
+            raise ValueError(f"Metric {type(metric)} isn't ByLabelCalculation")
+        value.set_display_name(metric.label_display_name(label))
+        value._metric_value_location = ByLabelValueLocation(metric.to_metric(), label)
         return value
 
     def dict(self) -> object:
@@ -216,14 +232,22 @@ class CountValue(MetricResult):
 
     def get_count(self) -> SingleValue:
         value = SingleValue(self.count)
-        value._metric = self.metric
-        value._metric_value_location = CountValueLocation(self.metric.to_metric(), True)
+        metric = self.metric
+        value._metric = metric
+        if not isinstance(metric, CountCalculation):
+            raise ValueError(f"Metric {type(metric)} is not Count")
+        value.set_display_name(metric.count_display_name())
+        value._metric_value_location = CountValueLocation(metric.to_metric(), True)
         return value
 
     def get_share(self) -> SingleValue:
         value = SingleValue(self.share)
-        value._metric = self.metric
-        value._metric_value_location = CountValueLocation(self.metric.to_metric(), False)
+        metric = self.metric
+        value._metric = metric
+        if not isinstance(metric, CountCalculation):
+            raise ValueError(f"Metric {type(metric)} is not Count")
+        value.set_display_name(metric.share_display_name())
+        value._metric_value_location = CountValueLocation(metric.to_metric(), False)
         return value
 
     def dict(self) -> object:
@@ -231,6 +255,9 @@ class CountValue(MetricResult):
             "count": self.count,
             "share": self.share,
         }
+
+    def __format__(self, format_spec):
+        return f"{format(self.count, format_spec)} ({format(self.share * 100, format_spec)}%)"
 
 
 @dataclasses.dataclass
@@ -240,14 +267,22 @@ class MeanStdValue(MetricResult):
 
     def get_mean(self) -> SingleValue:
         value = SingleValue(self.mean)
-        value._metric = self.metric
-        value._metric_value_location = MeanStdValueLocation(self.metric.to_metric(), True)
+        metric = self.metric
+        value._metric = metric
+        if not isinstance(metric, MeanStdCalculation):
+            raise ValueError(f"Metric {type(metric)} is not MeanStdCalculation")
+        value.set_display_name(metric.mean_display_name())
+        value._metric_value_location = MeanStdValueLocation(metric.to_metric(), True)
         return value
 
     def get_std(self) -> SingleValue:
         value = SingleValue(self.std)
-        value._metric = self.metric
-        value._metric_value_location = MeanStdValueLocation(self.metric.to_metric(), False)
+        metric = self.metric
+        if not isinstance(metric, MeanStdCalculation):
+            raise ValueError(f"Metric {type(metric)} is not MeanStdCalculation")
+        value._metric = metric
+        value.set_display_name(metric.std_display_name())
+        value._metric_value_location = MeanStdValueLocation(metric.to_metric(), False)
         return value
 
     def dict(self) -> object:
@@ -255,6 +290,9 @@ class MeanStdValue(MetricResult):
             "mean": self.mean,
             "std": self.std,
         }
+
+    def __format__(self, format_spec):
+        return f"{format(self.mean, format_spec)} (std: {format(self.std, format_spec)})"
 
 
 class DatasetType(enum.Enum):
@@ -377,7 +415,7 @@ def get_default_render_ref(title: str, result: MetricResult, ref_result: MetricR
             counter(
                 title=title + " (reference)",
                 size=WidgetSize.HALF,
-                counters=[CounterData(label="", value=f"{result.value:0.3f}")],
+                counters=[CounterData(label="", value=f"{ref_result.value:0.3f}")],
             ),
         ]
     if isinstance(result, ByLabelValue):
@@ -548,22 +586,6 @@ class AutoAliasMixin:
         return f"evidently:{cls.__alias_type__}:{cls.__name__}"
 
 
-class Reference(BaseModel):
-    relative: Optional[float] = None
-    absolute: Optional[float] = None
-
-    def __hash__(self) -> int:
-        return hash(self.relative) + hash(self.absolute)
-
-    def __str__(self):
-        boundaries = ""
-        if self.absolute is not None:
-            boundaries = f"absolute={self.absolute:.3f}"
-        if self.relative is not None:
-            boundaries = f"relative={self.relative:.3f}"
-        return f"Reference({boundaries})"
-
-
 class MetricTest(AutoAliasMixin, EvidentlyBaseModel):
     class Config:
         is_base_type = True
@@ -580,6 +602,12 @@ class MetricTest(AutoAliasMixin, EvidentlyBaseModel):
         if result.status == TestStatus.FAIL and not self.is_critical:
             result.status = TestStatus.WARNING
         return result
+
+    def bind_single(self, fingerprint: Fingerprint) -> "BoundTest":
+        return SingleValueBoundTest(test=self, metric_fingerprint=fingerprint)
+
+    def bind_count(self, fingerprint: Fingerprint, is_count: bool) -> "BoundTest":
+        return CountBoundTest(test=self, metric_fingerprint=fingerprint, is_count=is_count)
 
 
 class BoundTest(AutoAliasMixin, EvidentlyBaseModel, Generic[TResult], ABC):
@@ -640,10 +668,9 @@ class Metric(AutoAliasMixin, EvidentlyBaseModel, Generic[TCalculation]):
         return []
 
     def _get_all_default_tests(self, context: "Context") -> List[BoundTest]:
-        tests = self._default_tests()
         if context.has_reference:
-            tests.extend(self._default_tests_with_reference())
-        return tests
+            return self._default_tests_with_reference()
+        return self._default_tests()
 
     def call(self, context: "Context"):
         return self.to_calculation().call(context)
@@ -676,9 +703,12 @@ class MetricCalculation(MetricCalculationBase[TResult], Generic[TResult, TMetric
         if not inspect.isabstract(cls) and ABC not in cls.__bases__:
             base = typing_inspect.get_generic_bases(cls)[0]  # fixme only works for simple cases
             # print(base, typing_inspect.get_args(base))
-            config_type = typing_inspect.get_args(base)[-1]
-            if not isinstance(config_type, type) or not issubclass(config_type, Metric):
-                raise ValueError(f"Value of generic parameter TMetric for {config_type} should be Metric subclass")
+            try:
+                config_type = next(
+                    b for b in typing_inspect.get_args(base) if isinstance(b, type) and issubclass(b, Metric)
+                )
+            except StopIteration:
+                raise ValueError(f"Cannot find generic parameter of type Metric for {cls}")
             config_type.__calculation_type__ = cls
         super().__init_subclass__()
 
@@ -696,7 +726,7 @@ class SingleValueBoundTest(BoundTest[SingleValue]):
         calculation: MetricCalculationBase[SingleValue],
         metric_result: SingleValue,
     ) -> MetricTestResult:
-        return self.test.to_test()(context, calculation, metric_result)
+        return self.test.run(context, calculation, metric_result)
 
 
 class SingleValueMetric(Metric[TSingleValueMetricCalculation]):
@@ -749,6 +779,9 @@ class ByLabelCalculation(MetricCalculation[ByLabelValue, TByLabelMetric], Generi
     def label_metric(self, label: Label) -> SingleValueCalculation:
         raise NotImplementedError
 
+    def label_display_name(self, label: Label) -> str:
+        return self.display_name() + f" for label {label}"
+
 
 class CountBoundTest(BoundTest[CountValue]):
     is_count: bool
@@ -767,15 +800,14 @@ class CountBoundTest(BoundTest[CountValue]):
 
 
 class CountMetric(Metric["CountCalculation"]):
-    count_tests: Optional[List[MetricTest]] = None
+    tests: Optional[List[MetricTest]] = None
     share_tests: Optional[List[MetricTest]] = None
 
     def get_bound_tests(self, context: "Context") -> Sequence[BoundTest]:
-        if self.count_tests is None and self.share_tests is None and context.configuration.include_tests:
+        if self.tests is None and self.share_tests is None and context.configuration.include_tests:
             return self._get_all_default_tests(context)
         return [
-            CountBoundTest(is_count=True, test=t, metric_fingerprint=self.get_fingerprint())
-            for t in (self.count_tests or [])
+            CountBoundTest(is_count=True, test=t, metric_fingerprint=self.get_fingerprint()) for t in (self.tests or [])
         ] + [
             CountBoundTest(is_count=False, test=t, metric_fingerprint=self.get_fingerprint())
             for t in (self.share_tests or [])
@@ -786,7 +818,11 @@ TCountMetric = TypeVar("TCountMetric", bound=CountMetric)
 
 
 class CountCalculation(MetricCalculation[CountValue, TCountMetric], Generic[TCountMetric], ABC):
-    pass
+    def count_display_name(self) -> str:
+        return self.display_name()
+
+    def share_display_name(self) -> str:
+        return self.display_name()
 
 
 class MeanStdBoundTest(BoundTest[MeanStdValue]):
@@ -825,4 +861,8 @@ TMeanStdMetric = TypeVar("TMeanStdMetric", bound=MeanStdMetric)
 
 
 class MeanStdCalculation(MetricCalculation[MeanStdValue, TMeanStdMetric], Generic[TMeanStdMetric], ABC):
-    pass
+    def mean_display_name(self) -> str:
+        return self.display_name()
+
+    def std_display_name(self) -> str:
+        return self.display_name()

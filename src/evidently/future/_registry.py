@@ -87,3 +87,26 @@ register_type_alias(Metric, "evidently.future.metrics.column_statistics.UniqueVa
 register_type_alias(Metric, "evidently.future.metrics.regression.DummyMAE", "evidently:metric_v2:DummyMAE")
 register_type_alias(Metric, "evidently.future.metrics.regression.DummyMAPE", "evidently:metric_v2:DummyMAPE")
 register_type_alias(Metric, "evidently.future.metrics.regression.DummyRMSE", "evidently:metric_v2:DummyRMSE")
+
+register_type_alias(Metric, "evidently.future.metrics.recsys.FBetaTopK", "evidently:metric_v2:FBetaTopK")
+register_type_alias(Metric, "evidently.future.metrics.recsys.HitRate", "evidently:metric_v2:HitRate")
+register_type_alias(Metric, "evidently.future.metrics.recsys.MAP", "evidently:metric_v2:MAP")
+register_type_alias(Metric, "evidently.future.metrics.recsys.MRR", "evidently:metric_v2:MRR")
+register_type_alias(Metric, "evidently.future.metrics.recsys.NDCG", "evidently:metric_v2:NDCG")
+register_type_alias(Metric, "evidently.future.metrics.recsys.PrecisionTopK", "evidently:metric_v2:PrecisionTopK")
+register_type_alias(Metric, "evidently.future.metrics.recsys.RecallTopK", "evidently:metric_v2:RecallTopK")
+register_type_alias(Metric, "evidently.future.metrics.recsys.ScoreDistribution", "evidently:metric_v2:ScoreDistribution")
+register_type_alias(Metric, "evidently.future.metrics.recsys.TopKBase", "evidently:metric_v2:TopKBase")
+
+register_type_alias(MetricTest, "evidently.future.tests.numerical_tests.NotEqualMetricTest", "evidently:test_v2:NotEqualMetricTest")
+register_type_alias(MetricTest, "evidently.future.tests.numerical_tests.EqualMetricTestBase", "evidently:test_v2:EqualMetricTestBase")
+
+register_type_alias(MetricTest, "evidently.future.metrics.column_statistics.ValueDriftTest", "evidently:test_v2:ValueDriftTest")
+
+register_type_alias(Metric, "evidently.future.metrics.classification.DummyAccuracy", "evidently:metric_v2:DummyAccuracy")
+register_type_alias(Metric, "evidently.future.metrics.classification.DummyFNR", "evidently:metric_v2:DummyFNR")
+register_type_alias(Metric, "evidently.future.metrics.classification.DummyFPR", "evidently:metric_v2:DummyFPR")
+register_type_alias(Metric, "evidently.future.metrics.classification.DummyLogLoss", "evidently:metric_v2:DummyLogLoss")
+register_type_alias(Metric, "evidently.future.metrics.classification.DummyRocAuc", "evidently:metric_v2:DummyRocAuc")
+register_type_alias(Metric, "evidently.future.metrics.classification.DummyTNR", "evidently:metric_v2:DummyTNR")
+register_type_alias(Metric, "evidently.future.metrics.classification.DummyTPR", "evidently:metric_v2:DummyTPR")

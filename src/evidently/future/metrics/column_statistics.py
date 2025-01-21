@@ -16,17 +16,22 @@ from evidently.future.metric_types import BoundTest
 from evidently.future.metric_types import ByLabelCalculation
 from evidently.future.metric_types import ByLabelMetric
 from evidently.future.metric_types import ByLabelValue
-from evidently.future.metric_types import CountBoundTest
 from evidently.future.metric_types import CountCalculation
 from evidently.future.metric_types import CountMetric
 from evidently.future.metric_types import CountValue
+from evidently.future.metric_types import MetricTest
+from evidently.future.metric_types import MetricTestProto
+from evidently.future.metric_types import MetricTestResult
 from evidently.future.metric_types import SingleValue
+from evidently.future.metric_types import SingleValueBoundTest
 from evidently.future.metric_types import SingleValueCalculation
 from evidently.future.metric_types import SingleValueMetric
 from evidently.future.metric_types import TMetric
 from evidently.future.metrics._legacy import LegacyMetricCalculation
 from evidently.future.report import Context
+from evidently.future.tests import Reference
 from evidently.future.tests import eq
+from evidently.future.tests import lt
 from evidently.metric_results import DatasetColumns
 from evidently.metric_results import DatasetUtilityColumns
 from evidently.metric_results import HistogramData
@@ -46,6 +51,7 @@ from evidently.renderers.html_widgets import counter
 from evidently.renderers.html_widgets import plotly_figure
 from evidently.renderers.html_widgets import table_data
 from evidently.renderers.html_widgets import widget_tabs
+from evidently.tests.base_test import TestStatus
 from evidently.utils.visualizations import get_distribution_for_column
 from evidently.utils.visualizations import plot_agg_line_data
 from evidently.utils.visualizations import plot_distr_with_perc_button
@@ -83,6 +89,9 @@ def distribution(
 
 class StatisticsMetric(SingleValueMetric):
     column: str
+
+    def _default_tests_with_reference(self) -> List[BoundTest]:
+        return [eq(Reference(relative=0.1)).bind_single(self.get_fingerprint())]
 
 
 TStatisticsMetric = TypeVar("TStatisticsMetric", bound=StatisticsMetric)
@@ -193,6 +202,12 @@ class CategoryCount(CountMetric):
     column: str
     category: Label
 
+    def _default_tests_with_reference(self) -> List[BoundTest]:
+        return [
+            eq(Reference(relative=0.1)).bind_count(self.get_fingerprint(), True),
+            eq(Reference(relative=0.1)).bind_count(self.get_fingerprint(), False),
+        ]
+
 
 class CategoryCountCalculation(CountCalculation[CategoryCount]):
     def calculate(self, context: "Context", current_data: Dataset, reference_data: Optional[Dataset]):
@@ -207,7 +222,7 @@ class CategoryCountCalculation(CountCalculation[CategoryCount]):
     def _calculate_value(self, dataset: Dataset):
         column = dataset.column(self.metric.column)
         try:
-            value = column.data.value_counts()[self.metric.category]
+            value = column.data.value_counts().loc[self.metric.category]
         except KeyError:
             value = 0
         total = column.data.count()
@@ -218,6 +233,12 @@ class InRangeValueCount(CountMetric):
     column: str
     left: Union[int, float]
     right: Union[int, float]
+
+    def _default_tests_with_reference(self) -> List[BoundTest]:
+        return [
+            eq(Reference(relative=0.1)).bind_count(self.get_fingerprint(), True),
+            eq(Reference(relative=0.1)).bind_count(self.get_fingerprint(), False),
+        ]
 
 
 class InRangeValueCountCalculation(CountCalculation[InRangeValueCount]):
@@ -242,6 +263,12 @@ class OutRangeValueCount(CountMetric):
     left: Union[int, float]
     right: Union[int, float]
 
+    def _default_tests_with_reference(self) -> List[BoundTest]:
+        return [
+            eq(Reference(relative=0.1)).bind_count(self.get_fingerprint(), True),
+            eq(Reference(relative=0.1)).bind_count(self.get_fingerprint(), False),
+        ]
+
 
 class OutRangeValueCountCalculation(CountCalculation[OutRangeValueCount]):
     def calculate(self, context: "Context", current_data: Dataset, reference_data: Optional[Dataset]):
@@ -257,12 +284,18 @@ class OutRangeValueCountCalculation(CountCalculation[OutRangeValueCount]):
         column = dataset.column(self.metric.column)
         value = column.data.between(self.metric.left, self.metric.right).count()
         total = column.data.count()
-        return CountValue(total - value, value / total)
+        return CountValue(total - value, (total - value) / total)
 
 
 class InListValueCount(CountMetric):
     column: str
     values: List[Label]
+
+    def _default_tests_with_reference(self) -> List[BoundTest]:
+        return [
+            eq(Reference(relative=0.1)).bind_count(self.get_fingerprint(), True),
+            eq(Reference(relative=0.1)).bind_count(self.get_fingerprint(), False),
+        ]
 
 
 class InListValueCountCalculation(CountCalculation[InListValueCount]):
@@ -277,7 +310,7 @@ class InListValueCountCalculation(CountCalculation[InListValueCount]):
 
     def _calculate_value(self, dataset: Dataset):
         column = dataset.column(self.metric.column)
-        value = column.data.value_counts()[self.metric.values].sum()  # type: ignore[index]
+        value = column.data.value_counts().loc[self.metric.values].sum()  # type: ignore[index]
         total = column.data.count()
         return CountValue(value, value / total)
 
@@ -285,6 +318,12 @@ class InListValueCountCalculation(CountCalculation[InListValueCount]):
 class OutListValueCount(CountMetric):
     column: str
     values: List[Label]
+
+    def _default_tests_with_reference(self) -> List[BoundTest]:
+        return [
+            eq(Reference(relative=0.1)).bind_count(self.get_fingerprint(), True),
+            eq(Reference(relative=0.1)).bind_count(self.get_fingerprint(), False),
+        ]
 
 
 class OutListValueCountCalculation(CountCalculation[OutListValueCount]):
@@ -299,16 +338,22 @@ class OutListValueCountCalculation(CountCalculation[OutListValueCount]):
 
     def _calculate_value(self, dataset: Dataset):
         column = dataset.column(self.metric.column)
-        value = column.data.value_counts()[self.metric.values].sum()  # type: ignore[index]
+        value = column.data.value_counts().loc[self.metric.values].sum()  # type: ignore[index]
         total = column.data.count()
-        return CountValue(total - value, value / total)
+        return CountValue(total - value, (total - value) / total)
 
 
 class MissingValueCount(CountMetric):
     column: str
 
     def _default_tests(self) -> List[BoundTest]:
-        return [CountBoundTest(metric_fingerprint=self.get_fingerprint(), test=eq(0), is_count=True)]
+        return [eq(0).bind_count(self.get_fingerprint(), is_count=True)]
+
+    def _default_tests_with_reference(self) -> List[BoundTest]:
+        return [
+            eq(Reference(relative=0.1)).bind_count(self.get_fingerprint(), True),
+            eq(Reference(relative=0.1)).bind_count(self.get_fingerprint(), False),
+        ]
 
 
 class MissingValueCountCalculation(CountCalculation[MissingValueCount]):
@@ -325,12 +370,18 @@ class MissingValueCountCalculation(CountCalculation[MissingValueCount]):
         column = dataset.column(self.metric.column)
         value = column.data.count()
         total = len(column.data)
-        return CountValue(total - value, value / total)
+        return CountValue(total - value, (total - value) / total)
 
 
 class ValueDrift(SingleValueMetric):
     column: str
     method: Optional[str] = None
+    threshold: Optional[float] = None
+
+
+class ValueDriftTest(MetricTest):
+    def to_test(self) -> MetricTestProto:
+        raise NotImplementedError()
 
 
 class ValueDriftCalculation(SingleValueCalculation[ValueDrift]):
@@ -339,7 +390,11 @@ class ValueDriftCalculation(SingleValueCalculation[ValueDrift]):
         column_type = current_data.column(column).type
         if reference_data is None:
             raise ValueError("Reference data is required for Value Drift")
-        options = DataDriftOptions(all_features_stattest=self.metric.method)
+        options = DataDriftOptions(
+            all_features_stattest=self.metric.method,
+            all_features_threshold=self.metric.threshold,
+        )
+
         drift = get_one_column_drift(
             current_data=current_data.as_dataframe(),
             reference_data=reference_data.as_dataframe(),
@@ -358,6 +413,21 @@ class ValueDriftCalculation(SingleValueCalculation[ValueDrift]):
 
         result = SingleValue(drift.drift_score)
         result.widget = self._render(drift, Options(), ColorOptions())
+        if self.metric.tests is None:
+            result.set_tests(
+                {
+                    SingleValueBoundTest(
+                        metric_fingerprint=self.metric.get_fingerprint(), test=ValueDriftTest()
+                    ): MetricTestResult(
+                        "drift",
+                        f"Value Drift for column {self.metric.column}",
+                        f"Drift score is {drift.drift_score:0.2f}. "
+                        f"The drift detection method is {drift.stattest_name}. "
+                        f"The drift threshold is {drift.stattest_threshold:0.2f}.",
+                        status=TestStatus.FAIL if drift.drift_detected else TestStatus.SUCCESS,
+                    )
+                }
+            )
         return result
 
     def display_name(self) -> str:
@@ -497,6 +567,14 @@ class DriftedColumnsCount(CountMetric):
     text_stattest_threshold: Optional[float] = None
     per_column_stattest_threshold: Optional[Dict[str, float]] = None
 
+    def _default_tests_with_reference(self) -> List[BoundTest]:
+        return [
+            eq(0).bind_count(self.get_fingerprint(), True),
+        ]
+
+    def _default_tests(self) -> List[BoundTest]:
+        return [lt(0.5).bind_count(self.get_fingerprint(), is_count=False)]
+
 
 class LegacyDriftedColumnsMetric(
     LegacyMetricCalculation[CountValue, TMetric, DatasetDriftMetricResults, DatasetDriftMetric],
@@ -506,7 +584,7 @@ class LegacyDriftedColumnsMetric(
     pass
 
 
-class DriftedColumnCalculation(LegacyDriftedColumnsMetric[DriftedColumnsCount]):
+class DriftedColumnCalculation(CountCalculation[DriftedColumnsCount], LegacyDriftedColumnsMetric[DriftedColumnsCount]):
     def legacy_metric(self) -> DatasetDriftMetric:
         return DatasetDriftMetric(
             columns=self.metric.columns,
@@ -532,6 +610,9 @@ class DriftedColumnCalculation(LegacyDriftedColumnsMetric[DriftedColumnsCount]):
     def display_name(self) -> str:
         return "Count of Drifted Columns"
 
+    def share_display_name(self) -> str:
+        return "Share of Drifted Columns"
+
 
 class UniqueValueCount(ByLabelMetric):
     column: str
@@ -539,9 +620,16 @@ class UniqueValueCount(ByLabelMetric):
 
 class UniqueValueCountCalculation(ByLabelCalculation[UniqueValueCount]):
     def calculate(self, context: "Context", current_data: Dataset, reference_data: Optional[Dataset]):
+        current_result = self._calculate_value(current_data)
+        current_result.widget = distribution(
+            f"Unique value count: {self.metric.column}",
+            current_data.column(self.metric.column),
+            None if reference_data is None else reference_data.column(self.metric.column),
+        )
+        reference_result = None if reference_data is None else self._calculate_value(reference_data)
         return (
-            self._calculate_value(current_data),
-            None if reference_data is None else self._calculate_value(reference_data),
+            current_result,
+            reference_result,
         )
 
     def display_name(self) -> str:
@@ -549,4 +637,5 @@ class UniqueValueCountCalculation(ByLabelCalculation[UniqueValueCount]):
 
     def _calculate_value(self, dataset: Dataset):
         value_counts = dataset.as_dataframe()[self.metric.column].value_counts()
-        return ByLabelValue(value_counts.to_dict())  # type: ignore[arg-type]
+        result = ByLabelValue(value_counts.to_dict())  # type: ignore[arg-type]
+        return result
