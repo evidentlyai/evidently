@@ -234,9 +234,9 @@ class DashboardPanelDistribution(DashboardPanel):
 
 
 @autoregister
-class DistributionPanel(DashboardPanel):
+class DashboardPanelHistogram(DashboardPanel):
     class Config:
-        type_alias = "evidently:dashboard_panel:DistributionPanel"
+        type_alias = "evidently:dashboard_panel:DashboardPanelHistogram"
 
     value: PanelValue
     barmode: HistBarMode = HistBarMode.STACK
