@@ -24,10 +24,9 @@ from evidently.future.metrics import RocAucByLabel
 from evidently.future.metrics.classification import DummyF1Score
 from evidently.future.metrics.classification import DummyPrecision
 from evidently.future.metrics.classification import DummyRecall
-from evidently.future.preset_types import MetricPreset
-from evidently.future.preset_types import PresetResult
 from evidently.future.report import Context
 from evidently.metrics import ClassificationDummyMetric
+from evidently.metrics import ClassificationQualityByClass
 from evidently.metrics import ClassificationQualityMetric
 from evidently.model.widget import BaseWidgetInfo
 
@@ -83,12 +82,12 @@ class ClassificationQuality(MetricContainer):
         return render
 
 
-class ClassificationQualityByLabel(MetricPreset):
+class ClassificationQualityByLabel(MetricContainer):
     def __init__(self, probas_threshold: Optional[float] = None, k: Optional[int] = None):
         self._probas_threshold = probas_threshold
         self._k = k
 
-    def metrics(self) -> List[Metric]:
+    def generate_metrics(self, context: "Context") -> List[Metric]:
         return [
             F1ByLabel(probas_threshold=self._probas_threshold, k=self._k),
             PrecisionByLabel(probas_threshold=self._probas_threshold, k=self._k),
@@ -96,11 +95,11 @@ class ClassificationQualityByLabel(MetricPreset):
             RocAucByLabel(probas_threshold=self._probas_threshold, k=self._k),
         ]
 
-    def calculate(self, metric_results: Dict[MetricId, MetricResult]) -> PresetResult:
-        metric = RocAucByLabel(probas_threshold=self._probas_threshold, k=self._k)
-        widget = metric_results[metric.to_calculation().id].widget[:]
+    def render(self, context: "Context", results: Dict[MetricId, MetricResult]):
+        render = context.get_legacy_metric(ClassificationQualityByClass(self._probas_threshold, self._k))[1]
+        widget = render
         widget[0].params["counters"][0]["label"] = "Classification Quality by Label"
-        return PresetResult(widget)
+        return widget
 
 
 class ClassificationDummyQuality(MetricContainer):
