@@ -136,7 +136,7 @@ export const createUseMatchRouter = <M extends MatchAny>() => {
   return hook
 }
 
-export const CreateUseNavigate = <M extends MatchAny>() => {
+export const createUseNavigate = <M extends MatchAny>() => {
   const hook = <K extends M['path']>({
     to,
     paramsToReplace = {},
