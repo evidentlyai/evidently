@@ -13,6 +13,7 @@ from evidently.future.metric_types import TMeanStdMetric
 from evidently.future.metric_types import TSingleValueMetric
 from evidently.future.metrics._legacy import LegacyMetricCalculation
 from evidently.future.report import Context
+from evidently.metrics import RegressionAbsPercentageErrorPlot
 from evidently.metrics import RegressionDummyMetric
 from evidently.metrics.regression_performance.regression_dummy_metric import RegressionDummyMetricResults
 from evidently.metrics.regression_performance.regression_quality import RegressionQualityMetric
@@ -129,19 +130,25 @@ class RMSECalculation(LegacyRegressionSingleValueMetric[RMSE]):
 
 
 class MAPE(MeanStdMetric):
-    pass
+    perc_error_plot: bool = False
 
 
 class MAPECalculation(LegacyRegressionMeanStdMetric[MAPE]):
     def calculate_value(
         self, context: Context, legacy_result: RegressionQualityMetricResults, render: List[BaseWidgetInfo]
     ):
-        return (
-            MeanStdValue(legacy_result.current.mean_abs_perc_error, legacy_result.current.abs_perc_error_std),
+        value = MeanStdValue(legacy_result.current.mean_abs_perc_error, legacy_result.current.abs_perc_error_std)
+        if self.metric.perc_error_plot:
+            value.widget += context.get_legacy_metric(RegressionAbsPercentageErrorPlot())[1]
+        ref_value = (
             None
             if legacy_result.reference is None
-            else MeanStdValue(legacy_result.reference.mean_abs_perc_error, legacy_result.reference.abs_perc_error_std),
+            else MeanStdValue(
+                legacy_result.reference.mean_abs_perc_error,
+                legacy_result.reference.abs_perc_error_std,
+            )
         )
+        return value, ref_value
 
     def display_name(self) -> str:
         return "Mean Absolute Percentage Error"

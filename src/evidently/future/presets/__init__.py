@@ -6,6 +6,7 @@ from .dataset_stats import TextEvals
 from .dataset_stats import ValueStats
 from .drift import DataDriftPreset
 from .regression import RegressionDummyQuality
+from .regression import RegressionPreset
 from .regression import RegressionQuality
 
 __all__ = [
@@ -17,5 +18,6 @@ __all__ = [
     "DatasetStats",
     "RegressionDummyQuality",
     "RegressionQuality",
+    "RegressionPreset",
     "DataDriftPreset",
 ]
