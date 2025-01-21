@@ -1,4 +1,5 @@
 from .classification import ClassificationDummyQuality
+from .classification import ClassificationPreset
 from .classification import ClassificationQuality
 from .classification import ClassificationQualityByLabel
 from .dataset_stats import DatasetStats
@@ -12,6 +13,7 @@ from .regression import RegressionQuality
 
 __all__ = [
     "ClassificationDummyQuality",
+    "ClassificationPreset",
     "ClassificationQuality",
     "ClassificationQualityByLabel",
     "ValueStats",
