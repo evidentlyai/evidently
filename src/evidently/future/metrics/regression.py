@@ -95,6 +95,14 @@ class LegacyRegressionSingleValueMetric(
         default_data.data_definition = definition
         return default_data
 
+    def get_additional_widgets(self, context: "Context") -> List[BaseWidgetInfo]:
+        result = []
+        for field, metric in ADDITIONAL_WIDGET_MAPPING.items():
+            if hasattr(self.metric, field) and getattr(self.metric, field):
+                _, widgets = context.get_legacy_metric(metric, self._gen_input_data)
+                result += widgets
+        return result
+
 
 class MeanError(MeanStdMetric):
     error_plot: bool = True
