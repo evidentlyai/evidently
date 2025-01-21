@@ -17,7 +17,6 @@ from evidently.ui.type_aliases import DatasetID
 from evidently.ui.type_aliases import OrgID
 from evidently.ui.type_aliases import TeamID
 from evidently.ui.type_aliases import UserID
-from evidently.ui.workspace.base import AnySnapshot
 from evidently.ui.workspace.base import WorkspaceBase
 from evidently.utils.sync import async_to_sync
 
@@ -80,11 +79,7 @@ class WorkspaceView(WorkspaceBase):
             self.project_manager.list_projects(self.user_id, team_id or ZERO_UUID, org_id or ZERO_UUID)
         )
 
-    def add_snapshot(self, project_id: STR_UUID, snapshot: AnySnapshot):
-        if not isinstance(snapshot, Snapshot):
-            from evidently.future.backport import snapshot_v2_to_v1
-
-            snapshot = snapshot_v2_to_v1(snapshot)
+    def add_snapshot(self, project_id: STR_UUID, snapshot: Snapshot):
         if isinstance(project_id, str):
             project_id = uuid6.UUID(project_id)
         async_to_sync(self.project_manager.add_snapshot(self.user_id, project_id, snapshot))

@@ -3,6 +3,7 @@ from .classification import ClassificationPreset
 from .classification import ClassificationQuality
 from .classification import ClassificationQualityByLabel
 from .dataset_stats import DatasetStats
+from .dataset_stats import DataSummaryPreset
 from .dataset_stats import TextEvals
 from .dataset_stats import ValueStats
 from .drift import DataDriftPreset
@@ -17,6 +18,7 @@ __all__ = [
     "ValueStats",
     "TextEvals",
     "DatasetStats",
+    "DataSummaryPreset",
     "RegressionDummyQuality",
     "RegressionQuality",
     "DataDriftPreset",

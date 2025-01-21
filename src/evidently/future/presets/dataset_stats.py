@@ -231,6 +231,7 @@ class DatasetStats(MetricContainer):
 class TextEvals(MetricContainer):
     def __init__(self, columns: Optional[List[str]] = None):
         self._columns = columns
+        self._value_stats: List[ValueStats] = []
 
     def generate_metrics(self, context: Context) -> List[Metric]:
         if self._columns is None:
@@ -238,5 +239,23 @@ class TextEvals(MetricContainer):
         else:
             cols = self._columns
         metrics: List[Metric] = [RowCount()]
-        metrics.extend(list(chain(*[ValueStats(column).metrics(context)[1:] for column in cols])))
+        self._value_stats = [ValueStats(column) for column in cols]
+        metrics.extend(list(chain(*[vs.metrics(context)[1:] for vs in self._value_stats])))
         return metrics
+
+    def render(self, context: "Context", results: Dict[MetricId, MetricResult]) -> List[BaseWidgetInfo]:
+        return list(chain(*[vs.render(context, results) for vs in self._value_stats]))
+
+
+class DataSummaryPreset(MetricContainer):
+    def __init__(self, columns: Optional[List[str]] = None):
+        self._columns = columns
+
+    def generate_metrics(self, context: Context) -> List[Metric]:
+        columns_ = context.data_definition.get_categorical_columns() + context.data_definition.get_numerical_columns()
+        self._dataset_stats = DatasetStats()
+        self._text_evals = TextEvals(self._columns or columns_)
+        return self._dataset_stats.metrics(context) + self._text_evals.metrics(context)
+
+    def render(self, context: "Context", results: Dict[MetricId, MetricResult]) -> List[BaseWidgetInfo]:
+        return self._dataset_stats.render(context, results) + self._text_evals.render(context, results)
