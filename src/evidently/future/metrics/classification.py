@@ -88,17 +88,14 @@ class LegacyClassificationQualityByClass(
             if hasattr(self.metric, field) and getattr(self.metric, field):
                 _, widgets = context.get_legacy_metric(metric, self._gen_input_data)
                 for w in widgets:
-                    if "current" in w.title.lower():
-                        current.append(w)
-                    elif "reference" in w.title.lower():
+                    if "reference" in w.title.lower():
                         refrence.append(w)
                     else:
-                        raise ValueError(f"Unknow if current or reference widget {w} for {metric}")
+                        current.append(w)
         return current, refrence
 
 
 class F1ByLabel(ClassificationQualityByLabel):
-    probas_threshold: bool = False
     top_k: bool = False
 
 
@@ -121,7 +118,6 @@ class F1ByLabelCalculation(LegacyClassificationQualityByClass[F1ByLabel]):
 
 
 class PrecisionByLabel(ClassificationQualityByLabel):
-    probas_threshold: bool = False
     top_k: bool = False
 
 
@@ -146,7 +142,6 @@ class PrecisionByLabelCalculation(LegacyClassificationQualityByClass[PrecisionBy
 
 
 class RecallByLabel(ClassificationQualityByLabel):
-    probas_threshold: bool = False
     top_k: bool = False
 
 
@@ -171,7 +166,6 @@ class RecallByLabelCalculation(LegacyClassificationQualityByClass[RecallByLabel]
 
 
 class RocAucByLabel(ClassificationQualityByLabel):
-    probas_threshold: bool = False
     top_k: bool = False
 
 
@@ -245,17 +239,14 @@ class LegacyClassificationQuality(
             if hasattr(self.metric, field) and getattr(self.metric, field):
                 _, widgets = context.get_legacy_metric(metric, self._gen_input_data)
                 for w in widgets:
-                    if "current" in w.title.lower():
-                        current.append(w)
-                    elif "reference" in w.title.lower():
+                    if "reference" in w.title.lower():
                         refrence.append(w)
                     else:
-                        raise ValueError(f"Unknow if current or reference widget {w} for {metric}")
+                        current.append(w)
         return current, refrence
 
 
 class F1Score(ClassificationQuality):
-    probas_threshold: bool = False
     top_k: bool = False
     conf_matrix: bool = True
 
@@ -297,7 +288,6 @@ class AccuracyCalculation(LegacyClassificationQuality[Accuracy]):
 
 
 class Precision(ClassificationQuality):
-    probas_threshold: bool = False
     top_k: bool = False
     conf_matrix: bool = True
     pr_curve: bool = False
@@ -321,7 +311,6 @@ class PrecisionCalculation(LegacyClassificationQuality[Precision]):
 
 
 class Recall(ClassificationQuality):
-    probas_threshold: bool = False
     top_k: bool = False
     conf_matrix: bool = True
     pr_curve: bool = False
@@ -345,7 +334,6 @@ class RecallCalculation(LegacyClassificationQuality[Recall]):
 
 
 class TPR(ClassificationQuality):
-    probas_threshold: bool = False
     top_k: bool = False
     pr_table: bool = False
 
@@ -371,7 +359,6 @@ class TPRCalculation(LegacyClassificationQuality[TPR]):
 
 
 class TNR(ClassificationQuality):
-    probas_threshold: bool = False
     top_k: bool = False
     pr_table: bool = False
 
@@ -397,7 +384,6 @@ class TNRCalculation(LegacyClassificationQuality[TNR]):
 
 
 class FPR(ClassificationQuality):
-    probas_threshold: bool = False
     top_k: bool = False
     pr_table: bool = False
 
@@ -423,7 +409,6 @@ class FPRCalculation(LegacyClassificationQuality[FPR]):
 
 
 class FNR(ClassificationQuality):
-    probas_threshold: bool = False
     top_k: bool = False
     pr_table: bool = False
 

@@ -67,12 +67,10 @@ class LegacyRegressionMeanStdMetric(
             if hasattr(self.metric, field) and getattr(self.metric, field):
                 _, widgets = context.get_legacy_metric(metric, self._gen_input_data)
                 for w in widgets:
-                    if "current" in w.title.lower():
-                        current.append(w)
-                    elif "reference" in w.title.lower():
+                    if "reference" in w.title.lower():
                         refrence.append(w)
                     else:
-                        raise ValueError(f"Unknow if current or reference widget {w} for {metric}")
+                        current.append(w)
         return current, refrence
 
 

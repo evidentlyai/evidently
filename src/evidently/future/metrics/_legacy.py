@@ -38,9 +38,9 @@ class LegacyMetricCalculation(
         self.calculate_value(context, result, render)
         current, reference = self.calculate_value(context, result, render)
         add_cur, add_ref = self.get_additional_widgets(context)
-        current.widget.extend(add_cur)
+        current.widget += add_cur
         if reference is not None:
-            reference.widget.extend(add_ref)
+            reference.widget += add_ref
         return current, reference
 
     def get_additional_widgets(self, context: "Context") -> typing.Tuple[List[BaseWidgetInfo], List[BaseWidgetInfo]]:
