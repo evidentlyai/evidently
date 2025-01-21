@@ -4,6 +4,7 @@ from .base import ReportFilter
 from .reports import CounterAgg
 from .reports import DashboardPanelCounter
 from .reports import DashboardPanelDistribution
+from .reports import DashboardPanelHistogram
 from .reports import DashboardPanelPlot
 from .reports import HistBarMode
 from .reports import PlotType
@@ -27,4 +28,5 @@ __all__ = [
     "HistBarMode",
     "DashboardPanelTestSuiteCounter",
     "DashboardPanelDistribution",
+    "DashboardPanelHistogram",
 ]
