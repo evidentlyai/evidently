@@ -5,7 +5,6 @@ from typing import List
 from typing import Optional
 from typing import Tuple
 from typing import TypeVar
-from typing import Union
 
 from evidently.future.metric_types import ByLabelCalculation
 from evidently.future.metric_types import ByLabelMetric
@@ -17,8 +16,15 @@ from evidently.future.metric_types import TMetricResult
 from evidently.future.metrics._legacy import LegacyMetricCalculation
 from evidently.future.report import Context
 from evidently.metric_results import Label
+from evidently.metrics import ClassificationConfusionMatrix
 from evidently.metrics import ClassificationDummyMetric
+from evidently.metrics import ClassificationLiftCurve
+from evidently.metrics import ClassificationLiftTable
+from evidently.metrics import ClassificationPRCurve
+from evidently.metrics import ClassificationProbDistribution
+from evidently.metrics import ClassificationPRTable
 from evidently.metrics import ClassificationQualityByClass as _ClassificationQualityByClass
+from evidently.metrics import ClassificationRocCurve
 from evidently.metrics.classification_performance.classification_dummy_metric import ClassificationDummyMetricResults
 from evidently.metrics.classification_performance.classification_quality_metric import ClassificationQualityMetric
 from evidently.metrics.classification_performance.classification_quality_metric import ClassificationQualityMetricResult
@@ -75,9 +81,25 @@ class LegacyClassificationQualityByClass(
             return labels[label]
         return label
 
+    def get_additional_widgets(self, context: "Context") -> Tuple[List[BaseWidgetInfo], List[BaseWidgetInfo]]:
+        current = []
+        refrence = []
+        for field, metric in ADDITIONAL_WIDGET_MAPPING.items():
+            if hasattr(self.metric, field) and getattr(self.metric, field):
+                _, widgets = context.get_legacy_metric(metric, self._gen_input_data)
+                for w in widgets:
+                    if "current" in w.title.lower():
+                        current.append(w)
+                    elif "reference" in w.title.lower():
+                        refrence.append(w)
+                    else:
+                        raise ValueError(f"Unknow if current or reference widget {w} for {metric}")
+        return current, refrence
+
 
 class F1ByLabel(ClassificationQualityByLabel):
-    pass
+    probas_threshold: bool = False
+    top_k: bool = False
 
 
 class F1ByLabelCalculation(LegacyClassificationQualityByClass[F1ByLabel]):
@@ -99,7 +121,8 @@ class F1ByLabelCalculation(LegacyClassificationQualityByClass[F1ByLabel]):
 
 
 class PrecisionByLabel(ClassificationQualityByLabel):
-    pass
+    probas_threshold: bool = False
+    top_k: bool = False
 
 
 class PrecisionByLabelCalculation(LegacyClassificationQualityByClass[PrecisionByLabel]):
@@ -123,7 +146,8 @@ class PrecisionByLabelCalculation(LegacyClassificationQualityByClass[PrecisionBy
 
 
 class RecallByLabel(ClassificationQualityByLabel):
-    pass
+    probas_threshold: bool = False
+    top_k: bool = False
 
 
 class RecallByLabelCalculation(LegacyClassificationQualityByClass[RecallByLabel]):
@@ -147,7 +171,8 @@ class RecallByLabelCalculation(LegacyClassificationQualityByClass[RecallByLabel]
 
 
 class RocAucByLabel(ClassificationQualityByLabel):
-    pass
+    probas_threshold: bool = False
+    top_k: bool = False
 
 
 class RocAucByLabelCalculation(LegacyClassificationQualityByClass[RocAucByLabel]):
@@ -175,6 +200,17 @@ class RocAucByLabelCalculation(LegacyClassificationQualityByClass[RocAucByLabel]
         return "ROC AUC by Label metric"
 
 
+ADDITIONAL_WIDGET_MAPPING = {
+    "prob_distribution": ClassificationProbDistribution(),
+    "conf_matrix": ClassificationConfusionMatrix(),
+    "pr_curve": ClassificationPRCurve(),
+    "pr_table": ClassificationPRTable(),
+    "roc_curve": ClassificationRocCurve(),
+    "lift_curve": ClassificationLiftCurve(),
+    "lift_table": ClassificationLiftTable(),
+}
+
+
 class LegacyClassificationQuality(
     SingleValueCalculation[TSingleValueMetric],
     LegacyMetricCalculation[
@@ -199,12 +235,29 @@ class LegacyClassificationQuality(
         context: "Context",
         legacy_result: ClassificationQualityMetricResult,
         render: List[BaseWidgetInfo],
-    ) -> Union[SingleValue, Tuple[SingleValue, Optional[SingleValue]]]:
+    ) -> Tuple[SingleValue, Optional[SingleValue]]:
         raise NotImplementedError()
+
+    def get_additional_widgets(self, context: "Context") -> Tuple[List[BaseWidgetInfo], List[BaseWidgetInfo]]:
+        current = []
+        refrence = []
+        for field, metric in ADDITIONAL_WIDGET_MAPPING.items():
+            if hasattr(self.metric, field) and getattr(self.metric, field):
+                _, widgets = context.get_legacy_metric(metric, self._gen_input_data)
+                for w in widgets:
+                    if "current" in w.title.lower():
+                        current.append(w)
+                    elif "reference" in w.title.lower():
+                        refrence.append(w)
+                    else:
+                        raise ValueError(f"Unknow if current or reference widget {w} for {metric}")
+        return current, refrence
 
 
 class F1Score(ClassificationQuality):
-    pass
+    probas_threshold: bool = False
+    top_k: bool = False
+    conf_matrix: bool = True
 
 
 class F1ScoreCalculation(LegacyClassificationQuality[F1Score]):
@@ -244,7 +297,11 @@ class AccuracyCalculation(LegacyClassificationQuality[Accuracy]):
 
 
 class Precision(ClassificationQuality):
-    pass
+    probas_threshold: bool = False
+    top_k: bool = False
+    conf_matrix: bool = True
+    pr_curve: bool = False
+    pr_table: bool = False
 
 
 class PrecisionCalculation(LegacyClassificationQuality[Precision]):
@@ -264,7 +321,11 @@ class PrecisionCalculation(LegacyClassificationQuality[Precision]):
 
 
 class Recall(ClassificationQuality):
-    pass
+    probas_threshold: bool = False
+    top_k: bool = False
+    conf_matrix: bool = True
+    pr_curve: bool = False
+    pr_table: bool = False
 
 
 class RecallCalculation(LegacyClassificationQuality[Recall]):
@@ -284,7 +345,9 @@ class RecallCalculation(LegacyClassificationQuality[Recall]):
 
 
 class TPR(ClassificationQuality):
-    pass
+    probas_threshold: bool = False
+    top_k: bool = False
+    pr_table: bool = False
 
 
 class TPRCalculation(LegacyClassificationQuality[TPR]):
@@ -308,7 +371,9 @@ class TPRCalculation(LegacyClassificationQuality[TPR]):
 
 
 class TNR(ClassificationQuality):
-    pass
+    probas_threshold: bool = False
+    top_k: bool = False
+    pr_table: bool = False
 
 
 class TNRCalculation(LegacyClassificationQuality[TNR]):
@@ -332,7 +397,9 @@ class TNRCalculation(LegacyClassificationQuality[TNR]):
 
 
 class FPR(ClassificationQuality):
-    pass
+    probas_threshold: bool = False
+    top_k: bool = False
+    pr_table: bool = False
 
 
 class FPRCalculation(LegacyClassificationQuality[FPR]):
@@ -356,7 +423,9 @@ class FPRCalculation(LegacyClassificationQuality[FPR]):
 
 
 class FNR(ClassificationQuality):
-    pass
+    probas_threshold: bool = False
+    top_k: bool = False
+    pr_table: bool = False
 
 
 class FNRCalculation(LegacyClassificationQuality[FNR]):
@@ -380,7 +449,9 @@ class FNRCalculation(LegacyClassificationQuality[FNR]):
 
 
 class RocAuc(ClassificationQuality):
-    pass
+    roc_curve: bool = True
+    top_k: bool = False
+    pr_table: bool = False
 
 
 class RocAucCalculation(LegacyClassificationQuality[RocAuc]):
@@ -404,7 +475,8 @@ class RocAucCalculation(LegacyClassificationQuality[RocAuc]):
 
 
 class LogLoss(ClassificationQuality):
-    pass
+    top_k: bool = False
+    pr_table: bool = False
 
 
 class LogLossCalculation(LegacyClassificationQuality[LogLoss]):

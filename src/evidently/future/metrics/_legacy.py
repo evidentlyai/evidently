@@ -35,7 +35,16 @@ class LegacyMetricCalculation(
 
     def calculate(self, context: "Context", current_data: Dataset, reference_data: Optional[Dataset]) -> TMetricResult:
         result, render = context.get_legacy_metric(self.legacy_metric(), self._gen_input_data)
-        return self.calculate_value(context, result, render)
+        self.calculate_value(context, result, render)
+        current, reference = self.calculate_value(context, result, render)
+        add_cur, add_ref = self.get_additional_widgets(context)
+        current.widget.extend(add_cur)
+        if reference is not None:
+            reference.widget.extend(add_ref)
+        return current, reference
+
+    def get_additional_widgets(self, context: "Context") -> typing.Tuple[List[BaseWidgetInfo], List[BaseWidgetInfo]]:
+        return [], []
 
     @abc.abstractmethod
     def calculate_value(
