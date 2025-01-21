@@ -160,8 +160,6 @@ class RocAucByLabelCalculation(LegacyClassificationQualityByClass[RocAucByLabel]
         value = ByLabelValue(
             {self._relabel(context, k): v.roc_auc for k, v in legacy_result.current.metrics.items()},
         )
-        value.widget = render
-        value.widget[0].params["counters"][0]["label"] = self.display_name()
         return (
             value,
             None
