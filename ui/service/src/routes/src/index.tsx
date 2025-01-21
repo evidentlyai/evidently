@@ -1,19 +1,19 @@
 import type { RouteExtended } from 'evidently-ui-lib/router-utils/types'
 
 // It's important to import `SnapshotIdLazy` before `DashboardLazy`. Affects bundle chunks
-import { SnapshotIdLazy } from './src/snapshot-view/import'
+import { SnapshotIdLazy } from './snapshot-view/import'
 
-import { DashboardLazy } from './src/dashboard/import'
+import { DashboardLazy } from './dashboard/import'
 
 import { Route } from 'evidently-ui-lib/router-utils/router-builder'
-import { Home } from './src/home/import'
-import { Project } from './src/project/import'
-import { ProjectsLayout } from './src/projects-layout/import'
-import { ProjectsList } from './src/projects-list/import'
-import { ReportsLayout } from './src/reports-layout/import'
-import { ReportsList } from './src/reports-list/import'
-import { TestSuitesLayout } from './src/test-suites-layout/import'
-import { TestSuitesList } from './src/test-suites-list/import'
+import { Home } from './home/import'
+import { Project } from './project/import'
+import { ProjectsLayout } from './projects-layout/import'
+import { ProjectsList } from './projects-list/import'
+import { ReportsLayout } from './reports-layout/import'
+import { ReportsList } from './reports-list/import'
+import { TestSuitesLayout } from './test-suites-layout/import'
+import { TestSuitesList } from './test-suites-list/import'
 
 export const routes = [
   Route(Home, {

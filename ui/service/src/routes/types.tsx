@@ -6,7 +6,7 @@ import type {
   GetRouteStructure
 } from 'evidently-ui-lib/router-utils/types'
 
-import type { routes } from '~/routes/routes'
+import type { routes } from '~/routes/src'
 
 export type Routes = GetMatches<typeof routes>
 
