@@ -175,7 +175,7 @@ export type GetLinkParams<K extends string, Matches> = keyof GetParams<K> extend
       paramsToReplace: GetParams<K>
     }
 
-export type GetLinkParamsByPath<K extends string> = keyof GetParams<K> extends never
+export type GetLinkParamsByPathOnly<K extends string> = keyof GetParams<K> extends never
   ? {
       to: K
       // biome-ignore lint/complexity/noBannedTypes: fine

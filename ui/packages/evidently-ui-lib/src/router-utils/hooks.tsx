@@ -5,13 +5,18 @@ import {
   useLoaderData,
   useMatch,
   useMatches,
+  useNavigate,
   useNavigation,
   useParams,
   useRevalidator,
   useSearchParams
 } from 'react-router-dom'
-import type { CrumbDefinition, HandleWithCrumb } from '~/router-utils/router-builder'
-import type { MatchAny, MatchWithLoader } from '~/router-utils/types'
+import {
+  type CrumbDefinition,
+  type HandleWithCrumb,
+  makeRouteUrl
+} from '~/router-utils/router-builder'
+import type { GetLinkParams, MatchAny, MatchWithLoader } from '~/router-utils/types'
 
 export const useCurrentRouteParams = <
   K extends MatchWithLoader &
@@ -126,6 +131,21 @@ export const useCrumbsFromHandle = () => {
 export const createUseMatchRouter = <M extends MatchAny>() => {
   const hook = <K extends M['path']>({ path }: { path: K }) => {
     return Boolean(useMatch({ path, end: false }))
+  }
+
+  return hook
+}
+
+export const CreateUseNavigate = <M extends MatchAny>() => {
+  const hook = <K extends M['path']>({
+    to,
+    paramsToReplace = {},
+    query,
+    options
+  }: GetLinkParams<K, M> & { options?: NavigateOptions }) => {
+    const navigate = useNavigate()
+
+    navigate(makeRouteUrl({ path: to, paramsToReplace, query }), options)
   }
 
   return hook
