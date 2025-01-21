@@ -137,15 +137,16 @@ export const createUseMatchRouter = <M extends MatchAny>() => {
 }
 
 export const createUseNavigate = <M extends MatchAny>() => {
-  const hook = <K extends M['path']>({
-    to,
-    paramsToReplace = {},
-    query,
-    options
-  }: GetLinkParams<K, M> & { options?: NavigateOptions }) => {
+  const hook = <K extends M['path']>() => {
     const navigate = useNavigate()
 
-    navigate(makeRouteUrl({ path: to, paramsToReplace, query }), options)
+    return ({
+      to,
+      query,
+      paramsToReplace = {},
+      options
+    }: GetLinkParams<K, M> & { options?: NavigateOptions }) =>
+      navigate(makeRouteUrl({ path: to, paramsToReplace, query }), options)
   }
 
   return hook
