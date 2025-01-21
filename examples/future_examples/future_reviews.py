@@ -1,4 +1,3 @@
-import pathlib
 from datetime import datetime
 from datetime import timedelta
 
@@ -27,7 +26,7 @@ from evidently.future.report import Report
 
 from evidently.future.presets import DatasetStats
 from evidently.future.presets import ClassificationQuality
-from evidently.future.metrics import ValueDrift, RowCount, ColumnCount, Precision
+from evidently.future.metrics import ValueDrift, RowCount, ColumnCount, Precision, UniqueValueCount
 from evidently.future.metrics.column_statistics import CategoryCount
 from evidently.future.metrics.column_statistics import MeanValue
 from evidently.future.metrics.column_statistics import InRangeValueCount
@@ -38,21 +37,24 @@ from evidently.ui.workspace import Workspace
 
 from evidently.ui.dashboards import CounterAgg
 from evidently.ui.dashboards import DashboardPanelCounter
-#from evidently.ui.dashboards import DashboardPanelDistribution
+from evidently.ui.dashboards import DashboardPanelHistogram
 from evidently.ui.dashboards import DashboardPanelPlot
+from evidently.ui.dashboards import DashboardPanelTestSuiteCounter
+from evidently.ui.dashboards import DashboardPanelTestSuite
 from evidently.ui.dashboards import PanelValue
 from evidently.ui.dashboards import PlotType
+from evidently.ui.dashboards import TestSuitePanelType
 from evidently.ui.dashboards import ReportFilter
+from evidently.ui.dashboards import TestFilter
+from evidently.tests.base_test import TestStatus
 #from evidently.ui.demo_projects import DemoProject
 #from evidently.ui.workspace import WorkspaceBase
 from evidently.renderers.html_widgets import WidgetSize
 
 
 def create_data():
-    reviews = pd.read_parquet(
-        pathlib.Path(__file__).parent.joinpath("../../test_data/reviews.parquet"),
-        dtype_backend="numpy_nullable",
-    )
+    reviews_data = datasets.fetch_openml(name="Womens-E-Commerce-Clothing-Reviews", version=2, as_frame="auto")
+    reviews = reviews_data.frame
     for name, rs in (
         ("TheOtherStore", 0),
         ("AMajorCompetitor", 42),
@@ -77,10 +79,10 @@ def create_data():
     current = reviews.sample(n=5000, replace=True, ignore_index=True, random_state=142)
 
     data_definition=DataDefinition(
-        text_features=["Review_Text", "Title"],
-        numerical_features=["Age", "Positive_Feedback_Count", "Rating", "prediction"],
-        categorical_features=["Division_Name", "Department_Name", "Class_Name"],
-        classifications=[MulticlassClassification(target="Rating", prediction_labels="prediction")]
+        text_columns=["Review_Text", "Title"],
+        numerical_columns=["Age", "Positive_Feedback_Count", "Rating", "prediction"],
+        categorical_columns=["Division_Name", "Department_Name", "Class_Name"],
+        classification=[MulticlassClassification(target="Rating", prediction_labels="prediction")]
     )
 
     ref_dataset = Dataset.from_pandas(
@@ -99,10 +101,10 @@ def create_data():
     )
 
     data_definition=DataDefinition(
-        text_features=["Review_Text", "Title"],
-        numerical_features=["Age", "Positive_Feedback_Count", "Rating", "prediction"],
-        categorical_features=["Division_Name", "Department_Name", "Class_Name"],
-        classifications=[MulticlassClassification(target="Rating", prediction_labels="prediction")]
+        text_columns=["Review_Text", "Title"],
+        numerical_columns=["Age", "Positive_Feedback_Count", "Rating", "prediction"],
+        categorical_columns=["Division_Name", "Department_Name", "Class_Name"],
+        classification=[MulticlassClassification(target="Rating", prediction_labels="prediction")]
     )
 
     cur_dataset = Dataset.from_pandas(
@@ -126,6 +128,9 @@ def create_report(i: int, reference, current):
     text_report = Report([
         DatasetStats(),
         ClassificationQuality(),
+        UniqueValueCount(column="Division_Name"),
+        UniqueValueCount(column="Department_Name"),
+        UniqueValueCount(column="Class_Name"),
         ValueDrift(column="prediction"),
         ValueDrift(column="Rating"),
         ValueDrift(column="Age"),
@@ -143,6 +148,7 @@ def create_report(i: int, reference, current):
         CategoryCount(column="Rating", category=5),
         CategoryCount(column="competitors", category=1),
         ],
+        include_tests=True
         #timestamp=datetime(2023, 1, 29) + timedelta(days=i + 1),
     )
     #text_report.set_batch_size("daily")
@@ -152,11 +158,11 @@ def create_report(i: int, reference, current):
         current_df_batch = current_df.iloc[1000 * i : 1000 * (i + 1), :]
 
         data_definition=DataDefinition(
-            text_features=["Review_Text", "Title"],
-            numerical_features=["Age", "Positive_Feedback_Count", "Rating", "prediction", 
+            text_columns=["Review_Text", "Title"],
+            numerical_columns=["Age", "Positive_Feedback_Count", "Rating", "prediction", 
                 "Non Letter Character Percentage", "Sentiment", "urls", "TextLength in the Range"],
-            categorical_features=["Division_Name", "Department_Name", "Class_Name", "OOV"],
-            classifications=[MulticlassClassification(target="Rating", prediction_labels="prediction")]
+            categorical_columns=["Division_Name", "Department_Name", "Class_Name", "OOV"],
+            classification=[MulticlassClassification(target="Rating", prediction_labels="prediction")]
         )
 
         current_batch_dataset = Dataset.from_pandas(
@@ -167,6 +173,7 @@ def create_report(i: int, reference, current):
         snapshot = text_report.run(
             reference_data=reference,
             current_data=current_batch_dataset,
+            timestamp = datetime(2024, 1, 29) + timedelta(days=i + 1)
         )
 
     else:
@@ -174,10 +181,10 @@ def create_report(i: int, reference, current):
         current_df_batch = current_df[(current_df.Rating < 5)]
 
         data_definition=DataDefinition(
-            text_features=["Review_Text", "Title"],
-            numerical_features=["Age", "Positive_Feedback_Count", "Rating", "prediction", 
+            text_columns=["Review_Text", "Title"],
+            numerical_columns=["Age", "Positive_Feedback_Count", "Rating", "prediction", 
                 "Non Letter Character Percentage", "Sentiment", "urls", "TextLength in the Range"],
-            categorical_features=["Division_Name", "Department_Name", "Class_Name", "OOV"],
+            categorical_columns=["Division_Name", "Department_Name", "Class_Name", "OOV"],
             classifications=[MulticlassClassification(target="Rating", prediction_labels="prediction")]
         )
 
@@ -189,15 +196,13 @@ def create_report(i: int, reference, current):
         snapshot = text_report.run(
             reference_data=reference,
             current_data=current_batch_dataset,
+            timestamp = datetime(2024, 1, 29) + timedelta(days=i + 1)
         )
 
-    v1_snapshot = snapshot_v2_to_v1(snapshot)
-    v1_snapshot.timestamp = datetime(2024, 1, 29) + timedelta(days=i + 1)
+    return snapshot
 
-    return v1_snapshot
-
-def create_project(name="reviews v1"):
-    ws = Workspace.create("./workspace")
+def create_project(name="reviews with tests"):
+    ws = Workspace.create("./workspace_v2")
     
     project = ws.get_project(ZERO_UUID)
     if project is None:
@@ -221,7 +226,7 @@ def create_project(name="reviews v1"):
             title="Model Calls",
             filter=ReportFilter(metadata_values={}, tag_values=[]),
             value=PanelValue(
-                #metric_id="DatasetSummaryMetric",
+                #metric_fingerprint=RowCount().metric_id or get_fingerprint(),
                 metric_args={"metric.metric_id": RowCount().metric_id},
                 field_path="value",
                 legend="count",
@@ -245,6 +250,99 @@ def create_project(name="reviews v1"):
             size=WidgetSize.HALF,
         )
     )
+    # Distribution
+    project.dashboard.add_panel(
+        DashboardPanelHistogram(
+            title="Distr",
+            value=PanelValue(
+                field_path="values", 
+                metric_args={"metric.metric_id": UniqueValueCount(column="Division_Name").metric_id}
+                ),
+            filter=ReportFilter(metadata_values={}, tag_values=[]),
+            barmode="stack",
+            size=WidgetSize.FULL,
+        )
+    )
+
+    project.dashboard.add_panel(
+        DashboardPanelHistogram(
+            title="Distr",
+            value=PanelValue(
+                field_path="values", 
+                metric_args={"metric.metric_id": UniqueValueCount(column="Division_Name").metric_id}
+                ),
+            filter=ReportFilter(metadata_values={}, tag_values=[]),
+            barmode="group",
+            size=WidgetSize.FULL,
+        )
+    )
+
+    project.dashboard.add_panel(
+        DashboardPanelHistogram(
+            title="Distr",
+            value=PanelValue(
+                field_path="values", 
+                metric_args={"metric.metric_id": UniqueValueCount(column="Division_Name").metric_id}
+                ),
+            filter=ReportFilter(metadata_values={}, tag_values=[]),
+            barmode="overlay",
+            size=WidgetSize.FULL,
+        )
+    )
+
+    project.dashboard.add_panel(
+        DashboardPanelHistogram(
+            title="Distr",
+            value=PanelValue(
+                field_path="values", 
+                metric_args={"metric.metric_id": UniqueValueCount(column="Division_Name").metric_id}
+                ),
+            filter=ReportFilter(metadata_values={}, tag_values=[]),
+            barmode="relative",
+            size=WidgetSize.FULL,
+        )
+    )
+
+    # Test Counter
+    project.dashboard.add_panel(
+    DashboardPanelTestSuiteCounter(
+        title="Success of last",
+        agg=CounterAgg.LAST
+    )
+    )
+
+    project.dashboard.add_panel(
+    DashboardPanelTestSuiteCounter(
+        title="Success of 1",
+        test_filters=[
+            TestFilter(test_args={"test.metric_fingerprint": ValueDrift(column="Division_Name").metric_id}),
+            ],
+        statuses=[TestStatus.ERROR, TestStatus.FAIL]
+    )
+)
+
+    # Test Panel
+    project.dashboard.add_panel(
+        DashboardPanelTestSuite(
+            title="All tests: detailed",
+            filter=ReportFilter(metadata_values={}, tag_values=[], include_test_suites=True),
+            size=WidgetSize.HALF,
+            panel_type=TestSuitePanelType.DETAILED,
+            time_agg="1D",
+        )
+    )
+
+    project.dashboard.add_panel(
+        DashboardPanelTestSuite(
+            title="Column Drift tests for key features: detailed",
+            test_filters=[
+                TestFilter(test_args={"test.metric_fingerprint": ValueDrift(column="Division_Name").metric_id})
+            ],
+            filter=ReportFilter(metadata_values={}, tag_values=[], include_test_suites=True),
+            size=WidgetSize.HALF,
+            time_agg="1D",
+        )
+    )
 
     # Precision
     project.dashboard.add_panel(
@@ -262,6 +360,8 @@ def create_project(name="reviews v1"):
             size=WidgetSize.FULL,
         )
     )
+
+
 
      # target and prediction drift
     project.dashboard.add_panel(
