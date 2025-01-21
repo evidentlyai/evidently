@@ -93,7 +93,7 @@ class LegacyClassificationQualityByClass(
 
 
 class F1ByLabel(ClassificationQualityByLabel):
-    top_k: bool = False
+    pass
 
 
 class F1ByLabelCalculation(LegacyClassificationQualityByClass[F1ByLabel]):
@@ -115,7 +115,7 @@ class F1ByLabelCalculation(LegacyClassificationQualityByClass[F1ByLabel]):
 
 
 class PrecisionByLabel(ClassificationQualityByLabel):
-    top_k: bool = False
+    pass
 
 
 class PrecisionByLabelCalculation(LegacyClassificationQualityByClass[PrecisionByLabel]):
@@ -139,7 +139,7 @@ class PrecisionByLabelCalculation(LegacyClassificationQualityByClass[PrecisionBy
 
 
 class RecallByLabel(ClassificationQualityByLabel):
-    top_k: bool = False
+    pass
 
 
 class RecallByLabelCalculation(LegacyClassificationQualityByClass[RecallByLabel]):
@@ -163,7 +163,7 @@ class RecallByLabelCalculation(LegacyClassificationQualityByClass[RecallByLabel]
 
 
 class RocAucByLabel(ClassificationQualityByLabel):
-    top_k: bool = False
+    pass
 
 
 class RocAucByLabelCalculation(LegacyClassificationQualityByClass[RocAucByLabel]):
@@ -239,7 +239,6 @@ class LegacyClassificationQuality(
 
 
 class F1Score(ClassificationQuality):
-    top_k: bool = False
     conf_matrix: bool = True
 
 
@@ -280,7 +279,6 @@ class AccuracyCalculation(LegacyClassificationQuality[Accuracy]):
 
 
 class Precision(ClassificationQuality):
-    top_k: bool = False
     conf_matrix: bool = True
     pr_curve: bool = False
     pr_table: bool = False
@@ -303,7 +301,6 @@ class PrecisionCalculation(LegacyClassificationQuality[Precision]):
 
 
 class Recall(ClassificationQuality):
-    top_k: bool = False
     conf_matrix: bool = True
     pr_curve: bool = False
     pr_table: bool = False
@@ -326,7 +323,6 @@ class RecallCalculation(LegacyClassificationQuality[Recall]):
 
 
 class TPR(ClassificationQuality):
-    top_k: bool = False
     pr_table: bool = False
 
 
@@ -351,7 +347,6 @@ class TPRCalculation(LegacyClassificationQuality[TPR]):
 
 
 class TNR(ClassificationQuality):
-    top_k: bool = False
     pr_table: bool = False
 
 
@@ -376,7 +371,6 @@ class TNRCalculation(LegacyClassificationQuality[TNR]):
 
 
 class FPR(ClassificationQuality):
-    top_k: bool = False
     pr_table: bool = False
 
 
@@ -401,7 +395,6 @@ class FPRCalculation(LegacyClassificationQuality[FPR]):
 
 
 class FNR(ClassificationQuality):
-    top_k: bool = False
     pr_table: bool = False
 
 
@@ -427,7 +420,6 @@ class FNRCalculation(LegacyClassificationQuality[FNR]):
 
 class RocAuc(ClassificationQuality):
     roc_curve: bool = True
-    top_k: bool = False
     pr_table: bool = False
 
 
@@ -452,7 +444,6 @@ class RocAucCalculation(LegacyClassificationQuality[RocAuc]):
 
 
 class LogLoss(ClassificationQuality):
-    top_k: bool = False
     pr_table: bool = False
 
 
