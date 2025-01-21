@@ -1,11 +1,13 @@
 import abc
 from typing import ClassVar
+from typing import Dict
 from typing import Generic
 from typing import List
 from typing import Optional
 from typing import Tuple
 from typing import TypeVar
 
+from evidently.base_metric import Metric
 from evidently.future.metric_types import ByLabelCalculation
 from evidently.future.metric_types import ByLabelMetric
 from evidently.future.metric_types import ByLabelValue
@@ -189,7 +191,7 @@ class RocAucByLabelCalculation(LegacyClassificationQualityByClass[RocAucByLabel]
         return "ROC AUC by Label metric"
 
 
-ADDITIONAL_WIDGET_MAPPING = {
+ADDITIONAL_WIDGET_MAPPING: Dict[str, Metric] = {
     "prob_distribution": ClassificationProbDistribution(),
     "conf_matrix": ClassificationConfusionMatrix(),
     "pr_curve": ClassificationPRCurve(),

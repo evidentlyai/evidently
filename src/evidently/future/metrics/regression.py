@@ -1,8 +1,10 @@
 import abc
+from typing import Dict
 from typing import Generic
 from typing import List
 
 from evidently.base_metric import InputData
+from evidently.base_metric import Metric
 from evidently.future.metric_types import MeanStdCalculation
 from evidently.future.metric_types import MeanStdMetric
 from evidently.future.metric_types import MeanStdValue
@@ -25,7 +27,7 @@ from evidently.metrics.regression_performance.regression_quality import Regressi
 from evidently.model.widget import BaseWidgetInfo
 from evidently.utils.data_preprocessing import create_data_definition
 
-ADDITIONAL_WIDGET_MAPPING = {
+ADDITIONAL_WIDGET_MAPPING: Dict[str, Metric] = {
     "error_plot": RegressionErrorPlot(),
     "error_distr": RegressionErrorDistribution(),
     "error_normality": RegressionErrorNormality(),
