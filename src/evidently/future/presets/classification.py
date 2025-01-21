@@ -29,6 +29,7 @@ from evidently.metrics import ClassificationConfusionMatrix
 from evidently.metrics import ClassificationDummyMetric
 from evidently.metrics import ClassificationPRCurve
 from evidently.metrics import ClassificationPRTable
+from evidently.metrics import ClassificationQualityByClass
 from evidently.metrics import ClassificationQualityMetric
 from evidently.model.widget import BaseWidgetInfo
 
@@ -117,8 +118,9 @@ class ClassificationQualityByLabel(MetricContainer):
             RocAucByLabel(probas_threshold=self._probas_threshold, k=self._k),
         ]
 
-    def render(self, context: "Context", metric_results: Dict[MetricId, MetricResult]):
-        widget = context.get_metric_result(RocAucByLabel(probas_threshold=self._probas_threshold, k=self._k)).widget
+    def render(self, context: "Context", results: Dict[MetricId, MetricResult]):
+        render = context.get_legacy_metric(ClassificationQualityByClass(self._probas_threshold, self._k))[1]
+        widget = render
         widget[0].params["counters"][0]["label"] = "Classification Quality by Label"
         return widget
 
