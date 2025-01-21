@@ -1,7 +1,6 @@
 import abc
 from typing import Generic
 from typing import List
-from typing import Tuple
 
 from evidently.base_metric import InputData
 from evidently.future.metric_types import MeanStdCalculation
@@ -60,18 +59,13 @@ class LegacyRegressionMeanStdMetric(
         default_data.data_definition = definition
         return default_data
 
-    def get_additional_widgets(self, context: "Context") -> Tuple[List[BaseWidgetInfo], List[BaseWidgetInfo]]:
-        current = []
-        refrence = []
+    def get_additional_widgets(self, context: "Context") -> List[BaseWidgetInfo]:
+        result = []
         for field, metric in ADDITIONAL_WIDGET_MAPPING.items():
             if hasattr(self.metric, field) and getattr(self.metric, field):
                 _, widgets = context.get_legacy_metric(metric, self._gen_input_data)
-                for w in widgets:
-                    if "reference" in w.title.lower():
-                        refrence.append(w)
-                    else:
-                        current.append(w)
-        return current, refrence
+                result += widgets
+        return result
 
 
 class LegacyRegressionSingleValueMetric(

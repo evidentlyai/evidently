@@ -13,6 +13,8 @@ from evidently.future.metric_types import MetricCalculation
 from evidently.future.metric_types import TMetric
 from evidently.future.metric_types import TMetricResult
 from evidently.future.metric_types import TResult
+from evidently.future.metric_types import get_default_render
+from evidently.future.metric_types import get_default_render_ref
 from evidently.future.report import _default_input_data_generator
 from evidently.model.widget import BaseWidgetInfo
 
@@ -37,14 +39,17 @@ class LegacyMetricCalculation(
         result, render = context.get_legacy_metric(self.legacy_metric(), self._gen_input_data)
         self.calculate_value(context, result, render)
         current, reference = self.calculate_value(context, result, render)
-        add_cur, add_ref = self.get_additional_widgets(context)
-        current.widget += add_cur
-        if reference is not None:
-            reference.widget += add_ref
+
+        if reference is None:
+            current.widget = get_default_render(self.display_name(), current)
+        else:
+            current.widget = get_default_render_ref(self.display_name(), current, reference)
+
+        current.widget += self.get_additional_widgets(context)
         return current, reference
 
-    def get_additional_widgets(self, context: "Context") -> typing.Tuple[List[BaseWidgetInfo], List[BaseWidgetInfo]]:
-        return [], []
+    def get_additional_widgets(self, context: "Context") -> List[BaseWidgetInfo]:
+        return []
 
     @abc.abstractmethod
     def calculate_value(

@@ -81,18 +81,13 @@ class LegacyClassificationQualityByClass(
             return labels[label]
         return label
 
-    def get_additional_widgets(self, context: "Context") -> Tuple[List[BaseWidgetInfo], List[BaseWidgetInfo]]:
-        current = []
-        refrence = []
+    def get_additional_widgets(self, context: "Context") -> List[BaseWidgetInfo]:
+        result = []
         for field, metric in ADDITIONAL_WIDGET_MAPPING.items():
             if hasattr(self.metric, field) and getattr(self.metric, field):
                 _, widgets = context.get_legacy_metric(metric, self._gen_input_data)
-                for w in widgets:
-                    if "reference" in w.title.lower():
-                        refrence.append(w)
-                    else:
-                        current.append(w)
-        return current, refrence
+                result += widgets
+        return result
 
 
 class F1ByLabel(ClassificationQualityByLabel):
@@ -232,18 +227,13 @@ class LegacyClassificationQuality(
     ) -> Tuple[SingleValue, Optional[SingleValue]]:
         raise NotImplementedError()
 
-    def get_additional_widgets(self, context: "Context") -> Tuple[List[BaseWidgetInfo], List[BaseWidgetInfo]]:
-        current = []
-        refrence = []
+    def get_additional_widgets(self, context: "Context") -> List[BaseWidgetInfo]:
+        result = []
         for field, metric in ADDITIONAL_WIDGET_MAPPING.items():
             if hasattr(self.metric, field) and getattr(self.metric, field):
                 _, widgets = context.get_legacy_metric(metric, self._gen_input_data)
-                for w in widgets:
-                    if "reference" in w.title.lower():
-                        refrence.append(w)
-                    else:
-                        current.append(w)
-        return current, refrence
+                result += widgets
+        return result
 
 
 class F1Score(ClassificationQuality):
