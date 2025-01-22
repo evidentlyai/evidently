@@ -193,7 +193,7 @@ class FeatureDescriptor(Descriptor):
         self._feature = feature
 
     def get_dataset_column(self, column_name: str, values: pd.Series) -> DatasetColumn:
-        column_type = self._feature.get_type(f"{self._feature.get_fingerprint()}.{column_name}")
+        column_type = self._feature.get_type(column_name)
         if column_type == ColumnType.Numerical:
             values = pd.to_numeric(values, errors="coerce")
         dataset_column = DatasetColumn(type=column_type, data=values)
