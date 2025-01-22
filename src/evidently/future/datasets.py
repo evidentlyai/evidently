@@ -16,6 +16,7 @@ import pandas as pd
 
 from evidently import ColumnMapping
 from evidently import ColumnType
+from evidently.base_metric import DisplayName
 from evidently.features.generated_features import GeneratedFeatures
 from evidently.metric_results import Label
 from evidently.options.base import Options
@@ -177,7 +178,7 @@ class Descriptor:
         self._alias = alias
 
     @abc.abstractmethod
-    def generate_data(self, dataset: "Dataset") -> Union[DatasetColumn, Dict[str, DatasetColumn]]:
+    def generate_data(self, dataset: "Dataset") -> Union[DatasetColumn, Dict[DisplayName, DatasetColumn]]:
         raise NotImplementedError()
 
     @property
@@ -198,16 +199,16 @@ class FeatureDescriptor(Descriptor):
         dataset_column = DatasetColumn(type=column_type, data=values)
         return dataset_column
 
-    def generate_data(self, dataset: "Dataset") -> Union[DatasetColumn, Dict[str, DatasetColumn]]:
-        feature = self._feature.generate_features(
+    def generate_data(self, dataset: "Dataset") -> Union[DatasetColumn, Dict[DisplayName, DatasetColumn]]:
+        feature = self._feature.generate_features_renamed(
             dataset.as_dataframe(),
             create_data_definition(None, dataset.as_dataframe(), ColumnMapping()),
             Options(),
         )
-        if len(feature.columns) > 1:
-            return {col: self.get_dataset_column(col, feature[col]) for col in feature.columns}
-        col = feature.columns[0]
-        return self.get_dataset_column(col, feature[col])
+        return {
+            col.display_name: self.get_dataset_column(col.name, feature[col.name])
+            for col in self._feature.list_columns()
+        }
 
 
 def _determine_desccriptor_column_name(alias: str, columns: List[str]):
@@ -361,15 +362,11 @@ class PandasDataset(Dataset):
             self._data_definition.categorical_descriptors.append(key)
 
     def add_descriptor(self, descriptor: Descriptor):
-        key = _determine_desccriptor_column_name(descriptor.alias, self._data.columns.tolist())
-        new_column = descriptor.generate_data(self)
-        if isinstance(new_column, DatasetColumn):
-            self.add_column(key, new_column)
-        elif len(new_column) > 1:
-            for col, value in new_column.items():
-                self.add_column(f"{key}.{col}", value)
-        else:
-            self.add_column(key, list(new_column.values())[0])
+        new_columns = descriptor.generate_data(self)
+        if isinstance(new_columns, DatasetColumn):
+            new_columns = {descriptor.alias: new_columns}
+        for col, value in new_columns.items():
+            self.add_column(_determine_desccriptor_column_name(col, self._data.columns.tolist()), value)
 
     def add_descriptors(self, descriptors: List[Descriptor]):
         for descriptor in descriptors:
