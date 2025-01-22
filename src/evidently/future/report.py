@@ -25,15 +25,20 @@ from evidently.future.metric_types import Metric
 from evidently.future.metric_types import MetricCalculationBase
 from evidently.future.metric_types import MetricId
 from evidently.future.metric_types import MetricResult
+from evidently.future.metric_types import MetricTestResult
 from evidently.future.metric_types import SingleValueLocation
 from evidently.future.metric_types import metric_tests_widget
 from evidently.future.metric_types import render_widgets
 from evidently.future.preset_types import MetricPreset
 from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import DEFAULT_RENDERERS
+from evidently.renderers.html_widgets import CounterData
+from evidently.renderers.html_widgets import WidgetSize
+from evidently.renderers.html_widgets import counter
 from evidently.suite.base_suite import MetadataValueType
 from evidently.suite.base_suite import _discover_dependencies
 from evidently.suite.base_suite import find_metric_renderer
+from evidently.tests.base_test import TestStatus
 from evidently.utils import NumpyEncoder
 from evidently.utils.data_preprocessing import create_data_definition
 
@@ -212,6 +217,20 @@ def _default_input_data_generator(context: "Context") -> InputData:
     return input_data
 
 
+def metric_tests_stats(tests: List[MetricTestResult]) -> BaseWidgetInfo:
+    statuses = [TestStatus.SUCCESS, TestStatus.WARNING, TestStatus.FAIL, TestStatus.ERROR]
+    status_stats: Dict[TestStatus, int] = {}
+    for test in tests:
+        status_stats[test.status] = status_stats.get(test.status, 0) + 1
+    stats = counter(
+        title="",
+        size=WidgetSize.FULL,
+        counters=[CounterData(status.value, str(status_stats.get(status, 0))) for status in statuses],
+    )
+    stats.params["v2_test"] = True
+    return stats
+
+
 class Snapshot:
     _report: "Report"
     _context: Context  # stores report calculation progress
@@ -267,6 +286,7 @@ class Snapshot:
         widgets_to_render: List[BaseWidgetInfo] = [group_widget(title="", widgets=self._widgets)]
 
         if len(tests) > 0:
+            widgets_to_render.append(metric_tests_stats(tests))
             widgets_to_render.append(metric_tests_widget(tests))
         return render_widgets(widgets_to_render)
 
