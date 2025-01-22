@@ -198,7 +198,7 @@ class OpenAIWrapper(LLMWrapper):
         except openai.RateLimitError as e:
             raise LLMRateLimitError(e.message) from e
         except openai.APIError as e:
-            raise LLMRequestError(f"Failed to call OpenAI complete API: {e.message}") from e
+            raise LLMRequestError(f"Failed to call OpenAI complete API: {e.message}", original_error=e) from e
 
         content = response.choices[0].message.content
         assert content is not None  # todo: better error
