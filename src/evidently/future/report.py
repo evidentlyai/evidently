@@ -219,13 +219,13 @@ def _default_input_data_generator(context: "Context") -> InputData:
 
 def metric_tests_stats(tests: List[MetricTestResult]) -> BaseWidgetInfo:
     statuses = [TestStatus.SUCCESS, TestStatus.WARNING, TestStatus.FAIL, TestStatus.ERROR]
-    status_stats = {}
+    status_stats: Dict[TestStatus, int] = {}
     for test in tests:
         status_stats[test.status] = status_stats.get(test.status, 0) + 1
     stats = counter(
         title="",
         size=WidgetSize.FULL,
-        counters=[CounterData(status.value, status_stats.get(status, 0)) for status in statuses],
+        counters=[CounterData(status.value, str(status_stats.get(status, 0))) for status in statuses],
     )
     stats.params["v2_test"] = True
     return stats
