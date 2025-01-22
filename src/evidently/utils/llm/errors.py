@@ -1,5 +1,3 @@
-import openai
-
 from evidently.errors import EvidentlyError
 
 
@@ -12,7 +10,7 @@ class LLMResponseParseError(EvidentlyLLMError):
 
 
 class LLMRequestError(EvidentlyLLMError):
-    def __init__(self, message: str, original_error: openai.APIError = None):
+    def __init__(self, message: str, original_error: Exception = None):
         super().__init__(message)
         self.original_error = original_error
 
