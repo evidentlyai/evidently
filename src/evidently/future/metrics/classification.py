@@ -8,6 +8,7 @@ from typing import Tuple
 from typing import TypeVar
 
 from evidently.base_metric import Metric
+from evidently.future.metric_types import BoundTest
 from evidently.future.metric_types import ByLabelCalculation
 from evidently.future.metric_types import ByLabelMetric
 from evidently.future.metric_types import ByLabelValue
@@ -17,6 +18,8 @@ from evidently.future.metric_types import SingleValueMetric
 from evidently.future.metric_types import TMetricResult
 from evidently.future.metrics._legacy import LegacyMetricCalculation
 from evidently.future.report import Context
+from evidently.future.tests import Reference
+from evidently.future.tests import eq
 from evidently.metric_results import Label
 from evidently.metrics import ClassificationConfusionMatrix
 from evidently.metrics import ClassificationDummyMetric
@@ -38,10 +41,20 @@ class ClassificationQualityByLabel(ByLabelMetric):
     probas_threshold: Optional[float] = None
     k: Optional[int] = None
 
+    def _default_tests_with_reference(self) -> List[BoundTest]:
+        return [eq(Reference(relative=0.2)).bind_single(self.get_fingerprint())]
 
-class ClassificationQuality(SingleValueMetric):
+
+class ClassificationQualityBase(SingleValueMetric):
+    pass
+
+
+class ClassificationQuality(ClassificationQualityBase):
     probas_threshold: Optional[float] = None
     k: Optional[int] = None
+
+    def _default_tests_with_reference(self) -> List[BoundTest]:
+        return [eq(Reference(relative=0.2)).bind_single(self.get_fingerprint())]
 
 
 TByLabelMetric = TypeVar("TByLabelMetric", bound=ClassificationQualityByLabel)
@@ -498,7 +511,15 @@ class LegacyClassificationDummy(
         return SingleValue(current_value), SingleValue(reference_value)
 
 
-class DummyPrecision(ClassificationQuality):
+class DummyClassificationQuality(ClassificationQualityBase):
+    def _default_tests_with_reference(self) -> List[BoundTest]:
+        return []
+
+    def _default_tests(self) -> List[BoundTest]:
+        return []
+
+
+class DummyPrecision(DummyClassificationQuality):
     pass
 
 
@@ -509,7 +530,7 @@ class DummyPrecisionCalculation(LegacyClassificationDummy[DummyPrecision]):
         return "Dummy precision metric"
 
 
-class DummyRecall(ClassificationQuality):
+class DummyRecall(DummyClassificationQuality):
     pass
 
 
@@ -520,7 +541,7 @@ class DummyRecallCalculation(LegacyClassificationDummy[DummyRecall]):
         return "Dummy recall metric"
 
 
-class DummyF1Score(ClassificationQuality):
+class DummyF1Score(DummyClassificationQuality):
     pass
 
 
@@ -531,7 +552,7 @@ class DummyF1ScoreCalculation(LegacyClassificationDummy[DummyF1Score]):
         return "Dummy F1 score metric"
 
 
-class DummyAccuracy(ClassificationQuality):
+class DummyAccuracy(DummyClassificationQuality):
     pass
 
 
@@ -542,7 +563,7 @@ class DummyAccuracyCalculation(LegacyClassificationDummy[DummyAccuracy]):
         return "Dummy accuracy metric"
 
 
-class DummyTPR(ClassificationQuality):
+class DummyTPR(DummyClassificationQuality):
     pass
 
 
@@ -553,7 +574,7 @@ class DummyTPRCalculation(LegacyClassificationDummy[DummyTPR]):
         return "Dummy TPR metric"
 
 
-class DummyTNR(ClassificationQuality):
+class DummyTNR(DummyClassificationQuality):
     pass
 
 
@@ -564,7 +585,7 @@ class DummyTNRCalculation(LegacyClassificationDummy[DummyTNR]):
         return "Dummy TNR metric"
 
 
-class DummyFPR(ClassificationQuality):
+class DummyFPR(DummyClassificationQuality):
     pass
 
 
@@ -575,7 +596,7 @@ class DummyFPRCalculation(LegacyClassificationDummy[DummyFPR]):
         return "Dummy FPR metric"
 
 
-class DummyFNR(ClassificationQuality):
+class DummyFNR(DummyClassificationQuality):
     pass
 
 
@@ -586,7 +607,7 @@ class DummyFNRCalculation(LegacyClassificationDummy[DummyFNR]):
         return "Dummy FNR metric"
 
 
-class DummyLogLoss(ClassificationQuality):
+class DummyLogLoss(DummyClassificationQuality):
     pass
 
 
@@ -597,7 +618,7 @@ class DummyLogLossCalculation(LegacyClassificationDummy[DummyLogLoss]):
         return "Dummy LogLoss metric"
 
 
-class DummyRocAuc(ClassificationQuality):
+class DummyRocAuc(DummyClassificationQuality):
     pass
 
 
