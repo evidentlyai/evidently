@@ -44,8 +44,8 @@ class ClassificationQualityByLabel(ByLabelMetric):
     probas_threshold: Optional[float] = None
     k: Optional[int] = None
 
-    def _default_tests_with_reference(self, context: Context) -> List[BoundTest]:
-        return [eq(Reference(relative=0.2)).bind_single(self.get_fingerprint())]
+    # def _default_tests_with_reference(self, context: Context) -> List[BoundTest]:
+    #     return [eq(Reference(relative=0.2)).bind_single(self.get_fingerprint())]
 
 
 class ClassificationQualityBase(SingleValueMetric):
