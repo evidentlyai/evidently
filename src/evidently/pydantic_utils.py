@@ -4,6 +4,7 @@ import inspect
 import itertools
 import json
 import os
+import sys
 import warnings
 from abc import ABC
 from enum import Enum
@@ -37,6 +38,8 @@ from evidently._pydantic_compat import import_string
 
 if TYPE_CHECKING:
     from evidently._pydantic_compat import DictStrAny
+
+md5_kwargs = {"usedforsecurity": False} if sys.version_info >= (3, 9) else {}
 
 
 T = TypeVar("T")
@@ -315,7 +318,9 @@ class EvidentlyBaseModel(FrozenBaseModel, PolymorphicModel):
         is_base_type = True
 
     def get_fingerprint(self) -> Fingerprint:
-        return hashlib.md5((self.__get_classpath__() + str(self.get_fingerprint_parts())).encode("utf8")).hexdigest()
+        return hashlib.md5(
+            (self.__get_classpath__() + str(self.get_fingerprint_parts())).encode("utf8"), **md5_kwargs
+        ).hexdigest()
 
     def get_fingerprint_parts(self) -> Tuple[FingerprintPart, ...]:
         return tuple(
@@ -570,4 +575,4 @@ def get_object_hash_deprecated(obj: Union[BaseModel, dict]):
 
     if isinstance(obj, BaseModel):
         obj = obj.dict()
-    return hashlib.md5(json.dumps(obj, cls=NumpyEncoder).encode("utf8")).hexdigest()  # nosec: B324
+    return hashlib.md5(json.dumps(obj, cls=NumpyEncoder).encode("utf8"), **md5_kwargs).hexdigest()  # nosec: B324
