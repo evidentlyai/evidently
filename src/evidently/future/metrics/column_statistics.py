@@ -636,6 +636,6 @@ class UniqueValueCountCalculation(ByLabelCalculation[UniqueValueCount]):
         return "Unique Value Count"
 
     def _calculate_value(self, dataset: Dataset):
-        value_counts = dataset.as_dataframe()[self.metric.column].value_counts()
+        value_counts = dataset.as_dataframe()[self.metric.column].value_counts(dropna=False)
         result = ByLabelValue(value_counts.to_dict())  # type: ignore[arg-type]
         return result
