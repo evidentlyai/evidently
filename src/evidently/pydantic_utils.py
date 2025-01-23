@@ -571,5 +571,4 @@ def get_object_hash_deprecated(obj: Union[BaseModel, dict]):
 
     if isinstance(obj, BaseModel):
         obj = obj.dict()
-
     return hashlib.md5(json.dumps(obj, cls=NumpyEncoder).encode("utf8"), **md5_kwargs).hexdigest()  # nosec: B324
