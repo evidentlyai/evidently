@@ -77,13 +77,16 @@ class DatasetType(Enum):
     ADDITIONAL = "additional"
 
 
+DisplayName = str
+
+
 @autoregister
 class ColumnName(EnumValueMixin, EvidentlyBaseModel):
     class Config:
         type_alias = "evidently:base:ColumnName"
 
     name: str
-    display_name: str
+    display_name: DisplayName
     dataset: DatasetType
     _feature_class: Optional["GeneratedFeatures"] = PrivateAttr(None)
 

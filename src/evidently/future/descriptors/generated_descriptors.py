@@ -8,9 +8,6 @@ from evidently.features.llm_judge import BaseLLMPromptTemplate
 from evidently.features.llm_judge import Uncertainty
 from evidently.future.datasets import FeatureDescriptor
 
-DEFAULT_LLM_PROVIDER = "openai"
-DEFAULT_LLM_MODEL = "gpt-4o-mini"
-
 
 class BERTScore(FeatureDescriptor):
     def __init__(
@@ -373,8 +370,8 @@ class BiasLLMEval(FeatureDescriptor):
     def __init__(
         self,
         column_name: str,
-        provider: str = DEFAULT_LLM_PROVIDER,
-        model: str = DEFAULT_LLM_MODEL,
+        provider: str = "openai",
+        model: str = "gpt-4o-mini",
         additional_columns: Optional[Dict[str, str]] = None,
         include_category: Optional[bool] = None,
         include_score: Optional[bool] = None,
@@ -392,6 +389,7 @@ class BiasLLMEval(FeatureDescriptor):
             include_score=include_score,
             include_reasoning=include_reasoning,
             uncertainty=uncertainty,
+            display_name=alias,
         ).feature(column_name)
         super().__init__(feature, alias=alias)
 
@@ -419,6 +417,7 @@ class BinaryClassificationLLMEval(FeatureDescriptor):
             include_score=include_score,
             include_reasoning=include_reasoning,
             uncertainty=uncertainty,
+            display_name=alias,
         ).feature(column_name)
         super().__init__(feature, alias=alias)
 
@@ -428,8 +427,8 @@ class ContextQualityLLMEval(FeatureDescriptor):
         self,
         column_name: str,
         question: str,
-        provider: str = DEFAULT_LLM_PROVIDER,
-        model: str = DEFAULT_LLM_MODEL,
+        provider: str = "openai",
+        model: str = "gpt-4o-mini",
         additional_columns: Optional[Dict[str, str]] = None,
         include_category: Optional[bool] = None,
         include_score: Optional[bool] = None,
@@ -448,6 +447,7 @@ class ContextQualityLLMEval(FeatureDescriptor):
             include_score=include_score,
             include_reasoning=include_reasoning,
             uncertainty=uncertainty,
+            display_name=alias,
         ).feature(column_name)
         super().__init__(feature, alias=alias)
 
@@ -456,8 +456,8 @@ class DeclineLLMEval(FeatureDescriptor):
     def __init__(
         self,
         column_name: str,
-        provider: str = DEFAULT_LLM_PROVIDER,
-        model: str = DEFAULT_LLM_MODEL,
+        provider: str = "openai",
+        model: str = "gpt-4o-mini",
         additional_columns: Optional[Dict[str, str]] = None,
         include_category: Optional[bool] = None,
         include_score: Optional[bool] = None,
@@ -475,6 +475,7 @@ class DeclineLLMEval(FeatureDescriptor):
             include_score=include_score,
             include_reasoning=include_reasoning,
             uncertainty=uncertainty,
+            display_name=alias,
         ).feature(column_name)
         super().__init__(feature, alias=alias)
 
@@ -483,9 +484,9 @@ class LLMEval(FeatureDescriptor):
     def __init__(
         self,
         column_name: str,
+        provider: str,
+        model: str,
         template: BaseLLMPromptTemplate,
-        provider: str = DEFAULT_LLM_PROVIDER,
-        model: str = DEFAULT_LLM_MODEL,
         additional_columns: Optional[Dict[str, str]] = None,
         subcolumn: Optional[str] = None,
         alias: Optional[str] = None,
@@ -498,6 +499,7 @@ class LLMEval(FeatureDescriptor):
             template=template,
             additional_columns=additional_columns,
             subcolumn=subcolumn,
+            display_name=alias,
         ).feature(column_name)
         super().__init__(feature, alias=alias)
 
@@ -506,8 +508,8 @@ class NegativityLLMEval(FeatureDescriptor):
     def __init__(
         self,
         column_name: str,
-        provider: str = DEFAULT_LLM_PROVIDER,
-        model: str = DEFAULT_LLM_MODEL,
+        provider: str = "openai",
+        model: str = "gpt-4o-mini",
         additional_columns: Optional[Dict[str, str]] = None,
         include_category: Optional[bool] = None,
         include_score: Optional[bool] = None,
@@ -525,6 +527,7 @@ class NegativityLLMEval(FeatureDescriptor):
             include_score=include_score,
             include_reasoning=include_reasoning,
             uncertainty=uncertainty,
+            display_name=alias,
         ).feature(column_name)
         super().__init__(feature, alias=alias)
 
@@ -533,8 +536,8 @@ class PIILLMEval(FeatureDescriptor):
     def __init__(
         self,
         column_name: str,
-        provider: str = DEFAULT_LLM_PROVIDER,
-        model: str = DEFAULT_LLM_MODEL,
+        provider: str = "openai",
+        model: str = "gpt-4o-mini",
         additional_columns: Optional[Dict[str, str]] = None,
         include_category: Optional[bool] = None,
         include_score: Optional[bool] = None,
@@ -552,6 +555,7 @@ class PIILLMEval(FeatureDescriptor):
             include_score=include_score,
             include_reasoning=include_reasoning,
             uncertainty=uncertainty,
+            display_name=alias,
         ).feature(column_name)
         super().__init__(feature, alias=alias)
 
@@ -560,8 +564,8 @@ class ToxicityLLMEval(FeatureDescriptor):
     def __init__(
         self,
         column_name: str,
-        provider: str = DEFAULT_LLM_PROVIDER,
-        model: str = DEFAULT_LLM_MODEL,
+        provider: str = "openai",
+        model: str = "gpt-4o-mini",
         additional_columns: Optional[Dict[str, str]] = None,
         include_category: Optional[bool] = None,
         include_score: Optional[bool] = None,
@@ -579,5 +583,6 @@ class ToxicityLLMEval(FeatureDescriptor):
             include_score=include_score,
             include_reasoning=include_reasoning,
             uncertainty=uncertainty,
+            display_name=alias,
         ).feature(column_name)
         super().__init__(feature, alias=alias)

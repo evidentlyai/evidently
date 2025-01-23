@@ -76,7 +76,7 @@ class BinaryClassificationPromptTemplate(BaseLLMPromptTemplate, EnumValueMixin):
     include_score: bool = False
     score_range: Tuple[float, float] = (0.0, 1.0)
 
-    output_column: str = "category"
+    output_column: str = ""
     output_reasoning_column: str = "reasoning"
     output_score_column: str = "score"
 
@@ -153,7 +153,7 @@ class BinaryClassificationPromptTemplate(BaseLLMPromptTemplate, EnumValueMixin):
             return ColumnType.Text
         if subcolumn == self.output_score_column:
             return ColumnType.Numerical
-        if subcolumn == self.output_column:
+        if subcolumn == self.output_column or subcolumn is None:
             return ColumnType.Categorical
         raise ValueError(f"Unknown subcolumn {subcolumn}")
 
@@ -196,7 +196,7 @@ class LLMJudge(GeneratedFeatures):
 
     def list_columns(self) -> List["ColumnName"]:
         return [
-            self._create_column(c, display_name=f"{self.display_name or ''} {c}")
+            self._create_column(c, display_name=f"{self.display_name or ''} {c}".strip())
             for c in self.template.list_output_columns()
         ]
 
