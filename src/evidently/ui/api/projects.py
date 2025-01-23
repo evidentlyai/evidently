@@ -33,6 +33,7 @@ from evidently.ui.base import SnapshotMetadata
 from evidently.ui.dashboards.base import DashboardPanel
 from evidently.ui.dashboards.reports import DashboardPanelCounter
 from evidently.ui.dashboards.reports import DashboardPanelDistribution
+from evidently.ui.dashboards.reports import DashboardPanelHistogram
 from evidently.ui.dashboards.reports import DashboardPanelPlot
 from evidently.ui.dashboards.test_suites import DashboardPanelTestSuite
 from evidently.ui.dashboards.test_suites import DashboardPanelTestSuiteCounter
@@ -255,6 +256,7 @@ async def additional_models() -> (
             DashboardPanelPlot,
             DashboardPanelCounter,
             DashboardPanelDistribution,
+            DashboardPanelHistogram,
             DashboardPanelTestSuite,
             DashboardPanelTestSuiteCounter,
         ]
