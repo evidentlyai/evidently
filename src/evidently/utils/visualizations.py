@@ -75,7 +75,7 @@ def collect_updatemenus(name1: str, name2: str, y_name_1: str, y_name_2: str, vi
 
 def add_traces_with_perc(fig, hist_data, x, y, marker_color, name):
     trace_1 = go.Bar(
-        x=[str(x) for x in hist_data.x],
+        x=hist_data.x,
         y=hist_data.count,
         visible=True,
         marker_color=marker_color,
@@ -83,7 +83,7 @@ def add_traces_with_perc(fig, hist_data, x, y, marker_color, name):
     )
 
     trace_2 = go.Bar(
-        x=[str(x) for x in hist_data.x],
+        x=hist_data.x,
         y=(hist_data.count / hist_data.count.sum()) * 100,
         visible=False,
         marker_color=marker_color,
