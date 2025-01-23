@@ -35,6 +35,7 @@ from evidently.pydantic_utils import Fingerprint
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.suite.base_suite import ContextPayload
+from evidently.suite.base_suite import RunMetadata
 from evidently.suite.base_suite import Snapshot as SnapshotV1
 from evidently.tests.base_test import Test as TestV1
 from evidently.tests.base_test import TestParameters
@@ -48,6 +49,7 @@ from evidently.ui.errors import EvidentlyServiceError
 from evidently.ui.type_aliases import ProjectID
 from evidently.utils.data_preprocessing import ColumnDefinition
 from evidently.utils.data_preprocessing import DataDefinition as DataDefinitionV1
+from evidently.utils.data_preprocessing import FeatureDefinition
 from evidently.utils.data_preprocessing import PredictionColumns
 
 if TYPE_CHECKING:
@@ -126,9 +128,9 @@ def metric_v2_to_v1(metric: MetricV2) -> MetricV1:
 def data_definition_v2_to_v1(dd: DataDefinition, reference_present: bool) -> DataDefinitionV1:
     """For now, only columns field is used"""
     columns: Dict[str, ColumnDefinition] = {
-        **{col: ColumnDefinition(col, ColumnType.Numerical) for col in dd.get_numerical_columns()},
-        **{col: ColumnDefinition(col, ColumnType.Text) for col in dd.get_text_columns()},
-        **{col: ColumnDefinition(col, ColumnType.Categorical) for col in dd.get_categorical_columns()},
+        **{col: ColumnDefinition(col, ColumnType.Numerical) for col in (dd.numerical_columns or [])},
+        **{col: ColumnDefinition(col, ColumnType.Text) for col in (dd.text_columns or [])},
+        **{col: ColumnDefinition(col, ColumnType.Categorical) for col in (dd.categorical_columns or [])},
     }
     target: Optional[ColumnDefinition] = None
     prediction_columns: Optional[PredictionColumns] = None
@@ -183,6 +185,26 @@ def snapshot_v2_to_v1(snapshot: SnapshotV2) -> SnapshotV1:
                 )
             )
 
+    descriptors = {
+        x: FeatureDefinition(
+            feature_name=x,
+            display_name=x,
+            feature_type=ColumnType.Categorical,
+            feature_class="",
+        )
+        for x in context.data_definition.categorical_descriptors
+    }
+    descriptors.update(
+        {
+            x: FeatureDefinition(
+                feature_name=x,
+                display_name=x,
+                feature_type=ColumnType.Numerical,
+                feature_class="",
+            )
+            for x in context.data_definition.numerical_descriptors
+        }
+    )
     snapshot = SnapshotV1(
         id=new_id(),
         name="",
@@ -195,6 +217,7 @@ def snapshot_v2_to_v1(snapshot: SnapshotV2) -> SnapshotV1:
             tests=tests,
             test_results=test_results,
             data_definition=data_definition_v2_to_v1(context.data_definition, context._input_data[1] is not None),
+            run_metadata=RunMetadata(descriptors=descriptors),
         ),
         metrics_ids=list(range(len(metrics))),
         test_ids=[],
