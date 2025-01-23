@@ -112,7 +112,7 @@ def test_llm_judge():
 
     dd = DataDefinition(columns={}, reference_present=False)
     fts = llm_judge.generate_features(data, dd, Options())
-    pd.testing.assert_frame_equal(fts, pd.DataFrame({"category": ["A", "B"]}))
+    pd.testing.assert_frame_equal(fts, pd.DataFrame({"": ["A", "B"]}))
 
 
 @pytest.mark.asyncio
@@ -128,7 +128,7 @@ def test_multicol_llm_judge():
 
     dd = DataDefinition(columns={}, reference_present=False)
     fts = llm_judge.generate_features(data, dd, Options())
-    pd.testing.assert_frame_equal(fts, pd.DataFrame({"category": ["A", "B"]}))
+    pd.testing.assert_frame_equal(fts, pd.DataFrame({"": ["A", "B"]}))
 
 
 def test_run_snapshot_with_llm_judge():
