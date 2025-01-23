@@ -67,16 +67,13 @@ class ReferenceMetricNotFound(BaseException):
         return f"Reference data not found for {str(self.metric)} ({self.metric.metric_id})"
 
 
-MetricsGraph = Dict[MetricId, Union[MetricCalculationBase, "MetricsGraph"]]
-
-
 class Context:
     _configuration: "Report"
     _metrics: Dict[MetricId, MetricResult]
     _reference_metrics: Dict[MetricId, MetricResult]
-    _metrics_graph: MetricsGraph
+    _metrics_graph: dict
     _input_data: Tuple[Dataset, Optional[Dataset]]
-    _current_graph_level: MetricsGraph
+    _current_graph_level: dict
     _legacy_metrics: Dict[str, Tuple[object, List[BaseWidgetInfo]]]
 
     def __init__(self, report: "Report"):
