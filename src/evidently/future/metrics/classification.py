@@ -5,6 +5,7 @@ from typing import Generic
 from typing import List
 from typing import Optional
 from typing import Tuple
+from typing import Type
 from typing import TypeVar
 
 from evidently.base_metric import Metric
@@ -20,6 +21,8 @@ from evidently.future.metrics._legacy import LegacyMetricCalculation
 from evidently.future.report import Context
 from evidently.future.tests import Reference
 from evidently.future.tests import eq
+from evidently.future.tests import gt
+from evidently.future.tests import lt
 from evidently.metric_results import Label
 from evidently.metrics import ClassificationConfusionMatrix
 from evidently.metrics import ClassificationDummyMetric
@@ -41,20 +44,25 @@ class ClassificationQualityByLabel(ByLabelMetric):
     probas_threshold: Optional[float] = None
     k: Optional[int] = None
 
-    def _default_tests_with_reference(self) -> List[BoundTest]:
+    def _default_tests_with_reference(self, context: Context) -> List[BoundTest]:
         return [eq(Reference(relative=0.2)).bind_single(self.get_fingerprint())]
 
 
 class ClassificationQualityBase(SingleValueMetric):
-    pass
-
-
-class ClassificationQuality(ClassificationQualityBase):
     probas_threshold: Optional[float] = None
     k: Optional[int] = None
 
-    def _default_tests_with_reference(self) -> List[BoundTest]:
+
+class ClassificationQuality(ClassificationQualityBase):
+    def _default_tests_with_reference(self, context: Context) -> List[BoundTest]:
         return [eq(Reference(relative=0.2)).bind_single(self.get_fingerprint())]
+
+    def _get_dummy_value(
+        self, context: Context, dummy_type: Type["DummyClassificationQuality"], **kwargs
+    ) -> SingleValue:
+        return context.calculate_metric(
+            dummy_type(probas_threshold=self.probas_threshold, k=self.k, **kwargs).to_calculation()
+        )
 
 
 TByLabelMetric = TypeVar("TByLabelMetric", bound=ClassificationQualityByLabel)
@@ -252,6 +260,10 @@ class LegacyClassificationQuality(
 class F1Score(ClassificationQuality):
     conf_matrix: bool = True
 
+    def _default_tests(self, context: Context) -> List[BoundTest]:
+        dummy_value = self._get_dummy_value(context, DummyF1Score)
+        return [gt(dummy_value.value).bind_single(self.get_fingerprint())]
+
 
 class F1ScoreCalculation(LegacyClassificationQuality[F1Score]):
     def calculate_value(
@@ -270,7 +282,9 @@ class F1ScoreCalculation(LegacyClassificationQuality[F1Score]):
 
 
 class Accuracy(ClassificationQuality):
-    pass
+    def _default_tests(self, context: Context) -> List[BoundTest]:
+        dummy_value = self._get_dummy_value(context, DummyAccuracy)
+        return [gt(dummy_value.value).bind_single(self.get_fingerprint())]
 
 
 class AccuracyCalculation(LegacyClassificationQuality[Accuracy]):
@@ -294,6 +308,10 @@ class Precision(ClassificationQuality):
     pr_curve: bool = False
     pr_table: bool = False
 
+    def _default_tests(self, context: Context) -> List[BoundTest]:
+        dummy_value = self._get_dummy_value(context, DummyPrecision)
+        return [gt(dummy_value.value).bind_single(self.get_fingerprint())]
+
 
 class PrecisionCalculation(LegacyClassificationQuality[Precision]):
     def calculate_value(
@@ -316,6 +334,10 @@ class Recall(ClassificationQuality):
     pr_curve: bool = False
     pr_table: bool = False
 
+    def _default_tests(self, context: Context) -> List[BoundTest]:
+        dummy_value = self._get_dummy_value(context, DummyRecall)
+        return [gt(dummy_value.value).bind_single(self.get_fingerprint())]
+
 
 class RecallCalculation(LegacyClassificationQuality[Recall]):
     def calculate_value(
@@ -335,6 +357,10 @@ class RecallCalculation(LegacyClassificationQuality[Recall]):
 
 class TPR(ClassificationQuality):
     pr_table: bool = False
+
+    def _default_tests(self, context: Context) -> List[BoundTest]:
+        dummy_value = self._get_dummy_value(context, DummyTPR)
+        return [gt(dummy_value.value).bind_single(self.get_fingerprint())]
 
 
 class TPRCalculation(LegacyClassificationQuality[TPR]):
@@ -360,6 +386,10 @@ class TPRCalculation(LegacyClassificationQuality[TPR]):
 class TNR(ClassificationQuality):
     pr_table: bool = False
 
+    def _default_tests(self, context: Context) -> List[BoundTest]:
+        dummy_value = self._get_dummy_value(context, DummyTNR)
+        return [gt(dummy_value.value).bind_single(self.get_fingerprint())]
+
 
 class TNRCalculation(LegacyClassificationQuality[TNR]):
     def calculate_value(
@@ -384,6 +414,10 @@ class TNRCalculation(LegacyClassificationQuality[TNR]):
 class FPR(ClassificationQuality):
     pr_table: bool = False
 
+    def _default_tests(self, context: Context) -> List[BoundTest]:
+        dummy_value = self._get_dummy_value(context, DummyFPR)
+        return [lt(dummy_value.value).bind_single(self.get_fingerprint())]
+
 
 class FPRCalculation(LegacyClassificationQuality[FPR]):
     def calculate_value(
@@ -407,6 +441,10 @@ class FPRCalculation(LegacyClassificationQuality[FPR]):
 
 class FNR(ClassificationQuality):
     pr_table: bool = False
+
+    def _default_tests(self, context: Context) -> List[BoundTest]:
+        dummy_value = self._get_dummy_value(context, DummyFNR)
+        return [lt(dummy_value.value).bind_single(self.get_fingerprint())]
 
 
 class FNRCalculation(LegacyClassificationQuality[FNR]):
@@ -433,6 +471,10 @@ class RocAuc(ClassificationQuality):
     roc_curve: bool = True
     pr_table: bool = False
 
+    def _default_tests(self, context: Context) -> List[BoundTest]:
+        dummy_value = self._get_dummy_value(context, DummyRocAuc)
+        return [gt(dummy_value.value).bind_single(self.get_fingerprint())]
+
 
 class RocAucCalculation(LegacyClassificationQuality[RocAuc]):
     def calculate_value(
@@ -456,6 +498,10 @@ class RocAucCalculation(LegacyClassificationQuality[RocAuc]):
 
 class LogLoss(ClassificationQuality):
     pr_table: bool = False
+
+    def _default_tests(self, context: Context) -> List[BoundTest]:
+        dummy_value = self._get_dummy_value(context, DummyLogLoss)
+        return [lt(dummy_value.value).bind_single(self.get_fingerprint())]
 
 
 class LogLossCalculation(LegacyClassificationQuality[LogLoss]):
@@ -512,10 +558,10 @@ class LegacyClassificationDummy(
 
 
 class DummyClassificationQuality(ClassificationQualityBase):
-    def _default_tests_with_reference(self) -> List[BoundTest]:
+    def _default_tests_with_reference(self, context: Context) -> List[BoundTest]:
         return []
 
-    def _default_tests(self) -> List[BoundTest]:
+    def _default_tests(self, context: Context) -> List[BoundTest]:
         return []
 
 

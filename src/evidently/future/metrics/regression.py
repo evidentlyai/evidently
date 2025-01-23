@@ -113,7 +113,7 @@ class MeanError(MeanStdMetric):
     error_distr: bool = False
     error_normality: bool = False
 
-    def _default_tests_with_reference(self) -> List[BoundTest]:
+    def _default_tests_with_reference(self, context: Context) -> List[BoundTest]:
         return [eq(Reference(relative=0.1)).bind_single(self.get_fingerprint())]
 
 
@@ -137,7 +137,7 @@ class MAE(MeanStdMetric):
     error_distr: bool = True
     error_normality: bool = False
 
-    def _default_tests_with_reference(self) -> List[BoundTest]:
+    def _default_tests_with_reference(self, context: Context) -> List[BoundTest]:
         return [eq(Reference(relative=0.1)).bind_single(self.get_fingerprint())]
 
 
@@ -161,7 +161,7 @@ class RMSE(SingleValueMetric):
     error_distr: bool = True
     error_normality: bool = False
 
-    def _default_tests_with_reference(self) -> List[BoundTest]:
+    def _default_tests_with_reference(self, context: Context) -> List[BoundTest]:
         return [eq(Reference(relative=0.1)).bind_single(self.get_fingerprint())]
 
 
@@ -182,7 +182,7 @@ class MAPE(MeanStdMetric):
     perc_error_plot: bool = True
     error_distr: bool = False
 
-    def _default_tests_with_reference(self) -> List[BoundTest]:
+    def _default_tests_with_reference(self, context: Context) -> List[BoundTest]:
         return [eq(Reference(relative=0.1)).bind_single(self.get_fingerprint())]
 
 
@@ -205,10 +205,10 @@ class R2Score(SingleValueMetric):
     error_distr: bool = False
     error_normality: bool = False
 
-    def _default_tests(self) -> List[BoundTest]:
+    def _default_tests(self, context: Context) -> List[BoundTest]:
         return [gt(0).bind_single(self.get_fingerprint())]
 
-    def _default_tests_with_reference(self) -> List[BoundTest]:
+    def _default_tests_with_reference(self, context: Context) -> List[BoundTest]:
         return [eq(Reference(relative=0.1)).bind_single(self.get_fingerprint())]
 
 
@@ -229,7 +229,7 @@ class AbsMaxError(SingleValueMetric):
     error_distr: bool = False
     error_normality: bool = False
 
-    def _default_tests_with_reference(self) -> List[BoundTest]:
+    def _default_tests_with_reference(self, context: Context) -> List[BoundTest]:
         return [eq(Reference(relative=0.1)).bind_single(self.get_fingerprint())]
 
 

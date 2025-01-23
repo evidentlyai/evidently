@@ -609,6 +609,9 @@ class MetricTest(AutoAliasMixin, EvidentlyBaseModel):
     def bind_count(self, fingerprint: Fingerprint, is_count: bool) -> "BoundTest":
         return CountBoundTest(test=self, metric_fingerprint=fingerprint, is_count=is_count)
 
+    def bind_by_label(self, fingerprint: Fingerprint, label: Label):
+        return ByLabelBoundTest(test=self, metric_fingerprint=fingerprint, label=label)
+
 
 class BoundTest(AutoAliasMixin, EvidentlyBaseModel, Generic[TResult], ABC):
     class Config:
@@ -650,7 +653,7 @@ class Metric(AutoAliasMixin, EvidentlyBaseModel, Generic[TCalculation]):
     def metric_id(self) -> str:
         return self.get_fingerprint()
 
-    def _default_tests(self) -> List[BoundTest]:
+    def _default_tests(self, context: "Context") -> List[BoundTest]:
         """
         allows to redefine default tests for metric
         Returns:
@@ -658,7 +661,7 @@ class Metric(AutoAliasMixin, EvidentlyBaseModel, Generic[TCalculation]):
         """
         return []
 
-    def _default_tests_with_reference(self) -> List[BoundTest]:
+    def _default_tests_with_reference(self, context: "Context") -> List[BoundTest]:
         """
         allows to redefine default tests for metric when calculated with reference
         Returns:
@@ -669,8 +672,8 @@ class Metric(AutoAliasMixin, EvidentlyBaseModel, Generic[TCalculation]):
 
     def _get_all_default_tests(self, context: "Context") -> List[BoundTest]:
         if context.has_reference:
-            return self._default_tests_with_reference()
-        return self._default_tests()
+            return self._default_tests_with_reference(context)
+        return self._default_tests(context)
 
     def call(self, context: "Context"):
         return self.to_calculation().call(context)
