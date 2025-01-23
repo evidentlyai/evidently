@@ -96,7 +96,7 @@ class MockLLMWrapper(LLMWrapper):
     async def complete(self, messages: List[LLMMessage]) -> str:
         text = messages[-1].content
         cat = re.findall("___text_starts_here___\n(.*)\n___text_ends_here___", text)[0][0]
-        return json.dumps({"category": cat})
+        return json.dumps({"": cat})
 
 
 @pytest.mark.asyncio
@@ -148,7 +148,7 @@ def test_run_snapshot_with_llm_judge():
             {
                 "metric": "ColumnSummaryMetric",
                 "result": {
-                    "column_name": "Negativity category",
+                    "column_name": "Negativity",
                     "column_type": "cat",
                     "current_characteristics": {
                         "count": 2,
