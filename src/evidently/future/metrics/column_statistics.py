@@ -413,7 +413,8 @@ class ValueDriftCalculation(SingleValueCalculation[ValueDrift]):
 
         result = SingleValue(drift.drift_score)
         result.widget = self._render(drift, Options(), ColorOptions())
-        if self.metric.tests is None:
+        if self.metric.tests is None and context.configuration.include_tests:
+            # todo: move to _default_tests
             result.set_tests(
                 {
                     SingleValueBoundTest(
