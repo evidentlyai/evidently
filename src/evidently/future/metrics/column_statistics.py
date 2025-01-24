@@ -200,7 +200,7 @@ class QuantileValueCalculation(StatisticsCalculation[QuantileValue]):
 
 class CategoryCount(CountMetric):
     column: str
-    category: Label
+    category: Union[Label, bool]
 
     def _default_tests_with_reference(self, context: Context) -> List[BoundTest]:
         return [
