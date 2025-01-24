@@ -827,6 +827,7 @@ register_type_alias(MetricResult, "evidently.tests.base_test.TestResult", "evide
 
 
 register_type_alias(Metric, "evidently.future.backport.MetricV2Adapter", "evidently:metric:MetricV2Adapter")
+register_type_alias(Metric, "evidently.future.backport.MetricV2PresetAdapter", "evidently:metric:MetricV2PresetAdapter")
 register_type_alias(
     MetricResult, "evidently.future.backport.MetricResultV2Adapter", "evidently:metric_result:MetricResultV2Adapter"
 )

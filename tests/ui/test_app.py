@@ -281,6 +281,7 @@ async def test_get_snapshot_data(test_client: TestClient, project_manager: Proje
                 "type": "counter",
                 "widgets": [],
                 "source_fingerprint": fp,
+                "linked_metrics": [fp],
             }
         ],
     }
@@ -316,6 +317,7 @@ async def test_get_projects_graphs_data(
         "type": "counter",
         "widgets": [],
         "source_fingerprint": None,
+        "linked_metrics": None,
     }
 
 
@@ -398,6 +400,7 @@ async def test_get_project_dashboard(test_client: TestClient, project_manager: P
                 "type": "counter",
                 "widgets": [],
                 "source_fingerprint": None,
+                "linked_metrics": None,
             }
         ],
     }
