@@ -265,6 +265,7 @@ async def test_get_snapshot_data(test_client: TestClient, project_manager: Proje
                         "type": "counter",
                         "widgets": [],
                         "source_fingerprint": None,
+                        "linked_metrics": None,
                     }
                 ],
                 "alertStats": None,
