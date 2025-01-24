@@ -202,9 +202,10 @@ def snapshot_v2_to_v1(snapshot: SnapshotV2) -> SnapshotV1:
     test_results: List[TestResultV1] = []
     context = snapshot.context
     saved_metrics = set()
+    calculation: MetricCalculationBase
     for item in snapshot._snapshot_item:
         if item.metric_id is not None:
-            calculation: MetricCalculationBase = context.get_metric(item.metric_id)
+            calculation = context.get_metric(item.metric_id)
             metric = calculation.to_metric()
             metric_result = context.get_metric_result(item.metric_id)
             metrics.append(metric_v2_to_v1(metric))
@@ -218,7 +219,7 @@ def snapshot_v2_to_v1(snapshot: SnapshotV2) -> SnapshotV1:
     for metric_id, metric_result in context._metrics.items():
         if metric_id in saved_metrics:
             continue
-        calculation: MetricCalculationBase = context.get_metric(metric_id)
+        calculation = context.get_metric(metric_id)
         metric = calculation.to_metric()
         metrics.append(metric_v2_to_v1(metric))
         metric_results.append(metric_result_v2_to_v1(metric_result, ignore_widget=True))
