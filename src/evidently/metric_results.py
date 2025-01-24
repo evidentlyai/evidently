@@ -20,7 +20,7 @@ from evidently.core import IncludeTags
 from evidently.core import pydantic_type_validator
 from evidently.pipeline.column_mapping import TargetNames
 
-Label = Union[int, str]
+Label = Union[int, str, bool]
 
 try:
     List.__getitem__.__closure__[0].cell_contents.cache_clear()  # type: ignore
