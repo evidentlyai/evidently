@@ -46,6 +46,10 @@ class BaseLLMPromptTemplate(PromptTemplate):
     def get_type(self, subcolumn: Optional[str]) -> ColumnType:
         raise NotImplementedError
 
+    @abstractmethod
+    def get_main_output_column(self) -> str:
+        raise NotImplementedError
+
 
 class Uncertainty(str, Enum):
     UNKNOWN = "unknown"
@@ -76,7 +80,7 @@ class BinaryClassificationPromptTemplate(BaseLLMPromptTemplate, EnumValueMixin):
     include_score: bool = False
     score_range: Tuple[float, float] = (0.0, 1.0)
 
-    output_column: str = ""
+    output_column: str = "category"
     output_reasoning_column: str = "reasoning"
     output_score_column: str = "score"
 
@@ -148,6 +152,9 @@ class BinaryClassificationPromptTemplate(BaseLLMPromptTemplate, EnumValueMixin):
             result.append(self.output_reasoning_column)
         return result
 
+    def get_main_output_column(self) -> str:
+        return self.output_column
+
     def get_type(self, subcolumn: Optional[str]) -> ColumnType:
         if subcolumn == self.output_reasoning_column:
             return ColumnType.Text
@@ -195,8 +202,9 @@ class LLMJudge(GeneratedFeatures):
         return pd.DataFrame(result)
 
     def list_columns(self) -> List["ColumnName"]:
+        main_col = self.template.get_main_output_column()
         return [
-            self._create_column(c, display_name=f"{self.display_name or ''} {c}".strip())
+            self._create_column(c, display_name=f"{self.display_name or ''} {c if c != main_col else ''}".strip())
             for c in self.template.list_output_columns()
         ]
 
