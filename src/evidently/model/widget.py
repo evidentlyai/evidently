@@ -100,6 +100,7 @@ class BaseWidgetInfo:
     widgets: Iterable["BaseWidgetInfo"] = field(default_factory=list)
     pageSize: int = 5
     source_fingerprint: Optional[Fingerprint] = None
+    linked_metrics: Optional[List[Fingerprint]] = None
 
     def get_additional_graphs(
         self,
@@ -109,6 +110,19 @@ class BaseWidgetInfo:
         ]
 
 
+def link_metric(
+    widgets: Union[BaseWidgetInfo, Iterable[BaseWidgetInfo]],
+    source: Union[EvidentlyBaseModel, Fingerprint],
+):
+    fingerprint = source if isinstance(source, Fingerprint) else source.get_fingerprint()
+    widgets = [widgets] if isinstance(widgets, BaseWidgetInfo) else widgets
+    for widget in widgets:
+        if widget.linked_metrics is None:
+            widget.linked_metrics = [fingerprint]
+        else:
+            widget.linked_metrics.append(fingerprint)
+
+
 def set_source_fingerprint(
     widgets: Union[BaseWidgetInfo, Iterable[BaseWidgetInfo]], source: Union[EvidentlyBaseModel, Fingerprint]
 ):
@@ -116,6 +130,7 @@ def set_source_fingerprint(
     widgets = [widgets] if isinstance(widgets, BaseWidgetInfo) else widgets
     for w in widgets:
         w.source_fingerprint = fingerprint
+    link_metric(widgets, source)
 
 
 @dataclass
