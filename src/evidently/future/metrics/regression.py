@@ -5,6 +5,7 @@ from typing import List
 
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
+from evidently.future.metric_types import BoundTest
 from evidently.future.metric_types import MeanStdCalculation
 from evidently.future.metric_types import MeanStdMetric
 from evidently.future.metric_types import MeanStdValue
@@ -15,6 +16,10 @@ from evidently.future.metric_types import TMeanStdMetric
 from evidently.future.metric_types import TSingleValueMetric
 from evidently.future.metrics._legacy import LegacyMetricCalculation
 from evidently.future.report import Context
+from evidently.future.tests import Reference
+from evidently.future.tests import eq
+from evidently.future.tests import gt
+from evidently.future.tests import lt
 from evidently.metrics import RegressionAbsPercentageErrorPlot
 from evidently.metrics import RegressionDummyMetric
 from evidently.metrics import RegressionErrorDistribution
@@ -109,6 +114,9 @@ class MeanError(MeanStdMetric):
     error_distr: bool = False
     error_normality: bool = False
 
+    def _default_tests_with_reference(self, context: Context) -> List[BoundTest]:
+        return [eq(Reference(relative=0.1)).bind_mean_std(self.get_fingerprint())]
+
 
 class MeanErrorCalculation(LegacyRegressionMeanStdMetric[MeanError]):
     def calculate_value(
@@ -129,6 +137,13 @@ class MAE(MeanStdMetric):
     error_plot: bool = False
     error_distr: bool = True
     error_normality: bool = False
+
+    def _default_tests_with_reference(self, context: Context) -> List[BoundTest]:
+        return [eq(Reference(relative=0.1)).bind_mean_std(self.get_fingerprint(), True)]
+
+    def _default_tests(self, context: "Context") -> List[BoundTest]:
+        dv: SingleValue = context.calculate_metric(DummyMAE().to_calculation())
+        return [lt(dv.value).bind_mean_std(self.get_fingerprint())]
 
 
 class MAECalculation(LegacyRegressionMeanStdMetric[MAE]):
@@ -151,6 +166,13 @@ class RMSE(SingleValueMetric):
     error_distr: bool = True
     error_normality: bool = False
 
+    def _default_tests_with_reference(self, context: Context) -> List[BoundTest]:
+        return [eq(Reference(relative=0.1)).bind_single(self.get_fingerprint())]
+
+    def _default_tests(self, context: "Context") -> List[BoundTest]:
+        dv: SingleValue = context.calculate_metric(DummyRMSE().to_calculation())
+        return [lt(dv.value).bind_single(self.get_fingerprint())]
+
 
 class RMSECalculation(LegacyRegressionSingleValueMetric[RMSE]):
     def calculate_value(
@@ -168,6 +190,13 @@ class RMSECalculation(LegacyRegressionSingleValueMetric[RMSE]):
 class MAPE(MeanStdMetric):
     perc_error_plot: bool = True
     error_distr: bool = False
+
+    def _default_tests_with_reference(self, context: Context) -> List[BoundTest]:
+        return [eq(Reference(relative=0.1)).bind_mean_std(self.get_fingerprint())]
+
+    def _default_tests(self, context: "Context") -> List[BoundTest]:
+        dv: SingleValue = context.calculate_metric(DummyMAPE().to_calculation())
+        return [lt(dv.value).bind_mean_std(self.get_fingerprint())]
 
 
 class MAPECalculation(LegacyRegressionMeanStdMetric[MAPE]):
@@ -189,6 +218,12 @@ class R2Score(SingleValueMetric):
     error_distr: bool = False
     error_normality: bool = False
 
+    def _default_tests(self, context: Context) -> List[BoundTest]:
+        return [gt(0).bind_single(self.get_fingerprint())]
+
+    def _default_tests_with_reference(self, context: Context) -> List[BoundTest]:
+        return [eq(Reference(relative=0.1)).bind_single(self.get_fingerprint())]
+
 
 class R2ScoreCalculation(LegacyRegressionSingleValueMetric[R2Score]):
     def calculate_value(
@@ -206,6 +241,9 @@ class R2ScoreCalculation(LegacyRegressionSingleValueMetric[R2Score]):
 class AbsMaxError(SingleValueMetric):
     error_distr: bool = False
     error_normality: bool = False
+
+    def _default_tests_with_reference(self, context: Context) -> List[BoundTest]:
+        return [eq(Reference(relative=0.1)).bind_single(self.get_fingerprint())]
 
 
 class AbsMaxErrorCalculation(LegacyRegressionSingleValueMetric[AbsMaxError]):

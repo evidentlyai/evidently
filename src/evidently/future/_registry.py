@@ -110,3 +110,6 @@ register_type_alias(Metric, "evidently.future.metrics.classification.DummyLogLos
 register_type_alias(Metric, "evidently.future.metrics.classification.DummyRocAuc", "evidently:metric_v2:DummyRocAuc")
 register_type_alias(Metric, "evidently.future.metrics.classification.DummyTNR", "evidently:metric_v2:DummyTNR")
 register_type_alias(Metric, "evidently.future.metrics.classification.DummyTPR", "evidently:metric_v2:DummyTPR")
+
+register_type_alias(Metric, "evidently.future.metrics.classification.ClassificationQualityBase", "evidently:metric_v2:ClassificationQualityBase")
+register_type_alias(Metric, "evidently.future.metrics.classification.DummyClassificationQuality", "evidently:metric_v2:DummyClassificationQuality")
