@@ -1,3 +1,4 @@
+import dataclasses
 import json
 import typing
 from datetime import datetime
@@ -31,6 +32,7 @@ from evidently.future.metric_types import metric_tests_widget
 from evidently.future.metric_types import render_widgets
 from evidently.future.preset_types import MetricPreset
 from evidently.model.widget import BaseWidgetInfo
+from evidently.model.widget import link_metric
 from evidently.renderers.base_renderer import DEFAULT_RENDERERS
 from evidently.renderers.html_widgets import CounterData
 from evidently.renderers.html_widgets import WidgetSize
@@ -231,15 +233,23 @@ def metric_tests_stats(tests: List[MetricTestResult]) -> BaseWidgetInfo:
     return stats
 
 
+@dataclasses.dataclass
+class SnapshotItem:
+    metric_id: Optional[MetricId]
+    widgets: List[BaseWidgetInfo]
+
+
 class Snapshot:
     _report: "Report"
     _context: Context  # stores report calculation progress
     _metrics: Dict[MetricId, MetricResult]
+    _snapshot_item: List[SnapshotItem]
     _widgets: List[BaseWidgetInfo]
 
     def __init__(self, report: "Report"):
         self._report = report
         self._context = Context(report)
+        self._snapshot_item = []
 
     @property
     def context(self) -> Context:
@@ -253,21 +263,34 @@ class Snapshot:
         self.context.init_dataset(current_data, reference_data)
         metric_results = {}
         widgets: List[BaseWidgetInfo] = []
+        snapshot_items: List[SnapshotItem] = []
         for item in self.report.items():
             if isinstance(item, (MetricPreset,)):
                 for metric in item.metrics():
                     calc = metric.to_calculation()
                     metric_results[calc.id] = self.context.calculate_metric(calc)
-                widgets.extend(item.calculate(metric_results).widget)
+                widget = item.calculate(metric_results).widget
+                for metric in item.metrics():
+                    link_metric(widget, metric)
+                widgets.extend(widget)
+                snapshot_items.append(SnapshotItem(None, widget))
             elif isinstance(item, (MetricContainer,)):
                 for metric in item.metrics(self.context):
                     calc = metric.to_calculation()
                     metric_results[calc.id] = self.context.calculate_metric(calc)
-                widgets.extend(item.render(self.context, results=metric_results))
+                widget = item.render(self.context, results=metric_results)
+                for metric in item.metrics(self.context):
+                    link_metric(widget, metric)
+                widgets.extend(widget)
+                snapshot_items.append(SnapshotItem(None, widget))
             else:
                 calc = item.to_calculation()
                 metric_results[calc.id] = self.context.calculate_metric(calc)
-                widgets.extend(metric_results[calc.id].widget)
+                widget = metric_results[calc.id].widget
+                widgets.extend(widget)
+                link_metric(widget, item)
+                snapshot_items.append(SnapshotItem(calc.id, widget))
+        self._snapshot_item = snapshot_items
         self._widgets = widgets
 
     def _repr_html_(self):
