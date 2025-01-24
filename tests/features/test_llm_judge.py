@@ -96,7 +96,7 @@ class MockLLMWrapper(LLMWrapper):
     async def complete(self, messages: List[LLMMessage]) -> str:
         text = messages[-1].content
         cat = re.findall("___text_starts_here___\n(.*)\n___text_ends_here___", text)[0][0]
-        return json.dumps({"": cat})
+        return json.dumps({"category": cat})
 
 
 @pytest.mark.asyncio
@@ -112,7 +112,7 @@ def test_llm_judge():
 
     dd = DataDefinition(columns={}, reference_present=False)
     fts = llm_judge.generate_features(data, dd, Options())
-    pd.testing.assert_frame_equal(fts, pd.DataFrame({"": ["A", "B"]}))
+    pd.testing.assert_frame_equal(fts, pd.DataFrame({"category": ["A", "B"]}))
 
 
 @pytest.mark.asyncio
@@ -128,7 +128,7 @@ def test_multicol_llm_judge():
 
     dd = DataDefinition(columns={}, reference_present=False)
     fts = llm_judge.generate_features(data, dd, Options())
-    pd.testing.assert_frame_equal(fts, pd.DataFrame({"": ["A", "B"]}))
+    pd.testing.assert_frame_equal(fts, pd.DataFrame({"category": ["A", "B"]}))
 
 
 def test_run_snapshot_with_llm_judge():
