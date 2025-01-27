@@ -211,6 +211,19 @@ def snapshot_v2_to_v1(snapshot: SnapshotV2) -> SnapshotV1:
             metrics.append(metric_v2_to_v1(metric))
             metric_results.append(metric_result_v2_to_v1(metric_result))
             saved_metrics.add(item.metric_id)
+
+            for test_config, test_result in (metric_result._tests or {}).items():
+                tests_v2.append(test_config)
+                tests.append(TestV2Adapter(test=test_config))
+                test_results.append(
+                    TestResultV1(
+                        name=test_result.name,
+                        description=test_result.description,
+                        status=test_result.status,
+                        group="",
+                        parameters=TestV2Parameters(),
+                    )
+                )
         else:  # metric preset wrapper
             adapter = MetricV2PresetAdapter(id=str(uuid7()))
             metrics.append(adapter)
