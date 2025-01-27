@@ -29,7 +29,9 @@ from evidently.future.metric_types import TResult
 from evidently.future.report import Context
 from evidently.future.report import Snapshot as SnapshotV2
 from evidently.metric_results import Label
+from evidently.model.widget import AdditionalGraphInfo
 from evidently.model.widget import BaseWidgetInfo
+from evidently.model.widget import PlotlyGraphInfo
 from evidently.options.base import Options
 from evidently.pipeline.column_mapping import RecomType
 from evidently.pipeline.column_mapping import TargetNames
@@ -144,16 +146,32 @@ class MetricV2PresetAdapter(MetricV1[MetricResultV2Adapter]):
         raise NotImplementedError()
 
 
+def _unwrap_widget_info(data: dict) -> BaseWidgetInfo:
+    base_version = BaseWidgetInfo(**data)
+    if base_version.widgets is not None and isinstance(base_version.widgets, list):
+        for idx, item in enumerate(base_version.widgets):
+            base_version.widgets[idx] = _unwrap_widget_info(item)
+    if base_version.additionalGraphs is not None and isinstance(base_version.additionalGraphs, list):
+        for idx, item in enumerate(base_version.additionalGraphs):
+            if "type" in item:
+                base_version.additionalGraphs[idx] = _unwrap_widget_info(item)
+            elif "data" in item:
+                base_version.additionalGraphs[idx] = PlotlyGraphInfo(**item)
+            else:
+                base_version.additionalGraphs[idx] = AdditionalGraphInfo(**item)
+    return base_version
+
+
 @default_renderer(MetricV2PresetAdapter)
 class MetricV2PresetAdapterRenderer(MetricRenderer):
     def render_html(self, obj: MetricV2PresetAdapter) -> List[BaseWidgetInfo]:
-        return [BaseWidgetInfo(**w) for w in obj.get_result().widget]
+        return [_unwrap_widget_info(w) for w in obj.get_result().widget]
 
 
 @default_renderer(MetricV2Adapter)
 class MetricV2AdapterRenderer(MetricRenderer):
     def render_html(self, obj: MetricV2Adapter) -> List[BaseWidgetInfo]:
-        return [BaseWidgetInfo(**w) for w in obj.get_result().widget]
+        return [_unwrap_widget_info(w) for w in obj.get_result().widget]
 
 
 def metric_v2_to_v1(metric: MetricV2) -> MetricV1:
