@@ -162,16 +162,6 @@ class DashboardPanelDistribution(DashboardPanel):
         timestamp_start: Optional[datetime.datetime],
         timestamp_end: Optional[datetime.datetime],
     ) -> BaseWidgetInfo:
-        if self.value.metric_args.get("metric.type", "").startswith("evidently:metric_v2"):
-            return await DashboardPanelHistogram(
-                id=self.id,
-                title=self.title,
-                filter=self.filter,
-                size=self.size,
-                value=self.value,
-                barmode=self.barmode,
-            ).build(data_storage, project_id, timestamp_start, timestamp_end)
-
         bins_for_hists_data: DataPointsAsType[
             Union[HistogramData, Distribution, dict]
         ] = await data_storage.load_points_as_type(
