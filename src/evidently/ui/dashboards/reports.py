@@ -17,6 +17,7 @@ from evidently.metric_results import HistogramData
 from evidently.metric_results import Label
 from evidently.model.widget import BaseWidgetInfo
 from evidently.pydantic_utils import autoregister
+from evidently.pydantic_utils import register_type_alias
 from evidently.renderers.html_widgets import CounterData
 from evidently.renderers.html_widgets import counter
 from evidently.renderers.html_widgets import plotly_figure
@@ -243,3 +244,6 @@ class DashboardPanelDistribution(DashboardPanel):
 
 
 DashboardPanelHistogram = DashboardPanelDistribution
+register_type_alias(
+    DashboardPanel, DashboardPanelHistogram.__get_classpath__(), "evidently:dashboard_panel:DashboardPanelHistogram"
+)
