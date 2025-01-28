@@ -199,8 +199,11 @@ class QuantileValueCalculation(StatisticsCalculation[QuantileValue]):
 
 
 class CategoryCount(CountMetric):
+    class Config:
+        smart_union = True
+
     column: str
-    category: Union[Label, bool]
+    category: Union[bool, Label]
 
     def _default_tests_with_reference(self, context: Context) -> List[BoundTest]:
         return [
