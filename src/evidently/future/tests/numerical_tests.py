@@ -94,7 +94,6 @@ def gt(threshold: ThresholdType, is_critical: bool = True) -> MetricTest:
 
 
 class LessThanMetricTest(ComparisonTest):
-    threshold: Union[int, float]
     __short_name__: ClassVar[str] = "lt"
     __full_name__: ClassVar[str] = "Less"
     __reference_relation__ = "less"
