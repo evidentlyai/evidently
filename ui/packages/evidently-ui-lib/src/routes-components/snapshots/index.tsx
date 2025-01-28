@@ -38,7 +38,7 @@ import { Autocomplete } from '@mui/material'
 import dayjs from 'dayjs'
 import invariant from 'tiny-invariant'
 import type { z } from 'zod'
-import type { MetadataModel } from '~/api/types'
+import type { MetadataModel, ReportModel } from '~/api/types'
 import type { crumbFunction } from '~/components/BreadCrumbs'
 import { DownloadButton } from '~/components/DownloadButton'
 import { HidedTags } from '~/components/HidedTags'
@@ -76,9 +76,13 @@ const metadataToOneString: (metadata: MetadataModel) => string = (metadata: Meta
 
 export const SnapshotsListTemplate = ({
   type,
-  slots
+  slots,
+  isHideActions = () => false,
+  HideActionsComponent = () => <></>
 }: {
   type: 'reports' | 'test suites'
+  isHideActions?: (snapshot: ReportModel) => boolean
+  HideActionsComponent?: () => JSX.Element
   slots?: {
     additionalSnapshotActions?: (args: { snapshotId: string; projectId: string }) => JSX.Element
     ViewButton?: (args: { snapshotId: string; projectId: string }) => JSX.Element
@@ -297,47 +301,58 @@ export const SnapshotsListTemplate = ({
               </TableCell>
               <TableCell>
                 <Box display={'flex'} justifyContent={'center'} gap={1}>
-                  {slots?.ViewButton ? (
-                    <slots.ViewButton snapshotId={snapshot.id} projectId={projectId} />
+                  {isHideActions(snapshot) ? (
+                    <HideActionsComponent />
                   ) : (
-                    <Button disabled={isNavigation} component={RouterLink} to={`${snapshot.id}`}>
-                      View
-                    </Button>
-                  )}
+                    <>
+                      {slots?.ViewButton ? (
+                        <slots.ViewButton snapshotId={snapshot.id} projectId={projectId} />
+                      ) : (
+                        <Button
+                          disabled={isNavigation}
+                          component={RouterLink}
+                          to={`${snapshot.id}`}
+                        >
+                          View
+                        </Button>
+                      )}
 
-                  <DownloadButton
-                    variant={slots?.donwloadButtonVariant || 'outlined'}
-                    disabled={isNavigation}
-                    downloadLink={`/api/projects/${projectId}/${snapshot.id}/download`}
-                  />
-
-                  {slots?.additionalSnapshotActions && (
-                    <slots.additionalSnapshotActions
-                      snapshotId={snapshot.id}
-                      projectId={projectId}
-                    />
-                  )}
-                  <Box>
-                    <Tooltip title='delete snapshot' placement='top'>
-                      <IconButton
-                        onClick={() => {
-                          if (confirm('Are you sure?') === true) {
-                            submit(
-                              {
-                                action: 'delete-snapshot',
-                                snapshotId: snapshot.id
-                              } satisfies z.infer<typeof deleteSnapshotSchema>,
-                              { method: 'post', replace: true, encType: 'application/json' }
-                            )
-                          }
-                        }}
-                        color='primary'
+                      <DownloadButton
+                        variant={slots?.donwloadButtonVariant || 'outlined'}
                         disabled={isNavigation}
-                      >
-                        <DeleteIcon />
-                      </IconButton>
-                    </Tooltip>
-                  </Box>
+                        downloadLink={`/api/projects/${projectId}/${snapshot.id}/download`}
+                      />
+
+                      {slots?.additionalSnapshotActions && (
+                        <slots.additionalSnapshotActions
+                          snapshotId={snapshot.id}
+                          projectId={projectId}
+                        />
+                      )}
+
+                      <Box>
+                        <Tooltip title='delete snapshot' placement='top'>
+                          <IconButton
+                            onClick={() => {
+                              if (confirm('Are you sure?') === true) {
+                                submit(
+                                  {
+                                    action: 'delete-snapshot',
+                                    snapshotId: snapshot.id
+                                  } satisfies z.infer<typeof deleteSnapshotSchema>,
+                                  { method: 'post', replace: true, encType: 'application/json' }
+                                )
+                              }
+                            }}
+                            color='primary'
+                            disabled={isNavigation}
+                          >
+                            <DeleteIcon />
+                          </IconButton>
+                        </Tooltip>
+                      </Box>
+                    </>
+                  )}
                 </Box>
               </TableCell>
             </TableRow>
