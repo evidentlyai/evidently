@@ -77,12 +77,10 @@ const metadataToOneString: (metadata: MetadataModel) => string = (metadata: Meta
 export const SnapshotsListTemplate = ({
   type,
   slots,
-  isHideActions = () => false,
-  HideActionsComponent = () => <></>
+  ActionsWrapper = ({ children }) => <>{children}</>
 }: {
   type: 'reports' | 'test suites'
-  isHideActions?: (snapshot: ReportModel) => boolean
-  HideActionsComponent?: () => JSX.Element
+  ActionsWrapper?: ({ children }: { children: React.ReactNode }) => JSX.Element
   slots?: {
     additionalSnapshotActions?: (args: { snapshotId: string; projectId: string }) => JSX.Element
     ViewButton?: (args: { snapshotId: string; projectId: string }) => JSX.Element
@@ -301,9 +299,7 @@ export const SnapshotsListTemplate = ({
               </TableCell>
               <TableCell>
                 <Box display={'flex'} justifyContent={'center'} gap={1}>
-                  {isHideActions(snapshot) ? (
-                    <HideActionsComponent />
-                  ) : (
+                  <ActionsWrapper>
                     <>
                       {slots?.ViewButton ? (
                         <slots.ViewButton snapshotId={snapshot.id} projectId={projectId} />
@@ -352,7 +348,7 @@ export const SnapshotsListTemplate = ({
                         </Tooltip>
                       </Box>
                     </>
-                  )}
+                  </ActionsWrapper>
                 </Box>
               </TableCell>
             </TableRow>
