@@ -8,6 +8,7 @@ from typing import Tuple
 from typing import Type
 from typing import TypeVar
 
+from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.future.metric_types import BoundTest
 from evidently.future.metric_types import ByLabelCalculation
@@ -19,6 +20,7 @@ from evidently.future.metric_types import SingleValueMetric
 from evidently.future.metric_types import TMetricResult
 from evidently.future.metrics._legacy import LegacyMetricCalculation
 from evidently.future.report import Context
+from evidently.future.report import _default_input_data_generator
 from evidently.future.tests import Reference
 from evidently.future.tests import eq
 from evidently.future.tests import gt
@@ -44,9 +46,6 @@ class ClassificationQualityByLabel(ByLabelMetric):
     probas_threshold: Optional[float] = None
     k: Optional[int] = None
 
-    # def _default_tests_with_reference(self, context: Context) -> List[BoundTest]:
-    #     return [eq(Reference(relative=0.2)).bind_single(self.get_fingerprint())]
-
 
 class ClassificationQualityBase(SingleValueMetric):
     probas_threshold: Optional[float] = None
@@ -67,6 +66,11 @@ class ClassificationQuality(ClassificationQualityBase):
 
 TByLabelMetric = TypeVar("TByLabelMetric", bound=ClassificationQualityByLabel)
 TSingleValueMetric = TypeVar("TSingleValueMetric", bound=ClassificationQuality)
+
+
+def _gen_classification_input_data(context: "Context") -> InputData:
+    default_input_data = _default_input_data_generator(context)
+    return default_input_data
 
 
 class LegacyClassificationQualityByClass(

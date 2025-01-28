@@ -14,6 +14,7 @@ from evidently.future.metrics import DummyMAPE
 from evidently.future.metrics import DummyRMSE
 from evidently.future.metrics import MeanError
 from evidently.future.metrics import R2Score
+from evidently.future.metrics.regression import _gen_regression_input_data
 from evidently.future.report import Context
 from evidently.metrics import RegressionDummyMetric
 from evidently.metrics import RegressionErrorDistribution
@@ -45,13 +46,25 @@ class RegressionQuality(MetricContainer):
         ]
 
     def render(self, context: Context, results: Dict[MetricId, MetricResult]) -> List[BaseWidgetInfo]:
-        widgets = context.get_legacy_metric(RegressionQualityMetric())[1]
+        widgets = context.get_legacy_metric(
+            RegressionQualityMetric(),
+            _gen_regression_input_data,
+        )[1]
         if self._pred_actual_plot:
-            widgets += context.get_legacy_metric(RegressionPredictedVsActualPlot())[1]
+            widgets += context.get_legacy_metric(
+                RegressionPredictedVsActualPlot(),
+                _gen_regression_input_data,
+            )[1]
         if self._error_plot:
-            widgets += context.get_legacy_metric(RegressionErrorPlot())[1]
+            widgets += context.get_legacy_metric(
+                RegressionErrorPlot(),
+                _gen_regression_input_data,
+            )[1]
         if self._error_distr:
-            widgets += context.get_legacy_metric(RegressionErrorDistribution())[1]
+            widgets += context.get_legacy_metric(
+                RegressionErrorDistribution(),
+                _gen_regression_input_data,
+            )[1]
         return widgets
 
 
@@ -64,7 +77,10 @@ class RegressionDummyQuality(MetricContainer):
         ]
 
     def render(self, context: Context, results: Dict[MetricId, MetricResult]) -> List[BaseWidgetInfo]:
-        return context.get_legacy_metric(RegressionDummyMetric())[1]
+        return context.get_legacy_metric(
+            RegressionDummyMetric(),
+            _gen_regression_input_data,
+        )[1]
 
 
 class RegressionPreset(MetricContainer):
