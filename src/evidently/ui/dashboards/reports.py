@@ -12,7 +12,6 @@ from typing import Union
 from plotly import graph_objs as go
 
 from evidently.base_metric import Metric
-from evidently.future.metric_types import Value
 from evidently.metric_results import Distribution
 from evidently.metric_results import HistogramData
 from evidently.metric_results import Label
@@ -173,16 +172,16 @@ class DashboardPanelDistribution(DashboardPanel):
             ).build(data_storage, project_id, timestamp_start, timestamp_end)
 
         bins_for_hists_data: DataPointsAsType[
-            Union[HistogramData, Distribution]
+            Union[HistogramData, Distribution, dict]
         ] = await data_storage.load_points_as_type(
-            Union[HistogramData, Distribution],  # type: ignore[arg-type]
+            Union[HistogramData, Distribution, dict],  # type: ignore[arg-type]
             project_id,
             self.filter,
             [self.value],
             timestamp_start,
             timestamp_end,
         )
-        bins_for_hists = bins_for_hists_data[0]
+        bins_for_hists = bins_for_hists_data[0]  # dict metric -> list of point infos
         if len(bins_for_hists) == 0:
             raise ValueError(f"Cannot build hist from {self.value}")
         if len(bins_for_hists) > 1:
@@ -194,7 +193,7 @@ class DashboardPanelDistribution(DashboardPanel):
                 (
                     d.timestamp,
                     d.snapshot_id,
-                    d.value if isinstance(d.value, HistogramData) else HistogramData.from_distribution(d.value),
+                    HistogramData.from_any(d.value),
                 )
                 for d in v
             ]
@@ -202,97 +201,13 @@ class DashboardPanelDistribution(DashboardPanel):
         )
 
         timestamps: List[datetime.datetime] = []
-        names: Set[str] = set()
-        values: List[Dict[str, Any]] = []
+        names: Set[Label] = set()
+        values: List[Dict[Label, Any]] = []
         snapshot_ids = []
 
         for timestamp, snapshot_id, hist in bins_for_hist:
             timestamps.append(timestamp)
             data = dict(zip(hist.x, hist.count))
-            values.append(data)
-            names.update(data.keys())
-            snapshot_ids.append(snapshot_id)
-
-        names_sorted = list(sorted(names))
-        name_to_date_value: Dict[str, List[Any]] = defaultdict(list)
-        name_to_snapshot_id: Dict[str, List[SnapshotID]] = defaultdict(list)
-        for timestamp, snapshot_id, data in zip(timestamps, snapshot_ids, values):
-            for name in names_sorted:
-                name_to_date_value[name].append(data.get(name))
-                name_to_snapshot_id[name].append(snapshot_id)
-
-        hovertemplate = "<b>{name}: %{{y}}</b><br><b>Timestamp: %{{x}}</b>"
-        fig = go.Figure(
-            data=[
-                go.Bar(
-                    name=name,
-                    x=timestamps,
-                    y=name_to_date_value[name],
-                    hovertemplate=hovertemplate.format(name=name),
-                    customdata=[
-                        {"metric_fingerprint": fingerprint, "snapshot_id": str(snapshot_id)}
-                        for snapshot_id in name_to_snapshot_id[name]
-                    ],
-                )
-                for name in names_sorted
-            ]
-        )
-        # Change the bar mode
-        fig.update_layout(barmode=self.barmode.value)
-
-        return plotly_figure(title=self.title, figure=fig, size=self.size)
-
-
-@autoregister
-class DashboardPanelHistogram(DashboardPanel):
-    class Config:
-        type_alias = "evidently:dashboard_panel:DashboardPanelHistogram"
-
-    value: PanelValue
-    barmode: HistBarMode = HistBarMode.STACK
-
-    @assign_panel_id
-    async def build(
-        self,
-        data_storage: "DataStorage",
-        project_id: ProjectID,
-        timestamp_start: Optional[datetime.datetime],
-        timestamp_end: Optional[datetime.datetime],
-    ) -> BaseWidgetInfo:
-        label_values: DataPointsAsType[dict] = await data_storage.load_points_as_type(
-            dict,  # type: ignore[arg-type]
-            project_id,
-            self.filter,
-            [self.value],
-            timestamp_start,
-            timestamp_end,
-        )
-        results = label_values[0]
-        if len(results) == 0:
-            raise ValueError(f"Cannot build hist from {self.value}")
-        if len(results) > 1:
-            raise ValueError(f"Ambiguious metrics for {self.value}")
-        metric = next(iter(results.keys()))
-        fingerprint = metric.get_fingerprint()
-        point_values: List[Tuple[datetime.datetime, SnapshotID, Dict[Label, Value]]] = next(
-            [
-                (
-                    d.timestamp,
-                    d.snapshot_id,
-                    d.value,
-                )
-                for d in v
-            ]
-            for v in results.values()
-        )
-
-        timestamps: List[datetime.datetime] = []
-        names: Set[Label] = set()
-        values: List[Dict[Label, Union[float, int]]] = []
-        snapshot_ids = []
-
-        for timestamp, snapshot_id, data in point_values:
-            timestamps.append(timestamp)
             values.append(data)
             names.update(data.keys())
             snapshot_ids.append(snapshot_id)
@@ -325,3 +240,6 @@ class DashboardPanelHistogram(DashboardPanel):
         fig.update_layout(barmode=self.barmode.value)
 
         return plotly_figure(title=self.title, figure=fig, size=self.size)
+
+
+DashboardPanelHistogram = DashboardPanelDistribution
