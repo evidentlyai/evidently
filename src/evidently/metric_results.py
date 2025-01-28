@@ -404,9 +404,13 @@ class HistogramData(MetricResult):
         return cls(x=pd.Series(data.keys()), count=pd.Series(data.values()), name=name)
 
     @classmethod
-    def from_any(cls, value: Union[None, pd.DataFrame, Distribution, Dict], name: Optional[str] = None):
+    def from_any(
+        cls, value: Union[None, "HistogramData", pd.DataFrame, Distribution, Dict], name: Optional[str] = None
+    ):
         if value is None:
             return None
+        if isinstance(value, HistogramData):
+            return value
         if isinstance(value, pd.DataFrame):
             return cls.from_df(value, name)
         if isinstance(value, Distribution):
