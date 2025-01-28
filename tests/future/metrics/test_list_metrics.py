@@ -4,6 +4,7 @@ import pytest
 from evidently.future.datasets import BinaryClassification
 from evidently.future.datasets import DataDefinition
 from evidently.future.datasets import Dataset
+from evidently.future.datasets import Regression
 from evidently.future.descriptors import TextLength
 from evidently.future.report import Report
 from evidently.future.tests import Reference
@@ -32,6 +33,35 @@ def sample_dataset():
         categorical_columns=["column_2"],
         text_columns=["text_column"],
         classification=[BinaryClassification()],
+    )
+
+    return Dataset.from_pandas(
+        data,
+        data_definition=definition,
+        descriptors=[
+            TextLength("column_2", alias="target2"),
+            TextLength("column_2", alias="prediction2"),
+        ],
+    )
+
+
+@pytest.fixture
+def regression_sample_dataset():
+    data = pd.DataFrame(
+        data={
+            "column_1": [1, 2, 3, 4, -1, 5],
+            "column_2": ["a", "aa", "aaaa", "aaaaaaa", None, "aa"],
+            "text_column": ["a", "aa", "aaaa", "aaaaaaa", None, "aa"],
+            "target": [1, 1, 0, 0, 1, 1],
+            "prediction": [0.1, 0.2, 0.3, 0.4, 0.5, 0.6],
+        }
+    )
+
+    definition = DataDefinition(
+        numerical_columns=["column_1", "target", "prediction"],
+        categorical_columns=["column_2"],
+        text_columns=["text_column"],
+        regression=[Regression(target="target", prediction="prediction")],
     )
 
     return Dataset.from_pandas(
@@ -196,7 +226,7 @@ def test_dataset_structure_metrics(sample_dataset):
 
 
 # Regression Metrics Tests
-def test_regression_metrics(sample_dataset):
+def test_regression_metrics(regression_sample_dataset):
     from evidently.future.metrics import MAE
     from evidently.future.metrics import MAPE
     from evidently.future.metrics import RMSE
@@ -215,11 +245,11 @@ def test_regression_metrics(sample_dataset):
         ]
     )
 
-    snapshot = report.run(sample_dataset, sample_dataset)
+    snapshot = report.run(regression_sample_dataset, regression_sample_dataset)
     assert snapshot is not None
 
 
-def test_dummy_regression_metrics(sample_dataset):
+def test_dummy_regression_metrics(regression_sample_dataset):
     from evidently.future.metrics import DummyMAE
     from evidently.future.metrics import DummyMAPE
     from evidently.future.metrics import DummyRMSE
@@ -232,7 +262,7 @@ def test_dummy_regression_metrics(sample_dataset):
         ]
     )
 
-    snapshot = report.run(sample_dataset, sample_dataset)
+    snapshot = report.run(regression_sample_dataset, regression_sample_dataset)
     assert snapshot is not None
 
 
@@ -281,4 +311,12 @@ def test_dataset_stats_preset(sample_dataset):
 
     report = Report([DatasetStats()])
     snapshot = report.run(sample_dataset, sample_dataset)
+    assert snapshot is not None
+
+
+def test_regression_preset(regression_sample_dataset):
+    from evidently.future.presets import RegressionPreset
+
+    report = Report([RegressionPreset()])
+    snapshot = report.run(regression_sample_dataset, regression_sample_dataset)
     assert snapshot is not None

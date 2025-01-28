@@ -140,7 +140,7 @@ class Context:
     def get_legacy_metric(
         self,
         metric: LegacyMetric[T],
-        input_data_generator: Optional[Callable[["Context"], InputData]] = None,
+        input_data_generator: Optional[Callable[["Context"], InputData]],
     ) -> Tuple[T, List[BaseWidgetInfo]]:
         if input_data_generator is None:
             input_data_generator = _default_input_data_generator
@@ -148,7 +148,7 @@ class Context:
         dependencies = _discover_dependencies(metric)
         for _, obj in dependencies:
             if isinstance(obj, LegacyMetric):
-                (result, render) = self.get_legacy_metric(obj)
+                (result, render) = self.get_legacy_metric(obj, input_data_generator)
                 object.__setattr__(obj, "get_result", lambda: result)
             else:
                 raise ValueError(f"unexpected type {type(obj)}")

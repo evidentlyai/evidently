@@ -28,6 +28,7 @@ from evidently.future.metrics.dataset_statistics import DuplicatedColumnsCount
 from evidently.future.metrics.dataset_statistics import EmptyColumnsCount
 from evidently.future.metrics.dataset_statistics import EmptyRowsCount
 from evidently.future.report import Context
+from evidently.future.report import _default_input_data_generator
 from evidently.metric_results import Label
 from evidently.metrics import DatasetSummaryMetric
 from evidently.model.widget import BaseWidgetInfo
@@ -224,7 +225,7 @@ class DatasetStats(MetricContainer):
 
     def render(self, context: Context, results: Dict[MetricId, MetricResult]) -> List[BaseWidgetInfo]:
         metric = DatasetSummaryMetric()
-        _, render = context.get_legacy_metric(metric)
+        _, render = context.get_legacy_metric(metric, _default_input_data_generator)
         return render
 
 
