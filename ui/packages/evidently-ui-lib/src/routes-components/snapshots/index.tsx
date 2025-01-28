@@ -38,7 +38,7 @@ import { Autocomplete } from '@mui/material'
 import dayjs from 'dayjs'
 import invariant from 'tiny-invariant'
 import type { z } from 'zod'
-import type { MetadataModel } from '~/api/types'
+import type { MetadataModel, ReportModel } from '~/api/types'
 import type { crumbFunction } from '~/components/BreadCrumbs'
 import { DownloadButton } from '~/components/DownloadButton'
 import { HidedTags } from '~/components/HidedTags'
@@ -80,7 +80,10 @@ export const SnapshotsListTemplate = ({
   ActionsWrapper = ({ children }) => <>{children}</>
 }: {
   type: 'reports' | 'test suites'
-  ActionsWrapper?: ({ children }: { children: React.ReactNode }) => JSX.Element
+  ActionsWrapper?: ({
+    children,
+    snapshot
+  }: { children: React.ReactNode; snapshot: ReportModel }) => JSX.Element
   slots?: {
     additionalSnapshotActions?: (args: { snapshotId: string; projectId: string }) => JSX.Element
     ViewButton?: (args: { snapshotId: string; projectId: string }) => JSX.Element
@@ -299,7 +302,7 @@ export const SnapshotsListTemplate = ({
               </TableCell>
               <TableCell>
                 <Box display={'flex'} justifyContent={'center'} gap={1}>
-                  <ActionsWrapper>
+                  <ActionsWrapper snapshot={snapshot}>
                     <>
                       {slots?.ViewButton ? (
                         <slots.ViewButton snapshotId={snapshot.id} projectId={projectId} />
