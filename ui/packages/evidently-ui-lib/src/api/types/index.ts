@@ -34,14 +34,12 @@ export type DashboardPanel =
   | DashboardPanelPlot
   | DashboardPanelCounter
   | DashboardPanelDistribution
-  | DashboardPanelHistogram
   | DashboardPanelTestSuite
   | DashboardPanelTestSuiteCounter
 
 export type DashboardPanelPlot = StrictID<Schemas['DashboardPanelPlot']>
 export type DashboardPanelCounter = StrictID<Schemas['DashboardPanelCounter']>
 export type DashboardPanelDistribution = StrictID<Schemas['DashboardPanelDistribution']>
-export type DashboardPanelHistogram = StrictID<Schemas['DashboardPanelHistogram']>
 
 export type DashboardPanelTestSuite = StrictID<
   Omit<Schemas['DashboardPanelTestSuite'], 'filter'> & {

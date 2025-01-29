@@ -24,6 +24,7 @@ from evidently.future.metrics import RocAucByLabel
 from evidently.future.metrics.classification import DummyF1Score
 from evidently.future.metrics.classification import DummyPrecision
 from evidently.future.metrics.classification import DummyRecall
+from evidently.future.metrics.classification import _gen_classification_input_data
 from evidently.future.report import Context
 from evidently.metrics import ClassificationConfusionMatrix
 from evidently.metrics import ClassificationDummyMetric
@@ -93,15 +94,25 @@ class ClassificationQuality(MetricContainer):
         return metrics
 
     def render(self, context: "Context", results: Dict[MetricId, MetricResult]) -> List[BaseWidgetInfo]:
-        _, render = context.get_legacy_metric(ClassificationQualityMetric(probas_threshold=self._probas_threshold))
+        _, render = context.get_legacy_metric(
+            ClassificationQualityMetric(probas_threshold=self._probas_threshold),
+            _gen_classification_input_data,
+        )
         if self._conf_matrix:
-            render += context.get_legacy_metric(ClassificationConfusionMatrix(probas_threshold=self._probas_threshold))[
-                1
-            ]
+            render += context.get_legacy_metric(
+                ClassificationConfusionMatrix(probas_threshold=self._probas_threshold),
+                _gen_classification_input_data,
+            )[1]
         if self._pr_curve:
-            render += context.get_legacy_metric(ClassificationPRCurve(probas_threshold=self._probas_threshold))[1]
+            render += context.get_legacy_metric(
+                ClassificationPRCurve(probas_threshold=self._probas_threshold),
+                _gen_classification_input_data,
+            )[1]
         if self._pr_table:
-            render += context.get_legacy_metric(ClassificationPRTable(probas_threshold=self._probas_threshold))[1]
+            render += context.get_legacy_metric(
+                ClassificationPRTable(probas_threshold=self._probas_threshold),
+                _gen_classification_input_data,
+            )[1]
         return render
 
 
@@ -119,7 +130,10 @@ class ClassificationQualityByLabel(MetricContainer):
         ]
 
     def render(self, context: "Context", results: Dict[MetricId, MetricResult]):
-        render = context.get_legacy_metric(ClassificationQualityByClass(self._probas_threshold, self._k))[1]
+        render = context.get_legacy_metric(
+            ClassificationQualityByClass(self._probas_threshold, self._k),
+            _gen_classification_input_data,
+        )[1]
         widget = render
         widget[0].params["counters"][0]["label"] = "Classification Quality by Label"
         return widget
@@ -138,7 +152,10 @@ class ClassificationDummyQuality(MetricContainer):
         ]
 
     def render(self, context: "Context", results: Dict[MetricId, MetricResult]) -> List[BaseWidgetInfo]:
-        _, widgets = context.get_legacy_metric(ClassificationDummyMetric(self._probas_threshold, self._k))
+        _, widgets = context.get_legacy_metric(
+            ClassificationDummyMetric(self._probas_threshold, self._k),
+            _gen_classification_input_data,
+        )
         return widgets
 
 

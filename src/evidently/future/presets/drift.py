@@ -12,6 +12,7 @@ from evidently.future.metric_types import MetricResult
 from evidently.future.metrics import ValueDrift
 from evidently.future.metrics.column_statistics import DriftedColumnsCount
 from evidently.future.report import Context
+from evidently.future.report import _default_input_data_generator
 from evidently.metrics import DataDriftTable
 from evidently.metrics import DatasetDriftMetric
 from evidently.metrics.data_drift.embedding_drift_methods import DriftMethod
@@ -110,7 +111,8 @@ class DataDriftPreset(MetricContainer):
                 num_stattest_threshold=self.num_stattest_threshold,
                 text_stattest_threshold=self.text_stattest_threshold,
                 per_column_stattest_threshold=self.per_column_stattest_threshold,
-            )
+            ),
+            _default_input_data_generator,
         )[1]
         table = context.get_legacy_metric(
             DataDriftTable(
@@ -125,7 +127,8 @@ class DataDriftPreset(MetricContainer):
                 num_stattest_threshold=self.num_stattest_threshold,
                 text_stattest_threshold=self.text_stattest_threshold,
                 per_column_stattest_threshold=self.per_column_stattest_threshold,
-            )
+            ),
+            _default_input_data_generator,
         )[1]
         return dataset_drift + table
 
