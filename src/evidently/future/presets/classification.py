@@ -103,12 +103,15 @@ class ClassificationQuality(MetricContainer):
                 ClassificationConfusionMatrix(probas_threshold=self._probas_threshold),
                 _gen_classification_input_data,
             )[1]
-        if self._pr_curve:
+        classification = context.data_definition.get_classification("default")
+        if classification is None:
+            raise ValueError("Cannot use ClassificationQuality without a classification data")
+        if self._pr_curve and classification.prediction_probas is not None:
             render += context.get_legacy_metric(
                 ClassificationPRCurve(probas_threshold=self._probas_threshold),
                 _gen_classification_input_data,
             )[1]
-        if self._pr_table:
+        if self._pr_table and classification.prediction_probas is not None:
             render += context.get_legacy_metric(
                 ClassificationPRTable(probas_threshold=self._probas_threshold),
                 _gen_classification_input_data,
@@ -122,12 +125,20 @@ class ClassificationQualityByLabel(MetricContainer):
         self._k = k
 
     def generate_metrics(self, context: "Context") -> List[Metric]:
+        classification = context.data_definition.get_classification("default")
+        if classification is None:
+            raise ValueError("Cannot use ClassificationPreset without a classification configration")
         return [
             F1ByLabel(probas_threshold=self._probas_threshold, k=self._k),
             PrecisionByLabel(probas_threshold=self._probas_threshold, k=self._k),
             RecallByLabel(probas_threshold=self._probas_threshold, k=self._k),
-            RocAucByLabel(probas_threshold=self._probas_threshold, k=self._k),
-        ]
+        ] + (
+            []
+            if classification.prediction_probas is None
+            else [
+                RocAucByLabel(probas_threshold=self._probas_threshold, k=self._k),
+            ]
+        )
 
     def render(self, context: "Context", results: Dict[MetricId, MetricResult]):
         render = context.get_legacy_metric(

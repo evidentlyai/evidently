@@ -45,12 +45,46 @@ class ColumnInfo:
 
 @dataclasses.dataclass
 class BinaryClassification:
-    name: str = "default"
-    target: str = "target"
-    prediction_labels: Optional[str] = None
-    prediction_probas: Optional[str] = "prediction"
-    pos_label: Label = 1
-    labels: Optional[Dict[Label, str]] = None
+    name: str
+    target: str
+    prediction_labels: Optional[str]
+    prediction_probas: Optional[str]
+    pos_label: Label
+    labels: Optional[Dict[Label, str]]
+
+    def __init__(
+        self,
+        *,
+        name: str = "default",
+        target: Optional[str] = None,
+        prediction_labels: Optional[str] = None,
+        prediction_probas: Optional[str] = None,
+        pos_label: Optional[str] = None,
+        labels: Optional[Dict[Label, str]] = None,
+    ):
+        self.name = name
+        if (
+            target is None
+            and prediction_labels is None
+            and prediction_probas is None
+            and pos_label is None
+            and labels is None
+        ):
+            self.target = "target"
+            self.prediction_labels = None
+            self.prediction_probas = "prediction"
+            self.pos_label = 1
+            self.labels = None
+            return
+        if target is None or (prediction_labels is None and prediction_probas is None):
+            raise ValueError(
+                "Invalid BinaryClassification configuration:" " target and one of (labels or probas) should be set"
+            )
+        self.target = target
+        self.prediction_labels = prediction_labels
+        self.prediction_probas = prediction_probas
+        self.pos_label = pos_label
+        self.labels = labels
 
 
 @dataclasses.dataclass
@@ -60,6 +94,31 @@ class MulticlassClassification:
     prediction_labels: str = "prediction"
     prediction_probas: Optional[List[str]] = None
     labels: Optional[Dict[Label, str]] = None
+
+    def __init__(
+        self,
+        *,
+        name: str = "default",
+        target: Optional[str] = None,
+        prediction_labels: Optional[str] = None,
+        prediction_probas: Optional[List[str]] = None,
+        labels: Optional[Dict[Label, str]] = None,
+    ):
+        self.name = name
+        if target is None and prediction_labels is None and prediction_probas is None and labels is None:
+            self.target = "target"
+            self.prediction_labels = "prediction"
+            self.prediction_probas = None
+            self.labels = None
+            return
+        if target is None or (prediction_labels is None and prediction_probas is None):
+            raise ValueError(
+                "Invalid MulticlassClassification configuration:" " target and one of (labels or probas) should be set"
+            )
+        self.target = target
+        self.prediction_labels = prediction_labels
+        self.prediction_probas = prediction_probas
+        self.labels = labels
 
 
 Classification = Union[BinaryClassification, MulticlassClassification]
