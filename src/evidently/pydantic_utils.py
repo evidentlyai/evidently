@@ -531,7 +531,7 @@ class FieldPath:
             raise ValueError("Empty path provided")
         if len(path) == 1:
             if isinstance(self._cls, type) and issubclass(self._cls, BaseModel):
-                return self._cls.__fields__[path[0]].type_
+                return self._cls.__fields__[path[0]].outer_type_
             if self.has_instance:
                 # fixme: tmp fix
                 # in case of field like f: Dict[str, A] we wont know that value was type annotated with A when we get to it
