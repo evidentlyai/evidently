@@ -83,7 +83,7 @@ class BinaryClassification:
         self.target = target
         self.prediction_labels = prediction_labels
         self.prediction_probas = prediction_probas
-        self.pos_label = pos_label
+        self.pos_label = pos_label if pos_label is not None else 1
         self.labels = labels
 
 
@@ -91,7 +91,7 @@ class BinaryClassification:
 class MulticlassClassification:
     name: str = "default"
     target: str = "target"
-    prediction_labels: str = "prediction"
+    prediction_labels: Optional[str] = "prediction"
     prediction_probas: Optional[List[str]] = None
     labels: Optional[Dict[Label, str]] = None
 
