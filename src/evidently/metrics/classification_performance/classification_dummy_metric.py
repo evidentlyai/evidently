@@ -132,7 +132,11 @@ class ClassificationDummyMetric(ThresholdClassificationMetric[ClassificationDumm
             coeff_precision = min(1.0, (1 - threshold) / 0.5)
             neg_label_precision = precision_score(target, dummy_preds, pos_label=labels[1]) * coeff_precision
             neg_label_recall = recall_score(target, dummy_preds, pos_label=labels[1]) * coeff_recall
-            f1_label2_value = 2 * neg_label_precision * neg_label_recall / (neg_label_precision + neg_label_recall)
+            f1_label2_value = (
+                2 * neg_label_precision * neg_label_recall / (neg_label_precision + neg_label_recall)
+                if (neg_label_precision + neg_label_recall) != 0
+                else float("nan")
+            )
             metrics_matrix = {
                 str(labels[0]): ClassMetric(
                     precision=current_dummy.precision,
