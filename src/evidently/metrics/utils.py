@@ -1,4 +1,25 @@
 import pandas as pd
+import sklearn.metrics
+
+use_new_root_mean_squared_error = True if hasattr(sklearn.metrics, "root_mean_squared_error") else False
+
+
+def root_mean_squared_error(y_true, y_pred):
+    """
+    Compute the Root Mean Squared Error (RMSE) in a way that is compatible
+    with both old and new versions of scikit-learn.
+
+    In scikit-learn >= 1.6.0, uses sklearn.metrics.root_mean_squared_error.
+    In earlier versions, uses mean_squared_error with squared=False.
+    """
+    if use_new_root_mean_squared_error:
+        from sklearn.metrics import root_mean_squared_error
+
+        return root_mean_squared_error(y_true, y_pred)
+
+    from sklearn.metrics import mean_squared_error
+
+    return mean_squared_error(y_true, y_pred, squared=False)
 
 
 def make_target_bins_for_reg_plots(
