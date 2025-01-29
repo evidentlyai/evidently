@@ -76,7 +76,7 @@ def test_metric(tmetric: TestMetric, tdataset: TestDataset, outcome: TestOutcome
     report2.save_html(str(tmp_path / "report.html"))
 
 
-IGNORE_METRICS = {"MetricV2Adapter"}
+IGNORE_METRICS = {"MetricV2Adapter", "MetricV2PresetAdapter"}
 
 
 def test_all_metrics_tested():

@@ -827,6 +827,7 @@ register_type_alias(MetricResult, "evidently.tests.base_test.TestResult", "evide
 
 
 register_type_alias(Metric, "evidently.future.backport.MetricV2Adapter", "evidently:metric:MetricV2Adapter")
+register_type_alias(Metric, "evidently.future.backport.MetricV2PresetAdapter", "evidently:metric:MetricV2PresetAdapter")
 register_type_alias(
     MetricResult, "evidently.future.backport.MetricResultV2Adapter", "evidently:metric_result:MetricResultV2Adapter"
 )
@@ -835,3 +836,7 @@ register_type_alias(MetricResult, "evidently.future.backport.SingleValueV1", "ev
 register_type_alias(MetricResult, "evidently.future.backport.ByLabelValueV1", "evidently:metric_result:ByLabelValueV1")
 
 register_type_alias(MetricResult, "evidently.future.backport.CountValueV1", "evidently:metric_result:CountValueV1")
+
+register_type_alias(
+    MetricResult, "evidently.future.backport.PresetMetricValueV1", "evidently:metric_result:PresetMetricValueV1"
+)

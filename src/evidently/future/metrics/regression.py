@@ -5,6 +5,7 @@ from typing import List
 
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
+from evidently.future.metric_types import BoundTest
 from evidently.future.metric_types import MeanStdCalculation
 from evidently.future.metric_types import MeanStdMetric
 from evidently.future.metric_types import MeanStdValue
@@ -15,6 +16,11 @@ from evidently.future.metric_types import TMeanStdMetric
 from evidently.future.metric_types import TSingleValueMetric
 from evidently.future.metrics._legacy import LegacyMetricCalculation
 from evidently.future.report import Context
+from evidently.future.report import _default_input_data_generator
+from evidently.future.tests import Reference
+from evidently.future.tests import eq
+from evidently.future.tests import gt
+from evidently.future.tests import lt
 from evidently.metrics import RegressionAbsPercentageErrorPlot
 from evidently.metrics import RegressionDummyMetric
 from evidently.metrics import RegressionErrorDistribution
@@ -36,6 +42,23 @@ ADDITIONAL_WIDGET_MAPPING: Dict[str, Metric] = {
 }
 
 
+def _gen_regression_input_data(context: "Context") -> InputData:
+    default_data = _default_input_data_generator(context)
+    regression = context.data_definition.get_regression("default")
+    if regression is None:
+        raise ValueError("No default regression in data definition")
+    default_data.column_mapping.target = regression.target
+    default_data.column_mapping.prediction = regression.prediction
+
+    definition = create_data_definition(
+        default_data.reference_data,
+        default_data.current_data,
+        default_data.column_mapping,
+    )
+    default_data.data_definition = definition
+    return default_data
+
+
 class LegacyRegressionMeanStdMetric(
     MeanStdCalculation[TMeanStdMetric],
     LegacyMetricCalculation[MeanStdValue, TMeanStdMetric, RegressionQualityMetricResults, RegressionQualityMetric],
@@ -45,29 +68,16 @@ class LegacyRegressionMeanStdMetric(
     def legacy_metric(self) -> RegressionQualityMetric:
         return RegressionQualityMetric()
 
-    def _gen_input_data(self, context: "Context") -> InputData:
-        default_data = super()._gen_input_data(context)
-        regression = context.data_definition.get_regression("default")
-        if regression is None:
-            raise ValueError("No default regression in data definition")
-        default_data.column_mapping.target = regression.target
-        default_data.column_mapping.prediction = regression.prediction
-
-        definition = create_data_definition(
-            default_data.reference_data,
-            default_data.current_data,
-            default_data.column_mapping,
-        )
-        default_data.data_definition = definition
-        return default_data
-
     def get_additional_widgets(self, context: "Context") -> List[BaseWidgetInfo]:
         result = []
         for field, metric in ADDITIONAL_WIDGET_MAPPING.items():
             if hasattr(self.metric, field) and getattr(self.metric, field):
-                _, widgets = context.get_legacy_metric(metric, self._gen_input_data)
+                _, widgets = context.get_legacy_metric(metric, _gen_regression_input_data)
                 result += widgets
         return result
+
+    def _gen_input_data(self, context: "Context") -> InputData:
+        return _gen_regression_input_data(context)
 
 
 class LegacyRegressionSingleValueMetric(
@@ -79,35 +89,25 @@ class LegacyRegressionSingleValueMetric(
     def legacy_metric(self) -> RegressionQualityMetric:
         return RegressionQualityMetric()
 
-    def _gen_input_data(self, context: "Context") -> InputData:
-        default_data = super()._gen_input_data(context)
-        regression = context.data_definition.get_regression("default")
-        if regression is None:
-            raise ValueError("No default regression in data definition")
-        default_data.column_mapping.target = regression.target
-        default_data.column_mapping.prediction = regression.prediction
-
-        definition = create_data_definition(
-            default_data.reference_data,
-            default_data.current_data,
-            default_data.column_mapping,
-        )
-        default_data.data_definition = definition
-        return default_data
-
     def get_additional_widgets(self, context: "Context") -> List[BaseWidgetInfo]:
         result = []
         for field, metric in ADDITIONAL_WIDGET_MAPPING.items():
             if hasattr(self.metric, field) and getattr(self.metric, field):
-                _, widgets = context.get_legacy_metric(metric, self._gen_input_data)
+                _, widgets = context.get_legacy_metric(metric, _gen_regression_input_data)
                 result += widgets
         return result
+
+    def _gen_input_data(self, context: "Context") -> InputData:
+        return _gen_regression_input_data(context)
 
 
 class MeanError(MeanStdMetric):
     error_plot: bool = True
     error_distr: bool = False
     error_normality: bool = False
+
+    def _default_tests_with_reference(self, context: Context) -> List[BoundTest]:
+        return [eq(Reference(relative=0.1)).bind_mean_std(self.get_fingerprint())]
 
 
 class MeanErrorCalculation(LegacyRegressionMeanStdMetric[MeanError]):
@@ -130,6 +130,13 @@ class MAE(MeanStdMetric):
     error_distr: bool = True
     error_normality: bool = False
 
+    def _default_tests_with_reference(self, context: Context) -> List[BoundTest]:
+        return [eq(Reference(relative=0.1)).bind_mean_std(self.get_fingerprint(), True)]
+
+    def _default_tests(self, context: "Context") -> List[BoundTest]:
+        dv: SingleValue = context.calculate_metric(DummyMAE().to_calculation())
+        return [lt(dv.value).bind_mean_std(self.get_fingerprint())]
+
 
 class MAECalculation(LegacyRegressionMeanStdMetric[MAE]):
     def calculate_value(
@@ -151,6 +158,13 @@ class RMSE(SingleValueMetric):
     error_distr: bool = True
     error_normality: bool = False
 
+    def _default_tests_with_reference(self, context: Context) -> List[BoundTest]:
+        return [eq(Reference(relative=0.1)).bind_single(self.get_fingerprint())]
+
+    def _default_tests(self, context: "Context") -> List[BoundTest]:
+        dv: SingleValue = context.calculate_metric(DummyRMSE().to_calculation())
+        return [lt(dv.value).bind_single(self.get_fingerprint())]
+
 
 class RMSECalculation(LegacyRegressionSingleValueMetric[RMSE]):
     def calculate_value(
@@ -168,6 +182,13 @@ class RMSECalculation(LegacyRegressionSingleValueMetric[RMSE]):
 class MAPE(MeanStdMetric):
     perc_error_plot: bool = True
     error_distr: bool = False
+
+    def _default_tests_with_reference(self, context: Context) -> List[BoundTest]:
+        return [eq(Reference(relative=0.1)).bind_mean_std(self.get_fingerprint())]
+
+    def _default_tests(self, context: "Context") -> List[BoundTest]:
+        dv: SingleValue = context.calculate_metric(DummyMAPE().to_calculation())
+        return [lt(dv.value).bind_mean_std(self.get_fingerprint())]
 
 
 class MAPECalculation(LegacyRegressionMeanStdMetric[MAPE]):
@@ -189,6 +210,12 @@ class R2Score(SingleValueMetric):
     error_distr: bool = False
     error_normality: bool = False
 
+    def _default_tests(self, context: Context) -> List[BoundTest]:
+        return [gt(0).bind_single(self.get_fingerprint())]
+
+    def _default_tests_with_reference(self, context: Context) -> List[BoundTest]:
+        return [eq(Reference(relative=0.1)).bind_single(self.get_fingerprint())]
+
 
 class R2ScoreCalculation(LegacyRegressionSingleValueMetric[R2Score]):
     def calculate_value(
@@ -206,6 +233,9 @@ class R2ScoreCalculation(LegacyRegressionSingleValueMetric[R2Score]):
 class AbsMaxError(SingleValueMetric):
     error_distr: bool = False
     error_normality: bool = False
+
+    def _default_tests_with_reference(self, context: Context) -> List[BoundTest]:
+        return [eq(Reference(relative=0.1)).bind_single(self.get_fingerprint())]
 
 
 class AbsMaxErrorCalculation(LegacyRegressionSingleValueMetric[AbsMaxError]):
@@ -231,20 +261,7 @@ class LegacyRegressionDummyMeanStdMetric(
         return RegressionDummyMetric()
 
     def _gen_input_data(self, context: "Context") -> InputData:
-        default_data = super()._gen_input_data(context)
-        regression = context.data_definition.get_regression("default")
-        if regression is None:
-            raise ValueError("No default regression in data definition")
-        default_data.column_mapping.target = regression.target
-        default_data.column_mapping.prediction = regression.prediction
-
-        definition = create_data_definition(
-            default_data.reference_data,
-            default_data.current_data,
-            default_data.column_mapping,
-        )
-        default_data.data_definition = definition
-        return default_data
+        return _gen_regression_input_data(context)
 
 
 class LegacyRegressionDummyValueMetric(
@@ -257,20 +274,7 @@ class LegacyRegressionDummyValueMetric(
         return RegressionDummyMetric()
 
     def _gen_input_data(self, context: "Context") -> InputData:
-        default_data = super()._gen_input_data(context)
-        regression = context.data_definition.get_regression("default")
-        if regression is None:
-            raise ValueError("No default regression in data definition")
-        default_data.column_mapping.target = regression.target
-        default_data.column_mapping.prediction = regression.prediction
-
-        definition = create_data_definition(
-            default_data.reference_data,
-            default_data.current_data,
-            default_data.column_mapping,
-        )
-        default_data.data_definition = definition
-        return default_data
+        return _gen_regression_input_data(context)
 
 
 class DummyMAE(SingleValueMetric):

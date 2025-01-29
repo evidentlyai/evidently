@@ -490,6 +490,10 @@ class FieldPath:
         if issubclass(self._cls, BaseResult) and self._cls.__config__.extract_as_obj:
             return [(self._path, current_tags)]
         res = []
+        from evidently.future.backport import ByLabelValueV1
+
+        if issubclass(self._cls, ByLabelValueV1):
+            res.append((self._path + ["values"], current_tags.union({IncludeTags.Render})))
         for name, field in self._cls.__fields__.items():
             field_value = field.type_
 
@@ -527,7 +531,7 @@ class FieldPath:
             raise ValueError("Empty path provided")
         if len(path) == 1:
             if isinstance(self._cls, type) and issubclass(self._cls, BaseModel):
-                return self._cls.__fields__[path[0]].type_
+                return self._cls.__fields__[path[0]].outer_type_
             if self.has_instance:
                 # fixme: tmp fix
                 # in case of field like f: Dict[str, A] we wont know that value was type annotated with A when we get to it
