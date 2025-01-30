@@ -149,15 +149,11 @@ def get_llm_wrapper(provider: LLMProvider, model: LLMModel, options: Options) ->
     key = (provider, None)
     if key in _wrappers:
         return _wrappers[key](model, options)
-    try:
-        find_spec("litellm")
-
+    if find_spec("litellm") is not None:
         litellm_wrapper = get_litellm_wrapper(provider, model, options)
         if litellm_wrapper is not None:
             return litellm_wrapper
-    except ImportError:
-        pass
-    raise ValueError(f"LLM wrapper for provider {provider} model {model} not found")
+    raise ValueError(f"LLM wrapper for provider {provider} model {model} not found. Try installing litellm")
 
 
 class LLMOptions(Option):
