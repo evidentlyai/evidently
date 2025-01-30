@@ -246,16 +246,19 @@ class ClassificationDummyMetric(ThresholdClassificationMetric[ClassificationDumm
             fpr = dummy_results.fpr * coeff_recall
             fnr = dummy_results.fnr * coeff_precision
 
+        f1_denominator = dummy_results.precision * coeff_precision + dummy_results.recall * coeff_recall
+
+        f1 = (
+            2 * dummy_results.precision * coeff_precision * dummy_results.recall * coeff_recall / f1_denominator
+            if f1_denominator != 0
+            else float("nan")
+        )
+
         return DatasetClassificationQuality(
             accuracy=dummy_results.accuracy,
             precision=dummy_results.precision * coeff_precision,
             recall=dummy_results.recall * coeff_recall,
-            f1=2
-            * dummy_results.precision
-            * coeff_precision
-            * dummy_results.recall
-            * coeff_recall
-            / (dummy_results.precision * coeff_precision + dummy_results.recall * coeff_recall),
+            f1=f1,
             roc_auc=0.5,
             log_loss=None,
             tpr=tpr,
