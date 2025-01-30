@@ -5,7 +5,6 @@ from typing import Optional
 import numpy as np
 from sklearn.metrics import mean_absolute_error
 from sklearn.metrics import mean_absolute_percentage_error
-from sklearn.metrics import mean_squared_error
 from sklearn.metrics import r2_score
 
 from evidently.base_metric import InputData
@@ -19,6 +18,7 @@ from evidently.metrics.regression_performance.objects import RegressionMetricSca
 from evidently.metrics.regression_performance.objects import RegressionMetricsScatter
 from evidently.metrics.regression_performance.utils import apply_func_to_binned_data
 from evidently.metrics.utils import make_target_bins_for_reg_plots
+from evidently.metrics.utils import root_mean_squared_error_compat
 from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
@@ -123,10 +123,9 @@ class RegressionPerformanceMetrics(Metric[RegressionPerformanceMetricsResults]):
             y_true=data.current_data[data.column_mapping.target],
             y_pred=data.current_data[data.column_mapping.prediction],
         )
-        rmse_score_value = mean_squared_error(
+        rmse_score_value = root_mean_squared_error_compat(
             y_true=data.current_data[data.column_mapping.target],
             y_pred=data.current_data[data.column_mapping.prediction],
-            squared=False,
         )
 
         # mae default values
@@ -138,16 +137,14 @@ class RegressionPerformanceMetrics(Metric[RegressionPerformanceMetricsResults]):
         # rmse default values
         rmse_ref = None
         if data.reference_data is not None:
-            rmse_ref = mean_squared_error(
+            rmse_ref = root_mean_squared_error_compat(
                 y_true=data.reference_data[data.column_mapping.target],
                 y_pred=data.reference_data[data.column_mapping.prediction],
-                squared=False,
             )
         dummy_preds = data.current_data[data.column_mapping.target].mean()
-        rmse_default = mean_squared_error(
+        rmse_default = root_mean_squared_error_compat(
             y_true=data.current_data[data.column_mapping.target],
             y_pred=[dummy_preds] * data.current_data.shape[0],
-            squared=False,
         )
         # mape default values
         # optimal constant for mape
@@ -211,7 +208,7 @@ class RegressionPerformanceMetrics(Metric[RegressionPerformanceMetricsResults]):
             ["r2_score", "rmse", "mean_abs_error", "mean_abs_perc_error"],
             [
                 r2_score,
-                lambda x, y: mean_squared_error(x, y, squared=False),
+                lambda x, y: root_mean_squared_error_compat(x, y),
                 mean_absolute_error,
                 mean_absolute_percentage_error,
             ],
