@@ -6,6 +6,7 @@ from abc import abstractmethod
 from asyncio import Lock
 from asyncio import Semaphore
 from asyncio import sleep
+from importlib.util import find_spec
 from typing import Callable
 from typing import ClassVar
 from typing import Dict
@@ -148,21 +149,34 @@ def get_llm_wrapper(provider: LLMProvider, model: LLMModel, options: Options) ->
     key = (provider, None)
     if key in _wrappers:
         return _wrappers[key](model, options)
+    try:
+        find_spec("litellm")
+
+        litellm_wrapper = get_litellm_wrapper(provider, model, options)
+        if litellm_wrapper is not None:
+            return litellm_wrapper
+    except ImportError:
+        pass
     raise ValueError(f"LLM wrapper for provider {provider} model {model} not found")
 
 
-class OpenAIKey(Option):
+class LLMOptions(Option):
     api_key: Optional[SecretStr] = None
     rpm_limit: int = 500
+    api_url: Optional[str] = None
 
-    def __init__(self, api_key: Optional[str] = None):
+    def __init__(self, api_key: Optional[str] = None, **data):
         self.api_key = SecretStr(api_key) if api_key is not None else None
-        super().__init__()
+        super().__init__(**data)
 
     def get_api_key(self) -> Optional[str]:
         if self.api_key is None:
             return None
         return self.api_key.get_secret_value()
+
+
+class OpenAIKey(LLMOptions):
+    pass
 
 
 @llm_provider("openai", None)
@@ -208,12 +222,35 @@ class OpenAIWrapper(LLMWrapper):
         return self.options.rpm_limit
 
 
+def get_litellm_wrapper(provider: LLMProvider, model: LLMModel, options: Options) -> Optional[LLMWrapper]:
+    from litellm import BadRequestError
+    from litellm.litellm_core_utils.get_llm_provider_logic import get_llm_provider
+
+    try:
+        model, provider, *_ = get_llm_provider(model, provider)
+        return LiteLLMWrapper(f"{provider}/{model}", options)
+    except BadRequestError:
+        return None
+
+
 @llm_provider("litellm", None)
 class LiteLLMWrapper(LLMWrapper):
-    def __init__(self, model: str):
+    __used_options__: ClassVar = [LLMOptions]
+
+    def __init__(self, model: str, options: Options):
         self.model = model
+        self.options: LLMOptions = options.get(LLMOptions)
 
     async def complete(self, messages: List[LLMMessage]) -> str:
         from litellm import completion
 
-        return completion(model=self.model, messages=messages).choices[0].message.content
+        return (
+            completion(
+                model=self.model,
+                messages=[dataclasses.asdict(m) for m in messages],
+                api_key=self.options.get_api_key(),
+                api_base=self.options.api_url,
+            )
+            .choices[0]
+            .message.content
+        )

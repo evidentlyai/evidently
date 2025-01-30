@@ -64,6 +64,8 @@ class Options(BaseModel):
         _options = None
         if isinstance(options, dict):
             _options = Options(**options)
+        if isinstance(options, Option):
+            options = [options]
         if isinstance(options, list):
             _options = Options.from_list(options)
         if isinstance(options, Options):
