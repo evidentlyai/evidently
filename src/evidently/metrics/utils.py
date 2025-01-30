@@ -1,7 +1,7 @@
 import pandas as pd
 import sklearn.metrics
 
-use_new_root_mean_squared_error = True if hasattr(sklearn.metrics, "root_mean_squared_error") else False
+use_new_root_mean_squared_error = hasattr(sklearn.metrics, "root_mean_squared_error")
 
 
 def root_mean_squared_error_compat(y_true, y_pred):
