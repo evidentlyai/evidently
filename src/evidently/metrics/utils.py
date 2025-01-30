@@ -4,7 +4,7 @@ import sklearn.metrics
 use_new_root_mean_squared_error = True if hasattr(sklearn.metrics, "root_mean_squared_error") else False
 
 
-def root_mean_squared_error(y_true, y_pred):
+def root_mean_squared_error_compat(y_true, y_pred):
     """
     Compute the Root Mean Squared Error (RMSE) in a way that is compatible
     with both old and new versions of scikit-learn.
