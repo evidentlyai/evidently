@@ -8,9 +8,6 @@ from evidently.features.llm_judge import BaseLLMPromptTemplate
 from evidently.features.llm_judge import Uncertainty
 from evidently.future.datasets import FeatureDescriptor
 
-DEFAULT_LLM_PROVIDER = "openai"
-DEFAULT_LLM_MODEL = "gpt-4o-mini"
-
 
 class BERTScore(FeatureDescriptor):
     def __init__(
@@ -22,7 +19,7 @@ class BERTScore(FeatureDescriptor):
     ):
         from evidently.features.BERTScore_feature import BERTScoreFeature as BERTScoreFeatureV1
 
-        feature = BERTScoreFeatureV1(columns=columns, model=model, tfidf_weighted=tfidf_weighted)
+        feature = BERTScoreFeatureV1(columns=columns, model=model, tfidf_weighted=tfidf_weighted, display_name=alias)
         super().__init__(feature, alias=alias)
 
 
@@ -30,7 +27,9 @@ class BeginsWith(FeatureDescriptor):
     def __init__(self, column_name: str, prefix: str, case_sensitive: bool = True, alias: Optional[str] = None):
         from evidently.features.text_part_feature import BeginsWith as BeginsWithV1
 
-        feature = BeginsWithV1(column_name=column_name, prefix=prefix, case_sensitive=case_sensitive)
+        feature = BeginsWithV1(
+            column_name=column_name, prefix=prefix, case_sensitive=case_sensitive, display_name=alias
+        )
         super().__init__(feature, alias=alias)
 
 
@@ -45,7 +44,9 @@ class Contains(FeatureDescriptor):
     ):
         from evidently.features.text_contains_feature import Contains as ContainsV1
 
-        feature = ContainsV1(column_name=column_name, items=items, case_sensitive=case_sensitive, mode=mode)
+        feature = ContainsV1(
+            column_name=column_name, items=items, case_sensitive=case_sensitive, mode=mode, display_name=alias
+        )
         super().__init__(feature, alias=alias)
 
 
@@ -53,7 +54,7 @@ class ContainsLink(FeatureDescriptor):
     def __init__(self, column_name: str, alias: Optional[str] = None):
         from evidently.features.contains_link_feature import ContainsLink as ContainsLinkV1
 
-        feature = ContainsLinkV1(column_name=column_name)
+        feature = ContainsLinkV1(column_name=column_name, display_name=alias)
         super().__init__(feature, alias=alias)
 
 
@@ -68,7 +69,9 @@ class DoesNotContain(FeatureDescriptor):
     ):
         from evidently.features.text_contains_feature import DoesNotContain as DoesNotContainV1
 
-        feature = DoesNotContainV1(column_name=column_name, items=items, case_sensitive=case_sensitive, mode=mode)
+        feature = DoesNotContainV1(
+            column_name=column_name, items=items, case_sensitive=case_sensitive, mode=mode, display_name=alias
+        )
         super().__init__(feature, alias=alias)
 
 
@@ -76,7 +79,7 @@ class EndsWith(FeatureDescriptor):
     def __init__(self, column_name: str, suffix: str, case_sensitive: bool = True, alias: Optional[str] = None):
         from evidently.features.text_part_feature import EndsWith as EndsWithV1
 
-        feature = EndsWithV1(column_name=column_name, suffix=suffix, case_sensitive=case_sensitive)
+        feature = EndsWithV1(column_name=column_name, suffix=suffix, case_sensitive=case_sensitive, display_name=alias)
         super().__init__(feature, alias=alias)
 
 
@@ -84,7 +87,7 @@ class ExactMatch(FeatureDescriptor):
     def __init__(self, columns: List[str], alias: Optional[str] = None):
         from evidently.features.exact_match_feature import ExactMatchFeature as ExactMatchFeatureV1
 
-        feature = ExactMatchFeatureV1(columns=columns)
+        feature = ExactMatchFeatureV1(columns=columns, display_name=alias)
         super().__init__(feature, alias=alias)
 
 
@@ -99,7 +102,9 @@ class ExcludesWords(FeatureDescriptor):
     ):
         from evidently.features.words_feature import ExcludesWords as ExcludesWordsV1
 
-        feature = ExcludesWordsV1(column_name=column_name, words_list=words_list, mode=mode, lemmatize=lemmatize)
+        feature = ExcludesWordsV1(
+            column_name=column_name, words_list=words_list, mode=mode, lemmatize=lemmatize, display_name=alias
+        )
         super().__init__(feature, alias=alias)
 
 
@@ -132,7 +137,9 @@ class IncludesWords(FeatureDescriptor):
     ):
         from evidently.features.words_feature import IncludesWords as IncludesWordsV1
 
-        feature = IncludesWordsV1(column_name=column_name, words_list=words_list, mode=mode, lemmatize=lemmatize)
+        feature = IncludesWordsV1(
+            column_name=column_name, words_list=words_list, mode=mode, lemmatize=lemmatize, display_name=alias
+        )
         super().__init__(feature, alias=alias)
 
 
@@ -140,7 +147,7 @@ class IsValidJSON(FeatureDescriptor):
     def __init__(self, column_name: str, alias: Optional[str] = None):
         from evidently.features.is_valid_json_feature import IsValidJSON as IsValidJSONV1
 
-        feature = IsValidJSONV1(column_name=column_name)
+        feature = IsValidJSONV1(column_name=column_name, display_name=alias)
         super().__init__(feature, alias=alias)
 
 
@@ -148,7 +155,7 @@ class IsValidPython(FeatureDescriptor):
     def __init__(self, column_name: str, alias: Optional[str] = None):
         from evidently.features.is_valid_python_feature import IsValidPython as IsValidPythonV1
 
-        feature = IsValidPythonV1(column_name=column_name)
+        feature = IsValidPythonV1(column_name=column_name, display_name=alias)
         super().__init__(feature, alias=alias)
 
 
@@ -156,7 +163,7 @@ class IsValidSQL(FeatureDescriptor):
     def __init__(self, column_name: str, alias: Optional[str] = None):
         from evidently.features.is_valid_sql_feature import IsValidSQL as IsValidSQLV1
 
-        feature = IsValidSQLV1(column_name=column_name)
+        feature = IsValidSQLV1(column_name=column_name, display_name=alias)
         super().__init__(feature, alias=alias)
 
 
@@ -164,7 +171,7 @@ class ItemMatch(FeatureDescriptor):
     def __init__(self, columns: List[str], case_sensitive: bool = True, mode: str = "any", alias: Optional[str] = None):
         from evidently.features.text_contains_feature import ItemMatch as ItemMatchV1
 
-        feature = ItemMatchV1(columns=columns, case_sensitive=case_sensitive, mode=mode)
+        feature = ItemMatchV1(columns=columns, case_sensitive=case_sensitive, mode=mode, display_name=alias)
         super().__init__(feature, alias=alias)
 
 
@@ -172,7 +179,7 @@ class ItemNoMatch(FeatureDescriptor):
     def __init__(self, columns: List[str], case_sensitive: bool = True, mode: str = "any", alias: Optional[str] = None):
         from evidently.features.text_contains_feature import ItemNoMatch as ItemNoMatchV1
 
-        feature = ItemNoMatchV1(columns=columns, case_sensitive=case_sensitive, mode=mode)
+        feature = ItemNoMatchV1(columns=columns, case_sensitive=case_sensitive, mode=mode, display_name=alias)
         super().__init__(feature, alias=alias)
 
 
@@ -186,7 +193,9 @@ class JSONMatch(FeatureDescriptor):
     ):
         from evidently.features.json_match_feature import JSONMatch as JSONMatchV1
 
-        feature = JSONMatchV1(first_column=first_column, second_column=second_column, feature_type=feature_type)
+        feature = JSONMatchV1(
+            first_column=first_column, second_column=second_column, feature_type=feature_type, display_name=alias
+        )
         super().__init__(feature, alias=alias)
 
 
@@ -206,6 +215,7 @@ class JSONSchemaMatch(FeatureDescriptor):
             expected_schema=expected_schema,
             validate_types=validate_types,
             exact_match=exact_match,
+            display_name=alias,
         )
         super().__init__(feature, alias=alias)
 
@@ -223,7 +233,12 @@ class LLMJudge(FeatureDescriptor):
         from evidently.features.llm_judge import LLMJudge as LLMJudgeV1
 
         feature = LLMJudgeV1(
-            provider=provider, model=model, template=template, input_column=input_column, input_columns=input_columns
+            provider=provider,
+            model=model,
+            template=template,
+            input_column=input_column,
+            input_columns=input_columns,
+            display_name=alias,
         )
         super().__init__(feature, alias=alias)
 
@@ -234,7 +249,7 @@ class NonLetterCharacterPercentage(FeatureDescriptor):
             NonLetterCharacterPercentage as NonLetterCharacterPercentageV1,
         )
 
-        feature = NonLetterCharacterPercentageV1(column_name=column_name)
+        feature = NonLetterCharacterPercentageV1(column_name=column_name, display_name=alias)
         super().__init__(feature, alias=alias)
 
 
@@ -242,7 +257,7 @@ class OOVWordsPercentage(FeatureDescriptor):
     def __init__(self, column_name: str, ignore_words: Any = (), alias: Optional[str] = None):
         from evidently.features.OOV_words_percentage_feature import OOVWordsPercentage as OOVWordsPercentageV1
 
-        feature = OOVWordsPercentageV1(column_name=column_name, ignore_words=ignore_words)
+        feature = OOVWordsPercentageV1(column_name=column_name, ignore_words=ignore_words, display_name=alias)
         super().__init__(feature, alias=alias)
 
 
@@ -276,6 +291,7 @@ class OpenAI(FeatureDescriptor):
             check_mode=check_mode,
             possible_values=possible_values,
             openai_params=openai_params,
+            display_name=alias,
         )
         super().__init__(feature, alias=alias)
 
@@ -284,7 +300,7 @@ class RegExp(FeatureDescriptor):
     def __init__(self, column_name: str, reg_exp: str, alias: Optional[str] = None):
         from evidently.features.regexp_feature import RegExp as RegExpV1
 
-        feature = RegExpV1(column_name=column_name, reg_exp=reg_exp)
+        feature = RegExpV1(column_name=column_name, reg_exp=reg_exp, display_name=alias)
         super().__init__(feature, alias=alias)
 
 
@@ -294,7 +310,7 @@ class SemanticSimilarity(FeatureDescriptor):
             SemanticSimilarityFeature as SemanticSimilarityFeatureV1,
         )
 
-        feature = SemanticSimilarityFeatureV1(columns=columns, model=model)
+        feature = SemanticSimilarityFeatureV1(columns=columns, model=model, display_name=alias)
         super().__init__(feature, alias=alias)
 
 
@@ -302,7 +318,7 @@ class SentenceCount(FeatureDescriptor):
     def __init__(self, column_name: str, alias: Optional[str] = None):
         from evidently.features.sentence_count_feature import SentenceCount as SentenceCountV1
 
-        feature = SentenceCountV1(column_name=column_name)
+        feature = SentenceCountV1(column_name=column_name, display_name=alias)
         super().__init__(feature, alias=alias)
 
 
@@ -310,7 +326,7 @@ class Sentiment(FeatureDescriptor):
     def __init__(self, column_name: str, alias: Optional[str] = None):
         from evidently.features.sentiment_feature import Sentiment as SentimentV1
 
-        feature = SentimentV1(column_name=column_name)
+        feature = SentimentV1(column_name=column_name, display_name=alias)
         super().__init__(feature, alias=alias)
 
 
@@ -318,7 +334,7 @@ class TextLength(FeatureDescriptor):
     def __init__(self, column_name: str, alias: Optional[str] = None):
         from evidently.features.text_length_feature import TextLength as TextLengthV1
 
-        feature = TextLengthV1(column_name=column_name)
+        feature = TextLengthV1(column_name=column_name, display_name=alias)
         super().__init__(feature, alias=alias)
 
 
@@ -326,7 +342,9 @@ class TriggerWordsPresent(FeatureDescriptor):
     def __init__(self, column_name: str, words_list: List[str], lemmatize: bool = True, alias: Optional[str] = None):
         from evidently.features.trigger_words_presence_feature import TriggerWordsPresent as TriggerWordsPresentV1
 
-        feature = TriggerWordsPresentV1(column_name=column_name, words_list=words_list, lemmatize=lemmatize)
+        feature = TriggerWordsPresentV1(
+            column_name=column_name, words_list=words_list, lemmatize=lemmatize, display_name=alias
+        )
         super().__init__(feature, alias=alias)
 
 
@@ -334,7 +352,7 @@ class WordCount(FeatureDescriptor):
     def __init__(self, column_name: str, alias: Optional[str] = None):
         from evidently.features.word_count_feature import WordCount as WordCountV1
 
-        feature = WordCountV1(column_name=column_name)
+        feature = WordCountV1(column_name=column_name, display_name=alias)
         super().__init__(feature, alias=alias)
 
 
@@ -342,7 +360,7 @@ class WordMatch(FeatureDescriptor):
     def __init__(self, columns: List[str], mode: str, lemmatize: bool, alias: Optional[str] = None):
         from evidently.features.words_feature import WordMatch as WordMatchV1
 
-        feature = WordMatchV1(columns=columns, mode=mode, lemmatize=lemmatize)
+        feature = WordMatchV1(columns=columns, mode=mode, lemmatize=lemmatize, display_name=alias)
         super().__init__(feature, alias=alias)
 
 
@@ -350,7 +368,7 @@ class WordNoMatch(FeatureDescriptor):
     def __init__(self, columns: List[str], mode: str, lemmatize: bool, alias: Optional[str] = None):
         from evidently.features.words_feature import WordNoMatch as WordNoMatchV1
 
-        feature = WordNoMatchV1(columns=columns, mode=mode, lemmatize=lemmatize)
+        feature = WordNoMatchV1(columns=columns, mode=mode, lemmatize=lemmatize, display_name=alias)
         super().__init__(feature, alias=alias)
 
 
@@ -365,7 +383,9 @@ class WordsPresence(FeatureDescriptor):
     ):
         from evidently.features.words_feature import WordsPresence as WordsPresenceV1
 
-        feature = WordsPresenceV1(column_name=column_name, words_list=words_list, mode=mode, lemmatize=lemmatize)
+        feature = WordsPresenceV1(
+            column_name=column_name, words_list=words_list, mode=mode, lemmatize=lemmatize, display_name=alias
+        )
         super().__init__(feature, alias=alias)
 
 
@@ -373,8 +393,8 @@ class BiasLLMEval(FeatureDescriptor):
     def __init__(
         self,
         column_name: str,
-        provider: str = DEFAULT_LLM_PROVIDER,
-        model: str = DEFAULT_LLM_MODEL,
+        provider: str = "openai",
+        model: str = "gpt-4o-mini",
         additional_columns: Optional[Dict[str, str]] = None,
         include_category: Optional[bool] = None,
         include_score: Optional[bool] = None,
@@ -392,6 +412,7 @@ class BiasLLMEval(FeatureDescriptor):
             include_score=include_score,
             include_reasoning=include_reasoning,
             uncertainty=uncertainty,
+            display_name=alias,
         ).feature(column_name)
         super().__init__(feature, alias=alias)
 
@@ -419,6 +440,7 @@ class BinaryClassificationLLMEval(FeatureDescriptor):
             include_score=include_score,
             include_reasoning=include_reasoning,
             uncertainty=uncertainty,
+            display_name=alias,
         ).feature(column_name)
         super().__init__(feature, alias=alias)
 
@@ -428,8 +450,8 @@ class ContextQualityLLMEval(FeatureDescriptor):
         self,
         column_name: str,
         question: str,
-        provider: str = DEFAULT_LLM_PROVIDER,
-        model: str = DEFAULT_LLM_MODEL,
+        provider: str = "openai",
+        model: str = "gpt-4o-mini",
         additional_columns: Optional[Dict[str, str]] = None,
         include_category: Optional[bool] = None,
         include_score: Optional[bool] = None,
@@ -448,6 +470,7 @@ class ContextQualityLLMEval(FeatureDescriptor):
             include_score=include_score,
             include_reasoning=include_reasoning,
             uncertainty=uncertainty,
+            display_name=alias,
         ).feature(column_name)
         super().__init__(feature, alias=alias)
 
@@ -456,8 +479,8 @@ class DeclineLLMEval(FeatureDescriptor):
     def __init__(
         self,
         column_name: str,
-        provider: str = DEFAULT_LLM_PROVIDER,
-        model: str = DEFAULT_LLM_MODEL,
+        provider: str = "openai",
+        model: str = "gpt-4o-mini",
         additional_columns: Optional[Dict[str, str]] = None,
         include_category: Optional[bool] = None,
         include_score: Optional[bool] = None,
@@ -475,6 +498,7 @@ class DeclineLLMEval(FeatureDescriptor):
             include_score=include_score,
             include_reasoning=include_reasoning,
             uncertainty=uncertainty,
+            display_name=alias,
         ).feature(column_name)
         super().__init__(feature, alias=alias)
 
@@ -483,9 +507,9 @@ class LLMEval(FeatureDescriptor):
     def __init__(
         self,
         column_name: str,
+        provider: str,
+        model: str,
         template: BaseLLMPromptTemplate,
-        provider: str = DEFAULT_LLM_PROVIDER,
-        model: str = DEFAULT_LLM_MODEL,
         additional_columns: Optional[Dict[str, str]] = None,
         subcolumn: Optional[str] = None,
         alias: Optional[str] = None,
@@ -498,6 +522,7 @@ class LLMEval(FeatureDescriptor):
             template=template,
             additional_columns=additional_columns,
             subcolumn=subcolumn,
+            display_name=alias,
         ).feature(column_name)
         super().__init__(feature, alias=alias)
 
@@ -506,8 +531,8 @@ class NegativityLLMEval(FeatureDescriptor):
     def __init__(
         self,
         column_name: str,
-        provider: str = DEFAULT_LLM_PROVIDER,
-        model: str = DEFAULT_LLM_MODEL,
+        provider: str = "openai",
+        model: str = "gpt-4o-mini",
         additional_columns: Optional[Dict[str, str]] = None,
         include_category: Optional[bool] = None,
         include_score: Optional[bool] = None,
@@ -525,6 +550,7 @@ class NegativityLLMEval(FeatureDescriptor):
             include_score=include_score,
             include_reasoning=include_reasoning,
             uncertainty=uncertainty,
+            display_name=alias,
         ).feature(column_name)
         super().__init__(feature, alias=alias)
 
@@ -533,8 +559,8 @@ class PIILLMEval(FeatureDescriptor):
     def __init__(
         self,
         column_name: str,
-        provider: str = DEFAULT_LLM_PROVIDER,
-        model: str = DEFAULT_LLM_MODEL,
+        provider: str = "openai",
+        model: str = "gpt-4o-mini",
         additional_columns: Optional[Dict[str, str]] = None,
         include_category: Optional[bool] = None,
         include_score: Optional[bool] = None,
@@ -552,6 +578,7 @@ class PIILLMEval(FeatureDescriptor):
             include_score=include_score,
             include_reasoning=include_reasoning,
             uncertainty=uncertainty,
+            display_name=alias,
         ).feature(column_name)
         super().__init__(feature, alias=alias)
 
@@ -560,8 +587,8 @@ class ToxicityLLMEval(FeatureDescriptor):
     def __init__(
         self,
         column_name: str,
-        provider: str = DEFAULT_LLM_PROVIDER,
-        model: str = DEFAULT_LLM_MODEL,
+        provider: str = "openai",
+        model: str = "gpt-4o-mini",
         additional_columns: Optional[Dict[str, str]] = None,
         include_category: Optional[bool] = None,
         include_score: Optional[bool] = None,
@@ -579,5 +606,6 @@ class ToxicityLLMEval(FeatureDescriptor):
             include_score=include_score,
             include_reasoning=include_reasoning,
             uncertainty=uncertainty,
+            display_name=alias,
         ).feature(column_name)
         super().__init__(feature, alias=alias)

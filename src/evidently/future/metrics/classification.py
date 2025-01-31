@@ -1,12 +1,16 @@
 import abc
 from typing import ClassVar
+from typing import Dict
 from typing import Generic
 from typing import List
 from typing import Optional
 from typing import Tuple
+from typing import Type
 from typing import TypeVar
-from typing import Union
 
+from evidently.base_metric import InputData
+from evidently.base_metric import Metric
+from evidently.future.metric_types import BoundTest
 from evidently.future.metric_types import ByLabelCalculation
 from evidently.future.metric_types import ByLabelMetric
 from evidently.future.metric_types import ByLabelValue
@@ -16,9 +20,21 @@ from evidently.future.metric_types import SingleValueMetric
 from evidently.future.metric_types import TMetricResult
 from evidently.future.metrics._legacy import LegacyMetricCalculation
 from evidently.future.report import Context
+from evidently.future.report import _default_input_data_generator
+from evidently.future.tests import Reference
+from evidently.future.tests import eq
+from evidently.future.tests import gt
+from evidently.future.tests import lt
 from evidently.metric_results import Label
+from evidently.metrics import ClassificationConfusionMatrix
 from evidently.metrics import ClassificationDummyMetric
+from evidently.metrics import ClassificationLiftCurve
+from evidently.metrics import ClassificationLiftTable
+from evidently.metrics import ClassificationPRCurve
+from evidently.metrics import ClassificationProbDistribution
+from evidently.metrics import ClassificationPRTable
 from evidently.metrics import ClassificationQualityByClass as _ClassificationQualityByClass
+from evidently.metrics import ClassificationRocCurve
 from evidently.metrics.classification_performance.classification_dummy_metric import ClassificationDummyMetricResults
 from evidently.metrics.classification_performance.classification_quality_metric import ClassificationQualityMetric
 from evidently.metrics.classification_performance.classification_quality_metric import ClassificationQualityMetricResult
@@ -31,13 +47,30 @@ class ClassificationQualityByLabel(ByLabelMetric):
     k: Optional[int] = None
 
 
-class ClassificationQuality(SingleValueMetric):
+class ClassificationQualityBase(SingleValueMetric):
     probas_threshold: Optional[float] = None
     k: Optional[int] = None
 
 
+class ClassificationQuality(ClassificationQualityBase):
+    def _default_tests_with_reference(self, context: Context) -> List[BoundTest]:
+        return [eq(Reference(relative=0.2)).bind_single(self.get_fingerprint())]
+
+    def _get_dummy_value(
+        self, context: Context, dummy_type: Type["DummyClassificationQuality"], **kwargs
+    ) -> SingleValue:
+        return context.calculate_metric(
+            dummy_type(probas_threshold=self.probas_threshold, k=self.k, **kwargs).to_calculation()
+        )
+
+
 TByLabelMetric = TypeVar("TByLabelMetric", bound=ClassificationQualityByLabel)
 TSingleValueMetric = TypeVar("TSingleValueMetric", bound=ClassificationQuality)
+
+
+def _gen_classification_input_data(context: "Context") -> InputData:
+    default_input_data = _default_input_data_generator(context)
+    return default_input_data
 
 
 class LegacyClassificationQualityByClass(
@@ -74,6 +107,14 @@ class LegacyClassificationQualityByClass(
         if labels is not None:
             return labels[label]
         return label
+
+    def get_additional_widgets(self, context: "Context") -> List[BaseWidgetInfo]:
+        result = []
+        for field, metric in ADDITIONAL_WIDGET_MAPPING.items():
+            if hasattr(self.metric, field) and getattr(self.metric, field):
+                _, widgets = context.get_legacy_metric(metric, self._gen_input_data)
+                result += widgets
+        return result
 
 
 class F1ByLabel(ClassificationQualityByLabel):
@@ -160,8 +201,6 @@ class RocAucByLabelCalculation(LegacyClassificationQualityByClass[RocAucByLabel]
         value = ByLabelValue(
             {self._relabel(context, k): v.roc_auc for k, v in legacy_result.current.metrics.items()},
         )
-        value.widget = render
-        value.widget[0].params["counters"][0]["label"] = self.display_name()
         return (
             value,
             None
@@ -173,6 +212,17 @@ class RocAucByLabelCalculation(LegacyClassificationQualityByClass[RocAucByLabel]
 
     def display_name(self) -> str:
         return "ROC AUC by Label metric"
+
+
+ADDITIONAL_WIDGET_MAPPING: Dict[str, Metric] = {
+    "prob_distribution": ClassificationProbDistribution(),
+    "conf_matrix": ClassificationConfusionMatrix(),
+    "pr_curve": ClassificationPRCurve(),
+    "pr_table": ClassificationPRTable(),
+    "roc_curve": ClassificationRocCurve(),
+    "lift_curve": ClassificationLiftCurve(),
+    "lift_table": ClassificationLiftTable(),
+}
 
 
 class LegacyClassificationQuality(
@@ -199,12 +249,24 @@ class LegacyClassificationQuality(
         context: "Context",
         legacy_result: ClassificationQualityMetricResult,
         render: List[BaseWidgetInfo],
-    ) -> Union[SingleValue, Tuple[SingleValue, Optional[SingleValue]]]:
+    ) -> Tuple[SingleValue, Optional[SingleValue]]:
         raise NotImplementedError()
+
+    def get_additional_widgets(self, context: "Context") -> List[BaseWidgetInfo]:
+        result = []
+        for field, metric in ADDITIONAL_WIDGET_MAPPING.items():
+            if hasattr(self.metric, field) and getattr(self.metric, field):
+                _, widgets = context.get_legacy_metric(metric, self._gen_input_data)
+                result += widgets
+        return result
 
 
 class F1Score(ClassificationQuality):
-    pass
+    conf_matrix: bool = True
+
+    def _default_tests(self, context: Context) -> List[BoundTest]:
+        dummy_value = self._get_dummy_value(context, DummyF1Score)
+        return [gt(dummy_value.value).bind_single(self.get_fingerprint())]
 
 
 class F1ScoreCalculation(LegacyClassificationQuality[F1Score]):
@@ -224,7 +286,9 @@ class F1ScoreCalculation(LegacyClassificationQuality[F1Score]):
 
 
 class Accuracy(ClassificationQuality):
-    pass
+    def _default_tests(self, context: Context) -> List[BoundTest]:
+        dummy_value = self._get_dummy_value(context, DummyAccuracy)
+        return [gt(dummy_value.value).bind_single(self.get_fingerprint())]
 
 
 class AccuracyCalculation(LegacyClassificationQuality[Accuracy]):
@@ -244,7 +308,13 @@ class AccuracyCalculation(LegacyClassificationQuality[Accuracy]):
 
 
 class Precision(ClassificationQuality):
-    pass
+    conf_matrix: bool = True
+    pr_curve: bool = False
+    pr_table: bool = False
+
+    def _default_tests(self, context: Context) -> List[BoundTest]:
+        dummy_value = self._get_dummy_value(context, DummyPrecision)
+        return [gt(dummy_value.value).bind_single(self.get_fingerprint())]
 
 
 class PrecisionCalculation(LegacyClassificationQuality[Precision]):
@@ -264,7 +334,13 @@ class PrecisionCalculation(LegacyClassificationQuality[Precision]):
 
 
 class Recall(ClassificationQuality):
-    pass
+    conf_matrix: bool = True
+    pr_curve: bool = False
+    pr_table: bool = False
+
+    def _default_tests(self, context: Context) -> List[BoundTest]:
+        dummy_value = self._get_dummy_value(context, DummyRecall)
+        return [gt(dummy_value.value).bind_single(self.get_fingerprint())]
 
 
 class RecallCalculation(LegacyClassificationQuality[Recall]):
@@ -284,7 +360,11 @@ class RecallCalculation(LegacyClassificationQuality[Recall]):
 
 
 class TPR(ClassificationQuality):
-    pass
+    pr_table: bool = False
+
+    def _default_tests(self, context: Context) -> List[BoundTest]:
+        dummy_value = self._get_dummy_value(context, DummyTPR)
+        return [gt(dummy_value.value).bind_single(self.get_fingerprint())]
 
 
 class TPRCalculation(LegacyClassificationQuality[TPR]):
@@ -308,7 +388,11 @@ class TPRCalculation(LegacyClassificationQuality[TPR]):
 
 
 class TNR(ClassificationQuality):
-    pass
+    pr_table: bool = False
+
+    def _default_tests(self, context: Context) -> List[BoundTest]:
+        dummy_value = self._get_dummy_value(context, DummyTNR)
+        return [gt(dummy_value.value).bind_single(self.get_fingerprint())]
 
 
 class TNRCalculation(LegacyClassificationQuality[TNR]):
@@ -332,7 +416,11 @@ class TNRCalculation(LegacyClassificationQuality[TNR]):
 
 
 class FPR(ClassificationQuality):
-    pass
+    pr_table: bool = False
+
+    def _default_tests(self, context: Context) -> List[BoundTest]:
+        dummy_value = self._get_dummy_value(context, DummyFPR)
+        return [lt(dummy_value.value).bind_single(self.get_fingerprint())]
 
 
 class FPRCalculation(LegacyClassificationQuality[FPR]):
@@ -356,7 +444,11 @@ class FPRCalculation(LegacyClassificationQuality[FPR]):
 
 
 class FNR(ClassificationQuality):
-    pass
+    pr_table: bool = False
+
+    def _default_tests(self, context: Context) -> List[BoundTest]:
+        dummy_value = self._get_dummy_value(context, DummyFNR)
+        return [lt(dummy_value.value).bind_single(self.get_fingerprint())]
 
 
 class FNRCalculation(LegacyClassificationQuality[FNR]):
@@ -380,7 +472,12 @@ class FNRCalculation(LegacyClassificationQuality[FNR]):
 
 
 class RocAuc(ClassificationQuality):
-    pass
+    roc_curve: bool = True
+    pr_table: bool = False
+
+    def _default_tests(self, context: Context) -> List[BoundTest]:
+        dummy_value = self._get_dummy_value(context, DummyRocAuc)
+        return [gt(dummy_value.value).bind_single(self.get_fingerprint())]
 
 
 class RocAucCalculation(LegacyClassificationQuality[RocAuc]):
@@ -404,7 +501,11 @@ class RocAucCalculation(LegacyClassificationQuality[RocAuc]):
 
 
 class LogLoss(ClassificationQuality):
-    pass
+    pr_table: bool = False
+
+    def _default_tests(self, context: Context) -> List[BoundTest]:
+        dummy_value = self._get_dummy_value(context, DummyLogLoss)
+        return [lt(dummy_value.value).bind_single(self.get_fingerprint())]
 
 
 class LogLossCalculation(LegacyClassificationQuality[LogLoss]):
@@ -460,7 +561,15 @@ class LegacyClassificationDummy(
         return SingleValue(current_value), SingleValue(reference_value)
 
 
-class DummyPrecision(ClassificationQuality):
+class DummyClassificationQuality(ClassificationQualityBase):
+    def _default_tests_with_reference(self, context: Context) -> List[BoundTest]:
+        return []
+
+    def _default_tests(self, context: Context) -> List[BoundTest]:
+        return []
+
+
+class DummyPrecision(DummyClassificationQuality):
     pass
 
 
@@ -471,7 +580,7 @@ class DummyPrecisionCalculation(LegacyClassificationDummy[DummyPrecision]):
         return "Dummy precision metric"
 
 
-class DummyRecall(ClassificationQuality):
+class DummyRecall(DummyClassificationQuality):
     pass
 
 
@@ -482,7 +591,7 @@ class DummyRecallCalculation(LegacyClassificationDummy[DummyRecall]):
         return "Dummy recall metric"
 
 
-class DummyF1Score(ClassificationQuality):
+class DummyF1Score(DummyClassificationQuality):
     pass
 
 
@@ -493,7 +602,7 @@ class DummyF1ScoreCalculation(LegacyClassificationDummy[DummyF1Score]):
         return "Dummy F1 score metric"
 
 
-class DummyAccuracy(ClassificationQuality):
+class DummyAccuracy(DummyClassificationQuality):
     pass
 
 
@@ -504,7 +613,7 @@ class DummyAccuracyCalculation(LegacyClassificationDummy[DummyAccuracy]):
         return "Dummy accuracy metric"
 
 
-class DummyTPR(ClassificationQuality):
+class DummyTPR(DummyClassificationQuality):
     pass
 
 
@@ -515,7 +624,7 @@ class DummyTPRCalculation(LegacyClassificationDummy[DummyTPR]):
         return "Dummy TPR metric"
 
 
-class DummyTNR(ClassificationQuality):
+class DummyTNR(DummyClassificationQuality):
     pass
 
 
@@ -526,7 +635,7 @@ class DummyTNRCalculation(LegacyClassificationDummy[DummyTNR]):
         return "Dummy TNR metric"
 
 
-class DummyFPR(ClassificationQuality):
+class DummyFPR(DummyClassificationQuality):
     pass
 
 
@@ -537,7 +646,7 @@ class DummyFPRCalculation(LegacyClassificationDummy[DummyFPR]):
         return "Dummy FPR metric"
 
 
-class DummyFNR(ClassificationQuality):
+class DummyFNR(DummyClassificationQuality):
     pass
 
 
@@ -548,7 +657,7 @@ class DummyFNRCalculation(LegacyClassificationDummy[DummyFNR]):
         return "Dummy FNR metric"
 
 
-class DummyLogLoss(ClassificationQuality):
+class DummyLogLoss(DummyClassificationQuality):
     pass
 
 
@@ -559,7 +668,7 @@ class DummyLogLossCalculation(LegacyClassificationDummy[DummyLogLoss]):
         return "Dummy LogLoss metric"
 
 
-class DummyRocAuc(ClassificationQuality):
+class DummyRocAuc(DummyClassificationQuality):
     pass
 
 

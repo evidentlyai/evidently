@@ -10,8 +10,10 @@ class LLMResponseParseError(EvidentlyLLMError):
 
 
 class LLMRequestError(EvidentlyLLMError):
-    pass
+    def __init__(self, message: str, original_error: Exception = None):
+        super().__init__(message)
+        self.original_error = original_error
 
 
-class LLMRateLimitError(EvidentlyLLMError):
+class LLMRateLimitError(LLMRequestError):
     pass

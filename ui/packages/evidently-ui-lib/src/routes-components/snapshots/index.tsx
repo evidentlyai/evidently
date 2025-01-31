@@ -60,13 +60,18 @@ export const SnapshotsListTemplate = ({
   projectId,
   LinkToSnapshot,
   onReloadSnapshots,
-  onDeleteSnapshot
+  onDeleteSnapshot,
+  ActionsWrapper = ({ children }) => <>{children}</>
 }: {
   projectId: string
   disabled?: boolean
   snapshots: ReportModel[] | TestSuiteModel[]
   type: 'reports' | 'test suites'
   LinkToSnapshot: (props: { snapshotId: string; projectId: string }) => JSX.Element
+  ActionsWrapper?: ({
+    children,
+    snapshot
+  }: { children: React.ReactNode; snapshot: ReportModel }) => JSX.Element
   slots?: {
     additionalSnapshotActions?: (args: { snapshotId: string; projectId: string }) => JSX.Element
     donwloadButtonVariant?: ButtonOwnProps['variant']
@@ -267,41 +272,47 @@ export const SnapshotsListTemplate = ({
               </TableCell>
               <TableCell>
                 <Box display={'flex'} justifyContent={'center'} gap={1}>
-                  <LinkToSnapshot snapshotId={snapshot.id} projectId={projectId} />
+                  <ActionsWrapper snapshot={snapshot}>
+                    <>
+                      <LinkToSnapshot snapshotId={snapshot.id} projectId={projectId} />
 
-                  <DownloadButton
-                    variant={slots?.donwloadButtonVariant || 'outlined'}
-                    disabled={disabled ?? false}
-                    downloadLink={
-                      // better type safety
-                      (
-                        '/api/projects/{project_id}/{snapshot_id}/download' satisfies DownloadSnapshotURL
-                      )
-                        .replace('{project_id}', projectId)
-                        .replace('{snapshot_id}', snapshot.id)
-                    }
-                  />
-                  {slots?.additionalSnapshotActions && (
-                    <slots.additionalSnapshotActions
-                      snapshotId={snapshot.id}
-                      projectId={projectId}
-                    />
-                  )}
-                  <Box>
-                    <Tooltip title='delete snapshot' placement='top'>
-                      <IconButton
-                        onClick={() => {
-                          if (confirm('Are you sure?') === true) {
-                            onDeleteSnapshot({ snapshotId: snapshot.id })
-                          }
-                        }}
-                        color='primary'
-                        disabled={disabled}
-                      >
-                        <DeleteIcon />
-                      </IconButton>
-                    </Tooltip>
-                  </Box>
+                      <DownloadButton
+                        variant={slots?.donwloadButtonVariant || 'outlined'}
+                        disabled={disabled ?? false}
+                        downloadLink={
+                          // better type safety
+                          (
+                            '/api/projects/{project_id}/{snapshot_id}/download' satisfies DownloadSnapshotURL
+                          )
+                            .replace('{project_id}', projectId)
+                            .replace('{snapshot_id}', snapshot.id)
+                        }
+                      />
+
+                      {slots?.additionalSnapshotActions && (
+                        <slots.additionalSnapshotActions
+                          snapshotId={snapshot.id}
+                          projectId={projectId}
+                        />
+                      )}
+
+                      <Box>
+                        <Tooltip title='delete snapshot' placement='top'>
+                          <IconButton
+                            onClick={() => {
+                              if (confirm('Are you sure?') === true) {
+                                onDeleteSnapshot({ snapshotId: snapshot.id })
+                              }
+                            }}
+                            color='primary'
+                            disabled={disabled}
+                          >
+                            <DeleteIcon />
+                          </IconButton>
+                        </Tooltip>
+                      </Box>
+                    </>
+                  </ActionsWrapper>
                 </Box>
               </TableCell>
             </TableRow>

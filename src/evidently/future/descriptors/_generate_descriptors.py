@@ -94,6 +94,7 @@ def create_descriptor_function(feature_class: Type[GeneratedFeatures]):
 
     args, kwargs = get_args_kwargs(feature_class)
     display_name_required = "display_name" in args
+    has_display_name = display_name_required or "display_name" in kwargs
     if not display_name_required:
         kwargs["alias"] = ("Optional[str]", "None")
         kwargs.pop("display_name", None)
@@ -107,7 +108,7 @@ def create_descriptor_function(feature_class: Type[GeneratedFeatures]):
         kwargs_str = ""
 
     class_args = ", ".join(f"{k}={k}" for k in chain(args, kwargs) if k != "alias")
-    if display_name_required:
+    if has_display_name:
         class_args += ", display_name=alias"
     res = f"""
 class {name}(FeatureDescriptor):
@@ -131,7 +132,7 @@ def create_llm_descriptor_functions(feature_class: Type[BaseLLMEval]):
 
     args, kwargs = get_args_kwargs(feature_class)
     kwargs["alias"] = ("Optional[str]", "None")
-    kwargs.pop("display_name", None)
+    has_display_name = kwargs.pop("display_name", None) is not None
     args_str = ", ".join(f"{a}: {t}" for a, t in args.items())
     if len(kwargs) > 0:
         kwargs_str = ", ".join(f"{a}: {t} = {d}" for a, (t, d) in kwargs.items())
@@ -140,6 +141,8 @@ def create_llm_descriptor_functions(feature_class: Type[BaseLLMEval]):
     else:
         kwargs_str = ""
     class_args = ", ".join(f"{k}={k}" for k in chain(args, kwargs) if k != "alias")
+    if has_display_name:
+        class_args += ", display_name=alias"
     res = f"""
 class {name}(FeatureDescriptor):
     def __init__(self, column_name: str, {args_str}{kwargs_str}):

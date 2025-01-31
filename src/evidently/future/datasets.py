@@ -16,6 +16,7 @@ import pandas as pd
 
 from evidently import ColumnMapping
 from evidently import ColumnType
+from evidently.base_metric import DisplayName
 from evidently.features.generated_features import GeneratedFeatures
 from evidently.metric_results import Label
 from evidently.options.base import Options
@@ -44,21 +45,80 @@ class ColumnInfo:
 
 @dataclasses.dataclass
 class BinaryClassification:
-    name: str = "default"
-    target: str = "target"
-    prediction_labels: Optional[str] = None
-    prediction_probas: Optional[str] = "prediction"
-    pos_label: Label = 1
-    labels: Optional[Dict[Label, str]] = None
+    name: str
+    target: str
+    prediction_labels: Optional[str]
+    prediction_probas: Optional[str]
+    pos_label: Label
+    labels: Optional[Dict[Label, str]]
+
+    def __init__(
+        self,
+        *,
+        name: str = "default",
+        target: Optional[str] = None,
+        prediction_labels: Optional[str] = None,
+        prediction_probas: Optional[str] = None,
+        pos_label: Optional[str] = None,
+        labels: Optional[Dict[Label, str]] = None,
+    ):
+        self.name = name
+        if (
+            target is None
+            and prediction_labels is None
+            and prediction_probas is None
+            and pos_label is None
+            and labels is None
+        ):
+            self.target = "target"
+            self.prediction_labels = None
+            self.prediction_probas = "prediction"
+            self.pos_label = 1
+            self.labels = None
+            return
+        if target is None or (prediction_labels is None and prediction_probas is None):
+            raise ValueError(
+                "Invalid BinaryClassification configuration:" " target and one of (labels or probas) should be set"
+            )
+        self.target = target
+        self.prediction_labels = prediction_labels
+        self.prediction_probas = prediction_probas
+        self.pos_label = pos_label if pos_label is not None else 1
+        self.labels = labels
 
 
 @dataclasses.dataclass
 class MulticlassClassification:
     name: str = "default"
     target: str = "target"
-    prediction_labels: str = "prediction"
+    prediction_labels: Optional[str] = "prediction"
     prediction_probas: Optional[List[str]] = None
     labels: Optional[Dict[Label, str]] = None
+
+    def __init__(
+        self,
+        *,
+        name: str = "default",
+        target: Optional[str] = None,
+        prediction_labels: Optional[str] = None,
+        prediction_probas: Optional[List[str]] = None,
+        labels: Optional[Dict[Label, str]] = None,
+    ):
+        self.name = name
+        if target is None and prediction_labels is None and prediction_probas is None and labels is None:
+            self.target = "target"
+            self.prediction_labels = "prediction"
+            self.prediction_probas = None
+            self.labels = None
+            return
+        if target is None or (prediction_labels is None and prediction_probas is None):
+            raise ValueError(
+                "Invalid MulticlassClassification configuration:" " target and one of (labels or probas) should be set"
+            )
+        self.target = target
+        self.prediction_labels = prediction_labels
+        self.prediction_probas = prediction_probas
+        self.labels = labels
 
 
 Classification = Union[BinaryClassification, MulticlassClassification]
@@ -177,7 +237,7 @@ class Descriptor:
         self._alias = alias
 
     @abc.abstractmethod
-    def generate_data(self, dataset: "Dataset") -> Union[DatasetColumn, Dict[str, DatasetColumn]]:
+    def generate_data(self, dataset: "Dataset") -> Union[DatasetColumn, Dict[DisplayName, DatasetColumn]]:
         raise NotImplementedError()
 
     @property
@@ -192,22 +252,22 @@ class FeatureDescriptor(Descriptor):
         self._feature = feature
 
     def get_dataset_column(self, column_name: str, values: pd.Series) -> DatasetColumn:
-        column_type = self._feature.get_type(f"{self._feature.get_fingerprint()}.{column_name}")
+        column_type = self._feature.get_type(column_name)
         if column_type == ColumnType.Numerical:
             values = pd.to_numeric(values, errors="coerce")
         dataset_column = DatasetColumn(type=column_type, data=values)
         return dataset_column
 
-    def generate_data(self, dataset: "Dataset") -> Union[DatasetColumn, Dict[str, DatasetColumn]]:
-        feature = self._feature.generate_features(
+    def generate_data(self, dataset: "Dataset") -> Union[DatasetColumn, Dict[DisplayName, DatasetColumn]]:
+        feature = self._feature.generate_features_renamed(
             dataset.as_dataframe(),
             create_data_definition(None, dataset.as_dataframe(), ColumnMapping()),
             Options(),
         )
-        if len(feature.columns) > 1:
-            return {col: self.get_dataset_column(col, feature[col]) for col in feature.columns}
-        col = feature.columns[0]
-        return self.get_dataset_column(col, feature[col])
+        return {
+            col.display_name: self.get_dataset_column(col.name, feature[col.name])
+            for col in self._feature.list_columns()
+        }
 
 
 def _determine_desccriptor_column_name(alias: str, columns: List[str]):
@@ -361,15 +421,11 @@ class PandasDataset(Dataset):
             self._data_definition.categorical_descriptors.append(key)
 
     def add_descriptor(self, descriptor: Descriptor):
-        key = _determine_desccriptor_column_name(descriptor.alias, self._data.columns.tolist())
-        new_column = descriptor.generate_data(self)
-        if isinstance(new_column, DatasetColumn):
-            self.add_column(key, new_column)
-        elif len(new_column) > 1:
-            for col, value in new_column.items():
-                self.add_column(f"{key}.{col}", value)
-        else:
-            self.add_column(key, list(new_column.values())[0])
+        new_columns = descriptor.generate_data(self)
+        if isinstance(new_columns, DatasetColumn):
+            new_columns = {descriptor.alias: new_columns}
+        for col, value in new_columns.items():
+            self.add_column(_determine_desccriptor_column_name(col, self._data.columns.tolist()), value)
 
     def add_descriptors(self, descriptors: List[Descriptor]):
         for descriptor in descriptors:

@@ -132,7 +132,12 @@ class ClassificationDummyMetric(ThresholdClassificationMetric[ClassificationDumm
             coeff_precision = min(1.0, (1 - threshold) / 0.5)
             neg_label_precision = precision_score(target, dummy_preds, pos_label=labels[1]) * coeff_precision
             neg_label_recall = recall_score(target, dummy_preds, pos_label=labels[1]) * coeff_recall
-            f1_label2_value = 2 * neg_label_precision * neg_label_recall / (neg_label_precision + neg_label_recall)
+            f1_label2_denominator = neg_label_precision + neg_label_recall
+            f1_label2_value = (
+                2 * neg_label_precision * neg_label_recall / f1_label2_denominator
+                if f1_label2_denominator != 0
+                else float("nan")
+            )
             metrics_matrix = {
                 str(labels[0]): ClassMetric(
                     precision=current_dummy.precision,
@@ -242,16 +247,19 @@ class ClassificationDummyMetric(ThresholdClassificationMetric[ClassificationDumm
             fpr = dummy_results.fpr * coeff_recall
             fnr = dummy_results.fnr * coeff_precision
 
+        f1_denominator = dummy_results.precision * coeff_precision + dummy_results.recall * coeff_recall
+
+        f1 = (
+            2 * dummy_results.precision * coeff_precision * dummy_results.recall * coeff_recall / f1_denominator
+            if f1_denominator != 0
+            else float("nan")
+        )
+
         return DatasetClassificationQuality(
             accuracy=dummy_results.accuracy,
             precision=dummy_results.precision * coeff_precision,
             recall=dummy_results.recall * coeff_recall,
-            f1=2
-            * dummy_results.precision
-            * coeff_precision
-            * dummy_results.recall
-            * coeff_recall
-            / (dummy_results.precision * coeff_precision + dummy_results.recall * coeff_recall),
+            f1=f1,
             roc_auc=0.5,
             log_loss=None,
             tpr=tpr,

@@ -148,7 +148,7 @@ def test_run_snapshot_with_llm_judge():
             {
                 "metric": "ColumnSummaryMetric",
                 "result": {
-                    "column_name": "Negativity category",
+                    "column_name": "Negativity",
                     "column_type": "cat",
                     "current_characteristics": {
                         "count": 2,

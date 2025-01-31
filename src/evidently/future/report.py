@@ -1,3 +1,4 @@
+import dataclasses
 import json
 import typing
 from datetime import datetime
@@ -25,15 +26,21 @@ from evidently.future.metric_types import Metric
 from evidently.future.metric_types import MetricCalculationBase
 from evidently.future.metric_types import MetricId
 from evidently.future.metric_types import MetricResult
+from evidently.future.metric_types import MetricTestResult
 from evidently.future.metric_types import SingleValueLocation
 from evidently.future.metric_types import metric_tests_widget
 from evidently.future.metric_types import render_widgets
 from evidently.future.preset_types import MetricPreset
 from evidently.model.widget import BaseWidgetInfo
+from evidently.model.widget import link_metric
 from evidently.renderers.base_renderer import DEFAULT_RENDERERS
+from evidently.renderers.html_widgets import CounterData
+from evidently.renderers.html_widgets import WidgetSize
+from evidently.renderers.html_widgets import counter
 from evidently.suite.base_suite import MetadataValueType
 from evidently.suite.base_suite import _discover_dependencies
 from evidently.suite.base_suite import find_metric_renderer
+from evidently.tests.base_test import TestStatus
 from evidently.utils import NumpyEncoder
 from evidently.utils.data_preprocessing import create_data_definition
 
@@ -91,29 +98,29 @@ class Context:
     def column(self, column_name: str) -> ContextColumnData:
         return ContextColumnData(self._input_data[0].column(column_name))
 
-    def calculate_metric(self, metric: MetricCalculationBase[TResultType]) -> TResultType:
-        if metric.id not in self._current_graph_level:
-            self._current_graph_level[metric.id] = {"_self": metric}
+    def calculate_metric(self, calc: MetricCalculationBase[TResultType]) -> TResultType:
+        if calc.id not in self._current_graph_level:
+            self._current_graph_level[calc.id] = {"_self": calc}
         prev_level = self._current_graph_level
-        self._current_graph_level = prev_level[metric.id]
-        if metric.id not in self._metrics:
-            current_result, reference_result = metric.call(self)
-            current_result.set_display_name(metric.display_name())
-            current_result._metric = metric
-            current_result._metric_value_location = SingleValueLocation(metric.to_metric())
-            self._metrics[metric.id] = current_result
+        self._current_graph_level = prev_level[calc.id]
+        if calc.id not in self._metrics:
+            current_result, reference_result = calc.call(self)
+            current_result.set_display_name(calc.display_name())
+            current_result._metric = calc
+            current_result._metric_value_location = SingleValueLocation(calc.to_metric())
+            self._metrics[calc.id] = current_result
             if reference_result is not None:
-                reference_result._metric = metric
-                reference_result.set_display_name(metric.display_name())
-                reference_result._metric_value_location = SingleValueLocation(metric.to_metric())
-                self._reference_metrics[metric.id] = reference_result
+                reference_result._metric = calc
+                reference_result.set_display_name(calc.display_name())
+                reference_result._metric_value_location = SingleValueLocation(calc.to_metric())
+                self._reference_metrics[calc.id] = reference_result
             test_results = {
-                tc: tc.run_test(self, metric, current_result) for tc in metric.to_metric().get_bound_tests(self)
+                tc: tc.run_test(self, calc, current_result) for tc in calc.to_metric().get_bound_tests(self)
             }
             if test_results and len(test_results) > 0:
                 current_result.set_tests(test_results)
         self._current_graph_level = prev_level
-        return typing.cast(TResultType, self._metrics[metric.id])
+        return typing.cast(TResultType, self._metrics[calc.id])
 
     def get_metric_result(self, metric: Union[MetricId, Metric, MetricCalculationBase[TResultType]]) -> MetricResult:
         if isinstance(metric, MetricId):
@@ -133,7 +140,7 @@ class Context:
     def get_legacy_metric(
         self,
         metric: LegacyMetric[T],
-        input_data_generator: Optional[Callable[["Context"], InputData]] = None,
+        input_data_generator: Optional[Callable[["Context"], InputData]],
     ) -> Tuple[T, List[BaseWidgetInfo]]:
         if input_data_generator is None:
             input_data_generator = _default_input_data_generator
@@ -141,7 +148,7 @@ class Context:
         dependencies = _discover_dependencies(metric)
         for _, obj in dependencies:
             if isinstance(obj, LegacyMetric):
-                (result, render) = self.get_legacy_metric(obj)
+                (result, render) = self.get_legacy_metric(obj, input_data_generator)
                 object.__setattr__(obj, "get_result", lambda: result)
             else:
                 raise ValueError(f"unexpected type {type(obj)}")
@@ -212,15 +219,37 @@ def _default_input_data_generator(context: "Context") -> InputData:
     return input_data
 
 
+def metric_tests_stats(tests: List[MetricTestResult]) -> BaseWidgetInfo:
+    statuses = [TestStatus.SUCCESS, TestStatus.WARNING, TestStatus.FAIL, TestStatus.ERROR]
+    status_stats: Dict[TestStatus, int] = {}
+    for test in tests:
+        status_stats[test.status] = status_stats.get(test.status, 0) + 1
+    stats = counter(
+        title="",
+        size=WidgetSize.FULL,
+        counters=[CounterData(status.value, str(status_stats.get(status, 0))) for status in statuses],
+    )
+    stats.params["v2_test"] = True
+    return stats
+
+
+@dataclasses.dataclass
+class SnapshotItem:
+    metric_id: Optional[MetricId]
+    widgets: List[BaseWidgetInfo]
+
+
 class Snapshot:
     _report: "Report"
     _context: Context  # stores report calculation progress
     _metrics: Dict[MetricId, MetricResult]
+    _snapshot_item: List[SnapshotItem]
     _widgets: List[BaseWidgetInfo]
 
     def __init__(self, report: "Report"):
         self._report = report
         self._context = Context(report)
+        self._snapshot_item = []
 
     @property
     def context(self) -> Context:
@@ -234,21 +263,34 @@ class Snapshot:
         self.context.init_dataset(current_data, reference_data)
         metric_results = {}
         widgets: List[BaseWidgetInfo] = []
+        snapshot_items: List[SnapshotItem] = []
         for item in self.report.items():
             if isinstance(item, (MetricPreset,)):
                 for metric in item.metrics():
                     calc = metric.to_calculation()
                     metric_results[calc.id] = self.context.calculate_metric(calc)
-                widgets.extend(item.calculate(metric_results).widget)
+                widget = item.calculate(metric_results).widget
+                for metric in item.metrics():
+                    link_metric(widget, metric)
+                widgets.extend(widget)
+                snapshot_items.append(SnapshotItem(None, widget))
             elif isinstance(item, (MetricContainer,)):
                 for metric in item.metrics(self.context):
                     calc = metric.to_calculation()
                     metric_results[calc.id] = self.context.calculate_metric(calc)
-                widgets.extend(item.render(self.context, results=metric_results))
+                widget = item.render(self.context, results=metric_results)
+                for metric in item.metrics(self.context):
+                    link_metric(widget, metric)
+                widgets.extend(widget)
+                snapshot_items.append(SnapshotItem(None, widget))
             else:
                 calc = item.to_calculation()
                 metric_results[calc.id] = self.context.calculate_metric(calc)
-                widgets.extend(metric_results[calc.id].widget)
+                widget = metric_results[calc.id].widget
+                widgets.extend(widget)
+                link_metric(widget, item)
+                snapshot_items.append(SnapshotItem(calc.id, widget))
+        self._snapshot_item = snapshot_items
         self._widgets = widgets
 
     def _repr_html_(self):
@@ -267,6 +309,7 @@ class Snapshot:
         widgets_to_render: List[BaseWidgetInfo] = [group_widget(title="", widgets=self._widgets)]
 
         if len(tests) > 0:
+            widgets_to_render.append(metric_tests_stats(tests))
             widgets_to_render.append(metric_tests_widget(tests))
         return render_widgets(widgets_to_render)
 

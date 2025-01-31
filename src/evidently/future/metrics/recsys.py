@@ -34,7 +34,7 @@ class TopKBase(SingleValueMetric):
     min_rel_score: Optional[int] = None
     no_feedback_users: bool = False
 
-    def _default_tests_with_reference(self) -> List[BoundTest]:
+    def _default_tests_with_reference(self, context: Context) -> List[BoundTest]:
         return [
             eq(Reference(relative=0.1)).bind_single(self.get_fingerprint()),
         ]
@@ -155,7 +155,7 @@ class FBetaTopKCalculation(LegacyTopKCalculation[FBetaTopK]):
 class ScoreDistribution(SingleValueMetric):
     k: int
 
-    def _default_tests_with_reference(self) -> List[BoundTest]:
+    def _default_tests_with_reference(self, context: Context) -> List[BoundTest]:
         return [
             eq(Reference(relative=0.1)).bind_single(self.get_fingerprint()),
         ]

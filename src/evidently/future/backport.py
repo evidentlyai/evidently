@@ -8,6 +8,8 @@ from typing import List
 from typing import Optional
 from typing import Union
 
+from uuid6 import uuid7
+
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric as MetricV1
 from evidently.base_metric import MetricResult as MetricResultV1
@@ -27,14 +29,18 @@ from evidently.future.metric_types import TResult
 from evidently.future.report import Context
 from evidently.future.report import Snapshot as SnapshotV2
 from evidently.metric_results import Label
+from evidently.model.widget import AdditionalGraphInfo
 from evidently.model.widget import BaseWidgetInfo
+from evidently.model.widget import PlotlyGraphInfo
 from evidently.options.base import Options
 from evidently.pipeline.column_mapping import RecomType
 from evidently.pipeline.column_mapping import TargetNames
 from evidently.pydantic_utils import Fingerprint
+from evidently.pydantic_utils import IncludeTags
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.suite.base_suite import ContextPayload
+from evidently.suite.base_suite import RunMetadata
 from evidently.suite.base_suite import Snapshot as SnapshotV1
 from evidently.tests.base_test import Test as TestV1
 from evidently.tests.base_test import TestParameters
@@ -48,6 +54,7 @@ from evidently.ui.errors import EvidentlyServiceError
 from evidently.ui.type_aliases import ProjectID
 from evidently.utils.data_preprocessing import ColumnDefinition
 from evidently.utils.data_preprocessing import DataDefinition as DataDefinitionV1
+from evidently.utils.data_preprocessing import FeatureDefinition
 from evidently.utils.data_preprocessing import PredictionColumns
 
 if TYPE_CHECKING:
@@ -61,6 +68,11 @@ class MetricResultV2Adapter(MetricResultV1):
     widget: List[dict]
 
 
+class PresetMetricValueV1(MetricResultV2Adapter):
+    class Config:
+        type_alias = "evidently:metric_result:PresetMetricValueV1"
+
+
 class SingleValueV1(MetricResultV2Adapter):
     class Config:
         type_alias = "evidently:metric_result:SingleValueV1"
@@ -71,6 +83,7 @@ class SingleValueV1(MetricResultV2Adapter):
 class ByLabelValueV1(MetricResultV2Adapter):
     class Config:
         type_alias = "evidently:metric_result:ByLabelValueV1"
+        field_tags = {"values": {IncludeTags.Render}}
 
     values: Dict[Label, Union[float, int, bool, str]]
 
@@ -83,19 +96,29 @@ class CountValueV1(MetricResultV2Adapter):
     share: float
 
 
-def _create_metric_result_widget(metric_result: MetricResultV2) -> List[dict]:
+def _create_metric_result_widget(metric_result: MetricResultV2, ignore_widget: bool) -> List[dict]:
+    if ignore_widget:
+        return []
     widgets = list(metric_result.widget)
     return [dataclasses.asdict(w) for w in widgets]
 
 
-def metric_result_v2_to_v1(metric_result: MetricResultV2) -> MetricResultV1:
+def metric_result_v2_to_v1(metric_result: MetricResultV2, ignore_widget: bool = False) -> MetricResultV1:
     if isinstance(metric_result, SingleValue):
-        return SingleValueV1(widget=_create_metric_result_widget(metric_result), value=metric_result.value)
+        return SingleValueV1(
+            widget=_create_metric_result_widget(metric_result, ignore_widget),
+            value=metric_result.value,
+        )
     if isinstance(metric_result, ByLabelValue):
-        return ByLabelValueV1(widget=_create_metric_result_widget(metric_result), values=metric_result.values)
+        return ByLabelValueV1(
+            widget=_create_metric_result_widget(metric_result, ignore_widget),
+            values=metric_result.values,
+        )
     if isinstance(metric_result, CountValue):
         return CountValueV1(
-            widget=_create_metric_result_widget(metric_result), count=metric_result.count, share=metric_result.share
+            widget=_create_metric_result_widget(metric_result, ignore_widget),
+            count=metric_result.count,
+            share=metric_result.share,
         )
     raise NotImplementedError(metric_result.__class__.__name__)
 
@@ -113,10 +136,42 @@ class MetricV2Adapter(MetricV1[MetricResultV2Adapter]):
         return self.metric.get_fingerprint()
 
 
+class MetricV2PresetAdapter(MetricV1[MetricResultV2Adapter]):
+    class Config:
+        type_alias = "evidently:metric:MetricV2PresetAdapter"
+
+    id: str
+
+    def calculate(self, data: InputData) -> MetricResultV2Adapter:
+        raise NotImplementedError()
+
+
+def _unwrap_widget_info(data: dict) -> BaseWidgetInfo:
+    base_version = BaseWidgetInfo(**data)
+    if base_version.widgets is not None and isinstance(base_version.widgets, list):
+        for idx, item in enumerate(base_version.widgets):
+            base_version.widgets[idx] = _unwrap_widget_info(item)
+    if base_version.additionalGraphs is not None and isinstance(base_version.additionalGraphs, list):
+        for idx, item in enumerate(base_version.additionalGraphs):
+            if "type" in item:
+                base_version.additionalGraphs[idx] = _unwrap_widget_info(item)
+            elif "data" in item:
+                base_version.additionalGraphs[idx] = PlotlyGraphInfo(**item)
+            else:
+                base_version.additionalGraphs[idx] = AdditionalGraphInfo(**item)
+    return base_version
+
+
+@default_renderer(MetricV2PresetAdapter)
+class MetricV2PresetAdapterRenderer(MetricRenderer):
+    def render_html(self, obj: MetricV2PresetAdapter) -> List[BaseWidgetInfo]:
+        return [_unwrap_widget_info(w) for w in obj.get_result().widget]
+
+
 @default_renderer(MetricV2Adapter)
 class MetricV2AdapterRenderer(MetricRenderer):
     def render_html(self, obj: MetricV2Adapter) -> List[BaseWidgetInfo]:
-        return [BaseWidgetInfo(**w) for w in obj.get_result().widget]
+        return [_unwrap_widget_info(w) for w in obj.get_result().widget]
 
 
 def metric_v2_to_v1(metric: MetricV2) -> MetricV1:
@@ -126,9 +181,9 @@ def metric_v2_to_v1(metric: MetricV2) -> MetricV1:
 def data_definition_v2_to_v1(dd: DataDefinition, reference_present: bool) -> DataDefinitionV1:
     """For now, only columns field is used"""
     columns: Dict[str, ColumnDefinition] = {
-        **{col: ColumnDefinition(col, ColumnType.Numerical) for col in dd.get_numerical_columns()},
-        **{col: ColumnDefinition(col, ColumnType.Text) for col in dd.get_text_columns()},
-        **{col: ColumnDefinition(col, ColumnType.Categorical) for col in dd.get_categorical_columns()},
+        **{col: ColumnDefinition(col, ColumnType.Numerical) for col in (dd.numerical_columns or [])},
+        **{col: ColumnDefinition(col, ColumnType.Text) for col in (dd.text_columns or [])},
+        **{col: ColumnDefinition(col, ColumnType.Categorical) for col in (dd.categorical_columns or [])},
     }
     target: Optional[ColumnDefinition] = None
     prediction_columns: Optional[PredictionColumns] = None
@@ -164,11 +219,41 @@ def snapshot_v2_to_v1(snapshot: SnapshotV2) -> SnapshotV1:
     tests_v2: List[BoundTest] = []
     test_results: List[TestResultV1] = []
     context = snapshot.context
+    saved_metrics = set()
+    calculation: MetricCalculationBase
+    for item in snapshot._snapshot_item:
+        if item.metric_id is not None:
+            calculation = context.get_metric(item.metric_id)
+            metric = calculation.to_metric()
+            metric_result = context.get_metric_result(item.metric_id)
+            metrics.append(metric_v2_to_v1(metric))
+            metric_results.append(metric_result_v2_to_v1(metric_result))
+            saved_metrics.add(item.metric_id)
+
+            for test_config, test_result in (metric_result._tests or {}).items():
+                tests_v2.append(test_config)
+                tests.append(TestV2Adapter(test=test_config))
+                test_results.append(
+                    TestResultV1(
+                        name=test_result.name,
+                        description=test_result.description,
+                        status=test_result.status,
+                        group="",
+                        parameters=TestV2Parameters(),
+                    )
+                )
+        else:  # metric preset wrapper
+            adapter = MetricV2PresetAdapter(id=str(uuid7()))
+            metrics.append(adapter)
+            metric_results.append(PresetMetricValueV1(widget=[dataclasses.asdict(w) for w in item.widgets]))
+
     for metric_id, metric_result in context._metrics.items():
-        calculation: MetricCalculationBase = context.get_metric(metric_id)
+        if metric_id in saved_metrics:
+            continue
+        calculation = context.get_metric(metric_id)
         metric = calculation.to_metric()
         metrics.append(metric_v2_to_v1(metric))
-        metric_results.append(metric_result_v2_to_v1(metric_result))
+        metric_results.append(metric_result_v2_to_v1(metric_result, ignore_widget=True))
 
         for test_config, test_result in (metric_result._tests or {}).items():
             tests_v2.append(test_config)
@@ -183,6 +268,26 @@ def snapshot_v2_to_v1(snapshot: SnapshotV2) -> SnapshotV1:
                 )
             )
 
+    descriptors = {
+        x: FeatureDefinition(
+            feature_name=x,
+            display_name=x,
+            feature_type=ColumnType.Categorical,
+            feature_class="",
+        )
+        for x in context.data_definition.categorical_descriptors
+    }
+    descriptors.update(
+        {
+            x: FeatureDefinition(
+                feature_name=x,
+                display_name=x,
+                feature_type=ColumnType.Numerical,
+                feature_class="",
+            )
+            for x in context.data_definition.numerical_descriptors
+        }
+    )
     snapshot = SnapshotV1(
         id=new_id(),
         name="",
@@ -195,6 +300,7 @@ def snapshot_v2_to_v1(snapshot: SnapshotV2) -> SnapshotV1:
             tests=tests,
             test_results=test_results,
             data_definition=data_definition_v2_to_v1(context.data_definition, context._input_data[1] is not None),
+            run_metadata=RunMetadata(descriptors=descriptors),
         ),
         metrics_ids=list(range(len(metrics))),
         test_ids=[],
