@@ -128,4 +128,4 @@ class Options(BaseModel):
 
 _option_cls_mapping = {field.type_: name for name, field in Options.__fields__.items()}
 
-AnyOptions = Union[Options, dict, List[Option], None]
+AnyOptions = Union[Options, Option, dict, List[Option], None]

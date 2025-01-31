@@ -196,7 +196,9 @@ class OpenAIWrapper(LLMWrapper):
             raise RuntimeError("Cannot access OpenAIWrapper client without loop") from e
         loop_id = id(loop)
         if loop_id not in self._clients:
-            self._clients[loop_id] = openai.AsyncOpenAI(api_key=self.options.get_api_key())
+            self._clients[loop_id] = openai.AsyncOpenAI(
+                api_key=self.options.get_api_key(), base_url=self.options.api_url
+            )
         return self._clients[loop_id]
 
     async def complete(self, messages: List[LLMMessage]) -> str:
@@ -231,11 +233,14 @@ def get_litellm_wrapper(provider: LLMProvider, model: LLMModel, options: Options
 
 @llm_provider("litellm", None)
 class LiteLLMWrapper(LLMWrapper):
-    __used_options__: ClassVar = [LLMOptions]
+    __llm_options_type__: ClassVar[Type[LLMOptions]] = LLMOptions
+
+    def get_used_options(self) -> List[Type[Option]]:
+        return [self.__llm_options_type__]
 
     def __init__(self, model: str, options: Options):
         self.model = model
-        self.options: LLMOptions = options.get(LLMOptions)
+        self.options: LLMOptions = options.get(self.__llm_options_type__)
 
     async def complete(self, messages: List[LLMMessage]) -> str:
         from litellm import completion
@@ -250,3 +255,30 @@ class LiteLLMWrapper(LLMWrapper):
             .choices[0]
             .message.content
         )
+
+
+class AnthropicOptions(LLMOptions):
+    pass
+
+
+@llm_provider("anthropic", None)
+class AnthropicWrapper(LiteLLMWrapper):
+    __llm_options_type__: ClassVar = AnthropicOptions
+
+
+class GeminiOptions(LLMOptions):
+    pass
+
+
+@llm_provider("gemini", None)
+class GeminiWrapper(LiteLLMWrapper):
+    __llm_options_type__: ClassVar = GeminiOptions
+
+
+class DeepSeekOptions(LLMOptions):
+    pass
+
+
+@llm_provider("deepseek", None)
+class DeepSeekWrapper(LiteLLMWrapper):
+    __llm_options_type__: ClassVar = DeepSeekOptions
