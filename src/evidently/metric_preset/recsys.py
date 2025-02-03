@@ -102,7 +102,7 @@ class RecsysPreset(MetricPreset):
         if is_train_data:
             metrics.append(PopularityBias(k=self.k, normalize_arp=self.normalize_arp))
         metrics.append(RecCasesTable(user_ids=self.user_ids, display_features=self.display_features))
-        if data_definition.recommendations_type == RecomType.RANK:
+        if data_definition.recommendations_type == RecomType.SCORE:
             metrics.append(ScoreDistribution(k=self.k))
         metrics.append(PersonalizationMetric(k=self.k))
         if self.item_features is not None:
