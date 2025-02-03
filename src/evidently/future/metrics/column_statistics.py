@@ -572,7 +572,7 @@ class DriftedColumnsCount(CountMetric):
     per_column_stattest_threshold: Optional[Dict[str, float]] = None
 
     def _default_tests_with_reference(self, context: Context) -> List[BoundTest]:
-        return [lt(0.5).bind_count(self.get_fingerprint(), is_count=False)]
+        return [lt(self.drift_share).bind_count(self.get_fingerprint(), is_count=False)]
 
 
 class LegacyDriftedColumnsMetric(

@@ -92,6 +92,7 @@ class DataDriftPreset(MetricContainer):
                     context.data_definition.get_column_type(column),
                     options,
                 ),
+                threshold=options.get_threshold(column, context.data_definition.get_column_type(column).value),
             )
             for column in (self.columns if self.columns is not None else context.data_definition.get_columns(types))
         ]
