@@ -27,27 +27,27 @@ class DataDriftPreset(MetricContainer):
         embeddings: Optional[List[str]] = None,
         embeddings_drift_method: Optional[Dict[str, DriftMethod]] = None,
         drift_share: float = 0.5,
-        stattest: Optional[PossibleStatTestType] = None,
-        cat_stattest: Optional[PossibleStatTestType] = None,
-        num_stattest: Optional[PossibleStatTestType] = None,
-        text_stattest: Optional[PossibleStatTestType] = None,
-        per_column_stattest: Optional[Dict[str, PossibleStatTestType]] = None,
-        stattest_threshold: Optional[float] = None,
-        cat_stattest_threshold: Optional[float] = None,
-        num_stattest_threshold: Optional[float] = None,
-        text_stattest_threshold: Optional[float] = None,
-        per_column_stattest_threshold: Optional[Dict[str, float]] = None,
+        method: Optional[PossibleStatTestType] = None,
+        cat_method: Optional[PossibleStatTestType] = None,
+        num_method: Optional[PossibleStatTestType] = None,
+        text_method: Optional[PossibleStatTestType] = None,
+        per_column_method: Optional[Dict[str, PossibleStatTestType]] = None,
+        threshold: Optional[float] = None,
+        cat_threshold: Optional[float] = None,
+        num_threshold: Optional[float] = None,
+        text_threshold: Optional[float] = None,
+        per_column_threshold: Optional[Dict[str, float]] = None,
     ):
-        self.per_column_stattest_threshold = per_column_stattest_threshold
-        self.text_stattest_threshold = text_stattest_threshold
-        self.num_stattest_threshold = num_stattest_threshold
-        self.cat_stattest_threshold = cat_stattest_threshold
-        self.stattest_threshold = stattest_threshold
-        self.per_column_stattest = per_column_stattest
-        self.text_stattest = text_stattest
-        self.num_stattest = num_stattest
-        self.cat_stattest = cat_stattest
-        self.stattest = stattest
+        self.per_column_threshold = per_column_threshold
+        self.text_threshold = text_threshold
+        self.num_threshold = num_threshold
+        self.cat_threshold = cat_threshold
+        self.threshold = threshold
+        self.per_column_method = per_column_method
+        self.text_method = text_method
+        self.num_method = num_method
+        self.cat_method = cat_method
+        self.method = method
         self.drift_share = drift_share
         self.embeddings_drift_method = embeddings_drift_method
         self.embeddings = embeddings
@@ -57,31 +57,31 @@ class DataDriftPreset(MetricContainer):
         types = [ColumnType.Numerical, ColumnType.Categorical, ColumnType.Text]
         options = DataDriftOptions(
             drift_share=self.drift_share,
-            all_features_stattest=self.stattest,
-            cat_features_stattest=self.cat_stattest,
-            num_features_stattest=self.num_stattest,
-            text_features_stattest=self.text_stattest,
-            per_feature_stattest=self.per_column_stattest,
-            all_features_threshold=self.stattest_threshold,
-            cat_features_threshold=self.cat_stattest_threshold,
-            num_features_threshold=self.num_stattest_threshold,
-            text_features_threshold=self.text_stattest_threshold,
-            per_feature_threshold=self.per_column_stattest_threshold,
+            all_features_stattest=self.method,
+            cat_features_stattest=self.cat_method,
+            num_features_stattest=self.num_method,
+            text_features_stattest=self.text_method,
+            per_feature_stattest=self.per_column_method,
+            all_features_threshold=self.threshold,
+            cat_features_threshold=self.cat_threshold,
+            num_features_threshold=self.num_threshold,
+            text_features_threshold=self.text_threshold,
+            per_feature_threshold=self.per_column_threshold,
         )
         return [
             DriftedColumnsCount(
                 columns=self.columns,
                 drift_share=self.drift_share,
-                stattest=self.stattest,
-                cat_stattest=self.cat_stattest,
-                num_stattest=self.num_stattest,
-                text_stattest=self.text_stattest,
-                per_column_stattest=self.per_column_stattest,
-                stattest_threshold=self.stattest_threshold,
-                cat_stattest_threshold=self.cat_stattest_threshold,
-                num_stattest_threshold=self.num_stattest_threshold,
-                text_stattest_threshold=self.text_stattest_threshold,
-                per_column_stattest_threshold=self.per_column_stattest_threshold,
+                stattest=self.method,
+                cat_stattest=self.cat_method,
+                num_stattest=self.num_method,
+                text_stattest=self.text_method,
+                per_column_stattest=self.per_column_method,
+                stattest_threshold=self.threshold,
+                cat_stattest_threshold=self.cat_threshold,
+                num_stattest_threshold=self.num_threshold,
+                text_stattest_threshold=self.text_threshold,
+                per_column_stattest_threshold=self.per_column_threshold,
             ),
         ] + [
             ValueDrift(
@@ -102,32 +102,32 @@ class DataDriftPreset(MetricContainer):
             DatasetDriftMetric(
                 columns=self.columns,
                 drift_share=self.drift_share,
-                stattest=self.stattest,
-                cat_stattest=self.cat_stattest,
-                num_stattest=self.num_stattest,
-                text_stattest=self.text_stattest,
-                per_column_stattest=self.per_column_stattest,
-                stattest_threshold=self.stattest_threshold,
-                cat_stattest_threshold=self.cat_stattest_threshold,
-                num_stattest_threshold=self.num_stattest_threshold,
-                text_stattest_threshold=self.text_stattest_threshold,
-                per_column_stattest_threshold=self.per_column_stattest_threshold,
+                stattest=self.method,
+                cat_stattest=self.cat_method,
+                num_stattest=self.num_method,
+                text_stattest=self.text_method,
+                per_column_stattest=self.per_column_method,
+                stattest_threshold=self.threshold,
+                cat_stattest_threshold=self.cat_threshold,
+                num_stattest_threshold=self.num_threshold,
+                text_stattest_threshold=self.text_threshold,
+                per_column_stattest_threshold=self.per_column_threshold,
             ),
             _default_input_data_generator,
         )[1]
         table = context.get_legacy_metric(
             DataDriftTable(
                 columns=self.columns,
-                stattest=self.stattest,
-                cat_stattest=self.cat_stattest,
-                num_stattest=self.num_stattest,
-                text_stattest=self.text_stattest,
-                per_column_stattest=self.per_column_stattest,
-                stattest_threshold=self.stattest_threshold,
-                cat_stattest_threshold=self.cat_stattest_threshold,
-                num_stattest_threshold=self.num_stattest_threshold,
-                text_stattest_threshold=self.text_stattest_threshold,
-                per_column_stattest_threshold=self.per_column_stattest_threshold,
+                stattest=self.method,
+                cat_stattest=self.cat_method,
+                num_stattest=self.num_method,
+                text_stattest=self.text_method,
+                per_column_stattest=self.per_column_method,
+                stattest_threshold=self.threshold,
+                cat_stattest_threshold=self.cat_threshold,
+                num_stattest_threshold=self.num_threshold,
+                text_stattest_threshold=self.text_threshold,
+                per_column_stattest_threshold=self.per_column_threshold,
             ),
             _default_input_data_generator,
         )[1]
