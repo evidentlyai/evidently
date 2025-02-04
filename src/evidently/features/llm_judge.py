@@ -10,10 +10,10 @@ from typing import Tuple
 
 import pandas as pd
 
-from evidently import ColumnType
 from evidently._pydantic_compat import Field
 from evidently._pydantic_compat import PrivateAttr
 from evidently.base_metric import ColumnName
+from evidently.core import ColumnType
 from evidently.features.generated_features import GeneratedFeatures
 from evidently.options.base import Options
 from evidently.pydantic_utils import EnumValueMixin

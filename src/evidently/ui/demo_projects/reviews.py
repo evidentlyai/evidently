@@ -7,9 +7,9 @@ import numpy as np
 import pandas as pd
 from sklearn import datasets
 
-from evidently import ColumnMapping
 from evidently import descriptors
 from evidently import metrics
+from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.renderers.html_widgets import WidgetSize
 from evidently.report import Report
 from evidently.ui.dashboards import CounterAgg

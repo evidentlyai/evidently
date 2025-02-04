@@ -6,7 +6,7 @@ from datetime import timedelta
 import pandas as pd
 from sklearn import datasets
 
-from evidently import ColumnMapping
+from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.renderers.html_widgets import WidgetSize
 from evidently.test_preset import DataDriftTestPreset
 from evidently.test_suite import TestSuite

@@ -2,9 +2,9 @@ from typing import Dict
 from typing import List
 from typing import Optional
 
-from evidently import ColumnType
 from evidently.calculations.stattests import PossibleStatTestType
 from evidently.calculations.stattests import StatTest
+from evidently.core import ColumnType
 from evidently.future.container import MetricContainer
 from evidently.future.metric_types import Metric
 from evidently.future.metric_types import MetricId

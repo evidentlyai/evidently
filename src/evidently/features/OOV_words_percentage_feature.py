@@ -10,7 +10,7 @@ import pandas as pd
 from nltk.corpus import words
 from nltk.stem.wordnet import WordNetLemmatizer
 
-from evidently import ColumnType
+from evidently.core import ColumnType
 from evidently.features.generated_features import ApplyColumnGeneratedFeature
 from evidently.utils.data_preprocessing import DataDefinition
 
