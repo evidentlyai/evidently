@@ -134,7 +134,7 @@ LLMWrapperProvider = Callable[[LLMModel, Options], LLMWrapper]
 _wrappers: Dict[Tuple[LLMProvider, Optional[LLMModel]], LLMWrapperProvider] = {}
 
 
-def llm_provider(name: LLMProvider, model: Optional[LLMModel]):
+def llm_provider(name: LLMProvider, model: Optional[LLMModel]) -> Callable[[LLMWrapperProvider], LLMWrapperProvider]:
     def dec(f: LLMWrapperProvider):
         _wrappers[(name, model)] = f
         return f
@@ -282,3 +282,99 @@ class DeepSeekOptions(LLMOptions):
 @llm_provider("deepseek", None)
 class DeepSeekWrapper(LiteLLMWrapper):
     __llm_options_type__: ClassVar = DeepSeekOptions
+
+
+litellm_providers = [
+    # 'openai', # supported natively
+    # 'openai_like',
+    "jina_ai",
+    "xai",
+    # 'custom_openai',
+    # 'text-completion-openai',
+    "cohere",
+    "cohere_chat",
+    "clarifai",
+    "anthropic",
+    # 'anthropic_text',
+    "replicate",
+    "huggingface",
+    "together_ai",
+    "openrouter",
+    "vertex_ai",
+    # 'vertex_ai_beta',
+    "gemini",
+    "ai21",
+    "baseten",
+    "azure",
+    # 'azure_text',
+    "azure_ai",
+    "sagemaker",
+    # 'sagemaker_chat',
+    "bedrock",
+    "vllm",
+    "nlp_cloud",
+    "petals",
+    "oobabooga",
+    "ollama",
+    # 'ollama_chat',
+    "deepinfra",
+    "perplexity",
+    "mistral",
+    "groq",
+    "nvidia_nim",
+    "cerebras",
+    "ai21_chat",
+    "volcengine",
+    "codestral",
+    # 'text-completion-codestral',
+    "deepseek",
+    "sambanova",
+    "maritalk",
+    "voyage",
+    "cloudflare",
+    "xinference",
+    "fireworks_ai",
+    "friendliai",
+    "watsonx",
+    # 'watsonx_text',
+    "triton",
+    "predibase",
+    "databricks",
+    "empower",
+    "github",
+    # 'custom',
+    "litellm_proxy",
+    "hosted_vllm",
+    "lm_studio",
+    "galadriel",
+    "infinity",
+    "deepgram",
+    # 'aiohttp_openai',
+    "langfuse",
+    "humanloop",
+    "topaz",
+]
+
+
+def _create_litellm_wrapper(provider: str):
+    words = provider.split("_")
+    class_name_prefix = "".join(word.upper() if word.lower() == "ai" else word.capitalize() for word in words)
+
+    wrapper_name = f"{class_name_prefix}Wrapper"
+    options_name = f"{class_name_prefix}Options"
+    wrapper_type = type(
+        wrapper_name,
+        (LiteLLMWrapper,),
+        {"__llm_options_type__": DeepSeekOptions, "__annotations__": {"__llm_options_type__": ClassVar}},
+    )
+    return {
+        wrapper_name: llm_provider(provider, None)(wrapper_type),
+        options_name: type(options_name, (LLMOptions,), {}),
+    }
+
+
+for provider in litellm_providers:
+    key = (provider, None)
+    if key in _wrappers:
+        continue
+    locals().update(**_create_litellm_wrapper(provider))
