@@ -157,6 +157,8 @@ def get_llm_wrapper(provider: LLMProvider, model: LLMModel, options: Options) ->
 
 
 class LLMOptions(Option):
+    __provider_name__: ClassVar[str]
+
     api_key: Optional[SecretStr] = None
     rpm_limit: int = 500
     api_url: Optional[str] = None
@@ -172,7 +174,7 @@ class LLMOptions(Option):
 
 
 class OpenAIKey(LLMOptions):
-    pass
+    __provider_name__: ClassVar[str] = "openai"
 
 
 @llm_provider("openai", None)
@@ -258,7 +260,7 @@ class LiteLLMWrapper(LLMWrapper):
 
 
 class AnthropicOptions(LLMOptions):
-    pass
+    __provider_name__: ClassVar = "anthropic"
 
 
 @llm_provider("anthropic", None)
@@ -267,7 +269,7 @@ class AnthropicWrapper(LiteLLMWrapper):
 
 
 class GeminiOptions(LLMOptions):
-    pass
+    __provider_name__: ClassVar = "gemini"
 
 
 @llm_provider("gemini", None)
@@ -276,7 +278,7 @@ class GeminiWrapper(LiteLLMWrapper):
 
 
 class DeepSeekOptions(LLMOptions):
-    pass
+    __provider_name__: ClassVar = "deepseek"
 
 
 @llm_provider("deepseek", None)
@@ -367,9 +369,14 @@ def _create_litellm_wrapper(provider: str):
         (LiteLLMWrapper,),
         {"__llm_options_type__": DeepSeekOptions, "__annotations__": {"__llm_options_type__": ClassVar}},
     )
+    options_type = type(
+        options_name,
+        (LLMOptions,),
+        {"__provider_name__": provider, "__annotations__": {"__provider_name__": ClassVar[str]}},
+    )
     return {
         wrapper_name: llm_provider(provider, None)(wrapper_type),
-        options_name: type(options_name, (LLMOptions,), {}),
+        options_name: options_type,
     }
 
 
