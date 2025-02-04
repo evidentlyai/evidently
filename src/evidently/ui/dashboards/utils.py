@@ -161,7 +161,10 @@ TEST_COLORS = {
 tests_colors_order = {ts: i for i, ts in enumerate(TEST_COLORS)}
 
 
-def _get_test_hover(test_name: str, params: List[str]):
+def _get_test_hover(test: Test, params: List[str]):
+    from evidently.future.backport import TestV2Adapter
+
+    test_name = test.test.test.__class__.__name__ if isinstance(test, TestV2Adapter) else test.name
     params_join = "<br>".join(params)
     hover = f"<b>Timestamp: %{{x}}</b><br><b>{test_name}</b><br>{params_join}<br>%{{customdata.description}}<br>"
     return hover
