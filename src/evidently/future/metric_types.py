@@ -602,7 +602,7 @@ class MetricTest(AutoAliasMixin, EvidentlyBaseModel):
         if result.status == TestStatus.FAIL and not self.is_critical:
             result.status = TestStatus.WARNING
         metric_conf = metric.to_metric()
-        column = f"[{metric_conf.column}]" if hasattr(metric_conf, "column") else ""
+        column = f" for {metric_conf.column}" if hasattr(metric_conf, "column") else ""
         result.description = f"{metric_conf.__class__.__name__}{column}: {result.description}"
         return result
 
