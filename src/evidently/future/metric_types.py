@@ -601,6 +601,9 @@ class MetricTest(AutoAliasMixin, EvidentlyBaseModel):
         result: MetricTestResult = self.to_test()(context, metric, value)
         if result.status == TestStatus.FAIL and not self.is_critical:
             result.status = TestStatus.WARNING
+        metric_conf = metric.to_metric()
+        column = f"[{metric_conf.column}]" if hasattr(metric_conf, "column") else ""
+        result.description = f"{metric_conf.__class__.__name__}{column}: {result.description}"
         return result
 
     def bind_single(self, fingerprint: Fingerprint) -> "BoundTest":

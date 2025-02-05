@@ -141,6 +141,8 @@ def _get_hover_params(items: Set[TMT]) -> Dict[TMT, List[str]]:
         if isinstance(item, TestV2Adapter):
             item_fields = item.test.test
         for path, value in iterate_obj_fields(item_fields, [], early_stop=_hover_params_early_stop):
+            if path == "type":
+                continue
             params[item.get_id()][item].add(f"{path}: {value}")
     same_args: Dict[str, Set[str]] = {k: set.intersection(*v.values()) for k, v in params.items()}
     return {
