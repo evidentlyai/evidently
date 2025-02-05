@@ -364,16 +364,17 @@ def _create_litellm_wrapper(provider: str):
 
     wrapper_name = f"{class_name_prefix}Wrapper"
     options_name = f"{class_name_prefix}Options"
-    wrapper_type = type(
-        wrapper_name,
-        (LiteLLMWrapper,),
-        {"__llm_options_type__": DeepSeekOptions, "__annotations__": {"__llm_options_type__": ClassVar}},
-    )
     options_type = type(
         options_name,
         (LLMOptions,),
         {"__provider_name__": provider, "__annotations__": {"__provider_name__": ClassVar[str]}},
     )
+    wrapper_type = type(
+        wrapper_name,
+        (LiteLLMWrapper,),
+        {"__llm_options_type__": options_type, "__annotations__": {"__llm_options_type__": ClassVar}},
+    )
+
     return {
         wrapper_name: llm_provider(provider, None)(wrapper_type),
         options_name: options_type,
