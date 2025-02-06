@@ -4,7 +4,9 @@ import type { ProjectModel } from '~/api/types'
 import type { StrictID } from '~/api/types/utils'
 import { type GetLoaderAction, ensureID } from '~/api/utils'
 
-export type LoaderData = StrictID<ProjectModel>
+export type LoaderData = {
+  project: StrictID<ProjectModel>
+}
 
 export const getLoaderAction: GetLoaderAction<API_CLIENT_TYPE, LoaderData> = ({ api }) => ({
   loader: ({ params }) => {
@@ -15,5 +17,6 @@ export const getLoaderAction: GetLoaderAction<API_CLIENT_TYPE, LoaderData> = ({ 
       .GET('/api/projects/{project_id}/info', { params: { path: { project_id: projectId } } })
       .then(responseParser())
       .then(ensureID)
+      .then((project) => ({ project }))
   }
 })

@@ -560,19 +560,19 @@ class DriftedColumnsCount(CountMetric):
     embeddings: Optional[List[str]] = None
     embeddings_drift_method: Optional[Dict[str, DriftMethod]] = None
     drift_share: float = 0.5
-    stattest: Optional[PossibleStatTestType] = None
-    cat_stattest: Optional[PossibleStatTestType] = None
-    num_stattest: Optional[PossibleStatTestType] = None
-    text_stattest: Optional[PossibleStatTestType] = None
-    per_column_stattest: Optional[Dict[str, PossibleStatTestType]] = None
-    stattest_threshold: Optional[float] = None
-    cat_stattest_threshold: Optional[float] = None
-    num_stattest_threshold: Optional[float] = None
-    text_stattest_threshold: Optional[float] = None
-    per_column_stattest_threshold: Optional[Dict[str, float]] = None
+    method: Optional[PossibleStatTestType] = None
+    cat_method: Optional[PossibleStatTestType] = None
+    num_method: Optional[PossibleStatTestType] = None
+    text_method: Optional[PossibleStatTestType] = None
+    per_column_method: Optional[Dict[str, PossibleStatTestType]] = None
+    threshold: Optional[float] = None
+    cat_threshold: Optional[float] = None
+    num_threshold: Optional[float] = None
+    text_threshold: Optional[float] = None
+    per_column_threshold: Optional[Dict[str, float]] = None
 
     def _default_tests_with_reference(self, context: Context) -> List[BoundTest]:
-        return [lt(0.5).bind_count(self.get_fingerprint(), is_count=False)]
+        return [lt(self.drift_share).bind_count(self.get_fingerprint(), is_count=False)]
 
 
 class LegacyDriftedColumnsMetric(
@@ -588,16 +588,16 @@ class DriftedColumnCalculation(CountCalculation[DriftedColumnsCount], LegacyDrif
         return DatasetDriftMetric(
             columns=self.metric.columns,
             drift_share=self.metric.drift_share,
-            stattest=self.metric.stattest,
-            cat_stattest=self.metric.cat_stattest,
-            num_stattest=self.metric.num_stattest,
-            text_stattest=self.metric.text_stattest,
-            per_column_stattest=self.metric.per_column_stattest,
-            stattest_threshold=self.metric.stattest_threshold,
-            cat_stattest_threshold=self.metric.cat_stattest_threshold,
-            num_stattest_threshold=self.metric.num_stattest_threshold,
-            text_stattest_threshold=self.metric.text_stattest_threshold,
-            per_column_stattest_threshold=self.metric.per_column_stattest_threshold,
+            stattest=self.metric.method,
+            cat_stattest=self.metric.cat_method,
+            num_stattest=self.metric.num_method,
+            text_stattest=self.metric.text_method,
+            per_column_stattest=self.metric.per_column_method,
+            stattest_threshold=self.metric.threshold,
+            cat_stattest_threshold=self.metric.cat_threshold,
+            num_stattest_threshold=self.metric.num_threshold,
+            text_stattest_threshold=self.metric.text_threshold,
+            per_column_stattest_threshold=self.metric.per_column_threshold,
         )
 
     def calculate_value(

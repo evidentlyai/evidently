@@ -196,11 +196,17 @@ def _default_input_data_generator(context: "Context") -> InputData:
         prediction = ranking.prediction
         target = ranking.target
     mapping = ColumnMapping(
+        id=context.data_definition.id_column,
+        datetime=context.data_definition.timestamp,
         target=target,
         prediction=prediction,
         pos_label=classification.pos_label if isinstance(classification, BinaryClassification) else None,
         target_names=classification.labels if classification is not None else None,
         user_id=user_id,
+        numerical_features=[x for x in context.data_definition.get_columns([ColumnType.Numerical])],
+        categorical_features=[x for x in context.data_definition.get_columns([ColumnType.Categorical])],
+        text_features=[x for x in context.data_definition.get_columns([ColumnType.Text])],
+        datetime_features=[x for x in context.data_definition.get_columns([ColumnType.Datetime])],
     )
     definition = create_data_definition(
         reference,

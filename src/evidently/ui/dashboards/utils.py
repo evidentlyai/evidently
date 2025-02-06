@@ -131,11 +131,18 @@ TMT = TypeVar("TMT", bound=Union[Metric, Test])
 
 
 def _get_hover_params(items: Set[TMT]) -> Dict[TMT, List[str]]:
+    from evidently.future.backport import TestV2Adapter
+
     if len(items) == 0:
         return {}
     params: Dict[str, Dict[TMT, Set[str]]] = defaultdict(lambda: defaultdict(set))
     for item in items:
-        for path, value in iterate_obj_fields(item, [], early_stop=_hover_params_early_stop):
+        item_fields = item
+        if isinstance(item, TestV2Adapter):
+            item_fields = item.test.test
+        for path, value in iterate_obj_fields(item_fields, [], early_stop=_hover_params_early_stop):
+            if path == "type":
+                continue
             params[item.get_id()][item].add(f"{path}: {value}")
     same_args: Dict[str, Set[str]] = {k: set.intersection(*v.values()) for k, v in params.items()}
     return {
@@ -156,7 +163,10 @@ TEST_COLORS = {
 tests_colors_order = {ts: i for i, ts in enumerate(TEST_COLORS)}
 
 
-def _get_test_hover(test_name: str, params: List[str]):
+def _get_test_hover(test: Test, params: List[str]):
+    from evidently.future.backport import TestV2Adapter
+
+    test_name = test.test.test.__class__.__name__ if isinstance(test, TestV2Adapter) else test.name
     params_join = "<br>".join(params)
     hover = f"<b>Timestamp: %{{x}}</b><br><b>{test_name}</b><br>{params_join}<br>%{{customdata.description}}<br>"
     return hover
