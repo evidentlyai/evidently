@@ -299,7 +299,7 @@ litellm_providers = [
     "anthropic",
     # 'anthropic_text',
     "replicate",
-    "huggingface",
+    # "huggingface",  # llama models do not work, disable until tested
     "together_ai",
     "openrouter",
     "vertex_ai",
@@ -369,10 +369,18 @@ def _create_litellm_wrapper(provider: str):
         (LLMOptions,),
         {"__provider_name__": provider, "__annotations__": {"__provider_name__": ClassVar[str]}},
     )
+
+    def __init__(self, model: str, options: Options):
+        super(self.__class__, self).__init__(f"{provider}/{model}", options)
+
     wrapper_type = type(
         wrapper_name,
         (LiteLLMWrapper,),
-        {"__llm_options_type__": options_type, "__annotations__": {"__llm_options_type__": ClassVar}},
+        {
+            "__llm_options_type__": options_type,
+            "__annotations__": {"__llm_options_type__": ClassVar},
+            "__init__": __init__,
+        },
     )
 
     return {
