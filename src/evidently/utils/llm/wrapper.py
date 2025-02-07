@@ -263,6 +263,7 @@ class LiteLLMWrapper(LLMWrapper):
 
 class AnthropicOptions(LLMOptions):
     __provider_name__: ClassVar = "anthropic"
+    rpm_limit: int = 50
 
 
 @llm_provider("anthropic", None)
