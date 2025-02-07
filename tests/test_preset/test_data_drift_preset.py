@@ -1,4 +1,4 @@
-from evidently import ColumnType
+from evidently.core import ColumnType
 from evidently.test_preset import DataDriftTestPreset
 from evidently.tests import TestAllFeaturesValueDrift
 from evidently.tests import TestEmbeddingsDrift

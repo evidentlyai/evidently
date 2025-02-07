@@ -4,7 +4,7 @@ from typing import Dict
 from typing import List
 from typing import Optional
 
-from evidently import ColumnType
+from evidently.core import ColumnType
 from evidently.future.container import MetricContainer
 from evidently.future.metric_types import ByLabelValue
 from evidently.future.metric_types import Metric
@@ -32,6 +32,7 @@ from evidently.future.report import _default_input_data_generator
 from evidently.metric_results import Label
 from evidently.metrics import DatasetSummaryMetric
 from evidently.model.widget import BaseWidgetInfo
+from evidently.model.widget import link_metric
 from evidently.renderers.html_widgets import rich_data
 
 
@@ -68,18 +69,21 @@ class ValueStats(MetricContainer):
 
     def render(self, context: "Context", results: Dict[MetricId, MetricResult]) -> List[BaseWidgetInfo]:
         column_type = context.column(self._column).column_type
+        widgets = []
         if column_type == ColumnType.Numerical:
-            return self._render_numerical(context)
+            widgets = self._render_numerical(context)
         if column_type == ColumnType.Categorical:
             if len(context.column(self._column).labels()) <= 3:
-                return self._render_categorical_binary(context)
+                widgets = self._render_categorical_binary(context)
             else:
-                return self._render_categorical(context)
+                widgets = self._render_categorical(context)
         if column_type == ColumnType.Datetime:
-            return self._render_datetime(context)
+            widgets = self._render_datetime(context)
         if column_type == ColumnType.Text:
-            return self._render_text(context)
-        return []
+            widgets = self._render_text(context)
+        for metric in self.metrics(context):
+            link_metric(widgets, metric)
+        return widgets
 
     def _render_numerical(self, context: "Context") -> List[BaseWidgetInfo]:
         result = context.get_metric_result(MinValue(column=self._column).get_metric_id()).widget[0]
@@ -226,6 +230,8 @@ class DatasetStats(MetricContainer):
     def render(self, context: Context, results: Dict[MetricId, MetricResult]) -> List[BaseWidgetInfo]:
         metric = DatasetSummaryMetric()
         _, render = context.get_legacy_metric(metric, _default_input_data_generator)
+        for metric in self.metrics(context):
+            link_metric(render, metric)
         return render
 
 

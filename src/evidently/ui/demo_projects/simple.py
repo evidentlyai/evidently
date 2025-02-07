@@ -3,8 +3,8 @@ from datetime import timedelta
 
 import pandas as pd
 
-from evidently import ColumnMapping
 from evidently import metrics
+from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.renderers.html_widgets import WidgetSize
 from evidently.report import Report
 from evidently.ui.dashboards import CounterAgg

@@ -5,8 +5,8 @@ from typing import Optional
 import numpy as np
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 
-from evidently import ColumnType
 from evidently._pydantic_compat import PrivateAttr
+from evidently.core import ColumnType
 from evidently.features.generated_features import ApplyColumnGeneratedFeature
 
 

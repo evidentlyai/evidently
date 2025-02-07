@@ -12,11 +12,10 @@ from typing import Tuple
 from typing import TypeVar
 from typing import Union
 
-from evidently import ColumnMapping
-from evidently import ColumnType
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric as LegacyMetric
 from evidently.base_metric import MetricResult as LegacyMetricResult
+from evidently.core import ColumnType
 from evidently.future.container import MetricContainer
 from evidently.future.datasets import BinaryClassification
 from evidently.future.datasets import DataDefinition
@@ -33,6 +32,7 @@ from evidently.future.metric_types import render_widgets
 from evidently.future.preset_types import MetricPreset
 from evidently.model.widget import BaseWidgetInfo
 from evidently.model.widget import link_metric
+from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.renderers.base_renderer import DEFAULT_RENDERERS
 from evidently.renderers.html_widgets import CounterData
 from evidently.renderers.html_widgets import WidgetSize
@@ -106,12 +106,14 @@ class Context:
         if calc.id not in self._metrics:
             current_result, reference_result = calc.call(self)
             current_result.set_display_name(calc.display_name())
+            link_metric(current_result.widget, calc.to_metric())
             current_result._metric = calc
             current_result._metric_value_location = SingleValueLocation(calc.to_metric())
             self._metrics[calc.id] = current_result
             if reference_result is not None:
                 reference_result._metric = calc
                 reference_result.set_display_name(calc.display_name())
+                link_metric(reference_result.widget, calc.to_metric())
                 reference_result._metric_value_location = SingleValueLocation(calc.to_metric())
                 self._reference_metrics[calc.id] = reference_result
             test_results = {
@@ -196,11 +198,17 @@ def _default_input_data_generator(context: "Context") -> InputData:
         prediction = ranking.prediction
         target = ranking.target
     mapping = ColumnMapping(
+        id=context.data_definition.id_column,
+        datetime=context.data_definition.timestamp,
         target=target,
         prediction=prediction,
         pos_label=classification.pos_label if isinstance(classification, BinaryClassification) else None,
         target_names=classification.labels if classification is not None else None,
         user_id=user_id,
+        numerical_features=[x for x in context.data_definition.get_columns([ColumnType.Numerical])],
+        categorical_features=[x for x in context.data_definition.get_columns([ColumnType.Categorical])],
+        text_features=[x for x in context.data_definition.get_columns([ColumnType.Text])],
+        datetime_features=[x for x in context.data_definition.get_columns([ColumnType.Datetime])],
     )
     definition = create_data_definition(
         reference,
@@ -270,8 +278,6 @@ class Snapshot:
                     calc = metric.to_calculation()
                     metric_results[calc.id] = self.context.calculate_metric(calc)
                 widget = item.calculate(metric_results).widget
-                for metric in item.metrics():
-                    link_metric(widget, metric)
                 widgets.extend(widget)
                 snapshot_items.append(SnapshotItem(None, widget))
             elif isinstance(item, (MetricContainer,)):
@@ -279,8 +285,6 @@ class Snapshot:
                     calc = metric.to_calculation()
                     metric_results[calc.id] = self.context.calculate_metric(calc)
                 widget = item.render(self.context, results=metric_results)
-                for metric in item.metrics(self.context):
-                    link_metric(widget, metric)
                 widgets.extend(widget)
                 snapshot_items.append(SnapshotItem(None, widget))
             else:
@@ -288,7 +292,6 @@ class Snapshot:
                 metric_results[calc.id] = self.context.calculate_metric(calc)
                 widget = metric_results[calc.id].widget
                 widgets.extend(widget)
-                link_metric(widget, item)
                 snapshot_items.append(SnapshotItem(calc.id, widget))
         self._snapshot_item = snapshot_items
         self._widgets = widgets
@@ -312,6 +315,29 @@ class Snapshot:
             widgets_to_render.append(metric_tests_stats(tests))
             widgets_to_render.append(metric_tests_widget(tests))
         return render_widgets(widgets_to_render)
+
+    def render_only_fingerprint(self, fingerprint: str):
+        from IPython.display import HTML
+
+        from evidently.renderers.html_widgets import group_widget
+
+        results = [
+            (
+                metric,
+                self._context.get_metric_result(metric).widget,
+                self._context.get_metric_result(metric),
+            )
+            for metric in self.context._metrics_graph.keys()
+        ]
+
+        tests = list(chain(*[result[2].tests.values() for result in results]))
+        widgets = [w for w in self._widgets if fingerprint in (w.linked_metrics or [])]
+        widgets_to_render: List[BaseWidgetInfo] = [group_widget(title="", widgets=widgets)]
+
+        if len(tests) > 0:
+            widgets_to_render.append(metric_tests_stats(tests))
+            widgets_to_render.append(metric_tests_widget(tests))
+        return HTML(render_widgets(widgets_to_render))
 
     def dict(self) -> dict:
         return {

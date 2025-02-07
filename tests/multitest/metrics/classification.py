@@ -1,7 +1,6 @@
 import numpy as np
 import pandas as pd
 
-from evidently import ColumnMapping
 from evidently.metric_results import ConfusionMatrix
 from evidently.metric_results import DatasetClassificationQuality
 from evidently.metric_results import Histogram
@@ -22,6 +21,7 @@ from evidently.metrics.classification_performance.probability_distribution_metri
 from evidently.metrics.classification_performance.quality_by_class_metric import ClassificationQualityByClass
 from evidently.metrics.classification_performance.quality_by_feature_table import ClassificationQualityByFeatureTable
 from evidently.metrics.classification_performance.roc_curve_metric import ClassificationRocCurve
+from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.tests.utils import approx_result
 from tests.multitest.conftest import AssertExpectedResult
 from tests.multitest.conftest import NoopOutcome

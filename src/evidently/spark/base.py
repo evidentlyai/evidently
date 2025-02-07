@@ -10,9 +10,9 @@ from typing import Union
 from pyspark.sql import DataFrame
 from pyspark.sql import functions as sf
 
-from evidently import ColumnMapping
 from evidently import TaskType
 from evidently.core import ColumnType
+from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.spark.utils import calculate_stats
 from evidently.spark.utils import get_column_type
 from evidently.spark.utils import is_datetime64_dtype

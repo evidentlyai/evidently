@@ -5,7 +5,7 @@ from typing import Union
 
 import numpy as np
 
-from evidently import ColumnType
+from evidently.core import ColumnType
 from evidently.future.datasets import Dataset
 from evidently.future.datasets import DatasetColumn
 from evidently.future.datasets import Descriptor

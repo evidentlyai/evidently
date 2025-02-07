@@ -7,7 +7,6 @@ from typing import Tuple
 from typing import TypeVar
 from typing import Union
 
-from evidently import ColumnMapping
 from evidently.base_metric import ColumnName
 from evidently.base_metric import ColumnNotFound
 from evidently.base_metric import DatasetType
@@ -22,6 +21,7 @@ from evidently.core import ColumnType
 from evidently.features.generated_features import FeatureResult
 from evidently.features.generated_features import GeneratedFeatures
 from evidently.options.base import Options
+from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.spark.base import SparkDataFrame
 from evidently.spark.base import SparkSeries
 from evidently.spark.base import create_data_definition_spark

@@ -11,8 +11,8 @@ import requests
 from dateutil.relativedelta import relativedelta
 from sklearn import ensemble
 
-from evidently import ColumnMapping
 from evidently import metrics
+from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.renderers.html_widgets import WidgetSize
 from evidently.report import Report
 from evidently.test_preset import DataDriftTestPreset

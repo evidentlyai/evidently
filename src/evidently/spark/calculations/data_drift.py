@@ -8,7 +8,6 @@ import numpy as np
 from pyspark.sql import DataFrame
 from pyspark.sql import functions as sf
 
-from evidently import ColumnMapping
 from evidently.base_metric import ColumnName
 from evidently.base_metric import DataDefinition
 from evidently.calculations.data_drift import ColumnDataDriftMetrics
@@ -22,6 +21,7 @@ from evidently.metric_results import DatasetColumns
 from evidently.metric_results import DatasetUtilityColumns
 from evidently.metric_results import ScatterAggField
 from evidently.options.data_drift import DataDriftOptions
+from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.spark import SparkEngine
 from evidently.spark.base import SparkSeries
 from evidently.spark.calculations.histogram import get_histogram

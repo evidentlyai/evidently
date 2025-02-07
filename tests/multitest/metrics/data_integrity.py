@@ -2,7 +2,6 @@ import datetime
 
 import pandas as pd
 
-from evidently import ColumnMapping
 from evidently.metric_results import Histogram
 from evidently.metric_results import HistogramData
 from evidently.metrics.data_integrity.column_missing_values_metric import ColumnMissingValuesMetric
@@ -16,6 +15,7 @@ from evidently.metrics.data_integrity.column_summary_metric import DataQualityPl
 from evidently.metrics.data_integrity.column_summary_metric import NumericCharacteristics
 from evidently.metrics.data_integrity.dataset_missing_values_metric import DatasetMissingValuesMetric
 from evidently.metrics.data_integrity.dataset_summary_metric import DatasetSummaryMetric
+from evidently.pipeline.column_mapping import ColumnMapping
 from tests.multitest.conftest import AssertExpectedResult
 from tests.multitest.conftest import Error
 from tests.multitest.conftest import NoopOutcome
