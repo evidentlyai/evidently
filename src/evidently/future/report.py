@@ -331,7 +331,7 @@ class Snapshot:
         ]
 
         tests = list(chain(*[result[2].tests.values() for result in results]))
-        widgets = [w for w in self._widgets if fingerprint in w.linked_metrics]
+        widgets = [w for w in self._widgets if fingerprint in (w.linked_metrics or [])]
         widgets_to_render: List[BaseWidgetInfo] = [group_widget(title="", widgets=widgets)]
 
         if len(tests) > 0:
