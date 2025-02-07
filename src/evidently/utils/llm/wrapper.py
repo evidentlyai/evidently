@@ -245,14 +245,16 @@ class LiteLLMWrapper(LLMWrapper):
         self.options: LLMOptions = options.get(self.__llm_options_type__)
 
     async def complete(self, messages: List[LLMMessage]) -> str:
-        from litellm import completion
+        from litellm import acompletion
 
         return (
-            completion(
-                model=self.model,
-                messages=[dataclasses.asdict(m) for m in messages],
-                api_key=self.options.get_api_key(),
-                api_base=self.options.api_url,
+            (
+                await acompletion(
+                    model=self.model,
+                    messages=[dataclasses.asdict(m) for m in messages],
+                    api_key=self.options.get_api_key(),
+                    api_base=self.options.api_url,
+                )
             )
             .choices[0]
             .message.content
