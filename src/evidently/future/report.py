@@ -106,12 +106,14 @@ class Context:
         if calc.id not in self._metrics:
             current_result, reference_result = calc.call(self)
             current_result.set_display_name(calc.display_name())
+            link_metric(current_result.widget, calc.to_metric())
             current_result._metric = calc
             current_result._metric_value_location = SingleValueLocation(calc.to_metric())
             self._metrics[calc.id] = current_result
             if reference_result is not None:
                 reference_result._metric = calc
                 reference_result.set_display_name(calc.display_name())
+                link_metric(reference_result.widget, calc.to_metric())
                 reference_result._metric_value_location = SingleValueLocation(calc.to_metric())
                 self._reference_metrics[calc.id] = reference_result
             test_results = {
@@ -276,8 +278,6 @@ class Snapshot:
                     calc = metric.to_calculation()
                     metric_results[calc.id] = self.context.calculate_metric(calc)
                 widget = item.calculate(metric_results).widget
-                for metric in item.metrics():
-                    link_metric(widget, metric)
                 widgets.extend(widget)
                 snapshot_items.append(SnapshotItem(None, widget))
             elif isinstance(item, (MetricContainer,)):
@@ -285,8 +285,6 @@ class Snapshot:
                     calc = metric.to_calculation()
                     metric_results[calc.id] = self.context.calculate_metric(calc)
                 widget = item.render(self.context, results=metric_results)
-                for metric in item.metrics(self.context):
-                    link_metric(widget, metric)
                 widgets.extend(widget)
                 snapshot_items.append(SnapshotItem(None, widget))
             else:
@@ -294,7 +292,6 @@ class Snapshot:
                 metric_results[calc.id] = self.context.calculate_metric(calc)
                 widget = metric_results[calc.id].widget
                 widgets.extend(widget)
-                link_metric(widget, item)
                 snapshot_items.append(SnapshotItem(calc.id, widget))
         self._snapshot_item = snapshot_items
         self._widgets = widgets
@@ -318,6 +315,29 @@ class Snapshot:
             widgets_to_render.append(metric_tests_stats(tests))
             widgets_to_render.append(metric_tests_widget(tests))
         return render_widgets(widgets_to_render)
+
+    def render_only_fingerprint(self, fingerprint: str):
+        from IPython.display import HTML
+
+        from evidently.renderers.html_widgets import group_widget
+
+        results = [
+            (
+                metric,
+                self._context.get_metric_result(metric).widget,
+                self._context.get_metric_result(metric),
+            )
+            for metric in self.context._metrics_graph.keys()
+        ]
+
+        tests = list(chain(*[result[2].tests.values() for result in results]))
+        widgets = [w for w in self._widgets if fingerprint in w.linked_metrics]
+        widgets_to_render: List[BaseWidgetInfo] = [group_widget(title="", widgets=widgets)]
+
+        if len(tests) > 0:
+            widgets_to_render.append(metric_tests_stats(tests))
+            widgets_to_render.append(metric_tests_widget(tests))
+        return HTML(render_widgets(widgets_to_render))
 
     def dict(self) -> dict:
         return {
