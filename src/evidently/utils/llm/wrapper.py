@@ -354,6 +354,8 @@ class OpenAIWrapper(LLMWrapper):
 
         content = response.choices[0].message.content
         assert content is not None  # todo: better error
+        if response.usage is None:
+            return LLMResult(content, 0, 0)
         return LLMResult(content, response.usage.prompt_tokens, response.usage.completion_tokens)
 
     def get_limits(self) -> RateLimits:
