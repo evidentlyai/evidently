@@ -36,6 +36,7 @@ class RateLimits(BaseModel):
     itpm: Optional[int] = None
     otpm: Optional[int] = None
     tpm: Optional[int] = None
+    interval: datetime.timedelta = datetime.timedelta(minutes=1)
     # continious_token_refresh: bool = False
 
 
@@ -46,6 +47,7 @@ class _Enter:
     estimated_output_tokens: int
     input_tokens: Optional[int] = None
     output_tokens: Optional[int] = None
+    done: bool = False
 
     @property
     def estimated_tokens(self):
@@ -82,30 +84,27 @@ class _RateLimiterEntrypoint:
                     self.enter.ts = datetime.datetime.now()
                     self.enter.estimated_output_tokens = self.limiter.mean_output_size()
                     self.enters.append(self.enter)
-                    # print(f"entered {self.enter}")
                     break
             await sleep(0.1)
         return self
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):
         async with self.lock:
+            self.enter.done = True
             stat = LimiterStat(
                 self.enter.estimated_input_tokens,
                 self.enter.estimated_output_tokens,
                 self.enter.input_tokens or 0,
                 self.enter.output_tokens or 0,
             )
-            # print(f"recording stats: {stat}")
             self.limiter.stats.append(stat)
 
     def record(self, input_tokens: int, output_tokens: int):
-        # print(f"record {input_tokens} {output_tokens}")
         self.enter.input_tokens = input_tokens
         self.enter.output_tokens = output_tokens
 
     def _check_rpm(self):
         res = self.limits.rpm is None or len(self.enters) < self.limits.rpm
-        # print(f"rpm[{res}]: {len(self.enters)}/{self.limits.rpm}")
         return res
 
     def _check_tokens(self):
@@ -118,8 +117,6 @@ class _RateLimiterEntrypoint:
         output_good = self.limits.otpm is None or used_output_tokens < self.limits.otpm
         total_good = self.limits.tpm is None or used_output_tokens + used_input_tokens < self.limits.tpm
         res = input_good and output_good and total_good
-        # print(f"checking[{res}]: ui {used_input_tokens}/{self.limits.itpm} uo {used_output_tokens}/{self.limits.otpm}" \
-        # f" ei {self.request.estimated_input}")
         return res
 
 
@@ -132,9 +129,8 @@ class LimiterStat:
 
 
 class RateLimiter:
-    def __init__(self, limits: RateLimits, interval: datetime.timedelta, initial_output_estimation: int = 100000):
+    def __init__(self, limits: RateLimits, initial_output_estimation: int = 100000):
         self.limits = limits
-        self.interval = interval
         self.enters: List[_Enter] = []
         self.stats: List[LimiterStat] = []
         self.lock = Lock()
@@ -145,7 +141,7 @@ class RateLimiter:
 
     async def clean(self):
         now = datetime.datetime.now()
-        self.enters = [e for e in self.enters if now - e.ts < self.interval]
+        self.enters = [e for e in self.enters if not e.done or now - e.ts < self.limits.interval]
 
     def mean_output_size(self):
         if len(self.stats) == 0:
@@ -197,7 +193,7 @@ class LLMWrapper(ABC):
             batch_size = self.get_batch_size()
         if limits is None:
             limits = self.get_limits()
-        rate_limiter = RateLimiter(limits=limits, interval=datetime.timedelta(minutes=1))
+        rate_limiter = RateLimiter(limits=limits)
         semaphore = Semaphore(batch_size)
 
         async def work(request: LimitRequest[TBatchItem]) -> TBatchResult:
@@ -407,7 +403,9 @@ class LiteLLMWrapper(LLMWrapper):
 
 class AnthropicOptions(LLMOptions):
     __provider_name__: ClassVar = "anthropic"
-    limits: RateLimits = RateLimits(rpm=50, itpm=40000, otpm=1000)
+    limits: RateLimits = RateLimits(
+        rpm=50 // 12, itpm=40000 // 12, otpm=8000 // 12, interval=datetime.timedelta(seconds=5)
+    )
 
 
 @llm_provider("anthropic", None)
