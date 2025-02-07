@@ -33,6 +33,7 @@ from evidently.metrics import ClassificationPRTable
 from evidently.metrics import ClassificationQualityByClass
 from evidently.metrics import ClassificationQualityMetric
 from evidently.model.widget import BaseWidgetInfo
+from evidently.model.widget import link_metric
 
 
 class ClassificationQuality(MetricContainer):
@@ -116,6 +117,8 @@ class ClassificationQuality(MetricContainer):
                 ClassificationPRTable(probas_threshold=self._probas_threshold),
                 _gen_classification_input_data,
             )[1]
+        for metric in self.metrics(context):
+            link_metric(render, metric)
         return render
 
 
@@ -147,6 +150,8 @@ class ClassificationQualityByLabel(MetricContainer):
         )[1]
         widget = render
         widget[0].params["counters"][0]["label"] = "Classification Quality by Label"
+        for metric in self.metrics(context):
+            link_metric(widget, metric)
         return widget
 
 
@@ -167,6 +172,8 @@ class ClassificationDummyQuality(MetricContainer):
             ClassificationDummyMetric(self._probas_threshold, self._k),
             _gen_classification_input_data,
         )
+        for metric in self.metrics(context):
+            link_metric(widgets, metric)
         return widgets
 
 

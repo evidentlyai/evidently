@@ -22,6 +22,7 @@ from evidently.metrics import RegressionErrorPlot
 from evidently.metrics import RegressionPredictedVsActualPlot
 from evidently.metrics import RegressionQualityMetric
 from evidently.model.widget import BaseWidgetInfo
+from evidently.model.widget import link_metric
 
 
 class RegressionQuality(MetricContainer):
@@ -65,6 +66,8 @@ class RegressionQuality(MetricContainer):
                 RegressionErrorDistribution(),
                 _gen_regression_input_data,
             )[1]
+        for metric in self.metrics(context):
+            link_metric(widgets, metric)
         return widgets
 
 
@@ -77,10 +80,14 @@ class RegressionDummyQuality(MetricContainer):
         ]
 
     def render(self, context: Context, results: Dict[MetricId, MetricResult]) -> List[BaseWidgetInfo]:
-        return context.get_legacy_metric(
+        widgets = context.get_legacy_metric(
             RegressionDummyMetric(),
             _gen_regression_input_data,
         )[1]
+
+        for metric in self.metrics(context):
+            link_metric(widgets, metric)
+        return widgets
 
 
 class RegressionPreset(MetricContainer):
