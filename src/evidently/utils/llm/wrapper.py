@@ -7,6 +7,7 @@ from asyncio import Lock
 from asyncio import Semaphore
 from asyncio import sleep
 from importlib.util import find_spec
+from typing import Awaitable
 from typing import Callable
 from typing import ClassVar
 from typing import Dict
@@ -18,6 +19,7 @@ from typing import Tuple
 from typing import Type
 from typing import TypeVar
 
+from evidently._pydantic_compat import BaseModel
 from evidently._pydantic_compat import SecretStr
 from evidently.options.base import Options
 from evidently.options.option import Option
@@ -29,30 +31,65 @@ from evidently.utils.sync import sync_api
 TResult = TypeVar("TResult")
 
 
-class RateLimiter:
-    def __init__(self, rate: Optional[int], interval: datetime.timedelta):
-        self.rate = rate
-        self.interval = interval
-        self.enters: List[datetime.datetime] = []
-        self.lock = Lock()
+class RateLimits(BaseModel):
+    rpm: Optional[int] = None
+    itpm: Optional[int] = None
+    otpm: Optional[int] = None
+    tpm: Optional[int] = None
+    continious_token_refresh: bool = False
+
+
+@dataclasses.dataclass
+class _Enter:
+    ts: datetime.datetime
+    estimated_input_tokens: int
+    estimated_output_tokens: int
+    input_tokens: Optional[int] = None
+    output_tokens: Optional[int] = None
+
+    @property
+    def estimated_tokens(self):
+        return self.estimated_input_tokens + self.estimated_output_tokens
+
+    @property
+    def tokens(self):
+        return self.input_tokens + self.output_tokens
+
+
+class _RateLimiterEntrypoint:
+    def __init__(self, limiter: "RateLimiter", request: "LimitRequest"):
+        self.limiter = limiter
+        self.request = request
 
     async def __aenter__(self):
-        if self.rate is None:
-            return
         while True:
-            async with self.lock:
-                await self._clean()
-                if len(self.enters) < self.rate:
-                    self.enters.append(datetime.datetime.now())
+            async with self.limiter.lock:
+                await self.limiter._clean()
+                if self.limiter._check_rpm():
+                    self.limiter.enters.append(_Enter(datetime.datetime.now(), 0, 0))
                     break
             await sleep(0.1)
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):
         pass
 
+
+class RateLimiter:
+    def __init__(self, limits: RateLimits, interval: datetime.timedelta):
+        self.limits = limits
+        self.interval = interval
+        self.enters: List[_Enter] = []
+        self.lock = Lock()
+
+    def enter(self, request: "LimitRequest"):
+        return _RateLimiterEntrypoint(self, request)
+
+    def _check_rpm(self):
+        return self.limits.rpm is None or len(self.enters) < self.limits.rpm
+
     async def _clean(self):
         now = datetime.datetime.now()
-        self.enters = [e for e in self.enters if now - e < self.interval]
+        self.enters = [e for e in self.enters if now - e.ts < self.interval]
 
 
 @dataclasses.dataclass
@@ -63,6 +100,15 @@ class LLMRequest(Generic[TResult]):
     retries: int = 1
 
 
+TBatchItem = TypeVar("TBatchItem")
+TBatchResult = TypeVar("TBatchResult")
+
+
+@dataclasses.dataclass
+class LimitRequest(Generic[TBatchItem]):
+    request: TBatchItem
+
+
 class LLMWrapper(ABC):
     __used_options__: ClassVar[List[Type[Option]]] = []
 
@@ -70,21 +116,34 @@ class LLMWrapper(ABC):
     async def complete(self, messages: List[LLMMessage]) -> str:
         raise NotImplementedError
 
-    async def complete_batch(
-        self, messages_batch: List[List[LLMMessage]], batch_size: Optional[int] = None, rpm_limit: Optional[int] = None
-    ) -> List[str]:
+    async def _batch(
+        self,
+        coro: Callable[[TBatchItem], Awaitable[TBatchResult]],
+        batches: Sequence[LimitRequest[TBatchItem]],
+        batch_size: Optional[int] = None,
+        limits: Optional[RateLimits] = None,
+    ) -> List[TBatchResult]:
         if batch_size is None:
             batch_size = self.get_batch_size()
-        if rpm_limit is None:
-            rpm_limit = self.get_rpm_limit()
-        rate_limiter = RateLimiter(rate=rpm_limit, interval=datetime.timedelta(minutes=1))
+        if limits is None:
+            limits = self.get_limits()
+        rate_limiter = RateLimiter(limits=limits, interval=datetime.timedelta(minutes=1))
         semaphore = Semaphore(batch_size)
 
-        async def work(messages: List[LLMMessage]) -> str:
-            async with semaphore, rate_limiter:
-                return await self.complete(messages)
+        async def work(request: LimitRequest[TBatchItem]) -> TBatchResult:
+            async with semaphore, rate_limiter.enter(request):
+                return await coro(request.request)
 
-        return await asyncio.gather(*[work(msgs) for msgs in messages_batch])
+        return await asyncio.gather(*[work(batch) for batch in batches])
+
+    async def complete_batch(
+        self,
+        messages_batch: List[List[LLMMessage]],
+        batch_size: Optional[int] = None,
+        limits: Optional[RateLimits] = None,
+    ) -> List[str]:
+        requests = [LimitRequest(msgs) for msgs in messages_batch]
+        return await self._batch(self.complete, requests, batch_size, limits)
 
     async def run(self, request: LLMRequest[TResult]) -> TResult:
         num_retries = request.retries
@@ -99,26 +158,19 @@ class LLMWrapper(ABC):
         raise error
 
     async def run_batch(
-        self, requests: Sequence[LLMRequest[TResult]], batch_size: Optional[int] = None, rpm_limit: Optional[int] = None
+        self,
+        requests: Sequence[LLMRequest[TResult]],
+        batch_size: Optional[int] = None,
+        limits: Optional[RateLimits] = None,
     ) -> List[TResult]:
-        if batch_size is None:
-            batch_size = self.get_batch_size()
-        if rpm_limit is None:
-            rpm_limit = self.get_rpm_limit()
-        rate_limiter = RateLimiter(rate=rpm_limit, interval=datetime.timedelta(minutes=1))
-        semaphore = Semaphore(batch_size)
-
-        async def work(request: LLMRequest[TResult]) -> TResult:
-            async with semaphore, rate_limiter:
-                return await self.run(request)
-
-        return await asyncio.gather(*[work(r) for r in requests])
+        rs = [LimitRequest(r) for r in requests]
+        return await self._batch(self.run, rs, batch_size, limits)
 
     def get_batch_size(self) -> int:
         return 100
 
-    def get_rpm_limit(self) -> Optional[int]:
-        return None
+    def get_limits(self) -> RateLimits:
+        return RateLimits()
 
     def get_used_options(self) -> List[Type[Option]]:
         return self.__used_options__
@@ -160,12 +212,16 @@ class LLMOptions(Option):
     __provider_name__: ClassVar[str]
 
     api_key: Optional[SecretStr] = None
-    rpm_limit: int = 500
+    # rpm_limit: int = 500
+    limits: RateLimits = RateLimits()
     api_url: Optional[str] = None
 
-    def __init__(self, api_key: Optional[str] = None, **data):
+    def __init__(self, api_key: Optional[str] = None, rpm_limit: Optional[int] = None, **data):
         self.api_key = SecretStr(api_key) if api_key is not None else None
         super().__init__(**data)
+        # backward comp
+        if rpm_limit is not None:
+            self.limits.rpm = rpm_limit
 
     def get_api_key(self) -> Optional[str]:
         if self.api_key is None:
@@ -175,6 +231,7 @@ class LLMOptions(Option):
 
 class OpenAIKey(LLMOptions):
     __provider_name__: ClassVar[str] = "openai"
+    limits: RateLimits = RateLimits(rpm=500)
 
 
 @llm_provider("openai", None)
@@ -218,8 +275,8 @@ class OpenAIWrapper(LLMWrapper):
         assert content is not None  # todo: better error
         return content
 
-    def get_rpm_limit(self) -> Optional[int]:
-        return self.options.rpm_limit
+    def get_limits(self) -> RateLimits:
+        return self.options.limits
 
 
 def get_litellm_wrapper(provider: LLMProvider, model: LLMModel, options: Options) -> Optional[LLMWrapper]:
@@ -260,10 +317,13 @@ class LiteLLMWrapper(LLMWrapper):
             .message.content
         )
 
+    def get_limits(self) -> RateLimits:
+        return self.options.limits
+
 
 class AnthropicOptions(LLMOptions):
     __provider_name__: ClassVar = "anthropic"
-    rpm_limit: int = 50
+    limits: RateLimits = RateLimits(rpm=50)
 
 
 @llm_provider("anthropic", None)
