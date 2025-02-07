@@ -19,6 +19,7 @@ from evidently.options.base import Options
 from evidently.report import Report
 from evidently.utils.data_preprocessing import DataDefinition
 from evidently.utils.llm.errors import LLMResponseParseError
+from evidently.utils.llm.wrapper import LLMResult
 from evidently.utils.llm.wrapper import llm_provider
 
 
@@ -93,10 +94,10 @@ class MockLLMWrapper(LLMWrapper):
     def __init__(self, model: str, options: Options):
         self.model = model
 
-    async def complete(self, messages: List[LLMMessage]) -> str:
+    async def complete(self, messages: List[LLMMessage]) -> LLMResult[str]:
         text = messages[-1].content
         cat = re.findall("___text_starts_here___\n(.*)\n___text_ends_here___", text)[0][0]
-        return json.dumps({"category": cat})
+        return LLMResult(json.dumps({"category": cat}), 0, 0)
 
 
 @pytest.mark.asyncio
