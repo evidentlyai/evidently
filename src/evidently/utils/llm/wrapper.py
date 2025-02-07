@@ -84,7 +84,7 @@ class _RateLimiterEntrypoint:
                     self.enters.append(self.enter)
                     # print(f"entered {self.enter}")
                     break
-            await sleep(0.1 * 100)
+            await sleep(0.1)
         return self
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):
@@ -119,7 +119,7 @@ class _RateLimiterEntrypoint:
         total_good = self.limits.tpm is None or used_output_tokens + used_input_tokens < self.limits.tpm
         res = input_good and output_good and total_good
         # print(f"checking[{res}]: ui {used_input_tokens}/{self.limits.itpm} uo {used_output_tokens}/{self.limits.otpm}" \
-        # " ei {self.request.estimated_input}")
+        # f" ei {self.request.estimated_input}")
         return res
 
 
@@ -405,7 +405,7 @@ class LiteLLMWrapper(LLMWrapper):
 
 class AnthropicOptions(LLMOptions):
     __provider_name__: ClassVar = "anthropic"
-    limits: RateLimits = RateLimits(rpm=50, itpm=40000, otpm=8000)
+    limits: RateLimits = RateLimits(rpm=50, itpm=40000, otpm=1000)
 
 
 @llm_provider("anthropic", None)
