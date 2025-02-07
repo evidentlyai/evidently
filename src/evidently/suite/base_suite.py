@@ -18,7 +18,6 @@ from typing import Union
 import ujson
 
 import evidently
-from evidently import ColumnMapping
 from evidently._pydantic_compat import BaseModel
 from evidently._pydantic_compat import parse_obj_as
 from evidently.base_metric import ErrorResult
@@ -32,6 +31,7 @@ from evidently.features.generated_features import FeatureResult
 from evidently.features.generated_features import GeneratedFeatures
 from evidently.options.base import AnyOptions
 from evidently.options.base import Options
+from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.renderers.base_renderer import DEFAULT_RENDERERS
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import RenderersDefinitions

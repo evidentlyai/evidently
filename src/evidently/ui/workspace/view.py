@@ -6,7 +6,7 @@ from typing import Union
 import pandas as pd
 import uuid6
 
-from evidently import ColumnMapping
+from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.suite.base_suite import Snapshot
 from evidently.ui.base import Project
 from evidently.ui.datasets import DatasetSourceType

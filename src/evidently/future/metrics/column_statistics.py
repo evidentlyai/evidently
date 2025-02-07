@@ -6,10 +6,10 @@ from typing import Optional
 from typing import TypeVar
 from typing import Union
 
-from evidently import ColumnType
 from evidently.calculations.data_drift import ColumnDataDriftMetrics
 from evidently.calculations.data_drift import get_one_column_drift
 from evidently.calculations.stattests import PossibleStatTestType
+from evidently.core import ColumnType
 from evidently.future.datasets import Dataset
 from evidently.future.datasets import DatasetColumn
 from evidently.future.metric_types import BoundTest

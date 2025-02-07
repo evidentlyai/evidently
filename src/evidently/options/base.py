@@ -64,6 +64,8 @@ class Options(BaseModel):
         _options = None
         if isinstance(options, dict):
             _options = Options(**options)
+        if isinstance(options, Option):
+            options = [options]
         if isinstance(options, list):
             _options = Options.from_list(options)
         if isinstance(options, Options):
@@ -126,4 +128,4 @@ class Options(BaseModel):
 
 _option_cls_mapping = {field.type_: name for name, field in Options.__fields__.items()}
 
-AnyOptions = Union[Options, dict, List[Option], None]
+AnyOptions = Union[Options, Option, dict, List[Option], None]

@@ -108,11 +108,31 @@ class NoopOutputFormat(OutputFormatBlock[str]):
         return response
 
 
+_json_pattern = re.compile(r"\{(?:[^{}]|\{[^{}]*\})*\}")
+
+
+def find_largest_json(text):
+    candidates = _json_pattern.findall(text)
+
+    largest_json = None
+    max_length = 0
+    for candidate in candidates:
+        try:
+            json_obj = json.loads(candidate)
+            if len(candidate) > max_length:
+                largest_json = json_obj
+                max_length = len(candidate)
+        except json.JSONDecodeError:
+            continue
+    return largest_json
+
+
 class JsonOutputFormatBlock(OutputFormatBlock[Dict[str, Any]]):
     class Config:
         type_alias = "evidently:prompt_block:JsonOutputFormatBlock"
 
     fields: Dict[str, Union[Tuple[str, str], str]]
+    search_for_substring: bool = True
 
     def _render(self) -> str:
         values = []
@@ -132,6 +152,10 @@ class JsonOutputFormatBlock(OutputFormatBlock[Dict[str, Any]]):
         try:
             return json.loads(response)
         except json.JSONDecodeError as e:
+            if self.search_for_substring:
+                sub = find_largest_json(response)
+                if sub is not None:
+                    return sub
             raise LLMResponseParseError(f"Failed to parse response '{response}' as json") from e
 
 

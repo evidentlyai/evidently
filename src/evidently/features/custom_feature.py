@@ -3,9 +3,9 @@ from typing import Tuple
 
 import pandas as pd
 
-from evidently import ColumnType
 from evidently._pydantic_compat import Field
 from evidently.base_metric import ColumnName
+from evidently.core import ColumnType
 from evidently.core import new_id
 from evidently.features.generated_features import FeatureTypeFieldMixin
 from evidently.features.generated_features import GeneratedFeature

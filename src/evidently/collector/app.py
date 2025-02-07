@@ -30,7 +30,6 @@ from litestar.types import Scope
 from litestar.types import Send
 from typing_extensions import Annotated
 
-from evidently import ColumnMapping
 from evidently._pydantic_compat import SecretStr
 from evidently.collector.config import CONFIG_PATH
 from evidently.collector.config import CollectorConfig
@@ -39,6 +38,7 @@ from evidently.collector.storage import CollectorStorage
 from evidently.collector.storage import CreateReportEvent
 from evidently.collector.storage import LogEvent
 from evidently.collector.storage import UploadReportEvent
+from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.telemetry import DO_NOT_TRACK_ENV
 from evidently.telemetry import event_logger
 from evidently.ui.components.security import NoSecurityComponent

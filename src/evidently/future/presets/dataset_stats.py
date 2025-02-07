@@ -4,7 +4,7 @@ from typing import Dict
 from typing import List
 from typing import Optional
 
-from evidently import ColumnType
+from evidently.core import ColumnType
 from evidently.future.container import MetricContainer
 from evidently.future.metric_types import ByLabelValue
 from evidently.future.metric_types import Metric

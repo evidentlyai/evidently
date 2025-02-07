@@ -15,7 +15,7 @@ import pandas as pd
 from requests import HTTPError
 from requests import Response
 
-from evidently import ColumnMapping
+from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.pydantic_utils import get_classpath
 from evidently.report import Report
 from evidently.test_suite import TestSuite

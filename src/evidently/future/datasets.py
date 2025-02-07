@@ -14,12 +14,12 @@ from typing import Union
 import numpy as np
 import pandas as pd
 
-from evidently import ColumnMapping
-from evidently import ColumnType
 from evidently.base_metric import DisplayName
+from evidently.core import ColumnType
 from evidently.features.generated_features import GeneratedFeatures
 from evidently.metric_results import Label
 from evidently.options.base import Options
+from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.utils.data_preprocessing import create_data_definition
 from evidently.utils.types import Numeric
 

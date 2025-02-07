@@ -8,8 +8,8 @@ from typing import Optional
 from typing import Tuple
 from typing import Type
 
-from evidently import ColumnType
 from evidently._pydantic_compat import import_string
+from evidently.core import ColumnType
 from evidently.descriptors.llm_judges import BaseLLMEval
 from evidently.features.custom_feature import CustomFeature
 from evidently.features.custom_feature import CustomPairColumnFeature

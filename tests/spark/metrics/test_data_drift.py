@@ -7,12 +7,12 @@ import pandas as pd
 import pytest
 from pyspark.sql import SparkSession
 
-from evidently import ColumnMapping
 from evidently.base_metric import ColumnName
 from evidently.metric_results import DatasetColumns
 from evidently.metric_results import DatasetUtilityColumns
 from evidently.metrics import ColumnDriftMetric
 from evidently.metrics import DataDriftTable
+from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.report import Report
 from evidently.spark.engine import SparkEngine
 from evidently.tests.utils import approx

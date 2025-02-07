@@ -4,7 +4,6 @@ from datetime import timedelta
 import numpy as np
 from sklearn import datasets
 
-from evidently import ColumnMapping
 from evidently.future.backport import snapshot_v2_to_v1
 from evidently.future.datasets import DataDefinition
 from evidently.future.datasets import Dataset
@@ -25,6 +24,7 @@ from evidently.future.metrics.dataset_statistics import RowCount
 from evidently.future.presets import ClassificationQuality
 from evidently.future.presets import DatasetStats
 from evidently.future.report import Report
+from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.renderers.html_widgets import WidgetSize
 from evidently.ui.dashboards import CounterAgg
 from evidently.ui.dashboards import DashboardPanelCounter

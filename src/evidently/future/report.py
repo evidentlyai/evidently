@@ -12,11 +12,10 @@ from typing import Tuple
 from typing import TypeVar
 from typing import Union
 
-from evidently import ColumnMapping
-from evidently import ColumnType
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric as LegacyMetric
 from evidently.base_metric import MetricResult as LegacyMetricResult
+from evidently.core import ColumnType
 from evidently.future.container import MetricContainer
 from evidently.future.datasets import BinaryClassification
 from evidently.future.datasets import DataDefinition
@@ -33,6 +32,7 @@ from evidently.future.metric_types import render_widgets
 from evidently.future.preset_types import MetricPreset
 from evidently.model.widget import BaseWidgetInfo
 from evidently.model.widget import link_metric
+from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.renderers.base_renderer import DEFAULT_RENDERERS
 from evidently.renderers.html_widgets import CounterData
 from evidently.renderers.html_widgets import WidgetSize

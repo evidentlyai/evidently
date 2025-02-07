@@ -5,8 +5,8 @@ from typing import List
 from typing import Optional
 from typing import TypeVar
 
-from evidently import ColumnType
 from evidently.base_metric import MetricResult as LegacyMetricResult
+from evidently.core import ColumnType
 from evidently.future.datasets import Dataset
 from evidently.future.metric_types import BoundTest
 from evidently.future.metric_types import SingleValue
