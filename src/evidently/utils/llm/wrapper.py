@@ -342,16 +342,17 @@ class OpenAIWrapper(LLMWrapper):
 
     async def complete(self, messages: List[LLMMessage]) -> LLMResult[str]:
         import openai
+        from openai.types.chat.chat_completion import ChatCompletion
 
         messages = [{"role": msg.role, "content": msg.content} for msg in messages]
         try:
-            response = await self.client.chat.completions.create(model=self.model, messages=messages)  # type: ignore[arg-type]
+            response: ChatCompletion = await self.client.chat.completions.create(model=self.model, messages=messages)  # type: ignore[arg-type]
         except openai.RateLimitError as e:
             raise LLMRateLimitError(e.message) from e
         except openai.APIError as e:
             raise LLMRequestError(f"Failed to call OpenAI complete API: {e.message}", original_error=e) from e
 
-        content: openai.ChatCompletion = response.choices[0].message.content
+        content = response.choices[0].message.content
         assert content is not None  # todo: better error
         return LLMResult(content, response.usage.prompt_tokens, response.usage.completion_tokens)
 
