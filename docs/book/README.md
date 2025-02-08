@@ -1,3 +1,8 @@
+
+{% hint style="info" %}
+**You are looking at the old Evidently documentation**: Check the newer version [here](https://docs.evidentlyai.com/introduction).
+{% endhint %}
+
 Evidently helps evaluate, test, and monitor data and ML-powered systems.
 * Predictive tasks: classification, regression, ranking, recommendations.
 * Generative tasks: chatbots, RAGs, Q&A, summarization.
