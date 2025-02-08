@@ -2,6 +2,10 @@
 description: LLM evaluation "Hello world." 
 ---
 
+{% hint style="info" %}
+**You are looking at the old Evidently documentation**: Check the newer version [here](https://docs.evidentlyai.com/introduction).
+{% endhint %}
+
 This quickstart shows how to evaluate text data, such as inputs and outputs from your LLM system.
 
 You will run evals locally in Python and send results to Evidently Cloud for analysis and monitoring.
