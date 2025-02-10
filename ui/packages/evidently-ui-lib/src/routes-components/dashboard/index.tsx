@@ -1,24 +1,22 @@
 import dayjs, { type Dayjs } from 'dayjs'
 import type { PlotMouseEvent } from 'plotly.js'
 import { useEffect, useState } from 'react'
-import type { DashboardInfoModel } from '~/api/types'
 import {
   DateFilter,
   type DateFilterProps,
   type DateFilterState,
   ShowInOrderSwitch
 } from '~/components/DashboardDateFilter'
-import { DashboardWidgets } from '~/components/DashboardWidgets'
 import { DashboardViewParamsContext } from '~/contexts/DashboardViewParams'
 import { useDebounce, useIsFirstRender, useLocalStorage } from '~/hooks/index'
 
 export const ProjectDashboard = ({
-  data,
+  Widgets,
   dateFilterProps,
   OnClickedPointComponent,
   OnHoveredPlotComponent
 }: {
-  data: DashboardInfoModel
+  Widgets: React.ReactNode
   dateFilterProps: DateFilterProps
   OnClickedPointComponent?: ({ event }: { event: PlotMouseEvent }) => JSX.Element
   OnHoveredPlotComponent?: () => JSX.Element
@@ -40,7 +38,7 @@ export const ProjectDashboard = ({
       <DashboardViewParamsContext.Provider
         value={{ isXaxisAsCategorical, OnClickedPointComponent, OnHoveredPlotComponent }}
       >
-        <DashboardWidgets widgets={data.widgets} />
+        {Widgets}
       </DashboardViewParamsContext.Provider>
     </>
   )
