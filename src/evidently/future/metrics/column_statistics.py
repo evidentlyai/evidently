@@ -256,7 +256,7 @@ class InRangeValueCountCalculation(CountCalculation[InRangeValueCount]):
 
     def _calculate_value(self, dataset: Dataset):
         column = dataset.column(self.metric.column)
-        value = column.data.between(self.metric.left, self.metric.right).count()
+        value = column.data.between(self.metric.left, self.metric.right).sum()
         total = column.data.count()
         return CountValue(value, value / total)
 
@@ -285,7 +285,7 @@ class OutRangeValueCountCalculation(CountCalculation[OutRangeValueCount]):
 
     def _calculate_value(self, dataset: Dataset):
         column = dataset.column(self.metric.column)
-        value = column.data.between(self.metric.left, self.metric.right).count()
+        value = column.data.between(self.metric.left, self.metric.right).sum()
         total = column.data.count()
         return CountValue(total - value, (total - value) / total)
 
