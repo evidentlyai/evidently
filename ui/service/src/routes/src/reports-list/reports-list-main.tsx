@@ -31,7 +31,6 @@ export const loadData = ({ params }: loadDataArgs) => {
 
 export const actions = getSnapshotsActions({ api: clientAPI })
 
-// type OOO = GetRouteByPath<'/:projectId/reports/:snapshotId'>['']
 export const Component = () => {
   const { loaderData: reports, params } = useCurrentRouteParams<CurrentRoute>()
 
