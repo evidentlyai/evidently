@@ -1,6 +1,6 @@
+from ._context_relevance import ContextRelevance
 from ._custom_descriptors import CustomColumnDescriptor
 from ._custom_descriptors import CustomDescriptor
-from ._ranking_descriptor import RankingDescriptor
 from ._text_length import TextLength
 from .generated_descriptors import BeginsWith
 from .generated_descriptors import BERTScore
@@ -85,5 +85,5 @@ __all__ = [
     "NegativityLLMEval",
     "PIILLMEval",
     "ToxicityLLMEval",
-    "RankingDescriptor",
+    "ContextRelevance",
 ]

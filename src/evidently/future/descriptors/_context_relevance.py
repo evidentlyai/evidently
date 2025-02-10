@@ -42,7 +42,7 @@ def semantic_similarity_scoring(question: DatasetColumn, context: DatasetColumn)
 
 
 def mean(scores: List[float]) -> float:
-    return np.average(scores)
+    return float(np.average(scores))
 
 
 METHODS = {
@@ -55,22 +55,22 @@ AGGREGATION_METHODS = {
 }
 
 
-class RankingDescriptor(Descriptor):
+class ContextRelevance(Descriptor):
     def __init__(
         self,
-        question: str,
-        context: str,
+        input: str,
+        contexts: str,
         method: str = "semantic_similarity",
         aggregation_method: Optional[str] = None,
         output_scores: bool = False,
         alias: Optional[str] = None,
     ):
-        super().__init__(alias or f"Ranking for {question} with {context}")
+        super().__init__(alias or f"Ranking for {input} with {contexts}")
         self.output_scores = output_scores
         self.aggregation_method = aggregation_method
         self.method = method
-        self.question = question
-        self.context = context
+        self.input = input
+        self.context = contexts
 
     def generate_data(self, dataset: Dataset) -> Union[DatasetColumn, Dict[DisplayName, DatasetColumn]]:
         data = dataset.column(self.context)
@@ -83,7 +83,7 @@ class RankingDescriptor(Descriptor):
         if aggregation_method is None:
             raise ValueError(f"Aggregation method {self.aggregation_method} not found")
 
-        scored_contexts = method(dataset.column(self.question), data)
+        scored_contexts = method(dataset.column(self.input), data)
         aggregated_scores = scored_contexts.data.apply(aggregation_method)
         result = {
             f"{self.alias}: aggregate score": DatasetColumn(ColumnType.Numerical, aggregated_scores),
