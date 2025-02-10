@@ -227,3 +227,31 @@ Such texts aim to demean or harm, affecting the well-being or safety of others t
     )
     provider = "openai"
     model = "gpt-4o-mini"
+
+
+class CorrectnessLLMEval(BinaryClassificationLLMEval):
+    class Config:
+        type_alias = "evidently:descriptor:CorrectnessLLMEval"
+
+    name: ClassVar = "Correctness"
+    target_output: str
+    provider = "openai"
+    model = "gpt-4o-mini"
+    template: ClassVar = BinaryClassificationPromptTemplate(
+        criteria="""An OUTPUT is correct when it is the same as the REFERENCE in all facts and details, even if worded differently.
+        The OUTPUT is incorrect if it contradicts the REFERENCE, adds additional claims, omits or changes details.
+         REFERENCE:
+        =====
+        {target_output}
+        =====""",
+        target_category="INCORRECT",
+        non_target_category="OK",
+        uncertainty="unknown",
+        include_reasoning=True,
+        pre_messages=[
+            (
+                "system",
+                "You are an impartial expert evaluator. You will be given an OUTPUT and REFERENCE.",
+            )
+        ],
+    )
