@@ -1,24 +1,15 @@
 import { responseParser } from 'evidently-ui-lib/api/client-heplers'
 import { ensureID } from 'evidently-ui-lib/api/utils'
+import { ProjectLayoutTemplate } from 'evidently-ui-lib/components/ProjectLayout'
+import { useCurrentRouteParams } from 'evidently-ui-lib/router-utils/hooks'
 import type { CrumbDefinition } from 'evidently-ui-lib/router-utils/router-builder'
 import type { GetParams, loadDataArgs } from 'evidently-ui-lib/router-utils/types'
-import {
-  Box,
-  Grid,
-  IconButton,
-  Tabs,
-  Typography
-} from 'evidently-ui-lib/shared-dependencies/mui-material'
+import { Tabs } from 'evidently-ui-lib/shared-dependencies/mui-material'
 import { Outlet } from 'evidently-ui-lib/shared-dependencies/react-router-dom'
-
-import { ContentCopy as ContentCopyIcon } from 'evidently-ui-lib/shared-dependencies/mui-icons-material'
-
-import type { GetRouteByPath } from '~/routes/types'
-
-import { useCurrentRouteParams } from 'evidently-ui-lib/router-utils/hooks'
 import { clientAPI } from '~/api'
 import { RouterLink } from '~/routes/components'
 import { useMatchRouter } from '~/routes/hooks'
+import type { GetRouteByPath } from '~/routes/types'
 
 ///////////////////
 //    ROUTE
@@ -30,7 +21,7 @@ type CurrentRoute = GetRouteByPath<typeof currentRoutePath>
 type Params = GetParams<typeof currentRoutePath>
 
 const crumb: CrumbDefinition = {
-  keyFromLoaderData: 'name' satisfies keyof CurrentRoute['loader']['returnType']
+  keyFromLoaderData: 'projectName' satisfies keyof CurrentRoute['loader']['returnType']
 }
 
 export const handle = { crumb }
@@ -42,17 +33,14 @@ export const loadData = ({ params }: loadDataArgs) => {
     .GET('/api/projects/{project_id}/info', { params: { path: { project_id } } })
     .then(responseParser())
     .then(ensureID)
-    .then(({ name, id }) => ({ name, id }))
-}
-
-const TABS = {
-  reports: 'reports',
-  'test-suites': 'test-suites',
-  index: 'index'
+    .then((project) => ({ project, projectName: project.name }))
 }
 
 export const Component = () => {
-  const { loaderData: project, params } = useCurrentRouteParams<CurrentRoute>()
+  const {
+    loaderData: { project },
+    params
+  } = useCurrentRouteParams<CurrentRoute>()
 
   const isReports = useMatchRouter({ path: '/projects/:projectId/reports' })
   const isTestSuites = useMatchRouter({ path: '/projects/:projectId/test-suites' })
@@ -62,49 +50,42 @@ export const Component = () => {
   const selectedTab = isReports ? TABS.reports : isTestSuites ? TABS['test-suites'] : TABS.index
 
   return (
-    <Box mt={2}>
-      <Grid container spacing={2} direction='row' justifyContent='flex-start' alignItems='flex-end'>
-        <Grid item xs={12}>
-          <Typography sx={{ color: '#aaa' }} variant='body2'>
-            {`project id: ${project.id}`}
-            <IconButton
-              size='small'
-              style={{ marginLeft: 10 }}
-              onClick={() => navigator.clipboard.writeText(project.id)}
-            >
-              <ContentCopyIcon fontSize='small' />
-            </IconButton>
-          </Typography>
-        </Grid>
-      </Grid>
+    <ProjectLayoutTemplate project={project}>
+      <>
+        <Tabs value={selectedTab} aria-label='simple tabs example' indicatorColor={'primary'}>
+          <RouterLink
+            type='tab'
+            value={TABS.index}
+            label={'Dashboard'}
+            to='/projects/:projectId/?index'
+            paramsToReplace={{ projectId }}
+          />
 
-      <Tabs value={selectedTab} aria-label='simple tabs example' indicatorColor={'primary'}>
-        <RouterLink
-          type='tab'
-          value={TABS.index}
-          label={'Dashboard'}
-          to='/projects/:projectId/?index'
-          paramsToReplace={{ projectId }}
-        />
+          <RouterLink
+            type='tab'
+            value={TABS.reports}
+            label={'Reports'}
+            to='/projects/:projectId/reports'
+            paramsToReplace={{ projectId }}
+          />
 
-        <RouterLink
-          type='tab'
-          value={TABS.reports}
-          label={'Reports'}
-          to='/projects/:projectId/reports'
-          paramsToReplace={{ projectId }}
-        />
+          <RouterLink
+            type='tab'
+            value={TABS['test-suites']}
+            label={'Test suites'}
+            to='/projects/:projectId/test-suites'
+            paramsToReplace={{ projectId }}
+          />
+        </Tabs>
 
-        <RouterLink
-          type='tab'
-          value={TABS['test-suites']}
-          label={'Test suites'}
-          to='/projects/:projectId/test-suites'
-          paramsToReplace={{ projectId }}
-        />
-      </Tabs>
-
-      <Outlet />
-    </Box>
+        <Outlet />
+      </>
+    </ProjectLayoutTemplate>
   )
+}
+
+const TABS = {
+  reports: 'reports',
+  'test-suites': 'test-suites',
+  index: 'index'
 }
