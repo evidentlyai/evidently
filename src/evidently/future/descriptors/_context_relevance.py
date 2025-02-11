@@ -29,7 +29,7 @@ def semantic_similarity_scoring(question: DatasetColumn, context: DatasetColumn,
     no_index_context = context.data.reset_index()
 
     first = model.encode(question.data.fillna(""))
-    context_rows = no_index_context[context_column].explode().reset_index()
+    context_rows = no_index_context.explode([context_column]).reset_index()
     second = model.encode(context_rows[context_column].fillna(""))
 
     scores = pd.Series(data=[[x] for x in second], index=context_rows.index)
@@ -48,7 +48,7 @@ def openai_scoring(question: DatasetColumn, context: DatasetColumn, options: Opt
     # unwrap data to rows
     context_column = context.data.name
     no_index_context = context.data.reset_index()
-    context_rows = no_index_context.explode(context_column).reset_index()
+    context_rows = no_index_context.explode([context_column]).reset_index()  #
 
     # do scoring
     llm_wrapper = OpenAIWrapper("gpt-4o-mini", options)
