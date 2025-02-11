@@ -179,8 +179,8 @@ class ContextRelevance(Descriptor):
         aggregation = aggregation_method(**(self.aggregation_method_params or {}))
         aggregated_scores = scored_contexts.data.apply(aggregation.do)
         result = {
-            f"{self.alias}: aggregate score": DatasetColumn(ColumnType.Numerical, aggregated_scores),
+            f"{self.alias}": DatasetColumn(ColumnType.Numerical, aggregated_scores),
         }
         if self.output_scores:
-            result[f"{self.alias}: scores"] = scored_contexts
+            result[f"{self.alias} scores"] = scored_contexts
         return result
