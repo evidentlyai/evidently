@@ -56,9 +56,9 @@ def openai_scoring(question: DatasetColumn, context: DatasetColumn, options: Opt
     # do scoring
     llm_wrapper = OpenAIWrapper("gpt-4o-mini", options)
     template = BinaryClassificationPromptTemplate(
-        criteria="""A "RELEVANT" refers to CONTEXT is relevant to QUESTION.
+        criteria="""A “RELEVANT” label means that the CONTEXT provides useful, supportive, or related information to the QUESTION.
 
-        "IRRELEVANT" refers to CONTEXT is contradictory or irrelevant to QUESTION.
+        An “IRRELEVANT” label means that the CONTEXT is either contradictory or unrelated to the QUESTION.
 
                 Here is a QUESTION
                 -----question_starts-----
