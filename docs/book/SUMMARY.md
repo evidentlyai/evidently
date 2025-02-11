@@ -1,5 +1,6 @@
 # Table of contents
 
+* [New DOCS](https://docs.evidentlyai.com/)
 * [What is Evidently?](README.md)
 * [Get Started](get-started/README.md)
   * [Evidently Cloud](get-started/quickstart-cloud.md)
