@@ -127,12 +127,16 @@ class MetricV2Adapter(MetricV1[MetricResultV2Adapter]):
     class Config:
         type_alias = "evidently:metric:MetricV2Adapter"
 
-    metric: MetricV2
+    metric: Union[MetricV2, dict]
+    fingerprint: Fingerprint = ""
 
     def calculate(self, data: InputData) -> MetricResultV2Adapter:
         raise NotImplementedError()
 
     def get_fingerprint(self) -> Fingerprint:
+        if self.fingerprint != "":
+            return self.fingerprint
+        assert isinstance(self.metric, MetricV2), "fingerprint should be present for unknown metrics"
         return self.metric.get_fingerprint()
 
 
@@ -175,7 +179,7 @@ class MetricV2AdapterRenderer(MetricRenderer):
 
 
 def metric_v2_to_v1(metric: MetricV2) -> MetricV1:
-    return MetricV2Adapter(metric=metric)
+    return MetricV2Adapter(metric=metric, fingerprint=metric.get_fingerprint())
 
 
 def data_definition_v2_to_v1(dd: DataDefinition, reference_present: bool) -> DataDefinitionV1:
@@ -309,7 +313,8 @@ def snapshot_v2_to_v1(snapshot: SnapshotV2) -> SnapshotV1:
     snapshot.metadata["version"] = "2"
     if len(tests) > 0:
         test_widgets = snapshot.as_test_suite()._build_dashboard_info()[1].widgets
-        snapshot.suite.metrics.append(MetricV2Adapter(metric=TestsConfig(tests=tests_v2)))
+        tests_config = TestsConfig(tests=tests_v2)
+        snapshot.suite.metrics.append(MetricV2Adapter(metric=tests_config, fingerprint=tests_config.get_fingerprint()))
         widgets_dict = [dataclasses.asdict(w) for w in test_widgets]
         for wd in widgets_dict:
             params = wd.get("params", {})
