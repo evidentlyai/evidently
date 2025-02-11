@@ -18,6 +18,7 @@ from evidently.base_metric import DisplayName
 from evidently.core import ColumnType
 from evidently.features.generated_features import GeneratedFeatures
 from evidently.metric_results import Label
+from evidently.options.base import AnyOptions
 from evidently.options.base import Options
 from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.utils.data_preprocessing import create_data_definition
@@ -237,7 +238,9 @@ class Descriptor:
         self._alias = alias
 
     @abc.abstractmethod
-    def generate_data(self, dataset: "Dataset") -> Union[DatasetColumn, Dict[DisplayName, DatasetColumn]]:
+    def generate_data(
+        self, dataset: "Dataset", options: Options
+    ) -> Union[DatasetColumn, Dict[DisplayName, DatasetColumn]]:
         raise NotImplementedError()
 
     @property
@@ -258,11 +261,13 @@ class FeatureDescriptor(Descriptor):
         dataset_column = DatasetColumn(type=column_type, data=values)
         return dataset_column
 
-    def generate_data(self, dataset: "Dataset") -> Union[DatasetColumn, Dict[DisplayName, DatasetColumn]]:
+    def generate_data(
+        self, dataset: "Dataset", options: Options
+    ) -> Union[DatasetColumn, Dict[DisplayName, DatasetColumn]]:
         feature = self._feature.generate_features_renamed(
             dataset.as_dataframe(),
             create_data_definition(None, dataset.as_dataframe(), ColumnMapping()),
-            Options(),
+            options,
         )
         return {
             col.display_name: self.get_dataset_column(col.name, feature[col.name])
@@ -347,10 +352,11 @@ class Dataset:
         data: pd.DataFrame,
         data_definition: Optional[DataDefinition] = None,
         descriptors: Optional[List[Descriptor]] = None,
+        options: AnyOptions = None,
     ) -> "Dataset":
         dataset = PandasDataset(data, data_definition)
         if descriptors is not None:
-            dataset.add_descriptors(descriptors)
+            dataset.add_descriptors(descriptors, options)
         return dataset
 
     @abstractmethod
@@ -372,6 +378,14 @@ class Dataset:
     @property
     def data_definition(self) -> DataDefinition:
         return self._data_definition
+
+    @abstractmethod
+    def add_descriptor(self, descriptor: Descriptor, options: AnyOptions = None):
+        raise NotImplementedError
+
+    def add_descriptors(self, descriptors: List[Descriptor], options: AnyOptions = None):
+        for descriptor in descriptors:
+            self.add_descriptor(descriptor, options)
 
 
 class PandasDataset(Dataset):
@@ -420,16 +434,12 @@ class PandasDataset(Dataset):
         if data.type == ColumnType.Categorical:
             self._data_definition.categorical_descriptors.append(key)
 
-    def add_descriptor(self, descriptor: Descriptor):
-        new_columns = descriptor.generate_data(self)
+    def add_descriptor(self, descriptor: Descriptor, options: AnyOptions = None):
+        new_columns = descriptor.generate_data(self, Options.from_any_options(options))
         if isinstance(new_columns, DatasetColumn):
             new_columns = {descriptor.alias: new_columns}
         for col, value in new_columns.items():
             self.add_column(_determine_desccriptor_column_name(col, self._data.columns.tolist()), value)
-
-    def add_descriptors(self, descriptors: List[Descriptor]):
-        for descriptor in descriptors:
-            self.add_descriptor(descriptor)
 
     def _collect_stats(self, column_type: ColumnType, data: pd.Series):
         numerical_stats = None

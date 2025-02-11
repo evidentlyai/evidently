@@ -9,6 +9,7 @@ from evidently.core import ColumnType
 from evidently.future.datasets import Dataset
 from evidently.future.datasets import DatasetColumn
 from evidently.future.datasets import Descriptor
+from evidently.options.base import Options
 
 
 class TextLength(Descriptor):
@@ -16,7 +17,7 @@ class TextLength(Descriptor):
         super().__init__(alias or "text_length")
         self._column_name: str = column_name
 
-    def generate_data(self, dataset: "Dataset") -> Union[DatasetColumn, Dict[str, DatasetColumn]]:
+    def generate_data(self, dataset: "Dataset", options: Options) -> Union[DatasetColumn, Dict[str, DatasetColumn]]:
         column_items_lengths = dataset.as_dataframe()[self._column_name].apply(_apply)
         return DatasetColumn(type=ColumnType.Numerical, data=column_items_lengths)
 
