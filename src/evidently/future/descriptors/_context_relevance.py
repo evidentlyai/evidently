@@ -8,12 +8,15 @@ import pandas as pd
 
 from evidently import ColumnType
 from evidently.base_metric import DisplayName
+from evidently.features.llm_judge import BinaryClassificationPromptTemplate
 from evidently.future.datasets import Dataset
 from evidently.future.datasets import DatasetColumn
 from evidently.future.datasets import Descriptor
+from evidently.options.base import Options
+from evidently.utils.llm.wrapper import OpenAIWrapper
 
 
-def semantic_similarity_scoring(question: DatasetColumn, context: DatasetColumn) -> DatasetColumn:
+def semantic_similarity_scoring(question: DatasetColumn, context: DatasetColumn, options: Options) -> DatasetColumn:
     from sentence_transformers import SentenceTransformer
 
     model_id: str = "all-MiniLM-L6-v2"
@@ -41,12 +44,61 @@ def semantic_similarity_scoring(question: DatasetColumn, context: DatasetColumn)
     )
 
 
+def openai_scoring(question: DatasetColumn, context: DatasetColumn, options: Options) -> DatasetColumn:
+    # unwrap data to rows
+    context_column = context.data.name
+    no_index_context = context.data.reset_index()
+    context_rows = no_index_context.explode(context_column).reset_index()
+
+    # do scoring
+    llm_wrapper = OpenAIWrapper("gpt-4o-mini", options)
+    template = BinaryClassificationPromptTemplate(
+        criteria="""A "RELEVANT" refers to CONTEXT is relevant to QUESTION.
+
+        "IRRELEVANT" refers to CONTEXT is contradictory or irrelevant to QUESTION.
+
+                Here is a QUESTION
+                -----question_starts-----
+                {input}
+                -----question_ends-----
+
+                Here is a CONTEXT
+                -----context_starts-----
+                {context}
+                -----context_ends-----
+
+        """,
+        target_category="RELEVANT",
+        non_target_category="IRRELEVANT",
+        uncertainty="unknown",
+        include_reasoning=True,
+        include_score=True,
+        pre_messages=[("system", "You are a judge which evaluates text.")],
+    )
+    df = pd.DataFrame({"input": question.data, "context": context.data}).explode("context").reset_index()
+    questions = template.iterate_messages(df, {"input": "input", "context": "context"})
+    results = llm_wrapper.run_batch_sync(questions)
+    result_data = pd.DataFrame(results)
+    # wrap scoring to lists back
+    scind = pd.DataFrame(data={"ind": context_rows["index"], "scores": result_data["score"]})
+    rsd = pd.Series(
+        [list(scind.iloc[x]["scores"].astype(float)) for x in scind.groupby("ind").groups.values()],
+        index=question.data.index,
+    )
+
+    return DatasetColumn(
+        ColumnType.List,
+        rsd,
+    )
+
+
 def mean(scores: List[float]) -> float:
     return float(np.average(scores))
 
 
 METHODS = {
     "semantic_similarity": (semantic_similarity_scoring, mean),
+    "openai": (openai_scoring, mean),
 }
 
 
@@ -83,7 +135,7 @@ class ContextRelevance(Descriptor):
         if aggregation_method is None:
             raise ValueError(f"Aggregation method {self.aggregation_method} not found")
 
-        scored_contexts = method(dataset.column(self.input), data)
+        scored_contexts = method(dataset.column(self.input), data, Options())
         aggregated_scores = scored_contexts.data.apply(aggregation_method)
         result = {
             f"{self.alias}: aggregate score": DatasetColumn(ColumnType.Numerical, aggregated_scores),
