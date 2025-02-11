@@ -1,6 +1,9 @@
+import abc
 from typing import Dict
+from typing import Generic
 from typing import List
 from typing import Optional
+from typing import TypeVar
 from typing import Union
 
 import numpy as np
@@ -96,14 +99,47 @@ def mean(scores: List[float]) -> float:
     return float(np.average(scores))
 
 
+def hit(threshold: float, scores: List[float]) -> float:
+    return any([x > threshold for x in scores])
+
+
+T = TypeVar("T")
+
+
+class AggregationMethod(Generic[T]):
+    column_type: ColumnType
+
+    @abc.abstractmethod
+    def do(self, scores: List[float]) -> T:
+        raise NotImplementedError
+
+
+class MeanAggregation(AggregationMethod[float]):
+    def __init__(self):
+        self.column_type = ColumnType.Numerical
+
+    def do(self, scores: List[float]) -> float:
+        return float(np.average(scores))
+
+
+class HitAggregation(AggregationMethod[int]):
+    def __init__(self, threshold: float = 0.8):
+        self.column_type = ColumnType.Categorical
+        self.threshold = threshold
+
+    def do(self, scores: List[float]) -> int:
+        return 1 if any([x > self.threshold for x in scores]) else 0
+
+
 METHODS = {
-    "semantic_similarity": (semantic_similarity_scoring, mean),
-    "openai": (openai_scoring, mean),
+    "semantic_similarity": (semantic_similarity_scoring, MeanAggregation),
+    "openai": (openai_scoring, MeanAggregation),
 }
 
 
 AGGREGATION_METHODS = {
-    "mean": mean,
+    "mean": MeanAggregation,
+    "hit": HitAggregation,
 }
 
 
@@ -113,14 +149,18 @@ class ContextRelevance(Descriptor):
         input: str,
         contexts: str,
         method: str = "semantic_similarity",
+        method_params: Optional[Dict[str, object]] = None,
         aggregation_method: Optional[str] = None,
+        aggregation_method_params: Optional[Dict[str, object]] = None,
         output_scores: bool = False,
         alias: Optional[str] = None,
     ):
         super().__init__(alias or f"Ranking for {input} with {contexts}")
         self.output_scores = output_scores
         self.aggregation_method = aggregation_method
+        self.aggregation_method_params = aggregation_method_params
         self.method = method
+        self.method_params = method_params
         self.input = input
         self.context = contexts
 
@@ -136,7 +176,8 @@ class ContextRelevance(Descriptor):
             raise ValueError(f"Aggregation method {self.aggregation_method} not found")
 
         scored_contexts = method(dataset.column(self.input), data, Options())
-        aggregated_scores = scored_contexts.data.apply(aggregation_method)
+        aggregation = aggregation_method(**(self.aggregation_method_params or {}))
+        aggregated_scores = scored_contexts.data.apply(aggregation.do)
         result = {
             f"{self.alias}: aggregate score": DatasetColumn(ColumnType.Numerical, aggregated_scores),
         }
