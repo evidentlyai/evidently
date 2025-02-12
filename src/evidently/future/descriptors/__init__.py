@@ -1,3 +1,4 @@
+from ._context_relevance import ContextRelevance
 from ._custom_descriptors import CustomColumnDescriptor
 from ._custom_descriptors import CustomDescriptor
 from ._text_length import TextLength
@@ -84,4 +85,5 @@ __all__ = [
     "NegativityLLMEval",
     "PIILLMEval",
     "ToxicityLLMEval",
+    "ContextRelevance",
 ]
