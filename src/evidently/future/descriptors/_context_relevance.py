@@ -16,6 +16,7 @@ from evidently.future.datasets import Dataset
 from evidently.future.datasets import DatasetColumn
 from evidently.future.datasets import Descriptor
 from evidently.options.base import Options
+from evidently.utils.llm.wrapper import LLMWrapper
 from evidently.utils.llm.wrapper import OpenAIWrapper
 from evidently.utils.llm.wrapper import get_litellm_wrapper
 
@@ -60,6 +61,7 @@ def llm_scoring(
     no_index_context = context.data.reset_index()
     context_rows = no_index_context.explode([context_column]).reset_index()  #
 
+    llm_wrapper: Optional[LLMWrapper]
     # do scoring
     if provider == "openai":
         llm_wrapper = OpenAIWrapper(model, options)
