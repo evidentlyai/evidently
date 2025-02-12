@@ -1,6 +1,11 @@
 import { useCallback, useMemo } from 'react'
 import { makeRouteUrl } from '~/router-utils/router-builder'
-import type { GetParams, MatchAny, MatchWithAction, MatchWithLoader } from '~/router-utils/types'
+import type {
+  GetParamsOptional,
+  MatchAny,
+  MatchWithAction,
+  MatchWithLoader
+} from '~/router-utils/types'
 import {
   type SubmitOptions,
   useActionData,
@@ -12,25 +17,24 @@ import { REST_PARAMS_FOR_FETCHER_SUBMIT } from '~/utils/index'
 
 export const useSubmitFetcherGeneral = <M extends MatchWithAction, K extends keyof M['action']>({
   action,
-  path,
-  provideParams
+  path
 }: {
   action: K
   path: M['path']
-  provideParams: ({ data }: { data: M['action'][K]['requestData'] }) => GetParams<M['path']>
 }) => {
   const originalFetcher = useFetcher<M['action'][K]['returnType']>()
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: fine
   const submit = useCallback(
-    (data: M['action'][K]['requestData']) => {
-      const params = provideParams({ data })
-
+    ({
+      data,
+      paramsToReplace = {}
+    }: { data: M['action'][K]['requestData'] } & GetParamsOptional<M['path']>) => {
       originalFetcher.submit(
         // @ts-ignore
         { data, action },
         {
-          action: makeRouteUrl({ paramsToReplace: params, path }),
+          action: makeRouteUrl({ paramsToReplace, path }),
           ...REST_PARAMS_FOR_FETCHER_SUBMIT
         }
       )
@@ -55,11 +59,6 @@ export const createUseSubmitFetcherGeneral = <M extends MatchAny>() => {
   >(args: {
     action: ActionName
     path: Path
-    provideParams: ({
-      data
-    }: {
-      data: Extract<MatchesWithAction, { path: Path }>['action'][ActionName]['requestData']
-    }) => GetParams<Extract<MatchesWithAction, { path: Path }>['path']>
   }) => useSubmitFetcherGeneral<Extract<MatchesWithAction, { path: Path }>, ActionName>(args)
 
   return hook
@@ -67,12 +66,10 @@ export const createUseSubmitFetcherGeneral = <M extends MatchAny>() => {
 
 export const useSubmitGeneral = <M extends MatchWithAction, K extends keyof M['action']>({
   action,
-  path,
-  provideParams
+  path
 }: {
   action: K
   path: M['path']
-  provideParams: ({ data }: { data: M['action'][K]['requestData'] }) => GetParams<M['path']>
 }) => {
   const originalSumit = useSubmit()
   const navigattion = useNavigation()
@@ -80,14 +77,18 @@ export const useSubmitGeneral = <M extends MatchWithAction, K extends keyof M['a
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: fine
   const submit = useCallback(
-    (data: M['action'][K]['requestData'], submitOptions?: SubmitOptions) => {
-      const params = provideParams({ data })
-
+    ({
+      data,
+      paramsToReplace = {},
+      submitOptions
+    }: { data: M['action'][K]['requestData']; submitOptions?: SubmitOptions } & GetParamsOptional<
+      M['path']
+    >) => {
       originalSumit(
         // @ts-ignore
         { data, action },
         {
-          action: makeRouteUrl({ paramsToReplace: params, path }),
+          action: makeRouteUrl({ paramsToReplace, path }),
           ...submitOptions,
           ...REST_PARAMS_FOR_FETCHER_SUBMIT
         }
@@ -108,11 +109,6 @@ export const createUseSubmitGeneral = <M extends MatchAny>() => {
   >(args: {
     action: ActionName
     path: Path
-    provideParams: ({
-      data
-    }: {
-      data: Extract<MatchesWithAction, { path: Path }>['action'][ActionName]['requestData']
-    }) => GetParams<Extract<MatchesWithAction, { path: Path }>['path']>
   }) => useSubmitGeneral<Extract<MatchesWithAction, { path: Path }>, ActionName>(args)
 
   return hook
@@ -122,8 +118,11 @@ export const useLoaderGeneral = <M extends MatchWithLoader>(path: M['path']) => 
   const originalFetcher = useFetcher<M['loader']['returnType']>()
 
   const load = useCallback(
-    ({ params, query }: { params: GetParams<M['path']>; query?: M['loader']['query'] }) =>
-      originalFetcher.load(makeRouteUrl({ paramsToReplace: params, path, query: query })),
+    ({
+      query,
+      paramsToReplace = {}
+    }: { query?: M['loader']['query'] } & GetParamsOptional<M['path']>) =>
+      originalFetcher.load(makeRouteUrl({ paramsToReplace, path, query: query })),
     [originalFetcher, path]
   )
 

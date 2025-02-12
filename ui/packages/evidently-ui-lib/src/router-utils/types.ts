@@ -185,3 +185,8 @@ export type GetLinkParamsByPathOnly<K extends string> = keyof GetParams<K> exten
       to: K
       paramsToReplace: GetParams<K>
     }
+
+export type GetParamsOptional<K extends string> = keyof GetParams<K> extends never
+  ? // biome-ignore lint/complexity/noBannedTypes: fine
+    { paramsToReplace?: {} }
+  : { paramsToReplace: GetParams<K> }

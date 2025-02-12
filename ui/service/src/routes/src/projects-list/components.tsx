@@ -12,8 +12,7 @@ export const ProjectCardWrapper = ({ project }: { project: StrictID<ProjectModel
 
   const deleteProjectFetcher = useSubmitFetcher({
     path: '/?index',
-    action: 'delete-project',
-    provideParams: () => ({})
+    action: 'delete-project'
   })
 
   useOnSubmitEnd({
@@ -27,8 +26,7 @@ export const ProjectCardWrapper = ({ project }: { project: StrictID<ProjectModel
 
   const editProjectFetcher = useSubmitFetcher({
     path: '/?index',
-    action: 'edit-project',
-    provideParams: () => ({})
+    action: 'edit-project'
   })
 
   useOnSubmitEnd({
@@ -47,9 +45,9 @@ export const ProjectCardWrapper = ({ project }: { project: StrictID<ProjectModel
       mode={mode}
       onAlterMode={() => setMode((p) => (p === 'edit' ? 'view' : 'edit'))}
       disabled={deleteProjectFetcher.state !== 'idle'}
-      onDeleteProject={(project_id) => deleteProjectFetcher.submit({ project_id })}
+      onDeleteProject={(project_id) => deleteProjectFetcher.submit({ data: { project_id } })}
       onEditProject={(nameAndDescription) =>
-        editProjectFetcher.submit({ project: { ...project, ...nameAndDescription } })
+        editProjectFetcher.submit({ data: { project: { ...project, ...nameAndDescription } } })
       }
     />
   )
@@ -68,8 +66,7 @@ const LinkToProject = ({ name, projectId }: { name: string; projectId: string })
 export const AddNewProjectWrapper = () => {
   const createProjectFetcher = useSubmitFetcher({
     path: '/?index',
-    action: 'create-project',
-    provideParams: () => ({})
+    action: 'create-project'
   })
 
   const [opened, setOpened] = useState<boolean>(false)
@@ -88,7 +85,7 @@ export const AddNewProjectWrapper = () => {
       disabled={createProjectFetcher.state !== 'idle'}
       opened={opened}
       alterOpened={() => setOpened((p) => !p)}
-      onEditProject={(project) => createProjectFetcher.submit({ project })}
+      onEditProject={(project) => createProjectFetcher.submit({ data: { project } })}
     />
   )
 }
