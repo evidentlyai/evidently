@@ -1,3 +1,4 @@
+from ._context_relevance import ContextRelevance
 from ._custom_descriptors import CustomColumnDescriptor
 from ._custom_descriptors import CustomDescriptor
 from ._text_length import TextLength
@@ -5,14 +6,17 @@ from .generated_descriptors import BeginsWith
 from .generated_descriptors import BERTScore
 from .generated_descriptors import BiasLLMEval
 from .generated_descriptors import BinaryClassificationLLMEval
+from .generated_descriptors import CompletenessLLMEval
 from .generated_descriptors import Contains
 from .generated_descriptors import ContainsLink
 from .generated_descriptors import ContextQualityLLMEval
+from .generated_descriptors import CorrectnessLLMEval
 from .generated_descriptors import DeclineLLMEval
 from .generated_descriptors import DoesNotContain
 from .generated_descriptors import EndsWith
 from .generated_descriptors import ExactMatch
 from .generated_descriptors import ExcludesWords
+from .generated_descriptors import FaithfulnessLLMEval
 from .generated_descriptors import HuggingFace
 from .generated_descriptors import HuggingFaceToxicity
 from .generated_descriptors import IncludesWords
@@ -84,4 +88,8 @@ __all__ = [
     "NegativityLLMEval",
     "PIILLMEval",
     "ToxicityLLMEval",
+    "CompletenessLLMEval",
+    "FaithfulnessLLMEval",
+    "CorrectnessLLMEval",
+    "ContextRelevance",
 ]

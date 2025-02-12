@@ -287,6 +287,9 @@ def get_llm_wrapper(provider: LLMProvider, model: LLMModel, options: Options) ->
 class LLMOptions(Option):
     __provider_name__: ClassVar[str]
 
+    class Config:
+        extra = "forbid"
+
     api_key: Optional[SecretStr] = None
     # rpm_limit: int = 500
     limits: RateLimits = RateLimits()
@@ -308,6 +311,9 @@ class LLMOptions(Option):
 class OpenAIKey(LLMOptions):
     __provider_name__: ClassVar[str] = "openai"
     limits: RateLimits = RateLimits(rpm=500)
+
+
+OpenAIOptions = OpenAIKey  # for consistency
 
 
 @llm_provider("openai", None)
