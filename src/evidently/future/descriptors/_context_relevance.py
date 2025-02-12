@@ -17,6 +17,7 @@ from evidently.future.datasets import DatasetColumn
 from evidently.future.datasets import Descriptor
 from evidently.options.base import Options
 from evidently.utils.llm.wrapper import OpenAIWrapper
+from evidently.utils.llm.wrapper import get_litellm_wrapper
 
 
 def semantic_similarity_scoring(question: DatasetColumn, context: DatasetColumn, options: Options) -> DatasetColumn:
@@ -47,14 +48,23 @@ def semantic_similarity_scoring(question: DatasetColumn, context: DatasetColumn,
     )
 
 
-def openai_scoring(question: DatasetColumn, context: DatasetColumn, options: Options) -> DatasetColumn:
+def llm_scoring(
+    question: DatasetColumn,
+    context: DatasetColumn,
+    options: Options,
+    model: str = "gpt-4o-mini",
+    provider: str = "openai",
+) -> DatasetColumn:
     # unwrap data to rows
     context_column = context.data.name
     no_index_context = context.data.reset_index()
     context_rows = no_index_context.explode([context_column]).reset_index()  #
 
     # do scoring
-    llm_wrapper = OpenAIWrapper("gpt-4o-mini", options)
+    if provider == "openai":
+        llm_wrapper = OpenAIWrapper(model, options)
+    else:
+        llm_wrapper = get_litellm_wrapper(provider, model, options)
     template = BinaryClassificationPromptTemplate(
         criteria="""A “RELEVANT” label means that the CONTEXT provides useful, supportive, or related information to the QUESTION.
 
@@ -133,7 +143,7 @@ class HitAggregation(AggregationMethod[int]):
 
 METHODS = {
     "semantic_similarity": (semantic_similarity_scoring, MeanAggregation),
-    "openai": (openai_scoring, MeanAggregation),
+    "llm": (llm_scoring, MeanAggregation),
 }
 
 
@@ -179,7 +189,7 @@ class ContextRelevance(Descriptor):
         if aggregation_method is None:
             raise ValueError(f"Aggregation method {self.aggregation_method} not found")
 
-        scored_contexts = method(dataset.column(self.input), data, options)
+        scored_contexts = method(dataset.column(self.input), data, options, **(self.method_params or {}))
         aggregation = aggregation_method(**(self.aggregation_method_params or {}))
         aggregated_scores = scored_contexts.data.apply(aggregation.do)
         result = {
