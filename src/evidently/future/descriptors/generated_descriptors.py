@@ -609,3 +609,93 @@ class ToxicityLLMEval(FeatureDescriptor):
             display_name=alias,
         ).feature(column_name)
         super().__init__(feature, alias=alias)
+
+
+class CorrectnessLLMEval(FeatureDescriptor):
+    def __init__(
+        self,
+        column_name: str,
+        target_output: str,
+        provider: str = "openai",
+        model: str = "gpt-4o-mini",
+        additional_columns: Optional[Dict[str, str]] = None,
+        include_category: Optional[bool] = None,
+        include_score: Optional[bool] = None,
+        include_reasoning: Optional[bool] = None,
+        uncertainty: Optional[Uncertainty] = None,
+        alias: Optional[str] = None,
+    ):
+        from evidently.descriptors.llm_judges import CorrectnessLLMEval as CorrectnessLLMEvalV1
+
+        feature = CorrectnessLLMEvalV1(
+            target_output=target_output,
+            provider=provider,
+            model=model,
+            additional_columns=additional_columns,
+            include_category=include_category,
+            include_score=include_score,
+            include_reasoning=include_reasoning,
+            uncertainty=uncertainty,
+            display_name=alias,
+        ).feature(column_name)
+        super().__init__(feature, alias=alias)
+
+
+class FaithfulnessLLMEval(FeatureDescriptor):
+    def __init__(
+        self,
+        column_name: str,
+        context: str,
+        provider: str = "openai",
+        model: str = "gpt-4o-mini",
+        additional_columns: Optional[Dict[str, str]] = None,
+        include_category: Optional[bool] = None,
+        include_score: Optional[bool] = None,
+        include_reasoning: Optional[bool] = None,
+        uncertainty: Optional[Uncertainty] = None,
+        alias: Optional[str] = None,
+    ):
+        from evidently.descriptors.llm_judges import FaithfulnessLLMEval as FaithfulnessLLMEvalV1
+
+        feature = FaithfulnessLLMEvalV1(
+            context=context,
+            provider=provider,
+            model=model,
+            additional_columns=additional_columns,
+            include_category=include_category,
+            include_score=include_score,
+            include_reasoning=include_reasoning,
+            uncertainty=uncertainty,
+            display_name=alias,
+        ).feature(column_name)
+        super().__init__(feature, alias=alias)
+
+
+class CompletenessLLMEval(FeatureDescriptor):
+    def __init__(
+        self,
+        column_name: str,
+        context: str,
+        provider: str = "openai",
+        model: str = "gpt-4o-mini",
+        additional_columns: Optional[Dict[str, str]] = None,
+        include_category: Optional[bool] = None,
+        include_score: Optional[bool] = None,
+        include_reasoning: Optional[bool] = None,
+        uncertainty: Optional[Uncertainty] = None,
+        alias: Optional[str] = None,
+    ):
+        from evidently.descriptors.llm_judges import CompletenessLLMEval as CompletenessLLMEvalV1
+
+        feature = CompletenessLLMEvalV1(
+            context=context,
+            provider=provider,
+            model=model,
+            additional_columns=additional_columns,
+            include_category=include_category,
+            include_score=include_score,
+            include_reasoning=include_reasoning,
+            uncertainty=uncertainty,
+            display_name=alias,
+        ).feature(column_name)
+        super().__init__(feature, alias=alias)

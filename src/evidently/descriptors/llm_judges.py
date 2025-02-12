@@ -238,20 +238,120 @@ class CorrectnessLLMEval(BinaryClassificationLLMEval):
     provider = "openai"
     model = "gpt-4o-mini"
     template: ClassVar = BinaryClassificationPromptTemplate(
-        criteria="""An OUTPUT is correct when it is the same as the REFERENCE in all facts and details, even if worded differently.
-        The OUTPUT is incorrect if it contradicts the REFERENCE, adds additional claims, omits or changes details.
-         REFERENCE:
-        =====
+        criteria="""An OUTPUT is correct if:
+        - It conveys the same facts and details as the REFERENCE, even if worded differently.
+        - It preserves the original meaning without introducing inaccuracies or omissions.
+
+        An OUTPUT is incorrect if:
+        - It contradicts the REFERENCE.
+        - It introduces additional claims that are not present in the REFERENCE.
+        - It omits or alters key details in a way that changes the original meaning.
+
+        Here is the REFERENCE:
+        -----reference_starts-----
         {target_output}
-        =====""",
+        -----reference_finishes-----""",
         target_category="INCORRECT",
-        non_target_category="OK",
+        non_target_category="CORRECT",
         uncertainty="unknown",
         include_reasoning=True,
         pre_messages=[
             (
                 "system",
-                "You are an impartial expert evaluator. You will be given an OUTPUT and REFERENCE.",
+                """You are an impartial expert evaluator.
+                You will be given an OUTPUT and REFERENCE.
+                Your job is to evaluate correctness of the OUTPUT.""",
             )
         ],
     )
+
+    def get_input_columns(self, column_name: str) -> Dict[str, str]:
+        input_columns = super().get_input_columns(column_name)
+        input_columns.update({self.target_output: "target_output"})
+        return input_columns
+
+
+class FaithfulnessLLMEval(BinaryClassificationLLMEval):
+    class Config:
+        type_alias = "evidently:descriptor:FaithfulnessLLMEval"
+
+    name: ClassVar = "Faithfulness"
+    context: str
+    provider = "openai"
+    model = "gpt-4o-mini"
+    template: ClassVar = BinaryClassificationPromptTemplate(
+        criteria="""An unfaithful RESPONSE is any RESPONSE that:
+        - Contradicts the information provided in the SOURCE.
+        - Adds new information that is not present in the SOURCE.
+        - Provides a RESPONSE that is not grounded in the SOURCE, unless it is a refusal to answer or a clarifying question.
+
+        A faithful RESPONSE is a RESPONSE that:
+        - Accurately uses information from the SOURCE, even if only partially.
+        - Declines to answer when the SOURCE does not provide enough information.
+        - Asks a clarifying question when needed instead of making unsupported assumptions.
+
+        Here is a SOURCE:
+        -----source_starts-----
+        {context}
+        -----source_finishes-----""",
+        target_category="UNFAITHFUL",
+        non_target_category="FAITHFUL",
+        uncertainty="unknown",
+        include_reasoning=True,
+        pre_messages=[
+            (
+                "system",
+                """You are an impartial expert evaluator.
+                You will be given a text.
+                Your job is to evaluate faithfulness of responses by comparing them to the trusted information source.""",
+            )
+        ],
+    )
+
+    def get_input_columns(self, column_name: str) -> Dict[str, str]:
+        input_columns = super().get_input_columns(column_name)
+        input_columns.update({self.context: "context"})
+        return input_columns
+
+
+class CompletenessLLMEval(BinaryClassificationLLMEval):
+    class Config:
+        type_alias = "evidently:descriptor:CompletenessLLMEval"
+
+    name: ClassVar = "Completeness"
+    context: str
+    provider = "openai"
+    model = "gpt-4o-mini"
+    template: ClassVar = BinaryClassificationPromptTemplate(
+        criteria="""An OUTPUT is complete if:
+        - It includes all relevant facts and details from the SOURCE.
+        - It does not omit key information necessary for a full understanding of the response.
+        - It preserves the structure and intent of the SOURCE while ensuring all critical elements are covered.
+
+        An OUTPUT is incomplete if:
+        - It is missing key facts or details present in the SOURCE.
+        - It omits context that is necessary for a full and accurate response.
+        - It shortens or summarizes the SOURCE in a way that leads to loss of essential information.
+
+        Here is the SOURCE:
+        -----source_starts-----
+        {context}
+        -----source_finishes-----""",
+        target_category="IMCOMPLETE",
+        non_target_category="COMPLETE",
+        uncertainty="unknown",
+        include_reasoning=True,
+        pre_messages=[
+            (
+                "system",
+                """You are an impartial expert evaluator.
+                You will be given a text.
+                Your job is to evaluate completeness of responses.""",
+            )
+        ],
+    )
+
+    def get_input_columns(self, column_name: str) -> Dict[str, str]:
+        input_columns = super().get_input_columns(column_name)
+        input_columns.update({self.context: "context"})
+        return input_columns
