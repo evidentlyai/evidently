@@ -840,3 +840,5 @@ register_type_alias(MetricResult, "evidently.future.backport.CountValueV1", "evi
 register_type_alias(
     MetricResult, "evidently.future.backport.PresetMetricValueV1", "evidently:metric_result:PresetMetricValueV1"
 )
+
+register_type_alias(MetricResult, "evidently.future.backport.MeanStdValueV1", "evidently:metric_result:MeanStdValueV1")
