@@ -164,7 +164,11 @@ class ContextRelevance(Descriptor):
         self.input = input
         self.context = contexts
 
-    def generate_data(self, dataset: Dataset) -> Union[DatasetColumn, Dict[DisplayName, DatasetColumn]]:
+    def generate_data(
+        self,
+        dataset: Dataset,
+        options: Options,
+    ) -> Union[DatasetColumn, Dict[DisplayName, DatasetColumn]]:
         data = dataset.column(self.context)
 
         (method, aggregation_method) = METHODS.get(self.method)
@@ -175,7 +179,7 @@ class ContextRelevance(Descriptor):
         if aggregation_method is None:
             raise ValueError(f"Aggregation method {self.aggregation_method} not found")
 
-        scored_contexts = method(dataset.column(self.input), data, Options())
+        scored_contexts = method(dataset.column(self.input), data, options)
         aggregation = aggregation_method(**(self.aggregation_method_params or {}))
         aggregated_scores = scored_contexts.data.apply(aggregation.do)
         result = {
