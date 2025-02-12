@@ -65,6 +65,8 @@ def llm_scoring(
         llm_wrapper = OpenAIWrapper(model, options)
     else:
         llm_wrapper = get_litellm_wrapper(provider, model, options)
+    if llm_wrapper is None:
+        raise ValueError(f"LLM Wrapper for found for {provider}")
     template = BinaryClassificationPromptTemplate(
         criteria="""A “RELEVANT” label means that the CONTEXT provides useful, supportive, or related information to the QUESTION.
 
