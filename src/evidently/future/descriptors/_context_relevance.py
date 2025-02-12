@@ -18,7 +18,7 @@ from evidently.future.datasets import Descriptor
 from evidently.options.base import Options
 from evidently.utils.llm.wrapper import LLMWrapper
 from evidently.utils.llm.wrapper import OpenAIWrapper
-from evidently.utils.llm.wrapper import get_litellm_wrapper
+from evidently.utils.llm.wrapper import get_llm_wrapper
 
 
 def semantic_similarity_scoring(question: DatasetColumn, context: DatasetColumn, options: Options) -> DatasetColumn:
@@ -66,7 +66,7 @@ def llm_scoring(
     if provider == "openai":
         llm_wrapper = OpenAIWrapper(model, options)
     else:
-        llm_wrapper = get_litellm_wrapper(provider, model, options)
+        llm_wrapper = get_llm_wrapper(provider, model, options)
     if llm_wrapper is None:
         raise ValueError(f"LLM Wrapper for found for {provider}")
     template = BinaryClassificationPromptTemplate(
