@@ -1,68 +1,28 @@
-import { Box, Grid, IconButton, Link, Tab, Tabs, Typography } from '@mui/material'
-
-import ContentCopyIcon from '@mui/icons-material/ContentCopy'
+import { Link, Tab, Tabs } from '@mui/material'
 import { Outlet, Link as RouterLink, useLoaderData, useMatches } from 'react-router-dom'
-import type { ProjectModel } from '~/api/types'
-import type { StrictID } from '~/api/types/utils'
+
 import type { crumbFunction } from '~/components/BreadCrumbs'
+import { ProjectLayoutTemplate } from '~/components/ProjectLayout'
 import type { LoaderData } from './data'
 
 export const handle: { crumb: crumbFunction<LoaderData> } = {
   crumb: (data, { pathname }) => ({ to: pathname, linkText: data?.project?.name || 'undefined' })
 }
 
-const PROJECT_TABS = [
-  { id: 'dashboard', link: '.', label: 'Dashboard' },
-  { id: 'reports', link: 'reports', label: 'Reports' },
-  { id: 'test_suites', link: 'test-suites', label: 'Test suites' }
-]
-
 export const Component = () => {
   const { project } = useLoaderData() as LoaderData
 
-  return <ProjectTemplate project={project} tabsConfig={PROJECT_TABS} />
-}
-
-export const ProjectTemplate = ({
-  tabsConfig,
-  project
-}: {
-  tabsConfig: { id: string; link: string; label?: string }[]
-  project: StrictID<ProjectModel>
-}) => {
   return (
-    <Box mt={2}>
-      <ProjectInfo project={project} />
-
-      {tabsConfig.length > 0 && <ProjectTabs tabsConfig={tabsConfig} />}
-
-      <Outlet />
-    </Box>
+    <ProjectLayoutTemplate project={project}>
+      <>
+        <ProjectTabs tabsConfig={PROJECT_TABS} />
+        <Outlet />
+      </>
+    </ProjectLayoutTemplate>
   )
 }
 
-const ProjectInfo = ({ project }: { project: StrictID<ProjectModel> }) => {
-  return (
-    <Grid container spacing={2} direction='row' justifyContent='flex-start' alignItems='flex-end'>
-      <Grid item xs={12}>
-        <Typography sx={{ color: '#aaa' }} variant='body2'>
-          {`project id: ${project.id}`}
-          <IconButton
-            size='small'
-            style={{ marginLeft: 10 }}
-            onClick={() => {
-              navigator.clipboard.writeText(project.id)
-            }}
-          >
-            <ContentCopyIcon fontSize='small' />
-          </IconButton>
-        </Typography>
-      </Grid>
-    </Grid>
-  )
-}
-
-export const ProjectTabs = ({
+const ProjectTabs = ({
   tabsConfig = []
 }: { tabsConfig?: { id: string; link: string; label?: string }[] }) => {
   const matches = useMatches()
@@ -79,6 +39,8 @@ export const ProjectTabs = ({
   )
 }
 
-export const ProjectWithoutTabs = ({ project }: { project: StrictID<ProjectModel> }) => (
-  <ProjectTemplate project={project} tabsConfig={[]} />
-)
+const PROJECT_TABS = [
+  { id: 'dashboard', link: '.', label: 'Dashboard' },
+  { id: 'reports', link: 'reports', label: 'Reports' },
+  { id: 'test_suites', link: 'test-suites', label: 'Test suites' }
+]
