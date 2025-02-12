@@ -20,6 +20,7 @@ from evidently.future.datasets import Dataset
 from evidently.future.metric_types import BoundTest
 from evidently.future.metric_types import ByLabelValue
 from evidently.future.metric_types import CountValue
+from evidently.future.metric_types import MeanStdValue
 from evidently.future.metric_types import Metric as MetricV2
 from evidently.future.metric_types import MetricCalculationBase
 from evidently.future.metric_types import MetricResult as MetricResultV2
@@ -96,6 +97,14 @@ class CountValueV1(MetricResultV2Adapter):
     share: float
 
 
+class MeanStdValueV1(MetricResultV2Adapter):
+    class Config:
+        type_alias = "evidently:metric_result:MeanStdValueV1"
+
+    mean: float
+    std: float
+
+
 def _create_metric_result_widget(metric_result: MetricResultV2, ignore_widget: bool) -> List[dict]:
     if ignore_widget:
         return []
@@ -119,6 +128,12 @@ def metric_result_v2_to_v1(metric_result: MetricResultV2, ignore_widget: bool = 
             widget=_create_metric_result_widget(metric_result, ignore_widget),
             count=metric_result.count,
             share=metric_result.share,
+        )
+    if isinstance(metric_result, MeanStdValue):
+        return MeanStdValueV1(
+            widget=_create_metric_result_widget(metric_result, ignore_widget),
+            mean=metric_result.mean,
+            std=metric_result.std,
         )
     raise NotImplementedError(metric_result.__class__.__name__)
 
