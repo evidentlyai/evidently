@@ -3,6 +3,9 @@ from typing import Dict
 from typing import Generic
 from typing import List
 from typing import Optional
+from typing import Protocol
+from typing import Tuple
+from typing import Type
 from typing import TypeVar
 from typing import Union
 
@@ -145,7 +148,16 @@ class HitAggregation(AggregationMethod[int]):
         return 1 if any([x > self.threshold for x in scores]) else 0
 
 
-METHODS = {
+class ScoringMethod(Protocol):
+    def __call__(
+        self,
+        question: DatasetColumn,
+        context: DatasetColumn,
+        options: Options,
+    ) -> DatasetColumn: ...
+
+
+METHODS: Dict[str, Tuple[ScoringMethod, Type[MeanAggregation]]] = {
     "semantic_similarity": (semantic_similarity_scoring, MeanAggregation),
     "llm": (llm_scoring, MeanAggregation),
 }
