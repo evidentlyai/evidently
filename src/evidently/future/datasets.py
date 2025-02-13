@@ -388,8 +388,7 @@ class Dataset:
             self.add_descriptor(descriptor, options)
 
 
-INT_COLUMN_CAT_THRESHOLD = 0.1  # maximum unique/total ratio to be considered cat
-TEXT_COLUMN_CAT_THRESHOLD = 0.1  # maximum unique/total ratio to be considered cat
+INT_COLUMN_CAT_THRESHOLD = 10  # maximum unique to be considered cat
 
 
 class PandasDataset(Dataset):
@@ -424,25 +423,16 @@ class PandasDataset(Dataset):
         return PandasDataset(self._data[self._data[column_name] == label], self._data_definition)
 
     def _generate_data_definition(self, data: pd.DataFrame) -> DataDefinition:
-        numerical_cols = data.select_dtypes(include=["number"]).columns.tolist()
-        categorical_cols = data.select_dtypes(include=["category", "bool"]).columns.tolist()
-        text_cols = data.select_dtypes(include=["string", "object"]).columns.tolist()
         datetime_columns = data.select_dtypes(include=["datetime64", "timedelta64"]).columns.tolist()
         timestamp_column = next(iter(datetime_columns), None)
-        total = len(data)
+        categorical_columns = list(data.select_dtypes(include=["category", "bool"]).columns.tolist())
+        text_columns = data.select_dtypes(include=["string", "object"]).columns.tolist()
         numerical_columns = []
-        categorical_columns = list(categorical_cols)
-        text_columns = []
-        for col in numerical_cols:
-            if pd.api.types.is_integer_dtype(data[col]) and data[col].nunique() / total < INT_COLUMN_CAT_THRESHOLD:
+        for col in data.select_dtypes(include=["number"]).columns.tolist():
+            if pd.api.types.is_integer_dtype(data[col]) and data[col].nunique() <= INT_COLUMN_CAT_THRESHOLD:
                 categorical_columns.append(col)
             else:
                 numerical_columns.append(col)
-        for col in text_cols:
-            if pd.api.types.is_string_dtype(data[col]) and data[col].nunique() / total < TEXT_COLUMN_CAT_THRESHOLD:
-                categorical_columns.append(col)
-            else:
-                text_columns.append(col)
 
         return DataDefinition(
             id_column=None,
