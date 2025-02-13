@@ -198,12 +198,30 @@ class QuantileValueCalculation(StatisticsCalculation[QuantileValue]):
         return f"Quantile {self.metric.quantile} of {self.column}"
 
 
+CategoryCountLabel = Union[bool, Label]
+
+
 class CategoryCount(CountMetric):
     class Config:
         smart_union = True
 
     column: str
-    category: Union[bool, Label]
+
+    category: Optional[CategoryCountLabel] = None
+    categories: List[CategoryCountLabel] = []
+
+    def __init__(
+        self,
+        column: str,
+        categories: Optional[List[CategoryCountLabel]] = None,
+        category: Optional[CategoryCountLabel] = None,
+    ):
+        categories = categories or []
+        if category is not None:
+            categories.append(category)
+        if len(categories) == 0:
+            raise ValueError("Please provide at least one category")
+        super().__init__(column=column, categories=categories)
 
     def _default_tests_with_reference(self, context: Context) -> List[BoundTest]:
         return [
@@ -225,7 +243,7 @@ class CategoryCountCalculation(CountCalculation[CategoryCount]):
     def _calculate_value(self, dataset: Dataset):
         column = dataset.column(self.metric.column)
         try:
-            value = column.data.value_counts().loc[self.metric.category]
+            value = column.data.value_counts().loc[self.metric.categories].sum()
         except KeyError:
             value = 0
         total = column.data.count()
