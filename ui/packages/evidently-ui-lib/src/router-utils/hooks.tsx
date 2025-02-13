@@ -129,8 +129,8 @@ export const useCrumbsFromHandle = () => {
 }
 
 export const createUseMatchRouter = <M extends MatchAny>() => {
-  const hook = <K extends M['path']>({ path }: { path: K }) => {
-    return Boolean(useMatch({ path, end: false }))
+  const hook = <K extends M['path']>({ path, end = false }: { path: K; end?: boolean }) => {
+    return Boolean(useMatch({ path, end }))
   }
 
   return hook
