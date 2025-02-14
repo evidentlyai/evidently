@@ -57,8 +57,13 @@ export const useCurrentRouteParams = <
     }, navOpts)
   }
 
-  return { loaderData, params, query, setQuery }
+  return { loaderData, params, searchParams, query, setQuery }
 }
+
+export type RouteQueryParams = Pick<
+  ReturnType<typeof useCurrentRouteParams<MatchWithLoader>>,
+  'query' | 'setQuery'
+>
 
 export const useOnSubmitEnd = ({
   state,
