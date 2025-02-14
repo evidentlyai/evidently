@@ -19,8 +19,6 @@ import {
   Typography
 } from '@mui/material'
 
-import { useSearchParams } from 'react-router-dom'
-
 import { useLocalStorage } from '@uidotdev/usehooks'
 
 import { Delete as DeleteIcon } from '@mui/icons-material'
@@ -53,6 +51,7 @@ const metadataToOneString: (metadata: MetadataModel) => string = (metadata: Meta
     .join(' ')
 
 export const SnapshotsListTemplate = ({
+  query,
   type,
   slots,
   snapshots,
@@ -63,6 +62,7 @@ export const SnapshotsListTemplate = ({
   onDeleteSnapshot,
   ActionsWrapper = ({ children }) => <>{children}</>
 }: {
+  query: Partial<Record<string, string>>
   projectId: string
   disabled?: boolean
   snapshots: ReportModel[] | TestSuiteModel[]
@@ -79,11 +79,10 @@ export const SnapshotsListTemplate = ({
   onReloadSnapshots: () => void
   onDeleteSnapshot: ({ snapshotId }: { snapshotId: string }) => void
 }) => {
-  const [searchParams] = useSearchParams()
   const [sortByTimestamp, setSortByTimestamp] = useState<undefined | 'desc' | 'asc'>('desc')
   const [isCollapsedJson, setIsCollapsedJson] = useLocalStorage('show-full-json-metadata', false)
-  const [selectedTags, setTags] = useState(() => searchParams.get('tags')?.split(',') || [])
-  const [metadataQuery, setMetadataQuery] = useState(() => searchParams.get('metadata-query') || '')
+  const [selectedTags, setTags] = useState(() => query.tags?.split(',') || [])
+  const [metadataQuery, setMetadataQuery] = useState(() => query['metadata-query'] || '')
 
   useUpdateQueryStringValueWithoutNavigation('tags', selectedTags.join(','))
   useUpdateQueryStringValueWithoutNavigation('metadata-query', String(metadataQuery))

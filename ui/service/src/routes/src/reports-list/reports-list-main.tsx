@@ -32,7 +32,7 @@ export const loadData = ({ params }: loadDataArgs) => {
 export const actions = getSnapshotsActions({ api: clientAPI })
 
 export const Component = () => {
-  const { loaderData: reports, params } = useCurrentRouteParams<CurrentRoute>()
+  const { loaderData: reports, params, query } = useCurrentRouteParams<CurrentRoute>()
 
   const { projectId } = params
 
@@ -51,6 +51,7 @@ export const Component = () => {
   return (
     <>
       <SnapshotsListTemplate
+        query={query}
         disabled={disabled}
         projectId={params.projectId}
         snapshots={reports}
