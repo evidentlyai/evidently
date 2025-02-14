@@ -6,6 +6,7 @@ from typing import Optional
 
 from evidently.core import ColumnType
 from evidently.future.container import MetricContainer
+from evidently.future.metric_types import ByLabelCountValue
 from evidently.future.metric_types import ByLabelValue
 from evidently.future.metric_types import Metric
 from evidently.future.metric_types import MetricId
@@ -183,9 +184,9 @@ class ValueStats(MetricContainer):
         return [convert(context.get_metric_result(metric))]
 
     def _most_common_value(self, unique_value: MetricResult):
-        if not isinstance(unique_value, ByLabelValue):
+        if not isinstance(unique_value, ByLabelCountValue):
             raise ValueError("Most common value must be of type 'ByLabelValue'")
-        first = sorted(unique_value.values.items(), key=lambda x: x[1], reverse=True)[0]
+        first = sorted(unique_value.counts.items(), key=lambda x: x[1], reverse=True)[0]
         return f"Label: {first[0]} count: {first[1]}"
 
     def _label_count(
