@@ -12,6 +12,7 @@ from evidently.features.generated_features import FeatureDescriptor
 from evidently.metric_preset.metric_preset import AnyMetric
 from evidently.metric_preset.metric_preset import MetricPreset
 from evidently.metrics import ColumnSummaryMetric
+from evidently.metrics.bleu_metric import BLEUMetric
 from evidently.utils.data_preprocessing import DataDefinition
 
 
@@ -37,4 +38,4 @@ class TextEvals(MetricPreset):
             OOV(),
             NonLetterCharacterPercentage(),
         ]
-        return [ColumnSummaryMetric(desc.on(self.column_name)) for desc in descriptors]
+        return [ColumnSummaryMetric(desc.on(self.column_name)) for desc in descriptors] + [BLEUMetric(reference_column="reference", hypothesis_column=self.column_name)]
