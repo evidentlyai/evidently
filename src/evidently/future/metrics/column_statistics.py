@@ -216,6 +216,8 @@ class CategoryCount(CountMetric):
         column: str,
         categories: Optional[List[CategoryCountLabel]] = None,
         category: Optional[CategoryCountLabel] = None,
+        tests: Optional[List[MetricTest]] = None,
+        share_tests: Optional[List[MetricTest]] = None,
     ):
         categories = categories or []
         if category is not None:
@@ -225,7 +227,7 @@ class CategoryCount(CountMetric):
         if len(categories) != len(set(categories)):
             duplicated = [k for k, v in Counter(categories).items() if v > 1]
             raise ValueError(f"Duplicate categories: [{', '.join(str(c) for c in duplicated)}]")
-        super().__init__(column=column, categories=categories)
+        super().__init__(column=column, categories=categories, tests=tests, share_tests=share_tests)
 
     def _default_tests_with_reference(self, context: Context) -> List[BoundTest]:
         return [
