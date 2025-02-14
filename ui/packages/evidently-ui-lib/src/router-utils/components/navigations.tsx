@@ -9,6 +9,7 @@ import {
   Typography,
   type TypographyProps
 } from '@mui/material'
+import type { HTMLAttributeAnchorTarget } from 'react'
 import { Navigate, type NavigateProps, Link as ReactRouterLink } from 'react-router-dom'
 import { makeRouteUrl } from 'router-utils/router-builder'
 import type { GetLinkParams, MatchAny } from 'router-utils/types'
@@ -46,11 +47,12 @@ const RouterLinkTemplate = (props: RouterLinkTemplateComponentProps) => {
 type RLB = {
   to: string
   title?: string
+  target?: HTMLAttributeAnchorTarget | undefined
 } & ButtonProps
 
-const RLBComponent = ({ to, title, ...buttonProps }: RLB) => {
+const RLBComponent = ({ to, title, target, ...buttonProps }: RLB) => {
   return (
-    <Button component={ReactRouterLink} to={to} {...buttonProps}>
+    <Button component={ReactRouterLink} to={to} target={target} {...buttonProps}>
       {title}
     </Button>
   )

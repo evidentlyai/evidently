@@ -1,45 +1,10 @@
 import { Close as CloseIcon } from '@mui/icons-material'
-import { Box, Button, IconButton, Link, Paper, Snackbar, Stack, Typography } from '@mui/material'
+import { Box, IconButton, Paper, Snackbar, Typography } from '@mui/material'
 import { useLocalStorage } from '@uidotdev/usehooks'
 import type { PlotMouseEvent } from 'plotly.js'
 import { useEffect, useState } from 'react'
-import { Link as RLink } from 'react-router-dom'
 
 export type PlotMouseEventType = PlotMouseEvent
-
-export const GoToSnapshotByPoint = ({ event }: { event: PlotMouseEvent }) => {
-  const p = event.points[0]
-  const customdata = p.customdata as Partial<
-    Record<'test_fingerprint' | 'metric_fingerprint' | 'snapshot_id', string>
-  >
-
-  if (!customdata) {
-    return <></>
-  }
-
-  const snapshot_type = 'metric_fingerprint' in customdata ? 'report' : 'test-suite'
-
-  return (
-    <>
-      <Box
-        sx={{
-          position: 'absolute',
-          bottom: 0,
-          right: 0,
-          background: (t) => t.palette.background.default,
-          p: 1,
-          borderRadius: '10px'
-        }}
-      >
-        <Stack direction={'row'} alignItems={'center'} gap={2}>
-          <Link component={RLink} to={`${snapshot_type}s/${customdata.snapshot_id}`}>
-            <Button variant='outlined'>View {snapshot_type.split('-').join(' ')}</Button>
-          </Link>
-        </Stack>
-      </Box>
-    </>
-  )
-}
 
 export const HintOnHoverToPlot = () => {
   const [isSawHint, setIsSawHint] = useLocalStorage('is-user-saw-click-on-datapoints-hint', false)

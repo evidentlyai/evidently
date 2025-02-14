@@ -16,8 +16,14 @@ import {
 } from 'evidently-ui-lib/routes-components/dashboard/data'
 
 import { DashboardWidgets } from 'evidently-ui-lib/components/DashboardWidgets'
-import { GoToSnapshotByPoint, HintOnHoverToPlot } from 'evidently-ui-lib/components/OnClickedPoint'
+import {
+  HintOnHoverToPlot,
+  type PlotMouseEventType
+} from 'evidently-ui-lib/components/OnClickedPoint'
+import { Box, Stack } from 'evidently-ui-lib/shared-dependencies/mui-material'
+import { useParams } from 'evidently-ui-lib/shared-dependencies/react-router-dom'
 import { clientAPI } from '~/api'
+import { RouterLink } from '~/routes/components'
 
 ///////////////////
 //    ROUTE
@@ -72,5 +78,47 @@ export const Component = () => {
       OnClickedPointComponent={GoToSnapshotByPoint}
       OnHoveredPlotComponent={HintOnHoverToPlot}
     />
+  )
+}
+
+const GoToSnapshotByPoint = ({ event }: { event: PlotMouseEventType }) => {
+  const p = event.points[0]
+  const customdata = p.customdata as Partial<
+    Record<'test_fingerprint' | 'metric_fingerprint' | 'snapshot_id', string>
+  >
+
+  const { projectId } = useParams() as Params
+
+  if (!customdata || !customdata.snapshot_id) {
+    return <></>
+  }
+
+  const snapshot_type = 'metric_fingerprint' in customdata ? 'report' : 'test-suite'
+
+  const linkToSnapshot = `/projects/:projectId/${snapshot_type}s/:snapshotId` as const
+
+  return (
+    <>
+      <Box
+        sx={{
+          position: 'absolute',
+          bottom: 0,
+          right: 0,
+          p: 1,
+          background: (t) => t.palette.background.default,
+          borderRadius: '10px'
+        }}
+      >
+        <Stack direction={'row'} alignItems={'center'} gap={2}>
+          <RouterLink
+            type='button'
+            to={linkToSnapshot}
+            title={`View ${snapshot_type.split('-').join(' ')}`}
+            variant='outlined'
+            paramsToReplace={{ projectId, snapshotId: customdata.snapshot_id }}
+          />
+        </Stack>
+      </Box>
+    </>
   )
 }
