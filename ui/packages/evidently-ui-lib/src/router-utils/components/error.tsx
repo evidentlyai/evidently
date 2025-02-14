@@ -122,7 +122,7 @@ export const FetchersErrorSnackbar = () => {
 
   const d = isAllFetchersIdle && fetchers?.[lastActiveFetcherIndex]?.data
 
-  const data = d && 'error' in d ? d : undefined
+  const data = d && typeof d === 'object' && 'error' in d ? d : undefined
 
   return <ErrorAlertSnackBar data={data} />
 }
