@@ -112,14 +112,6 @@ def llm_scoring(
     )
 
 
-def mean(scores: List[float]) -> float:
-    return float(np.average(scores))
-
-
-def hit(threshold: float, scores: List[float]) -> float:
-    return any([x > threshold for x in scores])
-
-
 T = TypeVar("T")
 
 
@@ -145,7 +137,7 @@ class HitAggregation(AggregationMethod[int]):
         self.threshold = threshold
 
     def do(self, scores: List[float]) -> int:
-        return 1 if any([x > self.threshold for x in scores]) else 0
+        return 1 if any([x >= self.threshold for x in scores]) else 0
 
 
 class ScoringMethod(Protocol):
