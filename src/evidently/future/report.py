@@ -268,10 +268,8 @@ class Snapshot:
     def report(self) -> "Report":
         return self._report
 
-    def run(self, current_data: PossibleDatasetTypes, reference_data: Optional[PossibleDatasetTypes] = None):
-        current_dataset = Dataset.from_any(current_data)
-        reference_dataset = Dataset.from_any(reference_data) if reference_data is not None else None
-        self.context.init_dataset(current_dataset, reference_dataset)
+    def run(self, current_data: Dataset, reference_data: Optional[Dataset]):
+        self.context.init_dataset(current_data, reference_data)
         metric_results = {}
         widgets: List[BaseWidgetInfo] = []
         snapshot_items: List[SnapshotItem] = []
@@ -397,13 +395,15 @@ class Report:
 
     def run(
         self,
-        current_data: Dataset,
-        reference_data: Optional[Dataset],
+        current_data: PossibleDatasetTypes,
+        reference_data: Optional[PossibleDatasetTypes] = None,
         timestamp: Optional[datetime] = None,
     ) -> Snapshot:
         self._timestamp = timestamp or datetime.now()
+        current_dataset = Dataset.from_any(current_data)
+        reference_dataset = Dataset.from_any(reference_data) if reference_data else None
         snapshot = Snapshot(self)
-        snapshot.run(current_data, reference_data)
+        snapshot.run(current_dataset, reference_dataset)
         return snapshot
 
     def items(self) -> Sequence[Union[Metric, MetricPreset, MetricContainer]]:

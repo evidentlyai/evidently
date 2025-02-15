@@ -21,6 +21,7 @@ from evidently.future.datasets import infer_column_type
         (pd.Series([datetime.datetime.now(), datetime.datetime.now()]), ColumnType.Datetime),
         (pd.Series(["a", "b", "c", "d", "e", "f", "g"]), ColumnType.Text),
         (pd.Categorical(["a", "b", "c", "d", "e", "f", "g"]), ColumnType.Categorical),
+        (pd.Series(pd.date_range("2025-01-01", periods=11, freq="D").values), ColumnType.Datetime),
     ],
 )
 def test_infer_column_type(data: pd.Series, expected: ColumnType):
@@ -37,6 +38,7 @@ def test_data_definition():
             cat_2=pd.Series(["a", "b", "c", "d", "e", "a", "b", "c", "d", "e", "a"]),
             cat_3=pd.Series(random.choices([True, False], k=11)),
             datetime=pd.Series([datetime.datetime.now()] * 11),
+            datetime_2=pd.date_range("2025-01-01", periods=11, freq="D"),
             text_1=pd.Series(["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k"]),
             text_2=pd.Series(["a", "b", "c", "d", "e", "a", "b", "c", "d", "e", "f"]),
         )
@@ -48,6 +50,7 @@ def test_data_definition():
     assert dataset.data_definition.get_column_type("cat_1") == ColumnType.Categorical
     assert dataset.data_definition.get_column_type("cat_2") == ColumnType.Categorical
     assert dataset.data_definition.get_column_type("cat_3") == ColumnType.Categorical
-    assert dataset.data_definition.get_column_type("datetime") == ColumnType.Date
+    assert dataset.data_definition.get_column_type("datetime") == ColumnType.Datetime
+    assert dataset.data_definition.get_column_type("datetime_2") == ColumnType.Datetime
     assert dataset.data_definition.get_column_type("text_1") == ColumnType.Text
     assert dataset.data_definition.get_column_type("text_2") == ColumnType.Text

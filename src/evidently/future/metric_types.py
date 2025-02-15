@@ -94,6 +94,8 @@ class MetricResult:
         config_items = []
         type = None
         for field, value in config.items():
+            if field.endswith("tests"):
+                continue
             if field == "type":
                 type = value.split(":")[-1]
                 continue
@@ -686,7 +688,7 @@ class MetricTest(AutoAliasMixin, EvidentlyBaseModel):
         result: MetricTestResult = self.to_test()(context, metric, value)
         if result.status == TestStatus.FAIL and not self.is_critical:
             result.status = TestStatus.WARNING
-        result.description = f"{value.explicit_metric_id()}: {result.description}"
+        result.description = f"{value.metric.display_name()}: {result.description}"
         return result
 
     def bind_single(self, fingerprint: Fingerprint) -> "BoundTest":
