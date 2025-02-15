@@ -1,4 +1,5 @@
 import abc
+from collections import Counter
 from typing import Dict
 from typing import Generic
 from typing import List
@@ -198,12 +199,35 @@ class QuantileValueCalculation(StatisticsCalculation[QuantileValue]):
         return f"Quantile {self.metric.quantile} of {self.column}"
 
 
+CategoryCountLabel = Union[bool, Label]
+
+
 class CategoryCount(CountMetric):
     class Config:
         smart_union = True
 
     column: str
-    category: Union[bool, Label]
+
+    category: Optional[CategoryCountLabel] = None
+    categories: List[CategoryCountLabel] = []
+
+    def __init__(
+        self,
+        column: str,
+        categories: Optional[List[CategoryCountLabel]] = None,
+        category: Optional[CategoryCountLabel] = None,
+        tests: Optional[List[MetricTest]] = None,
+        share_tests: Optional[List[MetricTest]] = None,
+    ):
+        categories = categories or []
+        if category is not None:
+            categories.append(category)
+        if len(categories) == 0:
+            raise ValueError("Please provide at least one category")
+        if len(categories) != len(set(categories)):
+            duplicated = [k for k, v in Counter(categories).items() if v > 1]
+            raise ValueError(f"Duplicate categories: [{', '.join(str(c) for c in duplicated)}]")
+        super().__init__(column=column, categories=categories, tests=tests, share_tests=share_tests)
 
     def _default_tests_with_reference(self, context: Context) -> List[BoundTest]:
         return [
@@ -220,12 +244,18 @@ class CategoryCountCalculation(CountCalculation[CategoryCount]):
         )
 
     def display_name(self) -> str:
-        return f"Column '{self.metric.column}' category '{self.metric.category}'"
+        return f"Column '{self.metric.column}' categories '{', '.join(str(c) for c in self.metric.categories)}'"
 
     def _calculate_value(self, dataset: Dataset):
         column = dataset.column(self.metric.column)
         try:
-            value = column.data.value_counts().loc[self.metric.category]
+            counts = column.data.value_counts()
+            if len(counts) == len(self.metric.categories):
+                value = len(column.data)
+            elif all(isinstance(c, bool) for c in self.metric.categories):
+                value = counts[self.metric.categories[0]]  # only one boolean label is possible here
+            else:
+                value = counts.loc[self.metric.categories].sum()  # type: ignore[index]
         except KeyError:
             value = 0
         total = column.data.count()

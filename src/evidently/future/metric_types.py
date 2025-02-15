@@ -449,8 +449,6 @@ SingleValueTest = MetricTestProto[SingleValue]
 
 MetricId = str
 
-ByLabelValueTests = Dict[Label, List[SingleValueTest]]
-
 
 def metric_tests_widget(tests: List[MetricTestResult]) -> BaseWidgetInfo:
     return BaseWidgetInfo(
@@ -826,8 +824,11 @@ class SingleValueBoundTest(BoundTest[SingleValue]):
         return self.test.run(context, calculation, metric_result)
 
 
+SingleValueMetricTests = Optional[List[MetricTest]]
+
+
 class SingleValueMetric(Metric[TSingleValueMetricCalculation]):
-    tests: Optional[List[MetricTest]] = None
+    tests: SingleValueMetricTests = None
 
     def get_bound_tests(self, context: "Context") -> List[BoundTest]:
         if self.tests is None and context.configuration.include_tests:
@@ -856,8 +857,11 @@ class ByLabelBoundTest(BoundTest[ByLabelValue]):
         return self.test.run(context, calculation, value)
 
 
+ByLabelMetricTests = Optional[Dict[Label, List[MetricTest]]]
+
+
 class ByLabelMetric(Metric["ByLabelCalculation"]):
-    tests: Optional[Dict[Label, List[MetricTest]]] = None
+    tests: ByLabelMetricTests = None
 
     def get_bound_tests(self, context: "Context") -> List[BoundTest]:
         if self.tests is None and context.configuration.include_tests:
@@ -943,8 +947,8 @@ class CountBoundTest(BoundTest[CountValue]):
 
 
 class CountMetric(Metric["CountCalculation"]):
-    tests: Optional[List[MetricTest]] = None
-    share_tests: Optional[List[MetricTest]] = None
+    tests: SingleValueMetricTests = None
+    share_tests: SingleValueMetricTests = None
 
     def get_bound_tests(self, context: "Context") -> Sequence[BoundTest]:
         if self.tests is None and self.share_tests is None and context.configuration.include_tests:
@@ -983,8 +987,8 @@ class MeanStdBoundTest(BoundTest[MeanStdValue]):
 
 
 class MeanStdMetric(Metric["MeanStdCalculation"]):
-    mean_tests: Optional[List[MetricTest]] = None
-    std_tests: Optional[List[MetricTest]] = None
+    mean_tests: SingleValueMetricTests = None
+    std_tests: SingleValueMetricTests = None
 
     def get_bound_tests(self, context: "Context") -> Sequence[BoundTest]:
         if self.mean_tests is None and self.mean_tests is None and context.configuration.include_tests:
