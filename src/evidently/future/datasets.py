@@ -189,6 +189,10 @@ class DataDefinition:
             return ColumnType.Text
         if column_name in self.get_datetime_columns():
             return ColumnType.Datetime
+        if column_name == self.timestamp:
+            return ColumnType.Date
+        if column_name == self.id_column:
+            return ColumnType.Id
         return ColumnType.Unknown
 
     def get_classification(self, classification_id: str) -> Optional[Classification]:
@@ -388,6 +392,39 @@ class Dataset:
             self.add_descriptor(descriptor, options)
 
 
+INTEGER_CARDINALITY_LIMIT = 10
+
+
+def infer_column_type(column_data: pd.Series) -> ColumnType:
+    if column_data.dtype.name.startswith("float"):
+        return ColumnType.Numerical
+    if column_data.dtype.name.startswith("int"):
+        if column_data.nunique() <= INTEGER_CARDINALITY_LIMIT:
+            return ColumnType.Categorical
+        else:
+            return ColumnType.Numerical
+    if column_data.dtype.name in ["string"]:
+        if column_data.nunique() > (column_data.count() * 0.5):
+            return ColumnType.Text
+        else:
+            return ColumnType.Categorical
+    if column_data.dtype.name == "object":
+        without_na = column_data.dropna()
+        if isinstance(without_na.iloc[0], str) and isinstance(without_na.iloc[-1], str):
+            if column_data.nunique() > (column_data.count() * 0.5):
+                return ColumnType.Text
+            else:
+                return ColumnType.Categorical
+        elif isinstance(without_na.iloc[0], (list, tuple)) and isinstance(without_na.iloc[-1], (list, tuple)):
+            return ColumnType.List
+        return ColumnType.Unknown
+    if column_data.dtype.name in ["bool", "category"]:
+        return ColumnType.Categorical
+    if column_data.dtype.name.startswith("datetime"):
+        return ColumnType.Datetime
+    return ColumnType.Unknown
+
+
 class PandasDataset(Dataset):
     _data: pd.DataFrame
     _data_definition: DataDefinition
@@ -420,7 +457,29 @@ class PandasDataset(Dataset):
         return PandasDataset(self._data[self._data[column_name] == label], self._data_definition)
 
     def _generate_data_definition(self, data: pd.DataFrame) -> DataDefinition:
-        raise NotImplementedError()
+        numerical = []
+        categorical = []
+        text = []
+        datetime = []
+
+        for column in data.columns:
+            column_type = infer_column_type(data[column])
+            if column_type == ColumnType.Numerical:
+                numerical.append(column)
+            if column_type == ColumnType.Categorical:
+                categorical.append(column)
+            if column_type == ColumnType.Datetime:
+                datetime.append(column)
+            if column_type == ColumnType.Text:
+                text.append(column)
+
+        return DataDefinition(
+            timestamp=datetime[0] if len(datetime) == 1 else None,
+            numerical_columns=numerical,
+            categorical_columns=categorical,
+            datetime_columns=datetime if len(datetime) != 1 else [],
+            text_columns=text,
+        )
 
     def stats(self) -> DatasetStats:
         return self._dataset_stats
