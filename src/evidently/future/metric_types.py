@@ -384,7 +384,7 @@ class ByLabelValueLocation(MetricValueLocation):
         return value.get_label_result(self.label)
 
     def params(self) -> Dict[str, str]:
-        return {"label": self.label}
+        return {"label": str(self.label)}
 
 
 ByLabelCountSlot = Union[Literal["count"], Literal["share"]]
@@ -405,7 +405,7 @@ class ByLabelCountValueLocation(MetricValueLocation):
         return result[0] if self.slot == "count" else result[1]
 
     def params(self) -> Dict[str, str]:
-        return {"label": self.label, "value_type": str(self.slot)}
+        return {"label": str(self.label), "value_type": str(self.slot)}
 
 
 @dataclasses.dataclass
