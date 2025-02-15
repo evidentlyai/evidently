@@ -14,9 +14,9 @@ from evidently.core import ColumnType
 from evidently.future.datasets import Dataset
 from evidently.future.datasets import DatasetColumn
 from evidently.future.metric_types import BoundTest
-from evidently.future.metric_types import ByLabelCalculation
-from evidently.future.metric_types import ByLabelMetric
-from evidently.future.metric_types import ByLabelValue
+from evidently.future.metric_types import ByLabelCountCalculation
+from evidently.future.metric_types import ByLabelCountMetric
+from evidently.future.metric_types import ByLabelCountValue
 from evidently.future.metric_types import CountCalculation
 from evidently.future.metric_types import CountMetric
 from evidently.future.metric_types import CountValue
@@ -643,11 +643,11 @@ class DriftedColumnCalculation(CountCalculation[DriftedColumnsCount], LegacyDrif
         return "Share of Drifted Columns"
 
 
-class UniqueValueCount(ByLabelMetric):
+class UniqueValueCount(ByLabelCountMetric):
     column: str
 
 
-class UniqueValueCountCalculation(ByLabelCalculation[UniqueValueCount]):
+class UniqueValueCountCalculation(ByLabelCountCalculation[UniqueValueCount]):
     def calculate(self, context: "Context", current_data: Dataset, reference_data: Optional[Dataset]):
         current_result = self._calculate_value(current_data)
         current_result.widget = distribution(
@@ -664,7 +664,17 @@ class UniqueValueCountCalculation(ByLabelCalculation[UniqueValueCount]):
     def display_name(self) -> str:
         return "Unique Value Count"
 
+    def count_label_display_name(self, label: Label) -> str:
+        return f"Unique Value Count for label {label}"
+
+    def share_label_display_name(self, label: Label) -> str:
+        return f"Unique Value Share for label {label}"
+
     def _calculate_value(self, dataset: Dataset):
-        value_counts = dataset.as_dataframe()[self.metric.column].value_counts(dropna=False)
-        result = ByLabelValue(value_counts.to_dict())  # type: ignore[arg-type]
+        df = dataset.as_dataframe()
+        value_counts = df[self.metric.column].value_counts(dropna=False)
+        total = len(df)
+
+        res = value_counts.to_dict()
+        result = ByLabelCountValue(res, {k: v / total for k, v in res.items()})  # type: ignore[arg-type]
         return result

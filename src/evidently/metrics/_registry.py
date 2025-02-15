@@ -842,3 +842,7 @@ register_type_alias(
 )
 
 register_type_alias(MetricResult, "evidently.future.backport.MeanStdValueV1", "evidently:metric_result:MeanStdValueV1")
+
+register_type_alias(
+    MetricResult, "evidently.future.backport.ByLabelCountValueV1", "evidently:metric_result:ByLabelCountValueV1"
+)

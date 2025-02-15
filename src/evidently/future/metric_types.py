@@ -12,6 +12,7 @@ from typing import ClassVar
 from typing import Dict
 from typing import Generic
 from typing import List
+from typing import Literal
 from typing import Optional
 from typing import Protocol
 from typing import Sequence
@@ -82,6 +83,13 @@ class MetricResult:
         return self._display_name
 
     def to_dict(self):
+        return {
+            "id": self._metric.id,
+            "metric_id": self.explicit_metric_id(),
+            "value": self.dict(),
+        }
+
+    def explicit_metric_id(self):
         config = self.metric.to_metric().dict()
         config_items = []
         type = None
@@ -99,11 +107,10 @@ class MetricResult:
                 continue
             else:
                 config_items.append(f"{field}={str(value)}")
-        return {
-            "id": self._metric.id,
-            "metric_id": f"{type}({','.join(config_items)})",
-            "value": self.dict(),
-        }
+        if self._metric_value_location is not None:
+            for key, value in self._metric_value_location.params().items():
+                config_items.append(f"{key}={value}")
+        return f"{type}({','.join(config_items)})"
 
     @abc.abstractmethod
     def dict(self) -> object:
@@ -226,6 +233,32 @@ class ByLabelValue(MetricResult):
 
 
 @dataclasses.dataclass
+class ByLabelCountValue(MetricResult):
+    counts: Dict[Label, int]
+    shares: Dict[Label, float]
+
+    def labels(self) -> List[Label]:
+        return list(self.counts.keys())
+
+    def get_label_result(self, label: Label) -> Tuple[SingleValue, SingleValue]:
+        count = SingleValue(self.counts[label])
+        share = SingleValue(self.shares[label])
+        metric = self.metric
+        count._metric = metric
+        share._metric = metric
+        if not isinstance(metric, ByLabelCountCalculation):
+            raise ValueError(f"Metric {type(metric)} isn't ByLabelCountCalculation")
+        count.set_display_name(metric.count_label_display_name(label))
+        share.set_display_name(metric.share_label_display_name(label))
+        count._metric_value_location = ByLabelCountValueLocation(metric.to_metric(), label, "count")
+        share._metric_value_location = ByLabelCountValueLocation(metric.to_metric(), label, "share")
+        return count, share
+
+    def dict(self) -> object:
+        return {"counts": self.counts, "shares": self.shares}
+
+
+@dataclasses.dataclass
 class CountValue(MetricResult):
     count: int
     share: float
@@ -304,6 +337,9 @@ class DatasetType(enum.Enum):
 class MetricValueLocation:
     metric: "Metric"
 
+    def params(self) -> Dict[str, str]:
+        raise NotImplementedError
+
     def value(self, context: "Context", dataset_type: DatasetType) -> SingleValue:
         value = self._metric_value_by_dataset(context, dataset_type)
         return self.extract_value(value)
@@ -331,6 +367,9 @@ class SingleValueLocation(MetricValueLocation):
             )
         return value
 
+    def params(self) -> Dict[str, str]:
+        return {}
+
 
 @dataclasses.dataclass
 class ByLabelValueLocation(MetricValueLocation):
@@ -343,6 +382,30 @@ class ByLabelValueLocation(MetricValueLocation):
                 f" expected: {ByLabelValue.__name__}, actual: {type(value).__name__}"
             )
         return value.get_label_result(self.label)
+
+    def params(self) -> Dict[str, str]:
+        return {"label": str(self.label)}
+
+
+ByLabelCountSlot = Union[Literal["count"], Literal["share"]]
+
+
+@dataclasses.dataclass
+class ByLabelCountValueLocation(MetricValueLocation):
+    label: Label
+    slot: ByLabelCountSlot
+
+    def extract_value(self, value: MetricResult) -> SingleValue:
+        if not isinstance(value, ByLabelCountValue):
+            raise ValueError(
+                f"Unexpected type of metric result for metric[{str(value.metric)}]:"
+                f" expected: {ByLabelCountValue.__name__}, actual: {type(value).__name__}"
+            )
+        result = value.get_label_result(self.label)
+        return result[0] if self.slot == "count" else result[1]
+
+    def params(self) -> Dict[str, str]:
+        return {"label": str(self.label), "value_type": str(self.slot)}
 
 
 @dataclasses.dataclass
@@ -357,6 +420,9 @@ class CountValueLocation(MetricValueLocation):
             )
         return value.get_count() if self.is_count else value.get_share()
 
+    def params(self) -> Dict[str, str]:
+        return {"value_type": "count" if self.is_count else "share"}
+
 
 @dataclasses.dataclass
 class MeanStdValueLocation(MetricValueLocation):
@@ -369,6 +435,9 @@ class MeanStdValueLocation(MetricValueLocation):
                 f" expected: {MeanStdValue.__name__}, actual: {type(value).__name__}"
             )
         return value.get_mean() if self.is_mean else value.get_std()
+
+    def params(self) -> Dict[str, str]:
+        return {"value_type": "mean" if self.is_mean else "std"}
 
 
 class MetricTestProto(Protocol[TResult]):
@@ -424,6 +493,16 @@ def get_default_render_ref(title: str, result: MetricResult, ref_result: MetricR
                 size=WidgetSize.FULL,
                 column_names=["Label", "Current value", "Reference value"],
                 data=[(k, f"{v:0.3f}", f"{ref_result.values[k]}") for k, v in result.values.items()],
+            )
+        ]
+    if isinstance(result, ByLabelCountValue):
+        assert isinstance(ref_result, ByLabelCountValue)
+        return [
+            table_data(
+                title=title,
+                size=WidgetSize.FULL,
+                column_names=["Label", "Current value", "Reference value"],
+                data=[(k, f"{v:0.3f}", f"{ref_result.counts[k]}") for k, v in result.counts.items()],
             )
         ]
     if isinstance(result, CountValue):
@@ -484,6 +563,14 @@ def get_default_render(title: str, result: TResult) -> List[BaseWidgetInfo]:
                 title=title,
                 column_names=["Label", "Value"],
                 data=[(k, f"{v:0.3f}") for k, v in result.values.items()],
+            )
+        ]
+    if isinstance(result, ByLabelCountValue):
+        return [
+            table_data(
+                title=title,
+                column_names=["Label", "Value"],
+                data=[(k, f"{v:0.3f}") for k, v in result.counts.items()],
             )
         ]
     if isinstance(result, CountValue):
@@ -599,9 +686,7 @@ class MetricTest(AutoAliasMixin, EvidentlyBaseModel):
         result: MetricTestResult = self.to_test()(context, metric, value)
         if result.status == TestStatus.FAIL and not self.is_critical:
             result.status = TestStatus.WARNING
-        metric_conf = metric.to_metric()
-        column = f" for {metric_conf.column}" if hasattr(metric_conf, "column") else ""
-        result.description = f"{metric_conf.__class__.__name__}{column}: {result.description}"
+        result.description = f"{value.explicit_metric_id()}: {result.description}"
         return result
 
     def bind_single(self, fingerprint: Fingerprint) -> "BoundTest":
@@ -612,6 +697,9 @@ class MetricTest(AutoAliasMixin, EvidentlyBaseModel):
 
     def bind_by_label(self, fingerprint: Fingerprint, label: Label):
         return ByLabelBoundTest(test=self, metric_fingerprint=fingerprint, label=label)
+
+    def bind_by_label_count(self, fingerprint: Fingerprint, label: Label, slot: ByLabelCountSlot):
+        return ByLabelCountBoundTest(test=self, metric_fingerprint=fingerprint, label=label, slot=slot)
 
     def bind_mean_std(self, fingerprint: Fingerprint, is_mean: bool = True):
         return MeanStdBoundTest(test=self, metric_fingerprint=fingerprint, is_mean=is_mean)
@@ -791,6 +879,55 @@ class ByLabelCalculation(MetricCalculation[ByLabelValue, TByLabelMetric], Generi
 
     def label_display_name(self, label: Label) -> str:
         return self.display_name() + f" for label {label}"
+
+
+class ByLabelCountBoundTest(BoundTest[ByLabelCountValue]):
+    label: Label
+    slot: ByLabelCountSlot
+
+    def run_test(
+        self,
+        context: "Context",
+        calculation: MetricCalculationBase,
+        metric_result: ByLabelCountValue,
+    ) -> MetricTestResult:
+        value = metric_result.get_label_result(self.label)
+        return self.test.run(context, calculation, value[0] if self.slot == "count" else value[1])
+
+
+class ByLabelCountMetric(Metric["ByLabelCountCalculation"]):
+    tests: Optional[Dict[Label, List[MetricTest]]] = None
+    share_tests: Optional[Dict[Label, List[MetricTest]]] = None
+
+    def get_bound_tests(self, context: "Context") -> List[BoundTest]:
+        if self.tests is None and self.share_tests is None and context.configuration.include_tests:
+            return self._get_all_default_tests(context)
+        fingerprint = self.get_fingerprint()
+        return [
+            t.bind_by_label_count(fingerprint, label=label, slot="count")
+            for label, tests in (self.tests or {}).items()
+            for t in tests
+        ] + [
+            t.bind_by_label_count(fingerprint, label=label, slot="share")
+            for label, tests in (self.share_tests or {}).items()
+            for t in tests
+        ]
+
+
+TByLabelCountMetric = TypeVar("TByLabelCountMetric", bound=ByLabelCountMetric)
+
+
+class ByLabelCountCalculation(
+    MetricCalculation[ByLabelCountValue, TByLabelCountMetric], Generic[TByLabelCountMetric], ABC
+):
+    def label_metric(self, label: Label) -> SingleValueCalculation:
+        raise NotImplementedError
+
+    def count_label_display_name(self, label: Label) -> str:
+        raise NotImplementedError
+
+    def share_label_display_name(self, label: Label) -> str:
+        raise NotImplementedError
 
 
 class CountBoundTest(BoundTest[CountValue]):
