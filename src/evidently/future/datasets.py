@@ -343,6 +343,9 @@ class DatasetStats:
     column_stats: Dict[str, ColumnStats]
 
 
+PossibleDatasetTypes = Union["Dataset", pd.DataFrame]
+
+
 class Dataset:
     _data_definition: DataDefinition
 
@@ -358,6 +361,14 @@ class Dataset:
         if descriptors is not None:
             dataset.add_descriptors(descriptors, options)
         return dataset
+
+    @staticmethod
+    def from_any(dataset: PossibleDatasetTypes) -> "Dataset":
+        if isinstance(dataset, Dataset):
+            return dataset
+        if isinstance(dataset, pd.DataFrame):
+            return Dataset.from_pandas(dataset)
+        raise ValueError(f"Unsupported dataset type: {type(dataset)}")
 
     @abstractmethod
     def as_dataframe(self) -> pd.DataFrame:
