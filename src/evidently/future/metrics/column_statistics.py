@@ -634,6 +634,12 @@ class UniqueValueCountCalculation(ByLabelCountCalculation[UniqueValueCount]):
     def display_name(self) -> str:
         return "Unique Value Count"
 
+    def count_label_display_name(self, label: Label) -> str:
+        return f"Unique Value Count for label {label}"
+
+    def share_label_display_name(self, label: Label) -> str:
+        return f"Unique Value Share for label {label}"
+
     def _calculate_value(self, dataset: Dataset):
         df = dataset.as_dataframe()
         value_counts = df[self.metric.column].value_counts(dropna=False)
