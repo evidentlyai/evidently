@@ -21,6 +21,7 @@ from evidently.future.datasets import BinaryClassification
 from evidently.future.datasets import DataDefinition
 from evidently.future.datasets import Dataset
 from evidently.future.datasets import DatasetColumn
+from evidently.future.datasets import PossibleDatasetTypes
 from evidently.future.metric_types import Metric
 from evidently.future.metric_types import MetricCalculationBase
 from evidently.future.metric_types import MetricId
@@ -267,8 +268,10 @@ class Snapshot:
     def report(self) -> "Report":
         return self._report
 
-    def run(self, current_data: Dataset, reference_data: Optional[Dataset]):
-        self.context.init_dataset(current_data, reference_data)
+    def run(self, current_data: PossibleDatasetTypes, reference_data: Optional[PossibleDatasetTypes] = None):
+        current_dataset = Dataset.from_any(current_data)
+        reference_dataset = Dataset.from_any(reference_data) if reference_data is not None else None
+        self.context.init_dataset(current_dataset, reference_dataset)
         metric_results = {}
         widgets: List[BaseWidgetInfo] = []
         snapshot_items: List[SnapshotItem] = []
