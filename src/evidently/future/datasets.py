@@ -218,6 +218,8 @@ class DataDefinition:
             yield from self.get_categorical_columns()
         if ColumnType.Text in types:
             yield from self.get_text_columns()
+        if ColumnType.Datetime in types:
+            yield from self.get_datetime_columns()
 
     def get_regression(self, regression_id: str) -> Optional[Regression]:
         item_list = list(filter(lambda x: x.name == regression_id, self.regression or []))

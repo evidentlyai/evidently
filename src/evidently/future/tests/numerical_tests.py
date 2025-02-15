@@ -31,15 +31,15 @@ class ComparisonTest(MetricTest):
     def to_test(self) -> SingleValueTest:
         def func(context: Context, metric: MetricCalculationBase, value: SingleValue):
             threshold = self.get_threshold(context, value.metric_value_location)
-            title_threshold = f"{threshold:0.2f}"
+            title_threshold = f"{threshold:0.3f}"
             if isinstance(self.threshold, Reference):
                 title_threshold = "Reference"
                 if isinstance(threshold, ApproxValue):
-                    title_threshold += f" ± {threshold.tolerance}"
+                    title_threshold += f" ± {threshold.tolerance:0.3f}"
             return MetricTestResult(
                 self.__short_name__,
                 f"{value.display_name()}: {self.__full_name__} {title_threshold}",
-                f"Actual value {value.value} {'<' if value.value < threshold else '>='} {threshold}",
+                f"Actual value {value.value:0.3f} {'<' if value.value < threshold else '>='} {threshold:0.3f}",
                 TestStatus.SUCCESS if self.check(value.value, threshold) else TestStatus.FAIL,
             )
 
@@ -116,11 +116,11 @@ class EqualMetricTestBase(MetricTest, abc.ABC):
             expected = ApproxValue(result.value, self.expected.relative, self.expected.absolute)
         else:
             expected = self.expected
-        title_expected = f"{expected:0.2f}"
+        title_expected = f"{expected:0.3f}"
         if isinstance(self.expected, Reference):
             title_expected = "Reference"
             if isinstance(expected, ApproxValue):
-                title_expected += f" ± {expected.tolerance}"
+                title_expected += f" ± {expected.tolerance:0.3f}"
         return expected, title_expected, expected == value.value
 
 
@@ -133,7 +133,7 @@ class EqualMetricTest(EqualMetricTestBase):
             return MetricTestResult(
                 "eq",
                 f"{metric.display_name()}: Equal {title_expected}",
-                f"Actual value {value.value} {f', but expected {expected}' if not is_equal else ''}",
+                f"Actual value {value.value:0.3f} {f', but expected {expected:0.3f}' if not is_equal else ''}",
                 TestStatus.SUCCESS if is_equal else TestStatus.FAIL,
             )
 
