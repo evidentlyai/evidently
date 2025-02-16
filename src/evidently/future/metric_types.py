@@ -243,6 +243,7 @@ class ByLabelCountValue(MetricResult):
         if not isinstance(metric, ByLabelCountCalculation):
             raise ValueError(f"Metric {type(metric)} isn't ByLabelCountCalculation")
         count.set_display_name(metric.label_display_name(label))
+        share.set_display_name(metric.label_display_name(label))
         count._metric_value_location = ByLabelCountValueLocation(metric.to_metric(), label, "count")
         share._metric_value_location = ByLabelCountValueLocation(metric.to_metric(), label, "share")
         return count, share
