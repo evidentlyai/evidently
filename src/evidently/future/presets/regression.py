@@ -154,6 +154,8 @@ class RegressionPreset(MetricContainer):
         ]
 
     def render(self, context: "Context", results: Dict[MetricId, MetricResult]) -> List[BaseWidgetInfo]:
+        if self._quality is None:
+            raise ValueError("No _quality set in preset, something went wrong.")
         return (
             self._quality.render(context, results)
             + context.get_metric_result(
