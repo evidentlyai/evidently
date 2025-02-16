@@ -116,6 +116,8 @@ class RegressionDummyQuality(MetricContainer):
 
 
 class RegressionPreset(MetricContainer):
+    _quality: Optional[RegressionQuality] = None
+
     def __init__(
         self,
         mean_error_tests: Optional[MeanStdMetricTests] = None,
