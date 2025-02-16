@@ -456,19 +456,42 @@ class PandasDataset(Dataset):
             or data_definition.text_columns is None
             or data_definition.numerical_columns is None
         ):
-            generated_data_definition = self._generate_data_definition(data)
+            reserved_fields = []
+            if data_definition is not None:
+                if data_definition.timestamp is not None:
+                    reserved_fields.append(data_definition.timestamp)
+                if data_definition.id_column is not None:
+                    reserved_fields.append(data_definition.id_column)
+                if data_definition.numerical_columns is not None:
+                    reserved_fields.extend(data_definition.numerical_columns)
+                if data_definition.categorical_columns is not None:
+                    reserved_fields.extend(data_definition.categorical_columns)
+                if data_definition.datetime_columns is not None:
+                    reserved_fields.extend(data_definition.datetime_columns)
+                if data_definition.text_columns is not None:
+                    reserved_fields.extend(data_definition.text_columns)
+                if data_definition.numerical_descriptors is not None:
+                    reserved_fields.extend(data_definition.numerical_descriptors)
+                if data_definition.categorical_descriptors is not None:
+                    reserved_fields.extend(data_definition.categorical_descriptors)
+            generated_data_definition = self._generate_data_definition(data, reserved_fields)
             if data_definition is None:
                 self._data_definition = generated_data_definition
             else:
                 self._data_definition = copy.deepcopy(data_definition)
                 if self._data_definition.datetime_columns is None:
-                    self._data_definition.datetime_columns = generated_data_definition.datetime_columns
+                    if self._data_definition.timestamp is not None and generated_data_definition.timestamp is not None:
+                        self._data_definition.datetime_columns = [generated_data_definition.timestamp]
+                    else:
+                        self._data_definition.datetime_columns = generated_data_definition.datetime_columns
                 if self._data_definition.numerical_columns is None:
                     self._data_definition.numerical_columns = generated_data_definition.numerical_columns
                 if self._data_definition.categorical_columns is None:
                     self._data_definition.categorical_columns = generated_data_definition.categorical_columns
                 if self._data_definition.text_columns is None:
                     self._data_definition.text_columns = generated_data_definition.text_columns
+                if self._data_definition.timestamp is None and generated_data_definition.timestamp is not None:
+                    self._data_definition.timestamp = generated_data_definition.timestamp
         else:
             self._data_definition = copy.deepcopy(data_definition)
         (rows, columns) = data.shape
@@ -487,13 +510,15 @@ class PandasDataset(Dataset):
     def subdataset(self, column_name: str, label: object):
         return PandasDataset(self._data[self._data[column_name] == label], self._data_definition)
 
-    def _generate_data_definition(self, data: pd.DataFrame) -> DataDefinition:
+    def _generate_data_definition(self, data: pd.DataFrame, reserved_fields: List[str]) -> DataDefinition:
         numerical = []
         categorical = []
         text = []
         datetime = []
 
         for column in data.columns:
+            if column in reserved_fields:
+                continue
             column_type = infer_column_type(data[column])
             if column_type == ColumnType.Numerical:
                 numerical.append(column)
