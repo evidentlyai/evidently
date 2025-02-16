@@ -5,6 +5,7 @@ import pandas as pd
 import pytest
 
 from evidently import ColumnType
+from evidently.future.datasets import DataDefinition
 from evidently.future.datasets import Dataset
 from evidently.future.datasets import infer_column_type
 
@@ -28,7 +29,57 @@ def test_infer_column_type(data: pd.Series, expected: ColumnType):
     assert infer_column_type(data) == expected
 
 
-def test_data_definition():
+@pytest.mark.parametrize(
+    "definition,numerical,categorical,datetime_cols,text",
+    [
+        (
+            None,
+            ("num_1", "num_2", "num_3"),
+            ("cat_1", "cat_2", "cat_3"),
+            ("datetime", "datetime_2"),
+            ("text_1", "text_2"),
+        ),
+        (
+            DataDefinition(numerical_columns=["num_1"]),
+            ("num_1",),
+            ("cat_1", "cat_2", "cat_3"),
+            ("datetime", "datetime_2"),
+            ("text_1", "text_2"),
+        ),
+        (
+            DataDefinition(categorical_columns=["cat_1"]),
+            ("num_1", "num_2", "num_3"),
+            ("cat_1",),
+            ("datetime", "datetime_2"),
+            ("text_1", "text_2"),
+        ),
+        (
+            DataDefinition(text_columns=["text_2"]),
+            ("num_1", "num_2", "num_3"),
+            ("cat_1", "cat_2", "cat_3"),
+            ("datetime", "datetime_2"),
+            ("text_2",),
+        ),
+        (
+            DataDefinition(datetime_columns=["datetime_2"]),
+            ("num_1", "num_2", "num_3"),
+            ("cat_1", "cat_2", "cat_3"),
+            ("datetime_2",),
+            ("text_1", "text_2"),
+        ),
+        (
+            DataDefinition(numerical_columns=[]),
+            tuple(),
+            ("cat_1", "cat_2", "cat_3"),
+            (
+                "datetime",
+                "datetime_2",
+            ),
+            ("text_1", "text_2"),
+        ),
+    ],
+)
+def test_data_definition(definition, numerical, categorical, datetime_cols, text):
     data = pd.DataFrame(
         data=dict(
             num_1=pd.Series([0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.1]),
@@ -43,14 +94,8 @@ def test_data_definition():
             text_2=pd.Series(["a", "b", "c", "d", "e", "a", "b", "c", "d", "e", "f"]),
         )
     )
-    dataset = Dataset.from_pandas(data)
-    assert dataset.data_definition.get_column_type("num_1") == ColumnType.Numerical
-    assert dataset.data_definition.get_column_type("num_2") == ColumnType.Numerical
-    assert dataset.data_definition.get_column_type("num_3") == ColumnType.Numerical
-    assert dataset.data_definition.get_column_type("cat_1") == ColumnType.Categorical
-    assert dataset.data_definition.get_column_type("cat_2") == ColumnType.Categorical
-    assert dataset.data_definition.get_column_type("cat_3") == ColumnType.Categorical
-    assert dataset.data_definition.get_column_type("datetime") == ColumnType.Datetime
-    assert dataset.data_definition.get_column_type("datetime_2") == ColumnType.Datetime
-    assert dataset.data_definition.get_column_type("text_1") == ColumnType.Text
-    assert dataset.data_definition.get_column_type("text_2") == ColumnType.Text
+    dataset = Dataset.from_pandas(data, data_definition=definition)
+    assert set(numerical) == set(dataset.data_definition.get_numerical_columns())
+    assert set(categorical) == set(dataset.data_definition.get_categorical_columns())
+    assert set(datetime_cols) == set(dataset.data_definition.get_datetime_columns())
+    assert set(text) == set(dataset.data_definition.get_text_columns())

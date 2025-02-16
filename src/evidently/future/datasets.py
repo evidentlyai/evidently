@@ -449,8 +449,26 @@ class PandasDataset(Dataset):
         data_definition: Optional[DataDefinition] = None,
     ):
         self._data = data
-        if data_definition is None:
-            self._data_definition = self._generate_data_definition(data)
+        if (
+            data_definition is None
+            or data_definition.datetime_columns is None
+            or data_definition.categorical_columns is None
+            or data_definition.text_columns is None
+            or data_definition.numerical_columns is None
+        ):
+            generated_data_definition = self._generate_data_definition(data)
+            if data_definition is None:
+                self._data_definition = generated_data_definition
+            else:
+                self._data_definition = copy.deepcopy(data_definition)
+                if self._data_definition.datetime_columns is None:
+                    self._data_definition.datetime_columns = generated_data_definition.datetime_columns
+                if self._data_definition.numerical_columns is None:
+                    self._data_definition.numerical_columns = generated_data_definition.numerical_columns
+                if self._data_definition.categorical_columns is None:
+                    self._data_definition.categorical_columns = generated_data_definition.categorical_columns
+                if self._data_definition.text_columns is None:
+                    self._data_definition.text_columns = generated_data_definition.text_columns
         else:
             self._data_definition = copy.deepcopy(data_definition)
         (rows, columns) = data.shape
