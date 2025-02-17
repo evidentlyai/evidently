@@ -35,6 +35,7 @@ class ColumnMetricGenerator(MetricContainer):
         if self.columns is not None:
             column_list = self.columns
         else:
+            column_types: Union[ColumnTypeStr, List[ColumnTypeStr]]
             if self.column_types == "all":
                 column_types = list(ColumnType)
             else:
