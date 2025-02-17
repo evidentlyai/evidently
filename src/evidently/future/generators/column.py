@@ -11,13 +11,15 @@ from evidently.future.metric_types import ColumnMetric
 from evidently.future.metric_types import Metric
 from evidently.future.report import Context
 
+ColumnTypeStr = Union[ColumnType, str]
+
 
 class ColumnMetricGenerator(MetricContainer):
     def __init__(
         self,
         metric_type: Type[ColumnMetric],
         columns: Optional[List[str]] = None,
-        column_types: Optional[Union[ColumnType, List[ColumnType]]] = None,
+        column_types: Optional[Union[ColumnTypeStr, List[ColumnTypeStr]]] = None,
         metric_kwargs: Optional[Dict[str, Any]] = None,
     ):
         self.metric_type = metric_type
@@ -32,10 +34,11 @@ class ColumnMetricGenerator(MetricContainer):
         if self.columns is not None:
             column_list = self.columns
         else:
-            if self.column_types is None:
+            if self.column_types is None or self.column_types == "all":
                 column_types = list(ColumnType)
             else:
                 column_types = self.column_types
             column_types = column_types if isinstance(column_types, list) else [column_types]
+            column_types = [ct if isinstance(ct, ColumnType) else ColumnType(ct) for ct in column_types]
             column_list = list(context.data_definition.get_columns(column_types))
         return [self._instantiate_metric(column) for column in column_list]
