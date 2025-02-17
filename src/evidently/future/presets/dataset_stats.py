@@ -9,7 +9,6 @@ from evidently.core import ColumnType
 from evidently.future.container import MetricContainer
 from evidently.future.metric_types import ByLabelCountValue
 from evidently.future.metric_types import ByLabelMetricTests
-from evidently.future.metric_types import ByLabelValue
 from evidently.future.metric_types import Metric
 from evidently.future.metric_types import MetricId
 from evidently.future.metric_types import MetricResult
@@ -269,7 +268,7 @@ class ValueStats(MetricContainer):
 
     def _most_common_value(self, unique_value: MetricResult):
         if not isinstance(unique_value, ByLabelCountValue):
-            raise ValueError("Most common value must be of type 'ByLabelValue'")
+            raise ValueError("Most common value must be of type 'ByLabelCountValue'")
         first = sorted(unique_value.counts.items(), key=lambda x: x[1], reverse=True)[0]
         return f"Label: {first[0]} count: {first[1]}"
 
@@ -280,16 +279,16 @@ class ValueStats(MetricContainer):
         label: Label,
     ):
         result = context.get_metric_result(metric)
-        assert isinstance(result, ByLabelValue)
+        assert isinstance(result, ByLabelCountValue)
         if context.has_reference:
             ref_result = context.get_reference_metric_result(metric)
-            assert isinstance(ref_result, ByLabelValue)
+            assert isinstance(ref_result, ByLabelCountValue)
             return [
-                str(result.values[label]),
-                str(ref_result.values[label]),
+                f"{result.counts[label]} ({(result.shares[label] * 100):0.0f}%)",
+                f"{ref_result.counts[label]} ({(ref_result.shares[label] * 100):0.0f}%)",
             ]
         return [
-            str(result.values[label]),
+            f"{result.counts[label]} ({(result.shares[label] * 100):0.0f}%)",
         ]
 
 
