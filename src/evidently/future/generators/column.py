@@ -41,6 +41,6 @@ class ColumnMetricGenerator(MetricContainer):
             else:
                 column_types = self.column_types
             column_types = column_types if isinstance(column_types, list) else [column_types]
-            column_types = [ct if isinstance(ct, ColumnType) else ColumnType(ct) for ct in column_types]
-            column_list = list(context.data_definition.get_columns(column_types))
+            cts: List[ColumnType] = [ct if isinstance(ct, ColumnType) else ColumnType(ct) for ct in column_types]
+            column_list = list(context.data_definition.get_columns(cts))
         return [self._instantiate_metric(column) for column in column_list]
