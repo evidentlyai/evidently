@@ -1016,3 +1016,7 @@ class MeanStdCalculation(MetricCalculation[MeanStdValue, TMeanStdMetric], Generi
 
     def std_display_name(self) -> str:
         return self.display_name()
+
+
+class ColumnMetric(Metric, ABC):
+    column: str

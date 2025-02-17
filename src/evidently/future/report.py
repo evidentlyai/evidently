@@ -366,6 +366,11 @@ class Snapshot:
             with open(filename, "w", encoding="utf-8") as out_file:
                 json.dump(self.dict(), out_file, cls=NumpyEncoder)
 
+    def _to_v1(self):
+        from evidently.future.backport import snapshot_v2_to_v1
+
+        return snapshot_v2_to_v1(self)
+
 
 class Report:
     def __init__(
