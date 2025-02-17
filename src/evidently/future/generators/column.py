@@ -1,6 +1,7 @@
 from typing import Any
 from typing import Dict
 from typing import List
+from typing import Literal
 from typing import Optional
 from typing import Type
 from typing import Union
@@ -19,7 +20,7 @@ class ColumnMetricGenerator(MetricContainer):
         self,
         metric_type: Type[ColumnMetric],
         columns: Optional[List[str]] = None,
-        column_types: Optional[Union[ColumnTypeStr, List[ColumnTypeStr]]] = None,
+        column_types: Union[ColumnTypeStr, List[ColumnTypeStr], Literal["all"]] = "all",
         metric_kwargs: Optional[Dict[str, Any]] = None,
     ):
         self.metric_type = metric_type
@@ -34,7 +35,7 @@ class ColumnMetricGenerator(MetricContainer):
         if self.columns is not None:
             column_list = self.columns
         else:
-            if self.column_types is None or self.column_types == "all":
+            if self.column_types == "all":
                 column_types = list(ColumnType)
             else:
                 column_types = self.column_types
