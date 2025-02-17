@@ -32,5 +32,10 @@ class ColumnMetricGenerator(MetricContainer):
         if self.columns is not None:
             column_list = self.columns
         else:
-            raise NotImplementedError()
+            if self.column_types is None:
+                column_types = list(ColumnType)
+            else:
+                column_types = self.column_types
+            column_types = column_types if isinstance(column_types, list) else [column_types]
+            column_list = list(context.data_definition.get_columns(column_types))
         return [self._instantiate_metric(column) for column in column_list]
