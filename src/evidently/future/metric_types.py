@@ -23,6 +23,7 @@ from typing import Union
 
 import typing_inspect
 
+from evidently._pydantic_compat import BaseModel
 from evidently.future._utils import not_implemented
 from evidently.future.datasets import Dataset
 from evidently.metric_results import Label
@@ -986,6 +987,11 @@ class MeanStdBoundTest(BoundTest[MeanStdValue]):
             calculation,
             metric_result.get_mean() if self.is_mean else metric_result.get_std(),
         )
+
+
+class MeanStdMetricTests(BaseModel):
+    mean: SingleValueMetricTests = None
+    std: SingleValueMetricTests = None
 
 
 class MeanStdMetric(Metric["MeanStdCalculation"]):
