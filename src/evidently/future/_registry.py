@@ -113,3 +113,6 @@ register_type_alias(Metric, "evidently.future.metrics.classification.DummyTPR", 
 
 register_type_alias(Metric, "evidently.future.metrics.classification.ClassificationQualityBase", "evidently:metric_v2:ClassificationQualityBase")
 register_type_alias(Metric, "evidently.future.metrics.classification.DummyClassificationQuality", "evidently:metric_v2:DummyClassificationQuality")
+
+register_type_alias(BoundTest, "evidently.future.metric_types.ByLabelCountBoundTest", "evidently:bound_test:ByLabelCountBoundTest")
+register_type_alias(Metric, "evidently.future.metric_types.ByLabelCountMetric", "evidently:metric_v2:ByLabelCountMetric")

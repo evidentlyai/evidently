@@ -21,6 +21,7 @@ from evidently.future.datasets import BinaryClassification
 from evidently.future.datasets import DataDefinition
 from evidently.future.datasets import Dataset
 from evidently.future.datasets import DatasetColumn
+from evidently.future.datasets import PossibleDatasetTypes
 from evidently.future.metric_types import Metric
 from evidently.future.metric_types import MetricCalculationBase
 from evidently.future.metric_types import MetricId
@@ -394,13 +395,15 @@ class Report:
 
     def run(
         self,
-        current_data: Dataset,
-        reference_data: Optional[Dataset],
+        current_data: PossibleDatasetTypes,
+        reference_data: Optional[PossibleDatasetTypes] = None,
         timestamp: Optional[datetime] = None,
     ) -> Snapshot:
         self._timestamp = timestamp or datetime.now()
+        current_dataset = Dataset.from_any(current_data)
+        reference_dataset = Dataset.from_any(reference_data) if reference_data else None
         snapshot = Snapshot(self)
-        snapshot.run(current_data, reference_data)
+        snapshot.run(current_dataset, reference_dataset)
         return snapshot
 
     def items(self) -> Sequence[Union[Metric, MetricPreset, MetricContainer]]:

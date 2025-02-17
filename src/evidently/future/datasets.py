@@ -189,6 +189,10 @@ class DataDefinition:
             return ColumnType.Text
         if column_name in self.get_datetime_columns():
             return ColumnType.Datetime
+        if column_name == self.timestamp:
+            return ColumnType.Date
+        if column_name == self.id_column:
+            return ColumnType.Id
         return ColumnType.Unknown
 
     def get_classification(self, classification_id: str) -> Optional[Classification]:
@@ -214,6 +218,8 @@ class DataDefinition:
             yield from self.get_categorical_columns()
         if ColumnType.Text in types:
             yield from self.get_text_columns()
+        if ColumnType.Datetime in types:
+            yield from self.get_datetime_columns()
 
     def get_regression(self, regression_id: str) -> Optional[Regression]:
         item_list = list(filter(lambda x: x.name == regression_id, self.regression or []))
@@ -343,6 +349,9 @@ class DatasetStats:
     column_stats: Dict[str, ColumnStats]
 
 
+PossibleDatasetTypes = Union["Dataset", pd.DataFrame]
+
+
 class Dataset:
     _data_definition: DataDefinition
 
@@ -358,6 +367,14 @@ class Dataset:
         if descriptors is not None:
             dataset.add_descriptors(descriptors, options)
         return dataset
+
+    @staticmethod
+    def from_any(dataset: PossibleDatasetTypes) -> "Dataset":
+        if isinstance(dataset, Dataset):
+            return dataset
+        if isinstance(dataset, pd.DataFrame):
+            return Dataset.from_pandas(dataset)
+        raise ValueError(f"Unsupported dataset type: {type(dataset)}")
 
     @abstractmethod
     def as_dataframe(self) -> pd.DataFrame:
@@ -388,6 +405,39 @@ class Dataset:
             self.add_descriptor(descriptor, options)
 
 
+INTEGER_CARDINALITY_LIMIT = 10
+
+
+def infer_column_type(column_data: pd.Series) -> ColumnType:
+    if column_data.dtype.name.startswith("float"):
+        return ColumnType.Numerical
+    if column_data.dtype.name.startswith("int"):
+        if column_data.nunique() <= INTEGER_CARDINALITY_LIMIT:
+            return ColumnType.Categorical
+        else:
+            return ColumnType.Numerical
+    if column_data.dtype.name in ["string"]:
+        if column_data.nunique() > (column_data.count() * 0.5):
+            return ColumnType.Text
+        else:
+            return ColumnType.Categorical
+    if column_data.dtype.name == "object":
+        without_na = column_data.dropna()
+        if isinstance(without_na.iloc[0], str) and isinstance(without_na.iloc[-1], str):
+            if column_data.nunique() > (column_data.count() * 0.5):
+                return ColumnType.Text
+            else:
+                return ColumnType.Categorical
+        elif isinstance(without_na.iloc[0], (list, tuple)) and isinstance(without_na.iloc[-1], (list, tuple)):
+            return ColumnType.List
+        return ColumnType.Unknown
+    if column_data.dtype.name in ["bool", "category"]:
+        return ColumnType.Categorical
+    if column_data.dtype.name.startswith("datetime"):
+        return ColumnType.Datetime
+    return ColumnType.Unknown
+
+
 class PandasDataset(Dataset):
     _data: pd.DataFrame
     _data_definition: DataDefinition
@@ -399,8 +449,49 @@ class PandasDataset(Dataset):
         data_definition: Optional[DataDefinition] = None,
     ):
         self._data = data
-        if data_definition is None:
-            self._data_definition = self._generate_data_definition(data)
+        if (
+            data_definition is None
+            or data_definition.datetime_columns is None
+            or data_definition.categorical_columns is None
+            or data_definition.text_columns is None
+            or data_definition.numerical_columns is None
+        ):
+            reserved_fields = []
+            if data_definition is not None:
+                if data_definition.timestamp is not None:
+                    reserved_fields.append(data_definition.timestamp)
+                if data_definition.id_column is not None:
+                    reserved_fields.append(data_definition.id_column)
+                if data_definition.numerical_columns is not None:
+                    reserved_fields.extend(data_definition.numerical_columns)
+                if data_definition.categorical_columns is not None:
+                    reserved_fields.extend(data_definition.categorical_columns)
+                if data_definition.datetime_columns is not None:
+                    reserved_fields.extend(data_definition.datetime_columns)
+                if data_definition.text_columns is not None:
+                    reserved_fields.extend(data_definition.text_columns)
+                if data_definition.numerical_descriptors is not None:
+                    reserved_fields.extend(data_definition.numerical_descriptors)
+                if data_definition.categorical_descriptors is not None:
+                    reserved_fields.extend(data_definition.categorical_descriptors)
+            generated_data_definition = self._generate_data_definition(data, reserved_fields)
+            if data_definition is None:
+                self._data_definition = generated_data_definition
+            else:
+                self._data_definition = copy.deepcopy(data_definition)
+                if self._data_definition.datetime_columns is None:
+                    if self._data_definition.timestamp is not None and generated_data_definition.timestamp is not None:
+                        self._data_definition.datetime_columns = [generated_data_definition.timestamp]
+                    else:
+                        self._data_definition.datetime_columns = generated_data_definition.datetime_columns
+                if self._data_definition.numerical_columns is None:
+                    self._data_definition.numerical_columns = generated_data_definition.numerical_columns
+                if self._data_definition.categorical_columns is None:
+                    self._data_definition.categorical_columns = generated_data_definition.categorical_columns
+                if self._data_definition.text_columns is None:
+                    self._data_definition.text_columns = generated_data_definition.text_columns
+                if self._data_definition.timestamp is None and generated_data_definition.timestamp is not None:
+                    self._data_definition.timestamp = generated_data_definition.timestamp
         else:
             self._data_definition = copy.deepcopy(data_definition)
         (rows, columns) = data.shape
@@ -419,8 +510,32 @@ class PandasDataset(Dataset):
     def subdataset(self, column_name: str, label: object):
         return PandasDataset(self._data[self._data[column_name] == label], self._data_definition)
 
-    def _generate_data_definition(self, data: pd.DataFrame) -> DataDefinition:
-        raise NotImplementedError()
+    def _generate_data_definition(self, data: pd.DataFrame, reserved_fields: List[str]) -> DataDefinition:
+        numerical = []
+        categorical = []
+        text = []
+        datetime = []
+
+        for column in data.columns:
+            if column in reserved_fields:
+                continue
+            column_type = infer_column_type(data[column])
+            if column_type == ColumnType.Numerical:
+                numerical.append(column)
+            if column_type == ColumnType.Categorical:
+                categorical.append(column)
+            if column_type == ColumnType.Datetime:
+                datetime.append(column)
+            if column_type == ColumnType.Text:
+                text.append(column)
+
+        return DataDefinition(
+            timestamp=datetime[0] if len(datetime) == 1 else None,
+            numerical_columns=numerical,
+            categorical_columns=categorical,
+            datetime_columns=datetime if len(datetime) != 1 else [],
+            text_columns=text,
+        )
 
     def stats(self) -> DatasetStats:
         return self._dataset_stats

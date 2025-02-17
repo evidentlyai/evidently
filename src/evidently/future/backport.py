@@ -18,6 +18,7 @@ from evidently.core import new_id
 from evidently.future.datasets import DataDefinition
 from evidently.future.datasets import Dataset
 from evidently.future.metric_types import BoundTest
+from evidently.future.metric_types import ByLabelCountValue
 from evidently.future.metric_types import ByLabelValue
 from evidently.future.metric_types import CountValue
 from evidently.future.metric_types import MeanStdValue
@@ -89,6 +90,15 @@ class ByLabelValueV1(MetricResultV2Adapter):
     values: Dict[Label, Union[float, int, bool, str]]
 
 
+class ByLabelCountValueV1(MetricResultV2Adapter):
+    class Config:
+        type_alias = "evidently:metric_result:ByLabelCountValueV1"
+        field_tags = {"values": {IncludeTags.Render}}
+
+    counts: Dict[Label, int]
+    shares: Dict[Label, float]
+
+
 class CountValueV1(MetricResultV2Adapter):
     class Config:
         type_alias = "evidently:metric_result:CountValueV1"
@@ -122,6 +132,12 @@ def metric_result_v2_to_v1(metric_result: MetricResultV2, ignore_widget: bool = 
         return ByLabelValueV1(
             widget=_create_metric_result_widget(metric_result, ignore_widget),
             values=metric_result.values,
+        )
+    if isinstance(metric_result, ByLabelCountValue):
+        return ByLabelCountValueV1(
+            widget=_create_metric_result_widget(metric_result, ignore_widget),
+            counts=metric_result.counts,
+            shares=metric_result.shares,
         )
     if isinstance(metric_result, CountValue):
         return CountValueV1(

@@ -337,7 +337,7 @@ class CompletenessLLMEval(BinaryClassificationLLMEval):
         -----source_starts-----
         {context}
         -----source_finishes-----""",
-        target_category="IMCOMPLETE",
+        target_category="INCOMPLETE",
         non_target_category="COMPLETE",
         uncertainty="unknown",
         include_reasoning=True,

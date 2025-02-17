@@ -181,7 +181,7 @@ def test_value_count_metrics(sample_dataset):
             CategoryCount(
                 column="column_2",
                 category="a",
-                count_tests=[
+                tests=[
                     eq(1),
                     lte(2),
                     lte(Reference(relative=0.1)),
