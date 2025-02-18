@@ -8,6 +8,7 @@ from typing import Optional
 from evidently.core import ColumnType
 from evidently.future.container import ColumnMetricContainer
 from evidently.future.container import MetricContainer
+from evidently.future.container import MetricOrContainer
 from evidently.future.metric_types import ByLabelCountValue
 from evidently.future.metric_types import ByLabelMetricTests
 from evidently.future.metric_types import Metric
@@ -67,7 +68,7 @@ class ValueStats(ColumnMetricContainer):
         self._q75_tests = q75_tests
         self._unique_values_count_tests = unique_values_count_tests
 
-    def generate_metrics(self, context: Context) -> List[Metric]:
+    def generate_metrics(self, context: Context) -> List[MetricOrContainer]:
         metrics: List[Metric] = [
             RowCount(tests=self._row_count_tests),
             MissingValueCount(column=self._column, tests=self._missing_values_count_tests),
@@ -318,7 +319,7 @@ class DatasetStats(MetricContainer):
         self.column_count_tests = column_count_tests
         self.row_count_tests = row_count_tests
 
-    def generate_metrics(self, context: Context) -> List[Metric]:
+    def generate_metrics(self, context: Context) -> List[MetricOrContainer]:
         return [
             RowCount(tests=self.row_count_tests),
             ColumnCount(tests=self.column_count_tests),
@@ -370,7 +371,7 @@ class TextEvals(MetricContainer):
         self._row_count_tests = row_count_tests
         self._column_tests = column_tests
 
-    def generate_metrics(self, context: Context) -> List[Metric]:
+    def generate_metrics(self, context: Context) -> List[MetricOrContainer]:
         if self._columns is None:
             cols = context.data_definition.numerical_descriptors + context.data_definition.categorical_descriptors
         else:
@@ -418,7 +419,7 @@ class DataSummaryPreset(MetricContainer):
         self._columns = columns
         self._column_tests = column_tests
 
-    def generate_metrics(self, context: Context) -> List[Metric]:
+    def generate_metrics(self, context: Context) -> List[MetricOrContainer]:
         columns_ = context.data_definition.get_categorical_columns() + context.data_definition.get_numerical_columns()
         self._dataset_stats = DatasetStats(
             row_count_tests=self.row_count_tests,

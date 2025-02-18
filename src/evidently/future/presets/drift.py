@@ -6,7 +6,7 @@ from evidently.calculations.stattests import PossibleStatTestType
 from evidently.calculations.stattests import StatTest
 from evidently.core import ColumnType
 from evidently.future.container import MetricContainer
-from evidently.future.metric_types import Metric
+from evidently.future.container import MetricOrContainer
 from evidently.future.metric_types import MetricId
 from evidently.future.metric_types import MetricResult
 from evidently.future.metrics import ValueDrift
@@ -53,7 +53,7 @@ class DataDriftPreset(MetricContainer):
         self.embeddings = embeddings
         self.columns = columns
 
-    def generate_metrics(self, context: Context) -> List[Metric]:
+    def generate_metrics(self, context: Context) -> List[MetricOrContainer]:
         types = [ColumnType.Numerical, ColumnType.Categorical, ColumnType.Text]
         options = DataDriftOptions(
             drift_share=self.drift_share,

@@ -9,8 +9,8 @@ from typing import Union
 from evidently import ColumnType
 from evidently.future.container import ColumnMetricContainer
 from evidently.future.container import MetricContainer
+from evidently.future.container import MetricOrContainer
 from evidently.future.metric_types import ColumnMetric
-from evidently.future.metric_types import Metric
 from evidently.future.report import Context
 
 ColumnTypeStr = Union[ColumnType, str]
@@ -29,10 +29,10 @@ class ColumnMetricGenerator(MetricContainer):
         self.column_types = column_types
         self.metric_kwargs = metric_kwargs or {}
 
-    def _instantiate_metric(self, column: str) -> Union[Metric, MetricContainer]:
+    def _instantiate_metric(self, column: str) -> MetricOrContainer:
         return self.metric_type(column=column, **self.metric_kwargs)
 
-    def generate_metrics(self, context: "Context") -> List[Metric]:
+    def generate_metrics(self, context: "Context") -> List[MetricOrContainer]:
         if self.columns is not None:
             column_list = self.columns
         else:
