@@ -1,4 +1,5 @@
 import abc
+import itertools
 import typing
 from typing import Dict
 from typing import List
@@ -16,27 +17,24 @@ MetricOrContainer = typing.Union[Metric, "MetricContainer"]
 
 
 class MetricContainer(abc.ABC):
-    _metrics: Optional[List[MetricOrContainer]] = None
+    _metrics: Optional[List[Metric]] = None
 
     @abc.abstractmethod
     def generate_metrics(self, context: "Context") -> List[MetricOrContainer]:
         raise NotImplementedError()
 
-    def metrics(self, context: "Context") -> List[MetricOrContainer]:
+    def metrics(self, context: "Context") -> List[Metric]:
         if self._metrics is None:
-            self._metrics = self.generate_metrics(context)
+            metrics = self.generate_metrics(context)
+            self._metrics = [
+                m for m_or_c in metrics for m in ((m_or_c,) if isinstance(m_or_c, Metric) else m_or_c.metrics(context))
+            ]
         return self._metrics
 
     def render(self, context: "Context", results: Dict[MetricId, MetricResult]) -> List[BaseWidgetInfo]:
         if self._metrics is None:
             raise ValueError("Metrics weren't composed in container")
-        result: List[BaseWidgetInfo] = []
-        for metric in self._metrics:
-            if isinstance(metric, Metric):
-                result.extend(results[metric.to_calculation().id].widget)
-            else:
-                result.extend(metric.render(context, results))
-        return result
+        return list(itertools.chain(*[results[metric.to_calculation().id].widget for metric in self._metrics]))
 
 
 class ColumnMetricContainer(MetricContainer, abc.ABC):
