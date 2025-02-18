@@ -19,45 +19,21 @@ import {
   Typography
 } from '@mui/material'
 
-import {
-  Outlet,
-  Link as RouterLink,
-  type ShouldRevalidateFunction,
-  useLoaderData,
-  useMatches,
-  useNavigation,
-  useParams,
-  useSearchParams,
-  useSubmit
-} from 'react-router-dom'
-
 import { useLocalStorage } from '@uidotdev/usehooks'
 
 import { Delete as DeleteIcon } from '@mui/icons-material'
 import { Autocomplete } from '@mui/material'
-import dayjs from 'dayjs'
-import invariant from 'tiny-invariant'
-import type { z } from 'zod'
-import type { MetadataModel, ReportModel } from '~/api/types'
-import type { crumbFunction } from '~/components/BreadCrumbs'
+import type { DownloadSnapshotURL, MetadataModel, ReportModel, TestSuiteModel } from '~/api/types'
 import { DownloadButton } from '~/components/DownloadButton'
 import { HidedTags } from '~/components/HidedTags'
 import { JsonViewThemed } from '~/components/JsonView'
 import { TextWithCopyIcon } from '~/components/TextWithCopyIcon'
 import { useUpdateQueryStringValueWithoutNavigation } from '~/hooks/useUpdateQueryStringValueWithoutNavigation'
-import type { deleteSnapshotSchema, reloadSnapshotSchema } from './data'
-import type { ReportsLoaderData, TestSuitesLoaderData } from './data'
 
-export const shouldRevalidate: ShouldRevalidateFunction = () => true
-
-type LoaderData = ReportsLoaderData | TestSuitesLoaderData
-
-export const handle: { crumb: crumbFunction<LoaderData> } = {
-  crumb: (_, { pathname }) => ({
-    to: pathname,
-    linkText: pathname.split('/').reverse()[0] === 'reports' ? 'Reports' : 'Test Suites'
-  })
-}
+import dayjs from 'dayjs'
+import 'dayjs/locale/en-gb'
+import localizedFormat from 'dayjs/plugin/localizedFormat'
+dayjs.extend(localizedFormat)
 
 const metadataToOneString: (metadata: MetadataModel) => string = (metadata: MetadataModel) =>
   Object.values(metadata)
@@ -75,41 +51,41 @@ const metadataToOneString: (metadata: MetadataModel) => string = (metadata: Meta
     .join(' ')
 
 export const SnapshotsListTemplate = ({
+  query,
   type,
   slots,
+  snapshots,
+  disabled,
+  projectId,
+  LinkToSnapshot,
+  onReloadSnapshots,
+  onDeleteSnapshot,
   ActionsWrapper = ({ children }) => <>{children}</>
 }: {
+  query: Partial<Record<string, string>>
+  projectId: string
+  disabled?: boolean
+  snapshots: ReportModel[] | TestSuiteModel[]
   type: 'reports' | 'test suites'
+  LinkToSnapshot: (props: { snapshotId: string; projectId: string }) => JSX.Element
   ActionsWrapper?: ({
     children,
     snapshot
   }: { children: React.ReactNode; snapshot: ReportModel }) => JSX.Element
   slots?: {
     additionalSnapshotActions?: (args: { snapshotId: string; projectId: string }) => JSX.Element
-    ViewButton?: (args: { snapshotId: string; projectId: string }) => JSX.Element
     donwloadButtonVariant?: ButtonOwnProps['variant']
   }
+  onReloadSnapshots: () => void
+  onDeleteSnapshot: ({ snapshotId }: { snapshotId: string }) => void
 }) => {
-  const { projectId } = useParams()
-  const snapshots = useLoaderData() as LoaderData
-  const matches = useMatches()
-  const submit = useSubmit()
-  const navigation = useNavigation()
-  const isNavigation = navigation.state !== 'idle'
-
-  invariant(projectId, 'missing projectId')
-
-  const [searchParams] = useSearchParams()
   const [sortByTimestamp, setSortByTimestamp] = useState<undefined | 'desc' | 'asc'>('desc')
   const [isCollapsedJson, setIsCollapsedJson] = useLocalStorage('show-full-json-metadata', false)
-  const [selectedTags, setTags] = useState(() => searchParams.get('tags')?.split(',') || [])
-  const [metadataQuery, setMetadataQuery] = useState(() => searchParams.get('metadata-query') || '')
+  const [selectedTags, setTags] = useState(() => query.tags?.split(',') || [])
+  const [metadataQuery, setMetadataQuery] = useState(() => query['metadata-query'] || '')
 
   useUpdateQueryStringValueWithoutNavigation('tags', selectedTags.join(','))
   useUpdateQueryStringValueWithoutNavigation('metadata-query', String(metadataQuery))
-
-  // @ts-ignore
-  const hideSnapshotsList = matches.find(({ handle }) => handle?.hide?.snapshotList === true)
 
   const ALL_TAGS = useMemo(
     () => Array.from(new Set(snapshots.flatMap(({ tags }) => tags))),
@@ -154,10 +130,6 @@ export const SnapshotsListTemplate = ({
     [filteredSnapshotsByMetadata, sortByTimestamp]
   )
 
-  if (hideSnapshotsList) {
-    return <Outlet />
-  }
-
   const FilterComponent = (
     <Box sx={{ padding: 2 }}>
       <Grid container gap={2} alignItems={'flex-end'} justifyContent={'space-around'}>
@@ -197,14 +169,11 @@ export const SnapshotsListTemplate = ({
               <Button
                 sx={{ minWidth: 160 }}
                 variant='outlined'
-                onClick={() =>
-                  submit(
-                    { action: 'reload-snapshots' } satisfies z.infer<typeof reloadSnapshotSchema>,
-                    { method: 'post', replace: true, encType: 'application/json' }
-                  )
-                }
+                onClick={() => {
+                  onReloadSnapshots()
+                }}
                 color='primary'
-                disabled={isNavigation}
+                disabled={disabled}
               >
                 refresh {type}
               </Button>
@@ -304,22 +273,19 @@ export const SnapshotsListTemplate = ({
                 <Box display={'flex'} justifyContent={'center'} gap={1}>
                   <ActionsWrapper snapshot={snapshot}>
                     <>
-                      {slots?.ViewButton ? (
-                        <slots.ViewButton snapshotId={snapshot.id} projectId={projectId} />
-                      ) : (
-                        <Button
-                          disabled={isNavigation}
-                          component={RouterLink}
-                          to={`${snapshot.id}`}
-                        >
-                          View
-                        </Button>
-                      )}
+                      <LinkToSnapshot snapshotId={snapshot.id} projectId={projectId} />
 
                       <DownloadButton
                         variant={slots?.donwloadButtonVariant || 'outlined'}
-                        disabled={isNavigation}
-                        downloadLink={`/api/projects/${projectId}/${snapshot.id}/download`}
+                        disabled={disabled ?? false}
+                        downloadLink={
+                          // better type safety
+                          (
+                            '/api/projects/{project_id}/{snapshot_id}/download' satisfies DownloadSnapshotURL
+                          )
+                            .replace('{project_id}', projectId)
+                            .replace('{snapshot_id}', snapshot.id)
+                        }
                       />
 
                       {slots?.additionalSnapshotActions && (
@@ -334,17 +300,11 @@ export const SnapshotsListTemplate = ({
                           <IconButton
                             onClick={() => {
                               if (confirm('Are you sure?') === true) {
-                                submit(
-                                  {
-                                    action: 'delete-snapshot',
-                                    snapshotId: snapshot.id
-                                  } satisfies z.infer<typeof deleteSnapshotSchema>,
-                                  { method: 'post', replace: true, encType: 'application/json' }
-                                )
+                                onDeleteSnapshot({ snapshotId: snapshot.id })
                               }
                             }}
                             color='primary'
-                            disabled={isNavigation}
+                            disabled={disabled}
                           >
                             <DeleteIcon />
                           </IconButton>

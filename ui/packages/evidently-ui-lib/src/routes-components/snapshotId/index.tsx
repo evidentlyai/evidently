@@ -1,27 +1,17 @@
 import { Box } from '@mui/material'
-import { useLoaderData, useParams } from 'react-router-dom'
-import invariant from 'tiny-invariant'
 import type { AdditionalGraphInfo, WidgetInfo } from '~/api'
 import { JSONParseExtended } from '~/api/JsonParser'
 import { type API_CLIENT_TYPE, responseParser } from '~/api/client-heplers'
-import type { crumbFunction } from '~/components/BreadCrumbs'
+import type { DashboardInfoModel } from '~/api/types'
 import { SnapshotWidgets } from '~/components/WidgetsContent'
 import DashboardContext, { CreateDashboardContextState } from '~/contexts/DashboardContext'
-import type { LoaderData } from './data'
 
-export const handle: { crumb: crumbFunction<LoaderData>; hide: Record<string, boolean> } = {
-  crumb: (_, { pathname, params }) => ({ to: pathname, linkText: String(params.snapshotId) }),
-  hide: {
-    snapshotList: true
-  }
-}
-
-export const SnapshotTemplate = ({ api }: { api: API_CLIENT_TYPE }) => {
-  const { projectId, snapshotId } = useParams()
-  invariant(projectId, 'missing projectId')
-  invariant(snapshotId, 'missing snapshotId')
-
-  const data = useLoaderData() as LoaderData
+export const SnapshotTemplateComponent = ({
+  api,
+  data,
+  projectId,
+  snapshotId
+}: { api: API_CLIENT_TYPE; data: DashboardInfoModel; projectId: string; snapshotId: string }) => {
   return (
     <>
       <DashboardContext.Provider
