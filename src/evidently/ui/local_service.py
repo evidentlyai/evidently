@@ -7,6 +7,7 @@ from litestar import Response
 from litestar.di import Provide
 from litestar.logging import LoggingConfig
 
+from evidently.errors import EvidentlyError
 from evidently.ui.api.projects import create_projects_api
 from evidently.ui.api.projects import projects_api_dependencies
 from evidently.ui.api.service import service_api
@@ -28,6 +29,10 @@ def evidently_service_exception_handler(_: Request, exc: EvidentlyServiceError) 
     return exc.to_response()
 
 
+def evidently_exception_handler(_: Request, exc: EvidentlyError) -> Response:
+    return Response(content={"detail": exc.get_message()}, status_code=505)
+
+
 class LocalServiceComponent(ServiceComponent):
     debug: bool = False
 
@@ -47,6 +52,7 @@ class LocalServiceComponent(ServiceComponent):
         super().apply(ctx, builder)
         assert isinstance(ctx, ConfigContext)
         builder.exception_handlers[EvidentlyServiceError] = evidently_service_exception_handler
+        builder.exception_handlers[EvidentlyError] = evidently_exception_handler
         builder.kwargs["debug"] = self.debug
         if self.debug:
             log_config = create_logging()

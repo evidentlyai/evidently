@@ -156,7 +156,7 @@ class JsonOutputFormatBlock(OutputFormatBlock[Dict[str, Any]]):
                 sub = find_largest_json(response)
                 if sub is not None:
                     return sub
-            raise LLMResponseParseError(f"Failed to parse response '{response}' as json") from e
+            raise LLMResponseParseError("Failed to parse response as json", response) from e
 
 
 class StringListFormatBlock(OutputFormatBlock[List[str]]):
@@ -261,7 +261,7 @@ class PromptTemplate(EvidentlyBaseModel):
         output = self.get_output_format()
         parsed = output.parse_response(response)
         if keys is not None and set(keys) != set(parsed.keys()):
-            raise LLMResponseParseError(f"Keys {keys} are required but got {list(parsed.keys())}")
+            raise LLMResponseParseError(f"Keys {keys} are required but got {list(parsed.keys())}", response)
         return parsed
 
     def get_messages(self, values, template: Optional[str] = None) -> List[LLMMessage]:
