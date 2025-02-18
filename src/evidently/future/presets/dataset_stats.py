@@ -6,6 +6,7 @@ from typing import List
 from typing import Optional
 
 from evidently.core import ColumnType
+from evidently.future.container import ColumnMetricContainer
 from evidently.future.container import MetricContainer
 from evidently.future.metric_types import ByLabelCountValue
 from evidently.future.metric_types import ByLabelMetricTests
@@ -39,7 +40,7 @@ from evidently.model.widget import link_metric
 from evidently.renderers.html_widgets import rich_data
 
 
-class ValueStats(MetricContainer):
+class ValueStats(ColumnMetricContainer):
     def __init__(
         self,
         column: str,
@@ -54,7 +55,7 @@ class ValueStats(MetricContainer):
         q75_tests: SingleValueMetricTests = None,
         unique_values_count_tests: ByLabelMetricTests = None,
     ):
-        self._column = column
+        super().__init__(column=column)
         self._row_count_tests = row_count_tests
         self._missing_values_count_tests = missing_values_count_tests
         self._min_tests = min_tests

@@ -14,7 +14,7 @@ if typing.TYPE_CHECKING:
     from evidently.future.report import Context
 
 
-class MetricContainer:
+class MetricContainer(abc.ABC):
     _metrics: Optional[List[Metric]] = None
 
     @abc.abstractmethod
@@ -30,3 +30,8 @@ class MetricContainer:
         if self._metrics is None:
             raise ValueError("Metrics weren't composed in container")
         return list(itertools.chain(*[results[metric.to_calculation().id].widget for metric in self._metrics]))
+
+
+class ColumnMetricContainer(MetricContainer, abc.ABC):
+    def __init__(self, column: str):
+        self._column = column
