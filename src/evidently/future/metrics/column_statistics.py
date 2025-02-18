@@ -17,6 +17,7 @@ from evidently.future.metric_types import BoundTest
 from evidently.future.metric_types import ByLabelCountCalculation
 from evidently.future.metric_types import ByLabelCountMetric
 from evidently.future.metric_types import ByLabelCountValue
+from evidently.future.metric_types import ColumnMetric
 from evidently.future.metric_types import CountCalculation
 from evidently.future.metric_types import CountMetric
 from evidently.future.metric_types import CountValue
@@ -88,9 +89,7 @@ def distribution(
     ]
 
 
-class StatisticsMetric(SingleValueMetric):
-    column: str
-
+class StatisticsMetric(ColumnMetric, SingleValueMetric):
     def _default_tests_with_reference(self, context: Context) -> List[BoundTest]:
         return [eq(Reference(relative=0.1)).bind_single(self.get_fingerprint())]
 
@@ -202,11 +201,9 @@ class QuantileValueCalculation(StatisticsCalculation[QuantileValue]):
 CategoryCountLabel = Union[bool, Label]
 
 
-class CategoryCount(CountMetric):
+class CategoryCount(ColumnMetric, CountMetric):
     class Config:
         smart_union = True
-
-    column: str
 
     category: Optional[CategoryCountLabel] = None
     categories: List[CategoryCountLabel] = []
@@ -262,8 +259,7 @@ class CategoryCountCalculation(CountCalculation[CategoryCount]):
         return CountValue(value, value / total)
 
 
-class InRangeValueCount(CountMetric):
-    column: str
+class InRangeValueCount(ColumnMetric, CountMetric):
     left: Union[int, float]
     right: Union[int, float]
 
@@ -291,8 +287,7 @@ class InRangeValueCountCalculation(CountCalculation[InRangeValueCount]):
         return CountValue(value, value / total)
 
 
-class OutRangeValueCount(CountMetric):
-    column: str
+class OutRangeValueCount(ColumnMetric, CountMetric):
     left: Union[int, float]
     right: Union[int, float]
 
@@ -320,8 +315,7 @@ class OutRangeValueCountCalculation(CountCalculation[OutRangeValueCount]):
         return CountValue(total - value, (total - value) / total)
 
 
-class InListValueCount(CountMetric):
-    column: str
+class InListValueCount(ColumnMetric, CountMetric):
     values: List[Label]
 
     def _default_tests_with_reference(self, context: Context) -> List[BoundTest]:
@@ -348,8 +342,7 @@ class InListValueCountCalculation(CountCalculation[InListValueCount]):
         return CountValue(value, value / total)
 
 
-class OutListValueCount(CountMetric):
-    column: str
+class OutListValueCount(ColumnMetric, CountMetric):
     values: List[Label]
 
     def _default_tests_with_reference(self, context: Context) -> List[BoundTest]:
@@ -376,9 +369,7 @@ class OutListValueCountCalculation(CountCalculation[OutListValueCount]):
         return CountValue(total - value, (total - value) / total)
 
 
-class MissingValueCount(CountMetric):
-    column: str
-
+class MissingValueCount(ColumnMetric, CountMetric):
     def _default_tests(self, context: Context) -> List[BoundTest]:
         return [eq(0).bind_count(self.get_fingerprint(), is_count=True)]
 
@@ -406,8 +397,7 @@ class MissingValueCountCalculation(CountCalculation[MissingValueCount]):
         return CountValue(total - value, (total - value) / total)
 
 
-class ValueDrift(SingleValueMetric):
-    column: str
+class ValueDrift(ColumnMetric, SingleValueMetric):
     method: Optional[str] = None
     threshold: Optional[float] = None
 
@@ -643,8 +633,8 @@ class DriftedColumnCalculation(CountCalculation[DriftedColumnsCount], LegacyDrif
         return "Share of Drifted Columns"
 
 
-class UniqueValueCount(ByLabelCountMetric):
-    column: str
+class UniqueValueCount(ColumnMetric, ByLabelCountMetric):
+    pass
 
 
 class UniqueValueCountCalculation(ByLabelCountCalculation[UniqueValueCount]):
