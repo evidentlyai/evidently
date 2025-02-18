@@ -20,6 +20,7 @@ from requests import Response
 from requests import Session
 
 from evidently._pydantic_compat import parse_obj_as
+from evidently.errors import EvidentlyError
 from evidently.suite.base_suite import Snapshot
 from evidently.ui.api.service import EVIDENTLY_APPLICATION_NAME
 from evidently.ui.base import BlobMetadata
@@ -33,7 +34,6 @@ from evidently.ui.base import User
 from evidently.ui.dashboards.base import PanelValue
 from evidently.ui.dashboards.base import ReportFilter
 from evidently.ui.dashboards.test_suites import TestFilter
-from evidently.ui.errors import EvidentlyServiceError
 from evidently.ui.errors import ProjectNotFound
 from evidently.ui.managers.projects import ProjectManager
 from evidently.ui.storage.common import SECRET_HEADER_NAME
@@ -134,7 +134,7 @@ class RemoteBase:
         if response.status_code >= 400:
             try:
                 details = response.json()["detail"]
-                raise EvidentlyServiceError(details)
+                raise EvidentlyError(details)
             except ValueError:
                 pass
         response.raise_for_status()
