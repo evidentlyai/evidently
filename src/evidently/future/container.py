@@ -1,5 +1,4 @@
 import abc
-import itertools
 import typing
 from typing import Dict
 from typing import List
@@ -13,15 +12,17 @@ from evidently.model.widget import BaseWidgetInfo
 if typing.TYPE_CHECKING:
     from evidently.future.report import Context
 
+MetricOrContainer = typing.Union[Metric, "MetricContainer"]
+
 
 class MetricContainer(abc.ABC):
-    _metrics: Optional[List[Metric]] = None
+    _metrics: Optional[List[MetricOrContainer]] = None
 
     @abc.abstractmethod
-    def generate_metrics(self, context: "Context") -> List[Metric]:
+    def generate_metrics(self, context: "Context") -> List[MetricOrContainer]:
         raise NotImplementedError()
 
-    def metrics(self, context: "Context") -> List[Metric]:
+    def metrics(self, context: "Context") -> List[MetricOrContainer]:
         if self._metrics is None:
             self._metrics = self.generate_metrics(context)
         return self._metrics
@@ -29,7 +30,13 @@ class MetricContainer(abc.ABC):
     def render(self, context: "Context", results: Dict[MetricId, MetricResult]) -> List[BaseWidgetInfo]:
         if self._metrics is None:
             raise ValueError("Metrics weren't composed in container")
-        return list(itertools.chain(*[results[metric.to_calculation().id].widget for metric in self._metrics]))
+        result: List[BaseWidgetInfo] = []
+        for metric in self._metrics:
+            if isinstance(metric, Metric):
+                result.extend(results[metric.to_calculation().id].widget)
+            else:
+                result.extend(metric.render(context, results))
+        return result
 
 
 class ColumnMetricContainer(MetricContainer, abc.ABC):
