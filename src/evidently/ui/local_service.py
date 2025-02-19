@@ -30,7 +30,7 @@ def evidently_service_exception_handler(_: Request, exc: EvidentlyServiceError) 
 
 
 def evidently_exception_handler(_: Request, exc: EvidentlyError) -> Response:
-    return Response(content={"detail": exc.get_message()}, status_code=505)
+    return Response(content={"detail": exc.get_message()}, status_code=500)
 
 
 class LocalServiceComponent(ServiceComponent):
