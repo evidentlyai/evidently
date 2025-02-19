@@ -3,6 +3,7 @@ from typing import Dict
 from typing import List
 from typing import Literal
 from typing import Optional
+from typing import Sequence
 from typing import Type
 from typing import Union
 
@@ -32,7 +33,7 @@ class ColumnMetricGenerator(MetricContainer):
     def _instantiate_metric(self, column: str) -> MetricOrContainer:
         return self.metric_type(column=column, **self.metric_kwargs)
 
-    def generate_metrics(self, context: "Context") -> List[MetricOrContainer]:
+    def generate_metrics(self, context: "Context") -> Sequence[MetricOrContainer]:
         if self.columns is not None:
             column_list = self.columns
         else:
