@@ -1,6 +1,7 @@
 from typing import Dict
 from typing import List
 from typing import Optional
+from typing import Sequence
 
 from evidently.calculations.stattests import PossibleStatTestType
 from evidently.calculations.stattests import StatTest
@@ -53,7 +54,7 @@ class DataDriftPreset(MetricContainer):
         self.embeddings = embeddings
         self.columns = columns
 
-    def generate_metrics(self, context: Context) -> List[MetricOrContainer]:
+    def generate_metrics(self, context: Context) -> Sequence[MetricOrContainer]:
         types = [ColumnType.Numerical, ColumnType.Categorical, ColumnType.Text]
         options = DataDriftOptions(
             drift_share=self.drift_share,

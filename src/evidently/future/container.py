@@ -1,26 +1,28 @@
 import abc
 import itertools
-import typing
+from typing import TYPE_CHECKING
 from typing import Dict
 from typing import List
 from typing import Optional
+from typing import Sequence
+from typing import Union
 
 from evidently.future.metric_types import Metric
 from evidently.future.metric_types import MetricId
 from evidently.future.metric_types import MetricResult
 from evidently.model.widget import BaseWidgetInfo
 
-if typing.TYPE_CHECKING:
+if TYPE_CHECKING:
     from evidently.future.report import Context
 
-MetricOrContainer = typing.Union[Metric, "MetricContainer"]
+MetricOrContainer = Union[Metric, "MetricContainer"]
 
 
 class MetricContainer(abc.ABC):
     _metrics: Optional[List[Metric]] = None
 
     @abc.abstractmethod
-    def generate_metrics(self, context: "Context") -> List[MetricOrContainer]:
+    def generate_metrics(self, context: "Context") -> Sequence[MetricOrContainer]:
         raise NotImplementedError()
 
     def metrics(self, context: "Context") -> List[Metric]:
