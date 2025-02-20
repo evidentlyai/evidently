@@ -247,9 +247,7 @@ class CategoryCountCalculation(CountCalculation[CategoryCount]):
         column = dataset.column(self.metric.column)
         try:
             counts = column.data.value_counts()
-            if len(counts) == len(self.metric.categories):
-                value = len(column.data)
-            elif all(isinstance(c, bool) for c in self.metric.categories):
+            if all(isinstance(c, bool) for c in self.metric.categories):
                 value = counts[self.metric.categories[0]]  # only one boolean label is possible here
             else:
                 value = counts.loc[self.metric.categories].sum()  # type: ignore[index]
