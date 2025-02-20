@@ -1,9 +1,12 @@
+from abc import abstractmethod
+
 from litestar import Response
 
 from evidently.errors import EvidentlyError
 
 
 class EvidentlyServiceError(EvidentlyError):
+    @abstractmethod
     def to_response(self) -> Response:
         raise NotImplementedError
 

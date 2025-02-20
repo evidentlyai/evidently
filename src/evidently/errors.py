@@ -1,2 +1,3 @@
 class EvidentlyError(Exception):
-    pass
+    def get_message(self):
+        return f"{self.__class__.__name__}: {self}"
