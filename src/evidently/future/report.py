@@ -17,6 +17,7 @@ from evidently.base_metric import Metric as LegacyMetric
 from evidently.base_metric import MetricResult as LegacyMetricResult
 from evidently.core import ColumnType
 from evidently.future.container import MetricContainer
+from evidently.future.container import MetricOrContainer
 from evidently.future.datasets import BinaryClassification
 from evidently.future.datasets import DataDefinition
 from evidently.future.datasets import Dataset
@@ -30,7 +31,6 @@ from evidently.future.metric_types import MetricTestResult
 from evidently.future.metric_types import SingleValueLocation
 from evidently.future.metric_types import metric_tests_widget
 from evidently.future.metric_types import render_widgets
-from evidently.future.preset_types import MetricPreset
 from evidently.model.widget import BaseWidgetInfo
 from evidently.model.widget import link_metric
 from evidently.pipeline.column_mapping import ColumnMapping
@@ -268,23 +268,14 @@ class Snapshot:
     def report(self) -> "Report":
         return self._report
 
-    def run(self, current_data: Dataset, reference_data: Optional[Dataset]):
-        self.context.init_dataset(current_data, reference_data)
-        metric_results = {}
+    def _run_items(
+        self, items: Sequence[MetricOrContainer], metric_results: Dict[MetricId, MetricResult]
+    ) -> Tuple[List[SnapshotItem], List[BaseWidgetInfo]]:
         widgets: List[BaseWidgetInfo] = []
         snapshot_items: List[SnapshotItem] = []
-        for item in self.report.items():
-            if isinstance(item, (MetricPreset,)):
-                for metric in item.metrics():
-                    calc = metric.to_calculation()
-                    metric_results[calc.id] = self.context.calculate_metric(calc)
-                widget = item.calculate(metric_results).widget
-                widgets.extend(widget)
-                snapshot_items.append(SnapshotItem(None, widget))
-            elif isinstance(item, (MetricContainer,)):
-                for metric in item.metrics(self.context):
-                    calc = metric.to_calculation()
-                    metric_results[calc.id] = self.context.calculate_metric(calc)
+        for item in items:
+            if isinstance(item, MetricContainer):
+                self._run_items(item.metrics(self.context), metric_results)
                 widget = item.render(self.context, results=metric_results)
                 widgets.extend(widget)
                 snapshot_items.append(SnapshotItem(None, widget))
@@ -294,8 +285,11 @@ class Snapshot:
                 widget = metric_results[calc.id].widget
                 widgets.extend(widget)
                 snapshot_items.append(SnapshotItem(calc.id, widget))
-        self._snapshot_item = snapshot_items
-        self._widgets = widgets
+        return snapshot_items, widgets
+
+    def run(self, current_data: Dataset, reference_data: Optional[Dataset]):
+        self.context.init_dataset(current_data, reference_data)
+        self._snapshot_item, self._widgets = self._run_items(self.report.items(), {})
 
     def _repr_html_(self):
         from evidently.renderers.html_widgets import group_widget
@@ -375,7 +369,7 @@ class Snapshot:
 class Report:
     def __init__(
         self,
-        metrics: List[Union[Metric, MetricPreset, MetricContainer]],
+        metrics: List[MetricOrContainer],
         metadata: Dict[str, MetadataValueType] = None,
         tags: List[str] = None,
         model_id: str = None,
@@ -411,7 +405,7 @@ class Report:
         snapshot.run(current_dataset, reference_dataset)
         return snapshot
 
-    def items(self) -> Sequence[Union[Metric, MetricPreset, MetricContainer]]:
+    def items(self) -> Sequence[MetricOrContainer]:
         return self._metrics
 
     def set_batch_size(self, batch_size: str):

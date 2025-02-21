@@ -1,8 +1,8 @@
-from typing import List
 from typing import Optional
 from typing import Sequence
 
 from evidently.future.container import MetricContainer
+from evidently.future.container import MetricOrContainer
 from evidently.future.datasets import Dataset
 from evidently.future.metric_types import BoundTest
 from evidently.future.metric_types import Metric
@@ -50,7 +50,7 @@ class GroupBy(MetricContainer):
         self._column_name = column_name
         self._metric = metric
 
-    def generate_metrics(self, context: Context) -> List[Metric]:
+    def generate_metrics(self, context: Context) -> Sequence[MetricOrContainer]:
         labels = context.column(self._column_name).labels()
         return [GroupByMetric(metric=self._metric, column_name=self._column_name, label=label) for label in labels]
 

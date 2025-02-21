@@ -1,10 +1,11 @@
 from typing import Dict
 from typing import List
 from typing import Optional
+from typing import Sequence
 
 from evidently.future.container import MetricContainer
+from evidently.future.container import MetricOrContainer
 from evidently.future.metric_types import MeanStdMetricTests
-from evidently.future.metric_types import Metric
 from evidently.future.metric_types import MetricId
 from evidently.future.metric_types import MetricResult
 from evidently.future.metric_types import SingleValueMetricTests
@@ -51,7 +52,7 @@ class RegressionQuality(MetricContainer):
         self._r2score_tests = r2score_tests
         self._abs_max_error_tests = abs_max_error_tests
 
-    def generate_metrics(self, context: Context) -> List[Metric]:
+    def generate_metrics(self, context: Context) -> Sequence[MetricOrContainer]:
         return [
             MeanError(mean_tests=self._mean_error_tests.mean, std_tests=self._mean_error_tests.std),
             MAPE(mean_tests=self._mape_tests.mean, std_tests=self._mape_tests.std),
@@ -97,7 +98,7 @@ class RegressionDummyQuality(MetricContainer):
         self._mape_tests = mape_tests
         self._rmse_tests = rmse_tests
 
-    def generate_metrics(self, context: Context) -> List[Metric]:
+    def generate_metrics(self, context: Context) -> Sequence[MetricOrContainer]:
         return [
             DummyMAE(tests=self._mae_tests),
             DummyMAPE(tests=self._mape_tests),
@@ -135,7 +136,7 @@ class RegressionPreset(MetricContainer):
         self._r2score_tests = r2score_tests
         self._abs_max_error_tests = abs_max_error_tests
 
-    def generate_metrics(self, context: Context) -> List[Metric]:
+    def generate_metrics(self, context: Context) -> Sequence[MetricOrContainer]:
         self._quality = RegressionQuality(
             True,
             True,

@@ -3,13 +3,15 @@ from typing import Dict
 from typing import List
 from typing import Literal
 from typing import Optional
+from typing import Sequence
 from typing import Type
 from typing import Union
 
 from evidently import ColumnType
+from evidently.future.container import ColumnMetricContainer
 from evidently.future.container import MetricContainer
+from evidently.future.container import MetricOrContainer
 from evidently.future.metric_types import ColumnMetric
-from evidently.future.metric_types import Metric
 from evidently.future.report import Context
 
 ColumnTypeStr = Union[ColumnType, str]
@@ -18,7 +20,7 @@ ColumnTypeStr = Union[ColumnType, str]
 class ColumnMetricGenerator(MetricContainer):
     def __init__(
         self,
-        metric_type: Type[ColumnMetric],
+        metric_type: Union[Type[ColumnMetric], Type[ColumnMetricContainer]],
         columns: Optional[List[str]] = None,
         column_types: Union[ColumnTypeStr, List[ColumnTypeStr], Literal["all"]] = "all",
         metric_kwargs: Optional[Dict[str, Any]] = None,
@@ -28,10 +30,10 @@ class ColumnMetricGenerator(MetricContainer):
         self.column_types = column_types
         self.metric_kwargs = metric_kwargs or {}
 
-    def _instantiate_metric(self, column: str) -> Metric:
+    def _instantiate_metric(self, column: str) -> MetricOrContainer:
         return self.metric_type(column=column, **self.metric_kwargs)
 
-    def generate_metrics(self, context: "Context") -> List[Metric]:
+    def generate_metrics(self, context: "Context") -> Sequence[MetricOrContainer]:
         if self.columns is not None:
             column_list = self.columns
         else:

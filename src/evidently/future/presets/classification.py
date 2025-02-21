@@ -1,8 +1,10 @@
 from typing import Dict
 from typing import List
 from typing import Optional
+from typing import Sequence
 
 from evidently.future.container import MetricContainer
+from evidently.future.container import MetricOrContainer
 from evidently.future.datasets import BinaryClassification
 from evidently.future.metric_types import ByLabelMetricTests
 from evidently.future.metric_types import Metric
@@ -71,7 +73,7 @@ class ClassificationQuality(MetricContainer):
         self._pr_curve = pr_curve
         self._pr_table = pr_table
 
-    def generate_metrics(self, context: "Context") -> List[Metric]:
+    def generate_metrics(self, context: "Context") -> Sequence[MetricOrContainer]:
         classification = context.data_definition.get_classification("default")
         if classification is None:
             raise ValueError("Cannot use ClassificationQuality without a classification data")
@@ -147,7 +149,7 @@ class ClassificationQualityByLabel(MetricContainer):
         self._recall_tests = recall_tests
         self._rocauc_tests = rocauc_tests
 
-    def generate_metrics(self, context: "Context") -> List[Metric]:
+    def generate_metrics(self, context: "Context") -> Sequence[MetricOrContainer]:
         classification = context.data_definition.get_classification("default")
         if classification is None:
             raise ValueError("Cannot use ClassificationPreset without a classification configration")
@@ -184,7 +186,7 @@ class ClassificationDummyQuality(MetricContainer):
         self._probas_threshold = probas_threshold
         self._k = k
 
-    def generate_metrics(self, context: "Context") -> List[Metric]:
+    def generate_metrics(self, context: "Context") -> Sequence[MetricOrContainer]:
         return [
             DummyPrecision(),
             DummyRecall(),
@@ -249,7 +251,7 @@ class ClassificationPreset(MetricContainer):
             tests=rocauc_tests,
         )
 
-    def generate_metrics(self, context: "Context") -> List[Metric]:
+    def generate_metrics(self, context: "Context") -> Sequence[MetricOrContainer]:
         classification = context.data_definition.get_classification("default")
         if classification is None:
             raise ValueError("Cannot use ClassificationPreset without a classification configration")
