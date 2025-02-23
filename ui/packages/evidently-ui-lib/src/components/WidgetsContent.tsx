@@ -66,7 +66,7 @@ const SnapshotWidgetsV2: React.FC<{ widgets: WidgetInfo[] }> = ({ widgets }) => 
           <Tooltip
             arrow
             placement='top'
-            title='This report contains both mertics and tests. You can switch between them'
+            title='This report contains both metrics and tests. You can switch between them'
           >
             <IconButton size='small'>
               <InfoOutlinedIcon fontSize='inherit' />
