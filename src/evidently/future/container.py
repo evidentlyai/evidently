@@ -37,7 +37,7 @@ class MetricContainer(abc.ABC):
     ) -> List[BaseWidgetInfo]:
         if self._metrics is None:
             raise ValueError("Metrics weren't composed in container")
-        return list(itertools.chain(*[widget[1] for widget in child_widgets]))
+        return list(itertools.chain(*[widget[1] for widget in (child_widgets or [])]))
 
     def list_metrics(self) -> Generator[Metric, None, None]:
         if self._metrics is None:

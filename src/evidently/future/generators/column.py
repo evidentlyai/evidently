@@ -56,4 +56,4 @@ class ColumnMetricGenerator(MetricContainer):
         context: "Context",
         child_widgets: Optional[List[Tuple[Optional[MetricId], List[BaseWidgetInfo]]]] = None,
     ) -> List[BaseWidgetInfo]:
-        return list(chain(*[widget[1] for widget in child_widgets]))
+        return list(chain(*[widget[1] for widget in (child_widgets or [])]))
