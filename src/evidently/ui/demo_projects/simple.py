@@ -3,8 +3,8 @@ from datetime import timedelta
 
 import pandas as pd
 
-from evidently import ColumnMapping
 from evidently import metrics
+from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.renderers.html_widgets import WidgetSize
 from evidently.report import Report
 from evidently.ui.dashboards import CounterAgg
@@ -66,6 +66,7 @@ def create_project(workspace: WorkspaceBase, name: str):
 
 simple_demo_project = DemoProject(
     name="Demo project - Simple",
+    create_snapshot=None,
     create_data=create_data,
     create_report=create_report,
     create_project=create_project,

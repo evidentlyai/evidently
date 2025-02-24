@@ -3,9 +3,9 @@ from typing import Optional
 
 import pandas as pd
 
-from evidently import ColumnType
 from evidently._pydantic_compat import PrivateAttr
 from evidently.base_metric import ColumnName
+from evidently.core import ColumnType
 from evidently.features.feature_generator import FeatureGenerator
 from evidently.features.generated_features import GeneratedFeatures
 from evidently.metrics import ColumnSummaryMetric

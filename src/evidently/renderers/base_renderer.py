@@ -74,6 +74,7 @@ class DetailsInfo:
 class TestHtmlInfo:
     name: str
     description: str
+    test_fingerprint: str
     status: str
     details: List[DetailsInfo]
     groups: Dict[str, str]
@@ -98,6 +99,7 @@ class TestRenderer(Generic[TTest], BaseRenderer):
         return TestHtmlInfo(
             name=result.name,
             description=self.html_description(obj),
+            test_fingerprint=obj.get_fingerprint(),
             status=result.status.value,
             details=[],
             groups=obj.get_groups(),

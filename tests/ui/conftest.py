@@ -11,12 +11,12 @@ from litestar.testing import TestClient
 from evidently._pydantic_compat import BaseModel
 from evidently.ui.app import create_app
 from evidently.ui.base import Project
-from evidently.ui.base import ProjectManager
 from evidently.ui.components.base import Component
 from evidently.ui.components.base import ComponentContext
 from evidently.ui.components.storage import LocalStorageComponent
 from evidently.ui.local_service import LocalConfig
 from evidently.ui.local_service import LocalServiceComponent
+from evidently.ui.managers.projects import ProjectManager
 from evidently.ui.security.service import SecurityService
 from evidently.utils import NumpyEncoder
 

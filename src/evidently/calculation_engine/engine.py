@@ -12,7 +12,6 @@ from typing import Type
 from typing import TypeVar
 from typing import Union
 
-from evidently import ColumnMapping
 from evidently.base_metric import ErrorResult
 from evidently.base_metric import GenericInputData
 from evidently.base_metric import Metric
@@ -22,6 +21,7 @@ from evidently.calculation_engine.metric_implementation import MetricImplementat
 from evidently.features.generated_features import FeatureResult
 from evidently.features.generated_features import GeneratedFeatures
 from evidently.options.base import Options
+from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.pydantic_utils import Fingerprint
 from evidently.utils.data_preprocessing import DataDefinition
 

@@ -2,8 +2,8 @@ import json
 
 import pandas as pd
 
-from evidently import ColumnType
 from evidently.base_metric import ColumnName
+from evidently.core import ColumnType
 from evidently.features.generated_features import FeatureTypeFieldMixin
 from evidently.features.generated_features import GeneratedFeature
 from evidently.utils.data_preprocessing import DataDefinition

@@ -1,8 +1,8 @@
 import {
   Box,
   Button,
+  Collapse,
   IconButton,
-  Link,
   Paper,
   TextField,
   ToggleButton,
@@ -10,8 +10,8 @@ import {
   Typography
 } from '@mui/material'
 import type React from 'react'
-import { useEffect, useState } from 'react'
-import { Form, Link as RouterLink, useNavigation, useSubmit } from 'react-router-dom'
+import { useEffect } from 'react'
+import { Form } from 'react-router-dom'
 
 import { Add as AddIcon } from '@mui/icons-material'
 
@@ -31,20 +31,14 @@ const editProjectInfoSchema = z.object({
 })
 
 export const EditProjectInfoForm = ({
-  project,
-  action
-}:
-  | {
-      action: 'edit-project'
-      project: StrictID<ProjectModel>
-    }
-  | {
-      action: 'create-new-project'
-      project: Omit<ProjectModel, 'id'>
-    }) => {
-  const navigation = useNavigation()
-  const isDisabled = navigation.state !== 'idle'
-
+  defaultValues,
+  onSuccess,
+  disabled
+}: {
+  defaultValues: z.infer<typeof editProjectInfoSchema>
+  onSuccess: (v: z.infer<typeof editProjectInfoSchema>) => void
+  disabled?: boolean
+}) => {
   const {
     setFocus,
     register,
@@ -52,40 +46,17 @@ export const EditProjectInfoForm = ({
     formState: { errors, dirtyFields }
   } = useForm<z.infer<typeof editProjectInfoSchema>>({
     resolver: zodResolver(editProjectInfoSchema),
-    defaultValues: {
-      name: project.name || '',
-      description: project.description || ''
-    }
+    defaultValues: defaultValues
   })
 
   const { palette } = useTheme()
-
-  // for form submitting
-  const submit = useSubmit()
 
   // focus on the firs input
   useEffect(() => setFocus('name'), [setFocus])
 
   return (
     <>
-      <Form
-        onSubmit={handleSubmit(({ name, description }) =>
-          // here we inject the new `name` and `description`
-          // to project object, then it goes to the action
-
-          submit(
-            // @ts-ignore
-            {
-              ...project,
-              name,
-              description,
-              action: action
-            },
-            { method: 'put', replace: true, encType: 'application/json' }
-          )
-        )}
-        style={{ opacity: isDisabled ? 0.5 : 1 }}
-      >
+      <Form onSubmit={handleSubmit(onSuccess)} style={{ opacity: disabled ? 0.5 : 1 }}>
         {/* name */}
         <TextField
           {...register('name')}
@@ -95,7 +66,7 @@ export const EditProjectInfoForm = ({
           InputProps={{
             style: { color: palette.primary.main, fontSize: '20px', fontWeight: '500' }
           }}
-          disabled={isDisabled}
+          disabled={disabled}
           variant='standard'
         />
         {/* description */}
@@ -104,7 +75,7 @@ export const EditProjectInfoForm = ({
           error={Boolean(errors.description)}
           helperText={errors.description?.message}
           placeholder='Description'
-          disabled={isDisabled}
+          disabled={disabled}
           fullWidth
           // this `multiline` below causes Material-UI: Too many re-renders
           // multiline
@@ -115,7 +86,7 @@ export const EditProjectInfoForm = ({
           <Button
             variant='outlined'
             disabled={
-              isDisabled ||
+              disabled ||
               // we didn't touch any fields
               Object.keys(dirtyFields).length === 0 ||
               // error here
@@ -133,12 +104,16 @@ export const EditProjectInfoForm = ({
   )
 }
 
-export const ProjectInfoCard = ({ project }: { project: StrictID<ProjectModel> }) => {
+export const ProjectInfoCard = ({
+  project,
+  LinkToProject
+}: {
+  project: StrictID<ProjectModel>
+  LinkToProject: (props: { name: string; projectId: string }) => JSX.Element
+}) => {
   return (
     <>
-      <Link component={RouterLink} to={`projects/${project.id}`}>
-        <Typography variant={'h6'}>{project.name}</Typography>
-      </Link>
+      <LinkToProject projectId={project.id} name={project.name} />
       <Typography style={{ whiteSpace: 'pre-line' }} variant='body1'>
         {project.description}
       </Typography>
@@ -148,18 +123,23 @@ export const ProjectInfoCard = ({ project }: { project: StrictID<ProjectModel> }
 
 interface ProjectProps {
   project: StrictID<ProjectModel>
+  mode: 'edit' | 'view'
+  onAlterMode: () => void
+  onDeleteProject: (id: string) => void
+  onEditProject: (args: { name: string; description: string }) => void
+  disabled?: boolean
+  LinkToProject: (props: { name: string; projectId: string }) => JSX.Element
 }
 
-export const ProjectCard: React.FC<ProjectProps> = ({ project }) => {
-  const [isEditMode, setEditMode] = useState(false)
-
-  const navigation = useNavigation()
-  const isDisabled = navigation.state !== 'idle'
-  const submit = useSubmit()
-
-  // biome-ignore lint: project has changed -> set edit mode to false
-  useEffect(() => setEditMode(false), [project])
-
+export const ProjectCard: React.FC<ProjectProps> = ({
+  project,
+  mode,
+  disabled,
+  onAlterMode,
+  onDeleteProject,
+  onEditProject,
+  LinkToProject
+}) => {
   return (
     <Paper
       sx={{
@@ -186,16 +166,10 @@ export const ProjectCard: React.FC<ProjectProps> = ({ project }) => {
           columnGap={1}
         >
           <IconButton
-            disabled={isDisabled || isEditMode}
+            disabled={disabled || mode === 'edit'}
             onClick={() => {
               if (confirm('Are you sure you want to delete this project?') === true) {
-                submit(
-                  {
-                    projectId: project.id,
-                    action: 'delete-project'
-                  },
-                  { method: 'post', replace: true, encType: 'application/json' }
-                )
+                onDeleteProject(project.id)
               }
             }}
           >
@@ -203,68 +177,71 @@ export const ProjectCard: React.FC<ProjectProps> = ({ project }) => {
           </IconButton>
 
           <ToggleButton
-            disabled={isDisabled}
+            disabled={disabled}
             color='primary'
             value={'edit-mode'}
-            selected={isEditMode}
+            selected={mode === 'edit'}
             size='small'
             sx={{ border: 'none', borderRadius: '50%' }}
-            onChange={() => setEditMode((mode) => !mode)}
+            onChange={onAlterMode}
           >
             <EditIcon />
           </ToggleButton>
         </Box>
       </Box>
-      {isEditMode ? (
-        <EditProjectInfoForm project={project} action={'edit-project'} />
+      {mode === 'edit' ? (
+        <EditProjectInfoForm
+          defaultValues={{ name: project.name ?? '', description: project.description ?? '' }}
+          onSuccess={onEditProject}
+          disabled={disabled}
+        />
       ) : (
-        <ProjectInfoCard project={project} />
+        <ProjectInfoCard project={project} LinkToProject={LinkToProject} />
       )}
     </Paper>
   )
 }
 
-export const AddNewProjectButton = () => {
-  const [on, toggle] = useState(false)
-  const [wasSubmitting, toggleWasSubmitting] = useState(false)
-  const navigation = useNavigation()
-  const isDisabled = navigation.state !== 'idle'
+type AddNewProjectButtonProps = {
+  opened: boolean
+  alterOpened: () => void
+  disabled?: boolean
+  onEditProject: (args: { name: string; description: string }) => void
+}
 
-  if (!wasSubmitting && navigation.state === 'submitting') {
-    toggleWasSubmitting(true)
-  }
-
-  if (wasSubmitting && navigation.state === 'idle') {
-    toggleWasSubmitting(false)
-    toggle(false)
-  }
-
+export const AddNewProjectButton = ({
+  opened,
+  alterOpened,
+  disabled,
+  onEditProject
+}: AddNewProjectButtonProps) => {
   return (
     <Box py={2}>
       <Box display={'flex'} justifyContent={'center'}>
         <Tooltip title='Create new project'>
           <ToggleButton
             size='small'
-            selected={on}
-            disabled={isDisabled}
+            selected={opened}
+            disabled={disabled}
             color='primary'
             value={'check'}
             sx={{ border: 'none', borderRadius: '50%' }}
-            onChange={() => toggle((prev) => !prev)}
+            onChange={alterOpened}
           >
             <AddIcon />
           </ToggleButton>
         </Tooltip>
       </Box>
 
-      {on && (
+      <Collapse in={opened} unmountOnExit>
         <Box p={3} display={'flex'} flexDirection={'column'} rowGap={1}>
           <EditProjectInfoForm
-            project={{ name: '', description: '' }}
-            action='create-new-project'
+            disabled={disabled}
+            defaultValues={{ name: '', description: '' }}
+            onSuccess={onEditProject}
           />
         </Box>
-      )}
+      </Collapse>
     </Box>
   )
 }

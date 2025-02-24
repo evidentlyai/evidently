@@ -5,7 +5,6 @@ from typing import List
 from typing import Optional
 from typing import Type
 
-from evidently import ColumnMapping
 from evidently.base_metric import GenericInputData
 from evidently.calculation_engine.engine import Engine
 from evidently.calculation_engine.engine import EngineDatasets
@@ -13,6 +12,7 @@ from evidently.calculation_engine.python_engine import PythonEngine
 from evidently.features.generated_features import GeneratedFeatures
 from evidently.options.base import AnyOptions
 from evidently.options.base import Options
+from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.suite.base_suite import Runnable
 from evidently.suite.base_suite import Suite
 

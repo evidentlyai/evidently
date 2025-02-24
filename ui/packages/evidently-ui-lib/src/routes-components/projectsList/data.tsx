@@ -1,60 +1,34 @@
-import { z } from 'zod'
-import { type API_CLIENT_TYPE, responseParser } from '~/api/client-heplers'
+import { type API, responseParser } from '~/api/client-heplers'
 import type { ProjectModel } from '~/api/types'
 
 import type { StrictID } from '~/api/types/utils'
-import { type GetLoaderAction, ensureID, expectJsonRequest } from '~/api/utils'
+import { ensureIDInArray } from '~/api/utils'
+import type { ActionArgs } from '~/router-utils/types'
 
-export type LoaderData = StrictID<ProjectModel>[]
+export const getProjects = ({ api }: API) =>
+  api.GET('/api/projects').then(responseParser()).then(ensureIDInArray)
 
-export const editProjectSchema = z.object({
-  action: z.literal('edit-project')
-})
-
-export const createNewProjectSchema = z.object({
-  action: z.literal('create-new-project')
-})
-
-export const deleteProjectAction = z.object({
-  action: z.literal('delete-project'),
-  projectId: z.string().uuid()
-})
-
-export const getLoaderAction: GetLoaderAction<API_CLIENT_TYPE, LoaderData> = ({ api }) => ({
-  loader: () =>
+export const getProjectsListActions = ({ api }: API) => ({
+  'delete-project': (args: ActionArgs<{ data: { project_id: string } }>) =>
     api
-      .GET('/api/projects')
-      .then(responseParser())
-      .then((p) => p.map(ensureID)),
-
-  action: async ({ request }) => {
-    expectJsonRequest(request)
-
-    // TODO: fix this (ensure submit right data in right places)
-    const json = (await request.json()) as StrictID<ProjectModel>
-
-    if (createNewProjectSchema.safeParse(json).success) {
-      return api.POST('/api/projects', { body: json }).then(responseParser({ notThrowExc: true }))
-    }
-
-    const isDeleteAction = deleteProjectAction.safeParse(json)
-    if (isDeleteAction.success) {
-      return api
-        .DELETE('/api/projects/{project_id}', {
-          params: { path: { project_id: isDeleteAction.data.projectId } }
-        })
-        .then(responseParser({ notThrowExc: true }))
-    }
-
-    if (editProjectSchema.safeParse(json).success) {
-      return api
-        .POST('/api/projects/{project_id}/info', {
-          params: { path: { project_id: json.id } },
-          body: json
-        })
-        .then(responseParser({ notThrowExc: true }))
-    }
-
-    throw 'Undefined action'
-  }
+      .DELETE('/api/projects/{project_id}', {
+        params: { path: { project_id: args.data.project_id } }
+      })
+      .then(responseParser({ notThrowExc: true })),
+  'create-project': (
+    args: ActionArgs<{ data: { project: ProjectModel; orgId?: string | null } }>
+  ) =>
+    api
+      .POST('/api/projects', {
+        body: args.data.project,
+        params: { query: { org_id: args.data.orgId } }
+      })
+      .then(responseParser({ notThrowExc: true })),
+  'edit-project': (args: ActionArgs<{ data: { project: StrictID<ProjectModel> } }>) =>
+    api
+      .POST('/api/projects/{project_id}/info', {
+        params: { path: { project_id: args.data.project.id } },
+        body: args.data.project
+      })
+      .then(responseParser({ notThrowExc: true }))
 })

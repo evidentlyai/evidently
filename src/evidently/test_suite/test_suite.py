@@ -21,6 +21,7 @@ from evidently.model.widget import BaseWidgetInfo
 from evidently.model.widget import set_source_fingerprint
 from evidently.options.base import AnyOptions
 from evidently.pipeline.column_mapping import ColumnMapping
+from evidently.renderers.base_renderer import TestHtmlInfo
 from evidently.renderers.base_renderer import TestRenderer
 from evidently.renderers.base_renderer import WidgetIdGenerator
 from evidently.renderers.base_renderer import replace_test_widget_ids
@@ -212,7 +213,7 @@ class TestSuite(ReportBase):
         return result
 
     def _build_dashboard_info(self):
-        test_results = []
+        test_results: List[TestHtmlInfo] = []
         total_tests = len(self._inner_suite.context.test_results)
         by_status = {}
         color_options = self.options.color_options
@@ -249,6 +250,7 @@ class TestSuite(ReportBase):
                     dict(
                         title=test_info.name,
                         description=test_info.description,
+                        test_fingerprint=test_info.test_fingerprint,
                         state=test_info.status.lower(),
                         details=dict(
                             parts=[dict(id=item.id, title=item.title, type="widget") for item in test_info.details]

@@ -5,7 +5,10 @@ from sklearn import metrics
 
 from evidently.calculations.classification_performance import calculate_confusion_by_classes
 from evidently.calculations.classification_performance import calculate_metrics
+from evidently.calculations.classification_performance import get_prediction_data
 from evidently.metric_results import ConfusionMatrix
+from evidently.metric_results import DatasetColumns
+from evidently.metric_results import DatasetUtilityColumns
 from evidently.metric_results import PredictionData
 from evidently.pipeline.column_mapping import ColumnMapping
 
@@ -58,3 +61,41 @@ def test_calculate_metrics():
     assert actual_result.rate_plots_data.fpr == [pytest.approx(v) for v in [0.0, 0.0, 0.4, 0.4, 0.6, 0.6, 1.0]]
     assert actual_result.rate_plots_data.fnr == [pytest.approx(v) for v in [1.0, 0.8, 0.8, 0.2, 0.2, 0.0, 0.0]]
     assert actual_result.rate_plots_data.tnr == [pytest.approx(v) for v in [1.0, 1.0, 0.6, 0.6, 0.4, 0.4, 0.0]]
+
+
+@pytest.mark.parametrize(
+    "dataframe,target,prediction,target_names,pos_label,expected",
+    (
+        (
+            pd.DataFrame(data={"col": ["a", "b", "b", "a", "b"], "prob": [0.1, 0.1, 0.1, 0.8, 0.2]}),
+            "col",
+            "prob",
+            ["a", "b"],
+            "a",
+            {"a": [0.1, 0.1, 0.1, 0.8, 0.2], "b": [0.9, 0.9, 0.9, 0.2, 0.8]},
+        ),
+        (
+            pd.DataFrame(data={"col": ["a", "b", "b", "a", "b"], "prob": [0.1, 0.1, 0.1, 0.8, 0.2]}),
+            "col",
+            "prob",
+            ["a", "b"],
+            "a",
+            {"a": [0.1, 0.1, 0.1, 0.8, 0.2], "b": [0.9, 0.9, 0.9, 0.2, 0.8]},
+        ),
+    ),
+)
+def test_get_prediction_data(dataframe, target, prediction, target_names, pos_label, expected):
+    data = get_prediction_data(
+        dataframe,
+        DatasetColumns(
+            utility_columns=DatasetUtilityColumns(target=target, prediction=prediction),
+            target_names=target_names,
+            num_feature_names=[],
+            cat_feature_names=[],
+            text_feature_names=[],
+            datetime_feature_names=[],
+        ),
+        pos_label=pos_label,
+    )
+    for label in target_names:
+        assert np.allclose(data.prediction_probas[label], expected[label], atol=1e-6)

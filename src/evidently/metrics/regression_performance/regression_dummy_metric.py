@@ -5,12 +5,12 @@ import numpy as np
 import pandas as pd
 from sklearn.metrics import mean_absolute_error
 from sklearn.metrics import mean_absolute_percentage_error
-from sklearn.metrics import mean_squared_error
 
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
 from evidently.metrics.regression_performance.regression_quality import RegressionQualityMetric
+from evidently.metrics.utils import root_mean_squared_error_compat
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options.base import AnyOptions
 from evidently.renderers.base_renderer import MetricRenderer
@@ -76,10 +76,9 @@ class RegressionDummyMetric(Metric[RegressionDummyMetricResults]):
         )
         # rmse
         dummy_preds = data.current_data[target_name].mean()
-        rmse_default = mean_squared_error(
+        rmse_default = root_mean_squared_error_compat(
             y_true=data.current_data[target_name],
             y_pred=[dummy_preds] * data.current_data.shape[0],
-            squared=False,
         )
         # mape default values
         # optimal constant for mape
@@ -118,10 +117,9 @@ class RegressionDummyMetric(Metric[RegressionDummyMetricResults]):
             )
             # rmse
             dummy_preds = data.reference_data[target_name].mean()
-            rmse_by_ref = mean_squared_error(
+            rmse_by_ref = root_mean_squared_error_compat(
                 y_true=data.current_data[target_name],
                 y_pred=[dummy_preds] * data.current_data.shape[0],
-                squared=False,
             )
             # mape default values
             # optimal constant for mape

@@ -7,12 +7,15 @@ v = 1 if pydantic.__version__.startswith("1") else 2
 if v == 2:
     from pydantic.v1 import BaseConfig
     from pydantic.v1 import BaseModel
+    from pydantic.v1 import EmailStr
     from pydantic.v1 import Extra
     from pydantic.v1 import Field
     from pydantic.v1 import PrivateAttr
     from pydantic.v1 import SecretStr
     from pydantic.v1 import ValidationError
+    from pydantic.v1 import create_model
     from pydantic.v1 import parse_obj_as
+    from pydantic.v1 import root_validator
     from pydantic.v1 import validator
     from pydantic.v1.fields import SHAPE_DICT
     from pydantic.v1.fields import SHAPE_LIST
@@ -32,12 +35,15 @@ if v == 2:
 else:
     from pydantic import BaseConfig  # type: ignore[assignment]
     from pydantic import BaseModel  # type: ignore[assignment]
+    from pydantic import EmailStr  # type: ignore[attr-defined,no-redef]
     from pydantic import Extra  # type: ignore[assignment]
     from pydantic import Field  # type: ignore[assignment]
     from pydantic import PrivateAttr
     from pydantic import SecretStr  # type: ignore[assignment]
     from pydantic import ValidationError  # type: ignore[assignment]
+    from pydantic import create_model  # type: ignore[attr-defined,no-redef]
     from pydantic import parse_obj_as
+    from pydantic import root_validator  # type: ignore[attr-defined,no-redef]
     from pydantic import validator
     from pydantic.fields import SHAPE_DICT  # type: ignore[attr-defined,no-redef]
     from pydantic.fields import SHAPE_LIST  # type: ignore[attr-defined,no-redef]
@@ -77,4 +83,7 @@ __all__ = [
     "DictStrAny",
     "PrivateAttr",
     "Extra",
+    "create_model",
+    "EmailStr",
+    "root_validator",
 ]

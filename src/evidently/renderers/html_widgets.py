@@ -913,3 +913,40 @@ def get_class_separation_plot_data_agg(
 
         additional_plots.append((str(label), plotly_figure(title="", figure=fig)))
     return additional_plots
+
+
+def group_widget(
+    *,
+    title: str,
+    widgets: List[BaseWidgetInfo],
+) -> BaseWidgetInfo:
+    return BaseWidgetInfo(
+        title=title,
+        type=WidgetType.GROUP.value,
+        widgets=widgets,
+        size=2,
+    )
+
+
+def rich_data(
+    *,
+    title: str,
+    description: str,
+    header: List[str],
+    metrics: List[dict],
+    graph: Optional[PlotlyGraphInfo],
+):
+    return BaseWidgetInfo(
+        type=WidgetType.RICH_DATA.value,
+        title="",
+        size=2,
+        params={
+            "header": title,
+            "description": description,
+            "metricsValuesHeaders": header,
+            "metrics": metrics,
+            "graph": graph,
+            "details": {"parts": [], "insights": []},
+        },
+        additionalGraphs=[],
+    )

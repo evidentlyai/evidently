@@ -50,6 +50,19 @@ register_type_alias(
     FeatureDescriptor, "evidently.descriptors.llm_judges.ToxicityLLMEval", "evidently:descriptor:ToxicityLLMEval"
 )
 register_type_alias(
+    FeatureDescriptor, "evidently.descriptors.llm_judges.CorrectnessLLMEval", "evidently:descriptor:CorrectnessLLMEval"
+)
+register_type_alias(
+    FeatureDescriptor,
+    "evidently.descriptors.llm_judges.FaithfulnessLLMEval",
+    "evidently:descriptor:FaithfulnessLLMEval",
+)
+register_type_alias(
+    FeatureDescriptor,
+    "evidently.descriptors.llm_judges.CompletenessLLMEval",
+    "evidently:descriptor:CompletenessLLMEval",
+)
+register_type_alias(
     FeatureDescriptor,
     "evidently.descriptors.non_letter_character_percentage_descriptor.NonLetterCharacterPercentage",
     "evidently:descriptor:NonLetterCharacterPercentage",
@@ -126,6 +139,9 @@ register_type_alias(
     GeneralDescriptor,
     "evidently.descriptors.custom_descriptor.CustomPairColumnEval",
     "evidently:descriptor:CustomPairColumnEval",
+)
+register_type_alias(
+    FeatureDescriptor, "evidently.descriptors.is_valid_sql_descriptor.IsValidSQL", "evidently:descriptor:IsValidSQL"
 )
 register_type_alias(
     FeatureDescriptor,

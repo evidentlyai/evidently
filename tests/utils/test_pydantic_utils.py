@@ -391,19 +391,19 @@ def test_fingerprint_default_collision():
 
 
 def test_wrong_classpath():
-    class A(EvidentlyBaseModel):
+    class WrongClassPath(EvidentlyBaseModel):
         class Config:
             alias_required = False
 
         f: str
 
     ALLOWED_TYPE_PREFIXES.append("tests.")
-    a = A(f="asd")
-    assert parse_obj_as(A, a.dict()) == a
+    a = WrongClassPath(f="asd")
+    assert parse_obj_as(WrongClassPath, a.dict()) == a
     d = a.dict()
     d["type"] += "_"
     with pytest.raises(ValidationError):
-        parse_obj_as(A, d)
+        parse_obj_as(WrongClassPath, d)
 
 
 def test_alias_requied():

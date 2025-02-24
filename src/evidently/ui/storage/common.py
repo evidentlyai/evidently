@@ -4,16 +4,16 @@ from typing import Optional
 from typing import Set
 from typing import Tuple
 
-from evidently.ui.base import AuthManager
-from evidently.ui.base import DefaultRole
 from evidently.ui.base import EntityType
 from evidently.ui.base import Org
-from evidently.ui.base import Permission
-from evidently.ui.base import Role
 from evidently.ui.base import Team
 from evidently.ui.base import User
-from evidently.ui.base import UserWithRoles
-from evidently.ui.base import get_default_role_permissions
+from evidently.ui.managers.auth import AuthManager
+from evidently.ui.managers.auth import DefaultRole
+from evidently.ui.managers.auth import Permission
+from evidently.ui.managers.auth import Role
+from evidently.ui.managers.auth import UserWithRoles
+from evidently.ui.managers.auth import get_default_role_permissions
 from evidently.ui.type_aliases import ZERO_UUID
 from evidently.ui.type_aliases import EntityID
 from evidently.ui.type_aliases import OrgID

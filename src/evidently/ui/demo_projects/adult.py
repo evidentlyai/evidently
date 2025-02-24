@@ -1,9 +1,12 @@
+import os
+import pathlib
 from datetime import datetime
 from datetime import timedelta
 
+import pandas as pd
 from sklearn import datasets
 
-from evidently import ColumnMapping
+from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.renderers.html_widgets import WidgetSize
 from evidently.test_preset import DataDriftTestPreset
 from evidently.test_suite import TestSuite
@@ -16,8 +19,11 @@ from evidently.ui.workspace import WorkspaceBase
 
 
 def create_data():
-    adult_data = datasets.fetch_openml(name="adult", version=2, as_frame="auto")
-    adult = adult_data.frame
+    if os.environ.get("EVIDENTLY_TEST_ENVIRONMENT", "0") != "1":
+        adult_data = datasets.fetch_openml(name="adult", version=2, as_frame="auto")
+        adult = adult_data.frame
+    else:
+        adult = pd.read_parquet(pathlib.Path(__file__).parent.joinpath("../../../../test_data/adults.parquet"))
 
     reference = adult[~adult.education.isin(["Some-college", "HS-grad", "Bachelors"])]
     current = adult[adult.education.isin(["Some-college", "HS-grad", "Bachelors"])]
@@ -97,6 +103,7 @@ def create_project(workspace: WorkspaceBase, name: str):
 adult_demo_project = DemoProject(
     name="Demo project - Adult",
     create_data=create_data,
+    create_snapshot=None,
     create_report=None,
     create_project=create_project,
     create_test_suite=create_test_suite,

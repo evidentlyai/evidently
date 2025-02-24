@@ -158,11 +158,14 @@ jobs:
         uses: ./.github/share-actions/get-bikes-dataset-cached
 
       - name: Run UI
-        run: EXPERIMENTAL_DETERMINISTIC_UUID="true" evidently ui --port 8000 --workspace workspace-for-visual-testing --demo-projects all &
+        env:
+          EXPERIMENTAL_DETERMINISTIC_UUID: "true"
+          EVIDENTLY_TEST_ENVIRONMENT: 1
+        run: evidently ui --port 8000 --workspace workspace-for-visual-testing --demo-projects all &
 
       - name: Wait UI to be ready to test
         working-directory: ui/service
-        run: pnpm wait-on tcp:127.0.0.1:8000 -t 4m
+        run: pnpm wait-on tcp:127.0.0.1:8000 -t 6m
 
       - name: Run Service Playwright tests
         working-directory: ui/service

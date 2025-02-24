@@ -20,27 +20,28 @@ from requests import Response
 from requests import Session
 
 from evidently._pydantic_compat import parse_obj_as
+from evidently.errors import EvidentlyError
 from evidently.suite.base_suite import Snapshot
 from evidently.ui.api.service import EVIDENTLY_APPLICATION_NAME
 from evidently.ui.base import BlobMetadata
 from evidently.ui.base import BlobStorage
 from evidently.ui.base import DataStorage
-from evidently.ui.base import MetadataStorage
 from evidently.ui.base import Project
-from evidently.ui.base import ProjectManager
+from evidently.ui.base import ProjectMetadataStorage
 from evidently.ui.base import SnapshotMetadata
 from evidently.ui.base import Team
 from evidently.ui.base import User
 from evidently.ui.dashboards.base import PanelValue
 from evidently.ui.dashboards.base import ReportFilter
 from evidently.ui.dashboards.test_suites import TestFilter
-from evidently.ui.errors import EvidentlyServiceError
 from evidently.ui.errors import ProjectNotFound
+from evidently.ui.managers.projects import ProjectManager
 from evidently.ui.storage.common import SECRET_HEADER_NAME
 from evidently.ui.storage.common import NoopAuthManager
 from evidently.ui.type_aliases import ZERO_UUID
 from evidently.ui.type_aliases import BlobID
 from evidently.ui.type_aliases import DataPointsAsType
+from evidently.ui.type_aliases import OrgID
 from evidently.ui.type_aliases import PointType
 from evidently.ui.type_aliases import ProjectID
 from evidently.ui.type_aliases import SnapshotID
@@ -133,7 +134,7 @@ class RemoteBase:
         if response.status_code >= 400:
             try:
                 details = response.json()["detail"]
-                raise EvidentlyServiceError(details)
+                raise EvidentlyError(details)
             except ValueError:
                 pass
         response.raise_for_status()
@@ -142,7 +143,7 @@ class RemoteBase:
         return response
 
 
-class RemoteMetadataStorage(MetadataStorage, RemoteBase):
+class RemoteProjectMetadataStorage(ProjectMetadataStorage, RemoteBase):
     def __init__(self, base_url: str, secret: Optional[str] = None):
         self.base_url = base_url
         self.secret = secret
@@ -173,10 +174,14 @@ class RemoteMetadataStorage(MetadataStorage, RemoteBase):
             r.headers[SECRET_HEADER_NAME] = self.secret
         return r
 
-    async def add_project(self, project: Project, user: User, team: Team) -> Project:
+    async def add_project(
+        self, project: Project, user: User, team: Optional[Team], org_id: Optional[OrgID] = None
+    ) -> Project:
         params = {}
         if team is not None and team.id is not None and team.id != ZERO_UUID:
-            params["team_id"] = str(team.id)
+            params["team_id"] = str(team.id) if team is not None else None
+        if org_id:
+            params["org_id"] = str(org_id)
         return self._request("/api/projects", "POST", query_params=params, body=project.dict(), response_model=Project)
 
     async def get_project(self, project_id: ProjectID) -> Optional[Project]:
@@ -279,7 +284,7 @@ class NoopDataStorage(DataStorage):
 class RemoteWorkspaceView(WorkspaceView):
     def verify(self):
         try:
-            response = self.project_manager.metadata._request("/api/version", "GET")
+            response = self.project_manager.project_metadata._request("/api/version", "GET")
             assert response.json()["application"] == EVIDENTLY_APPLICATION_NAME
         except (HTTPError, JSONDecodeError, KeyError, AssertionError) as e:
             raise ValueError(f"Evidenly API not available at {self.base_url}") from e
@@ -288,10 +293,10 @@ class RemoteWorkspaceView(WorkspaceView):
         self.base_url = base_url
         self.secret = secret
         pm = ProjectManager(
-            metadata=(RemoteMetadataStorage(base_url=self.base_url, secret=self.secret)),
-            blob=(NoopBlobStorage()),
-            data=(NoopDataStorage()),
-            auth=(NoopAuthManager()),
+            project_metadata=(RemoteProjectMetadataStorage(base_url=self.base_url, secret=self.secret)),
+            blob_storage=(NoopBlobStorage()),
+            data_storage=(NoopDataStorage()),
+            auth_manager=(NoopAuthManager()),
         )
         super().__init__(None, pm)
         self.verify()

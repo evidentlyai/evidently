@@ -76,12 +76,17 @@ def test_metric(tmetric: TestMetric, tdataset: TestDataset, outcome: TestOutcome
     report2.save_html(str(tmp_path / "report.html"))
 
 
+IGNORE_METRICS = {"MetricV2Adapter", "MetricV2PresetAdapter"}
+
+
 def test_all_metrics_tested():
     load_test_metrics()
     all_metric_classes = find_all_subclasses(Metric)
     missing = []
     no_datasets = []
     for metric_class in all_metric_classes:
+        if metric_class.__name__ in IGNORE_METRICS:
+            continue
         if not any(m.metric.__class__ is metric_class for m in metric_fixtures):
             missing.append(metric_class)
         else:

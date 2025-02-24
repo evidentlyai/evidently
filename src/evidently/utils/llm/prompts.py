@@ -108,11 +108,31 @@ class NoopOutputFormat(OutputFormatBlock[str]):
         return response
 
 
+_json_pattern = re.compile(r"\{(?:[^{}]|\{[^{}]*\})*\}")
+
+
+def find_largest_json(text):
+    candidates = _json_pattern.findall(text)
+
+    largest_json = None
+    max_length = 0
+    for candidate in candidates:
+        try:
+            json_obj = json.loads(candidate)
+            if len(candidate) > max_length:
+                largest_json = json_obj
+                max_length = len(candidate)
+        except json.JSONDecodeError:
+            continue
+    return largest_json
+
+
 class JsonOutputFormatBlock(OutputFormatBlock[Dict[str, Any]]):
     class Config:
         type_alias = "evidently:prompt_block:JsonOutputFormatBlock"
 
     fields: Dict[str, Union[Tuple[str, str], str]]
+    search_for_substring: bool = True
 
     def _render(self) -> str:
         values = []
@@ -132,7 +152,11 @@ class JsonOutputFormatBlock(OutputFormatBlock[Dict[str, Any]]):
         try:
             return json.loads(response)
         except json.JSONDecodeError as e:
-            raise LLMResponseParseError(f"Failed to parse response '{response}' as json") from e
+            if self.search_for_substring:
+                sub = find_largest_json(response)
+                if sub is not None:
+                    return sub
+            raise LLMResponseParseError("Failed to parse response as json", response) from e
 
 
 class StringListFormatBlock(OutputFormatBlock[List[str]]):
@@ -146,7 +170,7 @@ class StringListFormatBlock(OutputFormatBlock[List[str]]):
 This should be only a list of string {self.of_what}, each one on a new line with no enumeration"""
 
     def parse_response(self, response: str) -> List[str]:
-        return response.split("\n")
+        return [line.strip() for line in response.split("\n") if line.strip()]
 
 
 class StringFormatBlock(OutputFormatBlock[str]):
@@ -237,7 +261,7 @@ class PromptTemplate(EvidentlyBaseModel):
         output = self.get_output_format()
         parsed = output.parse_response(response)
         if keys is not None and set(keys) != set(parsed.keys()):
-            raise LLMResponseParseError(f"Keys {keys} are required but got {list(parsed.keys())}")
+            raise LLMResponseParseError(f"Keys {keys} are required but got {list(parsed.keys())}", response)
         return parsed
 
     def get_messages(self, values, template: Optional[str] = None) -> List[LLMMessage]:

@@ -388,14 +388,36 @@ class HistogramData(MetricResult):
     name: Optional[str] = None
 
     @classmethod
-    def from_df(cls, value: pd.DataFrame):
-        return cls(x=value["x"], count=value["count"])
+    def from_df(cls, value: pd.DataFrame, name: Optional[str] = None):
+        return cls(x=value["x"], count=value["count"], name=name)
 
     @classmethod
-    def from_distribution(cls, dist: Optional[Distribution], name: str = None):
+    def from_distribution(cls, dist: Optional[Distribution], name: Optional[str] = None):
         if dist is None:
             return None
         return cls(x=pd.Series(dist.x), count=pd.Series(dist.y), name=name)
+
+    @classmethod
+    def from_dict(cls, data: Optional[Dict], name: Optional[str] = None):
+        if data is None:
+            return None
+        return cls(x=pd.Series(data.keys()), count=pd.Series(data.values()), name=name)
+
+    @classmethod
+    def from_any(
+        cls, value: Union[None, "HistogramData", pd.DataFrame, Distribution, Dict], name: Optional[str] = None
+    ):
+        if value is None:
+            return None
+        if isinstance(value, HistogramData):
+            return value
+        if isinstance(value, pd.DataFrame):
+            return cls.from_df(value, name)
+        if isinstance(value, Distribution):
+            return cls.from_distribution(value, name)
+        if isinstance(value, dict):
+            return cls.from_dict(value, name)
+        raise NotImplementedError(f"Cannot create {cls.__name__} from {value.__class__.__name__}")
 
     def to_df(self):
         return pd.DataFrame.from_dict(self.dict(include={"x", "count"}))

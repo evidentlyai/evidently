@@ -1,8 +1,8 @@
 from enum import Enum
 from typing import Dict
 
-from evidently import ColumnMapping
-from evidently import ColumnType
+from evidently.core import ColumnType
+from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.ui.type_aliases import SnapshotID
 from evidently.utils.data_preprocessing import FeatureDefinition
 

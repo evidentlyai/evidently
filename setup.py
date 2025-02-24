@@ -51,7 +51,7 @@ setup_args = dict(
     long_description_content_type="text/markdown",
     include_package_data=True,
     install_requires=[
-        "plotly>=5.10.0",
+        "plotly>=5.10.0,<6",
         "statsmodels>=0.12.2",
         "scikit-learn>=1.0.1",
         "pandas[parquet]>=1.3.5",
@@ -103,7 +103,9 @@ setup_args = dict(
             "evaluate>=0.4.1",
             "transformers[torch]>=4.39.3",
             "sentence-transformers>=2.7.0",
+            "sqlvalidator>=0.0.20",
             "chromadb>=0.4.0",
+            "litellm>=1.60.4",
         ],
         "spark": ["pyspark>=3.4.0"],
         "fsspec": [

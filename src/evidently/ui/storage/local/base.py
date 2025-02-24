@@ -22,9 +22,8 @@ from evidently.tests.base_test import Test
 from evidently.ui.base import BlobMetadata
 from evidently.ui.base import BlobStorage
 from evidently.ui.base import DataStorage
-from evidently.ui.base import MetadataStorage
 from evidently.ui.base import Project
-from evidently.ui.base import ProjectManager
+from evidently.ui.base import ProjectMetadataStorage
 from evidently.ui.base import SnapshotMetadata
 from evidently.ui.base import Team
 from evidently.ui.base import User
@@ -33,10 +32,13 @@ from evidently.ui.dashboards.base import ReportFilter
 from evidently.ui.dashboards.test_suites import TestFilter
 from evidently.ui.dashboards.test_suites import to_period
 from evidently.ui.errors import ProjectNotFound
+from evidently.ui.managers.projects import ProjectManager
 from evidently.ui.storage.common import NO_TEAM
 from evidently.ui.storage.common import NO_USER
 from evidently.ui.type_aliases import BlobID
 from evidently.ui.type_aliases import DataPointsAsType
+from evidently.ui.type_aliases import OrgID
+from evidently.ui.type_aliases import PointInfo
 from evidently.ui.type_aliases import PointType
 from evidently.ui.type_aliases import ProjectID
 from evidently.ui.type_aliases import SnapshotID
@@ -186,7 +188,7 @@ class LocalState:
                 raise ValueError(f"{snapshot_id} is malformed") from e
 
 
-class JsonFileMetadataStorage(MetadataStorage):
+class JsonFileProjectMetadataStorage(ProjectMetadataStorage):
     path: str
 
     _state: LocalState = PrivateAttr(None)
@@ -201,8 +203,11 @@ class JsonFileMetadataStorage(MetadataStorage):
             self._state = LocalState.load(self.path, None)
         return self._state
 
-    async def add_project(self, project: Project, user: User, team: Team) -> Project:
+    async def add_project(
+        self, project: Project, user: User, team: Optional[Team], org_id: Optional[OrgID] = None
+    ) -> Project:
         project_id = str(project.id)
+        project.org_id = org_id
         self.state.location.makedirs(posixpath.join(project_id, SNAPSHOTS))
         with self.state.location.open(posixpath.join(project_id, METADATA_PATH), "w") as f:
             json.dump(project.dict(), f, indent=2, cls=NumpyEncoder)
@@ -211,7 +216,7 @@ class JsonFileMetadataStorage(MetadataStorage):
         return project
 
     async def update_project(self, project: Project) -> Project:
-        return await self.add_project(project, NO_USER, NO_TEAM)
+        return await self.add_project(project, NO_USER, NO_TEAM, org_id=None)
 
     async def get_project(self, project_id: ProjectID) -> Optional[Project]:
         return self.state.projects.get(project_id)
@@ -295,12 +300,16 @@ class InMemoryDataStorage(DataStorage):
         timestamp_end: Optional[datetime.datetime],
     ) -> TestResultPoints:
         points: Dict[datetime.datetime, Dict[Test, TestInfo]] = defaultdict(dict)
-        for report in (s.as_test_suite() for s in self.state.snapshot_data[project_id].values() if not s.is_report):
+        for report in (
+            s.as_test_suite()
+            for s in self.state.snapshot_data[project_id].values()
+            if not s.is_report or s.is_new_report
+        ):
             if not (
                 filter.filter(report)
                 and isinstance(report, TestSuite)
                 and (timestamp_start is None or report.timestamp >= timestamp_start)
-                and (timestamp_end is None or report.timestamp < timestamp_end)
+                and (timestamp_end is None or report.timestamp <= timestamp_end)
             ):
                 continue
 
@@ -327,7 +336,7 @@ class InMemoryDataStorage(DataStorage):
             if not (
                 filter.filter(report)
                 and (timestamp_start is None or report.timestamp >= timestamp_start)
-                and (timestamp_end is None or report.timestamp < timestamp_end)
+                and (timestamp_end is None or report.timestamp <= timestamp_end)
             ):
                 continue
 
@@ -335,5 +344,7 @@ class InMemoryDataStorage(DataStorage):
                 for metric, metric_field_value in value.get(report).items():
                     if metric not in points[i]:
                         points[i][metric] = []
-                    points[i][metric].append((report.timestamp, self.parse_value(cls, metric_field_value)))
+                    points[i][metric].append(
+                        PointInfo(report.timestamp, report.id, self.parse_value(cls, metric_field_value))
+                    )
         return points

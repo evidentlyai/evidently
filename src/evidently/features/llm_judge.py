@@ -10,10 +10,10 @@ from typing import Tuple
 
 import pandas as pd
 
-from evidently import ColumnType
 from evidently._pydantic_compat import Field
 from evidently._pydantic_compat import PrivateAttr
 from evidently.base_metric import ColumnName
+from evidently.core import ColumnType
 from evidently.features.generated_features import GeneratedFeatures
 from evidently.options.base import Options
 from evidently.pydantic_utils import EnumValueMixin
@@ -44,6 +44,10 @@ class BaseLLMPromptTemplate(PromptTemplate):
 
     @abstractmethod
     def get_type(self, subcolumn: Optional[str]) -> ColumnType:
+        raise NotImplementedError
+
+    @abstractmethod
+    def get_main_output_column(self) -> str:
         raise NotImplementedError
 
 
@@ -123,7 +127,7 @@ class BinaryClassificationPromptTemplate(BaseLLMPromptTemplate, EnumValueMixin):
         if self.include_score:
             fields["score"] = ("<score here>", self.output_score_column)
         if self.include_reasoning:
-            fields["reasoning"] = ('"<reasoning here>"', self.output_reasoning_column)
+            fields["reasoning"] = ("<reasoning here>", self.output_reasoning_column)
         return [
             PromptBlock.simple(self.criteria),
             PromptBlock.simple(
@@ -148,12 +152,15 @@ class BinaryClassificationPromptTemplate(BaseLLMPromptTemplate, EnumValueMixin):
             result.append(self.output_reasoning_column)
         return result
 
+    def get_main_output_column(self) -> str:
+        return self.output_column
+
     def get_type(self, subcolumn: Optional[str]) -> ColumnType:
         if subcolumn == self.output_reasoning_column:
             return ColumnType.Text
         if subcolumn == self.output_score_column:
             return ColumnType.Numerical
-        if subcolumn == self.output_column:
+        if subcolumn == self.output_column or subcolumn is None:
             return ColumnType.Categorical
         raise ValueError(f"Unknown subcolumn {subcolumn}")
 
@@ -195,8 +202,9 @@ class LLMJudge(GeneratedFeatures):
         return pd.DataFrame(result)
 
     def list_columns(self) -> List["ColumnName"]:
+        main_col = self.template.get_main_output_column()
         return [
-            self._create_column(c, display_name=f"{self.display_name or ''} {c}")
+            self._create_column(c, display_name=f"{self.display_name or ''} {c if c != main_col else ''}".strip())
             for c in self.template.list_output_columns()
         ]
 

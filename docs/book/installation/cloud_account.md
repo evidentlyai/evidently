@@ -10,15 +10,7 @@ If not yet, [sign up for a free Evidently Cloud account](https://app.evidently.c
 
 After logging in, create an **Organization** and name it.
 
-# 3. Create a Team 
-
-Go to the **Teams** icon in the left menu, create a Team, and name it. ([Team page](https://app.evidently.cloud/teams)).
-
-{% hint style="info" %}
-**Do I always need a Team?** Yes. Every Project must be within a Team. Teams act as "folders" to organize your work, and you can create multiple Teams. If you work alone, simply create a Team without external users. 
-{% endhint %}
-
-# 4. Connect from Python
+# 3. Connect from Python
 
 You will need an access token to interact with Evidently Cloud from your Python environment.
 

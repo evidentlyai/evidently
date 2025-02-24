@@ -1,14 +1,13 @@
-import { AppBar, Button, IconButton, Link, Stack, Toolbar } from '@mui/material'
-import { Link as RouterLink } from 'react-router-dom'
+import { AppBar, Button, Link, Stack, Toolbar } from '@mui/material'
 import { DiscordIcon } from '~/components/DiscordSvg'
 import { ThemeToggle } from '~/components/ThemeToggle'
 
 export function ServiceHeader({
-  LogoSvg,
+  HomeLink,
   version,
   authComponent
 }: {
-  LogoSvg: () => JSX.Element
+  HomeLink: () => JSX.Element
   authComponent?: React.ReactNode
   version: string
 }) {
@@ -28,25 +27,7 @@ export function ServiceHeader({
         <Toolbar sx={{ gap: 1 }}>
           <Stack flexGrow={1} justifyContent={'flex-start'} direction={'row'}>
             <Stack direction={'row'} alignItems={'flex-end'} gap={1}>
-              <IconButton
-                component={RouterLink}
-                to={'/'}
-                sx={(theme) => ({
-                  color: '#4d4d4d',
-                  ...theme.applyStyles('dark', {
-                    color: theme.palette.text.primary
-                  }),
-                  '&:hover': {
-                    borderRadius: '5px',
-                    color: theme.palette.text.disabled,
-                    ...theme.applyStyles('dark', {
-                      color: theme.palette.text.secondary
-                    })
-                  }
-                })}
-              >
-                <LogoSvg />
-              </IconButton>
+              <HomeLink />
               <span style={{ verticalAlign: 'super', fontSize: '0.75rem' }}>{version}</span>
             </Stack>
           </Stack>

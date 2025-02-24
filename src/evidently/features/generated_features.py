@@ -93,7 +93,7 @@ class GeneratedFeatures(EvidentlyBaseModel):
         return self.as_column(subcolumn)
 
     def _create_column_name(self, subcolumn: Optional[str]) -> str:
-        subcolumn = f".{subcolumn}" if subcolumn is not None else ""
+        subcolumn = f".{subcolumn}" if subcolumn is not None and len(subcolumn) > 0 else ""
         return f"{self.get_fingerprint()}{subcolumn}"
 
     def _extract_subcolumn_name(self, column_name: str) -> Optional[str]:

@@ -20,6 +20,24 @@ def iterate_obj_fields(
         if es is not None:
             yield from es
             return
+
+    from evidently.future.backport import ByLabelCountValueV1
+    from evidently.future.backport import ByLabelValueV1
+
+    if isinstance(obj, ByLabelValueV1):
+        yield from (
+            [(".".join(paths + ["values"]), obj.values)]
+            + [(".".join(paths + ["values", str(key)]), str(val)) for key, val in obj.values.items()]
+        )
+        return
+    if isinstance(obj, ByLabelCountValueV1):
+        yield from (
+            [(".".join(paths + ["counts"]), obj.counts)]
+            + [(".".join(paths + ["counts", str(key)]), str(val)) for key, val in obj.counts.items()]
+            + [(".".join(paths + ["shares"]), obj.shares)]
+            + [(".".join(paths + ["shares", str(key)]), str(val)) for key, val in obj.shares.items()]
+        )
+        return
     if isinstance(obj, list):
         return
     if isinstance(obj, dict):
@@ -40,6 +58,9 @@ def iterate_obj_fields(
 
 def iterate_obj_float_fields(obj: Any, paths: List[str]) -> Iterator[Tuple[str, str]]:
     for path, value in iterate_obj_fields(obj, paths):
+        if isinstance(value, dict):
+            yield path, json.dumps(value, cls=NumpyEncoder)
+            continue
         if isinstance(value, BaseResult) and value.__config__.extract_as_obj:
             yield path, json.dumps(value.dict(), cls=NumpyEncoder)
             continue

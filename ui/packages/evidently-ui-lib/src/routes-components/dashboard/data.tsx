@@ -1,41 +1,19 @@
-import dayjs from 'dayjs'
-import invariant from 'tiny-invariant'
-import type { GetLoaderAction } from '~/api/utils'
-
-export type LoaderData = DashboardInfoModel
-
-import type { DashboardInfoModel } from '~/api/types'
-import { FILTER_QUERY_PARAMS } from '~/components/DashboardDateFilter'
+import type { DashboardInfoModel, GetSearchParamsAPIs } from '~/api/types'
 
 import { JSONParseExtended } from '~/api/JsonParser'
-import { type API_CLIENT_TYPE, responseParser } from '~/api/client-heplers'
+import { type API, responseParser } from '~/api/client-heplers'
 
-export const getLoaderAction: GetLoaderAction<API_CLIENT_TYPE, LoaderData> = ({ api }) => ({
-  loader: ({ params, request }) => {
-    invariant(params.projectId, 'missing projectId')
+const api_path = '/api/projects/{project_id}/dashboard'
 
-    const { searchParams } = new URL(request.url)
+export type ProjectDashboardSearchParams = GetSearchParamsAPIs<'get'>[typeof api_path]
+export type DashboardFilterQueryParams = keyof ProjectDashboardSearchParams
 
-    let timestamp_start = searchParams.get(FILTER_QUERY_PARAMS.FROM)
-    let timestamp_end = searchParams.get(FILTER_QUERY_PARAMS.TO)
-
-    if (timestamp_start && !dayjs(timestamp_start).isValid()) {
-      timestamp_start = null
-    }
-
-    if (timestamp_end && !dayjs(timestamp_end).isValid()) {
-      timestamp_end = null
-    }
-
-    return api
-      .GET('/api/projects/{project_id}/dashboard', {
-        params: {
-          path: { project_id: params.projectId },
-          query: { timestamp_start, timestamp_end }
-        },
-        parseAs: 'text'
-      })
-      .then(responseParser())
-      .then(JSONParseExtended<DashboardInfoModel>)
-  }
-})
+export const getProjectDashboard = ({
+  api,
+  projectId,
+  query
+}: API & { projectId: string; query: ProjectDashboardSearchParams }) =>
+  api
+    .GET(api_path, { params: { path: { project_id: projectId }, query }, parseAs: 'text' })
+    .then(responseParser())
+    .then(JSONParseExtended<DashboardInfoModel>)

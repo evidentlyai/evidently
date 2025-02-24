@@ -5,7 +5,7 @@ from urllib.parse import urlparse
 
 import numpy as np
 
-from evidently import ColumnType
+from evidently.core import ColumnType
 from evidently.features.generated_features import ApplyColumnGeneratedFeature
 
 

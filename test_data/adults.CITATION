@@ -1,0 +1,5 @@
+Title: Adult
+Description: Predict whether annual income of an individual exceeds $50K/yr based on census data. Also known as "Census Income" dataset.
+Dataset source: https://archive.ics.uci.edu/dataset/2/adult
+Creators: Barry Becker, Ronny Kohavi
+Licence: CC BY 4.0

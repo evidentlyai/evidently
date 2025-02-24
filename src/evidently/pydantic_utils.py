@@ -4,6 +4,7 @@ import inspect
 import itertools
 import json
 import os
+import sys
 import warnings
 from abc import ABC
 from enum import Enum
@@ -25,6 +26,7 @@ from typing import TypeVar
 from typing import Union
 from typing import get_args
 
+import numpy as np
 from typing_inspect import is_union_type
 
 from evidently._pydantic_compat import SHAPE_DICT
@@ -36,6 +38,8 @@ from evidently._pydantic_compat import import_string
 
 if TYPE_CHECKING:
     from evidently._pydantic_compat import DictStrAny
+
+md5_kwargs = {"usedforsecurity": False} if sys.version_info >= (3, 9) else {}
 
 
 T = TypeVar("T")
@@ -232,7 +236,8 @@ class PolymorphicModel(BaseModel):
         type_field.type_ = type_field.outer_type_ = literal_typename
 
         base_class = get_base_class(cls)
-        register_loaded_alias(base_class, cls, typename)
+        if (base_class, typename) not in LOADED_TYPE_ALIASES:
+            register_loaded_alias(base_class, cls, typename)
         if base_class != cls:
             base_typefield = base_class.__fields__["type"]
             base_typefield_type = base_typefield.type_
@@ -280,6 +285,8 @@ class PolymorphicModel(BaseModel):
 def get_value_fingerprint(value: Any) -> FingerprintPart:
     if isinstance(value, EvidentlyBaseModel):
         return value.get_fingerprint()
+    if isinstance(value, np.int64):
+        return int(value)
     if isinstance(value, BaseModel):
         return get_value_fingerprint(value.dict())
     if dataclasses.is_dataclass(value):
@@ -311,7 +318,9 @@ class EvidentlyBaseModel(FrozenBaseModel, PolymorphicModel):
         is_base_type = True
 
     def get_fingerprint(self) -> Fingerprint:
-        return hashlib.md5((self.__get_classpath__() + str(self.get_fingerprint_parts())).encode("utf8")).hexdigest()
+        return hashlib.md5(
+            (self.__get_classpath__() + str(self.get_fingerprint_parts())).encode("utf8"), **md5_kwargs
+        ).hexdigest()
 
     def get_fingerprint_parts(self) -> Tuple[FingerprintPart, ...]:
         return tuple(
@@ -481,6 +490,14 @@ class FieldPath:
         if issubclass(self._cls, BaseResult) and self._cls.__config__.extract_as_obj:
             return [(self._path, current_tags)]
         res = []
+        from evidently.future.backport import ByLabelCountValueV1
+        from evidently.future.backport import ByLabelValueV1
+
+        if issubclass(self._cls, ByLabelValueV1):
+            res.append((self._path + ["values"], current_tags.union({IncludeTags.Render})))
+        if issubclass(self._cls, ByLabelCountValueV1):
+            res.append((self._path + ["counts"], current_tags.union({IncludeTags.Render})))
+            res.append((self._path + ["shares"], current_tags.union({IncludeTags.Render})))
         for name, field in self._cls.__fields__.items():
             field_value = field.type_
 
@@ -518,7 +535,7 @@ class FieldPath:
             raise ValueError("Empty path provided")
         if len(path) == 1:
             if isinstance(self._cls, type) and issubclass(self._cls, BaseModel):
-                return self._cls.__fields__[path[0]].type_
+                return self._cls.__fields__[path[0]].outer_type_
             if self.has_instance:
                 # fixme: tmp fix
                 # in case of field like f: Dict[str, A] we wont know that value was type annotated with A when we get to it
@@ -566,4 +583,4 @@ def get_object_hash_deprecated(obj: Union[BaseModel, dict]):
 
     if isinstance(obj, BaseModel):
         obj = obj.dict()
-    return hashlib.md5(json.dumps(obj, cls=NumpyEncoder).encode("utf8")).hexdigest()  # nosec: B324
+    return hashlib.md5(json.dumps(obj, cls=NumpyEncoder).encode("utf8"), **md5_kwargs).hexdigest()  # nosec: B324

@@ -7,29 +7,24 @@ from typing import List
 from typing import Literal
 from typing import NamedTuple
 from typing import Optional
-from typing import Tuple
 from typing import Type
 from typing import Union
 from typing import overload
 
 import pandas as pd
-import uuid6
 from requests import HTTPError
 from requests import Response
 
-from evidently import ColumnMapping
+from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.pydantic_utils import get_classpath
 from evidently.report import Report
 from evidently.test_suite import TestSuite
 from evidently.ui.api.models import OrgModel
 from evidently.ui.api.models import TeamModel
 from evidently.ui.base import Org
-from evidently.ui.base import ProjectManager
 from evidently.ui.base import Team
 from evidently.ui.datasets import DatasetSourceType
-from evidently.ui.errors import OrgNotFound
-from evidently.ui.errors import ProjectNotFound
-from evidently.ui.errors import TeamNotFound
+from evidently.ui.managers.projects import ProjectManager
 from evidently.ui.storage.common import NoopAuthManager
 from evidently.ui.type_aliases import STR_UUID
 from evidently.ui.type_aliases import ZERO_UUID
@@ -39,7 +34,7 @@ from evidently.ui.type_aliases import ProjectID
 from evidently.ui.type_aliases import TeamID
 from evidently.ui.workspace.remote import NoopBlobStorage
 from evidently.ui.workspace.remote import NoopDataStorage
-from evidently.ui.workspace.remote import RemoteMetadataStorage
+from evidently.ui.workspace.remote import RemoteProjectMetadataStorage
 from evidently.ui.workspace.remote import T
 from evidently.ui.workspace.view import WorkspaceView
 
@@ -59,7 +54,7 @@ ACCESS_TOKEN_COOKIE = Cookie(
 )
 
 
-class CloudMetadataStorage(RemoteMetadataStorage):
+class CloudMetadataStorage(RemoteProjectMetadataStorage):
     def __init__(self, base_url: str, token: str, token_cookie_name: str):
         self.token = token
         self.token_cookie_name = token_cookie_name
@@ -241,10 +236,10 @@ class CloudWorkspace(WorkspaceView):
         )
 
         pm = ProjectManager(
-            metadata=meta,
-            blob=(NoopBlobStorage()),
-            data=(NoopDataStorage()),
-            auth=(CloudAuthManager()),
+            project_metadata=meta,
+            blob_storage=(NoopBlobStorage()),
+            data_storage=(NoopDataStorage()),
+            auth_manager=(CloudAuthManager()),
         )
         super().__init__(
             user_id,
@@ -252,16 +247,16 @@ class CloudWorkspace(WorkspaceView):
         )
 
     def create_org(self, name: str) -> Org:
-        assert isinstance(self.project_manager.metadata, CloudMetadataStorage)
-        return self.project_manager.metadata.create_org(Org(name=name)).to_org()
+        assert isinstance(self.project_manager.project_metadata, CloudMetadataStorage)
+        return self.project_manager.project_metadata.create_org(Org(name=name)).to_org()
 
     def list_orgs(self) -> List[Org]:
-        assert isinstance(self.project_manager.metadata, CloudMetadataStorage)
-        return [o.to_org() for o in self.project_manager.metadata.list_orgs()]
+        assert isinstance(self.project_manager.project_metadata, CloudMetadataStorage)
+        return [o.to_org() for o in self.project_manager.project_metadata.list_orgs()]
 
     def create_team(self, name: str, org_id: OrgID) -> Team:
-        assert isinstance(self.project_manager.metadata, CloudMetadataStorage)
-        return self.project_manager.metadata.create_team(Team(name=name, org_id=org_id), org_id).to_team()
+        assert isinstance(self.project_manager.project_metadata, CloudMetadataStorage)
+        return self.project_manager.project_metadata.create_team(Team(name=name, org_id=org_id), org_id).to_team()
 
     def add_dataset(
         self,
@@ -273,7 +268,7 @@ class CloudWorkspace(WorkspaceView):
         dataset_source: DatasetSourceType = DatasetSourceType.file,
     ) -> DatasetID:
         file: Union[NamedBytesIO, BinaryIO]
-        assert isinstance(self.project_manager.metadata, CloudMetadataStorage)
+        assert isinstance(self.project_manager.project_metadata, CloudMetadataStorage)
         if isinstance(data_or_path, str):
             file = open(data_or_path, "rb")
         elif isinstance(data_or_path, pd.DataFrame):
@@ -285,33 +280,15 @@ class CloudWorkspace(WorkspaceView):
         if isinstance(project_id, str):
             project_id = ProjectID(project_id)
         try:
-            return self.project_manager.metadata.add_dataset(
+            return self.project_manager.project_metadata.add_dataset(
                 file, name, project_id, description, column_mapping, dataset_source
             )
         finally:
             file.close()
 
-    def _get_org_id_team_id(self, project_id: STR_UUID) -> Tuple[OrgID, TeamID]:
-        """Temporary method until we can attach datasets to projects"""
-        assert isinstance(self.project_manager.metadata, CloudMetadataStorage)
-        if isinstance(project_id, str):
-            project_id = uuid6.UUID(project_id)
-        project = self.get_project(project_id)
-        if project is None:
-            raise ProjectNotFound()
-        if project.team_id is None:
-            raise TeamNotFound()
-        teams = self.project_manager.metadata._request(
-            "/api/teams/info", "GET", query_params={"team_ids": [project.team_id]}, response_model=Dict[TeamID, Team]
-        )
-        team = teams[project.team_id]
-        if team.org_id is None:
-            raise OrgNotFound()
-        return team.org_id, team.id
-
     def load_dataset(self, dataset_id: DatasetID) -> pd.DataFrame:
-        assert isinstance(self.project_manager.metadata, CloudMetadataStorage)
-        return self.project_manager.metadata.load_dataset(dataset_id)
+        assert isinstance(self.project_manager.project_metadata, CloudMetadataStorage)
+        return self.project_manager.project_metadata.load_dataset(dataset_id)
 
     def add_report_with_data(self, project_id: STR_UUID, report: Report):
         self.add_report(project_id, report)

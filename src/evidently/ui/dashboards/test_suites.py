@@ -78,7 +78,7 @@ class TestFilter(BaseModel):
             if self.test_matched(test):
                 try:
                     result = test.get_result()
-                    results[test] = TestInfo(result.status, result.description)
+                    results[test] = TestInfo(test_suite.id, result.status, result.description)
                 except AttributeError:
                     pass
         return results
@@ -130,6 +130,7 @@ class DashboardPanelTestSuite(DashboardPanel):
             layout={"showlegend": True},
         )
         fig.update_layout(barmode="stack")
+        fig.update_xaxes(type="category")
         return fig
 
     def _create_detailed_fig(self, points: TestResultPoints):
@@ -138,10 +139,15 @@ class DashboardPanelTestSuite(DashboardPanel):
         tests = list(all_tests)
         hover_params = _get_hover_params(all_tests)
 
-        def get_description(test, date):
-            description = points[date][test].description
+        def get_description(test: Test, date):
+            test_info = points[date][test]
+            description = test_info.description
             description, _ = descr_re.subn(r".<br>\g<1>", description)
-            return description
+            return {
+                "description": description,
+                "test_fingerprint": test.get_fingerprint(),
+                "snapshot_id": str(test_info.snapshot_id),
+            }
 
         def get_color(test, date) -> Optional[str]:
             ti = points[date].get(test)
@@ -156,7 +162,7 @@ class DashboardPanelTestSuite(DashboardPanel):
                     x=dates,
                     y=[1 for _ in range(len(dates))],
                     marker_color=[get_color(test, d) for d in dates],
-                    hovertemplate=_get_test_hover(test.name, hover_params[test]),
+                    hovertemplate=_get_test_hover(test, hover_params[test]),
                     customdata=[get_description(test, d) for i, d in enumerate(dates)],
                     showlegend=False,
                 )
@@ -180,6 +186,7 @@ class DashboardPanelTestSuite(DashboardPanel):
             barnorm="fraction",
         )
         fig.update_yaxes(showticklabels=False)
+        fig.update_xaxes(type="category")
         return fig
 
 

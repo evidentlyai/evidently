@@ -266,3 +266,13 @@ register_type_alias(
     "evidently.tests.data_quality_tests.ValueListParameters",
     "evidently:test_parameters:ValueListParameters",
 )
+
+register_type_alias(
+    TestParameters, "evidently.future.backport.TestV2Parameters", "evidently:test_parameters:TestV2Parameters"
+)
+
+
+register_type_alias(Test, "evidently.future.backport.TestV2Adapter", "evidently:test:TestV2Adapter")
+register_type_alias(
+    TestParameters, "evidently.future.backport.TestV2Parameters", "evidently:test_parameters:TestV2Parameters"
+)

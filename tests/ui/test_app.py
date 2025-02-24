@@ -23,11 +23,11 @@ from evidently.renderers.html_widgets import WidgetSize
 from evidently.renderers.html_widgets import counter
 from evidently.suite.base_suite import ContextPayload
 from evidently.suite.base_suite import Snapshot
-from evidently.ui.base import ProjectManager
 from evidently.ui.dashboards import CounterAgg
 from evidently.ui.dashboards import DashboardPanelCounter
 from evidently.ui.dashboards import ReportFilter
 from evidently.ui.dashboards.base import DashboardPanel
+from evidently.ui.managers.projects import ProjectManager
 from evidently.ui.storage.local import FSSpecBlobStorage
 from evidently.ui.type_aliases import ZERO_UUID
 from evidently.utils import NumpyEncoder
@@ -54,7 +54,10 @@ async def test_list_projects(test_client: TestClient, project_manager: ProjectMa
 @pytest.mark.asyncio
 async def test_add_project(test_client: TestClient, project_manager: ProjectManager, mock_project):
     """post /api/projects"""
-    r = test_client.post("/api/projects", content=_dumps(mock_project), headers=HEADERS)
+    mock_project.team_id = None
+    org_id = new_id()
+    mock_project.org_id = org_id
+    r = test_client.post(f"/api/projects?org_id={org_id}", content=_dumps(mock_project), headers=HEADERS)
     r.raise_for_status()
 
     data = await project_manager.list_projects(ZERO_UUID, None, None)
@@ -262,6 +265,7 @@ async def test_get_snapshot_data(test_client: TestClient, project_manager: Proje
                         "type": "counter",
                         "widgets": [],
                         "source_fingerprint": None,
+                        "linked_metrics": None,
                     }
                 ],
                 "alertStats": None,
@@ -278,6 +282,7 @@ async def test_get_snapshot_data(test_client: TestClient, project_manager: Proje
                 "type": "counter",
                 "widgets": [],
                 "source_fingerprint": fp,
+                "linked_metrics": [fp],
             }
         ],
     }
@@ -313,6 +318,7 @@ async def test_get_projects_graphs_data(
         "type": "counter",
         "widgets": [],
         "source_fingerprint": None,
+        "linked_metrics": None,
     }
 
 
@@ -395,6 +401,7 @@ async def test_get_project_dashboard(test_client: TestClient, project_manager: P
                 "type": "counter",
                 "widgets": [],
                 "source_fingerprint": None,
+                "linked_metrics": None,
             }
         ],
     }
@@ -408,7 +415,7 @@ async def test_reload_project(test_client: TestClient, project_manager: ProjectM
     await project_manager.add_snapshot(ZERO_UUID, project.id, mock_snapshot)
     assert len(await project_manager.list_snapshots(ZERO_UUID, project.id)) == 1
 
-    blob = project_manager.blob
+    blob = project_manager.blob_storage
     assert isinstance(blob, FSSpecBlobStorage)
     snapshot_path = os.path.join(blob.base_path, blob.get_snapshot_blob_id(project.id, mock_snapshot))
     snapshot_id2 = new_id()

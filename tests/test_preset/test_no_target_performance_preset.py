@@ -1,4 +1,4 @@
-from evidently import ColumnType
+from evidently.core import ColumnType
 from evidently.test_preset import NoTargetPerformanceTestPreset
 from evidently.tests import TestAllColumnsShareOfMissingValues
 from evidently.tests import TestCatColumnsOutOfListValues

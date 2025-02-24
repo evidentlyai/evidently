@@ -1,12 +1,12 @@
 import pandas as pd
 
-from evidently import ColumnMapping
 from evidently.base_metric import GenericInputData
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.calculation_engine.engine import metric_implementation
 from evidently.calculation_engine.python_engine import PythonEngine
 from evidently.calculation_engine.python_engine import PythonMetricImplementation
+from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.renderers.base_renderer import DEFAULT_RENDERERS
 from evidently.suite.base_suite import Context
 from evidently.suite.base_suite import States

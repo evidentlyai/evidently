@@ -137,7 +137,7 @@ assistant_logs.head(3)
 To be able to save and share results and get a live monitoring dashboard, create a Project in Evidently Cloud. Here's how to set it up:
 
 * **Sign up**. If you do not have one yet, create a free [Evidently Cloud account](https://app.evidently.cloud/signup) and name your Organization.
-* **Add a Team**. Click **Teams** in the left menu. Create a Team, copy and save the Team ID. ([Team page](https://app.evidently.cloud/teams)).
+* **Get an Organization ID**. Get an ID of your organization on the [organizations page](https://app.evidently.cloud/organizations).
 * **Get your API token**. Click the **Key** icon in the left menu to go. Generate and save the token. ([Token page](https://app.evidently.cloud/token)).
 * **Connect to Evidently Cloud**. Pass your API key to connect. 
 
@@ -145,10 +145,10 @@ To be able to save and share results and get a live monitoring dashboard, create
 ws = CloudWorkspace(token="YOUR_TOKEN", 
                     url="https://app.evidently.cloud")
 ```
-* **Create a Project**. Create a new Project inside your Team, adding your title and description:
+* **Create a Project**. Create a new Project inside your Organization, adding your title and description:
 
 ```python
-project = ws.create_project("My project title", team_id="YOUR_TEAM_ID")
+project = ws.create_project("My project title", org_id="YOUR_ORG_ID")
 project.description = "My project description"
 project.save()
 ```

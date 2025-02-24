@@ -12,9 +12,8 @@ from typing import Type
 from typing import TypeVar
 from typing import Union
 
-from pydantic import BaseModel
-
 import evidently
+from evidently._pydantic_compat import BaseModel
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
 from evidently.pydantic_utils import PolymorphicModel

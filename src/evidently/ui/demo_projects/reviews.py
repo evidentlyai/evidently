@@ -1,12 +1,15 @@
+import os
+import pathlib
 from datetime import datetime
 from datetime import timedelta
 
 import numpy as np
+import pandas as pd
 from sklearn import datasets
 
-from evidently import ColumnMapping
 from evidently import descriptors
 from evidently import metrics
+from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.renderers.html_widgets import WidgetSize
 from evidently.report import Report
 from evidently.ui.dashboards import CounterAgg
@@ -21,8 +24,13 @@ from evidently.ui.workspace import WorkspaceBase
 
 
 def create_data():
-    reviews_data = datasets.fetch_openml(name="Womens-E-Commerce-Clothing-Reviews", version=2, as_frame="auto")
-    reviews = reviews_data.frame
+    if os.environ.get("EVIDENTLY_TEST_ENVIRONMENT", "0") != "1":
+        reviews_data = datasets.fetch_openml(name="Womens-E-Commerce-Clothing-Reviews", version=2, as_frame="auto")
+        reviews = reviews_data.frame
+
+    else:
+        reviews = pd.read_parquet(pathlib.Path(__file__).parent.joinpath("../../../../test_data/reviews.parquet"))
+
     for name, rs in (
         ("TheOtherStore", 0),
         ("AMajorCompetitor", 42),
@@ -418,6 +426,7 @@ def create_project(workspace: WorkspaceBase, name: str):
 
 reviews_demo_project = DemoProject(
     name="Demo project - Reviews",
+    create_snapshot=None,
     create_data=create_data,
     create_report=create_report,
     create_project=create_project,

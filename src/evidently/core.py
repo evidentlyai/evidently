@@ -44,6 +44,7 @@ class ColumnType(Enum):
     Date = "data"
     Id = "id"
     Unknown = "unknown"
+    List = "list"
 
 
 def _is_mapping_field(field: ModelField):
