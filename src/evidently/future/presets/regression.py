@@ -1,13 +1,12 @@
-from typing import Dict
 from typing import List
 from typing import Optional
 from typing import Sequence
+from typing import Tuple
 
 from evidently.future.container import MetricContainer
 from evidently.future.container import MetricOrContainer
 from evidently.future.metric_types import MeanStdMetricTests
 from evidently.future.metric_types import MetricId
-from evidently.future.metric_types import MetricResult
 from evidently.future.metric_types import SingleValueMetricTests
 from evidently.future.metrics import MAE
 from evidently.future.metrics import MAPE
@@ -62,7 +61,11 @@ class RegressionQuality(MetricContainer):
             AbsMaxError(tests=self._abs_max_error_tests),
         ]
 
-    def render(self, context: Context, results: Dict[MetricId, MetricResult]) -> List[BaseWidgetInfo]:
+    def render(
+        self,
+        context: "Context",
+        child_widgets: Optional[List[Tuple[Optional[MetricId], List[BaseWidgetInfo]]]] = None,
+    ) -> List[BaseWidgetInfo]:
         widgets = context.get_legacy_metric(
             RegressionQualityMetric(),
             _gen_regression_input_data,
@@ -82,7 +85,7 @@ class RegressionQuality(MetricContainer):
                 RegressionErrorDistribution(),
                 _gen_regression_input_data,
             )[1]
-        for metric in self.metrics(context):
+        for metric in self.list_metrics():
             link_metric(widgets, metric)
         return widgets
 
@@ -105,13 +108,17 @@ class RegressionDummyQuality(MetricContainer):
             DummyRMSE(tests=self._rmse_tests),
         ]
 
-    def render(self, context: Context, results: Dict[MetricId, MetricResult]) -> List[BaseWidgetInfo]:
+    def render(
+        self,
+        context: "Context",
+        child_widgets: Optional[List[Tuple[Optional[MetricId], List[BaseWidgetInfo]]]] = None,
+    ) -> List[BaseWidgetInfo]:
         widgets = context.get_legacy_metric(
             RegressionDummyMetric(),
             _gen_regression_input_data,
         )[1]
 
-        for metric in self.metrics(context):
+        for metric in self.list_metrics():
             link_metric(widgets, metric)
         return widgets
 
@@ -154,11 +161,15 @@ class RegressionPreset(MetricContainer):
             R2Score(tests=self._r2score_tests),
         ]
 
-    def render(self, context: "Context", results: Dict[MetricId, MetricResult]) -> List[BaseWidgetInfo]:
+    def render(
+        self,
+        context: "Context",
+        child_widgets: Optional[List[Tuple[Optional[MetricId], List[BaseWidgetInfo]]]] = None,
+    ) -> List[BaseWidgetInfo]:
         if self._quality is None:
             raise ValueError("No _quality set in preset, something went wrong.")
         return (
-            self._quality.render(context, results)
+            self._quality.render(context)
             + context.get_metric_result(
                 MAPE(mean_tests=self._mape_tests.mean, std_tests=self._mape_tests.std),
             ).widget
