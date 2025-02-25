@@ -275,8 +275,8 @@ class Snapshot:
         snapshot_items: List[SnapshotItem] = []
         for item in items:
             if isinstance(item, MetricContainer):
-                self._run_items(item.metrics(self.context), metric_results)
-                widget = item.render(self.context, results=metric_results)
+                container_items, container_widgets = self._run_items(item.metrics(self.context), metric_results)
+                widget = item.render(self.context, [(v.metric_id, v.widgets) for v in container_items])
                 widgets.extend(widget)
                 snapshot_items.append(SnapshotItem(None, widget))
             else:

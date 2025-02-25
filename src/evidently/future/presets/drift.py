@@ -2,6 +2,7 @@ from typing import Dict
 from typing import List
 from typing import Optional
 from typing import Sequence
+from typing import Tuple
 
 from evidently.calculations.stattests import PossibleStatTestType
 from evidently.calculations.stattests import StatTest
@@ -9,7 +10,6 @@ from evidently.core import ColumnType
 from evidently.future.container import MetricContainer
 from evidently.future.container import MetricOrContainer
 from evidently.future.metric_types import MetricId
-from evidently.future.metric_types import MetricResult
 from evidently.future.metrics import ValueDrift
 from evidently.future.metrics.column_statistics import DriftedColumnsCount
 from evidently.future.report import Context
@@ -98,7 +98,11 @@ class DataDriftPreset(MetricContainer):
             for column in (self.columns if self.columns is not None else context.data_definition.get_columns(types))
         ]
 
-    def render(self, context: Context, results: Dict[MetricId, MetricResult]) -> List[BaseWidgetInfo]:
+    def render(
+        self,
+        context: "Context",
+        child_widgets: Optional[List[Tuple[Optional[MetricId], List[BaseWidgetInfo]]]] = None,
+    ) -> List[BaseWidgetInfo]:
         dataset_drift = context.get_legacy_metric(
             DatasetDriftMetric(
                 columns=self.columns,
