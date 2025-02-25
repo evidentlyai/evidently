@@ -83,6 +83,7 @@ class Context:
     _input_data: Tuple[Dataset, Optional[Dataset]]
     _current_graph_level: dict
     _legacy_metrics: Dict[str, Tuple[object, List[BaseWidgetInfo]]]
+    _containers_metrics: Dict[int, List[Metric]]
 
     def __init__(self, report: "Report"):
         self._metrics = {}
@@ -92,6 +93,7 @@ class Context:
         self._metrics_graph = {}
         self._current_graph_level = self._metrics_graph
         self._legacy_metrics = {}
+        self._containers_metrics = {}
 
     def init_dataset(self, current_data: Dataset, reference_data: Optional[Dataset]):
         self._input_data = (current_data, reference_data)
@@ -174,6 +176,12 @@ class Context:
     @property
     def has_reference(self) -> bool:
         return self._input_data[1] is not None
+
+    def container_metrics(self, container_hash: int) -> Optional[List[Metric]]:
+        return self._containers_metrics.get(container_hash, None)
+
+    def set_container_metrics(self, container_hash: int, items: List[Metric]) -> None:
+        self._containers_metrics[container_hash] = items
 
 
 def _default_input_data_generator(context: "Context") -> InputData:
