@@ -115,7 +115,7 @@ class ValueStats(ColumnMetricContainer):
             widgets = self._render_datetime(context)
         if column_type == ColumnType.Text:
             widgets = self._render_text(context)
-        for metric in self.list_metrics():
+        for metric in self.list_metrics(context):
             link_metric(widgets, metric)
         return widgets
 
@@ -350,7 +350,7 @@ class DatasetStats(MetricContainer):
     ) -> List[BaseWidgetInfo]:
         metric = DatasetSummaryMetric()
         _, render = context.get_legacy_metric(metric, _default_input_data_generator)
-        for metric in self.list_metrics():
+        for metric in self.list_metrics(context):
             link_metric(render, metric)
         return render
 
