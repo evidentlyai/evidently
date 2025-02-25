@@ -19,34 +19,34 @@ MetricOrContainer = Union[Metric, "MetricContainer"]
 
 
 class MetricContainer(abc.ABC):
-    _metrics: Optional[List[MetricOrContainer]] = None
-
     @abc.abstractmethod
     def generate_metrics(self, context: "Context") -> Sequence[MetricOrContainer]:
         raise NotImplementedError()
 
     def metrics(self, context: "Context") -> List[MetricOrContainer]:
-        if self._metrics is None:
-            self._metrics = list(self.generate_metrics(context))
-        return self._metrics
+        metric_container_hash = hash(self)
+        metrics = context.metrics_container(metric_container_hash)
+        if metrics is None:
+            metrics = list(self.generate_metrics(context))
+            context.set_metric_container_data(metric_container_hash, metrics)
+        return metrics
 
     def render(
         self,
         context: "Context",
         child_widgets: Optional[List[Tuple[Optional[MetricId], List[BaseWidgetInfo]]]] = None,
     ) -> List[BaseWidgetInfo]:
-        if self._metrics is None:
-            raise ValueError("Metrics weren't composed in container")
         return list(itertools.chain(*[widget[1] for widget in (child_widgets or [])]))
 
-    def list_metrics(self) -> Generator[Metric, None, None]:
-        if self._metrics is None:
+    def list_metrics(self, context: "Context") -> Generator[Metric, None, None]:
+        metrics = context.metrics_container(hash(self))
+        if metrics is None:
             raise ValueError("Metrics weren't composed in container")
-        for item in self._metrics:
+        for item in metrics:
             if isinstance(item, Metric):
                 yield item
             elif isinstance(item, MetricContainer):
-                yield from item.list_metrics()
+                yield from item.list_metrics(context)
             else:
                 raise ValueError(f"invalid metric type {type(item)}")
 

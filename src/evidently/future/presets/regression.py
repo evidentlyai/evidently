@@ -85,7 +85,7 @@ class RegressionQuality(MetricContainer):
                 RegressionErrorDistribution(),
                 _gen_regression_input_data,
             )[1]
-        for metric in self.list_metrics():
+        for metric in self.list_metrics(context):
             link_metric(widgets, metric)
         return widgets
 
@@ -118,7 +118,7 @@ class RegressionDummyQuality(MetricContainer):
             _gen_regression_input_data,
         )[1]
 
-        for metric in self.list_metrics():
+        for metric in self.list_metrics(context):
             link_metric(widgets, metric)
         return widgets
 
