@@ -144,7 +144,7 @@ def _is_cardinality_exceeded(
     limit: Optional[int],
 ) -> bool:
     cardinality = _get_column_cardinality(column_name, data)
-    if limit and cardinality >= min(limit, data.current.shape[0]):
+    if limit and cardinality >= limit:
         return True
     return False
 
