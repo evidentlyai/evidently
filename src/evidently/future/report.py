@@ -408,7 +408,7 @@ class Report:
     ) -> Snapshot:
         self._timestamp = timestamp or datetime.now()
         current_dataset = Dataset.from_any(current_data)
-        reference_dataset = Dataset.from_any(reference_data) if reference_data else None
+        reference_dataset = Dataset.from_any(reference_data) if reference_data is not None else None
         snapshot = Snapshot(self)
         snapshot.run(current_dataset, reference_dataset)
         return snapshot
