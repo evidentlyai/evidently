@@ -729,6 +729,7 @@ class Metric(AutoAliasMixin, EvidentlyBaseModel, Generic[TCalculation]):
 
     class Config:
         is_base_type = True
+        smart_union = True
 
     __calculation_type__: ClassVar[Type[TCalculation]]
 
