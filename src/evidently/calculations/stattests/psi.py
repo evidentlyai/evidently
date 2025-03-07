@@ -48,7 +48,7 @@ def _psi(
         psi_value: calculated PSI
         test_result: whether the drift is detected
     """
-    reference_percents, current_percents = get_binned_data(reference_data, current_data, feature_type, n_bins)
+    reference_percents, current_percents = get_binned_data(reference_data, current_data, feature_type, n=n_bins)
 
     psi_values = (reference_percents - current_percents) * np.log(reference_percents / current_percents)
     psi_value = np.sum(psi_values)
@@ -64,3 +64,5 @@ psi_stat_test = StatTest(
 )
 
 register_stattest(psi_stat_test, _psi)
+
+
