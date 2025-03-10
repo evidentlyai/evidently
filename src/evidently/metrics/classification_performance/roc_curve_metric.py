@@ -1,5 +1,7 @@
+from typing import Dict
 from typing import List
 from typing import Optional
+from typing import Union
 
 import pandas as pd
 from sklearn import metrics
@@ -13,6 +15,7 @@ from evidently.metric_results import PredictionData
 from evidently.metric_results import ROCCurve
 from evidently.metric_results import ROCCurveData
 from evidently.model.widget import BaseWidgetInfo
+from evidently.pipeline.column_mapping import TargetNames
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import TabData
@@ -60,9 +63,14 @@ class ClassificationRocCurve(Metric[ClassificationRocCurveResults]):
             reference_roc_curve=ref_roc_curve,
         )
 
-    def calculate_metrics(self, target_data: pd.Series, prediction: PredictionData, target_names) -> ROCCurve:
+    def calculate_metrics(
+        self,
+        target_data: pd.Series,
+        prediction: PredictionData,
+        target_names: Optional[TargetNames],
+    ) -> ROCCurve:
         labels = prediction.labels
-        tn = {}
+        tn: Dict[Union[int, str], str] = {}
         if target_names is None:
             tn = {}
         elif isinstance(target_names, list):
