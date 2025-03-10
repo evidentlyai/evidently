@@ -36,7 +36,7 @@ class MetadataStorageComponent(FactoryComponent[ProjectMetadataStorage], ABC):
     __section__: ClassVar = "metadata"
     dependency_name: ClassVar = "project_metadata"
     use_cache: ClassVar[bool] = True
-    sync_to_thread: ClassVar[bool] = False
+    sync_to_thread: ClassVar[bool] = None
 
 
 class DataStorageComponent(FactoryComponent[DataStorage], ABC):
