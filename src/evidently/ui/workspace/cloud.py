@@ -221,9 +221,17 @@ class CloudWorkspace(WorkspaceView):
 
     def __init__(
         self,
-        token: str,
+        token: Optional[str] = None,
         url: str = None,
     ):
+        if token is None:
+            import os
+
+            token = os.environ.get("EVIDENTLY_API_KEY", default=None)
+        if token is None:
+            raise ValueError(
+                "To use CloudWorkspace you must provide a token through argument or env variable EVIDENTLY_API_KEY"
+            )
         self.token = token
         self.url = url if url is not None else self.URL
 
