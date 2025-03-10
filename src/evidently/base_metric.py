@@ -55,6 +55,7 @@ class MetricResult(PolymorphicModel, BaseResult, metaclass=WithFieldsPathMetacla
         field_tags = {"type": {IncludeTags.TypeField}}
         is_base_type = True
         alias_required = True
+        smart_union = True
 
 
 class ErrorResult(BaseResult):

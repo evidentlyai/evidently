@@ -99,6 +99,7 @@ class PredictionData(MetricResult):
     class Config:
         type_alias = "evidently:metric_result:PredictionData"
         dict_include = False
+        smart_union = True
 
     predictions: pd.Series
     labels: LabelList

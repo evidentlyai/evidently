@@ -141,7 +141,7 @@ class ClassificationQualityByClassRenderer(MetricRenderer):
         names = metrics_frame.columns.tolist()
         if columns.target_names is not None and isinstance(columns.target_names, dict):
             # todo: refactor columns data typing
-            names = [columns.target_names[int(x)] for x in names]  # type: ignore
+            names = [columns.target_names.get(x) or columns.target_names.get(int(x)) for x in names]  # type: ignore
         z = metrics_frame.iloc[:-1].values
         x = list(map(str, names))
         y = ["precision", "recall", "f1-score"]

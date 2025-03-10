@@ -46,18 +46,30 @@ class ClassificationRocCurve(Metric[ClassificationRocCurveResults]):
         curr_predictions = get_prediction_data(data.current_data, dataset_columns, data.column_mapping.pos_label)
         if curr_predictions.prediction_probas is None:
             raise ValueError("Roc Curve can be calculated only on binary probabilistic predictions")
-        curr_roc_curve = self.calculate_metrics(data.current_data[target_name], curr_predictions)
+        curr_roc_curve = self.calculate_metrics(
+            data.current_data[target_name], curr_predictions, dataset_columns.target_names
+        )
         ref_roc_curve = None
         if data.reference_data is not None:
             ref_predictions = get_prediction_data(data.reference_data, dataset_columns, data.column_mapping.pos_label)
-            ref_roc_curve = self.calculate_metrics(data.reference_data[target_name], ref_predictions)
+            ref_roc_curve = self.calculate_metrics(
+                data.reference_data[target_name], ref_predictions, dataset_columns.target_names
+            )
         return ClassificationRocCurveResults(
             current_roc_curve=curr_roc_curve,
             reference_roc_curve=ref_roc_curve,
         )
 
-    def calculate_metrics(self, target_data: pd.Series, prediction: PredictionData) -> ROCCurve:
+    def calculate_metrics(self, target_data: pd.Series, prediction: PredictionData, target_names) -> ROCCurve:
         labels = prediction.labels
+        tn = {}
+        if target_names is None:
+            tn = {}
+        elif isinstance(target_names, list):
+            tn = {idx: value for idx, value in enumerate(target_names)}
+        elif isinstance(target_names, dict):
+            tn = target_names
+
         if prediction.prediction_probas is None:
             raise ValueError("Roc Curve can be calculated only on binary probabilistic predictions")
         binaraized_target = (target_data.to_numpy().reshape(-1, 1) == labels).astype(int)
@@ -75,8 +87,9 @@ class ClassificationRocCurve(Metric[ClassificationRocCurveResults]):
             binaraized_target.columns = labels
 
             for label in labels:
+                mapped_label = tn.get(label, label)
                 fpr, tpr, thrs = metrics.roc_curve(binaraized_target[label], prediction.prediction_probas[label])
-                roc_curve[label] = ROCCurveData(fpr=fpr.tolist(), tpr=tpr.tolist(), thrs=thrs.tolist())
+                roc_curve[mapped_label] = ROCCurveData(fpr=fpr.tolist(), tpr=tpr.tolist(), thrs=thrs.tolist())
         return roc_curve
 
 
