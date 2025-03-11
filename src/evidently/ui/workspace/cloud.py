@@ -14,7 +14,6 @@ from typing import overload
 import pandas as pd
 from requests import HTTPError
 from requests import Response
-from requests_toolbelt import MultipartDecoder
 
 from evidently._pydantic_compat import parse_obj_as
 from evidently.future.datasets import DataDefinition
@@ -235,18 +234,25 @@ class CloudMetadataStorage(RemoteProjectMetadataStorage):
 
     def load_dataset_v2(self, dataset_id: DatasetID) -> Dataset:
         response: Response = self._request(f"/api/v2/datasets/{dataset_id}/download", "GET")
-        decoder = MultipartDecoder.from_response(response)
+        content_type = response.headers.get("Content-Type", "")
+        boundary = content_type.split("boundary=")[-1]
+
+        if not boundary:
+            raise ValueError("No boundary found in Content-Type header")
+
+        parts = response.content.split(f"--{boundary}".encode())
 
         metadata = None
         file_content = None
 
-        for part in decoder.parts:
-            content_type = part.headers.get(b"Content-Type", b"").decode()
+        for part in parts:
+            if b"Content-Type: application/json" in part:
+                json_start = part.find(b"\r\n\r\n") + 4
+                metadata = json.loads(part[json_start:].decode())
+            elif b"Content-Type: application/octet-stream" in part:
+                file_start = part.find(b"\r\n\r\n") + 4
+                file_content = part[file_start:-2]
 
-            if content_type == "application/json":
-                metadata = json.loads(part.text)
-            elif content_type == "application/octet-stream":
-                file_content = part.content
         if metadata is None or file_content is None:
             raise ValueError("Wrong response from server")
 
