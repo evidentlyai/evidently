@@ -362,18 +362,3 @@ class CloudWorkspace(WorkspaceView):
 class CloudAuthManager(NoopAuthManager):
     async def get_team(self, team_id: TeamID) -> Optional[Team]:
         return Team(id=team_id, name="", org_id=ZERO_UUID)
-
-
-def main():
-    ws = CloudWorkspace("", "http://localhost:8003")
-    ds = Dataset.from_pandas(pd.DataFrame([{"a": [1, 2], "b": ["x", "y"]}]))
-    org = ws.create_org("org")
-    proj = ws.create_project("kek", org_id=org.id)
-    dataset_id = ws.add_dataset_v2(proj.id, ds, "kek")
-
-    ds2 = ws.load_dataset_v2(dataset_id)
-    print(ds2.as_dataframe())
-
-
-if __name__ == "__main__":
-    main()
