@@ -7,6 +7,7 @@ from typing import List
 from typing import Literal
 from typing import NamedTuple
 from typing import Optional
+from typing import Tuple
 from typing import Type
 from typing import Union
 from typing import overload
@@ -234,31 +235,37 @@ class CloudMetadataStorage(RemoteProjectMetadataStorage):
 
     def load_dataset_v2(self, dataset_id: DatasetID) -> Dataset:
         response: Response = self._request(f"/api/v2/datasets/{dataset_id}/download", "GET")
-        content_type = response.headers.get("Content-Type", "")
-        boundary = content_type.split("boundary=")[-1]
 
-        if not boundary:
-            raise ValueError("No boundary found in Content-Type header")
-
-        parts = response.content.split(f"--{boundary}".encode())
-
-        metadata = None
-        file_content = None
-
-        for part in parts:
-            if b"Content-Type: application/json" in part:
-                json_start = part.find(b"\r\n\r\n") + 4
-                metadata = json.loads(part[json_start:].decode())
-            elif b"Content-Type: application/octet-stream" in part:
-                file_start = part.find(b"\r\n\r\n") + 4
-                file_content = part[file_start:-2]
-
-        if metadata is None or file_content is None:
-            raise ValueError("Wrong response from server")
+        metadata, file_content = read_multipart_response(response)
 
         df = pd.read_parquet(BytesIO(file_content))
         data_def = parse_obj_as(DataDefinition, metadata["data_definition"])
         return Dataset.from_pandas(df, data_definition=data_def)
+
+
+def read_multipart_response(response: Response) -> Tuple[Dict, bytes]:
+    content_type = response.headers.get("Content-Type", "")
+    boundary = content_type.split("boundary=")[-1]
+
+    if not boundary:
+        raise ValueError("No boundary found in Content-Type header")
+
+    parts = response.content.split(f"--{boundary}".encode())
+
+    metadata = None
+    file_content = None
+
+    for part in parts:
+        if b"Content-Type: application/json" in part:
+            json_start = part.find(b"\r\n\r\n") + 4
+            metadata = json.loads(part[json_start:].decode())
+        elif b"Content-Type: application/octet-stream" in part:
+            file_start = part.find(b"\r\n\r\n") + 4
+            file_content = part[file_start:-2]
+
+    if metadata is None or file_content is None:
+        raise ValueError("Wrong response from server")
+    return metadata, file_content
 
 
 class NamedBytesIO(BytesIO):
