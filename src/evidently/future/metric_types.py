@@ -222,7 +222,7 @@ class ByLabelValue(MetricResult):
         return list(self.values.keys())
 
     def get_label_result(self, label: Label) -> SingleValue:
-        value = SingleValue(self.values[label])
+        value = SingleValue(self.values[str(label)])
         metric = self.metric
         value._metric = metric
         if not isinstance(metric, ByLabelCalculation):
