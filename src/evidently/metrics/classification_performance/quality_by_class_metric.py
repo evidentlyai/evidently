@@ -29,6 +29,7 @@ from evidently.utils.data_operations import process_columns
 class ClassificationQuality(MetricResult):
     class Config:
         type_alias = "evidently:metric_result:ClassificationQuality"
+        smart_union = True
 
     metrics: ClassesMetrics
     roc_aucs: Optional[List[float]]
@@ -46,6 +47,7 @@ class ClassificationQualityByClassResult(MetricResult):
             "reference": {IncludeTags.Reference},
             "columns": {IncludeTags.Parameter},
         }
+        smart_union = True
 
     columns: DatasetColumns
     current: ClassificationQuality
@@ -97,7 +99,7 @@ class ClassificationQualityByClass(ThresholdClassificationMetric[ClassificationQ
                 binaraized_target, prediction.prediction_probas, average=None
             ).tolist()
             for idx, item in enumerate(list(prediction.prediction_probas.columns)):
-                metrics_matrix[item].roc_auc = current_roc_aucs[idx]
+                metrics_matrix[str(item)].roc_auc = current_roc_aucs[idx]
         reference_roc_aucs = None
 
         reference = None
@@ -118,7 +120,7 @@ class ClassificationQualityByClass(ThresholdClassificationMetric[ClassificationQ
                     binaraized_target, ref_prediction.prediction_probas, average=None
                 ).tolist()
                 for idx, item in enumerate(list(ref_prediction.prediction_probas.columns)):
-                    ref_metrics[item].roc_auc = reference_roc_aucs[idx]
+                    ref_metrics[str(item)].roc_auc = reference_roc_aucs[idx]
             reference = ClassificationQuality(metrics=ref_metrics, roc_aucs=reference_roc_aucs)
         return ClassificationQualityByClassResult(
             columns=columns,
