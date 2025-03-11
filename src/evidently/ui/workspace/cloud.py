@@ -231,7 +231,7 @@ class CloudMetadataStorage(RemoteProjectMetadataStorage):
             query_params={"project_id": project_id},
             form_data=True,
         )
-        return DatasetID(response.json()["dataset_id"])
+        return DatasetID(response.json()["dataset"]["id"])
 
     def load_dataset_v2(self, dataset_id: DatasetID) -> Dataset:
         response: Response = self._request(f"/api/v2/datasets/{dataset_id}/download", "GET")
