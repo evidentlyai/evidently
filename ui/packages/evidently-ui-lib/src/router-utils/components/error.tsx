@@ -13,6 +13,14 @@ export const GenericErrorBoundary = () => {
 
   console.error(error)
 
+  const classicErrorMessage =
+    (typeof error === 'object' &&
+      error &&
+      'message' in error &&
+      typeof error.message === 'string' &&
+      error.message) ||
+    (typeof error === 'string' && error)
+
   return (
     <Box p={2}>
       <AlertThemed severity='error'>
@@ -33,7 +41,9 @@ export const GenericErrorBoundary = () => {
           </>
         )}
 
-        {typeof error === 'string' && <Typography fontWeight={'bold'}>{error}</Typography>}
+        {typeof classicErrorMessage === 'string' && (
+          <Typography fontWeight={'bold'}>{classicErrorMessage}</Typography>
+        )}
       </AlertThemed>
     </Box>
   )
