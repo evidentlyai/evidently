@@ -99,7 +99,7 @@ class LegacyClassificationQualityByClass(
     ):
         raise NotImplementedError()
 
-    def _relabel(self, context: "Context", label: Label):
+    def _relabel(self, context: "Context", label: Label) -> Label:
         classification = context.data_definition.get_classification("default")
         if classification is None:
             return label
@@ -128,11 +128,11 @@ class F1ByLabelCalculation(LegacyClassificationQualityByClass[F1ByLabel]):
         legacy_result: ClassificationQualityByClassResult,
         render: List[BaseWidgetInfo],
     ) -> Tuple[ByLabelValue, Optional[ByLabelValue]]:
-        return (
-            ByLabelValue({self._relabel(context, k): v.f1 for k, v in legacy_result.current.metrics.items()}),
-            None
-            if legacy_result.reference is None
-            else ByLabelValue({self._relabel(context, k): v.f1 for k, v in legacy_result.reference.metrics.items()}),
+        return self.collect_by_label_result(
+            context,
+            lambda x: x.f1,
+            legacy_result.current.metrics,
+            None if legacy_result.reference is None else legacy_result.reference.metrics,
         )
 
     def display_name(self) -> str:
@@ -150,13 +150,11 @@ class PrecisionByLabelCalculation(LegacyClassificationQualityByClass[PrecisionBy
         legacy_result: ClassificationQualityByClassResult,
         render: List[BaseWidgetInfo],
     ) -> Tuple[ByLabelValue, Optional[ByLabelValue]]:
-        return (
-            ByLabelValue({self._relabel(context, k): v.precision for k, v in legacy_result.current.metrics.items()}),
-            None
-            if legacy_result.reference is None
-            else ByLabelValue(
-                {self._relabel(context, k): v.precision for k, v in legacy_result.reference.metrics.items()}
-            ),
+        return self.collect_by_label_result(
+            context,
+            lambda x: x.precision,
+            legacy_result.current.metrics,
+            None if legacy_result.reference is None else legacy_result.reference.metrics,
         )
 
     def display_name(self) -> str:
@@ -174,13 +172,11 @@ class RecallByLabelCalculation(LegacyClassificationQualityByClass[RecallByLabel]
         legacy_result: ClassificationQualityByClassResult,
         render: List[BaseWidgetInfo],
     ) -> Tuple[ByLabelValue, Optional[ByLabelValue]]:
-        return (
-            ByLabelValue({self._relabel(context, k): v.recall for k, v in legacy_result.current.metrics.items()}),
-            None
-            if legacy_result.reference is None
-            else ByLabelValue(
-                {self._relabel(context, k): v.recall for k, v in legacy_result.reference.metrics.items()}
-            ),
+        return self.collect_by_label_result(
+            context,
+            lambda x: x.recall,
+            legacy_result.current.metrics,
+            None if legacy_result.reference is None else legacy_result.reference.metrics,
         )
 
     def display_name(self) -> str:
@@ -198,16 +194,11 @@ class RocAucByLabelCalculation(LegacyClassificationQualityByClass[RocAucByLabel]
         legacy_result: ClassificationQualityByClassResult,
         render: List[BaseWidgetInfo],
     ) -> Tuple[ByLabelValue, Optional[ByLabelValue]]:
-        value = ByLabelValue(
-            {self._relabel(context, k): v.roc_auc for k, v in legacy_result.current.metrics.items()},
-        )
-        return (
-            value,
-            None
-            if legacy_result.reference is None
-            else ByLabelValue(
-                {self._relabel(context, k): v.roc_auc for k, v in legacy_result.reference.metrics.items()}
-            ),
+        return self.collect_by_label_result(
+            context,
+            lambda x: x.roc_auc,
+            legacy_result.current.metrics,
+            None if legacy_result.reference is None else legacy_result.reference.metrics,
         )
 
     def display_name(self) -> str:
@@ -277,7 +268,7 @@ class F1ScoreCalculation(LegacyClassificationQuality[F1Score]):
         render: List[BaseWidgetInfo],
     ) -> Tuple[SingleValue, Optional[SingleValue]]:
         return (
-            SingleValue(legacy_result.current.f1),
+            SingleValue(self.display_name(), legacy_result.current.f1),
             None if legacy_result.reference is None else SingleValue(legacy_result.reference.f1),
         )
 

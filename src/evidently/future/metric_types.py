@@ -8,6 +8,8 @@ from abc import ABC
 from abc import abstractmethod
 from copy import copy
 from typing import TYPE_CHECKING
+from typing import Any
+from typing import Callable
 from typing import ClassVar
 from typing import Dict
 from typing import Generic
@@ -45,12 +47,21 @@ if TYPE_CHECKING:
     from evidently.future.report import Context
 
 
+MetricId = str
+
+
+@dataclasses.dataclass
+class MetricConfig:
+    metric_id: MetricId
+    params: Dict[str, Any]
+
+
+@dataclasses.dataclass
 class MetricResult:
-    _display_name: str = "<unset>"
-    _metric: Optional["MetricCalculationBase"] = None
-    _metric_value_location: Optional["MetricValueLocation"] = None
-    _widget: Optional[List[BaseWidgetInfo]] = None
-    _tests: Optional[Dict["BoundTest", "MetricTestResult"]] = None
+    _display_name: str = dataclasses.field(default="<unset>", init=False)
+    _metric_value_location: Optional["MetricValueLocation"] = dataclasses.field(default=None, init=False)
+    _widget: Optional[List[BaseWidgetInfo]] = dataclasses.field(default=None, init=False)
+    _tests: Optional[Dict["BoundTest", "MetricTestResult"]] = dataclasses.field(default=None, init=False)
 
     def set_tests(self, tests: Dict["BoundTest", "MetricTestResult"]):
         self._tests = tests
@@ -85,13 +96,14 @@ class MetricResult:
 
     def to_dict(self):
         return {
-            "id": self._metric.id,
+            "id": self.metric_value_location.metric.metric_id,
             "metric_id": self.explicit_metric_id(),
             "value": self.dict(),
         }
 
     def explicit_metric_id(self):
-        config = self.metric.to_metric().dict()
+        metric_value_location = self.metric_value_location
+        config = metric_value_location.metric.params
         config_items = []
         type = None
         for field, value in config.items():
@@ -110,19 +122,13 @@ class MetricResult:
                 continue
             else:
                 config_items.append(f"{field}={str(value)}")
-        if self._metric_value_location is not None:
-            for key, value in self._metric_value_location.params().items():
-                config_items.append(f"{key}={value}")
+        for key, value in self.metric_value_location.params().items():
+            config_items.append(f"{key}={value}")
         return f"{type}({','.join(config_items)})"
 
     @abc.abstractmethod
     def dict(self) -> object:
         raise NotImplementedError()
-
-    @property
-    def metric(self) -> "MetricCalculationBase":
-        assert self._metric
-        return self._metric
 
     @property
     def metric_value_location(self) -> "MetricValueLocation":
@@ -216,19 +222,14 @@ class SingleValue(MetricResult):
 
 @dataclasses.dataclass
 class ByLabelValue(MetricResult):
-    values: Dict[Label, Value]
+    values: Dict[Label, SingleValue]
 
     def labels(self) -> List[Label]:
         return list(self.values.keys())
 
     def get_label_result(self, label: Label) -> SingleValue:
-        value = SingleValue(self.values[label])
-        metric = self.metric
-        value._metric = metric
-        if not isinstance(metric, ByLabelCalculation):
-            raise ValueError(f"Metric {type(metric)} isn't ByLabelCalculation")
-        value.set_display_name(metric.label_display_name(label))
-        value._metric_value_location = ByLabelValueLocation(metric.to_metric(), label)
+        value = self.values[label]
+        value._metric_value_location = ByLabelValueLocation(self.metric_value_location.metric, label)
         return value
 
     def dict(self) -> object:
@@ -338,7 +339,7 @@ class DatasetType(enum.Enum):
 
 @dataclasses.dataclass
 class MetricValueLocation:
-    metric: "Metric"
+    metric: MetricConfig
 
     def params(self) -> Dict[str, str]:
         raise NotImplementedError
@@ -351,7 +352,7 @@ class MetricValueLocation:
         if dataset_type == DatasetType.Current:
             return context.get_metric_result(self.metric.metric_id)
         if dataset_type == DatasetType.Reference:
-            value = context.get_reference_metric_result(self.metric)
+            value = context.get_reference_metric_result(self.metric.metric_id)
             return value
         raise ValueError(f"Unknown dataset type {dataset_type}")
 
@@ -448,9 +449,6 @@ class MetricTestProto(Protocol[TResult]):
 
 
 SingleValueTest = MetricTestProto[SingleValue]
-
-
-MetricId = str
 
 
 def metric_tests_widget(tests: List[MetricTestResult]) -> BaseWidgetInfo:
@@ -875,6 +873,7 @@ class ByLabelMetric(Metric["ByLabelCalculation"]):
 
 
 TByLabelMetric = TypeVar("TByLabelMetric", bound=ByLabelMetric)
+T = TypeVar("T")
 
 
 class ByLabelCalculation(MetricCalculation[ByLabelValue, TByLabelMetric], Generic[TByLabelMetric], ABC):
@@ -883,6 +882,37 @@ class ByLabelCalculation(MetricCalculation[ByLabelValue, TByLabelMetric], Generi
 
     def label_display_name(self, label: Label) -> str:
         return self.display_name() + f" for label {label}"
+
+    def _relabel(self, context: "Context", label: Label) -> Label:
+        return label
+
+    def collect_by_label_result(
+        self,
+        context: "Context",
+        value_extract: Callable[[T], Value],
+        current_result: Dict[Label, T],
+        reference_result: Optional[Dict[Label, T]],
+    ):
+        return (
+            ByLabelValue(
+                {
+                    self._relabel(context, k): SingleValue(
+                        self.label_display_name(self._relabel(context, k)), value_extract(v)
+                    )
+                    for k, v in current_result.items()
+                }
+            ),
+            None
+            if reference_result is None
+            else ByLabelValue(
+                {
+                    self._relabel(context, k): SingleValue(
+                        self.label_display_name(self._relabel(context, k)), value_extract(v)
+                    )
+                    for k, v in reference_result.items()
+                }
+            ),
+        )
 
 
 class ByLabelCountBoundTest(BoundTest[ByLabelCountValue]):

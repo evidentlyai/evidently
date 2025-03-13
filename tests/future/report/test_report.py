@@ -4,6 +4,7 @@ import pytest
 from evidently.future.datasets import Dataset
 from evidently.future.metrics import MinValue
 from evidently.future.report import Report
+from evidently.future.report import Snapshot
 
 
 @pytest.mark.parametrize(
@@ -25,3 +26,8 @@ def test_report_run(current, reference):
 
     snapshot = report.run(current_data=current, reference_data=reference)
     assert snapshot is not None
+
+    data = snapshot.dumps()
+    snapshot_2 = Snapshot.loads(data)
+    assert snapshot_2 is not None
+    assert snapshot.dict() == snapshot_2.dict()
