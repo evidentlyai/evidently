@@ -110,7 +110,7 @@ class StatisticsCalculation(SingleValueCalculation[TStatisticsMetric]):
         if reference_data is not None:
             ref_value = self.calculate_value(reference_data.column(self.column))
             header += f", reference: {ref_value:.3f}"
-        result = SingleValue(value)
+        result = SingleValue(value, self.display_name())
         result.widget = distribution(
             f"{self.display_name()}: {header}",
             current_data.column(self.column),
@@ -118,7 +118,7 @@ class StatisticsCalculation(SingleValueCalculation[TStatisticsMetric]):
         )
         return (
             result,
-            None if ref_value is None else SingleValue(ref_value),
+            None if ref_value is None else SingleValue(ref_value, self.display_name()),
         )
 
     @abc.abstractmethod
@@ -254,7 +254,7 @@ class CategoryCountCalculation(CountCalculation[CategoryCount]):
         except KeyError:
             value = 0
         total = column.data.count()
-        return CountValue(value, value / total)
+        return CountValue(value, value / total, self.count_display_name(), self.share_display_name())
 
 
 class InRangeValueCount(ColumnMetric, CountMetric):
@@ -282,7 +282,7 @@ class InRangeValueCountCalculation(CountCalculation[InRangeValueCount]):
         column = dataset.column(self.metric.column)
         value = column.data.between(self.metric.left, self.metric.right).sum()
         total = column.data.count()
-        return CountValue(value, value / total)
+        return CountValue(value, value / total, self.count_display_name(), self.share_display_name())
 
 
 class OutRangeValueCount(ColumnMetric, CountMetric):
@@ -310,7 +310,7 @@ class OutRangeValueCountCalculation(CountCalculation[OutRangeValueCount]):
         column = dataset.column(self.metric.column)
         value = column.data.between(self.metric.left, self.metric.right).sum()
         total = column.data.count()
-        return CountValue(total - value, (total - value) / total)
+        return CountValue(total - value, (total - value) / total, self.count_display_name(), self.share_display_name())
 
 
 class InListValueCount(ColumnMetric, CountMetric):
@@ -337,7 +337,7 @@ class InListValueCountCalculation(CountCalculation[InListValueCount]):
         column = dataset.column(self.metric.column)
         value = column.data.value_counts().loc[self.metric.values].sum()  # type: ignore[index]
         total = column.data.count()
-        return CountValue(value, value / total)
+        return CountValue(value, value / total, self.count_display_name(), self.share_display_name())
 
 
 class OutListValueCount(ColumnMetric, CountMetric):
@@ -364,7 +364,7 @@ class OutListValueCountCalculation(CountCalculation[OutListValueCount]):
         column = dataset.column(self.metric.column)
         value = column.data.value_counts().loc[self.metric.values].sum()  # type: ignore[index]
         total = column.data.count()
-        return CountValue(total - value, (total - value) / total)
+        return CountValue(total - value, (total - value) / total, self.count_display_name(), self.share_display_name())
 
 
 class MissingValueCount(ColumnMetric, CountMetric):
@@ -392,7 +392,7 @@ class MissingValueCountCalculation(CountCalculation[MissingValueCount]):
         column = dataset.column(self.metric.column)
         value = column.data.count()
         total = len(column.data)
-        return CountValue(total - value, (total - value) / total)
+        return CountValue(total - value, (total - value) / total, self.count_display_name(), self.share_display_name())
 
 
 class ValueDrift(ColumnMetric, SingleValueMetric):
@@ -432,7 +432,7 @@ class ValueDriftCalculation(SingleValueCalculation[ValueDrift]):
             agg_data=True,
         )
 
-        result = SingleValue(drift.drift_score)
+        result = SingleValue(drift.drift_score, self.display_name())
         result.widget = self._render(drift, Options(), ColorOptions())
         if self.metric.tests is None and context.configuration.include_tests:
             # todo: move to _default_tests
@@ -621,7 +621,12 @@ class DriftedColumnCalculation(CountCalculation[DriftedColumnsCount], LegacyDrif
     def calculate_value(
         self, context: Context, legacy_result: DatasetDriftMetricResults, render: List[BaseWidgetInfo]
     ) -> CountValue:
-        result = CountValue(legacy_result.number_of_drifted_columns, legacy_result.share_of_drifted_columns)
+        result = CountValue(
+            legacy_result.number_of_drifted_columns,
+            legacy_result.share_of_drifted_columns,
+            self.count_display_name(),
+            self.share_display_name(),
+        )
         return result
 
     def display_name(self) -> str:

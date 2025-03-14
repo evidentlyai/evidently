@@ -4,7 +4,6 @@ from typing import List
 from evidently._pydantic_compat import BaseModel
 from evidently.future.metric_types import MetricId
 from evidently.future.metric_types import MetricResult
-from evidently.model.widget import BaseWidgetInfo
 
 
 class ReportItem(BaseModel):
@@ -19,4 +18,4 @@ class SnapshotModel(BaseModel):
     report: ReportModel
     metric_results: Dict[MetricId, MetricResult]
     top_level_metrics: List[MetricId]
-    widgets: List[BaseWidgetInfo]
+    # widgets: List[BaseWidgetInfo]

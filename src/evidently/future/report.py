@@ -25,11 +25,9 @@ from evidently.future.datasets import DatasetColumn
 from evidently.future.datasets import PossibleDatasetTypes
 from evidently.future.metric_types import Metric
 from evidently.future.metric_types import MetricCalculationBase
-from evidently.future.metric_types import MetricConfig
 from evidently.future.metric_types import MetricId
 from evidently.future.metric_types import MetricResult
 from evidently.future.metric_types import MetricTestResult
-from evidently.future.metric_types import SingleValueLocation
 from evidently.future.metric_types import metric_tests_widget
 from evidently.future.metric_types import render_widgets
 from evidently.future.serialization import ReportModel
@@ -111,15 +109,13 @@ class Context:
         self._current_graph_level = prev_level[calc.id]
         if calc.id not in self._metrics:
             current_result, reference_result = calc.call(self)
-            current_result.set_display_name(calc.display_name())
             link_metric(current_result.widget, calc.to_metric())
-            metric_config = MetricConfig(calc.to_metric().metric_id, calc.to_metric().dict())
-            current_result._metric_value_location = SingleValueLocation(metric_config)
+            metric_config = calc.to_metric_config()
+            current_result.set_metric_location(metric_config)
             self._metrics[calc.id] = current_result
             if reference_result is not None:
-                reference_result.set_display_name(calc.display_name())
                 link_metric(reference_result.widget, calc.to_metric())
-                reference_result._metric_value_location = SingleValueLocation(metric_config)
+                reference_result.set_metric_location(metric_config)
                 self._reference_metrics[calc.id] = reference_result
             test_results = {
                 tc: tc.run_test(self, calc, current_result) for tc in calc.to_metric().get_bound_tests(self)
