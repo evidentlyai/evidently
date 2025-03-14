@@ -32,10 +32,10 @@ class JsonMetadataComponent(MetadataStorageComponent):
     path: str
 
     def dependency_factory(self) -> Callable[..., ProjectMetadataStorage]:
-        def json_meta(local_state: Optional[LocalState] = None):
+        async def json_meta(local_state: Optional[LocalState] = None):
             return JsonFileProjectMetadataStorage(path=self.path, local_state=local_state)
 
-        return json_meta
+        return json_meta  # type: ignore[return-value]
 
 
 class InmemoryDataComponent(DataStorageComponent):

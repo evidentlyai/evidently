@@ -2,7 +2,6 @@ import abc
 import copy
 import dataclasses
 from abc import abstractmethod
-from dataclasses import field
 from enum import Enum
 from typing import Dict
 from typing import Generator
@@ -14,6 +13,7 @@ from typing import Union
 import numpy as np
 import pandas as pd
 
+from evidently._pydantic_compat import BaseModel
 from evidently.base_metric import DisplayName
 from evidently.core import ColumnType
 from evidently.features.generated_features import GeneratedFeatures
@@ -153,8 +153,7 @@ class RAG:
 LLMDefinition = Union[Completion, RAG]
 
 
-@dataclasses.dataclass
-class DataDefinition:
+class DataDefinition(BaseModel):
     id_column: Optional[str] = None
     timestamp: Optional[str] = None
     numerical_columns: Optional[List[str]] = None
@@ -164,9 +163,38 @@ class DataDefinition:
     classification: Optional[List[Classification]] = None
     regression: Optional[List[Regression]] = None
     llm: Optional[LLMDefinition] = None
-    numerical_descriptors: List[str] = field(default_factory=list)
-    categorical_descriptors: List[str] = field(default_factory=list)
+    numerical_descriptors: List[str] = []
+    categorical_descriptors: List[str] = []
     ranking: Optional[List[Recsys]] = None
+
+    def __init__(
+        self,
+        id_column: Optional[str] = None,
+        timestamp: Optional[str] = None,
+        numerical_columns: Optional[List[str]] = None,
+        categorical_columns: Optional[List[str]] = None,
+        text_columns: Optional[List[str]] = None,
+        datetime_columns: Optional[List[str]] = None,
+        classification: Optional[List[Classification]] = None,
+        regression: Optional[List[Regression]] = None,
+        llm: Optional[LLMDefinition] = None,
+        numerical_descriptors: Optional[List[str]] = None,
+        categorical_descriptors: Optional[List[str]] = None,
+        ranking: Optional[List[Recsys]] = None,
+    ):
+        super().__init__()
+        self.id_column = id_column
+        self.timestamp = timestamp
+        self.numerical_columns = numerical_columns
+        self.categorical_columns = categorical_columns
+        self.text_columns = text_columns
+        self.datetime_columns = datetime_columns
+        self.classification = classification
+        self.regression = regression
+        self.llm = llm
+        self.numerical_descriptors = numerical_descriptors if numerical_descriptors is not None else []
+        self.categorical_descriptors = categorical_descriptors if categorical_descriptors is not None else []
+        self.ranking = ranking
 
     def get_numerical_columns(self):
         return (self.numerical_columns or []) + (self.numerical_descriptors or [])

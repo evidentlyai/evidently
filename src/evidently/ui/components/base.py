@@ -5,6 +5,7 @@ from typing import ClassVar
 from typing import Dict
 from typing import Generic
 from typing import List
+from typing import Optional
 from typing import Type
 from typing import TypeVar
 
@@ -101,7 +102,7 @@ DT = TypeVar("DT")
 class FactoryComponent(Component, Generic[DT], ABC):
     dependency_name: ClassVar[str]
     use_cache: ClassVar[bool] = True
-    sync_to_thread: ClassVar[bool] = False
+    sync_to_thread: ClassVar[Optional[bool]] = False
 
     def dependency_factory(self) -> Callable[..., DT]:
         raise NotImplementedError(self.__class__)
