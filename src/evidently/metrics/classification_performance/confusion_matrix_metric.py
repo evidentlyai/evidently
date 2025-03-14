@@ -30,6 +30,7 @@ class ClassificationConfusionMatrixResult(MetricResult):
             "reference_matrix": {IncludeTags.Reference},
             "target_names": {IncludeTags.Parameter},
         }
+        smart_union = True
 
     current_matrix: ConfusionMatrix
     reference_matrix: Optional[ConfusionMatrix]
