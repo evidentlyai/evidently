@@ -359,11 +359,15 @@ class CloudWorkspace(WorkspaceView):
         self, project_id: STR_UUID, dataset: Dataset, name: str, description: Optional[str] = None
     ) -> DatasetID:
         assert isinstance(self.project_manager.project_metadata, CloudMetadataStorage)
-        return self.project_manager.project_metadata.add_dataset_v2(project_id, dataset, name, description)
+        return self.project_manager.project_metadata.add_dataset_v2(
+            project_id if isinstance(project_id, ProjectID) else ProjectID(project_id), dataset, name, description
+        )
 
     def load_dataset_v2(self, dataset_id: STR_UUID) -> Dataset:
         assert isinstance(self.project_manager.project_metadata, CloudMetadataStorage)
-        return self.project_manager.project_metadata.load_dataset_v2(dataset_id)
+        return self.project_manager.project_metadata.load_dataset_v2(
+            dataset_id if isinstance(dataset_id, DatasetID) else DatasetID(dataset_id)
+        )
 
 
 class CloudAuthManager(NoopAuthManager):
