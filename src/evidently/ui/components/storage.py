@@ -1,6 +1,7 @@
 from abc import ABC
 from typing import Callable
 from typing import ClassVar
+from typing import Optional
 
 from evidently.pydantic_utils import register_type_alias
 from evidently.ui.base import BlobStorage
@@ -36,7 +37,7 @@ class MetadataStorageComponent(FactoryComponent[ProjectMetadataStorage], ABC):
     __section__: ClassVar = "metadata"
     dependency_name: ClassVar = "project_metadata"
     use_cache: ClassVar[bool] = True
-    sync_to_thread: ClassVar[bool] = False
+    sync_to_thread: ClassVar[Optional[bool]] = None
 
 
 class DataStorageComponent(FactoryComponent[DataStorage], ABC):
