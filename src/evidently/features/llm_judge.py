@@ -28,8 +28,7 @@ from evidently.utils.llm.wrapper import get_llm_wrapper
 
 
 class BaseLLMPromptTemplate(PromptTemplate):
-    class Config:
-        is_base_type = True
+    __is_base_type__: ClassVar = True
 
     def iterate_messages(self, data: pd.DataFrame, input_columns: Dict[str, str]) -> Iterator[LLMRequest[dict]]:
         template = self.get_template()
@@ -59,8 +58,7 @@ class Uncertainty(str, Enum):
 
 @autoregister
 class BinaryClassificationPromptTemplate(BaseLLMPromptTemplate, EnumValueMixin):
-    class Config:
-        type_alias = "evidently:prompt_template:BinaryClassificationPromptTemplate"
+    __type_alias__: ClassVar = "evidently:prompt_template:BinaryClassificationPromptTemplate"
 
     criteria: str = ""
     instructions_template: str = (
@@ -166,8 +164,7 @@ class BinaryClassificationPromptTemplate(BaseLLMPromptTemplate, EnumValueMixin):
 
 
 class LLMJudge(GeneratedFeatures):
-    class Config:
-        type_alias = "evidently:feature:LLMJudge"
+    __type_alias__: ClassVar = "evidently:feature:LLMJudge"
 
     """Generic LLM judge generated features"""
 

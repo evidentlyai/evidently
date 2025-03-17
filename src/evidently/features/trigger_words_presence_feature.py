@@ -13,8 +13,7 @@ from evidently.features.generated_features import ApplyColumnGeneratedFeature
 
 
 class TriggerWordsPresent(ApplyColumnGeneratedFeature):
-    class Config:
-        type_alias = "evidently:feature:TriggerWordsPresent"
+    __type_alias__: ClassVar = "evidently:feature:TriggerWordsPresent"
 
     __feature_type__: ClassVar = ColumnType.Categorical
     column_name: str

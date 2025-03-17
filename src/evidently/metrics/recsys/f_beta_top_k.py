@@ -1,3 +1,4 @@
+from typing import ClassVar
 from typing import Optional
 
 import numpy as np
@@ -13,8 +14,7 @@ from evidently.renderers.base_renderer import default_renderer
 
 
 class FBetaTopKMetric(TopKMetric):
-    class Config:
-        type_alias = "evidently:metric:FBetaTopKMetric"
+    __type_alias__: ClassVar = "evidently:metric:FBetaTopKMetric"
 
     k: int
     beta: Optional[float]

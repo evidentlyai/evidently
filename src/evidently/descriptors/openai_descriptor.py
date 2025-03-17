@@ -1,3 +1,4 @@
+from typing import ClassVar
 from typing import List
 from typing import Optional
 
@@ -7,8 +8,7 @@ from evidently.features.openai_feature import OpenAIFeature
 
 
 class OpenAIPrompting(FeatureDescriptor):
-    class Config:
-        type_alias = "evidently:descriptor:OpenAIPrompting"
+    __type_alias__: ClassVar = "evidently:descriptor:OpenAIPrompting"
 
     prompt: str
     prompt_replace_string: str

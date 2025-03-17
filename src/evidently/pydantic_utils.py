@@ -81,8 +81,7 @@ object_delattr = object.__delattr__
 
 
 class FrozenBaseModel(BaseModel, metaclass=FrozenBaseMeta):
-    class Config:
-        underscore_attrs_are_private = True
+    __underscore_attrs_are_private__: ClassVar = True
 
     _init_values: Optional[Dict]
 
@@ -335,10 +334,9 @@ print(__file__)
 
 
 class EvidentlyBaseModel(FrozenBaseModel, PolymorphicModel):
-    class Config:
-        type_alias = "evidently:base:EvidentlyBaseModel"
-        alias_required = True
-        is_base_type = True
+    __type_alias__: ClassVar = "evidently:base:EvidentlyBaseModel"
+    __alias_required__: ClassVar = True
+    __is_base_type__: ClassVar = True
 
     def get_fingerprint(self) -> Fingerprint:
         return hashlib.md5(
@@ -364,8 +362,7 @@ class EvidentlyBaseModel(FrozenBaseModel, PolymorphicModel):
 
 @autoregister
 class WithTestAndMetricDependencies(EvidentlyBaseModel):
-    class Config:
-        type_alias = "evidently:test:WithTestAndMetricDependencies"
+    __type_alias__: ClassVar = "evidently:test:WithTestAndMetricDependencies"
 
     def __evidently_dependencies__(self):
         from evidently.base_metric import Metric
@@ -418,8 +415,7 @@ IncludeTags = FieldTags  # fixme: tmp for compatibility, remove in separate PR
 
 
 class FieldInfo(EnumValueMixin):
-    class Config:
-        frozen = True
+    __frozen__: ClassVar = True
 
     path: str
     tags: FrozenSet[FieldTags]

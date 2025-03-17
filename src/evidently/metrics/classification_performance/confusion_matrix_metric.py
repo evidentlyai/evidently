@@ -1,3 +1,4 @@
+from typing import ClassVar
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -24,14 +25,13 @@ DEFAULT_THRESHOLD = 0.5
 
 
 class ClassificationConfusionMatrixResult(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:ClassificationConfusionMatrixResult"
-        field_tags = {
-            "current_matrix": {IncludeTags.Current},
-            "reference_matrix": {IncludeTags.Reference},
-            "target_names": {IncludeTags.Parameter},
-        }
-        smart_union = True
+    __type_alias__: ClassVar = "evidently:metric_result:ClassificationConfusionMatrixResult"
+    __field_tags__: ClassVar = {
+        "current_matrix": {IncludeTags.Current},
+        "reference_matrix": {IncludeTags.Reference},
+        "target_names": {IncludeTags.Parameter},
+    }
+    __smart_union__: ClassVar = True
 
     current_matrix: ConfusionMatrix
     reference_matrix: Optional[ConfusionMatrix]
@@ -49,8 +49,7 @@ class ClassificationConfusionMatrixParameters(BaseModel):
 class ClassificationConfusionMatrix(
     ThresholdClassificationMetric[ClassificationConfusionMatrixResult], ClassificationConfusionMatrixParameters
 ):
-    class Config:
-        type_alias = "evidently:metric:ClassificationConfusionMatrix"
+    __type_alias__: ClassVar = "evidently:metric:ClassificationConfusionMatrix"
 
     def __init__(
         self,

@@ -27,8 +27,7 @@ from evidently.ui.type_aliases import UserID
 class SecurityComponent(Component, ABC):
     add_security_middleware: ClassVar[bool] = True
 
-    class Config:
-        is_base_type = True
+    __is_base_type__: ClassVar = True
 
     def get_security(self) -> SecurityService:
         raise NotImplementedError
@@ -87,8 +86,7 @@ class SimpleSecurity(SecurityComponent):
 
 
 class NoSecurityComponent(SimpleSecurity):
-    class Config:
-        type_alias = "none"
+    __type_alias__: ClassVar = "none"
 
     dummy_user_id: UserID = uuid6.UUID(int=1, version=7)
     dummy_org_id: OrgID = uuid6.UUID(int=2, version=7)
@@ -100,8 +98,7 @@ class NoSecurityComponent(SimpleSecurity):
 
 
 class TokenSecurityComponent(SimpleSecurity):
-    class Config:
-        type_alias = "token"
+    __type_alias__: ClassVar = "token"
 
     token: SecretStr
 

@@ -8,8 +8,7 @@ from evidently.features.generated_features import ApplyColumnGeneratedFeature
 
 
 class IsValidPython(ApplyColumnGeneratedFeature):
-    class Config:
-        type_alias = "evidently:feature:IsValidPython"
+    __type_alias__: ClassVar = "evidently:feature:IsValidPython"
 
     __feature_type__: ClassVar = ColumnType.Categorical
     display_name_template: ClassVar = "Valid Python for {column_name}"

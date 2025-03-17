@@ -94,8 +94,7 @@ class BaseDataQualityMetricsValueTest(ConditionFromReferenceMixin[ColumnCharacte
 
 
 class TestConflictTarget(Test):
-    class Config:
-        type_alias = "evidently:test:TestConflictTarget"
+    __type_alias__: ClassVar = "evidently:test:TestConflictTarget"
 
     group: ClassVar = DATA_QUALITY_GROUP.id
     name: ClassVar = "Test number of conflicts in target"
@@ -131,8 +130,7 @@ class TestConflictTarget(Test):
 
 
 class TestConflictPrediction(Test):
-    class Config:
-        type_alias = "evidently:test:TestConflictPrediction"
+    __type_alias__: ClassVar = "evidently:test:TestConflictPrediction"
 
     group: ClassVar = DATA_QUALITY_GROUP.id
     name: ClassVar = "Test number of conflicts in prediction"
@@ -201,8 +199,7 @@ class BaseDataQualityCorrelationsMetricsValueTest(ConditionFromReferenceMixin[Da
 
 
 class TestTargetPredictionCorrelation(BaseDataQualityCorrelationsMetricsValueTest):
-    class Config:
-        type_alias = "evidently:test:TestTargetPredictionCorrelation"
+    __type_alias__: ClassVar = "evidently:test:TestTargetPredictionCorrelation"
 
     name: ClassVar = "Correlation between Target and Prediction"
 
@@ -230,8 +227,7 @@ class TestTargetPredictionCorrelation(BaseDataQualityCorrelationsMetricsValueTes
 
 
 class TestHighlyCorrelatedColumns(BaseDataQualityCorrelationsMetricsValueTest):
-    class Config:
-        type_alias = "evidently:test:TestHighlyCorrelatedColumns"
+    __type_alias__: ClassVar = "evidently:test:TestHighlyCorrelatedColumns"
 
     name: ClassVar = "Highly Correlated Columns"
 
@@ -271,8 +267,7 @@ class TestHighlyCorrelatedColumnsRenderer(TestRenderer):
 
 
 class TestTargetFeaturesCorrelations(BaseDataQualityCorrelationsMetricsValueTest):
-    class Config:
-        type_alias = "evidently:test:TestTargetFeaturesCorrelations"
+    __type_alias__: ClassVar = "evidently:test:TestTargetFeaturesCorrelations"
 
     name: ClassVar = "Correlation between Target and Features"
 
@@ -299,8 +294,7 @@ class TestTargetFeaturesCorrelations(BaseDataQualityCorrelationsMetricsValueTest
 
 
 class TestPredictionFeaturesCorrelations(BaseDataQualityCorrelationsMetricsValueTest):
-    class Config:
-        type_alias = "evidently:test:TestPredictionFeaturesCorrelations"
+    __type_alias__: ClassVar = "evidently:test:TestPredictionFeaturesCorrelations"
 
     name: ClassVar = "Correlation between Prediction and Features"
 
@@ -347,8 +341,7 @@ class TestPredictionFeaturesCorrelationsRenderer(TestRenderer):
 
 
 class TestCorrelationChanges(BaseDataQualityCorrelationsMetricsValueTest):
-    class Config:
-        type_alias = "evidently:test:TestCorrelationChanges"
+    __type_alias__: ClassVar = "evidently:test:TestCorrelationChanges"
 
     group: ClassVar = DATA_QUALITY_GROUP.id
     name: ClassVar = "Change in Correlation"
@@ -488,8 +481,7 @@ class BaseFeatureDataQualityMetricsTest(BaseDataQualityMetricsValueTest, ABC):
 
 
 class TestColumnValueMin(BaseFeatureDataQualityMetricsTest):
-    class Config:
-        type_alias = "evidently:test:TestColumnValueMin"
+    __type_alias__: ClassVar = "evidently:test:TestColumnValueMin"
 
     name: ClassVar = "Min Value"
 
@@ -516,8 +508,7 @@ class TestColumnValueMin(BaseFeatureDataQualityMetricsTest):
 
 
 class TestColumnValueMax(BaseFeatureDataQualityMetricsTest):
-    class Config:
-        type_alias = "evidently:test:TestColumnValueMax"
+    __type_alias__: ClassVar = "evidently:test:TestColumnValueMax"
 
     name: ClassVar = "Max Value"
 
@@ -546,8 +537,7 @@ class TestColumnValueMax(BaseFeatureDataQualityMetricsTest):
 
 
 class TestColumnValueMean(BaseFeatureDataQualityMetricsTest):
-    class Config:
-        type_alias = "evidently:test:TestColumnValueMean"
+    __type_alias__: ClassVar = "evidently:test:TestColumnValueMean"
 
     name: ClassVar = "Mean Value"
 
@@ -572,8 +562,7 @@ class TestColumnValueMean(BaseFeatureDataQualityMetricsTest):
 
 
 class TestColumnValueMedian(BaseFeatureDataQualityMetricsTest):
-    class Config:
-        type_alias = "evidently:test:TestColumnValueMedian"
+    __type_alias__: ClassVar = "evidently:test:TestColumnValueMedian"
 
     name: ClassVar = "Median Value"
 
@@ -645,8 +634,7 @@ class TestColumnValueFeatureRenderer(TestRenderer):
 
 
 class TestColumnValueStd(BaseFeatureDataQualityMetricsTest):
-    class Config:
-        type_alias = "evidently:test:TestColumnValueStd"
+    __type_alias__: ClassVar = "evidently:test:TestColumnValueStd"
 
     name: ClassVar = "Standard Deviation (SD)"
 
@@ -692,8 +680,7 @@ class TestColumnValueStdRenderer(TestColumnValueFeatureRenderer):
 
 
 class TestNumberOfUniqueValues(BaseFeatureDataQualityMetricsTest):
-    class Config:
-        type_alias = "evidently:test:TestNumberOfUniqueValues"
+    __type_alias__: ClassVar = "evidently:test:TestNumberOfUniqueValues"
 
     name: ClassVar = "Number of Unique Values"
 
@@ -739,8 +726,7 @@ class TestNumberOfUniqueValuesRenderer(TestRenderer):
 
 
 class TestUniqueValuesShare(BaseFeatureDataQualityMetricsTest):
-    class Config:
-        type_alias = "evidently:test:TestUniqueValuesShare"
+    __type_alias__: ClassVar = "evidently:test:TestUniqueValuesShare"
 
     name: ClassVar = "Share of Unique Values"
 
@@ -793,8 +779,7 @@ class TestUniqueValuesShareRenderer(TestRenderer):
 
 
 class TestMostCommonValueShare(BaseFeatureDataQualityMetricsTest):
-    class Config:
-        type_alias = "evidently:test:TestMostCommonValueShare"
+    __type_alias__: ClassVar = "evidently:test:TestMostCommonValueShare"
 
     name: ClassVar = "Share of the Most Common Value"
 
@@ -888,8 +873,7 @@ class TestAllColumnsMostCommonValueShare(BaseGenerator):
 
 
 class MeanInNSigmasParameter(TestParameters):
-    class Config:
-        type_alias = "evidently:test_parameters:MeanInNSigmasParameter"
+    __type_alias__: ClassVar = "evidently:test_parameters:MeanInNSigmasParameter"
 
     column_name: str
     current_mean: float
@@ -899,8 +883,7 @@ class MeanInNSigmasParameter(TestParameters):
 
 
 class TestMeanInNSigmas(Test):
-    class Config:
-        type_alias = "evidently:test:TestMeanInNSigmas"
+    __type_alias__: ClassVar = "evidently:test:TestMeanInNSigmas"
 
     group: ClassVar = DATA_QUALITY_GROUP.id
     name: ClassVar = "Mean Value Stability"
@@ -1053,8 +1036,7 @@ class TestNumColumnsMeanInNSigmas(BaseGenerator):
 
 
 class TestValueRange(Test):
-    class Config:
-        type_alias = "evidently:test:TestValueRange"
+    __type_alias__: ClassVar = "evidently:test:TestValueRange"
 
     group: ClassVar = DATA_QUALITY_GROUP.id
     name: ClassVar = "Value Range"
@@ -1184,8 +1166,7 @@ class BaseDataQualityValueRangeMetricsTest(BaseCheckValueTest, ABC):
 
 
 class TestNumberOfOutRangeValues(BaseDataQualityValueRangeMetricsTest):
-    class Config:
-        type_alias = "evidently:test:TestNumberOfOutRangeValues"
+    __type_alias__: ClassVar = "evidently:test:TestNumberOfOutRangeValues"
 
     name: ClassVar = "Number of Out-of-Range Values "
 
@@ -1200,16 +1181,14 @@ class TestNumberOfOutRangeValues(BaseDataQualityValueRangeMetricsTest):
 
 
 class ShareOfOutRangeParameters(CheckValueParameters):
-    class Config:
-        type_alias = "evidently:test_parameters:ShareOfOutRangeParameters"
+    __type_alias__: ClassVar = "evidently:test_parameters:ShareOfOutRangeParameters"
 
     left: Optional[float]
     right: Optional[float]
 
 
 class TestShareOfOutRangeValues(BaseDataQualityValueRangeMetricsTest):
-    class Config:
-        type_alias = "evidently:test:TestShareOfOutRangeValues"
+    __type_alias__: ClassVar = "evidently:test:TestShareOfOutRangeValues"
 
     name: ClassVar = "Share of Out-of-Range Values"
 
@@ -1292,8 +1271,7 @@ class TestNumColumnsOutOfRangeValues(BaseGenerator):
 
 
 class ColumnValueListParameters(TestParameters):
-    class Config:
-        type_alias = "evidently:test_parameters:ColumnValueListParameters"
+    __type_alias__: ClassVar = "evidently:test_parameters:ColumnValueListParameters"
 
     value: Numeric
     column_name: str
@@ -1301,8 +1279,7 @@ class ColumnValueListParameters(TestParameters):
 
 
 class TestValueList(Test):
-    class Config:
-        type_alias = "evidently:test:TestValueList"
+    __type_alias__: ClassVar = "evidently:test:TestValueList"
 
     group: ClassVar = DATA_QUALITY_GROUP.id
     name: ClassVar = "Out-of-List Values"
@@ -1396,8 +1373,7 @@ class BaseDataQualityValueListMetricsTest(BaseCheckValueTest, ABC):
 
 
 class TestNumberOfOutListValues(BaseDataQualityValueListMetricsTest):
-    class Config:
-        type_alias = "evidently:test:TestNumberOfOutListValues"
+    __type_alias__: ClassVar = "evidently:test:TestNumberOfOutListValues"
 
     name: ClassVar = "Number Out-of-List Values"
     alias: ClassVar = "number_value_list"
@@ -1414,15 +1390,13 @@ class TestNumberOfOutListValues(BaseDataQualityValueListMetricsTest):
 
 class ValueListParameters(CheckValueParameters):
     # todo: typing
-    class Config:
-        type_alias = "evidently:test_parameters:ValueListParameters"
+    __type_alias__: ClassVar = "evidently:test_parameters:ValueListParameters"
 
     values: Optional[List[Any]] = None
 
 
 class TestShareOfOutListValues(BaseDataQualityValueListMetricsTest):
-    class Config:
-        type_alias = "evidently:test:TestShareOfOutListValues"
+    __type_alias__: ClassVar = "evidently:test:TestShareOfOutListValues"
 
     name: ClassVar = "Share of Out-of-List Values"
     alias: ClassVar = "share_value_list"
@@ -1470,8 +1444,7 @@ class TestCatColumnsOutOfListValues(BaseGenerator):
 
 
 class TestColumnQuantile(BaseCheckValueTest):
-    class Config:
-        type_alias = "evidently:test:TestColumnQuantile"
+    __type_alias__: ClassVar = "evidently:test:TestColumnQuantile"
 
     group: ClassVar = DATA_QUALITY_GROUP.id
     name: ClassVar = "Quantile Value"
@@ -1652,8 +1625,7 @@ class BaseDataQualityCategoryMetricsTest(BaseCheckValueTest, ABC):
 
 
 class TestCategoryShare(BaseDataQualityCategoryMetricsTest):
-    class Config:
-        type_alias = "evidently:test:TestCategoryShare"
+    __type_alias__: ClassVar = "evidently:test:TestCategoryShare"
 
     name: ClassVar = "Share of category"
     alias: ClassVar = "share_category"
@@ -1679,8 +1651,7 @@ class TestCategoryShare(BaseDataQualityCategoryMetricsTest):
 
 
 class TestCategoryCount(BaseDataQualityCategoryMetricsTest):
-    class Config:
-        type_alias = "evidently:test:TestCategoryCount"
+    __type_alias__: ClassVar = "evidently:test:TestCategoryCount"
 
     name: ClassVar = "Count of category"
     alias: ClassVar = "count_category"

@@ -1,6 +1,7 @@
 import dataclasses
 import datetime
 from dataclasses import dataclass
+from typing import ClassVar
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -33,8 +34,7 @@ from evidently.ui.type_aliases import UserID
 
 class EvidentlyAPIModel(BaseModel):
     # todo: migrate all models to this base
-    class Config:
-        extra = Extra.forbid
+    __extra__: ClassVar = Extra.forbid
 
 
 class MetricModel(BaseModel):

@@ -64,10 +64,9 @@ class Component(PolymorphicModel, ABC):
     def get_requirements(self) -> List[Type["Component"]]:
         return self.__require__
 
-    class Config:
-        extra = Extra.forbid
-        alias_required = False
-        is_base_type = True
+    __extra__: ClassVar = Extra.forbid
+    __alias_required__: ClassVar = False
+    __is_base_type__: ClassVar = True
 
     def __init_subclass__(cls):
         super().__init_subclass__()

@@ -65,8 +65,7 @@ class BaseRegressionPerformanceMetricsTest(BaseCheckValueTest, ABC):
 
 
 class TestValueMAE(BaseRegressionPerformanceMetricsTest):
-    class Config:
-        type_alias = "evidently:test:TestValueMAE"
+    __type_alias__: ClassVar = "evidently:test:TestValueMAE"
 
     name: ClassVar = "Mean Absolute Error (MAE)"
 
@@ -104,8 +103,7 @@ class TestValueMAERenderer(TestRenderer):
 
 
 class TestValueMAPE(BaseRegressionPerformanceMetricsTest):
-    class Config:
-        type_alias = "evidently:test:TestValueMAPE"
+    __type_alias__: ClassVar = "evidently:test:TestValueMAPE"
 
     name: ClassVar = "Mean Absolute Percentage Error (MAPE)"
 
@@ -145,8 +143,7 @@ class TestValueMAPERenderer(TestRenderer):
 
 
 class TestValueRMSE(BaseRegressionPerformanceMetricsTest):
-    class Config:
-        type_alias = "evidently:test:TestValueRMSE"
+    __type_alias__: ClassVar = "evidently:test:TestValueRMSE"
 
     name: ClassVar = "Root Mean Square Error (RMSE)"
 
@@ -184,8 +181,7 @@ class TestValueRMSERenderer(TestRenderer):
 
 
 class TestValueMeanError(BaseRegressionPerformanceMetricsTest):
-    class Config:
-        type_alias = "evidently:test:TestValueMeanError"
+    __type_alias__: ClassVar = "evidently:test:TestValueMeanError"
 
     name: ClassVar = "Mean Error (ME)"
 
@@ -230,8 +226,7 @@ class TestValueMeanErrorRenderer(TestRenderer):
 
 
 class TestValueAbsMaxError(BaseRegressionPerformanceMetricsTest):
-    class Config:
-        type_alias = "evidently:test:TestValueAbsMaxError"
+    __type_alias__: ClassVar = "evidently:test:TestValueAbsMaxError"
 
     name: ClassVar = "Max Absolute Error"
 
@@ -265,8 +260,7 @@ class TestValueAbsMaxErrorRenderer(TestRenderer):
 
 
 class TestValueR2Score(BaseRegressionPerformanceMetricsTest):
-    class Config:
-        type_alias = "evidently:test:TestValueR2Score"
+    __type_alias__: ClassVar = "evidently:test:TestValueR2Score"
 
     name: ClassVar = "R2 Score"
 

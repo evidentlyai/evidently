@@ -8,8 +8,7 @@ from evidently.features.generated_features import ApplyColumnGeneratedFeature
 
 
 class IsValidJSON(ApplyColumnGeneratedFeature):
-    class Config:
-        type_alias = "evidently:feature:IsValidJSON"
+    __type_alias__: ClassVar = "evidently:feature:IsValidJSON"
 
     __feature_type__: ClassVar = ColumnType.Categorical
     display_name_template: ClassVar = "JSON valid for {column_name}"

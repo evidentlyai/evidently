@@ -1,4 +1,5 @@
 from typing import Any
+from typing import ClassVar
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -19,8 +20,7 @@ from evidently.utils.data_preprocessing import DataDefinition
 
 
 class ClassificationPreset(MetricPreset):
-    class Config:
-        type_alias = "evidently:metric_preset:ClassificationPreset"
+    __type_alias__: ClassVar = "evidently:metric_preset:ClassificationPreset"
 
     """
     Metrics preset for classification performance.

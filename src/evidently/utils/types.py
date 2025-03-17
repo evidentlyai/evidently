@@ -18,8 +18,7 @@ ColumnDistribution = Dict[Any, Numeric]
 class ApproxValue(FrozenBaseModel, ExcludeNoneMixin):
     """Class for approximate scalar value calculations"""
 
-    class Config:
-        smart_union = True
+    __smart_union__: ClassVar = True
 
     DEFAULT_RELATIVE: ClassVar = 1e-6
     DEFAULT_ABSOLUTE: ClassVar = 1e-12

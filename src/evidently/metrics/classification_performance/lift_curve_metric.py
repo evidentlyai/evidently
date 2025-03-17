@@ -1,4 +1,5 @@
 from typing import Any
+from typing import ClassVar
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -26,19 +27,19 @@ from evidently.utils.data_operations import process_columns
 
 
 class ClassificationLiftCurveResults(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:ClassificationLiftCurveResults"
-        pd_include = False
-
-        field_tags = {"current_lift_curve": {IncludeTags.Current}, "reference_lift_curve": {IncludeTags.Reference}}
+    __type_alias__: ClassVar = "evidently:metric_result:ClassificationLiftCurveResults"
+    __pd_include__: ClassVar = False
+    __field_tags__: ClassVar = {
+        "current_lift_curve": {IncludeTags.Current},
+        "reference_lift_curve": {IncludeTags.Reference},
+    }
 
     current_lift_curve: Optional[LiftCurve] = None
     reference_lift_curve: Optional[LiftCurve] = None
 
 
 class ClassificationLiftCurve(Metric[ClassificationLiftCurveResults]):
-    class Config:
-        type_alias = "evidently:metric:ClassificationLiftCurve"
+    __type_alias__: ClassVar = "evidently:metric:ClassificationLiftCurve"
 
     def calculate(self, data: InputData) -> ClassificationLiftCurveResults:
         dataset_columns = process_columns(data.current_data, data.column_mapping)

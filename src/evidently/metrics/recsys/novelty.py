@@ -1,3 +1,4 @@
+from typing import ClassVar
 from typing import List
 from typing import Optional
 
@@ -26,15 +27,14 @@ from evidently.utils.visualizations import plot_distr_with_perc_button
 
 
 class NoveltyMetricResult(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:NoveltyMetricResult"
-        field_tags = {
-            "k": {IncludeTags.Parameter},
-            "current_value": {IncludeTags.Current},
-            "current_distr": {IncludeTags.Current},
-            "reference_value": {IncludeTags.Reference},
-            "reference_distr": {IncludeTags.Reference},
-        }
+    __type_alias__: ClassVar = "evidently:metric_result:NoveltyMetricResult"
+    __field_tags__: ClassVar = {
+        "k": {IncludeTags.Parameter},
+        "current_value": {IncludeTags.Current},
+        "current_distr": {IncludeTags.Current},
+        "reference_value": {IncludeTags.Reference},
+        "reference_distr": {IncludeTags.Reference},
+    }
 
     k: int
     current_value: float
@@ -44,8 +44,7 @@ class NoveltyMetricResult(MetricResult):
 
 
 class NoveltyMetric(Metric[NoveltyMetricResult]):
-    class Config:
-        type_alias = "evidently:metric:NoveltyMetric"
+    __type_alias__: ClassVar = "evidently:metric:NoveltyMetric"
 
     """Mean Inverse User Frequency"""
 

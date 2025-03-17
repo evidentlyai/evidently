@@ -288,8 +288,7 @@ def get_llm_wrapper(provider: LLMProvider, model: LLMModel, options: Options) ->
 class LLMOptions(Option):
     __provider_name__: ClassVar[str]
 
-    class Config:
-        extra = "forbid"
+    __extra__: ClassVar = "forbid"
 
     api_key: Optional[SecretStr] = None
     # rpm_limit: int = 500

@@ -1,11 +1,12 @@
+from typing import ClassVar
+
 from evidently.features import regexp_feature
 from evidently.features.generated_features import FeatureDescriptor
 from evidently.features.generated_features import GeneratedFeature
 
 
 class RegExp(FeatureDescriptor):
-    class Config:
-        type_alias = "evidently:descriptor:RegExp"
+    __type_alias__: ClassVar = "evidently:descriptor:RegExp"
 
     reg_exp: str
 

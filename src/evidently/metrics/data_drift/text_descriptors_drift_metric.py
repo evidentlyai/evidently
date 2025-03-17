@@ -1,3 +1,4 @@
+from typing import ClassVar
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -43,8 +44,7 @@ from evidently.utils.visualizations import plot_scatter_for_data_drift
 
 
 class TextDescriptorsDriftMetricResults(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:TextDescriptorsDriftMetricResults"
+    __type_alias__: ClassVar = "evidently:metric_result:TextDescriptorsDriftMetricResults"
 
     number_of_columns: int
     number_of_drifted_columns: int
@@ -55,8 +55,7 @@ class TextDescriptorsDriftMetricResults(MetricResult):
 
 
 class TextDescriptorsDriftMetric(UsesRawDataMixin, Metric[TextDescriptorsDriftMetricResults]):
-    class Config:
-        type_alias = "evidently:metric:TextDescriptorsDriftMetric"
+    __type_alias__: ClassVar = "evidently:metric:TextDescriptorsDriftMetric"
 
     column_name: str
     stattest: Optional[PossibleStatTestType] = None

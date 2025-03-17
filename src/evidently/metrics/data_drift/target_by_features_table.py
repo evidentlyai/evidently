@@ -1,4 +1,5 @@
 import json
+from typing import ClassVar
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -33,16 +34,15 @@ from evidently.utils.data_preprocessing import DataDefinition
 
 
 class TargetByFeaturesTableResults(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:TargetByFeaturesTableResults"
-        dict_include = False
-        field_tags = {
-            "current": {IncludeTags.Current},
-            "reference": {IncludeTags.Reference},
-            "target_name": {IncludeTags.Parameter},
-            "columns": {IncludeTags.Parameter},
-            "task": {IncludeTags.Parameter},
-        }
+    __type_alias__: ClassVar = "evidently:metric_result:TargetByFeaturesTableResults"
+    __dict_include__: ClassVar = False
+    __field_tags__: ClassVar = {
+        "current": {IncludeTags.Current},
+        "reference": {IncludeTags.Reference},
+        "target_name": {IncludeTags.Parameter},
+        "columns": {IncludeTags.Parameter},
+        "task": {IncludeTags.Parameter},
+    }
 
     current: StatsByFeature
     reference: Optional[StatsByFeature]
@@ -52,8 +52,7 @@ class TargetByFeaturesTableResults(MetricResult):
 
 
 class TargetByFeaturesTable(UsesRawDataMixin, Metric[TargetByFeaturesTableResults]):
-    class Config:
-        type_alias = "evidently:metric:TargetByFeaturesTable"
+    __type_alias__: ClassVar = "evidently:metric:TargetByFeaturesTable"
 
     columns: Optional[List[str]]
     _text_features_gen: Optional[

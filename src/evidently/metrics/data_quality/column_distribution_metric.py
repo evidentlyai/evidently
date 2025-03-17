@@ -1,3 +1,4 @@
+from typing import ClassVar
 from typing import List
 from typing import Optional
 from typing import Union
@@ -24,13 +25,12 @@ from evidently.utils.visualizations import plot_distr_with_perc_button
 
 
 class ColumnDistributionMetricResult(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:ColumnDistributionMetricResult"
-        field_tags = {
-            "current": {IncludeTags.Current},
-            "reference": {IncludeTags.Reference},
-            "column_name": {IncludeTags.Parameter},
-        }
+    __type_alias__: ClassVar = "evidently:metric_result:ColumnDistributionMetricResult"
+    __field_tags__: ClassVar = {
+        "current": {IncludeTags.Current},
+        "reference": {IncludeTags.Reference},
+        "column_name": {IncludeTags.Parameter},
+    }
 
     column_name: str
     current: Distribution
@@ -38,8 +38,7 @@ class ColumnDistributionMetricResult(MetricResult):
 
 
 class ColumnDistributionMetric(Metric[ColumnDistributionMetricResult]):
-    class Config:
-        type_alias = "evidently:metric:ColumnDistributionMetric"
+    __type_alias__: ClassVar = "evidently:metric:ColumnDistributionMetric"
 
     """Calculates distribution for the column"""
 

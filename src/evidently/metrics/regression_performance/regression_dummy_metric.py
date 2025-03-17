@@ -1,3 +1,4 @@
+from typing import ClassVar
 from typing import List
 from typing import Optional
 
@@ -21,8 +22,7 @@ from evidently.utils.data_operations import process_columns
 
 
 class RegressionDummyMetricResults(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:RegressionDummyMetricResults"
+    __type_alias__: ClassVar = "evidently:metric_result:RegressionDummyMetricResults"
 
     rmse_default: float
     mean_abs_error_default: float
@@ -39,8 +39,7 @@ class RegressionDummyMetricResults(MetricResult):
 
 
 class RegressionDummyMetric(Metric[RegressionDummyMetricResults]):
-    class Config:
-        type_alias = "evidently:metric:RegressionDummyMetric"
+    __type_alias__: ClassVar = "evidently:metric:RegressionDummyMetric"
 
     _quality_metric: RegressionQualityMetric
 

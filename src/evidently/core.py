@@ -15,7 +15,6 @@ from typing import get_args
 import numpy as np
 import pandas as pd
 import uuid6
-from pydantic import BaseConfig
 from pydantic import BaseModel
 from pydantic_core.core_schema import ModelField
 from typing_inspect import is_literal_type
@@ -90,20 +89,7 @@ def np_array_valudator(value):
 
 
 class BaseResult(BaseModel):
-    class Config(BaseConfig):
-        arbitrary_types_allowed = True
-        dict_include: bool = True
-        pd_include: bool = True
-        pd_name_mapping: Dict[str, str] = {}
-
-        dict_include_fields: set = set()
-        dict_exclude_fields: set = set()
-        pd_include_fields: set = set()
-        pd_exclude_fields: set = set()
-
-        tags: Set[IncludeTags] = set()
-        field_tags: Dict[str, set] = {}
-        extract_as_obj: bool = False
+    __arbitrary_types_allowed__: ClassVar = True
 
     if TYPE_CHECKING:
         __config__: ClassVar[Type[Config]] = Config

@@ -162,8 +162,7 @@ def _default_dashboard():
 class Project(Entity):
     entity_type: ClassVar[EntityType] = EntityType.Project
 
-    class Config:
-        underscore_attrs_are_private = True
+    __underscore_attrs_are_private__: ClassVar = True
 
     id: ProjectID = Field(default_factory=new_id)
     name: str

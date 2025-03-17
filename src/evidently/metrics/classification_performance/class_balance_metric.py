@@ -1,3 +1,4 @@
+from typing import ClassVar
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -17,17 +18,15 @@ from evidently.utils.visualizations import plot_distr_with_perc_button
 
 
 class ClassificationClassBalanceResult(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:ClassificationClassBalanceResult"
-        dict_exclude_fields = {"plot_data"}
-        pd_exclude_fields = {"plot_data"}
+    __type_alias__: ClassVar = "evidently:metric_result:ClassificationClassBalanceResult"
+    __dict_exclude_fields__: ClassVar = {"plot_data"}
+    __pd_exclude_fields__: ClassVar = {"plot_data"}
 
     plot_data: Histogram
 
 
 class ClassificationClassBalance(Metric[ClassificationClassBalanceResult]):
-    class Config:
-        type_alias = "evidently:metric:ClassificationClassBalance"
+    __type_alias__: ClassVar = "evidently:metric:ClassificationClassBalance"
 
     def calculate(self, data: InputData) -> ClassificationClassBalanceResult:
         dataset_columns = process_columns(data.current_data, data.column_mapping)

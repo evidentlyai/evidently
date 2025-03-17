@@ -1,3 +1,4 @@
+from typing import ClassVar
 from typing import List
 
 from evidently.features import trigger_words_presence_feature
@@ -6,8 +7,7 @@ from evidently.features.generated_features import GeneratedFeature
 
 
 class TriggerWordsPresence(FeatureDescriptor):
-    class Config:
-        type_alias = "evidently:descriptor:TriggerWordsPresence"
+    __type_alias__: ClassVar = "evidently:descriptor:TriggerWordsPresence"
 
     words_list: List[str]
     lemmatize: bool = True

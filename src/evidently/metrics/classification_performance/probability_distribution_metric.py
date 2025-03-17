@@ -1,3 +1,4 @@
+from typing import ClassVar
 from typing import Dict
 from typing import Iterable
 from typing import List
@@ -22,21 +23,21 @@ from evidently.utils.data_operations import process_columns
 
 
 class ClassificationProbDistributionResults(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:ClassificationProbDistributionResults"
-        dict_include = False
-        pd_include = False
-        tags = {IncludeTags.Render}
-
-        field_tags = {"current_distribution": {IncludeTags.Current}, "reference_distribution": {IncludeTags.Reference}}
+    __type_alias__: ClassVar = "evidently:metric_result:ClassificationProbDistributionResults"
+    __dict_include__: ClassVar = False
+    __pd_include__: ClassVar = False
+    __tags__: ClassVar = {IncludeTags.Render}
+    __field_tags__: ClassVar = {
+        "current_distribution": {IncludeTags.Current},
+        "reference_distribution": {IncludeTags.Reference},
+    }
 
     current_distribution: Optional[Dict[str, list]]  # todo use DistributionField?
     reference_distribution: Optional[Dict[str, list]]
 
 
 class ClassificationProbDistribution(Metric[ClassificationProbDistributionResults]):
-    class Config:
-        type_alias = "evidently:metric:ClassificationProbDistribution"
+    __type_alias__: ClassVar = "evidently:metric:ClassificationProbDistribution"
 
     @staticmethod
     def get_distribution(dataset: pd.DataFrame, target_name: str, prediction_labels: Iterable) -> Dict[str, list]:

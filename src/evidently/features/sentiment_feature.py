@@ -11,8 +11,7 @@ from evidently.features.generated_features import ApplyColumnGeneratedFeature
 
 
 class Sentiment(ApplyColumnGeneratedFeature):
-    class Config:
-        type_alias = "evidently:feature:Sentiment"
+    __type_alias__: ClassVar = "evidently:feature:Sentiment"
 
     __feature_type__: ClassVar = ColumnType.Numerical
     display_name_template: ClassVar = "Sentiment for {column_name}"

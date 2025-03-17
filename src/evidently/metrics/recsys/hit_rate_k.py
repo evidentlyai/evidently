@@ -1,3 +1,4 @@
+from typing import ClassVar
 from typing import Optional
 
 import pandas as pd
@@ -13,13 +14,12 @@ from evidently.renderers.base_renderer import default_renderer
 
 
 class HitRateKMetricResult(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:HitRateKMetricResult"
-        field_tags = {
-            "current": {IncludeTags.Current},
-            "reference": {IncludeTags.Reference},
-            "k": {IncludeTags.Parameter},
-        }
+    __type_alias__: ClassVar = "evidently:metric_result:HitRateKMetricResult"
+    __field_tags__: ClassVar = {
+        "current": {IncludeTags.Current},
+        "reference": {IncludeTags.Reference},
+        "k": {IncludeTags.Parameter},
+    }
 
     k: int
     current: pd.Series
@@ -27,8 +27,7 @@ class HitRateKMetricResult(MetricResult):
 
 
 class HitRateKMetric(Metric[HitRateKMetricResult]):
-    class Config:
-        type_alias = "evidently:metric:HitRateKMetric"
+    __type_alias__: ClassVar = "evidently:metric:HitRateKMetric"
 
     k: int
     min_rel_score: Optional[int]

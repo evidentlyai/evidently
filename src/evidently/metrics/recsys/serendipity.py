@@ -1,4 +1,5 @@
 from itertools import product
+from typing import ClassVar
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -28,15 +29,14 @@ from evidently.utils.visualizations import plot_distr_with_perc_button
 
 
 class SerendipityMetricResult(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:SerendipityMetricResult"
-        field_tags = {
-            "k": {IncludeTags.Parameter},
-            "current_value": {IncludeTags.Current},
-            "current_distr": {IncludeTags.Current},
-            "reference_value": {IncludeTags.Reference},
-            "reference_distr": {IncludeTags.Reference},
-        }
+    __type_alias__: ClassVar = "evidently:metric_result:SerendipityMetricResult"
+    __field_tags__: ClassVar = {
+        "k": {IncludeTags.Parameter},
+        "current_value": {IncludeTags.Current},
+        "current_distr": {IncludeTags.Current},
+        "reference_value": {IncludeTags.Reference},
+        "reference_distr": {IncludeTags.Reference},
+    }
 
     k: int
     current_value: float
@@ -46,8 +46,7 @@ class SerendipityMetricResult(MetricResult):
 
 
 class SerendipityMetric(Metric[SerendipityMetricResult]):
-    class Config:
-        type_alias = "evidently:metric:SerendipityMetric"
+    __type_alias__: ClassVar = "evidently:metric:SerendipityMetric"
 
     """unusualness * relevance"""
 

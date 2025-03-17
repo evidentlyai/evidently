@@ -1,3 +1,4 @@
+from typing import ClassVar
 from typing import Optional
 
 from evidently.features.generated_features import FeatureDescriptor
@@ -7,8 +8,7 @@ from evidently.features.hf_feature import HuggingFaceToxicityFeature
 
 
 class HuggingFaceModel(FeatureDescriptor):
-    class Config:
-        type_alias = "evidently:descriptor:HuggingFaceModel"
+    __type_alias__: ClassVar = "evidently:descriptor:HuggingFaceModel"
 
     model: str
     params: Optional[dict] = None
@@ -23,8 +23,7 @@ class HuggingFaceModel(FeatureDescriptor):
 
 
 class HuggingFaceToxicityModel(FeatureDescriptor):
-    class Config:
-        type_alias = "evidently:descriptor:HuggingFaceToxicityModel"
+    __type_alias__: ClassVar = "evidently:descriptor:HuggingFaceToxicityModel"
 
     model: Optional[str] = None
     toxic_label: Optional[str] = None

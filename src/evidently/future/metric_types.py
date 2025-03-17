@@ -675,8 +675,7 @@ class AutoAliasMixin:
 
 
 class MetricTest(AutoAliasMixin, EvidentlyBaseModel):
-    class Config:
-        is_base_type = True
+    __is_base_type__: ClassVar = True
 
     __alias_type__: ClassVar[str] = "test_v2"
     is_critical: bool = True
@@ -709,8 +708,7 @@ class MetricTest(AutoAliasMixin, EvidentlyBaseModel):
 
 
 class BoundTest(AutoAliasMixin, EvidentlyBaseModel, Generic[TResult], ABC):
-    class Config:
-        is_base_type = True
+    __is_base_type__: ClassVar = True
 
     __alias_type__: ClassVar[str] = "bound_test"
     test: MetricTest
@@ -727,9 +725,8 @@ TCalculation = TypeVar("TCalculation", bound="MetricCalculation")
 class Metric(AutoAliasMixin, EvidentlyBaseModel, Generic[TCalculation]):
     __alias_type__: ClassVar[str] = "metric_v2"
 
-    class Config:
-        is_base_type = True
-        smart_union = True
+    __is_base_type__: ClassVar = True
+    __smart_union__: ClassVar = True
 
     __calculation_type__: ClassVar[Type[TCalculation]]
 

@@ -1,3 +1,4 @@
+from typing import ClassVar
 from typing import Dict
 from typing import Optional
 
@@ -10,8 +11,7 @@ from evidently.metric_results import Label
 
 
 class ClassMetric(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:ClassMetric"
+    __type_alias__: ClassVar = "evidently:metric_result:ClassMetric"
 
     precision: float
     recall: float
@@ -24,9 +24,8 @@ ClassesMetrics = Dict[Label, ClassMetric]
 
 
 class ClassificationReport(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:ClassificationReport"
-        smart_union = True
+    __type_alias__: ClassVar = "evidently:metric_result:ClassificationReport"
+    __smart_union__: ClassVar = True
 
     classes: ClassesMetrics
     accuracy: float
