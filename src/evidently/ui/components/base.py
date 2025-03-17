@@ -15,8 +15,8 @@ from litestar.di import Provide
 from litestar.types import ControllerRouterHandler
 from litestar.types import ExceptionHandlersMap
 from litestar.types import Middleware
+from pydantic import Extra
 
-from evidently._pydantic_compat import Extra
 from evidently.pydantic_utils import PolymorphicModel
 from evidently.ui.utils import parse_json
 

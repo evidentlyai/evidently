@@ -16,10 +16,10 @@ from typing import TypeVar
 from typing import Union
 
 import ujson
+from pydantic import BaseModel
+from pydantic import parse_obj_as
 
 import evidently
-from evidently._pydantic_compat import BaseModel
-from evidently._pydantic_compat import parse_obj_as
 from evidently.base_metric import ErrorResult
 from evidently.base_metric import GenericInputData
 from evidently.base_metric import Metric

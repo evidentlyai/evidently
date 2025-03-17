@@ -22,8 +22,8 @@ from typing import TypeVar
 from typing import Union
 
 import typing_inspect
+from pydantic import BaseModel
 
-from evidently._pydantic_compat import BaseModel
 from evidently.future._utils import not_implemented
 from evidently.future.datasets import Dataset
 from evidently.metric_results import Label

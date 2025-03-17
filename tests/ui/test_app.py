@@ -7,9 +7,9 @@ from typing import List
 
 import pytest
 from litestar.testing import TestClient
+from pydantic import parse_obj_as
 
 import evidently
-from evidently._pydantic_compat import parse_obj_as
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult

@@ -11,8 +11,8 @@ from litestar.types import ASGIApp
 from litestar.types import Receive
 from litestar.types import Scope
 from litestar.types import Send
+from pydantic import SecretStr
 
-from evidently._pydantic_compat import SecretStr
 from evidently.pydantic_utils import register_type_alias
 from evidently.ui.components.base import Component
 from evidently.ui.components.base import ComponentContext

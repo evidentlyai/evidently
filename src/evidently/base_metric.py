@@ -17,10 +17,10 @@ from typing import Union
 
 import pandas as pd
 import typing_inspect
+from pydantic import Field
+from pydantic import PrivateAttr
+from pydantic._internal._model_construction import ModelMetaclass
 
-from evidently._pydantic_compat import Field
-from evidently._pydantic_compat import ModelMetaclass
-from evidently._pydantic_compat import PrivateAttr
 from evidently.core import BaseResult
 from evidently.core import ColumnType
 from evidently.core import IncludeTags

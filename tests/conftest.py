@@ -1,8 +1,8 @@
 import numpy as np
 import pandas as pd
 import pytest
+from pydantic import BaseModel
 
-from evidently._pydantic_compat import BaseModel
 from evidently.pydantic_utils import PolymorphicModel
 from evidently.utils.types import ApproxValue
 

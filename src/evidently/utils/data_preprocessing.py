@@ -11,8 +11,8 @@ from typing import Union
 
 import numpy as np
 import pandas as pd
+from pydantic import BaseModel
 
-from evidently._pydantic_compat import BaseModel
 from evidently.core import ColumnType
 from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.pipeline.column_mapping import RecomType

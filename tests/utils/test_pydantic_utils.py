@@ -4,9 +4,9 @@ from typing import Optional
 from typing import Union
 
 import pytest
+from pydantic import ValidationError
+from pydantic import parse_obj_as
 
-from evidently._pydantic_compat import ValidationError
-from evidently._pydantic_compat import parse_obj_as
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
 from evidently.core import IncludeTags

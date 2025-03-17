@@ -7,9 +7,9 @@ from typing import TypeVar
 from typing import Union
 
 import requests
+from pydantic import BaseModel
+from pydantic import parse_obj_as
 
-from evidently._pydantic_compat import BaseModel
-from evidently._pydantic_compat import parse_obj_as
 from evidently.ui.storage.common import SECRET_HEADER_NAME
 from evidently.utils import NumpyEncoder
 

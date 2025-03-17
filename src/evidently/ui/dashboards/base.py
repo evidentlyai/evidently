@@ -10,10 +10,10 @@ from typing import Optional
 from typing import Union
 
 import uuid6
+from pydantic import BaseModel
+from pydantic import Field
+from pydantic import validator
 
-from evidently._pydantic_compat import BaseModel
-from evidently._pydantic_compat import Field
-from evidently._pydantic_compat import validator
 from evidently.base_metric import Metric
 from evidently.core import new_id
 from evidently.model.dashboard import DashboardInfo

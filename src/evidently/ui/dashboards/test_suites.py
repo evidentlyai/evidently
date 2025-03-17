@@ -12,8 +12,8 @@ from typing import Union
 
 import pandas as pd
 from plotly import graph_objs as go
+from pydantic import BaseModel
 
-from evidently._pydantic_compat import BaseModel
 from evidently.model.widget import BaseWidgetInfo
 from evidently.pydantic_utils import EvidentlyBaseModel
 from evidently.pydantic_utils import autoregister

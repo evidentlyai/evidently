@@ -3,7 +3,8 @@ from typing import List
 from typing import Optional
 from typing import Union
 
-from evidently._pydantic_compat import PrivateAttr
+from pydantic import PrivateAttr
+
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult

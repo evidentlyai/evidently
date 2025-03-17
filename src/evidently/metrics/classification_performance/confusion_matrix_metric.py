@@ -3,7 +3,8 @@ from typing import List
 from typing import Optional
 from typing import Union
 
-from evidently._pydantic_compat import BaseModel
+from pydantic import BaseModel
+
 from evidently.base_metric import InputData
 from evidently.base_metric import MetricResult
 from evidently.calculations.classification_performance import calculate_matrix

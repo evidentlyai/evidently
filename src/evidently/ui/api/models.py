@@ -6,8 +6,9 @@ from typing import List
 from typing import Optional
 from typing import TypeVar
 
-from evidently._pydantic_compat import BaseModel
-from evidently._pydantic_compat import Extra
+from pydantic import BaseModel
+from pydantic import Extra
+
 from evidently.base_metric import Metric
 from evidently.model.dashboard import DashboardInfo
 from evidently.model.widget import BaseWidgetInfo

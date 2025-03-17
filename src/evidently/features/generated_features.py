@@ -9,9 +9,9 @@ from typing import Optional
 import deprecation
 import pandas as pd
 import uuid6
+from pydantic import BaseModel
+from pydantic import Field
 
-from evidently._pydantic_compat import BaseModel
-from evidently._pydantic_compat import Field
 from evidently.base_metric import ColumnName
 from evidently.base_metric import DatasetType
 from evidently.base_metric import TEngineDataType

@@ -19,8 +19,9 @@ from typing import Tuple
 from typing import Type
 from typing import TypeVar
 
-from evidently._pydantic_compat import BaseModel
-from evidently._pydantic_compat import SecretStr
+from pydantic import BaseModel
+from pydantic import SecretStr
+
 from evidently.options.base import Options
 from evidently.options.option import Option
 from evidently.utils.llm.base import LLMMessage

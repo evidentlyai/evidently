@@ -9,9 +9,9 @@ from typing import Sequence
 from typing import Tuple
 
 import pandas as pd
+from pydantic import Field
+from pydantic import PrivateAttr
 
-from evidently._pydantic_compat import Field
-from evidently._pydantic_compat import PrivateAttr
 from evidently.base_metric import ColumnName
 from evidently.core import ColumnType
 from evidently.features.generated_features import GeneratedFeatures

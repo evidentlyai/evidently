@@ -2,8 +2,8 @@ from typing import Callable
 from typing import Tuple
 
 import pandas as pd
+from pydantic import Field
 
-from evidently._pydantic_compat import Field
 from evidently.base_metric import ColumnName
 from evidently.core import ColumnType
 from evidently.core import new_id

@@ -6,8 +6,8 @@ from typing import List
 from typing import Sequence
 
 import pandas as pd
+from pydantic import BaseModel
 
-from evidently._pydantic_compat import BaseModel
 from evidently.pydantic_utils import PolymorphicModel
 from evidently.pydantic_utils import autoregister
 from evidently.suite.base_suite import ReportBase

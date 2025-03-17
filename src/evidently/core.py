@@ -1,4 +1,5 @@
 import uuid
+from enum import Enum
 from typing import TYPE_CHECKING
 from typing import Any
 from typing import ClassVar
@@ -14,24 +15,13 @@ from typing import get_args
 import numpy as np
 import pandas as pd
 import uuid6
+from pydantic import BaseConfig
+from pydantic import BaseModel
+from pydantic_core.core_schema import ModelField
 from typing_inspect import is_literal_type
 
-from evidently._pydantic_compat import SHAPE_DICT
-from evidently._pydantic_compat import SHAPE_LIST
-from evidently._pydantic_compat import SHAPE_SET
-from evidently._pydantic_compat import SHAPE_TUPLE
-from evidently._pydantic_compat import ModelField
 from evidently.pydantic_utils import IncludeTags
 from evidently.pydantic_utils import pydantic_type_validator
-
-if TYPE_CHECKING:
-    from evidently._pydantic_compat import AbstractSetIntStr
-    from evidently._pydantic_compat import MappingIntStrAny
-
-from enum import Enum
-
-from evidently._pydantic_compat import BaseConfig
-from evidently._pydantic_compat import BaseModel
 
 IncludeOptions = Union["AbstractSetIntStr", "MappingIntStrAny"]
 
