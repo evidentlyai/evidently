@@ -110,7 +110,7 @@ class StatisticsCalculation(SingleValueCalculation[TStatisticsMetric]):
         if reference_data is not None:
             ref_value = self.calculate_value(reference_data.column(self.column))
             header += f", reference: {ref_value:.3f}"
-        result = SingleValue(value, self.display_name())
+        result = self.result(value)
         result.widget = distribution(
             f"{self.display_name()}: {header}",
             current_data.column(self.column),
@@ -118,7 +118,7 @@ class StatisticsCalculation(SingleValueCalculation[TStatisticsMetric]):
         )
         return (
             result,
-            None if ref_value is None else SingleValue(ref_value, self.display_name()),
+            None if ref_value is None else self.result(ref_value),
         )
 
     @abc.abstractmethod

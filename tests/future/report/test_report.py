@@ -30,4 +30,4 @@ def test_report_run(current, reference):
     data = snapshot.dumps()
     snapshot_2 = Snapshot.loads(data)
     assert snapshot_2 is not None
-    assert snapshot.dict() == snapshot_2.dict()
+    assert snapshot.dumps() == snapshot_2.dumps()

@@ -55,44 +55,83 @@ class MetricConfig(BaseModel):
     params: Dict[str, Any]
 
 
+class MetricValueLocation(BaseModel):
+    metric: MetricConfig
+    param: Dict[str, Any]
+
+    def __init__(self, metric: MetricConfig, param: Dict[str, Any]):
+        super().__init__(metric=metric, param=param)
+
+    def params(self) -> Dict[str, Any]:
+        return self.param
+
+    def value(self, context: "Context", dataset_type: "DatasetType") -> "SingleValue":
+        value = self._metric_value_by_dataset(context, dataset_type)
+        return self.extract_value(value)
+
+    def _metric_value_by_dataset(self, context: "Context", dataset_type: "DatasetType") -> "MetricResult":
+        if dataset_type == DatasetType.Current:
+            return context.get_metric_result(self.metric.metric_id)
+        if dataset_type == DatasetType.Reference:
+            value = context.get_reference_metric_result(self.metric.metric_id)
+            return value
+        raise ValueError(f"Unknown dataset type {dataset_type}")
+
+    # @abc.abstractmethod
+    def extract_value(self, value: "MetricResult") -> "SingleValue":
+        if isinstance(value, SingleValue):
+            return value
+        if isinstance(value, ByLabelValue):
+            label = self.params().get("label")
+            if label is None or not isinstance(label, (bool, int, str)):
+                raise ValueError("label parameter not set in metric location")
+            return value.get_label_result(label)
+        if isinstance(value, CountValue):
+            value_type = self.params().get("value_type")
+            if value_type not in ["count", "share"]:
+                raise ValueError(f"Unknown value type {value_type}")
+            return value.get_count() if self.params()["value_type"] == "count" else value.get_share()
+        if isinstance(value, MeanStdValue):
+            value_type = self.params().get("value_type")
+            if value_type not in ["mean", "std"]:
+                raise ValueError(f"Unknown value type {value_type}")
+            return value.get_mean() if self.params()["value_type"] == "mean" else value.get_std()
+        if isinstance(value, ByLabelCountValue):
+            value_type = self.params().get("value_type")
+            label = self.params().get("label")
+            if label is None or not isinstance(label, (bool, int, str)):
+                raise ValueError("label parameter not set in metric location")
+            if value_type not in ["count", "share"]:
+                raise ValueError(f"Unknown value type {value_type}")
+            return value.counts[label] if self.params()["value_type"] == "count" else value.shares[label]
+        raise ValueError(f"Unknown value type {type(value)}")
+
+
 class MetricResult(BaseModel):
-    _display_name: str = "<unset>"
-    _metric_value_location: Optional["MetricValueLocation"] = None
-    # _widget: Optional[List[BaseWidgetInfo]] = PrivateAttr(None)
+    display_name: str
+    metric_value_location: Optional["MetricValueLocation"] = None
+    widget: Optional[List[BaseWidgetInfo]] = None
     _tests: Optional[Dict["BoundTest", "MetricTestResult"]] = None
 
     def set_tests(self, tests: Dict["BoundTest", "MetricTestResult"]):
         self._tests = tests
 
     def _repr_html_(self):
-        assert self._widget
-        widget = copy(self._widget)
+        assert self.widget
+        widget = copy(self.widget)
         if self._tests:
             widget.append(metric_tests_widget(list(self.tests.values())))
         return render_results((self, None), html=False)
 
     def is_widget_set(self) -> bool:
-        return self._widget is not None
-
-    @property
-    def widget(self) -> List[BaseWidgetInfo]:
-        # return self._widget or []
-        return []
-
-    @widget.setter
-    def widget(self, value: List[BaseWidgetInfo]):
-        pass
-        # self._widget = value
+        return self.widget is not None
 
     @property
     def tests(self) -> Dict["BoundTest", "MetricTestResult"]:
         return self._tests or {}
 
     def set_display_name(self, value: str):
-        self._display_name = value
-
-    def display_name(self) -> str:
-        return self._display_name
+        self.display_name = value
 
     @abc.abstractmethod
     def set_metric_location(self, metric: MetricConfig):
@@ -131,13 +170,8 @@ class MetricResult(BaseModel):
         return f"{type}({','.join(config_items)})"
 
     @abc.abstractmethod
-    def dict(self) -> object:
+    def to_simple_dict(self) -> object:
         raise NotImplementedError()
-
-    @property
-    def metric_value_location(self) -> "MetricValueLocation":
-        assert self._metric_value_location
-        return self._metric_value_location
 
     def __format__(self, format_spec):
         return str(self)
@@ -215,30 +249,18 @@ class MetricTestResult(BaseModel):
 class SingleValue(MetricResult):
     value: Value
 
-    def __init__(self, value: Value, display_name: str):
-        self.value = value
-        self.set_display_name(display_name)
-        super().__init__()
-
-    def dict(self) -> object:
+    def to_simple_dict(self) -> object:
         return self.value
 
     def __format__(self, format_spec):
         return format(self.value, format_spec)
 
     def set_metric_location(self, metric: MetricConfig):
-        self._metric_value_location = single_value_location(metric)
+        self.metric_value_location = single_value_location(metric)
 
 
 class ByLabelValue(MetricResult):
     values: Dict[Label, SingleValue]
-
-    def __init__(self, values: Dict[Label, Value], display_name_gen: Callable[[Label], str]):
-        super().__init__()
-        self.values = {}
-        for k, v in values.items():
-            value = SingleValue(v, display_name_gen(k))
-            self.values[k] = value
 
     def labels(self) -> List[Label]:
         return list(self.values.keys())
@@ -248,28 +270,17 @@ class ByLabelValue(MetricResult):
         return value
 
     def set_metric_location(self, metric: MetricConfig):
-        self._metric_value_location = single_value_location(metric)
+        self.metric_value_location = single_value_location(metric)
         for k, v in self.values.items():
-            v._metric_value_location = by_label_location(metric, k)
+            v.metric_value_location = by_label_location(metric, k)
 
-    def dict(self) -> object:
+    def to_simple_dict(self) -> object:
         return self.values
 
 
 class ByLabelCountValue(MetricResult):
     counts: Dict[Label, SingleValue]
     shares: Dict[Label, SingleValue]
-
-    def __init__(
-        self,
-        counts: Dict[Label, int],
-        shares: Dict[Label, float],
-        count_display_name_gen: Callable[[Label], str],
-        shares_display_name_gen: Callable[[Label], str],
-    ):
-        self.counts = {k: SingleValue(v, count_display_name_gen(k)) for k, v in counts.items()}
-        self.shares = {k: SingleValue(v, shares_display_name_gen(k)) for k, v in shares.items()}
-        super().__init__()
 
     def labels(self) -> List[Label]:
         return list(self.counts.keys())
@@ -279,31 +290,20 @@ class ByLabelCountValue(MetricResult):
         share = self.shares[label]
         return count, share
 
-    def dict(self) -> object:
+    def to_simple_dict(self) -> object:
         return {"counts": self.counts, "shares": self.shares}
 
     def set_metric_location(self, metric: MetricConfig):
-        self._metric_value_location = single_value_location(metric)
+        self.metric_value_location = single_value_location(metric)
         for k, v in self.counts.items():
-            v._metric_value_location = by_label_count_value_location(metric, k, True)
+            v.metric_value_location = by_label_count_value_location(metric, k, True)
         for k, v in self.shares.items():
-            v._metric_value_location = by_label_count_value_location(metric, k, False)
+            v.metric_value_location = by_label_count_value_location(metric, k, False)
 
 
 class CountValue(MetricResult):
     count: SingleValue
     share: SingleValue
-
-    def __init__(
-        self,
-        count: int,
-        share: float,
-        count_display_name: str,
-        share_display_name: str,
-    ):
-        self.count = SingleValue(count, count_display_name)
-        self.share = SingleValue(share, share_display_name)
-        super().__init__()
 
     def get_count(self) -> SingleValue:
         return self.count
@@ -311,16 +311,16 @@ class CountValue(MetricResult):
     def get_share(self) -> SingleValue:
         return self.share
 
-    def dict(self) -> object:
+    def to_simple_dict(self) -> object:
         return {
             "count": self.count.dict(),
             "share": self.share.dict(),
         }
 
     def set_metric_location(self, metric: MetricConfig):
-        self._metric_value_location = single_value_location(metric)
-        self.count._metric_value_location = count_value_location(metric, True)
-        self.count._metric_value_location = count_value_location(metric, False)
+        self.metric_value_location = single_value_location(metric)
+        self.count.metric_value_location = count_value_location(metric, True)
+        self.share.metric_value_location = count_value_location(metric, False)
 
     def __format__(self, format_spec):
         return f"{format(self.count, format_spec)} ({format(self.share.value * 100, format_spec)}%)"
@@ -330,18 +330,13 @@ class MeanStdValue(MetricResult):
     mean: SingleValue
     std: SingleValue
 
-    def __init__(self, mean: float, std: float, mean_display_name: str, std_display_name: str):
-        self.mean = SingleValue(mean, mean_display_name)
-        self.std = SingleValue(std, std_display_name)
-        super().__init__()
-
     def get_mean(self) -> SingleValue:
         return self.mean
 
     def get_std(self) -> SingleValue:
         return self.std
 
-    def dict(self) -> object:
+    def to_simple_dict(self) -> object:
         return {
             "mean": self.mean,
             "std": self.std,
@@ -351,63 +346,14 @@ class MeanStdValue(MetricResult):
         return f"{format(self.mean, format_spec)} (std: {format(self.std, format_spec)})"
 
     def set_metric_location(self, metric: MetricConfig):
-        self._metric_value_location = single_value_location(metric)
-        self.mean._metric_value_location = mean_std_value_location(metric, True)
-        self.std._metric_value_location = mean_std_value_location(metric, False)
+        self.metric_value_location = single_value_location(metric)
+        self.mean.metric_value_location = mean_std_value_location(metric, True)
+        self.std.metric_value_location = mean_std_value_location(metric, False)
 
 
 class DatasetType(enum.Enum):
     Current = "current"
     Reference = "reference"
-
-
-class MetricValueLocation(BaseModel):
-    metric: MetricConfig
-    param: Dict[str, Any]
-
-    def params(self) -> Dict[str, Any]:
-        return self.param
-
-    def value(self, context: "Context", dataset_type: DatasetType) -> SingleValue:
-        value = self._metric_value_by_dataset(context, dataset_type)
-        return self.extract_value(value)
-
-    def _metric_value_by_dataset(self, context: "Context", dataset_type: DatasetType) -> MetricResult:
-        if dataset_type == DatasetType.Current:
-            return context.get_metric_result(self.metric.metric_id)
-        if dataset_type == DatasetType.Reference:
-            value = context.get_reference_metric_result(self.metric.metric_id)
-            return value
-        raise ValueError(f"Unknown dataset type {dataset_type}")
-
-    # @abc.abstractmethod
-    def extract_value(self, value: MetricResult) -> SingleValue:
-        if isinstance(value, SingleValue):
-            return value
-        if isinstance(value, ByLabelValue):
-            label = self.params().get("label")
-            if label is None or not isinstance(label, (bool, int, str)):
-                raise ValueError("label parameter not set in metric location")
-            return value.get_label_result(label)
-        if isinstance(value, CountValue):
-            value_type = self.params().get("value_type")
-            if value_type not in ["count", "share"]:
-                raise ValueError(f"Unknown value type {value_type}")
-            return value.get_count() if self.params()["value_type"] == "count" else value.get_share()
-        if isinstance(value, MeanStdValue):
-            value_type = self.params().get("value_type")
-            if value_type not in ["mean", "std"]:
-                raise ValueError(f"Unknown value type {value_type}")
-            return value.get_mean() if self.params()["value_type"] == "mean" else value.get_std()
-        if isinstance(value, ByLabelCountValue):
-            value_type = self.params().get("value_type")
-            label = self.params().get("label")
-            if label is None or not isinstance(label, (bool, int, str)):
-                raise ValueError("label parameter not set in metric location")
-            if value_type not in ["count", "share"]:
-                raise ValueError(f"Unknown value type {value_type}")
-            return value.counts[label] if self.params()["value_type"] == "count" else value.shares[label]
-        raise ValueError(f"Unknown value type {type(value)}")
 
 
 def single_value_location(metric: MetricConfig) -> MetricValueLocation:
@@ -646,8 +592,8 @@ class MetricCalculationBase(Generic[TResult]):
 
     def to_metric_config(self):
         return MetricConfig(
-            self.to_metric().metric_id,
-            self.to_metric().dict(),
+            metric_id=self.to_metric().metric_id,
+            params=self.to_metric().dict(),
         )
 
     def group_by(self, group_by: Optional[str]) -> Union["MetricCalculationBase", List["MetricCalculationBase"]]:
@@ -682,7 +628,7 @@ class MetricTest(AutoAliasMixin, EvidentlyBaseModel):
         result: MetricTestResult = self.to_test()(context, metric, value)
         if result.status == TestStatus.FAIL and not self.is_critical:
             result.status = TestStatus.WARNING
-        result.description = f"{value.display_name()}: {result.description}"
+        result.description = f"{value.display_name}: {result.description}"
         return result
 
     def bind_single(self, fingerprint: Fingerprint) -> "BoundTest":
@@ -775,14 +721,6 @@ class Metric(AutoAliasMixin, EvidentlyBaseModel, Generic[TCalculation]):
 Render = List[BaseWidgetInfo]
 
 
-@dataclasses.dataclass
-class MetricResultValue:
-    metric: Metric
-    attributes: Dict[str, str]
-    value: Value
-    render: Render
-
-
 TMetric = TypeVar("TMetric", bound=Metric)
 
 
@@ -838,7 +776,10 @@ TSingleValueMetric = TypeVar("TSingleValueMetric", bound=SingleValueMetric)
 
 
 class SingleValueCalculation(MetricCalculation[SingleValue, TSingleValueMetric], Generic[TSingleValueMetric], ABC):
-    pass
+    def result(self, value: Value) -> SingleValue:
+        value = SingleValue(value=value, display_name=self.display_name())
+        value.metric_value_location = single_value_location(self.to_metric_config())
+        return value
 
 
 class ByLabelBoundTest(BoundTest[ByLabelValue]):
@@ -880,6 +821,18 @@ class ByLabelCalculation(MetricCalculation[ByLabelValue, TByLabelMetric], Generi
 
     def _relabel(self, context: "Context", label: Label) -> Label:
         return label
+
+    def result(self, values: Dict[Label, Value]) -> ByLabelValue:
+        return ByLabelValue(
+            values={
+                k: SingleValue(
+                    value=v,
+                    display_name=self.label_display_name(k),
+                    metric_value_localtion=single_value_location(self.to_metric_config()),
+                )
+                for k, v in values.items()
+            },
+        )
 
     def collect_by_label_result(
         self,

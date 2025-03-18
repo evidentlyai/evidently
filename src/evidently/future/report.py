@@ -381,7 +381,7 @@ class Snapshot:
             top_level_metrics=self._top_level_metrics,
             widgets=self._widgets,
         )
-        return snapshot.model_dump()
+        return json.dumps(snapshot.dict(), cls=NumpyEncoder)
 
     @staticmethod
     def loads(data: str) -> "Snapshot":

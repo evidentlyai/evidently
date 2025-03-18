@@ -37,10 +37,10 @@ class ComparisonTest(MetricTest):
                 if isinstance(threshold, ApproxValue):
                     title_threshold += f" ± {threshold.tolerance:0.3f}"
             return MetricTestResult(
-                self.__short_name__,
-                f"{value.display_name()}: {self.__full_name__} {title_threshold}",
-                f"Actual value {value.value:0.3f} {'<' if value.value < threshold else '>='} {threshold:0.3f}",
-                TestStatus.SUCCESS if self.check(value.value, threshold) else TestStatus.FAIL,
+                id=self.__short_name__,
+                name=f"{value.display_name}: {self.__full_name__} {title_threshold}",
+                description=f"Actual value {value.value:0.3f} {'<' if value.value < threshold else '>='} {threshold:0.3f}",
+                status=TestStatus.SUCCESS if self.check(value.value, threshold) else TestStatus.FAIL,
             )
 
         return func
@@ -131,10 +131,10 @@ class EqualMetricTest(EqualMetricTestBase):
         def func(context: Context, metric: MetricCalculationBase, value: SingleValue):
             expected, title_expected, is_equal = self.is_equal(context, value)
             return MetricTestResult(
-                "eq",
-                f"{metric.display_name()}: Equal {title_expected}",
-                f"Actual value {value.value:0.3f} {f', but expected {expected:0.3f}' if not is_equal else ''}",
-                TestStatus.SUCCESS if is_equal else TestStatus.FAIL,
+                id="eq",
+                name=f"{metric.display_name()}: Equal {title_expected}",
+                description=f"Actual value {value.value:0.3f} {f', but expected {expected:0.3f}' if not is_equal else ''}",
+                status=TestStatus.SUCCESS if is_equal else TestStatus.FAIL,
             )
 
         return func
@@ -149,10 +149,10 @@ class NotEqualMetricTest(EqualMetricTestBase):
         def func(context: Context, metric: MetricCalculationBase, value: SingleValue):
             expected, title_expected, is_equal = self.is_equal(context, value)
             return MetricTestResult(
-                "not_eq",
-                f"{metric.display_name()}: Not equal {title_expected}",
-                f"Actual value {value.value} {f', but expected not {expected}' if is_equal else ''}",
-                TestStatus.SUCCESS if not is_equal else TestStatus.FAIL,
+                id="not_eq",
+                name=f"{metric.display_name()}: Not equal {title_expected}",
+                description=f"Actual value {value.value} {f', but expected not {expected}' if is_equal else ''}",
+                status=TestStatus.SUCCESS if not is_equal else TestStatus.FAIL,
             )
 
         return func
