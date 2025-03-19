@@ -1,4 +1,5 @@
 import json
+from typing import ClassVar
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -33,14 +34,13 @@ from evidently.utils.data_preprocessing import DataDefinition
 
 
 class ClassificationQualityByFeatureTableResults(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:ClassificationQualityByFeatureTableResults"
-        field_tags = {
-            "current": {IncludeTags.Current},
-            "reference": {IncludeTags.Reference},
-            "target_name": {IncludeTags.Parameter},
-            "columns": {IncludeTags.Parameter},
-        }
+    __type_alias__: ClassVar = "evidently:metric_result:ClassificationQualityByFeatureTableResults"
+    __field_tags__: ClassVar = {
+        "current": {IncludeTags.Current},
+        "reference": {IncludeTags.Reference},
+        "target_name": {IncludeTags.Parameter},
+        "columns": {IncludeTags.Parameter},
+    }
 
     current: StatsByFeature
     reference: Optional[StatsByFeature]
@@ -50,8 +50,7 @@ class ClassificationQualityByFeatureTableResults(MetricResult):
 
 
 class ClassificationQualityByFeatureTable(UsesRawDataMixin, Metric[ClassificationQualityByFeatureTableResults]):
-    class Config:
-        type_alias = "evidently:metric:ClassificationQualityByFeatureTable"
+    __type_alias__: ClassVar = "evidently:metric:ClassificationQualityByFeatureTable"
 
     columns: Optional[List[str]]
     descriptors: Optional[Dict[str, Dict[str, FeatureDescriptor]]]

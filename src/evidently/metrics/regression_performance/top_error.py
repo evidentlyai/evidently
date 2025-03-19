@@ -1,4 +1,5 @@
 import json
+from typing import ClassVar
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -30,28 +31,25 @@ from evidently.utils.visualizations import plot_top_error_contours
 
 
 class TopData(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:TopData"
+    __type_alias__: ClassVar = "evidently:metric_result:TopData"
 
     mean_err_per_group: Dict[str, Dict[str, float]]
     scatter: RegressionScatter
 
 
 class AggTopData(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:AggTopData"
+    __type_alias__: ClassVar = "evidently:metric_result:AggTopData"
 
     mean_err_per_group: Dict[str, Dict[str, float]]
     contour: Dict[str, ContourData]
 
 
 class RegressionTopErrorMetricResults(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:RegressionTopErrorMetricResults"
-        dict_include = False
-        pd_include = False
-        tags = {IncludeTags.Render}
-        field_tags = {"current": {IncludeTags.Current}, "reference": {IncludeTags.Reference}}
+    __type_alias__: ClassVar = "evidently:metric_result:RegressionTopErrorMetricResults"
+    __dict_include__: ClassVar = False
+    __pd_include__: ClassVar = False
+    __tags__: ClassVar = {IncludeTags.Render}
+    __field_tags__: ClassVar = {"current": {IncludeTags.Current}, "reference": {IncludeTags.Reference}}
 
     current: Union[TopData, AggTopData]
     reference: Optional[Union[TopData, AggTopData]]
@@ -62,8 +60,7 @@ class RegressionTopErrorMetricResults(MetricResult):
 
 
 class RegressionTopErrorMetric(UsesRawDataMixin, Metric[RegressionTopErrorMetricResults]):
-    class Config:
-        type_alias = "evidently:metric:RegressionTopErrorMetric"
+    __type_alias__: ClassVar = "evidently:metric:RegressionTopErrorMetric"
 
     def calculate(self, data: InputData) -> RegressionTopErrorMetricResults:
         dataset_columns = process_columns(data.current_data, data.column_mapping)

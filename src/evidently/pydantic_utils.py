@@ -19,6 +19,7 @@ from typing import Iterable
 from typing import List
 from typing import Literal
 from typing import Optional
+from typing import Self
 from typing import Set
 from typing import Tuple
 from typing import Type
@@ -27,17 +28,19 @@ from typing import Union
 from typing import get_args
 
 import numpy as np
+from pydantic import BaseModel
+from pydantic import ConfigDict
+from pydantic import Field
+from pydantic import model_serializer
+from pydantic import model_validator
+from pydantic._internal._model_construction import ModelMetaclass
+from pydantic._internal._validators import import_string
+from pydantic_core import PydanticCustomError
+from pydantic_core.core_schema import SerializerFunctionWrapHandler
 from typing_inspect import is_union_type
 
-from evidently._pydantic_compat import SHAPE_DICT
-from evidently._pydantic_compat import BaseConfig
-from evidently._pydantic_compat import BaseModel
-from evidently._pydantic_compat import Field
-from evidently._pydantic_compat import ModelMetaclass
-from evidently._pydantic_compat import import_string
-
 if TYPE_CHECKING:
-    from evidently._pydantic_compat import DictStrAny
+    from pydantic import DictStrAny
 
 md5_kwargs = {"usedforsecurity": False} if sys.version_info >= (3, 9) else {}
 
@@ -47,7 +50,7 @@ T = TypeVar("T")
 
 def pydantic_type_validator(type_: Type[Any], prioritize: bool = False):
     def decorator(f):
-        from evidently._pydantic_compat import _VALIDATORS
+        from pydantic import _VALIDATORS
 
         for cls, validators in _VALIDATORS:
             if cls is type_:
@@ -68,8 +71,8 @@ def pydantic_type_validator(type_: Type[Any], prioritize: bool = False):
 
 class FrozenBaseMeta(ModelMetaclass):
     def __new__(mcs, name, bases, namespace, **kwargs):
-        res = super().__new__(mcs, name, bases, namespace, **kwargs)
-        res.__config__.frozen = True
+        res: Type[BaseModel] = super().__new__(mcs, name, bases, namespace, **kwargs)
+        res.model_config["frozen"] = True
         return res
 
 
@@ -78,8 +81,7 @@ object_delattr = object.__delattr__
 
 
 class FrozenBaseModel(BaseModel, metaclass=FrozenBaseMeta):
-    class Config:
-        underscore_attrs_are_private = True
+    __underscore_attrs_are_private__: ClassVar = True
 
     _init_values: Optional[Dict]
 
@@ -194,25 +196,21 @@ def is_not_abstract(cls):
 
 
 class PolymorphicModel(BaseModel):
-    class Config(BaseConfig):
-        # value to put into "type" field
-        type_alias: ClassVar[Optional[str]] = None
-        # flag to mark alias required. If not required, classpath is used by default
-        alias_required: ClassVar[bool] = True
-        # flag to register aliaes for grand-parent base type
-        # eg PolymorphicModel -> A -> B -> C, where A and B are base types. only if A has this flag, C can be parsed as both A and B.
-        transitive_aliases: ClassVar[bool] = False
-        # flag to mark type as base. This means it will be possible to parse all subclasses of it as this type
-        is_base_type: ClassVar[bool] = False
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
-    __config__: ClassVar[Type[Config]] = Config
+    # Configuration values
+    __type_alias__: ClassVar[Optional[str]] = None
+    __alias_required__: ClassVar[bool] = True
+    # __transitive_aliases__: ClassVar[bool] = False
+    __is_base_type__: ClassVar[bool] = False
+
+    type: str = Field(default="")
 
     @classmethod
     def __get_type__(cls):
-        config = cls.__dict__.get("Config")
-        if config is not None and config.__dict__.get("type_alias") is not None:
-            return config.type_alias
-        if cls.__config__.alias_required and is_not_abstract(cls):
+        if cls.__type_alias__ is not None:
+            return cls.__type_alias__
+        if cls.__alias_required__ and is_not_abstract(cls):
             raise ValueError(f"Alias is required for {cls.__name__}")
         return cls.__get_classpath__()
 
@@ -220,66 +218,88 @@ class PolymorphicModel(BaseModel):
     def __get_classpath__(cls):
         return get_classpath(cls)
 
-    type: str = Field("")
+    @classmethod
+    def __subtypes__(cls) -> Tuple[Type["PolymorphicModel"], ...]:
+        return tuple(all_subclasses(cls))
+
+    @classmethod
+    def __get_is_base_type__(cls) -> bool:
+        return cls.__dict__.get("__is_base_type__", False)
 
     def __init_subclass__(cls):
         super().__init_subclass__()
-        if cls == PolymorphicModel:
+        if cls == PolymorphicModel or cls.__get_is_base_type__():
             return
 
         typename = cls.__get_type__()
         literal_typename = Literal[typename]
 
-        type_field = cls.__fields__["type"]
+        type_field = cls.model_fields["type"]
         type_field.default = typename
-        type_field.field_info.default = typename
-        type_field.type_ = type_field.outer_type_ = literal_typename
+        type_field.annotation = literal_typename
 
         base_class = get_base_class(cls)
         if (base_class, typename) not in LOADED_TYPE_ALIASES:
             register_loaded_alias(base_class, cls, typename)
         if base_class != cls:
-            base_typefield = base_class.__fields__["type"]
-            base_typefield_type = base_typefield.type_
+            base_typefield = base_class.model_fields["type"]
+            base_typefield_type = base_typefield.annotation
             if is_union_type(base_typefield_type):
                 subclass_literals = get_args(base_typefield_type) + (literal_typename,)
             else:
                 subclass_literals = (base_typefield_type, literal_typename)
-            base_typefield.type_ = base_typefield.outer_type_ = Union[subclass_literals]
+            base_typefield.annotation = Union[subclass_literals]
+
+    def __str__(self):
+        return f"{self.__class__.__name__}[{self.__get_type__()}]({super().__str__()})"
 
     @classmethod
-    def __subtypes__(cls: Type[TPM]) -> Tuple[Type["TPM"], ...]:
-        return tuple(all_subclasses(cls))
-
-    @classmethod
-    def __is_base_type__(cls) -> bool:
-        config = cls.__dict__.get("Config")
-        if config is not None and config.__dict__.get("is_base_type") is not None:
-            return config.is_base_type
-        return False
-
-    @classmethod
-    def validate(cls: Type[TPM], value: Any) -> TPM:
+    def model_validate(
+        cls,
+        value: Any,
+        *,
+        strict: bool | None = None,
+        from_attributes: bool | None = None,
+        context: Any | None = None,
+    ) -> Self:
         if isinstance(value, dict) and "type" in value:
             typename = value.pop("type")
-            key = (get_base_class(cls), typename)  # type: ignore[arg-type]
-            if key in LOADED_TYPE_ALIASES:
-                subcls = LOADED_TYPE_ALIASES[key]
-            else:
-                if key in TYPE_ALIASES:
-                    classpath = TYPE_ALIASES[key]
+            try:
+                key = (get_base_class(cls), typename)
+
+                if key in LOADED_TYPE_ALIASES:
+                    subcls = LOADED_TYPE_ALIASES[key]
                 else:
-                    if "." not in typename:
-                        raise ValueError(f'Unknown alias "{typename}"')
-                    classpath = typename
-                if not any(classpath.startswith(p) for p in ALLOWED_TYPE_PREFIXES):
-                    raise ValueError(f"{classpath} does not match any allowed prefixes")
-                try:
-                    subcls = import_string(classpath)
-                except ImportError as e:
-                    raise ValueError(f"Error importing subclass from '{classpath}'") from e
-            return subcls.validate(value)  # type: ignore[return-value]
-        return super().validate(value)  # type: ignore[misc]
+                    if key in TYPE_ALIASES:
+                        classpath = TYPE_ALIASES[key]
+                    else:
+                        if "." not in typename:
+                            raise PydanticCustomError("unknown_alias", f'Unknown alias "{typename}"')
+                        classpath = typename
+                    if not any(classpath.startswith(p) for p in ALLOWED_TYPE_PREFIXES):
+                        raise PydanticCustomError("invalid_prefix", f"{classpath} does not match any allowed prefixes")
+                    try:
+                        subcls = import_string(classpath)
+                    except ImportError as e:
+                        raise PydanticCustomError("import_error", f"Error importing subclass from '{classpath}'") from e
+                return subcls.model_validate(
+                    value, strict=strict, from_attributes=from_attributes, context=context
+                )  # Pydantic v2 uses model_validate
+            finally:
+                value["type"] = typename
+        return super().model_validate(obj=value, strict=strict, from_attributes=from_attributes, context=context)
+
+    @model_validator(mode="wrap")
+    def _delegate_validation(cls, data: dict, handler) -> Any:
+        if "type" in data and data["type"] != cls.__get_type__():
+            return cls.model_validate(data)
+        return handler(data)
+
+    @model_serializer(mode="wrap")
+    def _delegate_serialization(self, nxt: SerializerFunctionWrapHandler):
+        if f"serializer={self.__class__.__name__}" not in str(nxt):
+            return self.model_dump()
+        return nxt(self)
 
 
 def get_value_fingerprint(value: Any) -> FingerprintPart:
@@ -310,12 +330,13 @@ def get_value_fingerprint(value: Any) -> FingerprintPart:
 
 EBM = TypeVar("EBM", bound="EvidentlyBaseModel")
 
+print(__file__)
+
 
 class EvidentlyBaseModel(FrozenBaseModel, PolymorphicModel):
-    class Config:
-        type_alias = "evidently:base:EvidentlyBaseModel"
-        alias_required = True
-        is_base_type = True
+    __type_alias__: ClassVar = "evidently:base:EvidentlyBaseModel"
+    __alias_required__: ClassVar = True
+    __is_base_type__: ClassVar = True
 
     def get_fingerprint(self) -> Fingerprint:
         return hashlib.md5(
@@ -341,8 +362,7 @@ class EvidentlyBaseModel(FrozenBaseModel, PolymorphicModel):
 
 @autoregister
 class WithTestAndMetricDependencies(EvidentlyBaseModel):
-    class Config:
-        type_alias = "evidently:test:WithTestAndMetricDependencies"
+    __type_alias__: ClassVar = "evidently:test:WithTestAndMetricDependencies"
 
     def __evidently_dependencies__(self):
         from evidently.base_metric import Metric
@@ -395,8 +415,7 @@ IncludeTags = FieldTags  # fixme: tmp for compatibility, remove in separate PR
 
 
 class FieldInfo(EnumValueMixin):
-    class Config:
-        frozen = True
+    __frozen__: ClassVar = True
 
     path: str
     tags: FrozenSet[FieldTags]

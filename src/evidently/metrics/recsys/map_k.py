@@ -1,11 +1,12 @@
+from typing import ClassVar
+
 from evidently.metrics.recsys.base_top_k import TopKMetric
 from evidently.metrics.recsys.base_top_k import TopKMetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 
 
 class MAPKMetric(TopKMetric):
-    class Config:
-        type_alias = "evidently:metric:MAPKMetric"
+    __type_alias__: ClassVar = "evidently:metric:MAPKMetric"
 
     def key(self):
         return "map"

@@ -1,11 +1,12 @@
+from typing import ClassVar
+
 from evidently.features.BERTScore_feature import BERTScoreFeature
 from evidently.features.generated_features import FeatureDescriptor
 from evidently.features.generated_features import GeneratedFeatures
 
 
 class BERTScore(FeatureDescriptor):
-    class Config:
-        type_alias = "evidently:descriptor:BERTScore"
+    __type_alias__: ClassVar = "evidently:descriptor:BERTScore"
 
     with_column: str
 

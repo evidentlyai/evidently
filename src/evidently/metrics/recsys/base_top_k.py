@@ -1,4 +1,5 @@
 import abc
+from typing import ClassVar
 from typing import List
 from typing import Optional
 
@@ -21,13 +22,12 @@ from evidently.utils.visualizations import plot_metric_k
 
 
 class TopKMetricResult(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:TopKMetricResult"
-        field_tags = {
-            "current": {IncludeTags.Current},
-            "reference": {IncludeTags.Reference},
-            "k": {IncludeTags.Parameter},
-        }
+    __type_alias__: ClassVar = "evidently:metric_result:TopKMetricResult"
+    __field_tags__: ClassVar = {
+        "current": {IncludeTags.Current},
+        "reference": {IncludeTags.Reference},
+        "k": {IncludeTags.Parameter},
+    }
 
     k: int
     current: pd.Series

@@ -1,4 +1,5 @@
 from typing import Any
+from typing import ClassVar
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -14,8 +15,7 @@ from evidently.utils.data_preprocessing import DataDefinition
 
 
 class DataQualityTestPreset(TestPreset):
-    class Config:
-        type_alias = "evidently:test_preset:DataQualityTestPreset"
+    __type_alias__: ClassVar = "evidently:test_preset:DataQualityTestPreset"
 
     """
     Data Quality tests.

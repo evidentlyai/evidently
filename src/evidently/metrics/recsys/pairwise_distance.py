@@ -1,3 +1,4 @@
+from typing import ClassVar
 from typing import Dict
 from typing import List
 from typing import Union
@@ -19,18 +20,16 @@ from evidently.renderers.base_renderer import default_renderer
 
 
 class PairwiseDistanceResult(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:PairwiseDistanceResult"
-        pd_include = False
-        field_tags = {"dist_matrix": {IncludeTags.Extra}}
+    __type_alias__: ClassVar = "evidently:metric_result:PairwiseDistanceResult"
+    __pd_include__: ClassVar = False
+    __field_tags__: ClassVar = {"dist_matrix": {IncludeTags.Extra}}
 
     dist_matrix: np.ndarray
     name_dict: Dict[Union[int, str], int]
 
 
 class PairwiseDistance(Metric[PairwiseDistanceResult]):
-    class Config:
-        type_alias = "evidently:metric:PairwiseDistance"
+    __type_alias__: ClassVar = "evidently:metric:PairwiseDistance"
 
     k: int
     item_features: List[str]

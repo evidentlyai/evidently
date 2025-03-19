@@ -1,3 +1,4 @@
+from typing import ClassVar
 from typing import List
 from typing import Optional
 
@@ -29,15 +30,14 @@ from evidently.utils.data_operations import process_columns
 
 
 class ClassificationClassSeparationPlotResults(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:ClassificationClassSeparationPlotResults"
-        dict_exclude_fields = {"current", "reference"}
-        pd_exclude_fields = {"current", "reference"}
-        field_tags = {
-            "current": {IncludeTags.Current, IncludeTags.Extra},
-            "reference": {IncludeTags.Reference, IncludeTags.Extra},
-            "target_name": {IncludeTags.Parameter},
-        }
+    __type_alias__: ClassVar = "evidently:metric_result:ClassificationClassSeparationPlotResults"
+    __dict_exclude_fields__: ClassVar = {"current", "reference"}
+    __pd_exclude_fields__: ClassVar = {"current", "reference"}
+    __field_tags__: ClassVar = {
+        "current": {IncludeTags.Current, IncludeTags.Extra},
+        "reference": {IncludeTags.Reference, IncludeTags.Extra},
+        "target_name": {IncludeTags.Parameter},
+    }
 
     target_name: str
 
@@ -73,8 +73,7 @@ def prepare_box_data(df: pd.DataFrame, target_name: str, prediction_names: List[
 
 
 class ClassificationClassSeparationPlot(UsesRawDataMixin, Metric[ClassificationClassSeparationPlotResults]):
-    class Config:
-        type_alias = "evidently:metric:ClassificationClassSeparationPlot"
+    __type_alias__: ClassVar = "evidently:metric:ClassificationClassSeparationPlot"
 
     def __init__(self, options: AnyOptions = None):
         super().__init__(options=options)

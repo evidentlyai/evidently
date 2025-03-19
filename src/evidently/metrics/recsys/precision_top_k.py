@@ -1,11 +1,12 @@
+from typing import ClassVar
+
 from evidently.metrics.recsys.base_top_k import TopKMetric
 from evidently.metrics.recsys.base_top_k import TopKMetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 
 
 class PrecisionTopKMetric(TopKMetric):
-    class Config:
-        type_alias = "evidently:metric:PrecisionTopKMetric"
+    __type_alias__: ClassVar = "evidently:metric:PrecisionTopKMetric"
 
     def key(self):
         return "precision"

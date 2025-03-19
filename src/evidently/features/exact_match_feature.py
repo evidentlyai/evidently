@@ -10,8 +10,7 @@ from evidently.utils.data_preprocessing import DataDefinition
 
 
 class ExactMatchFeature(GeneratedFeature):
-    class Config:
-        type_alias = "evidently:feature:ExactMatchFeature"
+    __type_alias__: ClassVar = "evidently:feature:ExactMatchFeature"
 
     __feature_type__: ClassVar = ColumnType.Categorical
     columns: List[str]

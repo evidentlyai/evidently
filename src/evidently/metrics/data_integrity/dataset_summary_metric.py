@@ -1,3 +1,4 @@
+from typing import ClassVar
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -53,20 +54,18 @@ class NumpyDtype(ExcludeNoneMixin):
 class DatasetSummary(MetricResult):
     """Columns information in a dataset"""
 
-    class Config:
-        type_alias = "evidently:metric_result:DatasetSummary"
-        dict_exclude_fields = {"columns_type_data"}
-        pd_exclude_fields = {"columns_type_data", "nans_by_columns", "number_uniques_by_columns"}
-
-        field_tags = {
-            "target": {IncludeTags.Parameter},
-            "prediction": {IncludeTags.Parameter},
-            "date_column": {IncludeTags.Parameter},
-            "id_column": {IncludeTags.Parameter},
-            "columns_type_data": {IncludeTags.Extra},
-            "nans_by_columns": {IncludeTags.Extra},
-            "number_uniques_by_columns": {IncludeTags.Extra},
-        }
+    __type_alias__: ClassVar = "evidently:metric_result:DatasetSummary"
+    __dict_exclude_fields__: ClassVar = {"columns_type_data"}
+    __pd_exclude_fields__: ClassVar = {"columns_type_data", "nans_by_columns", "number_uniques_by_columns"}
+    __field_tags__: ClassVar = {
+        "target": {IncludeTags.Parameter},
+        "prediction": {IncludeTags.Parameter},
+        "date_column": {IncludeTags.Parameter},
+        "id_column": {IncludeTags.Parameter},
+        "columns_type_data": {IncludeTags.Extra},
+        "nans_by_columns": {IncludeTags.Extra},
+        "number_uniques_by_columns": {IncludeTags.Extra},
+    }
 
     target: Optional[str]
     prediction: Optional[Union[str, Sequence[str]]]
@@ -96,13 +95,12 @@ class DatasetSummary(MetricResult):
 
 
 class DatasetSummaryMetricResult(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:DatasetSummaryMetricResult"
-        field_tags = {
-            "almost_duplicated_threshold": {IncludeTags.Parameter},
-            "current": {IncludeTags.Current},
-            "reference": {IncludeTags.Reference},
-        }
+    __type_alias__: ClassVar = "evidently:metric_result:DatasetSummaryMetricResult"
+    __field_tags__: ClassVar = {
+        "almost_duplicated_threshold": {IncludeTags.Parameter},
+        "current": {IncludeTags.Current},
+        "reference": {IncludeTags.Reference},
+    }
 
     almost_duplicated_threshold: float
     current: DatasetSummary
@@ -110,8 +108,7 @@ class DatasetSummaryMetricResult(MetricResult):
 
 
 class DatasetSummaryMetric(Metric[DatasetSummaryMetricResult]):
-    class Config:
-        type_alias = "evidently:metric:DatasetSummaryMetric"
+    __type_alias__: ClassVar = "evidently:metric:DatasetSummaryMetric"
 
     """Common dataset(s) columns/features characteristics"""
 

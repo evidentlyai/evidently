@@ -1,11 +1,12 @@
+from typing import ClassVar
+
 from evidently.metrics.recsys.base_top_k import TopKMetric
 from evidently.metrics.recsys.base_top_k import TopKMetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 
 
 class MARKMetric(TopKMetric):
-    class Config:
-        type_alias = "evidently:metric:MARKMetric"
+    __type_alias__: ClassVar = "evidently:metric:MARKMetric"
 
     def key(self):
         return "mar"

@@ -6,16 +6,17 @@ from typing import Type
 from typing import TypeVar
 from typing import Union
 
-from evidently._pydantic_compat import BaseModel
+from pydantic import BaseModel
+
 from evidently.options import ColorOptions
 from evidently.options.agg_data import DataDefinitionOptions
 from evidently.options.agg_data import RenderOptions
 from evidently.options.option import Option
 
 if TYPE_CHECKING:
-    from evidently._pydantic_compat import AbstractSetIntStr
-    from evidently._pydantic_compat import DictStrAny
-    from evidently._pydantic_compat import MappingIntStrAny
+    from pydantic import AbstractSetIntStr
+    from pydantic import DictStrAny
+    from pydantic import MappingIntStrAny
 TypeParam = TypeVar("TypeParam", bound=Option)
 
 

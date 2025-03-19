@@ -1,3 +1,4 @@
+from typing import ClassVar
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -22,9 +23,8 @@ SAMPLE_SIZE = 5000
 
 
 class FeatureImportanceMetricResult(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:FeatureImportanceMetricResult"
-        field_tags = {"current": {IncludeTags.Current}, "reference": {IncludeTags.Reference}}
+    __type_alias__: ClassVar = "evidently:metric_result:FeatureImportanceMetricResult"
+    __field_tags__: ClassVar = {"current": {IncludeTags.Current}, "reference": {IncludeTags.Reference}}
 
     current: Optional[Dict[str, float]] = None
     reference: Optional[Dict[str, float]] = None
@@ -42,8 +42,7 @@ class FeatureImportanceMetricResult(MetricResult):
 
 
 class FeatureImportanceMetric(Metric[FeatureImportanceMetricResult]):
-    class Config:
-        type_alias = "evidently:metric:FeatureImportanceMetric"
+    __type_alias__: ClassVar = "evidently:metric:FeatureImportanceMetric"
 
     def calculate(self, data: InputData) -> FeatureImportanceMetricResult:
         if data.additional_data.get("current_feature_importance") is not None:

@@ -19,8 +19,9 @@ from typing import Tuple
 from typing import Type
 from typing import TypeVar
 
-from evidently._pydantic_compat import BaseModel
-from evidently._pydantic_compat import SecretStr
+from pydantic import BaseModel
+from pydantic import SecretStr
+
 from evidently.options.base import Options
 from evidently.options.option import Option
 from evidently.utils.llm.base import LLMMessage
@@ -287,8 +288,7 @@ def get_llm_wrapper(provider: LLMProvider, model: LLMModel, options: Options) ->
 class LLMOptions(Option):
     __provider_name__: ClassVar[str]
 
-    class Config:
-        extra = "forbid"
+    __extra__: ClassVar = "forbid"
 
     api_key: Optional[SecretStr] = None
     # rpm_limit: int = 500

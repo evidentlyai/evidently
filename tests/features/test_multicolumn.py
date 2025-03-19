@@ -2,8 +2,8 @@ from typing import List
 from typing import Optional
 
 import pandas as pd
+from pydantic import PrivateAttr
 
-from evidently._pydantic_compat import PrivateAttr
 from evidently.base_metric import ColumnName
 from evidently.core import ColumnType
 from evidently.features.feature_generator import FeatureGenerator

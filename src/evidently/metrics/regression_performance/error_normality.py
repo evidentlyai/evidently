@@ -1,5 +1,6 @@
 import json
 from typing import Any
+from typing import ClassVar
 from typing import List
 from typing import Optional
 from typing import Union
@@ -24,17 +25,20 @@ from evidently.utils.data_operations import process_columns
 
 
 class RegressionErrorNormalityResults(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:RegressionErrorNormalityResults"
-        dict_exclude_fields = {"current_plot", "current_theoretical", "reference_plot", "reference_theoretical"}
-        pd_exclude_fields = {"current_plot", "current_theoretical", "reference_plot", "reference_theoretical"}
-
-        field_tags = {
-            "current_plot": {IncludeTags.Render, IncludeTags.Current},
-            "current_theoretical": {IncludeTags.Extra, IncludeTags.Current},
-            "reference_plot": {IncludeTags.Render, IncludeTags.Reference},
-            "reference_theoretical": {IncludeTags.Extra, IncludeTags.Reference},
-        }
+    __type_alias__: ClassVar = "evidently:metric_result:RegressionErrorNormalityResults"
+    __dict_exclude_fields__: ClassVar = {
+        "current_plot",
+        "current_theoretical",
+        "reference_plot",
+        "reference_theoretical",
+    }
+    __pd_exclude_fields__: ClassVar = {"current_plot", "current_theoretical", "reference_plot", "reference_theoretical"}
+    __field_tags__: ClassVar = {
+        "current_plot": {IncludeTags.Render, IncludeTags.Current},
+        "current_theoretical": {IncludeTags.Extra, IncludeTags.Current},
+        "reference_plot": {IncludeTags.Render, IncludeTags.Reference},
+        "reference_theoretical": {IncludeTags.Extra, IncludeTags.Reference},
+    }
 
     current_plot: pd.DataFrame
     current_theoretical: pd.DataFrame
@@ -43,8 +47,7 @@ class RegressionErrorNormalityResults(MetricResult):
 
 
 class RegressionErrorNormality(UsesRawDataMixin, Metric[RegressionErrorNormalityResults]):
-    class Config:
-        type_alias = "evidently:metric:RegressionErrorNormality"
+    __type_alias__: ClassVar = "evidently:metric:RegressionErrorNormality"
 
     def __init__(self, options: AnyOptions = None):
         super().__init__(options=options)

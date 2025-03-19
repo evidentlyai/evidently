@@ -1,3 +1,4 @@
+from typing import ClassVar
 from typing import Optional
 
 import numpy as np
@@ -13,8 +14,7 @@ from evidently.renderers.base_renderer import default_renderer
 
 
 class NDCGKMetric(Metric[TopKMetricResult]):
-    class Config:
-        type_alias = "evidently:metric:NDCGKMetric"
+    __type_alias__: ClassVar = "evidently:metric:NDCGKMetric"
 
     k: int
     min_rel_score: Optional[int]

@@ -26,10 +26,9 @@ from evidently.renderers.html_widgets import widget_tabs
 class ColumnMissingValues(MetricResult):
     """Statistics about missing values in a column"""
 
-    class Config:
-        type_alias = "evidently:metric_result:ColumnMissingValues"
-        pd_exclude_fields = {"different_missing_values"}
-        field_tags = {"number_of_rows": {IncludeTags.Extra}, "different_missing_values": {IncludeTags.Extra}}
+    __type_alias__: ClassVar = "evidently:metric_result:ColumnMissingValues"
+    __pd_exclude_fields__: ClassVar = {"different_missing_values"}
+    __field_tags__: ClassVar = {"number_of_rows": {IncludeTags.Extra}, "different_missing_values": {IncludeTags.Extra}}
 
     # count of rows in the column
     number_of_rows: int
@@ -44,13 +43,12 @@ class ColumnMissingValues(MetricResult):
 
 
 class ColumnMissingValuesMetricResult(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:ColumnMissingValuesMetricResult"
-        field_tags = {
-            "current": {IncludeTags.Current},
-            "reference": {IncludeTags.Reference},
-            "column_name": {IncludeTags.Parameter},
-        }
+    __type_alias__: ClassVar = "evidently:metric_result:ColumnMissingValuesMetricResult"
+    __field_tags__: ClassVar = {
+        "current": {IncludeTags.Current},
+        "reference": {IncludeTags.Reference},
+        "column_name": {IncludeTags.Parameter},
+    }
 
     column_name: str
     current: ColumnMissingValues
@@ -58,8 +56,7 @@ class ColumnMissingValuesMetricResult(MetricResult):
 
 
 class ColumnMissingValuesMetric(Metric[ColumnMissingValuesMetricResult]):
-    class Config:
-        type_alias = "evidently:metric:ColumnMissingValuesMetric"
+    __type_alias__: ClassVar = "evidently:metric:ColumnMissingValuesMetric"
 
     """Count missing values in a column.
 

@@ -3,8 +3,8 @@ from typing import Union
 from unittest.mock import Mock
 
 import pytest
+from pydantic import ValidationError
 
-from evidently._pydantic_compat import ValidationError
 from evidently.collector.config import IntervalTrigger
 from evidently.collector.config import RowsCountOrIntervalTrigger
 from evidently.collector.config import RowsCountTrigger

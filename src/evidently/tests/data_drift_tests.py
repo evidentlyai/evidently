@@ -48,8 +48,7 @@ GroupingTypes.TestGroup.add_value(DATA_DRIFT_GROUP)
 
 
 class ColumnDriftParameter(ExcludeNoneMixin, TestParameters):  # type: ignore[misc] # pydantic Config
-    class Config:
-        type_alias = "evidently:test_parameters:ColumnDriftParameter"
+    __type_alias__: ClassVar = "evidently:test_parameters:ColumnDriftParameter"
 
     stattest: str
     score: float
@@ -70,8 +69,7 @@ class ColumnDriftParameter(ExcludeNoneMixin, TestParameters):  # type: ignore[mi
 
 class ColumnsDriftParameters(ConditionTestParameters):
     # todo: rename to columns?
-    class Config:
-        type_alias = "evidently:test_parameters:ColumnsDriftParameters"
+    __type_alias__: ClassVar = "evidently:test_parameters:ColumnsDriftParameters"
 
     features: Dict[str, ColumnDriftParameter]
 
@@ -185,8 +183,7 @@ class BaseDataDriftMetricsTest(BaseCheckValueTest, WithDriftOptionsFields, ABC):
 
 
 class TestNumberOfDriftedColumns(BaseDataDriftMetricsTest):
-    class Config:
-        type_alias = "evidently:test:TestNumberOfDriftedColumns"
+    __type_alias__: ClassVar = "evidently:test:TestNumberOfDriftedColumns"
 
     name: ClassVar = "Number of Drifted Features"
 
@@ -208,8 +205,7 @@ class TestNumberOfDriftedColumns(BaseDataDriftMetricsTest):
 
 
 class TestShareOfDriftedColumns(BaseDataDriftMetricsTest):
-    class Config:
-        type_alias = "evidently:test:TestShareOfDriftedColumns"
+    __type_alias__: ClassVar = "evidently:test:TestShareOfDriftedColumns"
 
     name: ClassVar = "Share of Drifted Columns"
 
@@ -232,8 +228,7 @@ class TestShareOfDriftedColumns(BaseDataDriftMetricsTest):
 
 
 class TestColumnDrift(Test):
-    class Config:
-        type_alias = "evidently:test:TestColumnDrift"
+    __type_alias__: ClassVar = "evidently:test:TestColumnDrift"
 
     name: ClassVar = "Drift per Column"
     group: ClassVar = DATA_DRIFT_GROUP.id
@@ -619,8 +614,7 @@ class TestColumnDriftRenderer(TestRenderer):
 
 
 class TestEmbeddingsDrift(Test):
-    class Config:
-        type_alias = "evidently:test:TestEmbeddingsDrift"
+    __type_alias__: ClassVar = "evidently:test:TestEmbeddingsDrift"
 
     name: ClassVar = "Drift for embeddings"
     group: ClassVar = DATA_DRIFT_GROUP.id

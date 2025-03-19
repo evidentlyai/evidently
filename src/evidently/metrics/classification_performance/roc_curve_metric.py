@@ -1,3 +1,4 @@
+from typing import ClassVar
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -26,19 +27,19 @@ from evidently.utils.data_operations import process_columns
 
 
 class ClassificationRocCurveResults(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:ClassificationRocCurveResults"
-        pd_include = False
-
-        field_tags = {"current_roc_curve": {IncludeTags.Current}, "reference_roc_curve": {IncludeTags.Reference}}
+    __type_alias__: ClassVar = "evidently:metric_result:ClassificationRocCurveResults"
+    __pd_include__: ClassVar = False
+    __field_tags__: ClassVar = {
+        "current_roc_curve": {IncludeTags.Current},
+        "reference_roc_curve": {IncludeTags.Reference},
+    }
 
     current_roc_curve: Optional[ROCCurve] = None
     reference_roc_curve: Optional[ROCCurve] = None
 
 
 class ClassificationRocCurve(Metric[ClassificationRocCurveResults]):
-    class Config:
-        type_alias = "evidently:metric:ClassificationRocCurve"
+    __type_alias__: ClassVar = "evidently:metric:ClassificationRocCurve"
 
     def calculate(self, data: InputData) -> ClassificationRocCurveResults:
         dataset_columns = process_columns(data.current_data, data.column_mapping)

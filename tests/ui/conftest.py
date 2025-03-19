@@ -7,8 +7,8 @@ from litestar import Litestar
 from litestar import get
 from litestar.datastructures import State
 from litestar.testing import TestClient
+from pydantic import BaseModel
 
-from evidently._pydantic_compat import BaseModel
 from evidently.ui.app import create_app
 from evidently.ui.base import Project
 from evidently.ui.components.base import Component

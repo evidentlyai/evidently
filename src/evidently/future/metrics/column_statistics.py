@@ -1,5 +1,6 @@
 import abc
 from collections import Counter
+from typing import ClassVar
 from typing import Dict
 from typing import Generic
 from typing import List
@@ -202,8 +203,7 @@ CategoryCountLabel = Union[bool, Label]
 
 
 class CategoryCount(ColumnMetric, CountMetric):
-    class Config:
-        smart_union = True
+    __smart_union__: ClassVar = True
 
     category: Optional[CategoryCountLabel] = None
     categories: List[CategoryCountLabel] = []

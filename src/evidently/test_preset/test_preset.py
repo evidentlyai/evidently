@@ -1,5 +1,6 @@
 import abc
 from typing import Any
+from typing import ClassVar
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -14,8 +15,7 @@ AnyTest = Union[Test, BaseGenerator[Test]]
 
 
 class TestPreset(BasePreset):
-    class Config:
-        is_base_type = True
+    __is_base_type__: ClassVar = True
 
     @abc.abstractmethod
     def generate_tests(

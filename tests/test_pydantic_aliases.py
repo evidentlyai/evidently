@@ -9,9 +9,9 @@ from typing import Type
 from typing import TypeVar
 
 import pytest
+from pydantic import import_string
 
 import evidently
-from evidently._pydantic_compat import import_string
 from evidently.base_metric import BasePreset
 from evidently.base_metric import ColumnName
 from evidently.base_metric import Metric

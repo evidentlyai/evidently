@@ -1,3 +1,4 @@
+from typing import ClassVar
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -12,8 +13,7 @@ from evidently.metric_results import ScatterData
 
 
 class PredActualScatter(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:PredActualScatter"
+    __type_alias__: ClassVar = "evidently:metric_result:PredActualScatter"
 
     predicted: ScatterData
     actual: ScatterData
@@ -34,8 +34,7 @@ def scatter_as_dict(scatter: Optional[PredActualScatter]) -> Optional[Dict[str, 
 
 
 class RegressionScatter(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:RegressionScatter"
+    __type_alias__: ClassVar = "evidently:metric_result:RegressionScatter"
 
     underestimation: PredActualScatter
     majority: PredActualScatter
@@ -43,9 +42,8 @@ class RegressionScatter(MetricResult):
 
 
 class IntervalSeries(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:IntervalSeries"
-        underscore_attrs_are_private = True
+    __type_alias__: ClassVar = "evidently:metric_result:IntervalSeries"
+    __underscore_attrs_are_private__: ClassVar = True
 
     bins: List[float]
     values: List[float]
@@ -75,10 +73,9 @@ class IntervalSeries(MetricResult):
 
 
 class RegressionMetricScatter(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:RegressionMetricScatter"
-        smart_union = True
-        field_tags = {"current": {IncludeTags.Current}, "reference": {IncludeTags.Reference}}
+    __type_alias__: ClassVar = "evidently:metric_result:RegressionMetricScatter"
+    __smart_union__: ClassVar = True
+    __field_tags__: ClassVar = {"current": {IncludeTags.Current}, "reference": {IncludeTags.Reference}}
 
     current: IntervalSeries
     reference: Optional[IntervalSeries] = None
@@ -90,8 +87,7 @@ class RegressionMetricScatter(MetricResult):
 
 
 class RegressionMetricsScatter(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:RegressionMetricsScatter"
+    __type_alias__: ClassVar = "evidently:metric_result:RegressionMetricsScatter"
 
     r2_score: RegressionMetricScatter
     rmse: RegressionMetricScatter

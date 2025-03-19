@@ -1,3 +1,4 @@
+from typing import ClassVar
 from typing import List
 from typing import Optional
 
@@ -26,20 +27,19 @@ from evidently.utils.visualizations import plot_distr_with_perc_button
 
 
 class PopularityBiasResult(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:PopularityBiasResult"
-        field_tags = {
-            "k": {IncludeTags.Parameter},
-            "normalize_arp": {IncludeTags.Parameter},
-            "current_apr": {IncludeTags.Current},
-            "current_coverage": {IncludeTags.Current},
-            "current_gini": {IncludeTags.Current},
-            "current_distr": {IncludeTags.Current},
-            "reference_apr": {IncludeTags.Reference},
-            "reference_coverage": {IncludeTags.Reference},
-            "reference_gini": {IncludeTags.Reference},
-            "reference_distr": {IncludeTags.Reference},
-        }
+    __type_alias__: ClassVar = "evidently:metric_result:PopularityBiasResult"
+    __field_tags__: ClassVar = {
+        "k": {IncludeTags.Parameter},
+        "normalize_arp": {IncludeTags.Parameter},
+        "current_apr": {IncludeTags.Current},
+        "current_coverage": {IncludeTags.Current},
+        "current_gini": {IncludeTags.Current},
+        "current_distr": {IncludeTags.Current},
+        "reference_apr": {IncludeTags.Reference},
+        "reference_coverage": {IncludeTags.Reference},
+        "reference_gini": {IncludeTags.Reference},
+        "reference_distr": {IncludeTags.Reference},
+    }
 
     k: int
     normalize_arp: bool
@@ -54,8 +54,7 @@ class PopularityBiasResult(MetricResult):
 
 
 class PopularityBias(Metric[PopularityBiasResult]):
-    class Config:
-        type_alias = "evidently:metric:PopularityBias"
+    __type_alias__: ClassVar = "evidently:metric:PopularityBias"
 
     """
     Average Recommendation Popularity

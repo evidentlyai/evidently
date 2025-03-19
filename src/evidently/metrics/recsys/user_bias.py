@@ -1,3 +1,4 @@
+from typing import ClassVar
 from typing import List
 from typing import Optional
 
@@ -19,15 +20,14 @@ from evidently.utils.visualizations import plot_bias
 
 
 class UserBiasMetricResult(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:UserBiasMetricResult"
-        field_tags = {
-            "column_name": {IncludeTags.Parameter},
-            "current_train_distr": {IncludeTags.Current},
-            "current_distr": {IncludeTags.Current},
-            "reference_train_distr": {IncludeTags.Reference},
-            "reference_distr": {IncludeTags.Reference},
-        }
+    __type_alias__: ClassVar = "evidently:metric_result:UserBiasMetricResult"
+    __field_tags__: ClassVar = {
+        "column_name": {IncludeTags.Parameter},
+        "current_train_distr": {IncludeTags.Current},
+        "current_distr": {IncludeTags.Current},
+        "reference_train_distr": {IncludeTags.Reference},
+        "reference_distr": {IncludeTags.Reference},
+    }
 
     column_name: str
     current_train_distr: Distribution
@@ -37,8 +37,7 @@ class UserBiasMetricResult(MetricResult):
 
 
 class UserBiasMetric(Metric[UserBiasMetricResult]):
-    class Config:
-        type_alias = "evidently:metric:UserBiasMetric"
+    __type_alias__: ClassVar = "evidently:metric:UserBiasMetric"
 
     column_name: str
 

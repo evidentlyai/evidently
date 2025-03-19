@@ -2,8 +2,8 @@ import json
 
 import numpy as np
 import pandas as pd
+from pydantic import parse_obj_as
 
-from evidently._pydantic_compat import parse_obj_as
 from evidently.base_metric import MetricResult
 from evidently.metrics import PrecisionTopKMetric
 from evidently.metrics.recsys.base_top_k import TopKMetricResult

@@ -1,3 +1,4 @@
+from typing import ClassVar
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -31,10 +32,9 @@ from evidently.utils.visualizations import make_hist_for_num_plot
 
 
 class RegressionMetrics(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:RegressionMetrics"
-        pd_exclude_fields = {"underperformance"}
-        field_tags = {"underperformance": {IncludeTags.Extra}}
+    __type_alias__: ClassVar = "evidently:metric_result:RegressionMetrics"
+    __pd_exclude_fields__: ClassVar = {"underperformance"}
+    __field_tags__: ClassVar = {"underperformance": {IncludeTags.Extra}}
 
     r2_score: float
     rmse: float
@@ -46,25 +46,30 @@ class RegressionMetrics(MetricResult):
 
 
 class RegressionPerformanceMetricsResults(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:RegressionPerformanceMetricsResults"
-        dict_exclude_fields = {"hist_for_plot", "vals_for_plots", "me_hist_for_plot"}
-        pd_exclude_fields = {"hist_for_plot", "vals_for_plots", "me_hist_for_plot", "error_bias", "error_normality"}
-        field_tags = {
-            "current": {IncludeTags.Current},
-            "reference": {IncludeTags.Reference},
-            "rmse_default": {IncludeTags.Extra},
-            "me_default_sigma": {IncludeTags.Extra},
-            "mean_abs_error_default": {IncludeTags.Extra},
-            "mean_abs_perc_error_default": {IncludeTags.Extra},
-            "abs_error_max_default": {IncludeTags.Extra},
-            "error_std": {IncludeTags.Extra},
-            "abs_error_std": {IncludeTags.Extra},
-            "abs_perc_error_std": {IncludeTags.Extra},
-            "error_normality": {IncludeTags.Extra},
-            "vals_for_plots": {IncludeTags.Render},
-            "error_bias": {IncludeTags.Extra},
-        }
+    __type_alias__: ClassVar = "evidently:metric_result:RegressionPerformanceMetricsResults"
+    __dict_exclude_fields__: ClassVar = {"hist_for_plot", "vals_for_plots", "me_hist_for_plot"}
+    __pd_exclude_fields__: ClassVar = {
+        "hist_for_plot",
+        "vals_for_plots",
+        "me_hist_for_plot",
+        "error_bias",
+        "error_normality",
+    }
+    __field_tags__: ClassVar = {
+        "current": {IncludeTags.Current},
+        "reference": {IncludeTags.Reference},
+        "rmse_default": {IncludeTags.Extra},
+        "me_default_sigma": {IncludeTags.Extra},
+        "mean_abs_error_default": {IncludeTags.Extra},
+        "mean_abs_perc_error_default": {IncludeTags.Extra},
+        "abs_error_max_default": {IncludeTags.Extra},
+        "error_std": {IncludeTags.Extra},
+        "abs_error_std": {IncludeTags.Extra},
+        "abs_perc_error_std": {IncludeTags.Extra},
+        "error_normality": {IncludeTags.Extra},
+        "vals_for_plots": {IncludeTags.Render},
+        "error_bias": {IncludeTags.Extra},
+    }
 
     columns: DatasetColumns
 
@@ -88,8 +93,7 @@ class RegressionPerformanceMetricsResults(MetricResult):
 
 
 class RegressionPerformanceMetrics(Metric[RegressionPerformanceMetricsResults]):
-    class Config:
-        type_alias = "evidently:metric:RegressionPerformanceMetrics"
+    __type_alias__: ClassVar = "evidently:metric:RegressionPerformanceMetrics"
 
     def get_parameters(self) -> tuple:
         return ()

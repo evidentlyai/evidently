@@ -2,6 +2,7 @@ import datetime
 from collections import defaultdict
 from typing import TYPE_CHECKING
 from typing import Any
+from typing import ClassVar
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -40,8 +41,7 @@ if TYPE_CHECKING:
 
 @autoregister
 class DashboardPanelPlot(DashboardPanel):
-    class Config:
-        type_alias = "evidently:dashboard_panel:DashboardPanelPlot"
+    __type_alias__: ClassVar = "evidently:dashboard_panel:DashboardPanelPlot"
 
     values: List[PanelValue]
     plot_type: PlotType
@@ -102,8 +102,7 @@ class DashboardPanelPlot(DashboardPanel):
 
 @autoregister
 class DashboardPanelCounter(DashboardPanel):
-    class Config:
-        type_alias = "evidently:dashboard_panel:DashboardPanelCounter"
+    __type_alias__: ClassVar = "evidently:dashboard_panel:DashboardPanelCounter"
 
     agg: CounterAgg
     value: Optional[PanelValue] = None
@@ -148,8 +147,7 @@ class DashboardPanelCounter(DashboardPanel):
 
 @autoregister
 class DashboardPanelDistribution(DashboardPanel):
-    class Config:
-        type_alias = "evidently:dashboard_panel:DashboardPanelDistribution"
+    __type_alias__: ClassVar = "evidently:dashboard_panel:DashboardPanelDistribution"
 
     value: PanelValue
     barmode: HistBarMode = HistBarMode.STACK

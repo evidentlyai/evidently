@@ -18,11 +18,11 @@ from typing import TypeVar
 from typing import Union
 
 import uuid6
+from pydantic import BaseModel
+from pydantic import Field
+from pydantic import PrivateAttr
+from pydantic import parse_obj_as
 
-from evidently._pydantic_compat import BaseModel
-from evidently._pydantic_compat import Field
-from evidently._pydantic_compat import PrivateAttr
-from evidently._pydantic_compat import parse_obj_as
 from evidently.core import new_id
 from evidently.future.report import Snapshot as SnapshotV2
 from evidently.model.dashboard import DashboardInfo
@@ -162,8 +162,7 @@ def _default_dashboard():
 class Project(Entity):
     entity_type: ClassVar[EntityType] = EntityType.Project
 
-    class Config:
-        underscore_attrs_are_private = True
+    __underscore_attrs_are_private__: ClassVar = True
 
     id: ProjectID = Field(default_factory=new_id)
     name: str

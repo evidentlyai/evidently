@@ -1,3 +1,4 @@
+from typing import ClassVar
 from typing import List
 
 from evidently.base_metric import InputData
@@ -12,17 +13,15 @@ from evidently.renderers.html_widgets import text_widget
 
 
 class CommentResults(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:CommentResults"
-        dict_include = False
-        tags = {IncludeTags.Render}
+    __type_alias__: ClassVar = "evidently:metric_result:CommentResults"
+    __dict_include__: ClassVar = False
+    __tags__: ClassVar = {IncludeTags.Render}
 
     text: str
 
 
 class Comment(Metric[CommentResults]):
-    class Config:
-        type_alias = "evidently:metric:Comment"
+    __type_alias__: ClassVar = "evidently:metric:Comment"
 
     text: str
 

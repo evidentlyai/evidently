@@ -148,8 +148,7 @@ class SimpleClassificationTestTopK(SimpleClassificationTest, ClassificationConfu
 
 
 class TestAccuracyScore(SimpleClassificationTestTopK):
-    class Config:
-        type_alias = "evidently:test:TestAccuracyScore"
+    __type_alias__: ClassVar = "evidently:test:TestAccuracyScore"
 
     name = "Accuracy Score"
 
@@ -172,8 +171,7 @@ class TestAccuracyScoreRenderer(TestRenderer):
 
 
 class TestPrecisionScore(SimpleClassificationTestTopK):
-    class Config:
-        type_alias = "evidently:test:TestPrecisionScore"
+    __type_alias__: ClassVar = "evidently:test:TestPrecisionScore"
 
     name = "Precision Score"
 
@@ -196,8 +194,7 @@ class TestPrecisionScoreRenderer(TestRenderer):
 
 
 class TestF1Score(SimpleClassificationTestTopK):
-    class Config:
-        type_alias = "evidently:test:TestF1Score"
+    __type_alias__: ClassVar = "evidently:test:TestF1Score"
 
     name: ClassVar = "F1 Score"
 
@@ -220,8 +217,7 @@ class TestF1ScoreRenderer(TestRenderer):
 
 
 class TestRecallScore(SimpleClassificationTestTopK):
-    class Config:
-        type_alias = "evidently:test:TestRecallScore"
+    __type_alias__: ClassVar = "evidently:test:TestRecallScore"
 
     name = "Recall Score"
 
@@ -244,8 +240,7 @@ class TestRecallScoreRenderer(TestRenderer):
 
 
 class TestRocAuc(SimpleClassificationTest):
-    class Config:
-        type_alias = "evidently:test:TestRocAuc"
+    __type_alias__: ClassVar = "evidently:test:TestRocAuc"
 
     name: ClassVar = "ROC AUC Score"
     _roc_curve: ClassificationRocCurve
@@ -306,8 +301,7 @@ class TestRocAucRenderer(TestRenderer):
 
 
 class TestLogLoss(SimpleClassificationTest):
-    class Config:
-        type_alias = "evidently:test:TestLogLoss"
+    __type_alias__: ClassVar = "evidently:test:TestLogLoss"
 
     condition_arg = "lt"
     name = "Logarithmic Loss"
@@ -344,8 +338,7 @@ class TestLogLossRenderer(TestRenderer):
 
 
 class TestTPR(SimpleClassificationTestTopK):
-    class Config:
-        type_alias = "evidently:test:TestTPR"
+    __type_alias__: ClassVar = "evidently:test:TestTPR"
 
     name = "True Positive Rate"
 
@@ -383,8 +376,7 @@ class TestTPRRenderer(TestRenderer):
 
 
 class TestTNR(SimpleClassificationTestTopK):
-    class Config:
-        type_alias = "evidently:test:TestTNR"
+    __type_alias__: ClassVar = "evidently:test:TestTNR"
 
     name = "True Negative Rate"
 
@@ -422,8 +414,7 @@ class TestTNRRenderer(TestRenderer):
 
 
 class TestFPR(SimpleClassificationTestTopK):
-    class Config:
-        type_alias = "evidently:test:TestFPR"
+    __type_alias__: ClassVar = "evidently:test:TestFPR"
 
     condition_arg: ClassVar = "lt"
     name = "False Positive Rate"
@@ -462,8 +453,7 @@ class TestFPRRenderer(TestRenderer):
 
 
 class TestFNR(SimpleClassificationTestTopK):
-    class Config:
-        type_alias = "evidently:test:TestFNR"
+    __type_alias__: ClassVar = "evidently:test:TestFNR"
 
     condition_arg: ClassVar = "lt"
     name = "False Negative Rate"
@@ -502,8 +492,7 @@ class TestFNRRenderer(TestRenderer):
 
 
 class ByClassParameters(CheckValueParameters):
-    class Config:
-        type_alias = "evidently:test_parameters:ByClassParameters"
+    __type_alias__: ClassVar = "evidently:test_parameters:ByClassParameters"
 
     label: Label
 
@@ -601,8 +590,7 @@ class ByClassClassificationTest(BaseCheckValueTest, ABC):
 
 
 class TestPrecisionByClass(ByClassClassificationTest):
-    class Config:
-        type_alias = "evidently:test:TestPrecisionByClass"
+    __type_alias__: ClassVar = "evidently:test:TestPrecisionByClass"
 
     name: ClassVar[str] = "Precision Score by Class"
 
@@ -628,8 +616,7 @@ class TestPrecisionByClassRenderer(TestRenderer):
 
 
 class TestRecallByClass(ByClassClassificationTest):
-    class Config:
-        type_alias = "evidently:test:TestRecallByClass"
+    __type_alias__: ClassVar = "evidently:test:TestRecallByClass"
 
     name: ClassVar[str] = "Recall Score by Class"
 
@@ -655,8 +642,7 @@ class TestRecallByClassRenderer(TestRenderer):
 
 
 class TestF1ByClass(ByClassClassificationTest):
-    class Config:
-        type_alias = "evidently:test:TestF1ByClass"
+    __type_alias__: ClassVar = "evidently:test:TestF1ByClass"
 
     name: ClassVar[str] = "F1 Score by Class"
 

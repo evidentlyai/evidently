@@ -1,3 +1,4 @@
+from typing import ClassVar
 from typing import List
 from typing import Optional
 from typing import Union
@@ -28,20 +29,18 @@ from evidently.utils.visualizations import plot_scatter
 
 
 class AggPredActualScatter(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:AggPredActualScatter"
-        dict_include = False
-        tags = {IncludeTags.Render}
+    __type_alias__: ClassVar = "evidently:metric_result:AggPredActualScatter"
+    __dict_include__: ClassVar = False
+    __tags__: ClassVar = {IncludeTags.Render}
 
     data: Optional[ContourData]
 
 
 class RegressionPredictedVsActualScatterResults(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:RegressionPredictedVsActualScatterResults"
-        dict_include = False
-        tags = {IncludeTags.Render}
-        field_tags = {"current": {IncludeTags.Current}, "reference": {IncludeTags.Reference}}
+    __type_alias__: ClassVar = "evidently:metric_result:RegressionPredictedVsActualScatterResults"
+    __dict_include__: ClassVar = False
+    __tags__: ClassVar = {IncludeTags.Render}
+    __field_tags__: ClassVar = {"current": {IncludeTags.Current}, "reference": {IncludeTags.Reference}}
 
     current: Union[PredActualScatter, AggPredActualScatter]
     reference: Optional[Union[PredActualScatter, AggPredActualScatter]]
@@ -52,8 +51,7 @@ class RegressionPredictedVsActualScatterResults(MetricResult):
 
 
 class RegressionPredictedVsActualScatter(UsesRawDataMixin, Metric[RegressionPredictedVsActualScatterResults]):
-    class Config:
-        type_alias = "evidently:metric:RegressionPredictedVsActualScatter"
+    __type_alias__: ClassVar = "evidently:metric:RegressionPredictedVsActualScatter"
 
     def __init__(self, options: AnyOptions = None):
         super().__init__(options=options)

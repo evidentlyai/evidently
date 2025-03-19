@@ -1,13 +1,15 @@
 import dataclasses
 import datetime
 from dataclasses import dataclass
+from typing import ClassVar
 from typing import Dict
 from typing import List
 from typing import Optional
 from typing import TypeVar
 
-from evidently._pydantic_compat import BaseModel
-from evidently._pydantic_compat import Extra
+from pydantic import BaseModel
+from pydantic import Extra
+
 from evidently.base_metric import Metric
 from evidently.model.dashboard import DashboardInfo
 from evidently.model.widget import BaseWidgetInfo
@@ -32,8 +34,7 @@ from evidently.ui.type_aliases import UserID
 
 class EvidentlyAPIModel(BaseModel):
     # todo: migrate all models to this base
-    class Config:
-        extra = Extra.forbid
+    __extra__: ClassVar = Extra.forbid
 
 
 class MetricModel(BaseModel):

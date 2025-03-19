@@ -12,8 +12,7 @@ from evidently.utils.data_preprocessing import DataDefinition
 
 
 class JSONSchemaMatch(GeneratedFeature):
-    class Config:
-        type_alias = "evidently:feature:JSONSchemaMatch"
+    __type_alias__: ClassVar = "evidently:feature:JSONSchemaMatch"
 
     __feature_type__: ClassVar = ColumnType.Categorical
     column_name: str

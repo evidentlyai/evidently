@@ -1,5 +1,6 @@
 import abc
 from typing import Callable
+from typing import ClassVar
 from typing import Optional
 from typing import Tuple
 
@@ -47,8 +48,7 @@ def get_pca_df(
 
 
 class DriftMethod(EvidentlyBaseModel):
-    class Config:
-        is_base_type = True
+    __is_base_type__: ClassVar = True
 
     @abc.abstractmethod
     def __call__(self, current_emb: pd.DataFrame, reference_emb: pd.DataFrame) -> Tuple[float, bool, str]:
@@ -57,8 +57,7 @@ class DriftMethod(EvidentlyBaseModel):
 
 @autoregister
 class DistanceDriftMethod(DriftMethod):
-    class Config:
-        type_alias = "evidently:drift_method:DistanceDriftMethod"
+    __type_alias__: ClassVar = "evidently:drift_method:DistanceDriftMethod"
 
     dist: str = "euclidean"
     threshold: float = 0.2
@@ -129,8 +128,7 @@ def calc_roc_auc_random(y_test, i):
 
 @autoregister
 class ModelDriftMethod(DriftMethod):
-    class Config:
-        type_alias = "evidently:drift_method:ModelDriftMethod"
+    __type_alias__: ClassVar = "evidently:drift_method:ModelDriftMethod"
 
     threshold: float = 0.55
     bootstrap: Optional[bool] = None
@@ -188,8 +186,7 @@ def model(
 
 @autoregister
 class RatioDriftMethod(DriftMethod):
-    class Config:
-        type_alias = "evidently:drift_method:RatioDriftMethod"
+    __type_alias__: ClassVar = "evidently:drift_method:RatioDriftMethod"
 
     component_stattest: str = "wasserstein"
     component_stattest_threshold: float = 0.1
@@ -267,8 +264,7 @@ def MMD2u_bstrp(K, m, n, x_idx, y_idx):
 
 @autoregister
 class MMDDriftMethod(DriftMethod):
-    class Config:
-        type_alias = "evidently:drift_method:MMDDriftMethod"
+    __type_alias__: ClassVar = "evidently:drift_method:MMDDriftMethod"
 
     threshold: float = 0.015
     bootstrap: Optional[bool] = None

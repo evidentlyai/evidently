@@ -76,8 +76,7 @@ class BaseIntegrityValueTest(ConditionFromReferenceMixin[DatasetSummary], ABC):
 
 
 class TestNumberOfColumns(BaseIntegrityValueTest):
-    class Config:
-        type_alias = "evidently:test:TestNumberOfColumns"
+    __type_alias__: ClassVar = "evidently:test:TestNumberOfColumns"
 
     """Number of all columns in the data, including utility columns (id/index, datetime, target, predictions)"""
 
@@ -114,8 +113,7 @@ class TestNumberOfColumnsRenderer(TestRenderer):
 
 
 class TestNumberOfRows(BaseIntegrityValueTest):
-    class Config:
-        type_alias = "evidently:test:TestNumberOfRows"
+    __type_alias__: ClassVar = "evidently:test:TestNumberOfRows"
 
     """Number of rows in the data"""
 
@@ -246,8 +244,7 @@ class BaseTestMissingValuesRenderer(TestRenderer):
 
 
 class TestNumberOfDifferentMissingValues(BaseIntegrityMissingValuesValuesTest):
-    class Config:
-        type_alias = "evidently:test:TestNumberOfDifferentMissingValues"
+    __type_alias__: ClassVar = "evidently:test:TestNumberOfDifferentMissingValues"
 
     """Check a number of different encoded missing values."""
 
@@ -292,8 +289,7 @@ class TestNumberOfDifferentMissingValuesRenderer(BaseTestMissingValuesRenderer):
 
 
 class TestNumberOfMissingValues(BaseIntegrityMissingValuesValuesTest):
-    class Config:
-        type_alias = "evidently:test:TestNumberOfMissingValues"
+    __type_alias__: ClassVar = "evidently:test:TestNumberOfMissingValues"
 
     """Check a number of missing values."""
 
@@ -331,8 +327,7 @@ class TestNumberOfMissingValuesRenderer(BaseTestMissingValuesRenderer):
 
 
 class TestShareOfMissingValues(BaseIntegrityMissingValuesValuesTest):
-    class Config:
-        type_alias = "evidently:test:TestShareOfMissingValues"
+    __type_alias__: ClassVar = "evidently:test:TestShareOfMissingValues"
 
     """Check a share of missing values."""
 
@@ -360,8 +355,7 @@ class TestShareOfMissingValuesRenderer(BaseTestMissingValuesRenderer):
 
 
 class TestNumberOfColumnsWithMissingValues(BaseIntegrityMissingValuesValuesTest):
-    class Config:
-        type_alias = "evidently:test:TestNumberOfColumnsWithMissingValues"
+    __type_alias__: ClassVar = "evidently:test:TestNumberOfColumnsWithMissingValues"
 
     """Check a number of columns with a missing value."""
 
@@ -393,8 +387,7 @@ class TestNumberOfColumnsWithMissingValuesRenderer(BaseTestMissingValuesRenderer
 
 
 class TestShareOfColumnsWithMissingValues(BaseIntegrityMissingValuesValuesTest):
-    class Config:
-        type_alias = "evidently:test:TestShareOfColumnsWithMissingValues"
+    __type_alias__: ClassVar = "evidently:test:TestShareOfColumnsWithMissingValues"
 
     """Check a share of columns with a missing value."""
 
@@ -427,8 +420,7 @@ class TestShareOfColumnsWithMissingValuesRenderer(BaseTestMissingValuesRenderer)
 
 
 class TestNumberOfRowsWithMissingValues(BaseIntegrityMissingValuesValuesTest):
-    class Config:
-        type_alias = "evidently:test:TestNumberOfRowsWithMissingValues"
+    __type_alias__: ClassVar = "evidently:test:TestNumberOfRowsWithMissingValues"
 
     """Check a number of rows with a missing value."""
 
@@ -453,8 +445,7 @@ class TestNumberOfRowsWithMissingValues(BaseIntegrityMissingValuesValuesTest):
 
 
 class TestShareOfRowsWithMissingValues(BaseIntegrityMissingValuesValuesTest):
-    class Config:
-        type_alias = "evidently:test:TestShareOfRowsWithMissingValues"
+    __type_alias__: ClassVar = "evidently:test:TestShareOfRowsWithMissingValues"
 
     """Check a share of rows with a missing value."""
 
@@ -515,8 +506,7 @@ class BaseIntegrityColumnMissingValuesTest(ConditionFromReferenceMixin[DatasetMi
 
 
 class TestColumnNumberOfDifferentMissingValues(BaseIntegrityColumnMissingValuesTest):
-    class Config:
-        type_alias = "evidently:test:TestColumnNumberOfDifferentMissingValues"
+    __type_alias__: ClassVar = "evidently:test:TestColumnNumberOfDifferentMissingValues"
 
     """Check a number of differently encoded missing values in one column."""
 
@@ -568,8 +558,7 @@ class TestColumnNumberOfDifferentMissingValuesRenderer(BaseTestMissingValuesRend
 
 
 class TestColumnNumberOfMissingValues(BaseIntegrityColumnMissingValuesTest):
-    class Config:
-        type_alias = "evidently:test:TestColumnNumberOfMissingValues"
+    __type_alias__: ClassVar = "evidently:test:TestColumnNumberOfMissingValues"
 
     """Check a number of missing values in one column."""
 
@@ -596,8 +585,7 @@ class TestColumnNumberOfMissingValues(BaseIntegrityColumnMissingValuesTest):
 
 
 class TestColumnShareOfMissingValues(BaseIntegrityColumnMissingValuesTest):
-    class Config:
-        type_alias = "evidently:test:TestColumnShareOfMissingValues"
+    __type_alias__: ClassVar = "evidently:test:TestColumnShareOfMissingValues"
 
     """Check a share of missing values in one column."""
 
@@ -649,8 +637,7 @@ class TestAllColumnsShareOfMissingValues(BaseGenerator):
 
 
 class TestNumberOfConstantColumns(BaseIntegrityValueTest):
-    class Config:
-        type_alias = "evidently:test:TestNumberOfConstantColumns"
+    __type_alias__: ClassVar = "evidently:test:TestNumberOfConstantColumns"
 
     """Number of columns contained only one unique value"""
 
@@ -689,8 +676,7 @@ class TestNumberOfConstantColumnsRenderer(TestRenderer):
 
 
 class TestNumberOfEmptyRows(BaseIntegrityValueTest):
-    class Config:
-        type_alias = "evidently:test:TestNumberOfEmptyRows"
+    __type_alias__: ClassVar = "evidently:test:TestNumberOfEmptyRows"
 
     """Number of rows contained all NAN values"""
 
@@ -714,8 +700,7 @@ class TestNumberOfEmptyRows(BaseIntegrityValueTest):
 
 
 class TestNumberOfEmptyColumns(BaseIntegrityValueTest):
-    class Config:
-        type_alias = "evidently:test:TestNumberOfEmptyColumns"
+    __type_alias__: ClassVar = "evidently:test:TestNumberOfEmptyColumns"
 
     """Number of columns contained all NAN values"""
 
@@ -753,8 +738,7 @@ class TestNumberOfEmptyColumnsRenderer(TestRenderer):
 
 
 class TestNumberOfDuplicatedRows(BaseIntegrityValueTest):
-    class Config:
-        type_alias = "evidently:test:TestNumberOfDuplicatedRows"
+    __type_alias__: ClassVar = "evidently:test:TestNumberOfDuplicatedRows"
 
     """How many rows have duplicates in the dataset"""
 
@@ -778,8 +762,7 @@ class TestNumberOfDuplicatedRows(BaseIntegrityValueTest):
 
 
 class TestNumberOfDuplicatedColumns(BaseIntegrityValueTest):
-    class Config:
-        type_alias = "evidently:test:TestNumberOfDuplicatedColumns"
+    __type_alias__: ClassVar = "evidently:test:TestNumberOfDuplicatedColumns"
 
     """How many columns have duplicates in the dataset"""
 
@@ -856,8 +839,7 @@ class BaseIntegrityOneColumnTest(Test, ABC):
 
 
 class TestColumnAllConstantValues(BaseIntegrityOneColumnTest):
-    class Config:
-        type_alias = "evidently:test:TestColumnAllConstantValues"
+    __type_alias__: ClassVar = "evidently:test:TestColumnAllConstantValues"
 
     """Test that there is only one unique value in a column"""
 
@@ -902,8 +884,7 @@ class TestColumnAllConstantValuesRenderer(TestRenderer):
 
 
 class TestColumnAllUniqueValues(BaseIntegrityOneColumnTest):
-    class Config:
-        type_alias = "evidently:test:TestColumnAllUniqueValues"
+    __type_alias__: ClassVar = "evidently:test:TestColumnAllUniqueValues"
 
     """Test that there is only uniques values in a column"""
 
@@ -948,8 +929,7 @@ class TestColumnAllUniqueValuesRenderer(TestRenderer):
 
 
 class ColumnTypeParameter(TestParameters):
-    class Config:
-        type_alias = "evidently:test_parameters:ColumnTypeParameter"
+    __type_alias__: ClassVar = "evidently:test_parameters:ColumnTypeParameter"
 
     actual_type: str
     column_name: str
@@ -957,15 +937,13 @@ class ColumnTypeParameter(TestParameters):
 
 
 class ColumnTypesParameter(TestParameters):
-    class Config:
-        type_alias = "evidently:test_parameters:ColumnTypesParameter"
+    __type_alias__: ClassVar = "evidently:test_parameters:ColumnTypesParameter"
 
     columns: List[ColumnTypeParameter]
 
 
 class TestColumnsType(Test):
-    class Config:
-        type_alias = "evidently:test:TestColumnsType"
+    __type_alias__: ClassVar = "evidently:test:TestColumnsType"
 
     """This test compares columns type against the specified ones or a reference dataframe"""
 

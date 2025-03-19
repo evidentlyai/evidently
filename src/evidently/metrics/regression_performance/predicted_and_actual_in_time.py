@@ -1,3 +1,4 @@
+from typing import ClassVar
 from typing import List
 from typing import Optional
 from typing import Union
@@ -22,8 +23,7 @@ from evidently.utils.visualizations import prepare_df_for_time_index_plot
 
 
 class RegressionPredictedVsActualPlot(UsesRawDataMixin, Metric[ColumnScatterResult]):
-    class Config:
-        type_alias = "evidently:metric:RegressionPredictedVsActualPlot"
+    __type_alias__: ClassVar = "evidently:metric:RegressionPredictedVsActualPlot"
 
     def __init__(self, options: AnyOptions = None):
         super().__init__(options=options)

@@ -1,3 +1,4 @@
+from typing import ClassVar
 from typing import Optional
 
 import pandas as pd
@@ -13,13 +14,12 @@ from evidently.renderers.base_renderer import default_renderer
 
 
 class MRRKMetricResult(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:MRRKMetricResult"
-        field_tags = {
-            "k": {IncludeTags.Parameter},
-            "current": {IncludeTags.Current},
-            "reference": {IncludeTags.Reference},
-        }
+    __type_alias__: ClassVar = "evidently:metric_result:MRRKMetricResult"
+    __field_tags__: ClassVar = {
+        "k": {IncludeTags.Parameter},
+        "current": {IncludeTags.Current},
+        "reference": {IncludeTags.Reference},
+    }
 
     k: int
     current: pd.Series
@@ -27,8 +27,7 @@ class MRRKMetricResult(MetricResult):
 
 
 class MRRKMetric(Metric[MRRKMetricResult]):
-    class Config:
-        type_alias = "evidently:metric:MRRKMetric"
+    __type_alias__: ClassVar = "evidently:metric:MRRKMetric"
 
     k: int
     min_rel_score: Optional[int]

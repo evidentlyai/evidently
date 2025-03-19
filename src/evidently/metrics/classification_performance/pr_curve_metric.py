@@ -1,3 +1,4 @@
+from typing import ClassVar
 from typing import List
 from typing import Optional
 
@@ -23,19 +24,19 @@ from evidently.utils.data_operations import process_columns
 
 
 class ClassificationPRCurveResults(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:ClassificationPRCurveResults"
-        pd_include = False
-
-        field_tags = {"current_pr_curve": {IncludeTags.Current}, "reference_pr_curve": {IncludeTags.Reference}}
+    __type_alias__: ClassVar = "evidently:metric_result:ClassificationPRCurveResults"
+    __pd_include__: ClassVar = False
+    __field_tags__: ClassVar = {
+        "current_pr_curve": {IncludeTags.Current},
+        "reference_pr_curve": {IncludeTags.Reference},
+    }
 
     current_pr_curve: Optional[PRCurve] = None
     reference_pr_curve: Optional[PRCurve] = None
 
 
 class ClassificationPRCurve(Metric[ClassificationPRCurveResults]):
-    class Config:
-        type_alias = "evidently:metric:ClassificationPRCurve"
+    __type_alias__: ClassVar = "evidently:metric:ClassificationPRCurve"
 
     def calculate(self, data: InputData) -> ClassificationPRCurveResults:
         dataset_columns = process_columns(data.current_data, data.column_mapping)

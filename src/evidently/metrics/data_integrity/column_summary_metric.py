@@ -1,5 +1,6 @@
 import json
 import warnings
+from typing import ClassVar
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -54,8 +55,7 @@ from evidently.utils.visualizations import plot_time_feature_distr
 
 
 class ColumnCharacteristics(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:ColumnCharacteristics"
+    __type_alias__: ClassVar = "evidently:metric_result:ColumnCharacteristics"
 
     number_of_rows: int
     count: int
@@ -64,8 +64,7 @@ class ColumnCharacteristics(MetricResult):
 
 
 class NumericCharacteristics(ColumnCharacteristics):
-    class Config:
-        type_alias = "evidently:metric_result:NumericCharacteristics"
+    __type_alias__: ClassVar = "evidently:metric_result:NumericCharacteristics"
 
     mean: Optional[Numeric]
     std: Optional[Numeric]
@@ -83,8 +82,7 @@ class NumericCharacteristics(ColumnCharacteristics):
 
 
 class CategoricalCharacteristics(ColumnCharacteristics):
-    class Config:
-        type_alias = "evidently:metric_result:CategoricalCharacteristics"
+    __type_alias__: ClassVar = "evidently:metric_result:CategoricalCharacteristics"
 
     unique: Optional[int]
     unique_percentage: Optional[float]
@@ -95,8 +93,7 @@ class CategoricalCharacteristics(ColumnCharacteristics):
 
 
 class DatetimeCharacteristics(ColumnCharacteristics):
-    class Config:
-        type_alias = "evidently:metric_result:DatetimeCharacteristics"
+    __type_alias__: ClassVar = "evidently:metric_result:DatetimeCharacteristics"
 
     unique: Optional[int]
     unique_percentage: Optional[float]
@@ -107,8 +104,7 @@ class DatetimeCharacteristics(ColumnCharacteristics):
 
 
 class TextCharacteristics(ColumnCharacteristics):
-    class Config:
-        type_alias = "evidently:metric_result:TextCharacteristics"
+    __type_alias__: ClassVar = "evidently:metric_result:TextCharacteristics"
 
     text_length_min: Optional[float]
     text_length_mean: Optional[float]
@@ -122,17 +118,15 @@ class TextCharacteristics(ColumnCharacteristics):
 
 
 class DataInTimePlots(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:DataInTimePlots"
-        field_tags = {"current": {IncludeTags.Current}, "reference": {IncludeTags.Reference}}
+    __type_alias__: ClassVar = "evidently:metric_result:DataInTimePlots"
+    __field_tags__: ClassVar = {"current": {IncludeTags.Current}, "reference": {IncludeTags.Reference}}
 
     current: pd.DataFrame
     reference: Optional[pd.DataFrame]
 
 
 class DataInTime(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:DataInTime"
+    __type_alias__: ClassVar = "evidently:metric_result:DataInTime"
 
     data_for_plots: DataInTimePlots
     freq: str
@@ -140,9 +134,8 @@ class DataInTime(MetricResult):
 
 
 class DataByTarget(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:DataByTarget"
-        smart_union = True
+    __type_alias__: ClassVar = "evidently:metric_result:DataByTarget"
+    __smart_union__: ClassVar = True
 
     box_data: Optional[Dict[str, dict]]
     scatter_data: Optional[Dict[str, Dict[str, list]]]
@@ -153,11 +146,10 @@ class DataByTarget(MetricResult):
 
 
 class DataQualityPlot(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:DataQualityPlot"
-        dict_include = False
-        pd_include = False
-        tags = {IncludeTags.Render}
+    __type_alias__: ClassVar = "evidently:metric_result:DataQualityPlot"
+    __dict_include__: ClassVar = False
+    __pd_include__: ClassVar = False
+    __tags__: ClassVar = {IncludeTags.Render}
 
     bins_for_hist: Optional[Histogram]
     data_in_time: Optional[DataInTime]
@@ -328,17 +320,12 @@ def _split_periods(curr_data: pd.DataFrame, ref_data: pd.DataFrame, feature_name
 
 
 class ColumnSummaryResult(ColumnMetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:ColumnSummaryResult"
-        pd_name_mapping = {
-            "reference_characteristics": "reference",
-            "current_characteristics": "current",
-        }
-
-        field_tags = {
-            "current_characteristics": {IncludeTags.Current},
-            "reference_characteristics": {IncludeTags.Reference},
-        }
+    __type_alias__: ClassVar = "evidently:metric_result:ColumnSummaryResult"
+    __pd_name_mapping__: ClassVar = {"reference_characteristics": "reference", "current_characteristics": "current"}
+    __field_tags__: ClassVar = {
+        "current_characteristics": {IncludeTags.Current},
+        "reference_characteristics": {IncludeTags.Reference},
+    }
 
     reference_characteristics: Optional[ColumnCharacteristics]
     current_characteristics: ColumnCharacteristics
@@ -346,8 +333,7 @@ class ColumnSummaryResult(ColumnMetricResult):
 
 
 class ColumnSummaryMetric(UsesRawDataMixin, ColumnMetric[ColumnSummaryResult]):
-    class Config:
-        type_alias = "evidently:metric:ColumnSummaryMetric"
+    __type_alias__: ClassVar = "evidently:metric:ColumnSummaryMetric"
 
     _generated_text_features: Optional[Dict[str, Union[TextLength, NonLetterCharacterPercentage, OOVWordsPercentage]]]
 

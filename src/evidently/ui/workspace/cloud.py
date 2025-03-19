@@ -13,10 +13,10 @@ from typing import Union
 from typing import overload
 
 import pandas as pd
+from pydantic import parse_obj_as
 from requests import HTTPError
 from requests import Response
 
-from evidently._pydantic_compat import parse_obj_as
 from evidently.future.datasets import DataDefinition
 from evidently.future.datasets import Dataset
 from evidently.pipeline.column_mapping import ColumnMapping

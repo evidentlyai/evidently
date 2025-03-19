@@ -1,3 +1,4 @@
+from typing import ClassVar
 from typing import List
 from typing import Optional
 from typing import Union
@@ -247,8 +248,7 @@ def get_one_column_drift(
 
 
 class ColumnDriftMetric(UsesRawDataMixin, ColumnMetric[ColumnDataDriftMetrics]):
-    class Config:
-        type_alias = "evidently:metric:ColumnDriftMetric"
+    __type_alias__: ClassVar = "evidently:metric:ColumnDriftMetric"
 
     """Calculate drift metric for a column"""
 

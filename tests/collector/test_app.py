@@ -5,8 +5,8 @@ import sys
 import pandas as pd
 import pytest
 from litestar.testing import TestClient
+from pydantic import parse_obj_as
 
-from evidently._pydantic_compat import parse_obj_as
 from evidently.collector.app import check_snapshots_factory
 from evidently.collector.config import CollectorConfig
 from evidently.collector.config import CollectorServiceConfig

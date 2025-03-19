@@ -4,6 +4,7 @@ import typing
 import warnings
 from collections import Counter
 from typing import Any
+from typing import ClassVar
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -12,8 +13,8 @@ from typing import Union
 
 import pandas as pd
 from plotly import graph_objs as go
+from pydantic import BaseModel
 
-from evidently._pydantic_compat import BaseModel
 from evidently.model.widget import BaseWidgetInfo
 from evidently.pydantic_utils import EvidentlyBaseModel
 from evidently.pydantic_utils import autoregister
@@ -89,8 +90,7 @@ descr_re = re.compile(r"\.\s+([A-Z])")
 
 @autoregister
 class DashboardPanelTestSuite(DashboardPanel):
-    class Config:
-        type_alias = "evidently:dashboard_panel:DashboardPanelTestSuite"
+    __type_alias__: ClassVar = "evidently:dashboard_panel:DashboardPanelTestSuite"
 
     test_filters: List[TestFilter] = []
     filter: ReportFilter = ReportFilter(metadata_values={}, tag_values=[], include_test_suites=True)
@@ -198,8 +198,7 @@ def to_period(time_agg: Optional[str], timestamp: datetime.datetime) -> datetime
 
 @autoregister
 class DashboardPanelTestSuiteCounter(DashboardPanel):
-    class Config:
-        type_alias = "evidently:dashboard_panel:DashboardPanelTestSuiteCounter"
+    __type_alias__: ClassVar = "evidently:dashboard_panel:DashboardPanelTestSuiteCounter"
 
     agg: CounterAgg = CounterAgg.NONE
     filter: ReportFilter = ReportFilter(metadata_values={}, tag_values=[], include_test_suites=True)

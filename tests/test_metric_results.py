@@ -8,11 +8,11 @@ from typing import Set
 from typing import Type
 
 import pytest
+from pydantic import BaseModel
+from pydantic import Field
+from pydantic import parse_obj_as
 
 import evidently
-from evidently._pydantic_compat import BaseModel
-from evidently._pydantic_compat import Field
-from evidently._pydantic_compat import parse_obj_as
 from evidently.base_metric import MetricResult
 from evidently.tests.base_test import EnumValueMixin
 

@@ -6,7 +6,8 @@ from typing import List
 from typing import Optional
 from typing import Tuple
 
-from evidently._pydantic_compat import BaseModel
+from pydantic import BaseModel
+
 from evidently.base_metric import MetricResult
 from evidently.core import BaseResult
 from evidently.utils import NumpyEncoder
