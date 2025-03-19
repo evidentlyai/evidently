@@ -176,6 +176,7 @@ class Project(Entity):
     date_from: Optional[datetime.datetime] = None
     date_to: Optional[datetime.datetime] = None
     created_at: Optional[datetime.datetime] = Field(default=None)
+    version: str = "1"
     # Field(default=datetime.datetime.fromisoformat("1900-01-01T00:00:00"))
 
     _project_manager: "ProjectManager" = PrivateAttr(None)
