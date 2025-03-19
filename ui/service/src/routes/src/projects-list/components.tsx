@@ -3,6 +3,7 @@ import type { StrictID } from 'evidently-ui-lib/api/types/utils'
 import { AddNewProjectButton, ProjectCard } from 'evidently-ui-lib/components/ProjectCard'
 import { useState } from 'react'
 
+import { isSuccessData } from 'evidently-ui-lib/api/utils'
 import { useOnSubmitEnd } from 'evidently-ui-lib/router-utils/hooks'
 import { RouterLink } from '~/routes/components'
 import { useSubmitFetcher } from '~/routes/hooks'
@@ -18,7 +19,7 @@ export const ProjectCardWrapper = ({ project }: { project: StrictID<ProjectModel
   useOnSubmitEnd({
     state: deleteProjectFetcher.state,
     cb: () => {
-      if (!deleteProjectFetcher.data) {
+      if (isSuccessData(deleteProjectFetcher.data)) {
         setMode('view')
       }
     }
@@ -32,7 +33,7 @@ export const ProjectCardWrapper = ({ project }: { project: StrictID<ProjectModel
   useOnSubmitEnd({
     state: editProjectFetcher.state,
     cb: () => {
-      if (editProjectFetcher.data && !('error' in editProjectFetcher.data)) {
+      if (isSuccessData(editProjectFetcher.data)) {
         setMode('view')
       }
     }
@@ -74,7 +75,7 @@ export const AddNewProjectWrapper = () => {
   useOnSubmitEnd({
     state: createProjectFetcher.state,
     cb: () => {
-      if (createProjectFetcher.data && !('error' in createProjectFetcher.data)) {
+      if (isSuccessData(createProjectFetcher.data)) {
         setOpened(false)
       }
     }
