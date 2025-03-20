@@ -55,7 +55,7 @@ from evidently.utils.generators import BaseGenerator
 from evidently.utils.types import Numeric
 from evidently.utils.visualizations import plot_distr_with_cond_perc_button
 
-DATA_QUALITY_GROUP = GroupData("data_quality", "Data Quality", "")
+DATA_QUALITY_GROUP = GroupData(id="data_quality", title="Data Quality", description="")
 GroupingTypes.TestGroup.add_value(DATA_QUALITY_GROUP)
 
 

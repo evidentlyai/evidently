@@ -268,8 +268,8 @@ class F1ScoreCalculation(LegacyClassificationQuality[F1Score]):
         render: List[BaseWidgetInfo],
     ) -> Tuple[SingleValue, Optional[SingleValue]]:
         return (
-            SingleValue(legacy_result.current.f1, self.display_name()),
-            None if legacy_result.reference is None else SingleValue(legacy_result.reference.f1, self.display_name()),
+            self.result(legacy_result.current.f1),
+            None if legacy_result.reference is None else self.result(legacy_result.reference.f1),
         )
 
     def display_name(self) -> str:
@@ -290,10 +290,8 @@ class AccuracyCalculation(LegacyClassificationQuality[Accuracy]):
         render: List[BaseWidgetInfo],
     ) -> Tuple[SingleValue, Optional[SingleValue]]:
         return (
-            SingleValue(legacy_result.current.accuracy, self.display_name()),
-            None
-            if legacy_result.reference is None
-            else SingleValue(legacy_result.reference.accuracy, self.display_name()),
+            self.result(legacy_result.current.accuracy),
+            None if legacy_result.reference is None else self.result(legacy_result.reference.accuracy),
         )
 
     def display_name(self) -> str:
@@ -318,10 +316,8 @@ class PrecisionCalculation(LegacyClassificationQuality[Precision]):
         render: List[BaseWidgetInfo],
     ) -> Tuple[SingleValue, Optional[SingleValue]]:
         return (
-            SingleValue(legacy_result.current.precision, self.display_name()),
-            None
-            if legacy_result.reference is None
-            else SingleValue(legacy_result.reference.precision, self.display_name()),
+            self.result(legacy_result.current.precision),
+            None if legacy_result.reference is None else self.result(legacy_result.reference.precision),
         )
 
     def display_name(self) -> str:
@@ -346,10 +342,8 @@ class RecallCalculation(LegacyClassificationQuality[Recall]):
         render: List[BaseWidgetInfo],
     ) -> Tuple[SingleValue, Optional[SingleValue]]:
         return (
-            SingleValue(legacy_result.current.recall, self.display_name()),
-            None
-            if legacy_result.reference is None
-            else SingleValue(legacy_result.reference.recall, self.display_name()),
+            self.result(legacy_result.current.recall),
+            None if legacy_result.reference is None else self.result(legacy_result.reference.recall),
         )
 
     def display_name(self) -> str:
@@ -374,10 +368,10 @@ class TPRCalculation(LegacyClassificationQuality[TPR]):
         if legacy_result.current.tpr is None:
             raise ValueError("Failed to calculate TPR value")
         return (
-            SingleValue(legacy_result.current.tpr, self.display_name()),
+            self.result(legacy_result.current.tpr),
             None
             if legacy_result.reference is None or legacy_result.reference.tpr is None
-            else SingleValue(legacy_result.reference.tpr, self.display_name()),
+            else self.result(legacy_result.reference.tpr),
         )
 
     def display_name(self) -> str:
@@ -402,10 +396,10 @@ class TNRCalculation(LegacyClassificationQuality[TNR]):
         if legacy_result.current.tnr is None:
             raise ValueError("Failed to calculate TNR value")
         return (
-            SingleValue(legacy_result.current.tnr, self.display_name()),
+            self.result(legacy_result.current.tnr),
             None
             if legacy_result.reference is None or legacy_result.reference.tnr is None
-            else SingleValue(legacy_result.reference.tnr, self.display_name()),
+            else self.result(legacy_result.reference.tnr),
         )
 
     def display_name(self) -> str:
@@ -430,10 +424,10 @@ class FPRCalculation(LegacyClassificationQuality[FPR]):
         if legacy_result.current.fpr is None:
             raise ValueError("Failed to calculate FPR value")
         return (
-            SingleValue(legacy_result.current.fpr, self.display_name()),
+            self.result(legacy_result.current.fpr),
             None
             if legacy_result.reference is None or legacy_result.reference.fpr is None
-            else SingleValue(legacy_result.reference.fpr, self.display_name()),
+            else self.result(legacy_result.reference.fpr),
         )
 
     def display_name(self) -> str:
@@ -458,10 +452,10 @@ class FNRCalculation(LegacyClassificationQuality[FNR]):
         if legacy_result.current.fnr is None:
             raise ValueError("Failed to calculate FNR value")
         return (
-            SingleValue(legacy_result.current.fnr, self.display_name()),
+            self.result(legacy_result.current.fnr),
             None
             if legacy_result.reference is None or legacy_result.reference.fnr is None
-            else SingleValue(legacy_result.reference.fnr, self.display_name()),
+            else self.result(legacy_result.reference.fnr),
         )
 
     def display_name(self) -> str:
@@ -487,10 +481,10 @@ class RocAucCalculation(LegacyClassificationQuality[RocAuc]):
         if legacy_result.current.roc_auc is None:
             raise ValueError("Failed to calculate RocAuc value")
         return (
-            SingleValue(legacy_result.current.roc_auc, self.display_name()),
+            self.result(legacy_result.current.roc_auc),
             None
             if legacy_result.reference is None or legacy_result.reference.roc_auc is None
-            else SingleValue(legacy_result.reference.roc_auc, self.display_name()),
+            else self.result(legacy_result.reference.roc_auc),
         )
 
     def display_name(self) -> str:
@@ -515,10 +509,10 @@ class LogLossCalculation(LegacyClassificationQuality[LogLoss]):
         if legacy_result.current.log_loss is None:
             raise ValueError("Failed to calculate LogLoss value")
         return (
-            SingleValue(legacy_result.current.log_loss, self.display_name()),
+            self.result(legacy_result.current.log_loss),
             None
             if legacy_result.reference is None or legacy_result.reference.log_loss is None
-            else SingleValue(legacy_result.reference.log_loss, self.display_name()),
+            else self.result(legacy_result.reference.log_loss),
         )
 
     def display_name(self) -> str:
@@ -532,6 +526,7 @@ class LegacyClassificationDummy(
         ClassificationDummyMetricResults,
         ClassificationDummyMetric,
     ],
+    SingleValueCalculation[TSingleValueMetric],
     Generic[TSingleValueMetric],
     abc.ABC,
 ):
@@ -553,9 +548,9 @@ class LegacyClassificationDummy(
         if current_value is None:
             raise ValueError(f"Failed to calculate {self.display_name()}")
         if legacy_result.by_reference_dummy is None:
-            return SingleValue(current_value, self.display_name())
+            return self.result(current_value)
         reference_value = getattr(legacy_result.by_reference_dummy, self.__legacy_field_name__)
-        return SingleValue(current_value, self.display_name()), SingleValue(reference_value, self.display_name())
+        return self.result(current_value), self.result(reference_value)
 
 
 class DummyClassificationQuality(ClassificationQualityBase):

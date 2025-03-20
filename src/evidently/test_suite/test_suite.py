@@ -1,4 +1,3 @@
-import dataclasses
 import warnings
 from collections import Counter
 from datetime import datetime
@@ -265,8 +264,8 @@ class TestSuite(ReportBase):
         )
         return (
             "evidently_dashboard_" + str(new_id()).replace("-", ""),
-            DashboardInfo("Test Suite", widgets=[summary_widget, test_suite_widget]),
-            {item.id: dataclasses.asdict(item.info) for idx, info in enumerate(test_results) for item in info.details},
+            DashboardInfo(name="Test Suite", widgets=[summary_widget, test_suite_widget]),
+            {item.id: item.info.dict() for idx, info in enumerate(test_results) for item in info.details},
         )
 
     def _get_snapshot(self) -> Snapshot:

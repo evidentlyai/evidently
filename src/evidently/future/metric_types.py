@@ -26,6 +26,7 @@ from typing import Union
 import typing_inspect
 
 from evidently._pydantic_compat import BaseModel
+from evidently._pydantic_compat import Field
 from evidently.future._utils import not_implemented
 from evidently.future.datasets import Dataset
 from evidently.metric_results import Label
@@ -111,24 +112,20 @@ class MetricResult(BaseModel):
     display_name: str
     metric_value_location: Optional["MetricValueLocation"] = None
     widget: Optional[List[BaseWidgetInfo]] = None
-    _tests: Optional[Dict["BoundTest", "MetricTestResult"]] = None
+    tests: Dict["BoundTest", "MetricTestResult"] = Field(default_factory=dict)
 
     def set_tests(self, tests: Dict["BoundTest", "MetricTestResult"]):
-        self._tests = tests
+        self.tests = tests
 
     def _repr_html_(self):
         assert self.widget
         widget = copy(self.widget)
-        if self._tests:
+        if self.tests:
             widget.append(metric_tests_widget(list(self.tests.values())))
         return render_results((self, None), html=False)
 
     def is_widget_set(self) -> bool:
         return self.widget is not None
-
-    @property
-    def tests(self) -> Dict["BoundTest", "MetricTestResult"]:
-        return self._tests or {}
 
     def set_display_name(self, value: str):
         self.display_name = value
@@ -141,7 +138,7 @@ class MetricResult(BaseModel):
         return {
             "id": self.metric_value_location.metric.metric_id,
             "metric_id": self.explicit_metric_id(),
-            "value": self.dict(),
+            "value": self.to_simple_dict(),
         }
 
     def explicit_metric_id(self):
@@ -182,16 +179,16 @@ def render_widgets(widgets: List[BaseWidgetInfo]):
     for info_item in widgets:
         for additional_graph in info_item.get_additional_graphs():
             if isinstance(additional_graph, AdditionalGraphInfo):
-                items.append(DetailsInfo("", additional_graph.params, additional_graph.id))
+                items.append(DetailsInfo(title="", info=additional_graph.params, id=additional_graph.id))
             else:
-                items.append(DetailsInfo("", additional_graph, additional_graph.id))
+                items.append(DetailsInfo(title="", info=additional_graph, id=additional_graph.id))
     additional_graphs = {
         f"{item.id}": dataclasses.asdict(item.info) if dataclasses.is_dataclass(item.info) else item.info
         for item in items
     }
     dashboard_id, dashboard_info = (
         "metric_" + str(uuid.uuid4()).replace("-", ""),
-        DashboardInfo("Report", widgets=widgets),
+        DashboardInfo(name="Report", widgets=widgets),
     )
     template_params = TemplateParams(
         dashboard_id=dashboard_id,
@@ -428,7 +425,7 @@ def get_default_render_ref(title: str, result: MetricResult, ref_result: MetricR
                 title=title,
                 size=WidgetSize.FULL,
                 column_names=["Label", "Current value", "Reference value"],
-                data=[(k, f"{v:0.3f}", f"{ref_result.values[k]}") for k, v in result.values.items()],
+                data=[(k, f"{v:0.3f}", f"{ref_result.values[k].value}") for k, v in result.values.items()],
             )
         ]
     if isinstance(result, ByLabelCountValue):
@@ -438,7 +435,7 @@ def get_default_render_ref(title: str, result: MetricResult, ref_result: MetricR
                 title=title,
                 size=WidgetSize.FULL,
                 column_names=["Label", "Current value", "Reference value"],
-                data=[(k, f"{v:0.3f}", f"{ref_result.counts[k]}") for k, v in result.counts.items()],
+                data=[(k, f"{v:0.3f}", f"{ref_result.counts[k].value}") for k, v in result.counts.items()],
             )
         ]
     if isinstance(result, CountValue):
@@ -448,16 +445,16 @@ def get_default_render_ref(title: str, result: MetricResult, ref_result: MetricR
                 title=f"{title}: Current",
                 size=WidgetSize.HALF,
                 counters=[
-                    CounterData(label="Count", value=str(result.count)),
-                    CounterData(label="Share", value=f"{result.share:.2f}"),
+                    CounterData(label="Count", value=str(result.count.value)),
+                    CounterData(label="Share", value=f"{result.share.value:.2f}"),
                 ],
             ),
             counter(
                 title=f"{title}: Reference",
                 size=WidgetSize.HALF,
                 counters=[
-                    CounterData(label="Count", value=str(ref_result.count)),
-                    CounterData(label="Share", value=f"{ref_result.share:.2f}"),
+                    CounterData(label="Count", value=str(ref_result.count.value)),
+                    CounterData(label="Share", value=f"{ref_result.share.value:.2f}"),
                 ],
             ),
         ]
@@ -468,16 +465,16 @@ def get_default_render_ref(title: str, result: MetricResult, ref_result: MetricR
                 title=f"{title}: Current",
                 size=WidgetSize.HALF,
                 counters=[
-                    CounterData(label="Mean", value=f"{result.mean:.2f}"),
-                    CounterData(label="Std", value=f"{result.std:.2f}"),
+                    CounterData(label="Mean", value=f"{result.mean.value:.2f}"),
+                    CounterData(label="Std", value=f"{result.std.value:.2f}"),
                 ],
             ),
             counter(
                 title=f"{title}: Reference",
                 size=WidgetSize.HALF,
                 counters=[
-                    CounterData(label="Mean", value=f"{ref_result.mean:.2f}"),
-                    CounterData(label="Std", value=f"{ref_result.std:.2f}"),
+                    CounterData(label="Mean", value=f"{ref_result.mean.value:.2f}"),
+                    CounterData(label="Std", value=f"{ref_result.std.value:.2f}"),
                 ],
             ),
         ]
@@ -498,7 +495,7 @@ def get_default_render(title: str, result: TResult) -> List[BaseWidgetInfo]:
             table_data(
                 title=title,
                 column_names=["Label", "Value"],
-                data=[(k, f"{v:0.3f}") for k, v in result.values.items()],
+                data=[(k, f"{v.value:0.3f}") for k, v in result.values.items()],
             )
         ]
     if isinstance(result, ByLabelCountValue):
@@ -506,7 +503,7 @@ def get_default_render(title: str, result: TResult) -> List[BaseWidgetInfo]:
             table_data(
                 title=title,
                 column_names=["Label", "Value"],
-                data=[(k, f"{v:0.3f}") for k, v in result.counts.items()],
+                data=[(k, f"{v.value:0.3f}") for k, v in result.counts.items()],
             )
         ]
     if isinstance(result, CountValue):
@@ -514,12 +511,12 @@ def get_default_render(title: str, result: TResult) -> List[BaseWidgetInfo]:
             counter(
                 title=f"{title}: count",
                 size=WidgetSize.HALF,
-                counters=[CounterData(label="", value=str(result.count))],
+                counters=[CounterData(label="", value=str(result.count.value))],
             ),
             counter(
                 title=f"{title}: share",
                 size=WidgetSize.HALF,
-                counters=[CounterData(label="", value=f"{result.share:.2f}")],
+                counters=[CounterData(label="", value=f"{result.share.value:.2f}")],
             ),
         ]
     if isinstance(result, MeanStdValue):
@@ -527,12 +524,12 @@ def get_default_render(title: str, result: TResult) -> List[BaseWidgetInfo]:
             counter(
                 title=f"{title}: mean",
                 size=WidgetSize.HALF,
-                counters=[CounterData(label="", value=f"{result.mean:.2f}")],
+                counters=[CounterData(label="", value=f"{result.mean.value:.2f}")],
             ),
             counter(
                 title=f"{title}: std",
                 size=WidgetSize.HALF,
-                counters=[CounterData(label="", value=f"{result.std:.2f}")],
+                counters=[CounterData(label="", value=f"{result.std.value:.2f}")],
             ),
         ]
     raise NotImplementedError(f"No default render for {type(result)}")
@@ -828,10 +825,11 @@ class ByLabelCalculation(MetricCalculation[ByLabelValue, TByLabelMetric], Generi
                 k: SingleValue(
                     value=v,
                     display_name=self.label_display_name(k),
-                    metric_value_localtion=single_value_location(self.to_metric_config()),
+                    metric_value_location=by_label_location(self.to_metric_config(), k),
                 )
                 for k, v in values.items()
             },
+            display_name=self.display_name(),
         )
 
     def collect_by_label_result(
@@ -842,15 +840,13 @@ class ByLabelCalculation(MetricCalculation[ByLabelValue, TByLabelMetric], Generi
         reference_result: Optional[Dict[Label, T]],
     ):
         return (
-            ByLabelValue(
+            self.result(
                 {self._relabel(context, k): value_extract(v) for k, v in current_result.items()},
-                self.label_display_name,
             ),
             None
             if reference_result is None
-            else ByLabelValue(
+            else self.result(
                 {self._relabel(context, k): value_extract(v) for k, v in reference_result.items()},
-                self.label_display_name,
             ),
         )
 
@@ -903,6 +899,28 @@ class ByLabelCountCalculation(
     def share_label_display_name(self, label: Label) -> str:
         raise NotImplementedError
 
+    def result(self, count: Dict[Label, Value], shares: Dict[Label, Value]) -> ByLabelCountValue:
+        return ByLabelCountValue(
+            counts={
+                k: SingleValue(
+                    value=v,
+                    display_name=self.count_label_display_name(k),
+                    metric_value_location=by_label_count_value_location(self.to_metric_config(), k, True),
+                )
+                for k, v in count.items()
+            },
+            shares={
+                k: SingleValue(
+                    value=v,
+                    display_name=self.count_label_display_name(k),
+                    metric_value_location=by_label_count_value_location(self.to_metric_config(), k, False),
+                )
+                for k, v in shares.items()
+            },
+            display_name=self.display_name(),
+            metric_value_location=single_value_location(self.to_metric_config()),
+        )
+
 
 class CountBoundTest(BoundTest[CountValue]):
     is_count: bool
@@ -942,6 +960,21 @@ class CountCalculation(MetricCalculation[CountValue, TCountMetric], Generic[TCou
 
     def share_display_name(self) -> str:
         return self.display_name()
+
+    def result(self, count: int, share: float) -> CountValue:
+        return CountValue(
+            count=SingleValue(
+                value=count,
+                display_name=self.count_display_name(),
+                metric_value_location=count_value_location(self.to_metric_config(), True),
+            ),
+            share=SingleValue(
+                value=share,
+                display_name=self.share_display_name(),
+                metric_value_location=count_value_location(self.to_metric_config(), False),
+            ),
+            display_name=self.display_name(),
+        )
 
 
 class MeanStdBoundTest(BoundTest[MeanStdValue]):
@@ -987,6 +1020,21 @@ class MeanStdCalculation(MetricCalculation[MeanStdValue, TMeanStdMetric], Generi
 
     def std_display_name(self) -> str:
         return self.display_name()
+
+    def result(self, mean: Value, std: Value) -> MeanStdValue:
+        return MeanStdValue(
+            mean=SingleValue(
+                value=mean,
+                display_name=self.mean_display_name(),
+                metric_value_location=mean_std_value_location(self.to_metric_config(), True),
+            ),
+            std=SingleValue(
+                value=std,
+                display_name=self.std_display_name(),
+                metric_value_location=mean_std_value_location(self.to_metric_config(), False),
+            ),
+            display_name=self.display_name(),
+        )
 
 
 class ColumnMetric(Metric, ABC):

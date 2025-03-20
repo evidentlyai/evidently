@@ -270,14 +270,14 @@ class ValueStats(ColumnMetricContainer):
         if context.has_reference:
             return [
                 convert(context.get_metric_result(metric)),
-                convert(context.get_reference_metric_result(metric)),
+                convert(context.get_reference_metric_result(metric.metric_id)),
             ]
         return [convert(context.get_metric_result(metric))]
 
     def _most_common_value(self, unique_value: MetricResult):
         if not isinstance(unique_value, ByLabelCountValue):
             raise ValueError("Most common value must be of type 'ByLabelCountValue'")
-        first = sorted(unique_value.counts.items(), key=lambda x: x[1], reverse=True)[0]
+        first = sorted(unique_value.counts.items(), key=lambda x: x[1].value, reverse=True)[0]
         return f"Label: {first[0]} count: {first[1]}"
 
     def _label_count(
@@ -289,14 +289,14 @@ class ValueStats(ColumnMetricContainer):
         result = context.get_metric_result(metric)
         assert isinstance(result, ByLabelCountValue)
         if context.has_reference:
-            ref_result = context.get_reference_metric_result(metric)
+            ref_result = context.get_reference_metric_result(metric.metric_id)
             assert isinstance(ref_result, ByLabelCountValue)
             return [
-                f"{result.counts[label]} ({(result.shares[label] * 100):0.0f}%)",
-                f"{ref_result.counts[label]} ({(ref_result.shares[label] * 100):0.0f}%)",
+                f"{result.counts[label]} ({(result.shares[label].value * 100):0.0f}%)",
+                f"{ref_result.counts[label]} ({(ref_result.shares[label].value * 100):0.0f}%)",
             ]
         return [
-            f"{result.counts[label]} ({(result.shares[label] * 100):0.0f}%)",
+            f"{result.counts[label]} ({(result.shares[label].value * 100):0.0f}%)",
         ]
 
 

@@ -39,7 +39,7 @@ from evidently.utils.visualizations import plot_4_distr
 from evidently.utils.visualizations import plot_distr_with_perc_button
 from evidently.utils.visualizations import plot_metric_k
 
-RECSYS_GROUP = GroupData("recsys", "Recommendations", "")
+RECSYS_GROUP = GroupData(id="recsys", title="Recommendations", description="")
 GroupingTypes.TestGroup.add_value(RECSYS_GROUP)
 
 

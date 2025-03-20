@@ -20,7 +20,7 @@ from evidently.tests.utils import approx
 from evidently.utils.types import Numeric
 from evidently.utils.visualizations import plot_distr_with_cond_perc_button
 
-REGRESSION_GROUP = GroupData("regression", "Regression", "")
+REGRESSION_GROUP = GroupData(id="regression", title="Regression", description="")
 GroupingTypes.TestGroup.add_value(REGRESSION_GROUP)
 
 

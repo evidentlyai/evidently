@@ -54,12 +54,12 @@ class Alert(BaseModel):
 
 class AdditionalGraphInfo(BaseModel):
     id: str
-    params: Any
+    params: dict
 
 
 class PlotlyGraphInfo(BaseModel):
-    data: Any
-    layout: Any
+    data: dict
+    layout: dict
     id: str = Field(default_factory=lambda: str(uuid6.uuid7()))
 
 
