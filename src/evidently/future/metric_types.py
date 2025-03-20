@@ -263,7 +263,7 @@ class ByLabelValue(MetricResult):
         return list(self.values.keys())
 
     def get_label_result(self, label: Label) -> SingleValue:
-        value = self.values[label]
+        value = self.values[str(label)]
         return value
 
     def set_metric_location(self, metric: MetricConfig):

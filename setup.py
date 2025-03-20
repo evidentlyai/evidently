@@ -104,7 +104,6 @@ setup_args = dict(
             "transformers[torch]>=4.39.3",
             "sentence-transformers>=2.7.0",
             "sqlvalidator>=0.0.20",
-            "chromadb>=0.4.0",
             "litellm>=1.60.4",
         ],
         "spark": ["pyspark>=3.4.0"],

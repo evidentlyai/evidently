@@ -573,7 +573,7 @@ class ByClassClassificationTest(BaseCheckValueTest, ABC):
         return self._conf_matrix
 
     def calculate_value_for_test(self) -> Optional[Any]:
-        return self.get_value(self.by_class_metric.get_result().current.metrics[self.label])
+        return self.get_value(self.by_class_metric.get_result().current.metrics[str(self.label)])
 
     def get_condition(self) -> TestValueCondition:
         if self.condition.has_condition():
@@ -583,9 +583,9 @@ class ByClassClassificationTest(BaseCheckValueTest, ABC):
         ref_metrics = result.reference.metrics if result.reference is not None else None
 
         if ref_metrics is not None:
-            return TestValueCondition(eq=approx(self.get_value(ref_metrics[self.label]), relative=0.2))
+            return TestValueCondition(eq=approx(self.get_value(ref_metrics[str(self.label)]), relative=0.2))
 
-        dummy_result = self.dummy_metric.get_result().metrics_matrix[self.label]
+        dummy_result = self.dummy_metric.get_result().metrics_matrix[str(self.label)]
 
         if self.get_value(dummy_result) is None:
             raise ValueError("Neither required test parameters nor reference data has been provided.")

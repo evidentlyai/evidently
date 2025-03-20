@@ -26,6 +26,7 @@ ClassesMetrics = Dict[Label, ClassMetric]
 class ClassificationReport(MetricResult):
     class Config:
         type_alias = "evidently:metric_result:ClassificationReport"
+        smart_union = True
 
     classes: ClassesMetrics
     accuracy: float
@@ -59,6 +60,6 @@ class ClassificationReport(MetricResult):
             if not isinstance(v, dict):
                 continue
             v["f1"] = v.pop("f1-score")
-        class_metrics = {k: parse_obj_as(ClassMetric, report[str(k)]) for k in classes}
-        other = {k: v for k, v in report.items() if k not in [str(cl) for cl in classes]}
+        class_metrics = {str(k): parse_obj_as(ClassMetric, report[str(k)]) for k in classes}
+        other = {str(k): v for k, v in report.items() if k not in [str(cl) for cl in classes]}
         return parse_obj_as(cls, {"classes": class_metrics, **other})

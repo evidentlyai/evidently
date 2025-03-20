@@ -99,6 +99,7 @@ class PredictionData(MetricResult):
     class Config:
         type_alias = "evidently:metric_result:PredictionData"
         dict_include = False
+        smart_union = True
 
     predictions: pd.Series
     labels: LabelList
@@ -151,6 +152,7 @@ class DatasetColumns(MetricResult):
         dict_exclude_fields = {"task", "target_type"}
         pd_include = False
         tags = {IncludeTags.Parameter}
+        smart_union = True
 
     utility_columns: DatasetUtilityColumns
     target_type: Optional[str]

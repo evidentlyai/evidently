@@ -7,6 +7,7 @@ from typing import List
 from typing import Literal
 from typing import NamedTuple
 from typing import Optional
+from typing import Tuple
 from typing import Type
 from typing import Union
 from typing import overload
@@ -15,6 +16,9 @@ import pandas as pd
 from requests import HTTPError
 from requests import Response
 
+from evidently._pydantic_compat import parse_obj_as
+from evidently.future.datasets import DataDefinition
+from evidently.future.datasets import Dataset
 from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.pydantic_utils import get_classpath
 from evidently.report import Report
@@ -208,6 +212,61 @@ class CloudMetadataStorage(RemoteProjectMetadataStorage):
         response: Response = self._request(f"/api/datasets/{dataset_id}/download", "GET")
         return pd.read_parquet(BytesIO(response.content))
 
+    def add_dataset_v2(
+        self, project_id: ProjectID, dataset: Dataset, name: str, description: Optional[str]
+    ) -> DatasetID:
+        data_definition = json.dumps(dataset.data_definition.dict())
+        file = NamedBytesIO(b"", "data.parquet")
+        dataset.as_dataframe().to_parquet(file)
+        file.seek(0)
+        response: Response = self._request(
+            "/api/v2/datasets/upload",
+            "POST",
+            body={
+                "name": name,
+                "description": description,
+                "file": file,
+                "data_definition": data_definition,
+            },
+            query_params={"project_id": project_id},
+            form_data=True,
+        )
+        return DatasetID(response.json()["dataset"]["id"])
+
+    def load_dataset_v2(self, dataset_id: DatasetID) -> Dataset:
+        response: Response = self._request(f"/api/v2/datasets/{dataset_id}/download", "GET")
+
+        metadata, file_content = read_multipart_response(response)
+
+        df = pd.read_parquet(BytesIO(file_content))
+        data_def = parse_obj_as(DataDefinition, metadata["data_definition"])
+        return Dataset.from_pandas(df, data_definition=data_def)
+
+
+def read_multipart_response(response: Response) -> Tuple[Dict, bytes]:
+    content_type = response.headers.get("Content-Type", "")
+    boundary = content_type.split("boundary=")[-1]
+
+    if not boundary:
+        raise ValueError("No boundary found in Content-Type header")
+
+    parts = response.content.split(f"--{boundary}".encode())
+
+    metadata = None
+    file_content = None
+
+    for part in parts:
+        if b"Content-Type: application/json" in part:
+            json_start = part.find(b"\r\n\r\n") + 4
+            metadata = json.loads(part[json_start:].decode())
+        elif b"Content-Type: application/octet-stream" in part:
+            file_start = part.find(b"\r\n\r\n") + 4
+            file_content = part[file_start:-2]
+
+    if metadata is None or file_content is None:
+        raise ValueError("Wrong response from server")
+    return metadata, file_content
+
 
 class NamedBytesIO(BytesIO):
     def __init__(self, initial_bytes: bytes, name: str):
@@ -221,9 +280,17 @@ class CloudWorkspace(WorkspaceView):
 
     def __init__(
         self,
-        token: str,
+        token: Optional[str] = None,
         url: str = None,
     ):
+        if token is None:
+            import os
+
+            token = os.environ.get("EVIDENTLY_API_KEY", default=None)
+        if token is None:
+            raise ValueError(
+                "To use CloudWorkspace you must provide a token through argument or env variable EVIDENTLY_API_KEY"
+            )
         self.token = token
         self.url = url if url is not None else self.URL
 
@@ -295,6 +362,20 @@ class CloudWorkspace(WorkspaceView):
 
     def add_test_suite_with_data(self, project_id: STR_UUID, test_suite: TestSuite):
         self.add_test_suite(project_id, test_suite)
+
+    def add_dataset_v2(
+        self, project_id: STR_UUID, dataset: Dataset, name: str, description: Optional[str] = None
+    ) -> DatasetID:
+        assert isinstance(self.project_manager.project_metadata, CloudMetadataStorage)
+        return self.project_manager.project_metadata.add_dataset_v2(
+            project_id if isinstance(project_id, ProjectID) else ProjectID(project_id), dataset, name, description
+        )
+
+    def load_dataset_v2(self, dataset_id: STR_UUID) -> Dataset:
+        assert isinstance(self.project_manager.project_metadata, CloudMetadataStorage)
+        return self.project_manager.project_metadata.load_dataset_v2(
+            dataset_id if isinstance(dataset_id, DatasetID) else DatasetID(dataset_id)
+        )
 
 
 class CloudAuthManager(NoopAuthManager):
