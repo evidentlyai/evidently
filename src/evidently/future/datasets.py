@@ -3,6 +3,7 @@ import copy
 import dataclasses
 from abc import abstractmethod
 from enum import Enum
+from typing import ClassVar
 from typing import Dict
 from typing import Generator
 from typing import List
@@ -21,6 +22,8 @@ from evidently.metric_results import Label
 from evidently.options.base import AnyOptions
 from evidently.options.base import Options
 from evidently.pipeline.column_mapping import ColumnMapping
+from evidently.pydantic_utils import AutoAliasMixin
+from evidently.pydantic_utils import EvidentlyBaseModel
 from evidently.utils.data_preprocessing import create_data_definition
 from evidently.utils.types import Numeric
 
@@ -267,9 +270,13 @@ class DatasetColumn:
         self.data = data
 
 
-class Descriptor:
-    def __init__(self, alias: str):
-        self._alias = alias
+class Descriptor(AutoAliasMixin, EvidentlyBaseModel):
+    class Config:
+        is_base_type = True
+
+    __alias_type__: ClassVar = "descriptor_v2"
+
+    alias: str
 
     @abc.abstractmethod
     def generate_data(
@@ -277,19 +284,16 @@ class Descriptor:
     ) -> Union[DatasetColumn, Dict[DisplayName, DatasetColumn]]:
         raise NotImplementedError()
 
-    @property
-    def alias(self) -> str:
-        return self._alias
-
 
 class FeatureDescriptor(Descriptor):
+    feature: GeneratedFeatures
+
     def __init__(self, feature: GeneratedFeatures, alias: Optional[str] = None):
         feature_columns = feature.list_columns()
-        super().__init__(alias or f"{feature_columns[0].display_name}")
-        self._feature = feature
+        super().__init__(feature=feature, alias=alias or f"{feature_columns[0].display_name}")
 
     def get_dataset_column(self, column_name: str, values: pd.Series) -> DatasetColumn:
-        column_type = self._feature.get_type(column_name)
+        column_type = self.feature.get_type(column_name)
         if column_type == ColumnType.Numerical:
             values = pd.to_numeric(values, errors="coerce")
         dataset_column = DatasetColumn(type=column_type, data=values)
@@ -298,14 +302,14 @@ class FeatureDescriptor(Descriptor):
     def generate_data(
         self, dataset: "Dataset", options: Options
     ) -> Union[DatasetColumn, Dict[DisplayName, DatasetColumn]]:
-        feature = self._feature.generate_features_renamed(
+        feature = self.feature.generate_features_renamed(
             dataset.as_dataframe(),
             create_data_definition(None, dataset.as_dataframe(), ColumnMapping()),
             options,
         )
         return {
             col.display_name: self.get_dataset_column(col.name, feature[col.name])
-            for col in self._feature.list_columns()
+            for col in self.feature.list_columns()
         }
 
 

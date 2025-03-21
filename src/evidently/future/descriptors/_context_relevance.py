@@ -162,6 +162,14 @@ AGGREGATION_METHODS = {
 
 
 class ContextRelevance(Descriptor):
+    input: str
+    contexts: str
+    method: str = "semantic_similarity"
+    method_params: Optional[Dict[str, object]] = None
+    aggregation_method: Optional[str] = None
+    aggregation_method_params: Optional[Dict[str, object]] = None
+    output_scores: bool = False
+
     def __init__(
         self,
         input: str,
@@ -173,7 +181,6 @@ class ContextRelevance(Descriptor):
         output_scores: bool = False,
         alias: Optional[str] = None,
     ):
-        super().__init__(alias or f"Ranking for {input} with {contexts}")
         self.output_scores = output_scores
         self.aggregation_method = aggregation_method
         self.aggregation_method_params = aggregation_method_params
@@ -181,13 +188,14 @@ class ContextRelevance(Descriptor):
         self.method_params = method_params
         self.input = input
         self.context = contexts
+        super().__init__(alias=alias or f"Ranking for {input} with {contexts}")
 
     def generate_data(
         self,
         dataset: Dataset,
         options: Options,
     ) -> Union[DatasetColumn, Dict[DisplayName, DatasetColumn]]:
-        data = dataset.column(self.context)
+        data = dataset.column(self.contexts)
 
         (method, aggregation_method) = METHODS.get(self.method)
         if method is None:
