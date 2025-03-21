@@ -12,8 +12,8 @@ from typing import Union
 import numpy as np
 import pandas as pd
 
-from evidently import ColumnType
 from evidently.base_metric import DisplayName
+from evidently.core import ColumnType
 from evidently.features.llm_judge import BinaryClassificationPromptTemplate
 from evidently.future.datasets import Dataset
 from evidently.future.datasets import DatasetColumn

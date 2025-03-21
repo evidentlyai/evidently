@@ -24,7 +24,7 @@ class JSONSchemaMatch(GeneratedFeature):
     def __init__(
         self,
         column_name: str,
-        expected_schema: Dict[str, type],
+        expected_schema: Dict[str, type],  # type: ignore[valid-type]
         validate_types: bool = False,
         exact_match: bool = False,
         display_name: Optional[str] = None,

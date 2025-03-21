@@ -33,32 +33,32 @@ if v == 1:
         from pydantic.typing import DictStrAny  # type: ignore[attr-defined,no-redef]
 
 else:
-    from pydantic.v1 import BaseConfig
-    from pydantic.v1 import BaseModel
-    from pydantic.v1 import EmailStr
-    from pydantic.v1 import Extra
-    from pydantic.v1 import Field
-    from pydantic.v1 import PrivateAttr
-    from pydantic.v1 import SecretStr
-    from pydantic.v1 import ValidationError
-    from pydantic.v1 import create_model
-    from pydantic.v1 import parse_obj_as
-    from pydantic.v1 import root_validator
-    from pydantic.v1 import validator
-    from pydantic.v1.fields import SHAPE_DICT
-    from pydantic.v1.fields import SHAPE_LIST
-    from pydantic.v1.fields import SHAPE_SET
-    from pydantic.v1.fields import SHAPE_TUPLE
-    from pydantic.v1.fields import ModelField
-    from pydantic.v1.main import ModelMetaclass
-    from pydantic.v1.utils import import_string
-    from pydantic.v1.validators import _VALIDATORS
+    from pydantic.v1 import BaseConfig  # type: ignore[assignment]
+    from pydantic.v1 import BaseModel  # type: ignore[assignment]
+    from pydantic.v1 import EmailStr  # type: ignore[assignment]
+    from pydantic.v1 import Extra  # type: ignore[assignment]
+    from pydantic.v1 import Field  # type: ignore[assignment,no-redef]
+    from pydantic.v1 import PrivateAttr  # type: ignore[assignment,no-redef]
+    from pydantic.v1 import SecretStr  # type: ignore[assignment]
+    from pydantic.v1 import ValidationError  # type: ignore[assignment]
+    from pydantic.v1 import create_model  # type: ignore[assignment,no-redef]
+    from pydantic.v1 import parse_obj_as  # type: ignore[assignment]
+    from pydantic.v1 import root_validator  # type: ignore[assignment,no-redef]
+    from pydantic.v1 import validator  # type: ignore[assignment]
+    from pydantic.v1.fields import SHAPE_DICT  # type: ignore[assignment]
+    from pydantic.v1.fields import SHAPE_LIST  # type: ignore[assignment]
+    from pydantic.v1.fields import SHAPE_SET  # type: ignore[assignment]
+    from pydantic.v1.fields import SHAPE_TUPLE  # type: ignore[assignment]
+    from pydantic.v1.fields import ModelField  # type: ignore[assignment]
+    from pydantic.v1.main import ModelMetaclass  # type: ignore[assignment]
+    from pydantic.v1.utils import import_string  # type: ignore[assignment]
+    from pydantic.v1.validators import _VALIDATORS  # type: ignore[assignment]
 
     if TYPE_CHECKING:
-        from pydantic.v1.main import AbstractSetIntStr
-        from pydantic.v1.main import MappingIntStrAny
-        from pydantic.v1.main import Model
-        from pydantic.v1.typing import DictStrAny
+        from pydantic.v1.main import AbstractSetIntStr  # type: ignore[assignment]
+        from pydantic.v1.main import MappingIntStrAny  # type: ignore[assignment]
+        from pydantic.v1.main import Model  # type: ignore[assignment]
+        from pydantic.v1.typing import DictStrAny  # type: ignore[assignment]
 
 __all__ = [
     "BaseConfig",
