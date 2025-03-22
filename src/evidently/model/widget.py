@@ -1,9 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 # pylint: disable=invalid-name
-import dataclasses
-from dataclasses import dataclass
-from dataclasses import field
 from enum import Enum
 from typing import Any
 from typing import Iterable
@@ -13,18 +10,18 @@ from typing import Union
 
 import uuid6
 
+from evidently._pydantic_compat import BaseModel
+from evidently._pydantic_compat import Field
 from evidently.pydantic_utils import EvidentlyBaseModel
 from evidently.pydantic_utils import Fingerprint
 
 
-@dataclass()
-class TriggeredAlertStats:
+class TriggeredAlertStats(BaseModel):
     period: int
     last_24h: int
 
 
-@dataclass
-class AlertStats:
+class AlertStats(BaseModel):
     """
     Attributes:
         active: Number of active alerts.
@@ -35,8 +32,7 @@ class AlertStats:
     triggered: TriggeredAlertStats
 
 
-@dataclass
-class Insight:
+class Insight(BaseModel):
     """
     Attributes:
         title: Insight title
@@ -49,25 +45,22 @@ class Insight:
     text: str
 
 
-@dataclass
-class Alert:
+class Alert(BaseModel):
     value: Union[str, int, float]
     state: str
     text: str
     longText: str
 
 
-@dataclass
-class AdditionalGraphInfo:
+class AdditionalGraphInfo(BaseModel):
     id: str
-    params: Any
+    params: dict
 
 
-@dataclass
-class PlotlyGraphInfo:
-    data: Any
-    layout: Any
-    id: str = dataclasses.field(default_factory=lambda: str(uuid6.uuid7()))
+class PlotlyGraphInfo(BaseModel):
+    data: dict
+    layout: dict
+    id: str = Field(default_factory=lambda: str(uuid6.uuid7()))
 
 
 class WidgetType(Enum):
@@ -81,23 +74,21 @@ class WidgetType(Enum):
     TABS = "tabs"
 
 
-@dataclass
-class BaseWidgetInfo:
+# @dataclass
+class BaseWidgetInfo(BaseModel):
     type: str
     title: str
     size: int
-    id: str = dataclasses.field(default_factory=lambda: str(uuid6.uuid7()))
+    id: str = Field(default_factory=lambda: str(uuid6.uuid7()))
     details: str = ""
     alertsPosition: Optional[str] = None
     alertStats: Optional[AlertStats] = None
     params: Any = None
-    insights: Iterable[Insight] = field(default_factory=list)
-    additionalGraphs: Iterable[Union[AdditionalGraphInfo, "BaseWidgetInfo", PlotlyGraphInfo]] = field(
-        default_factory=list
-    )
-    alerts: Iterable[Alert] = field(default_factory=list)
-    tabs: Iterable["TabInfo"] = field(default_factory=list)
-    widgets: Iterable["BaseWidgetInfo"] = field(default_factory=list)
+    insights: List[Insight] = Field(default_factory=list)
+    additionalGraphs: List[Union[AdditionalGraphInfo, "BaseWidgetInfo", PlotlyGraphInfo]] = Field(default_factory=list)
+    alerts: List[Alert] = Field(default_factory=list)
+    tabs: List["TabInfo"] = Field(default_factory=list)
+    widgets: List["BaseWidgetInfo"] = Field(default_factory=list)
     pageSize: int = 5
     source_fingerprint: Optional[Fingerprint] = None
     linked_metrics: Optional[List[Fingerprint]] = None
@@ -111,9 +102,11 @@ class BaseWidgetInfo:
 
 
 def link_metric(
-    widgets: Union[BaseWidgetInfo, Iterable[BaseWidgetInfo]],
+    widgets: Union[BaseWidgetInfo, Iterable[BaseWidgetInfo], None],
     source: Union[EvidentlyBaseModel, Fingerprint],
 ):
+    if widgets is None:
+        return
     fingerprint = source if isinstance(source, Fingerprint) else source.get_fingerprint()
     widgets = [widgets] if isinstance(widgets, BaseWidgetInfo) else widgets
     for widget in widgets:
@@ -133,8 +126,10 @@ def set_source_fingerprint(
     link_metric(widgets, source)
 
 
-@dataclass
-class TabInfo:
+class TabInfo(BaseModel):
     id: str
     title: str
     widget: BaseWidgetInfo
+
+
+BaseWidgetInfo.update_forward_refs()

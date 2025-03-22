@@ -63,10 +63,10 @@ class LegacyTopKCalculation(
     def calculate_value(
         self, context: "Context", legacy_result: TopKMetricResult, render: List[BaseWidgetInfo]
     ) -> TMetricResult:
-        current = SingleValue(legacy_result.current[legacy_result.k - 1])
+        current = SingleValue(legacy_result.current[legacy_result.k - 1], self.display_name())
         if legacy_result.reference is None:
             return current
-        return current, SingleValue(legacy_result.reference[legacy_result.k - 1])
+        return current, SingleValue(legacy_result.reference[legacy_result.k - 1], self.display_name())
 
 
 class NDCG(TopKBase):
@@ -170,10 +170,10 @@ class ScoreDistributionCalculation(
     def calculate_value(
         self, context: "Context", legacy_result: ScoreDistributionResult, render: List[BaseWidgetInfo]
     ) -> TMetricResult:
-        current = SingleValue(legacy_result.current_entropy)
+        current = SingleValue(legacy_result.current_entropy, self.display_name())
         if legacy_result.reference_entropy is None:
             return current
-        return current, SingleValue(legacy_result.reference_entropy)
+        return current, SingleValue(legacy_result.reference_entropy, self.display_name())
 
     def display_name(self) -> str:
         return "Score distribution"

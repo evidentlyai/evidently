@@ -243,8 +243,6 @@ async def test_get_snapshot_data(test_client: TestClient, project_manager: Proje
     data = r.json()
     fp = MockMetric().get_fingerprint()
     assert data == {
-        "max_timestamp": None,
-        "min_timestamp": None,
         "name": "Report",
         "widgets": [
             {

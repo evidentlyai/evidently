@@ -339,7 +339,7 @@ def widget_tabs(*, title: str = "", size: WidgetSize = WidgetSize.FULL, tabs: Li
         title=title,
         type=WidgetType.TABS.value,
         size=size.value,
-        tabs=[TabInfo(str(uuid7()), tab.title, tab.widget) for tab in tabs],
+        tabs=[TabInfo(id=str(uuid7()), title=tab.title, widget=tab.widget) for tab in tabs],
     )
 
 

@@ -251,8 +251,8 @@ class TargetByFeaturesTableRenderer(MetricRenderer):
 
                 additional_graphs_data.append(
                     AdditionalGraphInfo(
-                        feature_name + "_target_values",
-                        {
+                        id=feature_name + "_target_values",
+                        params={
                             "data": target_fig_json["data"],
                             "layout": target_fig_json["layout"],
                         },
@@ -273,8 +273,8 @@ class TargetByFeaturesTableRenderer(MetricRenderer):
 
                 additional_graphs_data.append(
                     AdditionalGraphInfo(
-                        feature_name + "_prediction_values",
-                        {
+                        id=feature_name + "_prediction_values",
+                        params={
                             "data": preds_fig_json["data"],
                             "layout": preds_fig_json["layout"],
                         },

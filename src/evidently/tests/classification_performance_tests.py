@@ -35,7 +35,7 @@ from evidently.tests.utils import plot_conf_mtrx
 from evidently.tests.utils import plot_rates
 from evidently.utils.types import Numeric
 
-CLASSIFICATION_GROUP = GroupData("classification", "Classification", "")
+CLASSIFICATION_GROUP = GroupData(id="classification", title="Classification", description="")
 GroupingTypes.TestGroup.add_value(CLASSIFICATION_GROUP)
 
 

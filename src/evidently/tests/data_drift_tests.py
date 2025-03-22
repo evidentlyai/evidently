@@ -43,7 +43,7 @@ from evidently.utils.types import Numeric
 from evidently.utils.visualizations import plot_contour_single
 from evidently.utils.visualizations import plot_distr_with_cond_perc_button
 
-DATA_DRIFT_GROUP = GroupData("data_drift", "Data Drift", "")
+DATA_DRIFT_GROUP = GroupData(id="data_drift", title="Data Drift", description="")
 GroupingTypes.TestGroup.add_value(DATA_DRIFT_GROUP)
 
 

@@ -1,7 +1,6 @@
 import asyncio
 import datetime
 import json
-from dataclasses import asdict
 from typing import Callable
 from typing import Dict
 from typing import List
@@ -176,7 +175,7 @@ async def get_snapshot_graph_data(
     if graph is None:
         raise HTTPException(status_code=404, detail="Graph not found")
     log_event("get_snapshot_graph_data")
-    return json.dumps(graph, cls=NumpyEncoder)
+    return json.dumps(graph.dict() if not isinstance(graph, dict) else graph, cls=NumpyEncoder)
 
 
 @get("/{project_id:uuid}/{snapshot_id:uuid}/download")
@@ -218,7 +217,7 @@ async def get_snapshot_data(
         test_presets=snapshot.metadata.get(TEST_PRESETS, []),
         test_generators=snapshot.metadata.get(TEST_GENERATORS, []),
     )
-    return json.dumps(asdict(info), cls=NumpyEncoder)
+    return json.dumps(info.dict() if not isinstance(info, dict) else info, cls=NumpyEncoder)
 
 
 @get("/{project_id:uuid}/{snapshot_id:uuid}/metadata")
@@ -282,7 +281,7 @@ async def project_dashboard(
         timestamp_end=timestamp_end_,
     )
     log_event("project_dashboard")
-    return json.dumps(asdict(info), cls=NumpyEncoder)
+    return json.dumps(info.dict() if not isinstance(info, dict) else info, cls=NumpyEncoder)
 
 
 @post("/")

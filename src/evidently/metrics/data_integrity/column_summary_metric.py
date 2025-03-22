@@ -637,8 +637,8 @@ class ColumnSummaryMetricRenderer(MetricRenderer):
                 raise ValueError(f"Unsupported column type '{column_type}'")
             additional_graphs.append(
                 AdditionalGraphInfo(
-                    column_name_escaped + "_in_time",
-                    {
+                    id=column_name_escaped + "_in_time",
+                    params={
                         "data": feature_in_time_figure["data"],
                         "layout": feature_in_time_figure["layout"],
                     },
@@ -701,8 +701,8 @@ class ColumnSummaryMetricRenderer(MetricRenderer):
             if feature_by_target_figure is not None:
                 additional_graphs.append(
                     AdditionalGraphInfo(
-                        column_name_escaped + "_by_target",
-                        {
+                        id=column_name_escaped + "_by_target",
+                        params={
                             "data": feature_by_target_figure["data"],
                             "layout": feature_by_target_figure["layout"],
                         },

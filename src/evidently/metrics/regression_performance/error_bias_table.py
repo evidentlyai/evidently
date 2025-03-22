@@ -417,8 +417,8 @@ class RegressionErrorBiasTableRenderer(MetricRenderer):
 
                 additional_graphs_data.append(
                     AdditionalGraphInfo(
-                        feature_name + "_hist",
-                        {
+                        id=feature_name + "_hist",
+                        params={
                             "data": feature_hist_json["data"],
                             "layout": feature_hist_json["layout"],
                         },
@@ -427,8 +427,8 @@ class RegressionErrorBiasTableRenderer(MetricRenderer):
 
                 additional_graphs_data.append(
                     AdditionalGraphInfo(
-                        feature_name + "_segm",
-                        {
+                        id=feature_name + "_segm",
+                        params={
                             "data": segment_json["data"],
                             "layout": segment_json["layout"],
                         },
@@ -492,8 +492,8 @@ class RegressionErrorBiasTableRenderer(MetricRenderer):
 
                 additional_graphs_data.append(
                     AdditionalGraphInfo(
-                        feature_name + "_hist",
-                        {
+                        id=feature_name + "_hist",
+                        params={
                             "data": feature_hist_json["data"],
                             "layout": feature_hist_json["layout"],
                         },
@@ -502,8 +502,8 @@ class RegressionErrorBiasTableRenderer(MetricRenderer):
 
                 additional_graphs_data.append(
                     AdditionalGraphInfo(
-                        feature_name + "_segm",
-                        {
+                        id=feature_name + "_segm",
+                        params={
                             "data": segment_json["data"],
                             "layout": segment_json["layout"],
                         },

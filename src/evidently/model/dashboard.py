@@ -1,13 +1,12 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-from dataclasses import dataclass
 from typing import List
 
+from evidently._pydantic_compat import BaseModel
 from evidently.model.widget import BaseWidgetInfo
 
 
-@dataclass
-class DashboardInfo:
+class DashboardInfo(BaseModel):
     name: str
     widgets: List[BaseWidgetInfo]

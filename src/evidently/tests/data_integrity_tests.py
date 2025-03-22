@@ -41,7 +41,7 @@ from evidently.utils.generators import BaseGenerator
 from evidently.utils.types import Numeric
 from evidently.utils.types import NumericApprox
 
-DATA_INTEGRITY_GROUP = GroupData("data_integrity", "Data Integrity", "")
+DATA_INTEGRITY_GROUP = GroupData(id="data_integrity", title="Data Integrity", description="")
 GroupingTypes.TestGroup.add_value(DATA_INTEGRITY_GROUP)
 
 

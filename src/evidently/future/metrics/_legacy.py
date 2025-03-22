@@ -37,7 +37,6 @@ class LegacyMetricCalculation(
 
     def calculate(self, context: "Context", current_data: Dataset, reference_data: Optional[Dataset]) -> TMetricResult:
         result, render = context.get_legacy_metric(self.legacy_metric(), self._gen_input_data)
-        self.calculate_value(context, result, render)
         metric_result = self.calculate_value(context, result, render)
         if isinstance(metric_result, tuple):
             current, reference = metric_result

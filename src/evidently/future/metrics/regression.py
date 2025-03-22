@@ -115,10 +115,16 @@ class MeanErrorCalculation(LegacyRegressionMeanStdMetric[MeanError]):
         self, context: Context, legacy_result: RegressionQualityMetricResults, render: List[BaseWidgetInfo]
     ):
         return (
-            MeanStdValue(legacy_result.current.mean_error, legacy_result.current.error_std),
+            self.result(
+                legacy_result.current.mean_error,
+                legacy_result.current.error_std,
+            ),
             None
             if legacy_result.reference is None
-            else MeanStdValue(legacy_result.reference.mean_error, legacy_result.reference.error_std),
+            else self.result(
+                legacy_result.reference.mean_error,
+                legacy_result.reference.error_std,
+            ),
         )
 
     def display_name(self) -> str:
@@ -143,10 +149,16 @@ class MAECalculation(LegacyRegressionMeanStdMetric[MAE]):
         self, context: Context, legacy_result: RegressionQualityMetricResults, render: List[BaseWidgetInfo]
     ):
         return (
-            MeanStdValue(legacy_result.current.mean_abs_error, legacy_result.current.abs_error_std),
+            self.result(
+                legacy_result.current.mean_abs_error,
+                legacy_result.current.abs_error_std,
+            ),
             None
             if legacy_result.reference is None
-            else MeanStdValue(legacy_result.reference.mean_abs_error, legacy_result.reference.abs_error_std),
+            else self.result(
+                legacy_result.reference.mean_abs_error,
+                legacy_result.reference.abs_error_std,
+            ),
         )
 
     def display_name(self) -> str:
@@ -171,8 +183,8 @@ class RMSECalculation(LegacyRegressionSingleValueMetric[RMSE]):
         self, context: Context, legacy_result: RegressionQualityMetricResults, render: List[BaseWidgetInfo]
     ):
         return (
-            SingleValue(legacy_result.current.rmse),
-            None if legacy_result.reference is None else SingleValue(legacy_result.reference.rmse),
+            self.result(legacy_result.current.rmse),
+            None if legacy_result.reference is None else self.result(legacy_result.reference.rmse),
         )
 
     def display_name(self) -> str:
@@ -196,10 +208,10 @@ class MAPECalculation(LegacyRegressionMeanStdMetric[MAPE]):
         self, context: Context, legacy_result: RegressionQualityMetricResults, render: List[BaseWidgetInfo]
     ):
         return (
-            MeanStdValue(legacy_result.current.mean_abs_perc_error, legacy_result.current.abs_perc_error_std),
+            self.result(legacy_result.current.mean_abs_perc_error, legacy_result.current.abs_perc_error_std),
             None
             if legacy_result.reference is None
-            else MeanStdValue(legacy_result.reference.mean_abs_perc_error, legacy_result.reference.abs_perc_error_std),
+            else self.result(legacy_result.reference.mean_abs_perc_error, legacy_result.reference.abs_perc_error_std),
         )
 
     def display_name(self) -> str:
@@ -222,8 +234,8 @@ class R2ScoreCalculation(LegacyRegressionSingleValueMetric[R2Score]):
         self, context: Context, legacy_result: RegressionQualityMetricResults, render: List[BaseWidgetInfo]
     ):
         return (
-            SingleValue(legacy_result.current.r2_score),
-            None if legacy_result.reference is None else SingleValue(legacy_result.reference.r2_score),
+            self.result(legacy_result.current.r2_score),
+            None if legacy_result.reference is None else self.result(legacy_result.reference.r2_score),
         )
 
     def display_name(self) -> str:
@@ -243,8 +255,8 @@ class AbsMaxErrorCalculation(LegacyRegressionSingleValueMetric[AbsMaxError]):
         self, context: Context, legacy_result: RegressionQualityMetricResults, render: List[BaseWidgetInfo]
     ):
         return (
-            SingleValue(legacy_result.current.abs_error_max),
-            None if legacy_result.reference is None else SingleValue(legacy_result.reference.abs_error_max),
+            self.result(legacy_result.current.abs_error_max),
+            None if legacy_result.reference is None else self.result(legacy_result.reference.abs_error_max),
         )
 
     def display_name(self) -> str:
@@ -290,7 +302,7 @@ class DummyMAECalculation(LegacyRegressionDummyValueMetric[DummyMAE]):
     ) -> SingleValue:
         if legacy_result.mean_abs_error is None:
             raise ValueError("No mean absolute error was calculated")
-        return SingleValue(legacy_result.mean_abs_error)
+        return self.result(legacy_result.mean_abs_error)
 
     def display_name(self) -> str:
         return "Dummy Mean Absolute Error"
@@ -309,7 +321,7 @@ class DummyMAPECalculation(LegacyRegressionDummyValueMetric[DummyMAPE]):
     ) -> SingleValue:
         if legacy_result.mean_abs_perc_error is None:
             raise ValueError("No mean absolute percentage error was calculated")
-        return SingleValue(legacy_result.mean_abs_perc_error)
+        return self.result(legacy_result.mean_abs_perc_error)
 
     def display_name(self) -> str:
         return "Dummy Mean Absolute Percentage Error"
@@ -328,7 +340,7 @@ class DummyRMSECalculation(LegacyRegressionDummyValueMetric[DummyRMSE]):
     ) -> SingleValue:
         if legacy_result.rmse is None:
             raise ValueError("No RMSE was calculated")
-        return SingleValue(legacy_result.rmse)
+        return self.result(legacy_result.rmse)
 
     def display_name(self) -> str:
         return "Dummy RMSE"

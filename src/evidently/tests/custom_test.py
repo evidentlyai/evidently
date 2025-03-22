@@ -12,7 +12,7 @@ from evidently.tests.base_test import GroupingTypes
 from evidently.utils.types import Numeric
 from evidently.utils.types import NumericApprox
 
-CUSTOM_GROUP = GroupData("custom", "Custom", "")
+CUSTOM_GROUP = GroupData(id="custom", title="Custom", description="")
 GroupingTypes.TestGroup.add_value(CUSTOM_GROUP)
 
 
