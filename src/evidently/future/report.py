@@ -260,12 +260,16 @@ class Snapshot:
     _metrics: Dict[MetricId, MetricResult]
     _snapshot_item: List[SnapshotItem]
     _widgets: List[BaseWidgetInfo]
+    _tests_widgets: List[BaseWidgetInfo]
     _top_level_metrics: List[MetricId]
 
     def __init__(self, report: "Report"):
         self._report = report
         self._context = Context(report)
         self._snapshot_item = []
+        self._metrics = {}
+        self._top_level_metrics = []
+        self._tests_widgets = []
 
     @property
     def context(self) -> Context:
@@ -299,25 +303,18 @@ class Snapshot:
         self._metrics = {}
         self._snapshot_item, self._widgets = self._run_items(self.report.items(), self._metrics)
         self._top_level_metrics = list(self.context._metrics_graph.keys())
+        tests = list(chain(*[self._metrics.get(result).tests.values() for result in self._top_level_metrics]))
+        if len(tests) > 0:
+            self._tests_widgets = [
+                metric_tests_stats(tests),
+                metric_tests_widget(tests),
+            ]
 
     def _repr_html_(self):
         from evidently.renderers.html_widgets import group_widget
 
-        results = [
-            (
-                metric,
-                self._metrics.get(metric).widget,
-                self._metrics.get(metric),
-            )
-            for metric in self._top_level_metrics
-        ]
+        widgets_to_render: List[BaseWidgetInfo] = [group_widget(title="", widgets=self._widgets)] + self._tests_widgets
 
-        tests = list(chain(*[result[2].tests.values() for result in results]))
-        widgets_to_render: List[BaseWidgetInfo] = [group_widget(title="", widgets=self._widgets)]
-
-        if len(tests) > 0:
-            widgets_to_render.append(metric_tests_stats(tests))
-            widgets_to_render.append(metric_tests_widget(tests))
         return render_widgets(widgets_to_render)
 
     def render_only_fingerprint(self, fingerprint: str):
@@ -375,17 +372,27 @@ class Snapshot:
         return snapshot_v2_to_v1(self)
 
     def dumps(self) -> str:
+        return json.dumps(self.dump_dict(), cls=NumpyEncoder)
+
+    def dump_dict(self) -> dict:
         snapshot = SnapshotModel(
             report=ReportModel(items=[]),
+            timestamp=self.report._timestamp,
+            metadata=self.report.metadata,
+            tags=self.report.tags,
             metric_results=self._metrics,
             top_level_metrics=self._top_level_metrics,
             widgets=self._widgets,
         )
-        return json.dumps(snapshot.dict(), cls=NumpyEncoder)
+        return snapshot.dict()
 
     @staticmethod
     def loads(data: str) -> "Snapshot":
-        model = SnapshotModel.parse_obj(json.loads(data))
+        return Snapshot.load_dict(json.loads(data))
+
+    @staticmethod
+    def load_dict(data: dict) -> "Snapshot":
+        model = SnapshotModel.parse_obj(data)
         snapshot = Snapshot(report=Report([]))
         snapshot._metrics = model.metric_results
         snapshot._top_level_metrics = model.top_level_metrics

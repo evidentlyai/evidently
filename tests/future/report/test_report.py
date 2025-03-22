@@ -1,3 +1,5 @@
+from io import BytesIO
+
 import pandas as pd
 import pytest
 
@@ -29,5 +31,8 @@ def test_report_run(current, reference):
 
     data = snapshot.dumps()
     snapshot_2 = Snapshot.loads(data)
+    buffer = BytesIO()
     assert snapshot_2 is not None
     assert snapshot.dumps() == snapshot_2.dumps()
+    snapshot.save_html(buffer)
+    snapshot_2.save_html(buffer)

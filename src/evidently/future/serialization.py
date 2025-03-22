@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Dict
 from typing import List
 from typing import Union
@@ -12,16 +13,24 @@ from evidently.future.metric_types import SingleValue
 from evidently.model.widget import BaseWidgetInfo
 
 
-class ReportItem(BaseModel):
-    pass
+class MetricReportItem(BaseModel):
+    metric_id: MetricId
+    params: dict
+
+
+class PresetReportItem(BaseModel):
+    pass  # TODO: support presets
 
 
 class ReportModel(BaseModel):
-    items: List[ReportItem]
+    items: List[Union[MetricReportItem, PresetReportItem]]
 
 
 class SnapshotModel(BaseModel):
     report: ReportModel
+    timestamp: datetime
+    metadata: Dict[str, str]
+    tags: List[str]
     metric_results: Dict[MetricId, Union[SingleValue, ByLabelValue, CountValue, MeanStdValue, ByLabelCountValue]]
     top_level_metrics: List[MetricId]
     widgets: List[BaseWidgetInfo]
