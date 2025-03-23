@@ -41,6 +41,8 @@ class ComparisonTest(MetricTest):
                 name=f"{value.display_name}: {self.__full_name__} {title_threshold}",
                 description=f"Actual value {value.value:0.3f} {'<' if value.value < threshold else '>='} {threshold:0.3f}",
                 status=TestStatus.SUCCESS if self.check(value.value, threshold) else TestStatus.FAIL,
+                metric_config=metric.to_metric_config(),
+                test_config=self.dict(),
             )
 
         return func
@@ -135,6 +137,8 @@ class EqualMetricTest(EqualMetricTestBase):
                 name=f"{metric.display_name()}: Equal {title_expected}",
                 description=f"Actual value {value.value:0.3f} {f', but expected {expected:0.3f}' if not is_equal else ''}",
                 status=TestStatus.SUCCESS if is_equal else TestStatus.FAIL,
+                metric_config=metric.to_metric_config(),
+                test_config=self.dict(),
             )
 
         return func
@@ -153,6 +157,8 @@ class NotEqualMetricTest(EqualMetricTestBase):
                 name=f"{metric.display_name()}: Not equal {title_expected}",
                 description=f"Actual value {value.value} {f', but expected not {expected}' if is_equal else ''}",
                 status=TestStatus.SUCCESS if not is_equal else TestStatus.FAIL,
+                metric_config=metric.to_metric_config(),
+                test_config=self.dict(),
             )
 
         return func

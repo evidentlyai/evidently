@@ -27,6 +27,7 @@ from evidently.future.metric_types import SingleValue
 from evidently.future.metric_types import SingleValueBoundTest
 from evidently.future.metric_types import SingleValueCalculation
 from evidently.future.metric_types import SingleValueMetric
+from evidently.future.metric_types import TestConfig
 from evidently.future.metric_types import TMetric
 from evidently.future.metrics._legacy import LegacyMetricCalculation
 from evidently.future.report import Context
@@ -403,6 +404,9 @@ class ValueDriftTest(MetricTest):
     def to_test(self) -> MetricTestProto:
         raise NotImplementedError()
 
+    def to_config(self) -> TestConfig:
+        raise NotImplementedError()
+
 
 class ValueDriftCalculation(SingleValueCalculation[ValueDrift]):
     def calculate(self, context: "Context", current_data: Dataset, reference_data: Optional[Dataset]) -> SingleValue:
@@ -446,6 +450,8 @@ class ValueDriftCalculation(SingleValueCalculation[ValueDrift]):
                         f"The drift detection method is {drift.stattest_name}. "
                         f"The drift threshold is {drift.stattest_threshold:0.2f}.",
                         status=TestStatus.FAIL if drift.drift_detected else TestStatus.SUCCESS,
+                        metric_config=self.to_metric_config(),
+                        test_config={},
                     )
                 }
             )

@@ -1,6 +1,6 @@
 import abc
 from abc import ABC
-from enum import Enum
+from enum import StrEnum
 from typing import TYPE_CHECKING
 from typing import Any
 from typing import ClassVar
@@ -85,7 +85,7 @@ DEFAULT_GROUP = [
 ]
 
 
-class TestStatus(Enum):
+class TestStatus(StrEnum):
     # Constants for test result status
     SUCCESS = "SUCCESS"  # the test was passed
     FAIL = "FAIL"  # success pass for the test

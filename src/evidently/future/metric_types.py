@@ -112,16 +112,16 @@ class MetricResult(BaseModel):
     display_name: str
     metric_value_location: Optional["MetricValueLocation"] = None
     widget: Optional[List[BaseWidgetInfo]] = None
-    tests: Dict["BoundTest", "MetricTestResult"] = Field(default_factory=dict)
+    tests: List["MetricTestResult"] = Field(default_factory=list)
 
-    def set_tests(self, tests: Dict["BoundTest", "MetricTestResult"]):
+    def set_tests(self, tests: List["MetricTestResult"]):
         self.tests = tests
 
     def _repr_html_(self):
         assert self.widget
         widget = copy(self.widget)
         if self.tests:
-            widget.append(metric_tests_widget(list(self.tests.values())))
+            widget.append(metric_tests_widget(list(self.tests)))
         return render_results((self, None), html=False)
 
     def is_widget_set(self) -> bool:
@@ -228,19 +228,18 @@ MetricTestId = str
 Value = Union[float, int]
 
 
+class TestConfig(BaseModel):
+    id: MetricTestId
+    params: dict
+
+
 class MetricTestResult(BaseModel):
     id: MetricTestId
     name: str
     description: str
+    metric_config: MetricConfig
+    test_config: dict
     status: TestStatus
-
-    def dict(self) -> dict:
-        return {
-            "id": self.id,
-            "name": self.name,
-            "description": self.description,
-            "status": self.status.value,
-        }
 
 
 class SingleValue(MetricResult):

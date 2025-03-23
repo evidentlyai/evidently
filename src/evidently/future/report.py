@@ -121,7 +121,7 @@ class Context:
                 tc: tc.run_test(self, calc, current_result) for tc in calc.to_metric().get_bound_tests(self)
             }
             if test_results and len(test_results) > 0:
-                current_result.set_tests(test_results)
+                current_result.set_tests(list(test_results.values()))
         self._current_graph_level = prev_level
         return typing.cast(TResultType, self._metrics[calc.id])
 
@@ -303,7 +303,7 @@ class Snapshot:
         self._metrics = {}
         self._snapshot_item, self._widgets = self._run_items(self.report.items(), self._metrics)
         self._top_level_metrics = list(self.context._metrics_graph.keys())
-        tests = list(chain(*[self._metrics.get(result).tests.values() for result in self._top_level_metrics]))
+        tests = list(chain(*[self._metrics.get(result).tests for result in self._top_level_metrics]))
         if len(tests) > 0:
             self._tests_widgets = [
                 metric_tests_stats(tests),
@@ -383,6 +383,7 @@ class Snapshot:
             metric_results=self._metrics,
             top_level_metrics=self._top_level_metrics,
             widgets=self._widgets,
+            tests_widgets=self._tests_widgets,
         )
         return snapshot.dict()
 
@@ -394,9 +395,13 @@ class Snapshot:
     def load_dict(data: dict) -> "Snapshot":
         model = SnapshotModel.parse_obj(data)
         snapshot = Snapshot(report=Report([]))
+        snapshot._report._timestamp = model.timestamp
+        snapshot._report.metadata = model.metadata
+        snapshot._report.tags = model.tags
         snapshot._metrics = model.metric_results
         snapshot._top_level_metrics = model.top_level_metrics
         snapshot._widgets = model.widgets
+        snapshot._tests_widgets = model.tests_widgets
         return snapshot
 
 
