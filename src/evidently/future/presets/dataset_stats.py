@@ -5,6 +5,7 @@ from typing import Dict
 from typing import List
 from typing import Optional
 from typing import Sequence
+from typing import Tuple
 
 from evidently.core import ColumnType
 from evidently.future.container import ColumnMetricContainer
@@ -96,7 +97,11 @@ class ValueStats(ColumnMetricContainer):
             ]
         return metrics
 
-    def render(self, context: "Context", results: Dict[MetricId, MetricResult]) -> List[BaseWidgetInfo]:
+    def render(
+        self,
+        context: "Context",
+        child_widgets: Optional[List[Tuple[Optional[MetricId], List[BaseWidgetInfo]]]] = None,
+    ) -> List[BaseWidgetInfo]:
         column_type = context.column(self._column).column_type
         widgets = []
         if column_type == ColumnType.Numerical:
@@ -110,7 +115,7 @@ class ValueStats(ColumnMetricContainer):
             widgets = self._render_datetime(context)
         if column_type == ColumnType.Text:
             widgets = self._render_text(context)
-        for metric in self.metrics(context):
+        for metric in self.list_metrics(context):
             link_metric(widgets, metric)
         return widgets
 
@@ -338,10 +343,14 @@ class DatasetStats(MetricContainer):
             DatasetMissingValueCount(tests=self.dataset_missing_value_count_tests),
         ]
 
-    def render(self, context: Context, results: Dict[MetricId, MetricResult]) -> List[BaseWidgetInfo]:
+    def render(
+        self,
+        context: "Context",
+        child_widgets: Optional[List[Tuple[Optional[MetricId], List[BaseWidgetInfo]]]] = None,
+    ) -> List[BaseWidgetInfo]:
         metric = DatasetSummaryMetric()
         _, render = context.get_legacy_metric(metric, _default_input_data_generator)
-        for metric in self.metrics(context):
+        for metric in self.list_metrics(context):
             link_metric(render, metric)
         return render
 
@@ -377,15 +386,19 @@ class TextEvals(MetricContainer):
             cols = context.data_definition.numerical_descriptors + context.data_definition.categorical_descriptors
         else:
             cols = self._columns
-        metrics: List[Metric] = [RowCount(tests=self._row_count_tests)]
+        metrics: List[MetricOrContainer] = [RowCount(tests=self._row_count_tests)]
         self._value_stats = [
             ValueStats(column, **(self._column_tests or {}).get(column, ValueStatsTests()).__dict__) for column in cols
         ]
         metrics.extend(list(chain(*[vs.metrics(context)[1:] for vs in self._value_stats])))
         return metrics
 
-    def render(self, context: "Context", results: Dict[MetricId, MetricResult]) -> List[BaseWidgetInfo]:
-        return list(chain(*[vs.render(context, results) for vs in self._value_stats]))
+    def render(
+        self,
+        context: "Context",
+        child_widgets: Optional[List[Tuple[Optional[MetricId], List[BaseWidgetInfo]]]] = None,
+    ) -> List[BaseWidgetInfo]:
+        return list(chain(*[vs.render(context) for vs in self._value_stats]))
 
 
 class DataSummaryPreset(MetricContainer):
@@ -437,7 +450,11 @@ class DataSummaryPreset(MetricContainer):
         self._text_evals = TextEvals(self._columns or columns_, column_tests=self._column_tests)
         return self._dataset_stats.metrics(context) + self._text_evals.metrics(context)
 
-    def render(self, context: "Context", results: Dict[MetricId, MetricResult]) -> List[BaseWidgetInfo]:
+    def render(
+        self,
+        context: "Context",
+        child_widgets: Optional[List[Tuple[Optional[MetricId], List[BaseWidgetInfo]]]] = None,
+    ) -> List[BaseWidgetInfo]:
         if self._dataset_stats is None or self._text_evals is None:
             raise ValueError("Inconsistent internal state for DataSummaryPreset")
-        return self._dataset_stats.render(context, results) + self._text_evals.render(context, results)
+        return self._dataset_stats.render(context) + self._text_evals.render(context)

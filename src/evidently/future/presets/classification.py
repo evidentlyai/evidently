@@ -1,7 +1,7 @@
-from typing import Dict
 from typing import List
 from typing import Optional
 from typing import Sequence
+from typing import Tuple
 
 from evidently.future.container import MetricContainer
 from evidently.future.container import MetricOrContainer
@@ -9,7 +9,6 @@ from evidently.future.datasets import BinaryClassification
 from evidently.future.metric_types import ByLabelMetricTests
 from evidently.future.metric_types import Metric
 from evidently.future.metric_types import MetricId
-from evidently.future.metric_types import MetricResult
 from evidently.future.metric_types import SingleValueMetricTests
 from evidently.future.metrics import FNR
 from evidently.future.metrics import FPR
@@ -104,7 +103,11 @@ class ClassificationQuality(MetricContainer):
             )
         return metrics
 
-    def render(self, context: "Context", results: Dict[MetricId, MetricResult]) -> List[BaseWidgetInfo]:
+    def render(
+        self,
+        context: "Context",
+        child_widgets: Optional[List[Tuple[Optional[MetricId], List[BaseWidgetInfo]]]] = None,
+    ) -> List[BaseWidgetInfo]:
         _, render = context.get_legacy_metric(
             ClassificationQualityMetric(probas_threshold=self._probas_threshold),
             _gen_classification_input_data,
@@ -127,7 +130,7 @@ class ClassificationQuality(MetricContainer):
                 ClassificationPRTable(probas_threshold=self._probas_threshold),
                 _gen_classification_input_data,
             )[1]
-        for metric in self.metrics(context):
+        for metric in self.list_metrics(context):
             link_metric(render, metric)
         return render
 
@@ -165,14 +168,18 @@ class ClassificationQualityByLabel(MetricContainer):
             ]
         )
 
-    def render(self, context: "Context", results: Dict[MetricId, MetricResult]):
+    def render(
+        self,
+        context: "Context",
+        child_widgets: Optional[List[Tuple[Optional[MetricId], List[BaseWidgetInfo]]]] = None,
+    ) -> List[BaseWidgetInfo]:
         render = context.get_legacy_metric(
             ClassificationQualityByClass(self._probas_threshold, self._k),
             _gen_classification_input_data,
         )[1]
         widget = render
         widget[0].params["counters"][0]["label"] = "Classification Quality by Label"
-        for metric in self.metrics(context):
+        for metric in self.list_metrics(context):
             link_metric(widget, metric)
         return widget
 
@@ -193,12 +200,16 @@ class ClassificationDummyQuality(MetricContainer):
             DummyF1Score(),
         ]
 
-    def render(self, context: "Context", results: Dict[MetricId, MetricResult]) -> List[BaseWidgetInfo]:
+    def render(
+        self,
+        context: "Context",
+        child_widgets: Optional[List[Tuple[Optional[MetricId], List[BaseWidgetInfo]]]] = None,
+    ) -> List[BaseWidgetInfo]:
         _, widgets = context.get_legacy_metric(
             ClassificationDummyMetric(self._probas_threshold, self._k),
             _gen_classification_input_data,
         )
-        for metric in self.metrics(context):
+        for metric in self.list_metrics(context):
             link_metric(widgets, metric)
         return widgets
 
@@ -263,9 +274,13 @@ class ClassificationPreset(MetricContainer):
             + ([] if self._roc_auc is None else [RocAuc(probas_threshold=self._probas_threshold)])
         )
 
-    def render(self, context: "Context", results: Dict[MetricId, MetricResult]) -> List[BaseWidgetInfo]:
+    def render(
+        self,
+        context: "Context",
+        child_widgets: Optional[List[Tuple[Optional[MetricId], List[BaseWidgetInfo]]]] = None,
+    ) -> List[BaseWidgetInfo]:
         return (
-            self._quality.render(context, results)
-            + self._quality_by_label.render(context, results)
+            self._quality.render(context)
+            + self._quality_by_label.render(context)
             + ([] if self._roc_auc is None else context.get_metric_result(self._roc_auc).widget)
         )

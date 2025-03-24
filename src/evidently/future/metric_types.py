@@ -222,7 +222,7 @@ class ByLabelValue(MetricResult):
         return list(self.values.keys())
 
     def get_label_result(self, label: Label) -> SingleValue:
-        value = SingleValue(self.values[label])
+        value = SingleValue(self.values[str(label)])
         metric = self.metric
         value._metric = metric
         if not isinstance(metric, ByLabelCalculation):
@@ -729,6 +729,7 @@ class Metric(AutoAliasMixin, EvidentlyBaseModel, Generic[TCalculation]):
 
     class Config:
         is_base_type = True
+        smart_union = True
 
     __calculation_type__: ClassVar[Type[TCalculation]]
 

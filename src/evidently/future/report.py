@@ -83,6 +83,7 @@ class Context:
     _input_data: Tuple[Dataset, Optional[Dataset]]
     _current_graph_level: dict
     _legacy_metrics: Dict[str, Tuple[object, List[BaseWidgetInfo]]]
+    _metrics_container: Dict[int, List[MetricOrContainer]]
 
     def __init__(self, report: "Report"):
         self._metrics = {}
@@ -92,6 +93,7 @@ class Context:
         self._metrics_graph = {}
         self._current_graph_level = self._metrics_graph
         self._legacy_metrics = {}
+        self._metrics_container = {}
 
     def init_dataset(self, current_data: Dataset, reference_data: Optional[Dataset]):
         self._input_data = (current_data, reference_data)
@@ -174,6 +176,12 @@ class Context:
     @property
     def has_reference(self) -> bool:
         return self._input_data[1] is not None
+
+    def metrics_container(self, metric_container_hash: int) -> Optional[List[MetricOrContainer]]:
+        return self._metrics_container.get(metric_container_hash)
+
+    def set_metric_container_data(self, metric_container_hash: int, items: List[MetricOrContainer]) -> None:
+        self._metrics_container[metric_container_hash] = items
 
 
 def _default_input_data_generator(context: "Context") -> InputData:
@@ -275,8 +283,8 @@ class Snapshot:
         snapshot_items: List[SnapshotItem] = []
         for item in items:
             if isinstance(item, MetricContainer):
-                self._run_items(item.metrics(self.context), metric_results)
-                widget = item.render(self.context, results=metric_results)
+                container_items, container_widgets = self._run_items(item.metrics(self.context), metric_results)
+                widget = item.render(self.context, [(v.metric_id, v.widgets) for v in container_items])
                 widgets.extend(widget)
                 snapshot_items.append(SnapshotItem(None, widget))
             else:
@@ -400,7 +408,7 @@ class Report:
     ) -> Snapshot:
         self._timestamp = timestamp or datetime.now()
         current_dataset = Dataset.from_any(current_data)
-        reference_dataset = Dataset.from_any(reference_data) if reference_data else None
+        reference_dataset = Dataset.from_any(reference_data) if reference_data is not None else None
         snapshot = Snapshot(self)
         snapshot.run(current_dataset, reference_dataset)
         return snapshot
