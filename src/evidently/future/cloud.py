@@ -158,4 +158,4 @@ class CloudClient(CloudClientBase):
     def add_snapshot(self, project_id: ProjectID, snapshot: Snapshot) -> SnapshotID:
         data = snapshot.dump_dict()
         resp = self._request(f"/api/v2/snapshots/{project_id}", method="POST", body=data)
-        return uuid.UUID(resp.text)
+        return uuid.UUID(resp.json()["snapshot_id"])
