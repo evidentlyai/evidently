@@ -1,5 +1,4 @@
 import io
-import json
 import os
 from abc import ABC
 from abc import abstractmethod
@@ -26,6 +25,7 @@ from evidently.ui.api.models import OrgModel
 from evidently.ui.api.service import EVIDENTLY_APPLICATION_NAME
 from evidently.ui.base import Org
 from evidently.ui.base import Project
+from evidently.ui.dashboards import DashboardConfig
 from evidently.ui.storage.common import SECRET_HEADER_NAME
 from evidently.ui.type_aliases import STR_UUID
 from evidently.ui.type_aliases import DatasetID
@@ -48,14 +48,22 @@ class ProjectV2(Project):
 
 
 class WorkspaceBase(ABC):
-    @abstractmethod
     def create_project(
         self,
         name: str,
         description: Optional[str] = None,
         org_id: Optional[OrgID] = None,
     ) -> Project:
-        raise NotImplementedError
+        project = self.add_project(
+            Project(
+                name=name,
+                description=description,
+                dashboard=DashboardConfig(name=name, panels=[]),
+                org_id=org_id,
+            ),
+            org_id,
+        )
+        return project
 
     @abstractmethod
     def add_project(self, project: Project, org_id: Optional[OrgID] = None) -> Project:
@@ -108,6 +116,9 @@ class Workspace(WorkspaceBase, ABC):  # todo: local workspace after UI for v2
 
 
 class RemoteWorkspace(RemoteBase, WorkspaceBase):  # todo: reuse cloud ws
+    def get_url(self):
+        return self.base_url
+
     def verify(self):
         try:
             response = self._request("/api/version", "GET")
@@ -147,16 +158,14 @@ class RemoteWorkspace(RemoteBase, WorkspaceBase):  # todo: reuse cloud ws
             r.headers[SECRET_HEADER_NAME] = self.secret
         return r
 
-    def create_project(self, name: str, description: Optional[str] = None, org_id: Optional[OrgID] = None) -> Project:
-        raise NotImplementedError
-
     def add_project(self, project: Project, org_id: Optional[OrgID] = None) -> Project:
         params = {}
         if org_id:
             params["org_id"] = str(org_id)
-        return self._request(
-            "/api/projects", "POST", query_params=params, body=project.dict(), response_model=ProjectV2
-        ).bind_workspace(self)
+        project_id = self._request(
+            "/api/v2/projects", "POST", query_params=params, body=project.dict(), response_model=ProjectID
+        )
+        return self.get_project(project_id).bind_workspace(self)
 
     def get_project(self, project_id: STR_UUID) -> Optional[Project]:
         try:
@@ -173,10 +182,10 @@ class RemoteWorkspace(RemoteBase, WorkspaceBase):  # todo: reuse cloud ws
                 raise e
 
     def delete_project(self, project_id: STR_UUID):
-        return self._request(f"/api/projects/{project_id}", "DELETE")
+        return self._request(f"/api/v2/projects/{project_id}", "DELETE")
 
     def list_projects(self, org_id: Optional[OrgID] = None) -> Sequence[Project]:
-        projects = self._request("/api/projects", "GET", response_model=List[ProjectV2])
+        projects = self._request("/api/v2/projects", "GET", response_model=List[ProjectV2])
         return [p.bind_workspace(self) for p in projects]
 
     def _add_run(self, project_id: STR_UUID, snapshot: Snapshot):
@@ -316,14 +325,14 @@ class CloudWorkspace(RemoteWorkspace):
                 )
             raise
 
-    def create_org(self, org: Org) -> OrgModel:
-        return self._request("/api/orgs", "POST", body=org.dict(), response_model=OrgModel)
+    def create_org(self, name: str) -> Org:
+        return self._request("/api/orgs", "POST", body=Org(name=name).dict(), response_model=OrgModel).to_org()
 
     def list_orgs(self) -> List[OrgModel]:
-        return self._request("/api/orgs", "GET", response_model=List[OrgModel])
+        return [o.to_org() for o in self._request("/api/orgs", "GET", response_model=List[OrgModel])]
 
     def add_dataset(self, project_id: ProjectID, dataset: Dataset, name: str, description: Optional[str]) -> DatasetID:
-        data_definition = json.dumps(dataset.data_definition.dict())
+        data_definition = dataset.data_definition.json()
         file = NamedBytesIO(b"", "data.parquet")
         dataset.as_dataframe().to_parquet(file)
         file.seek(0)
@@ -334,7 +343,7 @@ class CloudWorkspace(RemoteWorkspace):
                 "name": name,
                 "description": description,
                 "file": file,
-                "data_definition": data_definition,
+                "data_definition_str": data_definition,
             },
             query_params={"project_id": project_id},
             form_data=True,
