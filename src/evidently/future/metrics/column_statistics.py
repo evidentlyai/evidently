@@ -24,7 +24,6 @@ from evidently.future.metric_types import MetricTest
 from evidently.future.metric_types import MetricTestProto
 from evidently.future.metric_types import MetricTestResult
 from evidently.future.metric_types import SingleValue
-from evidently.future.metric_types import SingleValueBoundTest
 from evidently.future.metric_types import SingleValueCalculation
 from evidently.future.metric_types import SingleValueMetric
 from evidently.future.metric_types import TestConfig
@@ -430,6 +429,7 @@ class ValueDriftCalculation(SingleValueCalculation[ValueDrift]):
                 cat_feature_names=[column] if column_type == ColumnType.Categorical else [],
                 text_feature_names=[column] if column_type == ColumnType.Text else [],
                 datetime_feature_names=[column] if column_type == ColumnType.Datetime else [],
+                target_names=None,
             ),
             column_type=column_type,
             agg_data=True,
@@ -440,10 +440,8 @@ class ValueDriftCalculation(SingleValueCalculation[ValueDrift]):
         if self.metric.tests is None and context.configuration.include_tests:
             # todo: move to _default_tests
             result.set_tests(
-                {
-                    SingleValueBoundTest(
-                        metric_fingerprint=self.metric.get_fingerprint(), test=ValueDriftTest()
-                    ): MetricTestResult(
+                [
+                    MetricTestResult(
                         id="drift",
                         name=f"Value Drift for column {self.metric.column}",
                         description=f"Drift score is {drift.drift_score:0.2f}. "
@@ -453,7 +451,7 @@ class ValueDriftCalculation(SingleValueCalculation[ValueDrift]):
                         metric_config=self.to_metric_config(),
                         test_config={},
                     )
-                }
+                ]
             )
         return result
 

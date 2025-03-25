@@ -36,6 +36,9 @@ from evidently._pydantic_compat import BaseModel
 IncludeOptions = Union["AbstractSetIntStr", "MappingIntStrAny"]
 
 
+Label = Union[int, str, None]
+
+
 class ColumnType(Enum):
     Numerical = "num"
     Categorical = "cat"

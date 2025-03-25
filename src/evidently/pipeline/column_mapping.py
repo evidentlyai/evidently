@@ -6,7 +6,7 @@ from typing import Optional
 from typing import Sequence
 from typing import Union
 
-from evidently.metric_results import Label
+from evidently.core import Label
 
 
 class TaskType:
