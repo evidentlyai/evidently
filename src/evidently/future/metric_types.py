@@ -169,6 +169,9 @@ class MetricResult(BaseModel):
     def to_simple_dict(self) -> object:
         raise NotImplementedError()
 
+    def get_widgets(self) -> List[BaseWidgetInfo]:
+        return self.widget or []
+
     def __format__(self, format_spec):
         return str(self)
 

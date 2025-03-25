@@ -129,7 +129,8 @@ class ClassificationLiftTable(Metric[ClassificationLiftTableResults]):
                         prediction.prediction_probas[label],
                     )
                 )
-                lift_table[int(label)] = calculate_lift_table(binded)
+                int_label = int(label) if label is not None else None
+                lift_table[int_label] = calculate_lift_table(binded)
         return lift_table
 
 

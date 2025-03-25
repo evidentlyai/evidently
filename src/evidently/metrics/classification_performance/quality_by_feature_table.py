@@ -191,7 +191,7 @@ class ClassificationQualityByFeatureTableRenderer(MetricRenderer):
         ref_predictions = result.reference.predictions if result.reference is not None else None
         columns = result.columns
         if ref_predictions is not None:
-            labels = np.union1d(curr_predictions.labels, ref_predictions.labels).tolist()
+            labels = list(set(curr_predictions.labels + ref_predictions.labels))
         else:
             labels = curr_predictions.labels
 

@@ -6,6 +6,8 @@ from typing import Optional
 from typing import Sequence
 from typing import Union
 
+from evidently.metric_results import Label
+
 
 class TaskType:
     REGRESSION_TASK: str = "regression"
@@ -18,7 +20,7 @@ class RecomType(str, Enum):
     RANK = "rank"
 
 
-TargetNames = Union[List[Union[int, str]], Dict[Union[int, str], str]]
+TargetNames = Union[List[Label], Dict[Label, str]]
 Embeddings = Dict[str, List[str]]
 
 

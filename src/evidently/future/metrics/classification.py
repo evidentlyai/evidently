@@ -65,7 +65,7 @@ class ClassificationQuality(ClassificationQualityBase):
 
 
 TByLabelMetric = TypeVar("TByLabelMetric", bound=ClassificationQualityByLabel)
-TSingleValueMetric = TypeVar("TSingleValueMetric", bound=ClassificationQuality)
+TSingleValueMetric = TypeVar("TSingleValueMetric", bound=ClassificationQualityBase)
 
 
 def _gen_classification_input_data(context: "Context") -> InputData:
@@ -196,7 +196,7 @@ class RocAucByLabelCalculation(LegacyClassificationQualityByClass[RocAucByLabel]
     ) -> Tuple[ByLabelValue, Optional[ByLabelValue]]:
         return self.collect_by_label_result(
             context,
-            lambda x: x.roc_auc,
+            lambda x: x.roc_auc if x.roc_auc is not None else 0.0,
             legacy_result.current.metrics,
             None if legacy_result.reference is None else legacy_result.reference.metrics,
         )

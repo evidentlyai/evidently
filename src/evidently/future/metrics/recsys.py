@@ -8,6 +8,7 @@ from typing import TypeVar
 
 from evidently.future.metric_types import BoundTest
 from evidently.future.metric_types import SingleValue
+from evidently.future.metric_types import SingleValueCalculation
 from evidently.future.metric_types import SingleValueMetric
 from evidently.future.metric_types import TMetricResult
 from evidently.future.metrics._legacy import LegacyMetricCalculation
@@ -50,6 +51,7 @@ class LegacyTopKCalculation(
         TopKMetricResult,
         TopKMetric,
     ],
+    SingleValueCalculation,
     Generic[TTopKBase],
     ABC,
 ):
@@ -63,10 +65,10 @@ class LegacyTopKCalculation(
     def calculate_value(
         self, context: "Context", legacy_result: TopKMetricResult, render: List[BaseWidgetInfo]
     ) -> TMetricResult:
-        current = SingleValue(legacy_result.current[legacy_result.k - 1], self.display_name())
+        current = self.result(legacy_result.current[legacy_result.k - 1])
         if legacy_result.reference is None:
             return current
-        return current, SingleValue(legacy_result.reference[legacy_result.k - 1], self.display_name())
+        return current, self.result(legacy_result.reference[legacy_result.k - 1])
 
 
 class NDCG(TopKBase):

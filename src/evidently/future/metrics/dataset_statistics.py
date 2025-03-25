@@ -12,8 +12,8 @@ from evidently.future.metric_types import BoundTest
 from evidently.future.metric_types import SingleValue
 from evidently.future.metric_types import SingleValueCalculation
 from evidently.future.metric_types import SingleValueMetric
-from evidently.future.metric_types import TMetric
 from evidently.future.metric_types import TResult
+from evidently.future.metric_types import TSingleValueMetric
 from evidently.future.metrics._legacy import LegacyMetricCalculation
 from evidently.future.tests import Reference
 from evidently.future.tests import eq
@@ -97,9 +97,9 @@ TLegacyResult = TypeVar("TLegacyResult", bound=LegacyMetricResult)
 
 
 class DatasetSummaryBasedMetricCalculation(
-    LegacyMetricCalculation[TResult, TMetric, DatasetSummaryMetricResult, DatasetSummaryMetric],
-    SingleValueCalculation[TMetric],
-    Generic[TResult, TMetric],
+    LegacyMetricCalculation[TResult, TSingleValueMetric, DatasetSummaryMetricResult, DatasetSummaryMetric],
+    SingleValueCalculation[TSingleValueMetric],
+    Generic[TResult, TSingleValueMetric],
     abc.ABC,
 ):
     _legacy_metric: Optional[DatasetSummaryMetric] = None

@@ -122,7 +122,7 @@ class ValueStats(ColumnMetricContainer):
     def _render_numerical(self, context: "Context") -> List[BaseWidgetInfo]:
         result = context.get_metric_result(
             MinValue(column=self._column, tests=self._min_tests).get_metric_id(),
-        ).widget[0]
+        ).get_widgets()[0]
         return [
             rich_data(
                 title=self._column,
@@ -167,7 +167,7 @@ class ValueStats(ColumnMetricContainer):
     def _render_categorical(self, context: "Context") -> List[BaseWidgetInfo]:
         result = context.get_metric_result(
             UniqueValueCount(column=self._column, tests=self._unique_values_count_tests),
-        ).widget[0]
+        ).get_widgets()[0]
         return [
             rich_data(
                 title=self._column,
@@ -202,7 +202,7 @@ class ValueStats(ColumnMetricContainer):
         unique_value_count = UniqueValueCount(column=self._column, tests=self._unique_values_count_tests)
         result = context.get_metric_result(
             unique_value_count,
-        ).widget[0]
+        ).get_widgets()[0]
         return [
             rich_data(
                 title=self._column,
@@ -236,7 +236,7 @@ class ValueStats(ColumnMetricContainer):
         raise NotImplementedError()
 
     def _render_datetime(self, context: "Context") -> List[BaseWidgetInfo]:
-        result = context.get_metric_result(MinValue(column=self._column, tests=[]).get_metric_id()).widget[0]
+        result = context.get_metric_result(MinValue(column=self._column, tests=[]).get_metric_id()).get_widgets()[0]
         return [
             rich_data(
                 title=self._column,
@@ -348,8 +348,8 @@ class DatasetStats(MetricContainer):
         context: "Context",
         child_widgets: Optional[List[Tuple[Optional[MetricId], List[BaseWidgetInfo]]]] = None,
     ) -> List[BaseWidgetInfo]:
-        metric = DatasetSummaryMetric()
-        _, render = context.get_legacy_metric(metric, _default_input_data_generator)
+        legacy_metric = DatasetSummaryMetric()
+        _, render = context.get_legacy_metric(legacy_metric, _default_input_data_generator)
         for metric in self.list_metrics(context):
             link_metric(render, metric)
         return render

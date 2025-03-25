@@ -172,7 +172,7 @@ class RegressionPreset(MetricContainer):
             self._quality.render(context)
             + context.get_metric_result(
                 MAPE(mean_tests=self._mape_tests.mean, std_tests=self._mape_tests.std),
-            ).widget
-            + context.get_metric_result(AbsMaxError(tests=self._abs_max_error_tests)).widget
-            + context.get_metric_result(R2Score(tests=self._r2score_tests)).widget
+            ).get_widgets()
+            + context.get_metric_result(AbsMaxError(tests=self._abs_max_error_tests)).get_widgets()
+            + context.get_metric_result(R2Score(tests=self._r2score_tests)).get_widgets()
         )

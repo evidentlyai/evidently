@@ -130,7 +130,7 @@ def create_llm_descriptor_functions(feature_class: Type[BaseLLMEval]):
     if name.endswith("Feature"):
         name = name[: -len("Feature")]
 
-    args, kwargs = get_args_kwargs(feature_class)
+    args, kwargs = get_args_kwargs(feature_class)  # type: ignore[arg-type]
     kwargs["alias"] = ("Optional[str]", "None")
     has_display_name = kwargs.pop("display_name", None) is not None
     args_str = ", ".join(f"{a}: {t}" for a, t in args.items())

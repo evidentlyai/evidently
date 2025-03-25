@@ -293,7 +293,7 @@ class Snapshot:
             else:
                 calc = item.to_calculation()
                 metric_results[calc.id] = self.context.calculate_metric(calc)
-                widget = metric_results[calc.id].widget
+                widget = metric_results[calc.id].get_widgets()
                 widgets.extend(widget)
                 snapshot_items.append(SnapshotItem(calc.id, widget))
         return snapshot_items, widgets
@@ -303,7 +303,8 @@ class Snapshot:
         self._metrics = {}
         self._snapshot_item, self._widgets = self._run_items(self.report.items(), self._metrics)
         self._top_level_metrics = list(self.context._metrics_graph.keys())
-        tests = list(chain(*[self._metrics.get(result).tests for result in self._top_level_metrics]))
+        metrics_results = [self._metrics.get(result) for result in self._top_level_metrics]
+        tests = list(chain(*[result.tests for result in metrics_results if result is not None]))
         if len(tests) > 0:
             self._tests_widgets = [
                 metric_tests_stats(tests),
@@ -325,13 +326,13 @@ class Snapshot:
         results = [
             (
                 metric,
-                self._metrics.get(metric).widget,
+                self._metrics.get(metric).get_widgets(),
                 self._metrics.get(metric),
             )
             for metric in self._top_level_metrics
         ]
 
-        tests = list(chain(*[result[2].tests.values() for result in results]))
+        tests = list(chain(*[result[2].tests for result in results]))
         widgets = [w for w in self._widgets if fingerprint in (w.linked_metrics or [])]
         widgets_to_render: List[BaseWidgetInfo] = [group_widget(title="", widgets=widgets)]
 
@@ -343,14 +344,14 @@ class Snapshot:
     def dict(self) -> dict:
         return {
             "metrics": [
-                self._metrics.get(metric).to_dict()  # type: ignore[attr-defined]
+                self._metrics.get(metric).to_dict() if self._metrics.get(metric) is not None else {}
                 for metric in self._top_level_metrics
             ],
-            "tests": {
-                test.get_fingerprint(): test_result.dict()
+            "tests": [
+                test_result.dict()
                 for metric in self._top_level_metrics
-                for test, test_result in self._metrics.get(metric).tests.items()  # type: ignore[attr-defined]
-            },
+                for test_result in self._metrics.get(metric).tests
+            ],
         }
 
     def json(self) -> str:
