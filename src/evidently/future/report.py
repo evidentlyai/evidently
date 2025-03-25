@@ -23,11 +23,16 @@ from evidently.future.datasets import DataDefinition
 from evidently.future.datasets import Dataset
 from evidently.future.datasets import DatasetColumn
 from evidently.future.datasets import PossibleDatasetTypes
+from evidently.future.metric_types import ByLabelCountValue
+from evidently.future.metric_types import ByLabelValue
+from evidently.future.metric_types import CountValue
+from evidently.future.metric_types import MeanStdValue
 from evidently.future.metric_types import Metric
 from evidently.future.metric_types import MetricCalculationBase
 from evidently.future.metric_types import MetricId
 from evidently.future.metric_types import MetricResult
 from evidently.future.metric_types import MetricTestResult
+from evidently.future.metric_types import SingleValue
 from evidently.future.metric_types import metric_tests_widget
 from evidently.future.metric_types import render_widgets
 from evidently.future.serialization import ReportModel
@@ -257,7 +262,7 @@ class SnapshotItem:
 class Snapshot:
     _report: "Report"
     _context: Context  # stores report calculation progress
-    _metrics: Dict[MetricId, MetricResult]
+    _metrics: Dict[MetricId, Union[SingleValue, ByLabelValue, CountValue, MeanStdValue, ByLabelCountValue]]
     _snapshot_item: List[SnapshotItem]
     _widgets: List[BaseWidgetInfo]
     _tests_widgets: List[BaseWidgetInfo]
@@ -280,7 +285,9 @@ class Snapshot:
         return self._report
 
     def _run_items(
-        self, items: Sequence[MetricOrContainer], metric_results: Dict[MetricId, MetricResult]
+        self,
+        items: Sequence[MetricOrContainer],
+        metric_results: Dict[MetricId, Union[SingleValue, ByLabelValue, CountValue, MeanStdValue, ByLabelCountValue]],
     ) -> Tuple[List[SnapshotItem], List[BaseWidgetInfo]]:
         widgets: List[BaseWidgetInfo] = []
         snapshot_items: List[SnapshotItem] = []
@@ -326,8 +333,8 @@ class Snapshot:
         results = [
             (
                 metric,
-                self._metrics.get(metric).get_widgets(),
-                self._metrics.get(metric),
+                self._metrics[metric].get_widgets(),
+                self._metrics[metric],
             )
             for metric in self._top_level_metrics
         ]
@@ -340,19 +347,6 @@ class Snapshot:
             widgets_to_render.append(metric_tests_stats(tests))
             widgets_to_render.append(metric_tests_widget(tests))
         return HTML(render_widgets(widgets_to_render))
-
-    def dict(self) -> dict:
-        return {
-            "metrics": [
-                self._metrics.get(metric).to_dict() if self._metrics.get(metric) is not None else {}
-                for metric in self._top_level_metrics
-            ],
-            "tests": [
-                test_result.dict()
-                for metric in self._top_level_metrics
-                for test_result in self._metrics.get(metric).tests
-            ],
-        }
 
     def json(self) -> str:
         return json.dumps(self.dict(), cls=NumpyEncoder)
@@ -404,6 +398,17 @@ class Snapshot:
         snapshot._widgets = model.widgets
         snapshot._tests_widgets = model.tests_widgets
         return snapshot
+
+    def dict(self) -> dict:
+        return {
+            "metrics": [
+                self._metrics[metric].to_dict() if self._metrics.get(metric) is not None else {}
+                for metric in self._top_level_metrics
+            ],
+            "tests": [
+                test_result.dict() for metric in self._top_level_metrics for test_result in self._metrics[metric].tests
+            ],
+        }
 
 
 class Report:

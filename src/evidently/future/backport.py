@@ -115,7 +115,7 @@ class MeanStdValueV1(MetricResultV2Adapter):
 def _create_metric_result_widget(metric_result: MetricResultV2, ignore_widget: bool) -> List[dict]:
     if ignore_widget:
         return []
-    widgets = list(metric_result.widget)
+    widgets = list(metric_result.get_widgets())
     return [w.dict() for w in widgets]
 
 
@@ -248,7 +248,7 @@ def snapshot_v2_to_v1(snapshot: SnapshotV2) -> SnapshotV1:
 
             for test_result in metric_result.tests or []:
                 tests_v2.append(test_result)
-                tests.append(TestV2Adapter(test=test_result.test_config))
+                tests.append(TestV2Adapter(test=test_result.test_config, result=test_result))
                 test_results.append(
                     TestResultV1(
                         name=test_result.name,
@@ -273,7 +273,7 @@ def snapshot_v2_to_v1(snapshot: SnapshotV2) -> SnapshotV1:
 
         for test_result in metric_result.tests or []:
             tests_v2.append(test_result)
-            tests.append(TestV2Adapter(test=test_result.test_config))
+            tests.append(TestV2Adapter(test=test_result.test_config, result=test_result))
             test_results.append(
                 TestResultV1(
                     name=test_result.name,
@@ -373,6 +373,7 @@ class TestV2Adapter(TestV1):
     group: ClassVar[str] = "TestV2Adapter"
     # fixme: needed for deduplication
     test: dict
+    result: MetricTestResult
 
     def check(self) -> TestResultV1:
         raise NotImplementedError

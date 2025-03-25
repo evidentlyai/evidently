@@ -164,7 +164,8 @@ class ScoreDistribution(SingleValueMetric):
 
 
 class ScoreDistributionCalculation(
-    LegacyMetricCalculation[SingleValue, ScoreDistribution, ScoreDistributionResult, ScoreDistributionLegacy]
+    LegacyMetricCalculation[SingleValue, ScoreDistribution, ScoreDistributionResult, ScoreDistributionLegacy],
+    SingleValueCalculation,
 ):
     def legacy_metric(self) -> ScoreDistributionLegacy:
         return ScoreDistributionLegacy(k=self.metric.k)
@@ -172,10 +173,10 @@ class ScoreDistributionCalculation(
     def calculate_value(
         self, context: "Context", legacy_result: ScoreDistributionResult, render: List[BaseWidgetInfo]
     ) -> TMetricResult:
-        current = SingleValue(legacy_result.current_entropy, self.display_name())
+        current = self.result(legacy_result.current_entropy)
         if legacy_result.reference_entropy is None:
             return current
-        return current, SingleValue(legacy_result.reference_entropy, self.display_name())
+        return current, self.result(legacy_result.reference_entropy)
 
     def display_name(self) -> str:
         return "Score distribution"

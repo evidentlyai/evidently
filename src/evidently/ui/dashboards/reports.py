@@ -203,7 +203,7 @@ class DashboardPanelDistribution(DashboardPanel):
             names.update(data.keys())
             snapshot_ids.append(snapshot_id)
 
-        names_sorted = list(sorted(names))
+        names_sorted = list(sorted([x for x in names if x is not None])) + ([None] if None in names else [])
         name_to_date_value: Dict[Label, List[Any]] = defaultdict(list)
         name_to_snapshot_id: Dict[Label, List[SnapshotID]] = defaultdict(list)
         for timestamp, snapshot_id, data in zip(timestamps, snapshot_ids, values):

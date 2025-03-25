@@ -16,6 +16,7 @@ from evidently.future.tests.reference import Reference
 from evidently.utils.types import ApproxValue
 
 ThresholdType = Union[float, int, ApproxValue, Reference]
+ThresholdValue = Union[float, int, ApproxValue]
 
 
 class ComparisonTest(MetricTest):
@@ -25,12 +26,12 @@ class ComparisonTest(MetricTest):
     __reference_relation__: ClassVar[str]
 
     @abc.abstractmethod
-    def check(self, value: Value, threshold: Value) -> bool:
+    def check(self, value: Value, threshold: ThresholdValue) -> bool:
         raise NotImplementedError
 
     def to_test(self) -> SingleValueTest:
         def func(context: Context, metric: MetricCalculationBase, value: SingleValue):
-            threshold = self.get_threshold(context, value.metric_value_location)
+            threshold = self.get_threshold(context, value.get_metric_value_location())
             title_threshold = f"{threshold:0.3f}"
             if isinstance(self.threshold, Reference):
                 title_threshold = "Reference"
@@ -61,7 +62,7 @@ class LessOrEqualMetricTest(ComparisonTest):
     __full_name__: ClassVar[str] = "Less or Equal"
     __reference_relation__ = "less"
 
-    def check(self, value: Value, threshold: Value) -> bool:
+    def check(self, value: Value, threshold: ThresholdValue) -> bool:
         return value <= threshold
 
 
@@ -74,7 +75,7 @@ class GreaterOrEqualMetricTest(ComparisonTest):
     __full_name__: ClassVar[str] = "Greater or Equal"
     __reference_relation__: ClassVar[str] = "greater"
 
-    def check(self, value: Value, threshold: Value):
+    def check(self, value: Value, threshold: ThresholdValue):
         return value >= threshold
 
 
@@ -87,7 +88,7 @@ class GreaterThanMetricTest(ComparisonTest):
     __full_name__: ClassVar[str] = "Greater"
     __reference_relation__: ClassVar[str] = "greater"
 
-    def check(self, value: Value, threshold: Value):
+    def check(self, value: Value, threshold: ThresholdValue):
         return value > threshold
 
 
@@ -100,7 +101,7 @@ class LessThanMetricTest(ComparisonTest):
     __full_name__: ClassVar[str] = "Less"
     __reference_relation__ = "less"
 
-    def check(self, value: Value, threshold: Value):
+    def check(self, value: Value, threshold: ThresholdValue):
         return value < threshold
 
 
@@ -114,7 +115,7 @@ class EqualMetricTestBase(MetricTest, abc.ABC):
     def is_equal(self, context: Context, value: SingleValue):
         expected: Union[float, int, ApproxValue]
         if isinstance(self.expected, Reference):
-            result = value.metric_value_location.value(context, DatasetType.Reference)
+            result = value.get_metric_value_location().value(context, DatasetType.Reference)
             expected = ApproxValue(result.value, self.expected.relative, self.expected.absolute)
         else:
             expected = self.expected

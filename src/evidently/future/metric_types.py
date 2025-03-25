@@ -172,6 +172,10 @@ class MetricResult(BaseModel):
     def get_widgets(self) -> List[BaseWidgetInfo]:
         return self.widget or []
 
+    def get_metric_value_location(self) -> MetricValueLocation:
+        assert self.metric_value_location, "Metric Value location should be set in all metric results"
+        return self.metric_value_location
+
     def __format__(self, format_spec):
         return str(self)
 

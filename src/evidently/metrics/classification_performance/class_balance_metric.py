@@ -1,11 +1,11 @@
 from typing import Dict
 from typing import List
 from typing import Optional
-from typing import Union
 
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
+from evidently.core import Label
 from evidently.metric_results import Histogram
 from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import MetricRenderer
@@ -39,7 +39,7 @@ class ClassificationClassBalance(Metric[ClassificationClassBalanceResult]):
         ref_target = None
         if data.reference_data is not None:
             ref_target = data.reference_data[target_name]
-        target_names: Optional[Dict[Union[int, str], str]]
+        target_names: Optional[Dict[Label, str]]
         if isinstance(dataset_columns.target_names, list):
             target_names = {idx: str(val) for idx, val in enumerate(dataset_columns.target_names)}
         else:

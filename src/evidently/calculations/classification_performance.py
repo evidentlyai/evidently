@@ -14,11 +14,11 @@ from pandas.core.dtypes.common import is_object_dtype
 from pandas.core.dtypes.common import is_string_dtype
 from sklearn import metrics
 
+from evidently.core import Label
 from evidently.metric_results import Boxes
 from evidently.metric_results import ConfusionMatrix
 from evidently.metric_results import DatasetClassificationQuality
 from evidently.metric_results import DatasetColumns
-from evidently.metric_results import Label
 from evidently.metric_results import PredictionData
 from evidently.metric_results import RatesPlotData
 from evidently.pipeline.column_mapping import ColumnMapping
@@ -29,7 +29,7 @@ if TYPE_CHECKING:
 
 def calculate_confusion_by_classes(
     confusion_matrix: np.ndarray, class_names: Sequence[Union[str, int, None]]
-) -> Dict[Union[str, int], Dict[str, int]]:
+) -> Dict[Label, Dict[str, int]]:
     """Calculate metrics:
     - TP (true positive)
     - TN (true negative)
@@ -321,7 +321,7 @@ def calculate_lift_table(binded):
 
 
 def calculate_matrix(target: pd.Series, prediction: pd.Series, labels: List[Label]) -> ConfusionMatrix:
-    sorted_labels = sorted(labels)
+    sorted_labels = sorted(labels)  # type: ignore[type-var]
     matrix = metrics.confusion_matrix(target, prediction, labels=sorted_labels)
     return ConfusionMatrix(labels=sorted_labels, values=[row.tolist() for row in matrix])
 

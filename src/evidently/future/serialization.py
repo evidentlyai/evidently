@@ -12,6 +12,7 @@ from evidently.future.metric_types import MeanStdValue
 from evidently.future.metric_types import MetricId
 from evidently.future.metric_types import SingleValue
 from evidently.model.widget import BaseWidgetInfo
+from evidently.suite.base_suite import MetadataValueType
 
 
 class MetricReportItem(BaseModel):
@@ -30,7 +31,7 @@ class ReportModel(BaseModel):
 class SnapshotModel(BaseModel):
     report: ReportModel
     timestamp: Optional[datetime]
-    metadata: Dict[str, str]
+    metadata: Dict[str, MetadataValueType]
     tags: List[str]
     metric_results: Dict[MetricId, Union[SingleValue, ByLabelValue, CountValue, MeanStdValue, ByLabelCountValue]]
     top_level_metrics: List[MetricId]
