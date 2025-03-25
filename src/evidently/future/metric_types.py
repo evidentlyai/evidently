@@ -1,8 +1,7 @@
 import abc
-import dataclasses
 import enum
 import inspect
-import itertools
+import typing
 import uuid
 from abc import ABC
 from abc import abstractmethod
@@ -183,8 +182,7 @@ def render_widgets(widgets: List[BaseWidgetInfo]):
             else:
                 items.append(DetailsInfo(title="", info=additional_graph, id=additional_graph.id))
     additional_graphs = {
-        f"{item.id}": dataclasses.asdict(item.info) if dataclasses.is_dataclass(item.info) else item.info
-        for item in items
+        f"{item.id}": item.info.dict() if isinstance(item.info, BaseWidgetInfo) else item.info for item in items
     }
     dashboard_id, dashboard_info = (
         "metric_" + str(uuid.uuid4()).replace("-", ""),
@@ -207,7 +205,13 @@ def render_results(results: Union[TMetricReturn, List[TMetricReturn]], html=True
         data = [results]
     else:
         data = results
-    widgets = list(itertools.chain(*[item[0].widget + [] if item[1] is None else item[1].widget for item in data]))
+    widgets = []
+    for item in data:
+        if item[1] is None and item[0].widget is not None:
+            widgets.extend(item[0].widget)
+            continue
+        if item[1] is not None and item[1].widget is not None:
+            widgets.extend(item[1].widget)
     result = render_widgets(widgets)
     if html:
         try:
@@ -656,7 +660,7 @@ class BoundTest(AutoAliasMixin, EvidentlyBaseModel, Generic[TResult], ABC):
         raise NotImplementedError(self.__class__)
 
 
-TCalculation = TypeVar("TCalculation", bound="MetricCalculation")
+TCalculation = TypeVar("TCalculation")
 
 
 class Metric(AutoAliasMixin, EvidentlyBaseModel, Generic[TCalculation]):
@@ -666,16 +670,21 @@ class Metric(AutoAliasMixin, EvidentlyBaseModel, Generic[TCalculation]):
         is_base_type = True
         smart_union = True
 
-    __calculation_type__: ClassVar[Type[TCalculation]]
+    __calculation_type__: ClassVar[Type]
 
     def __get_calculation_type__(self) -> Type[TCalculation]:
         if not hasattr(self, "__calculation_type__"):
             raise ValueError(f"{self.__class__.__name__} is not binded to Calculation type")
-        return self.__calculation_type__
+        if not issubclass(self.__calculation_type__, MetricCalculation):
+            raise ValueError(f"{self.__class__.__name__} __calculation_type__ is not a subclass of MetricCalculation")
+        return typing.cast(Type[TCalculation], self.__calculation_type__)
 
     def to_calculation(self) -> TCalculation:
         metric_type = self.__get_calculation_type__()
-        return metric_type(self.get_metric_id(), self)
+        if not issubclass(metric_type, MetricCalculation):
+            raise ValueError(f"{self.__class__.__name__} __calculation_type__ is not a subclass of MetricCalculation")
+
+        return typing.cast(TCalculation, metric_type(self.get_metric_id(), self))
 
     def get_metric_id(self) -> str:
         return self.get_fingerprint()
@@ -707,7 +716,10 @@ class Metric(AutoAliasMixin, EvidentlyBaseModel, Generic[TCalculation]):
         return self._default_tests(context)
 
     def call(self, context: "Context"):
-        return self.to_calculation().call(context)
+        calculation = self.to_calculation()
+        if not isinstance(calculation, MetricCalculation):
+            raise ValueError(f"{self.__class__.__name__} __calculation_type__ is not a subclass of MetricCalculation")
+        return calculation.call(context)
 
     @abstractmethod
     def get_bound_tests(self, context: "Context") -> Sequence[BoundTest]:
@@ -758,7 +770,7 @@ class SingleValueBoundTest(BoundTest[SingleValue]):
 SingleValueMetricTests = Optional[List[MetricTest]]
 
 
-class SingleValueMetric(Metric[TSingleValueMetricCalculation]):
+class SingleValueMetric(Metric):
     tests: SingleValueMetricTests = None
 
     def get_bound_tests(self, context: "Context") -> List[BoundTest]:
@@ -773,9 +785,9 @@ TSingleValueMetric = TypeVar("TSingleValueMetric", bound=SingleValueMetric)
 
 class SingleValueCalculation(MetricCalculation[SingleValue, TSingleValueMetric], Generic[TSingleValueMetric], ABC):
     def result(self, value: Value) -> SingleValue:
-        value = SingleValue(value=value, display_name=self.display_name())
-        value.metric_value_location = single_value_location(self.to_metric_config())
-        return value
+        result = SingleValue(value=value, display_name=self.display_name())
+        result.metric_value_location = single_value_location(self.to_metric_config())
+        return result
 
 
 class ByLabelBoundTest(BoundTest[ByLabelValue]):
@@ -794,7 +806,7 @@ class ByLabelBoundTest(BoundTest[ByLabelValue]):
 ByLabelMetricTests = Optional[Dict[Label, List[MetricTest]]]
 
 
-class ByLabelMetric(Metric["ByLabelCalculation"]):
+class ByLabelMetric(Metric):
     tests: ByLabelMetricTests = None
 
     def get_bound_tests(self, context: "Context") -> List[BoundTest]:
@@ -864,7 +876,7 @@ class ByLabelCountBoundTest(BoundTest[ByLabelCountValue]):
         return self.test.run(context, calculation, value[0] if self.slot == "count" else value[1])
 
 
-class ByLabelCountMetric(Metric["ByLabelCountCalculation"]):
+class ByLabelCountMetric(Metric):
     tests: Optional[Dict[Label, List[MetricTest]]] = None
     share_tests: Optional[Dict[Label, List[MetricTest]]] = None
 
@@ -937,7 +949,7 @@ class CountBoundTest(BoundTest[CountValue]):
         )
 
 
-class CountMetric(Metric["CountCalculation"]):
+class CountMetric(Metric):
     tests: SingleValueMetricTests = None
     share_tests: SingleValueMetricTests = None
 
@@ -997,7 +1009,7 @@ class MeanStdMetricTests(BaseModel):
     std: SingleValueMetricTests = None
 
 
-class MeanStdMetric(Metric["MeanStdCalculation"]):
+class MeanStdMetric(Metric):
     mean_tests: SingleValueMetricTests = None
     std_tests: SingleValueMetricTests = None
 
