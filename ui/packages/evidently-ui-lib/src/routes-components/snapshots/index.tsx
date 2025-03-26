@@ -79,7 +79,7 @@ export const SnapshotsListTemplate = ({
   }
   onReloadSnapshots: () => void
   onDeleteSnapshot: ({ snapshotId }: { snapshotId: string }) => void
-  downloadLink: string
+  downloadLink: DownloadSnapshotURL
 }) => {
   const [sortByTimestamp, setSortByTimestamp] = useState<undefined | 'desc' | 'asc'>('desc')
   const [isCollapsedJson, setIsCollapsedJson] = useLocalStorage('show-full-json-metadata', false)
@@ -282,7 +282,7 @@ export const SnapshotsListTemplate = ({
                         disabled={disabled ?? false}
                         downloadLink={
                           // better type safety
-                          (downloadLink satisfies DownloadSnapshotURL)
+                          downloadLink
                             .replace('{project_id}', projectId)
                             .replace('{snapshot_id}', snapshot.id)
                         }
