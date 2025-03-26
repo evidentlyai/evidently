@@ -282,7 +282,7 @@ class ByLabelValue(MetricResult):
             v.metric_value_location = by_label_location(metric, k)
 
     def to_simple_dict(self) -> object:
-        return self.values
+        return {k: v.value for k, v in self.values.items()}
 
 
 class ByLabelCountValue(MetricResult):
@@ -298,7 +298,10 @@ class ByLabelCountValue(MetricResult):
         return count, share
 
     def to_simple_dict(self) -> object:
-        return {"counts": self.counts, "shares": self.shares}
+        return {
+            "counts": {k: v.value for k, v in self.counts.items()},
+            "shares": {k: v.value for k, v in self.shares.items()},
+        }
 
     def set_metric_location(self, metric: MetricConfig):
         self.metric_value_location = single_value_location(metric)
@@ -320,8 +323,8 @@ class CountValue(MetricResult):
 
     def to_simple_dict(self) -> object:
         return {
-            "count": self.count.dict(),
-            "share": self.share.dict(),
+            "count": self.count.value,
+            "share": self.share.value,
         }
 
     def set_metric_location(self, metric: MetricConfig):
@@ -345,8 +348,8 @@ class MeanStdValue(MetricResult):
 
     def to_simple_dict(self) -> object:
         return {
-            "mean": self.mean,
-            "std": self.std,
+            "mean": self.mean.value,
+            "std": self.std.value,
         }
 
     def __format__(self, format_spec):

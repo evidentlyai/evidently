@@ -2,6 +2,7 @@ import pandas as pd
 import pytest
 
 from evidently.future.datasets import Dataset
+from evidently.future.metrics import CategoryCount
 from evidently.future.metrics import MinValue
 from evidently.future.report import Report
 from evidently.future.report import Snapshot
@@ -23,7 +24,12 @@ from evidently.future.tests import lt
     ],
 )
 def test_report_run(current, reference):
-    report = Report([MinValue(column="a", tests=[lt(1)])])
+    report = Report(
+        [
+            MinValue(column="a", tests=[lt(1)]),
+            CategoryCount(column="a", category=1),
+        ]
+    )
 
     snapshot = report.run(current_data=current, reference_data=reference)
     assert snapshot is not None
@@ -32,3 +38,4 @@ def test_report_run(current, reference):
     snapshot_2 = Snapshot.loads(data)
     assert snapshot_2 is not None
     assert snapshot.dumps() == snapshot_2.dumps()
+    snapshot.json()
