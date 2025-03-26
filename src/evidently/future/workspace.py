@@ -11,9 +11,9 @@ from typing import Sequence
 from typing import Type
 from typing import Union
 from typing import overload
-from urllib.error import HTTPError
 
 import pandas as pd
+from requests import HTTPError
 from requests import Response
 
 from evidently._pydantic_compat import PrivateAttr
@@ -89,7 +89,7 @@ class WorkspaceBase(ABC):
         if include_data:
             current, reference = run.context._input_data
             # todo
-            run_id = run.id  # type:ignore[attr]
+            run_id = run.id  # type:ignore[attr-defined]
             self.add_dataset(project_id, current, f"run-current-{run_id}", None)
             # todo: run.links.datasets.output.current = current_id
             if reference is not None:
@@ -107,7 +107,7 @@ class WorkspaceBase(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def add_dataset(self, project_id: ProjectID, dataset: Dataset, name: str, description: Optional[str]) -> DatasetID:
+    def add_dataset(self, project_id: STR_UUID, dataset: Dataset, name: str, description: Optional[str]) -> DatasetID:
         raise NotImplementedError
 
 
@@ -165,7 +165,9 @@ class RemoteWorkspace(RemoteBase, WorkspaceBase):  # todo: reuse cloud ws
         project_id = self._request(
             "/api/v2/projects", "POST", query_params=params, body=project.dict(), response_model=ProjectID
         )
-        return self.get_project(project_id).bind_workspace(self)
+        p = self.get_project(project_id)
+        assert p is not None
+        return p
 
     def get_project(self, project_id: STR_UUID) -> Optional[Project]:
         try:
@@ -198,7 +200,7 @@ class RemoteWorkspace(RemoteBase, WorkspaceBase):  # todo: reuse cloud ws
         projects = self._request(f"/api/projects/search/{project_name}", "GET", response_model=List[ProjectV2])
         return [p.bind_workspace(self) for p in projects]
 
-    def add_dataset(self, project_id: ProjectID, dataset: Dataset, name: str, description: Optional[str]) -> DatasetID:
+    def add_dataset(self, project_id: STR_UUID, dataset: Dataset, name: str, description: Optional[str]) -> DatasetID:
         raise NotImplementedError("Adding datasets is not supported yet")
 
 
@@ -331,7 +333,7 @@ class CloudWorkspace(RemoteWorkspace):
     def list_orgs(self) -> List[OrgModel]:
         return [o.to_org() for o in self._request("/api/orgs", "GET", response_model=List[OrgModel])]
 
-    def add_dataset(self, project_id: ProjectID, dataset: Dataset, name: str, description: Optional[str]) -> DatasetID:
+    def add_dataset(self, project_id: STR_UUID, dataset: Dataset, name: str, description: Optional[str]) -> DatasetID:
         data_definition = dataset.data_definition.json()
         file = NamedBytesIO(b"", "data.parquet")
         dataset.as_dataframe().to_parquet(file)
