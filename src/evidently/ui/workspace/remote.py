@@ -15,11 +15,11 @@ from typing import Union
 from typing import overload
 from urllib.error import HTTPError
 
+from pydantic import parse_obj_as
 from requests import Request
 from requests import Response
 from requests import Session
 
-from evidently._pydantic_compat import parse_obj_as
 from evidently.errors import EvidentlyError
 from evidently.suite.base_suite import Snapshot
 from evidently.ui.api.service import EVIDENTLY_APPLICATION_NAME

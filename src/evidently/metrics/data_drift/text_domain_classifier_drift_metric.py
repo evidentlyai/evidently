@@ -1,3 +1,4 @@
+from typing import ClassVar
 from typing import List
 from typing import Optional
 from typing import Tuple
@@ -26,21 +27,19 @@ from evidently.renderers.html_widgets import widget_tabs
 
 
 class TextDomainField(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:TextDomainField"
+    __type_alias__: ClassVar = "evidently:metric_result:TextDomainField"
 
     characteristic_examples: Optional[List[str]]
     characteristic_words: Optional[List[str]]
 
 
 class TextDomainClassifierDriftResult(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:TextDomainClassifierDriftResult"
-        field_tags = {
-            "current": {IncludeTags.Current, IncludeTags.Extra},
-            "reference": {IncludeTags.Reference, IncludeTags.Extra},
-            "text_column_name": {IncludeTags.Parameter},
-        }
+    __type_alias__: ClassVar = "evidently:metric_result:TextDomainClassifierDriftResult"
+    __field_tags__: ClassVar = {
+        "current": {IncludeTags.Current, IncludeTags.Extra},
+        "reference": {IncludeTags.Reference, IncludeTags.Extra},
+        "text_column_name": {IncludeTags.Parameter},
+    }
 
     text_column_name: str
     domain_classifier_roc_auc: float
@@ -51,8 +50,7 @@ class TextDomainClassifierDriftResult(MetricResult):
 
 
 class TextDomainClassifierDriftMetric(Metric[TextDomainClassifierDriftResult]):
-    class Config:
-        type_alias = "evidently:metric:TextDomainClassifierDriftMetric"
+    __type_alias__: ClassVar = "evidently:metric:TextDomainClassifierDriftMetric"
 
     text_column_name: str
 

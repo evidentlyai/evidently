@@ -28,9 +28,9 @@ from litestar.types import ExceptionHandlersMap
 from litestar.types import Receive
 from litestar.types import Scope
 from litestar.types import Send
+from pydantic import SecretStr
 from typing_extensions import Annotated
 
-from evidently._pydantic_compat import SecretStr
 from evidently.collector.config import CONFIG_PATH
 from evidently.collector.config import CollectorConfig
 from evidently.collector.config import CollectorServiceConfig

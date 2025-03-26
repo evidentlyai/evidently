@@ -1,4 +1,5 @@
 from typing import Any
+from typing import ClassVar
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -16,8 +17,7 @@ from evidently.utils.data_preprocessing import DataDefinition
 
 
 class TextEvals(MetricPreset):
-    class Config:
-        type_alias = "evidently:metric_preset:TextEvals"
+    __type_alias__: ClassVar = "evidently:metric_preset:TextEvals"
 
     column_name: str
     descriptors: Optional[List[FeatureDescriptor]] = None

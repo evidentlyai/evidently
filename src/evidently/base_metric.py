@@ -17,10 +17,10 @@ from typing import Union
 
 import pandas as pd
 import typing_inspect
+from pydantic import Field
+from pydantic import PrivateAttr
+from pydantic._internal._model_construction import ModelMetaclass
 
-from evidently._pydantic_compat import Field
-from evidently._pydantic_compat import ModelMetaclass
-from evidently._pydantic_compat import PrivateAttr
 from evidently.core import BaseResult
 from evidently.core import ColumnType
 from evidently.core import IncludeTags
@@ -50,16 +50,14 @@ class WithFieldsPathMetaclass(ModelMetaclass):
 
 
 class MetricResult(PolymorphicModel, BaseResult, metaclass=WithFieldsPathMetaclass):  # type: ignore[misc] # pydantic Config
-    class Config:
-        type_alias = "evidently:metric_result:MetricResult"
-        field_tags = {"type": {IncludeTags.TypeField}}
-        is_base_type = True
-        alias_required = True
+    __type_alias__: ClassVar = "evidently:metric_result:MetricResult"
+    __field_tags__: ClassVar = {"type": {IncludeTags.TypeField}}
+    __is_base_type__: ClassVar = True
+    __alias_required__: ClassVar = True
 
 
 class ErrorResult(BaseResult):
-    class Config:
-        underscore_attrs_are_private = True
+    __underscore_attrs_are_private__: ClassVar = True
 
     _exception: Optional[BaseException] = None  # todo: fix serialization of exceptions
 
@@ -82,8 +80,7 @@ DisplayName = str
 
 @autoregister
 class ColumnName(EnumValueMixin, EvidentlyBaseModel):
-    class Config:
-        type_alias = "evidently:base:ColumnName"
+    __type_alias__: ClassVar = "evidently:base:ColumnName"
 
     name: str
     display_name: DisplayName
@@ -232,15 +229,13 @@ class WithResultFieldPathMetaclass(FrozenBaseMeta):
 
 
 class BasePreset(EvidentlyBaseModel):
-    class Config:
-        type_alias = "evidently:base:BasePreset"
-        transitive_aliases = True
-        is_base_type = True
+    __type_alias__: ClassVar = "evidently:base:BasePreset"
+    __transitive_aliases__: ClassVar = True
+    __is_base_type__: ClassVar = True
 
 
 class Metric(WithTestAndMetricDependencies, Generic[TResult], metaclass=WithResultFieldPathMetaclass):
-    class Config:
-        is_base_type = True
+    __is_base_type__: ClassVar = True
 
     _context: Optional["Context"] = None
 
@@ -330,12 +325,8 @@ class UsesRawDataMixin:
 
 
 class ColumnMetricResult(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:ColumnMetricResult"
-        field_tags = {
-            "column_name": {IncludeTags.Parameter},
-            "column_type": {IncludeTags.Parameter},
-        }
+    __type_alias__: ClassVar = "evidently:metric_result:ColumnMetricResult"
+    __field_tags__: ClassVar = {"column_name": {IncludeTags.Parameter}, "column_type": {IncludeTags.Parameter}}
 
     column_name: str
     # todo: use enum

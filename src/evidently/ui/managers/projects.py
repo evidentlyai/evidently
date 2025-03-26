@@ -5,9 +5,9 @@ from typing import Optional
 from typing import Union
 
 from litestar.params import Dependency
+from pydantic import parse_obj_as
 from typing_extensions import Annotated
 
-from evidently._pydantic_compat import parse_obj_as
 from evidently.suite.base_suite import Snapshot
 from evidently.ui.base import BlobStorage
 from evidently.ui.base import DataStorage

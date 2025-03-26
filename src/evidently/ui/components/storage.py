@@ -14,8 +14,7 @@ from evidently.ui.storage.local import create_local_project_manager
 
 
 class StorageComponent(FactoryComponent[ProjectManager], ABC):
-    class Config:
-        is_base_type = True
+    __is_base_type__: ClassVar = True
 
     dependency_name: ClassVar = "project_manager"
     use_cache: ClassVar[bool] = True
@@ -31,8 +30,7 @@ class LocalStorageComponent(StorageComponent):
 
 
 class MetadataStorageComponent(FactoryComponent[ProjectMetadataStorage], ABC):
-    class Config:
-        is_base_type = True
+    __is_base_type__: ClassVar = True
 
     __section__: ClassVar = "metadata"
     dependency_name: ClassVar = "project_metadata"
@@ -41,8 +39,7 @@ class MetadataStorageComponent(FactoryComponent[ProjectMetadataStorage], ABC):
 
 
 class DataStorageComponent(FactoryComponent[DataStorage], ABC):
-    class Config:
-        is_base_type = True
+    __is_base_type__: ClassVar = True
 
     __section__: ClassVar = "data"
 
@@ -52,8 +49,7 @@ class DataStorageComponent(FactoryComponent[DataStorage], ABC):
 
 
 class BlobStorageComponent(FactoryComponent[BlobStorage], ABC):
-    class Config:
-        is_base_type = True
+    __is_base_type__: ClassVar = True
 
     __section__: ClassVar = "blob"
 

@@ -9,8 +9,7 @@ from evidently.features.generated_features import ApplyColumnGeneratedFeature
 
 
 class NonLetterCharacterPercentage(ApplyColumnGeneratedFeature):
-    class Config:
-        type_alias = "evidently:feature:NonLetterCharacterPercentage"
+    __type_alias__: ClassVar = "evidently:feature:NonLetterCharacterPercentage"
 
     __feature_type__: ClassVar = ColumnType.Numerical
     display_name_template: ClassVar = "Non Letter Character % for {column_name}"

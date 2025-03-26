@@ -1,6 +1,6 @@
 from typing import Optional
 
-from evidently._pydantic_compat import BaseModel
+from pydantic import BaseModel
 
 
 class Reference(BaseModel):

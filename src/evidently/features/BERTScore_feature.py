@@ -13,8 +13,7 @@ from evidently.utils.data_preprocessing import DataDefinition
 
 
 class BERTScoreFeature(GeneratedFeature):
-    class Config:
-        type_alias = "evidently:feature:BERTScoreFeature"
+    __type_alias__: ClassVar = "evidently:feature:BERTScoreFeature"
 
     __feature_type__: ClassVar = ColumnType.Numerical
     columns: List[str]

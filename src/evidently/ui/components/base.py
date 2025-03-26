@@ -15,8 +15,8 @@ from litestar.di import Provide
 from litestar.types import ControllerRouterHandler
 from litestar.types import ExceptionHandlersMap
 from litestar.types import Middleware
+from pydantic import Extra
 
-from evidently._pydantic_compat import Extra
 from evidently.pydantic_utils import PolymorphicModel
 from evidently.ui.utils import parse_json
 
@@ -64,10 +64,9 @@ class Component(PolymorphicModel, ABC):
     def get_requirements(self) -> List[Type["Component"]]:
         return self.__require__
 
-    class Config:
-        extra = Extra.forbid
-        alias_required = False
-        is_base_type = True
+    __extra__: ClassVar = Extra.forbid
+    __alias_required__: ClassVar = False
+    __is_base_type__: ClassVar = True
 
     def __init_subclass__(cls):
         super().__init_subclass__()

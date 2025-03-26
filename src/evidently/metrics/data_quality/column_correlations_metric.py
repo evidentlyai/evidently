@@ -1,3 +1,4 @@
+from typing import ClassVar
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -26,13 +27,12 @@ from evidently.utils.data_preprocessing import DataDefinition
 
 
 class ColumnCorrelationsMetricResult(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:ColumnCorrelationsMetricResult"
-        field_tags = {
-            "current": {IncludeTags.Current},
-            "reference": {IncludeTags.Reference},
-            "column_name": {IncludeTags.Parameter},
-        }
+    __type_alias__: ClassVar = "evidently:metric_result:ColumnCorrelationsMetricResult"
+    __field_tags__: ClassVar = {
+        "current": {IncludeTags.Current},
+        "reference": {IncludeTags.Reference},
+        "column_name": {IncludeTags.Parameter},
+    }
 
     column_name: str
     current: Dict[str, ColumnCorrelations]
@@ -55,8 +55,7 @@ class ColumnCorrelationsMetricResult(MetricResult):
 
 
 class ColumnCorrelationsMetric(Metric[ColumnCorrelationsMetricResult]):
-    class Config:
-        type_alias = "evidently:metric:ColumnCorrelationsMetric"
+    __type_alias__: ClassVar = "evidently:metric:ColumnCorrelationsMetric"
 
     """Calculates correlations between the selected column and all the other columns.
     In the current and reference (if presented) datasets"""

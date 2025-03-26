@@ -1,4 +1,5 @@
 from typing import Any
+from typing import ClassVar
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -25,17 +26,15 @@ from evidently.renderers.html_widgets import widget_tabs
 
 
 class PersonalizationMetricResult(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:PersonalizationMetricResult"
-        pd_include = False
-
-        field_tags = {
-            "k": {IncludeTags.Parameter},
-            "current_value": {IncludeTags.Current},
-            "current_table": {IncludeTags.Current, IncludeTags.Extra},
-            "reference_value": {IncludeTags.Reference},
-            "reference_table": {IncludeTags.Reference, IncludeTags.Extra},
-        }
+    __type_alias__: ClassVar = "evidently:metric_result:PersonalizationMetricResult"
+    __pd_include__: ClassVar = False
+    __field_tags__: ClassVar = {
+        "k": {IncludeTags.Parameter},
+        "current_value": {IncludeTags.Current},
+        "current_table": {IncludeTags.Current, IncludeTags.Extra},
+        "reference_value": {IncludeTags.Reference},
+        "reference_table": {IncludeTags.Reference, IncludeTags.Extra},
+    }
 
     k: int
     current_value: float
@@ -45,8 +44,7 @@ class PersonalizationMetricResult(MetricResult):
 
 
 class PersonalizationMetric(Metric[PersonalizationMetricResult]):
-    class Config:
-        type_alias = "evidently:metric:PersonalizationMetric"
+    __type_alias__: ClassVar = "evidently:metric:PersonalizationMetric"
 
     """Mean Inter List"""
 

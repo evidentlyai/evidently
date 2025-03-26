@@ -1,3 +1,4 @@
+from typing import ClassVar
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -36,13 +37,12 @@ from evidently.utils.visualizations import plot_scatter_for_data_drift
 
 
 class DataDriftTableResults(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:DataDriftTableResults"
-        dict_exclude_fields = {"dataset_columns"}
-        field_tags = {
-            "current_fi": {IncludeTags.Extra, IncludeTags.Current},
-            "reference_fi": {IncludeTags.Extra, IncludeTags.Reference},
-        }
+    __type_alias__: ClassVar = "evidently:metric_result:DataDriftTableResults"
+    __dict_exclude_fields__: ClassVar = {"dataset_columns"}
+    __field_tags__: ClassVar = {
+        "current_fi": {IncludeTags.Extra, IncludeTags.Current},
+        "reference_fi": {IncludeTags.Extra, IncludeTags.Reference},
+    }
 
     number_of_columns: int
     number_of_drifted_columns: int
@@ -55,8 +55,7 @@ class DataDriftTableResults(MetricResult):
 
 
 class DataDriftTable(UsesRawDataMixin, WithDriftOptions[DataDriftTableResults]):
-    class Config:
-        type_alias = "evidently:metric:DataDriftTable"
+    __type_alias__: ClassVar = "evidently:metric:DataDriftTable"
 
     columns: Optional[List[str]]
     feature_importance: Optional[bool]

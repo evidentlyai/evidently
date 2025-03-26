@@ -1,7 +1,7 @@
+from typing import ClassVar
 from typing import Dict
 from typing import List
 from typing import Optional
-from typing import Set
 
 import numpy as np
 from sklearn.metrics import mean_absolute_error
@@ -33,9 +33,7 @@ from evidently.utils.visualizations import make_hist_for_num_plot
 
 
 class MoreRegressionMetrics(RegressionMetrics):
-    class Config:
-        type_alias = "evidently:metric_result:MoreRegressionMetrics"
-        field_tags: Dict[str, Set[IncludeTags]] = {"underperformance": set()}
+    __type_alias__: ClassVar = "evidently:metric_result:MoreRegressionMetrics"
 
     error_std: float
     abs_error_std: float
@@ -43,22 +41,27 @@ class MoreRegressionMetrics(RegressionMetrics):
 
 
 class RegressionQualityMetricResults(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:RegressionQualityMetricResults"
-        dict_exclude_fields = {"hist_for_plot", "vals_for_plots", "me_hist_for_plot"}
-        pd_exclude_fields = {"hist_for_plot", "vals_for_plots", "me_hist_for_plot", "error_normality", "error_bias"}
-        field_tags = {
-            "current": {IncludeTags.Current},
-            "reference": {IncludeTags.Reference},
-            "rmse_default": {IncludeTags.Extra},
-            "me_default_sigma": {IncludeTags.Extra},
-            "mean_abs_error_default": {IncludeTags.Extra},
-            "mean_abs_perc_error_default": {IncludeTags.Extra},
-            "abs_error_max_default": {IncludeTags.Extra},
-            "error_normality": {IncludeTags.Extra},
-            "vals_for_plots": {IncludeTags.Render},
-            "error_bias": {IncludeTags.Extra},
-        }
+    __type_alias__: ClassVar = "evidently:metric_result:RegressionQualityMetricResults"
+    __dict_exclude_fields__: ClassVar = {"hist_for_plot", "vals_for_plots", "me_hist_for_plot"}
+    __pd_exclude_fields__: ClassVar = {
+        "hist_for_plot",
+        "vals_for_plots",
+        "me_hist_for_plot",
+        "error_normality",
+        "error_bias",
+    }
+    __field_tags__: ClassVar = {
+        "current": {IncludeTags.Current},
+        "reference": {IncludeTags.Reference},
+        "rmse_default": {IncludeTags.Extra},
+        "me_default_sigma": {IncludeTags.Extra},
+        "mean_abs_error_default": {IncludeTags.Extra},
+        "mean_abs_perc_error_default": {IncludeTags.Extra},
+        "abs_error_max_default": {IncludeTags.Extra},
+        "error_normality": {IncludeTags.Extra},
+        "vals_for_plots": {IncludeTags.Render},
+        "error_bias": {IncludeTags.Extra},
+    }
 
     columns: DatasetColumns
     current: MoreRegressionMetrics
@@ -76,8 +79,7 @@ class RegressionQualityMetricResults(MetricResult):
 
 
 class RegressionQualityMetric(Metric[RegressionQualityMetricResults]):
-    class Config:
-        type_alias = "evidently:metric:RegressionQualityMetric"
+    __type_alias__: ClassVar = "evidently:metric:RegressionQualityMetric"
 
     def calculate(self, data: InputData) -> RegressionQualityMetricResults:
         dataset_columns = process_columns(data.current_data, data.column_mapping)

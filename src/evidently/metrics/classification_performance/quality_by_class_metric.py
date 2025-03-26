@@ -1,3 +1,4 @@
+from typing import ClassVar
 from typing import List
 from typing import Optional
 
@@ -27,9 +28,8 @@ from evidently.utils.data_operations import process_columns
 
 
 class ClassificationQuality(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:ClassificationQuality"
-        smart_union = True
+    __type_alias__: ClassVar = "evidently:metric_result:ClassificationQuality"
+    __smart_union__: ClassVar = True
 
     metrics: ClassesMetrics
     roc_aucs: Optional[List[float]]
@@ -40,14 +40,13 @@ class ClassificationQuality(MetricResult):
 
 
 class ClassificationQualityByClassResult(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:ClassificationQualityByClassResult"
-        field_tags = {
-            "current": {IncludeTags.Current},
-            "reference": {IncludeTags.Reference},
-            "columns": {IncludeTags.Parameter},
-        }
-        smart_union = True
+    __type_alias__: ClassVar = "evidently:metric_result:ClassificationQualityByClassResult"
+    __field_tags__: ClassVar = {
+        "current": {IncludeTags.Current},
+        "reference": {IncludeTags.Reference},
+        "columns": {IncludeTags.Parameter},
+    }
+    __smart_union__: ClassVar = True
 
     columns: DatasetColumns
     current: ClassificationQuality
@@ -68,8 +67,7 @@ class ClassificationQualityByClassResult(MetricResult):
 
 
 class ClassificationQualityByClass(ThresholdClassificationMetric[ClassificationQualityByClassResult]):
-    class Config:
-        type_alias = "evidently:metric:ClassificationQualityByClass"
+    __type_alias__: ClassVar = "evidently:metric:ClassificationQualityByClass"
 
     def __init__(
         self,

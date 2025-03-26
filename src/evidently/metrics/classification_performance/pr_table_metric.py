@@ -1,5 +1,6 @@
 from typing import TYPE_CHECKING
 from typing import Any
+from typing import ClassVar
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -7,8 +8,8 @@ from typing import Type
 from typing import Union
 
 import pandas as pd
+from pydantic import BaseModel
 
-from evidently._pydantic_compat import BaseModel
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
@@ -27,7 +28,7 @@ from evidently.renderers.html_widgets import widget_tabs
 from evidently.utils.data_operations import process_columns
 
 if TYPE_CHECKING:
-    from evidently._pydantic_compat import Model
+    from pydantic import Model
 
 
 class LabelModel(BaseModel):
@@ -44,18 +45,16 @@ PRTable = Dict[Union[LabelModel, Label], List[List[Union[float, int]]]]
 
 
 class ClassificationPRTableResults(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:ClassificationPRTableResults"
-        pd_include = False
-        field_tags = {"current": {IncludeTags.Current}, "reference": {IncludeTags.Reference}}
+    __type_alias__: ClassVar = "evidently:metric_result:ClassificationPRTableResults"
+    __pd_include__: ClassVar = False
+    __field_tags__: ClassVar = {"current": {IncludeTags.Current}, "reference": {IncludeTags.Reference}}
 
     current: Optional[PRTable] = None
     reference: Optional[PRTable] = None
 
 
 class ClassificationPRTable(Metric[ClassificationPRTableResults]):
-    class Config:
-        type_alias = "evidently:metric:ClassificationPRTable"
+    __type_alias__: ClassVar = "evidently:metric:ClassificationPRTable"
 
     def calculate(self, data: InputData) -> ClassificationPRTableResults:
         dataset_columns = process_columns(data.current_data, data.column_mapping)

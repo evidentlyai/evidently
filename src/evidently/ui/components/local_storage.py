@@ -16,8 +16,7 @@ from evidently.ui.storage.local import LocalState
 
 
 class FSSpecBlobComponent(BlobStorageComponent):
-    class Config:
-        type_alias = "fsspec"
+    __type_alias__: ClassVar = "fsspec"
 
     path: str
 
@@ -26,8 +25,7 @@ class FSSpecBlobComponent(BlobStorageComponent):
 
 
 class JsonMetadataComponent(MetadataStorageComponent):
-    class Config:
-        type_alias = "json_file"
+    __type_alias__: ClassVar = "json_file"
 
     path: str
 
@@ -39,8 +37,7 @@ class JsonMetadataComponent(MetadataStorageComponent):
 
 
 class InmemoryDataComponent(DataStorageComponent):
-    class Config:
-        type_alias = "inmemory"
+    __type_alias__: ClassVar = "inmemory"
 
     path: str
 

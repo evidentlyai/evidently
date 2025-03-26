@@ -1,11 +1,12 @@
+from typing import ClassVar
+
 from evidently.features import json_match_feature
 from evidently.features.generated_features import FeatureDescriptor
 from evidently.features.generated_features import GeneratedFeature
 
 
 class JSONMatch(FeatureDescriptor):
-    class Config:
-        type_alias = "evidently:descriptor:JSONMatch"
+    __type_alias__: ClassVar = "evidently:descriptor:JSONMatch"
 
     with_column: str
 

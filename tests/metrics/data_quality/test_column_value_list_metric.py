@@ -4,8 +4,8 @@ from typing import Optional
 import numpy as np
 import pandas as pd
 import pytest
+from pydantic import parse_obj_as
 
-from evidently._pydantic_compat import parse_obj_as
 from evidently.metrics import ColumnValueListMetric
 from evidently.metrics.data_quality.column_value_list_metric import ColumnValueListMetricResult
 from evidently.metrics.data_quality.column_value_list_metric import ValueListStat

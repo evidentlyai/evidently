@@ -1,4 +1,5 @@
 from typing import Any
+from typing import ClassVar
 from typing import List
 from typing import Optional
 from typing import Tuple
@@ -24,13 +25,12 @@ from evidently.renderers.html_widgets import widget_tabs
 
 
 class ValueListStat(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:ValueListStat"
-        field_tags = {
-            "values_in_list_dist": {IncludeTags.Extra},
-            "values_not_in_list_dist": {IncludeTags.Extra},
-            "rows_count": {IncludeTags.Extra},
-        }
+    __type_alias__: ClassVar = "evidently:metric_result:ValueListStat"
+    __field_tags__: ClassVar = {
+        "values_in_list_dist": {IncludeTags.Extra},
+        "values_not_in_list_dist": {IncludeTags.Extra},
+        "rows_count": {IncludeTags.Extra},
+    }
 
     def __init__(self, **data: Any):
         if "values_in_list" in data:
@@ -64,14 +64,13 @@ class ValueListStat(MetricResult):
 
 
 class ColumnValueListMetricResult(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:ColumnValueListMetricResult"
-        field_tags = {
-            "current": {IncludeTags.Current},
-            "reference": {IncludeTags.Reference},
-            "column_name": {IncludeTags.Parameter},
-            "values": {IncludeTags.Parameter},
-        }
+    __type_alias__: ClassVar = "evidently:metric_result:ColumnValueListMetricResult"
+    __field_tags__: ClassVar = {
+        "current": {IncludeTags.Current},
+        "reference": {IncludeTags.Reference},
+        "column_name": {IncludeTags.Parameter},
+        "values": {IncludeTags.Parameter},
+    }
 
     column_name: str
     values: List[Any]
@@ -80,8 +79,7 @@ class ColumnValueListMetricResult(MetricResult):
 
 
 class ColumnValueListMetric(Metric[ColumnValueListMetricResult]):
-    class Config:
-        type_alias = "evidently:metric:ColumnValueListMetric"
+    __type_alias__: ClassVar = "evidently:metric:ColumnValueListMetric"
 
     """Calculates count and shares of values in the predefined values list"""
 

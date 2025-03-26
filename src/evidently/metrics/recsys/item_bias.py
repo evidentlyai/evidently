@@ -1,3 +1,4 @@
+from typing import ClassVar
 from typing import List
 from typing import Optional
 
@@ -21,16 +22,15 @@ from evidently.utils.visualizations import plot_bias
 
 
 class ItemBiasMetricResult(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:ItemBiasMetricResult"
-        field_tags = {
-            "k": {IncludeTags.Parameter},
-            "column_name": {IncludeTags.Parameter},
-            "current_train_distr": {IncludeTags.Current},
-            "current_distr": {IncludeTags.Current},
-            "reference_train_distr": {IncludeTags.Reference},
-            "reference_distr": {IncludeTags.Reference},
-        }
+    __type_alias__: ClassVar = "evidently:metric_result:ItemBiasMetricResult"
+    __field_tags__: ClassVar = {
+        "k": {IncludeTags.Parameter},
+        "column_name": {IncludeTags.Parameter},
+        "current_train_distr": {IncludeTags.Current},
+        "current_distr": {IncludeTags.Current},
+        "reference_train_distr": {IncludeTags.Reference},
+        "reference_distr": {IncludeTags.Reference},
+    }
 
     k: int
     column_name: str
@@ -41,8 +41,7 @@ class ItemBiasMetricResult(MetricResult):
 
 
 class ItemBiasMetric(Metric[ItemBiasMetricResult]):
-    class Config:
-        type_alias = "evidently:metric:ItemBiasMetric"
+    __type_alias__: ClassVar = "evidently:metric:ItemBiasMetric"
 
     k: int
     column_name: str

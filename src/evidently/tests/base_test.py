@@ -96,16 +96,14 @@ class TestStatus(Enum):
 
 
 class TestParameters(EvidentlyBaseModel, BaseResult):  # type: ignore[misc] # pydantic Config
-    class Config:
-        type_alias = "evidently:test_parameters:TestParameters"
-        field_tags = {"type": {IncludeTags.TypeField}}
-        is_base_type = True
+    __type_alias__: ClassVar = "evidently:test_parameters:TestParameters"
+    __field_tags__: ClassVar = {"type": {IncludeTags.TypeField}}
+    __is_base_type__: ClassVar = True
 
 
 class TestResult(EnumValueMixin, MetricResult):  # todo: create common base class
     # short name/title from the test class
-    class Config:
-        type_alias = "evidently:metric_result:TestResult"
+    __type_alias__: ClassVar = "evidently:metric_result:TestResult"
 
     name: str
     # what was checked, what threshold (current value 13 is not ok with condition less than 5)
@@ -144,8 +142,7 @@ class TestResult(EnumValueMixin, MetricResult):  # todo: create common base clas
 
 
 class Test(WithTestAndMetricDependencies):
-    class Config:
-        is_base_type = True
+    __is_base_type__: ClassVar = True
 
     """
     all fields in test class with type that is subclass of Metric would be used as dependencies of test.
@@ -196,10 +193,9 @@ class TestValueCondition(ExcludeNoneMixin):
     An object of the class stores specified conditions and can be used for checking a value by them.
     """
 
-    class Config:
-        arbitrary_types_allowed = True
-        use_enum_values = True
-        smart_union = True
+    __arbitrary_types_allowed__: ClassVar = True
+    __use_enum_values__: ClassVar = True
+    __smart_union__: ClassVar = True
 
     eq: Optional[NumericApprox] = None
     gt: Optional[NumericApprox] = None
@@ -279,8 +275,7 @@ class TestValueCondition(ExcludeNoneMixin):
 
 
 class ConditionTestParameters(TestParameters):
-    class Config:
-        type_alias = "evidently:test_parameters:ConditionTestParameters"
+    __type_alias__: ClassVar = "evidently:test_parameters:ConditionTestParameters"
 
     condition: TestValueCondition
 
@@ -290,11 +285,10 @@ class BaseConditionsTest(Test, TestValueCondition, ABC):
     Base class for all tests with a condition
     """
 
-    class Config:
-        arbitrary_types_allowed = True
-        use_enum_values = True
-        smart_union = True
-        underscore_attrs_are_private = True
+    __arbitrary_types_allowed__: ClassVar = True
+    __use_enum_values__: ClassVar = True
+    __smart_union__: ClassVar = True
+    __underscore_attrs_are_private__: ClassVar = True
 
     # condition: TestValueCondition
 
@@ -313,15 +307,13 @@ class BaseConditionsTest(Test, TestValueCondition, ABC):
 
 
 class CheckValueParameters(ConditionTestParameters):
-    class Config:
-        type_alias = "evidently:test_parameters:CheckValueParameters"
+    __type_alias__: ClassVar = "evidently:test_parameters:CheckValueParameters"
 
     value: Optional[Numeric]
 
 
 class ColumnCheckValueParameters(CheckValueParameters):
-    class Config:
-        type_alias = "evidently:test_parameters:ColumnCheckValueParameters"
+    __type_alias__: ClassVar = "evidently:test_parameters:ColumnCheckValueParameters"
 
     column_name: str
 

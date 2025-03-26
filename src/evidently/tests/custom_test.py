@@ -17,8 +17,7 @@ GroupingTypes.TestGroup.add_value(CUSTOM_GROUP)
 
 
 class CustomValueTest(BaseCheckValueTest):
-    class Config:
-        type_alias = "evidently:test:CustomValueTest"
+    __type_alias__: ClassVar = "evidently:test:CustomValueTest"
 
     name: ClassVar = "Custom Value test"
     group = CUSTOM_GROUP.id

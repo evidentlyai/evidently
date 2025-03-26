@@ -1,5 +1,6 @@
 import abc
 from typing import Any
+from typing import ClassVar
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -16,8 +17,7 @@ AnyMetric = Union[Metric, BaseGenerator[Metric]]
 class MetricPreset(BasePreset):
     """Base class for metric presets"""
 
-    class Config:
-        is_base_type = True
+    __is_base_type__: ClassVar = True
 
     @abc.abstractmethod
     def generate_metrics(

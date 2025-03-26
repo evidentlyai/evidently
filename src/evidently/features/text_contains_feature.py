@@ -11,8 +11,7 @@ from evidently.utils.data_preprocessing import DataDefinition
 
 
 class Contains(GeneratedFeature):
-    class Config:
-        type_alias = "evidently:feature:Contains"
+    __type_alias__: ClassVar = "evidently:feature:Contains"
 
     __feature_type__: ClassVar = ColumnType.Categorical
     column_name: str
@@ -62,8 +61,7 @@ class Contains(GeneratedFeature):
 
 
 class DoesNotContain(GeneratedFeature):
-    class Config:
-        type_alias = "evidently:feature:DoesNotContain"
+    __type_alias__: ClassVar = "evidently:feature:DoesNotContain"
 
     __feature_type__: ClassVar = ColumnType.Categorical
     column_name: str
@@ -115,8 +113,7 @@ class DoesNotContain(GeneratedFeature):
 
 
 class ItemMatch(GeneratedFeature):
-    class Config:
-        type_alias = "evidently:feature:ItemMatch"
+    __type_alias__: ClassVar = "evidently:feature:ItemMatch"
 
     __feature_type__: ClassVar = ColumnType.Categorical
     columns: List[str]
@@ -169,8 +166,7 @@ class ItemMatch(GeneratedFeature):
 
 
 class ItemNoMatch(GeneratedFeature):
-    class Config:
-        type_alias = "evidently:feature:ItemNoMatch"
+    __type_alias__: ClassVar = "evidently:feature:ItemNoMatch"
 
     __feature_type__: ClassVar = ColumnType.Categorical
     columns: List[str]

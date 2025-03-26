@@ -12,8 +12,8 @@ from typing import Union
 
 import numpy as np
 import pandas as pd
+from pydantic import BaseModel
 
-from evidently._pydantic_compat import BaseModel
 from evidently.base_metric import DisplayName
 from evidently.core import ColumnType
 from evidently.features.generated_features import GeneratedFeatures

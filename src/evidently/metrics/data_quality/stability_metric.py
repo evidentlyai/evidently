@@ -1,3 +1,4 @@
+from typing import ClassVar
 from typing import List
 from typing import Optional
 
@@ -13,16 +14,14 @@ from evidently.renderers.html_widgets import header_text
 
 
 class DataQualityStabilityMetricResult(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:DataQualityStabilityMetricResult"
+    __type_alias__: ClassVar = "evidently:metric_result:DataQualityStabilityMetricResult"
 
     number_not_stable_target: Optional[int] = None
     number_not_stable_prediction: Optional[int] = None
 
 
 class DataQualityStabilityMetric(Metric[DataQualityStabilityMetricResult]):
-    class Config:
-        type_alias = "evidently:metric:DataQualityStabilityMetric"
+    __type_alias__: ClassVar = "evidently:metric:DataQualityStabilityMetric"
 
     """Calculates stability by target and prediction"""
 

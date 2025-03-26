@@ -1,4 +1,5 @@
 import copy
+from typing import ClassVar
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -33,14 +34,13 @@ from evidently.utils.data_preprocessing import PredictionColumns
 
 
 class CorrelationStats(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:CorrelationStats"
-        field_tags = {
-            "abs_max_target_features_correlation": {IncludeTags.Extra},
-            "abs_max_prediction_features_correlation": {IncludeTags.Extra},
-            "abs_max_correlation": {IncludeTags.Extra},
-            "abs_max_features_correlation": {IncludeTags.Extra},
-        }
+    __type_alias__: ClassVar = "evidently:metric_result:CorrelationStats"
+    __field_tags__: ClassVar = {
+        "abs_max_target_features_correlation": {IncludeTags.Extra},
+        "abs_max_prediction_features_correlation": {IncludeTags.Extra},
+        "abs_max_correlation": {IncludeTags.Extra},
+        "abs_max_features_correlation": {IncludeTags.Extra},
+    }
 
     target_prediction_correlation: Optional[float] = None
     abs_max_target_features_correlation: Optional[float] = None
@@ -50,13 +50,11 @@ class CorrelationStats(MetricResult):
 
 
 class DatasetCorrelation(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:DatasetCorrelation"
-        dict_exclude_fields = {"correlation", "correlations_calculate"}
-        pd_include = False
-        pd_exclude_fields = {"correlation", "correlations_calculate"}
-
-        field_tags = {"correlations_calculate": {IncludeTags.Extra}}
+    __type_alias__: ClassVar = "evidently:metric_result:DatasetCorrelation"
+    __dict_exclude_fields__: ClassVar = {"correlation", "correlations_calculate"}
+    __pd_include__: ClassVar = False
+    __pd_exclude_fields__: ClassVar = {"correlation", "correlations_calculate"}
+    __field_tags__: ClassVar = {"correlations_calculate": {IncludeTags.Extra}}
 
     correlation: Dict[str, pd.DataFrame]
     stats: Dict[str, CorrelationStats]
@@ -64,15 +62,14 @@ class DatasetCorrelation(MetricResult):
 
 
 class DatasetCorrelationsMetricResult(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:DatasetCorrelationsMetricResult"
-        dict_exclude_fields = {"target_correlation"}
-        pd_exclude_fields = {"target_correlation"}
-        field_tags = {
-            "current": {IncludeTags.Current},
-            "reference": {IncludeTags.Reference},
-            "target_correlation": {IncludeTags.Parameter},
-        }
+    __type_alias__: ClassVar = "evidently:metric_result:DatasetCorrelationsMetricResult"
+    __dict_exclude_fields__: ClassVar = {"target_correlation"}
+    __pd_exclude_fields__: ClassVar = {"target_correlation"}
+    __field_tags__: ClassVar = {
+        "current": {IncludeTags.Current},
+        "reference": {IncludeTags.Reference},
+        "target_correlation": {IncludeTags.Parameter},
+    }
 
     current: DatasetCorrelation
     reference: Optional[DatasetCorrelation]
@@ -80,8 +77,7 @@ class DatasetCorrelationsMetricResult(MetricResult):
 
 
 class DatasetCorrelationsMetric(Metric[DatasetCorrelationsMetricResult]):
-    class Config:
-        type_alias = "evidently:metric:DatasetCorrelationsMetric"
+    __type_alias__: ClassVar = "evidently:metric:DatasetCorrelationsMetric"
 
     """Calculate different correlations with target, predictions and features"""
 

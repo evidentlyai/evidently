@@ -1,6 +1,7 @@
 """Methods and types for data drift calculations."""
 
 from dataclasses import dataclass
+from typing import ClassVar
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -34,17 +35,15 @@ Words = List[str]
 
 
 class DriftStatsField(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:DriftStatsField"
-        dict_exclude_fields = {"characteristic_examples", "characteristic_words", "correlations"}
-        # todo: after tests PR
-        field_tags = {
-            "characteristic_examples": {IncludeTags.Render},
-            "characteristic_words": {IncludeTags.Render},
-            "correlations": {IncludeTags.Render},
-            "small_distribution": {IncludeTags.Extra},
-        }
-        pd_include = False
+    __type_alias__: ClassVar = "evidently:metric_result:DriftStatsField"
+    __dict_exclude_fields__: ClassVar = {"characteristic_examples", "characteristic_words", "correlations"}
+    __field_tags__: ClassVar = {
+        "characteristic_examples": {IncludeTags.Render},
+        "characteristic_words": {IncludeTags.Render},
+        "correlations": {IncludeTags.Render},
+        "small_distribution": {IncludeTags.Extra},
+    }
+    __pd_include__: ClassVar = False
 
     distribution: Optional[Distribution]
     characteristic_examples: Optional[Examples]
@@ -54,16 +53,14 @@ class DriftStatsField(MetricResult):
 
 
 class ColumnDataDriftMetrics(ColumnMetricResult):
-    class Config:
-        # todo: change to field_tags: render
-        type_alias = "evidently:metric_result:ColumnDataDriftMetrics"
-        dict_exclude_fields = {"scatter"}
-        pd_exclude_fields = {"scatter"}
-        field_tags = {
-            "stattest_name": {IncludeTags.Parameter},
-            "current": {IncludeTags.Current},
-            "reference": {IncludeTags.Reference},
-        }
+    __type_alias__: ClassVar = "evidently:metric_result:ColumnDataDriftMetrics"
+    __dict_exclude_fields__: ClassVar = {"scatter"}
+    __pd_exclude_fields__: ClassVar = {"scatter"}
+    __field_tags__: ClassVar = {
+        "stattest_name": {IncludeTags.Parameter},
+        "current": {IncludeTags.Current},
+        "reference": {IncludeTags.Reference},
+    }
 
     stattest_name: str
     stattest_threshold: Optional[float]
@@ -87,8 +84,7 @@ class DatasetDrift:
 
 
 class DatasetDriftMetrics(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:DatasetDriftMetrics"
+    __type_alias__: ClassVar = "evidently:metric_result:DatasetDriftMetrics"
 
     number_of_columns: int
     number_of_drifted_columns: int

@@ -1,3 +1,4 @@
+from typing import ClassVar
 from typing import List
 from typing import Optional
 
@@ -30,12 +31,10 @@ from evidently.utils.data_operations import process_columns
 
 
 class ClassificationDummyMetricResults(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:ClassificationDummyMetricResults"
-        dict_exclude_fields = {"metrics_matrix"}
-        pd_exclude_fields = {"metrics_matrix"}
-
-        field_tags = {"by_reference_dummy": {IncludeTags.Reference}, "metrics_matrix": {IncludeTags.Extra}}
+    __type_alias__: ClassVar = "evidently:metric_result:ClassificationDummyMetricResults"
+    __dict_exclude_fields__: ClassVar = {"metrics_matrix"}
+    __pd_exclude_fields__: ClassVar = {"metrics_matrix"}
+    __field_tags__: ClassVar = {"by_reference_dummy": {IncludeTags.Reference}, "metrics_matrix": {IncludeTags.Extra}}
 
     dummy: DatasetClassificationQuality
     by_reference_dummy: Optional[DatasetClassificationQuality]
@@ -44,8 +43,7 @@ class ClassificationDummyMetricResults(MetricResult):
 
 
 class ClassificationDummyMetric(ThresholdClassificationMetric[ClassificationDummyMetricResults]):
-    class Config:
-        type_alias = "evidently:metric:ClassificationDummyMetric"
+    __type_alias__: ClassVar = "evidently:metric:ClassificationDummyMetric"
 
     _quality_metric: ClassificationQualityMetric
 

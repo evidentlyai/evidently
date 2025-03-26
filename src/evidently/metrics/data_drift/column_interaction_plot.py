@@ -1,5 +1,6 @@
 import json
 from typing import Any
+from typing import ClassVar
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -36,21 +37,20 @@ from evidently.utils.visualizations import plot_num_num_rel
 
 
 class ColumnInteractionPlotResults(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:ColumnInteractionPlotResults"
-        dict_include = False
-        pd_include = False
-        tags = {IncludeTags.Render}
-        field_tags = {
-            "current": {IncludeTags.Current},
-            "reference": {IncludeTags.Reference},
-            "current_scatter": {IncludeTags.Current},
-            "current_contour": {IncludeTags.Current},
-            "current_boxes": {IncludeTags.Current},
-            "reference_scatter": {IncludeTags.Reference},
-            "reference_contour": {IncludeTags.Reference},
-            "reference_boxes": {IncludeTags.Reference},
-        }
+    __type_alias__: ClassVar = "evidently:metric_result:ColumnInteractionPlotResults"
+    __dict_include__: ClassVar = False
+    __pd_include__: ClassVar = False
+    __tags__: ClassVar = {IncludeTags.Render}
+    __field_tags__: ClassVar = {
+        "current": {IncludeTags.Current},
+        "reference": {IncludeTags.Reference},
+        "current_scatter": {IncludeTags.Current},
+        "current_contour": {IncludeTags.Current},
+        "current_boxes": {IncludeTags.Current},
+        "reference_scatter": {IncludeTags.Reference},
+        "reference_contour": {IncludeTags.Reference},
+        "reference_boxes": {IncludeTags.Reference},
+    }
 
     y_type: ColumnType
     x_type: ColumnType
@@ -66,8 +66,7 @@ class ColumnInteractionPlotResults(MetricResult):
 
 
 class ColumnInteractionPlot(UsesRawDataMixin, Metric[ColumnInteractionPlotResults]):
-    class Config:
-        type_alias = "evidently:metric:ColumnInteractionPlot"
+    __type_alias__: ClassVar = "evidently:metric:ColumnInteractionPlot"
 
     x_column: str
     y_column: str

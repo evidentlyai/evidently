@@ -1,11 +1,12 @@
+from typing import ClassVar
+
 from evidently.features.generated_features import FeatureDescriptor
 from evidently.features.generated_features import GeneratedFeatures
 from evidently.features.semantic_similarity_feature import SemanticSimilarityFeature
 
 
 class SemanticSimilarity(FeatureDescriptor):
-    class Config:
-        type_alias = "evidently:descriptor:SemanticSimilarity"
+    __type_alias__: ClassVar = "evidently:descriptor:SemanticSimilarity"
 
     with_column: str
 

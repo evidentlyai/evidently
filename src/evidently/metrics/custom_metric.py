@@ -1,9 +1,11 @@
 from typing import Callable
+from typing import ClassVar
 from typing import List
 from typing import Optional
 from typing import Union
 
-from evidently._pydantic_compat import PrivateAttr
+from pydantic import PrivateAttr
+
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
@@ -17,8 +19,7 @@ from evidently.renderers.html_widgets import counter
 
 
 class CustomCallableMetricResult(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:CustomCallableMetricResult"
+    __type_alias__: ClassVar = "evidently:metric_result:CustomCallableMetricResult"
 
     value: float
 
@@ -27,8 +28,7 @@ CustomCallableType = Callable[[InputData], float]
 
 
 class CustomValueMetric(Metric[CustomCallableMetricResult]):
-    class Config:
-        type_alias = "evidently:metric:CustomValueMetric"
+    __type_alias__: ClassVar = "evidently:metric:CustomValueMetric"
 
     func: str
     title: Optional[str] = None

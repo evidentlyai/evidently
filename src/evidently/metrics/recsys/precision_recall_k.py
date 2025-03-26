@@ -1,3 +1,4 @@
+from typing import ClassVar
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -17,18 +18,16 @@ from evidently.renderers.base_renderer import default_renderer
 
 
 class PrecisionRecallCalculationResult(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:PrecisionRecallCalculationResult"
-        pd_include = False
-        field_tags = {"current": {IncludeTags.Current}, "reference": {IncludeTags.Reference}}
+    __type_alias__: ClassVar = "evidently:metric_result:PrecisionRecallCalculationResult"
+    __pd_include__: ClassVar = False
+    __field_tags__: ClassVar = {"current": {IncludeTags.Current}, "reference": {IncludeTags.Reference}}
 
     current: Dict[str, list]
     reference: Optional[Dict[str, list]] = None
 
 
 class PrecisionRecallCalculation(Metric[PrecisionRecallCalculationResult]):
-    class Config:
-        type_alias = "evidently:metric:PrecisionRecallCalculation"
+    __type_alias__: ClassVar = "evidently:metric:PrecisionRecallCalculation"
 
     max_k: int
     min_rel_score: Optional[int]

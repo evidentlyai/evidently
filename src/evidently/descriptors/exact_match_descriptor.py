@@ -1,11 +1,12 @@
+from typing import ClassVar
+
 from evidently.features.exact_match_feature import ExactMatchFeature
 from evidently.features.generated_features import FeatureDescriptor
 from evidently.features.generated_features import GeneratedFeatures
 
 
 class ExactMatch(FeatureDescriptor):
-    class Config:
-        type_alias = "evidently:descriptor:ExactMatch"
+    __type_alias__: ClassVar = "evidently:descriptor:ExactMatch"
 
     with_column: str
 

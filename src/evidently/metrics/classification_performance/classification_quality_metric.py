@@ -1,3 +1,4 @@
+from typing import ClassVar
 from typing import List
 from typing import Optional
 
@@ -19,13 +20,12 @@ from evidently.utils.data_operations import process_columns
 
 
 class ClassificationQualityMetricResult(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:ClassificationQualityMetricResult"
-        field_tags = {
-            "current": {IncludeTags.Current},
-            "reference": {IncludeTags.Reference},
-            "target_name": {IncludeTags.Parameter},
-        }
+    __type_alias__: ClassVar = "evidently:metric_result:ClassificationQualityMetricResult"
+    __field_tags__: ClassVar = {
+        "current": {IncludeTags.Current},
+        "reference": {IncludeTags.Reference},
+        "target_name": {IncludeTags.Parameter},
+    }
 
     current: DatasetClassificationQuality
     reference: Optional[DatasetClassificationQuality]
@@ -33,8 +33,7 @@ class ClassificationQualityMetricResult(MetricResult):
 
 
 class ClassificationQualityMetric(ThresholdClassificationMetric[ClassificationQualityMetricResult]):
-    class Config:
-        type_alias = "evidently:metric:ClassificationQualityMetric"
+    __type_alias__: ClassVar = "evidently:metric:ClassificationQualityMetric"
 
     _confusion_matrix_metric: ClassificationConfusionMatrix
 

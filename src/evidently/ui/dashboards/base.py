@@ -4,16 +4,17 @@ import warnings
 from functools import wraps
 from typing import TYPE_CHECKING
 from typing import Any
+from typing import ClassVar
 from typing import Dict
 from typing import List
 from typing import Optional
 from typing import Union
 
 import uuid6
+from pydantic import BaseModel
+from pydantic import Field
+from pydantic import validator
 
-from evidently._pydantic_compat import BaseModel
-from evidently._pydantic_compat import Field
-from evidently._pydantic_compat import validator
 from evidently.base_metric import Metric
 from evidently.core import new_id
 from evidently.model.dashboard import DashboardInfo
@@ -133,9 +134,8 @@ def assign_panel_id(f):
 
 
 class DashboardPanel(EnumValueMixin, PolymorphicModel):
-    class Config:
-        type_alias = "evidently:dashboard_panel:DashboardPanel"
-        is_base_type = True
+    __type_alias__: ClassVar = "evidently:dashboard_panel:DashboardPanel"
+    __is_base_type__: ClassVar = True
 
     id: PanelID = Field(default_factory=new_id)
     title: str

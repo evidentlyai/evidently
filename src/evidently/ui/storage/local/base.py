@@ -12,10 +12,10 @@ from typing import Type
 import uuid6
 from fsspec import AbstractFileSystem
 from fsspec import get_fs_token_paths
+from pydantic import PrivateAttr
+from pydantic import ValidationError
+from pydantic import parse_obj_as
 
-from evidently._pydantic_compat import PrivateAttr
-from evidently._pydantic_compat import ValidationError
-from evidently._pydantic_compat import parse_obj_as
 from evidently.suite.base_suite import Snapshot
 from evidently.test_suite import TestSuite
 from evidently.tests.base_test import Test

@@ -29,8 +29,7 @@ TResult = TypeVar("TResult")
 
 
 class PromptBlock(EvidentlyBaseModel):
-    class Config:
-        is_base_type = True
+    __is_base_type__: ClassVar = True
 
     def render(self):
         # )))
@@ -70,8 +69,7 @@ class PromptBlock(EvidentlyBaseModel):
 
 
 class Anchor(PromptBlock):
-    class Config:
-        type_alias = "evidently:prompt_block:Anchor"
+    __type_alias__: ClassVar = "evidently:prompt_block:Anchor"
 
     start: str
     block: PromptBlock
@@ -82,8 +80,7 @@ class Anchor(PromptBlock):
 
 
 class SimpleBlock(PromptBlock):
-    class Config:
-        type_alias = "evidently:prompt_block:SimpleBlock"
+    __type_alias__: ClassVar = "evidently:prompt_block:SimpleBlock"
 
     value: str
 
@@ -98,8 +95,7 @@ class OutputFormatBlock(PromptBlock, ABC, Generic[TResult]):
 
 
 class NoopOutputFormat(OutputFormatBlock[str]):
-    class Config:
-        type_alias = "evidently:prompt_block:NoopOutputFormat"
+    __type_alias__: ClassVar = "evidently:prompt_block:NoopOutputFormat"
 
     def _render(self) -> str:
         return ""
@@ -128,8 +124,7 @@ def find_largest_json(text):
 
 
 class JsonOutputFormatBlock(OutputFormatBlock[Dict[str, Any]]):
-    class Config:
-        type_alias = "evidently:prompt_block:JsonOutputFormatBlock"
+    __type_alias__: ClassVar = "evidently:prompt_block:JsonOutputFormatBlock"
 
     fields: Dict[str, Union[Tuple[str, str], str]]
     search_for_substring: bool = True
@@ -160,8 +155,7 @@ class JsonOutputFormatBlock(OutputFormatBlock[Dict[str, Any]]):
 
 
 class StringListFormatBlock(OutputFormatBlock[List[str]]):
-    class Config:
-        type_alias = "evidently:prompt_block:StringListFormatBlock"
+    __type_alias__: ClassVar = "evidently:prompt_block:StringListFormatBlock"
 
     of_what: str
 
@@ -174,8 +168,7 @@ This should be only a list of string {self.of_what}, each one on a new line with
 
 
 class StringFormatBlock(OutputFormatBlock[str]):
-    class Config:
-        type_alias = "evidently:prompt_block:StringFormatBlock"
+    __type_alias__: ClassVar = "evidently:prompt_block:StringFormatBlock"
 
     what: str
 
@@ -228,8 +221,7 @@ placeholders_re = re.compile(r"\{([a-zA-Z0-9_]+)}")
 
 
 class PromptTemplate(EvidentlyBaseModel):
-    class Config:
-        is_base_type = True
+    __is_base_type__: ClassVar = True
 
     # __run_func__ : ClassVar[Callable]
     @abstractmethod
@@ -281,8 +273,7 @@ AnyBlock = Union[str, PromptBlock, Callable]
 
 
 class BlockPromptTemplate(PromptTemplate):
-    class Config:
-        type_alias = "evidently:prompt_template:BlockPromptTemplate"
+    __type_alias__: ClassVar = "evidently:prompt_template:BlockPromptTemplate"
 
     blocks: ClassVar[List[AnyBlock]]
 
