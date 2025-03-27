@@ -124,7 +124,7 @@ class MetricResult(AutoAliasMixin, PolymorphicModel):
     class Config:
         is_base_type = True
 
-    __alias_type__: ClassVar[str] = "metric_result"
+    __alias_type__: ClassVar[str] = "metric_result_v2"
 
     display_name: str
     metric_value_location: Optional["MetricValueLocation"] = None
