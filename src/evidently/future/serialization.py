@@ -4,12 +4,8 @@ from typing import List
 from typing import Union
 
 from evidently._pydantic_compat import BaseModel
-from evidently.future.metric_types import ByLabelCountValue
-from evidently.future.metric_types import ByLabelValue
-from evidently.future.metric_types import CountValue
-from evidently.future.metric_types import MeanStdValue
 from evidently.future.metric_types import MetricId
-from evidently.future.metric_types import SingleValue
+from evidently.future.metric_types import MetricResult
 from evidently.model.widget import BaseWidgetInfo
 from evidently.suite.base_suite import MetadataValueType
 
@@ -32,7 +28,7 @@ class SnapshotModel(BaseModel):
     timestamp: datetime
     metadata: Dict[str, MetadataValueType]
     tags: List[str]
-    metric_results: Dict[MetricId, Union[SingleValue, ByLabelValue, CountValue, MeanStdValue, ByLabelCountValue]]
+    metric_results: Dict[MetricId, MetricResult]
     top_level_metrics: List[MetricId]
     widgets: List[BaseWidgetInfo]
     tests_widgets: List[BaseWidgetInfo]

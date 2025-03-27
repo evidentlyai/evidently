@@ -35,6 +35,7 @@ from evidently.model.widget import BaseWidgetInfo
 from evidently.pydantic_utils import EvidentlyBaseModel
 from evidently.pydantic_utils import Fingerprint
 from evidently.pydantic_utils import FrozenBaseModel
+from evidently.pydantic_utils import PolymorphicModel
 from evidently.renderers.base_renderer import DetailsInfo
 from evidently.renderers.html_widgets import CounterData
 from evidently.renderers.html_widgets import WidgetSize
@@ -49,6 +50,17 @@ if TYPE_CHECKING:
 
 
 MetricId = str
+
+
+class AutoAliasMixin:
+    __alias_type__: ClassVar[str]
+
+    @classmethod
+    def __get_type__(cls):
+        config = cls.__dict__.get("Config")
+        if config is not None and config.__dict__.get("type_alias") is not None:
+            return config.type_alias
+        return f"evidently:{cls.__alias_type__}:{cls.__name__}"
 
 
 class MetricConfig(FrozenBaseModel):
@@ -108,7 +120,12 @@ class MetricValueLocation(BaseModel):
         raise ValueError(f"Unknown value type {type(value)}")
 
 
-class MetricResult(BaseModel):
+class MetricResult(AutoAliasMixin, PolymorphicModel):
+    class Config:
+        is_base_type = True
+
+    __alias_type__: ClassVar[str] = "metric_result"
+
     display_name: str
     metric_value_location: Optional["MetricValueLocation"] = None
     widget: Optional[List[BaseWidgetInfo]] = None
@@ -613,17 +630,6 @@ class MetricCalculationBase(Generic[TResult]):
         if group_by is None:
             return self
         raise not_implemented(self)
-
-
-class AutoAliasMixin:
-    __alias_type__: ClassVar[str]
-
-    @classmethod
-    def __get_type__(cls):
-        config = cls.__dict__.get("Config")
-        if config is not None and config.__dict__.get("type_alias") is not None:
-            return config.type_alias
-        return f"evidently:{cls.__alias_type__}:{cls.__name__}"
 
 
 class MetricTest(AutoAliasMixin, EvidentlyBaseModel):

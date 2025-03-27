@@ -262,7 +262,7 @@ class SnapshotItem:
 class Snapshot:
     _report: "Report"
     _context: Context  # stores report calculation progress
-    _metrics: Dict[MetricId, Union[SingleValue, ByLabelValue, CountValue, MeanStdValue, ByLabelCountValue]]
+    _metrics: Dict[MetricId, MetricResult]
     _snapshot_item: List[SnapshotItem]
     _widgets: List[BaseWidgetInfo]
     _tests_widgets: List[BaseWidgetInfo]

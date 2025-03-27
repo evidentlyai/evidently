@@ -3,9 +3,12 @@ import pytest
 
 from evidently.future.datasets import Dataset
 from evidently.future.metrics import CategoryCount
+from evidently.future.metrics import MeanValue
 from evidently.future.metrics import MinValue
+from evidently.future.metrics import RowCount
 from evidently.future.report import Report
 from evidently.future.report import Snapshot
+from evidently.future.tests import eq
 from evidently.future.tests import lt
 
 
@@ -26,8 +29,10 @@ from evidently.future.tests import lt
 def test_report_run(current, reference):
     report = Report(
         [
+            RowCount(),
             MinValue(column="a", tests=[lt(1)]),
-            CategoryCount(column="a", category=1),
+            CategoryCount(column="a", category=1, tests=[eq(0)]),
+            MeanValue(column="a"),
         ]
     )
 
