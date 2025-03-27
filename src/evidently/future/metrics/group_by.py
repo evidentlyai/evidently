@@ -36,7 +36,7 @@ class GroupByMetricCalculation(MetricCalculation[TResult, GroupByMetric]):
         curr = current_data.subdataset(self.metric.column_name, self.metric.label)
         ref = reference_data.subdataset(self.metric.column_name, self.metric.label) if reference_data else None
         dn = self.calculation.display_name
-        self.calculation.display_name = _patched_display_name(dn, self.metric)
+        self.calculation.display_name = _patched_display_name(dn, self.metric)  # type: ignore[method-assign]
         res = self.calculation.calculate(context, curr, ref)
         if isinstance(res, tuple):
             curr_res, ref_res = res
