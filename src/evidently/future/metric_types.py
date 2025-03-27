@@ -1081,3 +1081,6 @@ class MeanStdCalculation(MetricCalculation[MeanStdValue, TMeanStdMetric], Generi
 
 class ColumnMetric(Metric, ABC):
     column: str
+
+
+MetricTestResult.update_forward_refs()
