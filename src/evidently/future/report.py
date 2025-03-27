@@ -23,16 +23,11 @@ from evidently.future.datasets import DataDefinition
 from evidently.future.datasets import Dataset
 from evidently.future.datasets import DatasetColumn
 from evidently.future.datasets import PossibleDatasetTypes
-from evidently.future.metric_types import ByLabelCountValue
-from evidently.future.metric_types import ByLabelValue
-from evidently.future.metric_types import CountValue
-from evidently.future.metric_types import MeanStdValue
 from evidently.future.metric_types import Metric
 from evidently.future.metric_types import MetricCalculationBase
 from evidently.future.metric_types import MetricId
 from evidently.future.metric_types import MetricResult
 from evidently.future.metric_types import MetricTestResult
-from evidently.future.metric_types import SingleValue
 from evidently.future.metric_types import metric_tests_widget
 from evidently.future.metric_types import render_widgets
 from evidently.future.serialization import ReportModel
@@ -299,7 +294,7 @@ class Snapshot:
     def _run_items(
         self,
         items: Sequence[MetricOrContainer],
-        metric_results: Dict[MetricId, Union[SingleValue, ByLabelValue, CountValue, MeanStdValue, ByLabelCountValue]],
+        metric_results: Dict[MetricId, MetricResult],
     ) -> Tuple[List[SnapshotItem], List[BaseWidgetInfo]]:
         widgets: List[BaseWidgetInfo] = []
         snapshot_items: List[SnapshotItem] = []
