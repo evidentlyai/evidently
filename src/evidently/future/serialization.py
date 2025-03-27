@@ -1,7 +1,6 @@
 from datetime import datetime
 from typing import Dict
 from typing import List
-from typing import Optional
 from typing import Union
 
 from evidently._pydantic_compat import BaseModel
@@ -30,7 +29,7 @@ class ReportModel(BaseModel):
 
 class SnapshotModel(BaseModel):
     report: ReportModel
-    timestamp: Optional[datetime]
+    timestamp: datetime
     metadata: Dict[str, MetadataValueType]
     tags: List[str]
     metric_results: Dict[MetricId, Union[SingleValue, ByLabelValue, CountValue, MeanStdValue, ByLabelCountValue]]
