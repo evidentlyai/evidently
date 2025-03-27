@@ -267,14 +267,26 @@ class Snapshot:
     _widgets: List[BaseWidgetInfo]
     _tests_widgets: List[BaseWidgetInfo]
     _top_level_metrics: List[MetricId]
+    _timestamp: datetime
+    _tags: List[str]
+    _metadata: Dict[str, MetadataValueType]
 
-    def __init__(self, report: "Report"):
+    def __init__(
+        self,
+        report: "Report",
+        timestamp: datetime,
+        metadata: Dict[str, MetadataValueType],
+        tags: List[str],
+    ):
         self._report = report
         self._context = Context(report)
         self._snapshot_item = []
         self._metrics = {}
         self._top_level_metrics = []
         self._tests_widgets = []
+        self._timestamp = timestamp
+        self._tags = tags
+        self._metadata = metadata
 
     @property
     def context(self) -> Context:
@@ -372,9 +384,9 @@ class Snapshot:
     def dump_dict(self) -> dict:
         snapshot = SnapshotModel(
             report=ReportModel(items=[]),
-            timestamp=self.report._timestamp,
-            metadata=self.report.metadata,
-            tags=self.report.tags,
+            timestamp=self._timestamp,
+            metadata=self._metadata,
+            tags=self._tags,
             metric_results=self._metrics,
             top_level_metrics=self._top_level_metrics,
             widgets=self._widgets,
@@ -389,10 +401,7 @@ class Snapshot:
     @staticmethod
     def load_dict(data: dict) -> "Snapshot":
         model = SnapshotModel.parse_obj(data)
-        snapshot = Snapshot(report=Report([]))
-        snapshot._report._timestamp = model.timestamp
-        snapshot._report.metadata = model.metadata
-        snapshot._report.tags = model.tags
+        snapshot = Snapshot(report=Report([]), timestamp=model.timestamp, metadata=model.metadata, tags=model.tags)
         snapshot._metrics = model.metric_results
         snapshot._top_level_metrics = model.top_level_metrics
         snapshot._widgets = model.widgets
@@ -447,11 +456,19 @@ class Report:
         current_data: PossibleDatasetTypes,
         reference_data: Optional[PossibleDatasetTypes] = None,
         timestamp: Optional[datetime] = None,
+        metadata: Dict[str, MetadataValueType] = None,
+        tags: List[str] = None,
     ) -> Snapshot:
-        self._timestamp = timestamp or datetime.now()
         current_dataset = Dataset.from_any(current_data)
         reference_dataset = Dataset.from_any(reference_data) if reference_data is not None else None
-        snapshot = Snapshot(self)
+        _timestamp = timestamp or datetime.now()
+        _metadata = self.metadata.copy()
+        if metadata is not None:
+            _metadata.update(metadata)
+        _tags = self.tags.copy()
+        if tags is not None:
+            _tags.extend(tags)
+        snapshot = Snapshot(self, _timestamp, _metadata, _tags)
         snapshot.run(current_dataset, reference_dataset)
         return snapshot
 

@@ -307,9 +307,9 @@ def snapshot_v2_to_v1(snapshot: SnapshotV2) -> SnapshotV1:
     snapshot_v1 = SnapshotV1(
         id=new_id(),
         name="",
-        timestamp=snapshot.report._timestamp,
-        metadata=dict(snapshot.report.metadata),
-        tags=snapshot.report.tags,
+        timestamp=snapshot._timestamp,
+        metadata=dict(snapshot._metadata),
+        tags=snapshot._tags,
         suite=ContextPayload(
             metrics=metrics,
             metric_results=metric_results,
