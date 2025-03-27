@@ -248,7 +248,7 @@ def snapshot_v2_to_v1(snapshot: SnapshotV2) -> SnapshotV1:
 
             for test_result in metric_result.tests or []:
                 tests_v2.append(test_result)
-                tests.append(TestV2Adapter(test=test_result.test_config, result=test_result))
+                tests.append(TestV2Adapter(test=test_result.bound_test))
                 test_results.append(
                     TestResultV1(
                         name=test_result.name,
@@ -273,7 +273,7 @@ def snapshot_v2_to_v1(snapshot: SnapshotV2) -> SnapshotV1:
 
         for test_result in metric_result.tests or []:
             tests_v2.append(test_result)
-            tests.append(TestV2Adapter(test=test_result.test_config, result=test_result))
+            tests.append(TestV2Adapter(test=test_result.bound_test))
             test_results.append(
                 TestResultV1(
                     name=test_result.name,
@@ -372,8 +372,7 @@ class TestV2Adapter(TestV1):
     name: ClassVar[str] = "TestV2Adapter"
     group: ClassVar[str] = "TestV2Adapter"
     # fixme: needed for deduplication
-    test: dict
-    result: MetricTestResult
+    test: BoundTest
 
     def check(self) -> TestResultV1:
         raise NotImplementedError

@@ -34,6 +34,7 @@ from evidently.model.widget import AdditionalGraphInfo
 from evidently.model.widget import BaseWidgetInfo
 from evidently.pydantic_utils import EvidentlyBaseModel
 from evidently.pydantic_utils import Fingerprint
+from evidently.pydantic_utils import FrozenBaseModel
 from evidently.renderers.base_renderer import DetailsInfo
 from evidently.renderers.html_widgets import CounterData
 from evidently.renderers.html_widgets import WidgetSize
@@ -50,7 +51,7 @@ if TYPE_CHECKING:
 MetricId = str
 
 
-class MetricConfig(BaseModel):
+class MetricConfig(FrozenBaseModel):
     metric_id: MetricId
     params: Dict[str, Any]
 
@@ -251,6 +252,7 @@ class MetricTestResult(BaseModel):
     metric_config: MetricConfig
     test_config: dict
     status: TestStatus
+    bound_test: Optional["BoundTest"] = None
 
 
 class SingleValue(MetricResult):
@@ -559,6 +561,7 @@ class MetricCalculationBase(Generic[TResult]):
     """
 
     _metric_id: MetricId
+    _replaced_display_name: Optional[str]
 
     def __init__(self, metric_id: MetricId) -> None:
         self._metric_id = metric_id
@@ -636,10 +639,18 @@ class MetricTest(AutoAliasMixin, EvidentlyBaseModel):
 
     def run(self, context: "Context", metric: "MetricCalculationBase", value: MetricResult) -> MetricTestResult:
         result: MetricTestResult = self.to_test()(context, metric, value)
+        status = result.status
         if result.status == TestStatus.FAIL and not self.is_critical:
-            result.status = TestStatus.WARNING
-        result.description = f"{value.display_name}: {result.description}"
-        return result
+            status = TestStatus.WARNING
+        description = f"{value.display_name}: {result.description}"
+        return MetricTestResult(
+            id=result.id,
+            name=result.name,
+            description=description,
+            status=status,
+            metric_config=result.metric_config,
+            test_config=result.test_config,
+        )
 
     def bind_single(self, fingerprint: Fingerprint) -> "BoundTest":
         return SingleValueBoundTest(test=self, metric_fingerprint=fingerprint)
@@ -774,7 +785,9 @@ class SingleValueBoundTest(BoundTest[SingleValue]):
         calculation: MetricCalculationBase[SingleValue],
         metric_result: SingleValue,
     ) -> MetricTestResult:
-        return self.test.run(context, calculation, metric_result)
+        result = self.test.run(context, calculation, metric_result)
+        result.bound_test = self
+        return result
 
 
 SingleValueMetricTests = Optional[List[MetricTest]]
@@ -810,7 +823,9 @@ class ByLabelBoundTest(BoundTest[ByLabelValue]):
         metric_result: ByLabelValue,
     ) -> MetricTestResult:
         value = metric_result.get_label_result(self.label)
-        return self.test.run(context, calculation, value)
+        result = self.test.run(context, calculation, value)
+        result.bound_test = self
+        return result
 
 
 ByLabelMetricTests = Optional[Dict[Label, List[MetricTest]]]
@@ -883,7 +898,9 @@ class ByLabelCountBoundTest(BoundTest[ByLabelCountValue]):
         metric_result: ByLabelCountValue,
     ) -> MetricTestResult:
         value = metric_result.get_label_result(self.label)
-        return self.test.run(context, calculation, value[0] if self.slot == "count" else value[1])
+        result = self.test.run(context, calculation, value[0] if self.slot == "count" else value[1])
+        result.bound_test = self
+        return result
 
 
 class ByLabelCountMetric(Metric):
@@ -952,11 +969,13 @@ class CountBoundTest(BoundTest[CountValue]):
         calculation: MetricCalculationBase,
         metric_result: CountValue,
     ) -> MetricTestResult:
-        return self.test.run(
+        result = self.test.run(
             context,
             calculation,
             metric_result.get_count() if self.is_count else metric_result.get_share(),
         )
+        result.bound_test = self
+        return result
 
 
 class CountMetric(Metric):
@@ -1007,11 +1026,13 @@ class MeanStdBoundTest(BoundTest[MeanStdValue]):
         calculation: MetricCalculationBase,
         metric_result: MeanStdValue,
     ) -> MetricTestResult:
-        return self.test.run(
+        result = self.test.run(
             context,
             calculation,
             metric_result.get_mean() if self.is_mean else metric_result.get_std(),
         )
+        result.bound_test = self
+        return result
 
 
 class MeanStdMetricTests(BaseModel):

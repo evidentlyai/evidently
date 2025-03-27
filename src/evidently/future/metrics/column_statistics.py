@@ -646,7 +646,7 @@ class UniqueValueCountCalculation(ByLabelCountCalculation[UniqueValueCount]):
     def calculate(self, context: "Context", current_data: Dataset, reference_data: Optional[Dataset]):
         current_result = self._calculate_value(current_data)
         current_result.widget = distribution(
-            f"Unique value count: {self.metric.column}",
+            self.display_name(),
             current_data.column(self.metric.column),
             None if reference_data is None else reference_data.column(self.metric.column),
         )
@@ -657,13 +657,13 @@ class UniqueValueCountCalculation(ByLabelCountCalculation[UniqueValueCount]):
         )
 
     def display_name(self) -> str:
-        return "Unique Value Count"
+        return f"Unique Value Count: {self.metric.column}"
 
     def count_label_display_name(self, label: Label) -> str:
-        return f"Unique Value Count for label {label}"
+        return f"{self.display_name()} for label {label}"
 
     def share_label_display_name(self, label: Label) -> str:
-        return f"Unique Value Share for label {label}"
+        return f"{self.display_name()} for label {label}"
 
     def _calculate_value(self, dataset: Dataset):
         df = dataset.as_dataframe()
