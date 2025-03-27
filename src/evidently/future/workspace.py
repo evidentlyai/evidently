@@ -98,11 +98,21 @@ class WorkspaceBase(ABC):
         snapshot_id = self._add_run(project_id, run)
         if include_data:
             current, reference = run.context._input_data
-            self.add_dataset(project_id, current, f"run-current-{snapshot_id}", None)
-            # todo: run.links.datasets.output.current = current_id
+            self.add_dataset(
+                project_id,
+                current,
+                f"run-current-{snapshot_id}",
+                None,
+                link=SnapshotLink(snapshot_id=snapshot_id, dataset_type="output", dataset_subtype="current"),
+            )
             if reference is not None:
-                self.add_dataset(project_id, reference, f"run-reference-{snapshot_id}", None)
-                # todo: run.links.datasets.output.reference = reference_id
+                self.add_dataset(
+                    project_id,
+                    reference,
+                    f"run-reference-{snapshot_id}",
+                    None,
+                    link=SnapshotLink(snapshot_id=snapshot_id, dataset_type="output", dataset_subtype="reference"),
+                )
         return snapshot_id
 
     @abstractmethod
@@ -366,6 +376,11 @@ class CloudWorkspace(RemoteWorkspace):
         file = NamedBytesIO(b"", "data.parquet")
         dataset.as_dataframe().to_parquet(file)
         file.seek(0)
+        qp = {"project_id": project_id}
+        if link is not None:
+            qp["snapshot_id"] = link.snapshot_id
+            qp["dataset_type"] = link.dataset_type
+            qp["dataset_subtype"] = link.dataset_subtype
         response: Response = self._request(
             "/api/v2/datasets/upload",
             "POST",
@@ -375,7 +390,7 @@ class CloudWorkspace(RemoteWorkspace):
                 "file": file,
                 "data_definition_str": data_definition,
             },
-            query_params={"project_id": project_id},
+            query_params=qp,
             form_data=True,
         )
         return DatasetID(response.json()["dataset"]["id"])
