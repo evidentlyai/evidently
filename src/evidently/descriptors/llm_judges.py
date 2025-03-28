@@ -10,7 +10,9 @@ from evidently.features.generated_features import GeneratedFeatures
 from evidently.features.llm_judge import BaseLLMPromptTemplate
 from evidently.features.llm_judge import BinaryClassificationPromptTemplate
 from evidently.features.llm_judge import LLMJudge
+from evidently.features.llm_judge import MulticlassClassificationPromptTemplate
 from evidently.features.llm_judge import Uncertainty
+from evidently.utils.llm.base import LLMMessage
 
 
 class BaseLLMEval(FeatureDescriptor, ABC):
@@ -97,9 +99,9 @@ This disposition can manifest through expressions that focus primarily on what i
 Texts or speeches exhibiting negativity may disproportionately emphasize faults, drawbacks, or criticisms, often overshadowing potential benefits or solutions, and can influence the mood or perception of the audience towards a more negative viewpoint.""",  # noqa: E501
         target_category="NEGATIVE",
         non_target_category="POSITIVE",
-        uncertainty="unknown",
+        uncertainty=Uncertainty.UNKNOWN,
         include_reasoning=True,
-        pre_messages=[("system", "You are a judge which evaluates text.")],
+        pre_messages=[LLMMessage.system("You are a judge which evaluates text.")],
     )
 
     provider = "openai"
@@ -119,9 +121,9 @@ or quasi-identifiers (e.g., race) that can be combined with other quasi-identifi
 PII may contain person's name, person's address,and something I may forget to mention""",  # noqa: E501
         target_category="PII",
         non_target_category="OK",
-        uncertainty="unknown",
+        uncertainty=Uncertainty.UNKNOWN,
         include_reasoning=True,
-        pre_messages=[("system", "You are a judge which evaluates text.")],
+        pre_messages=[LLMMessage.system("You are a judge which evaluates text.")],
     )
     provider = "openai"
     model = "gpt-4o-mini"
@@ -137,9 +139,9 @@ class DeclineLLMEval(BinaryClassificationLLMEval):
 In these contexts, "DECLINE" signifies a respectful or formal way of saying no to provide a help, service, or answer.""",
         target_category="DECLINE",
         non_target_category="OK",
-        uncertainty="unknown",
+        uncertainty=Uncertainty.UNKNOWN,
         include_reasoning=True,
-        pre_messages=[("system", "You are a judge which evaluates text.")],
+        pre_messages=[LLMMessage.system("You are a judge which evaluates text.")],
     )
     provider = "openai"
     model = "gpt-4o-mini"
@@ -166,9 +168,9 @@ or details required to answer the QUESTION fully or includes information that is
 """,
         target_category="VALID",
         non_target_category="INVALID",
-        uncertainty="unknown",
+        uncertainty=Uncertainty.UNKNOWN,
         include_reasoning=True,
-        pre_messages=[("system", "You are a judge which evaluates text.")],
+        pre_messages=[LLMMessage.system("You are a judge which evaluates text.")],
     )
     provider = "openai"
     model = "gpt-4o-mini"
@@ -192,11 +194,10 @@ This can manifest in various forms, including racial, gender, ethnic, or other t
 Texts exhibiting bias may unduly favor or discriminate against certain perspectives or groups, demonstrating partiality or unequal treatment.""",  # noqa: E501
         target_category="BIAS",
         non_target_category="OK",
-        uncertainty="unknown",
+        uncertainty=Uncertainty.UNKNOWN,
         include_reasoning=True,
         pre_messages=[
-            (
-                "system",
+            LLMMessage.system(
                 "You are an impartial expert evaluator. You will be given a text. Your task is to evaluate the text.",
             )
         ],
@@ -216,11 +217,10 @@ It may encompass hate speech, insults, threats, or any expressions that are abus
 Such texts aim to demean or harm, affecting the well-being or safety of others through aggressive or hurtful communication.""",  # noqa: E501
         target_category="TOXICITY",
         non_target_category="OK",
-        uncertainty="unknown",
+        uncertainty=Uncertainty.UNKNOWN,
         include_reasoning=True,
         pre_messages=[
-            (
-                "system",
+            LLMMessage.system(
                 "You are an impartial expert evaluator. You will be given a text. Your task is to evaluate the text.",
             )
         ],
@@ -253,11 +253,10 @@ class CorrectnessLLMEval(BinaryClassificationLLMEval):
         -----reference_finishes-----""",
         target_category="INCORRECT",
         non_target_category="CORRECT",
-        uncertainty="unknown",
+        uncertainty=Uncertainty.UNKNOWN,
         include_reasoning=True,
         pre_messages=[
-            (
-                "system",
+            LLMMessage.system(
                 """You are an impartial expert evaluator.
                 You will be given an OUTPUT and REFERENCE.
                 Your job is to evaluate correctness of the OUTPUT.""",
@@ -296,11 +295,10 @@ class FaithfulnessLLMEval(BinaryClassificationLLMEval):
         -----source_finishes-----""",
         target_category="UNFAITHFUL",
         non_target_category="FAITHFUL",
-        uncertainty="unknown",
+        uncertainty=Uncertainty.UNKNOWN,
         include_reasoning=True,
         pre_messages=[
-            (
-                "system",
+            LLMMessage.system(
                 """You are an impartial expert evaluator.
                 You will be given a text.
                 Your job is to evaluate faithfulness of responses by comparing them to the trusted information source.""",
@@ -339,11 +337,10 @@ class CompletenessLLMEval(BinaryClassificationLLMEval):
         -----source_finishes-----""",
         target_category="INCOMPLETE",
         non_target_category="COMPLETE",
-        uncertainty="unknown",
+        uncertainty=Uncertainty.UNKNOWN,
         include_reasoning=True,
         pre_messages=[
-            (
-                "system",
+            LLMMessage.system(
                 """You are an impartial expert evaluator.
                 You will be given a text.
                 Your job is to evaluate completeness of responses.""",
@@ -355,3 +352,30 @@ class CompletenessLLMEval(BinaryClassificationLLMEval):
         input_columns = super().get_input_columns(column_name)
         input_columns.update({self.context: "context"})
         return input_columns
+
+
+class MulticlassClassificationLLMEval(BaseLLMEval):
+    class Config:
+        type_alias = "evidently:descriptor:MulticlassClassificationLLMEval"
+
+    template: ClassVar[MulticlassClassificationPromptTemplate]
+    include_category: Optional[bool] = None
+    include_score: Optional[bool] = None
+    include_reasoning: Optional[bool] = None
+    uncertainty: Optional[Uncertainty] = None
+
+    def get_template(self) -> MulticlassClassificationPromptTemplate:
+        update = {
+            k: getattr(self, k)
+            for k in ("include_category", "include_score", "include_reasoning", "uncertainty")
+            if getattr(self, k) is not None
+        }
+        return self.template.update(**update)
+
+    def get_subcolumn(self) -> Optional[str]:
+        t = self.get_template()
+        if t.include_category:
+            return self.template.output_column
+        if t.include_score:
+            return self.template.get_score_column(next(iter(self.template.category_criteria.keys())))
+        return None

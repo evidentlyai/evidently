@@ -20,6 +20,7 @@ from evidently.future.metric_types import ColumnMetric
 from evidently.future.metric_types import CountCalculation
 from evidently.future.metric_types import CountMetric
 from evidently.future.metric_types import CountValue
+from evidently.future.metric_types import MetricCalculationBase
 from evidently.future.metric_types import MetricTest
 from evidently.future.metric_types import MetricTestProto
 from evidently.future.metric_types import MetricTestResult
@@ -28,6 +29,7 @@ from evidently.future.metric_types import SingleValueCalculation
 from evidently.future.metric_types import SingleValueMetric
 from evidently.future.metric_types import TestConfig
 from evidently.future.metric_types import TMetric
+from evidently.future.metric_types import TResult
 from evidently.future.metrics._legacy import LegacyMetricCalculation
 from evidently.future.report import Context
 from evidently.future.tests import Reference
@@ -400,6 +402,11 @@ class ValueDrift(ColumnMetric, SingleValueMetric):
     threshold: Optional[float] = None
 
 
+class ValueDriftBoundTest(BoundTest[SingleValue]):
+    def run_test(self, context: "Context", calculation: MetricCalculationBase[TResult], metric_result: TResult):
+        raise NotImplementedError()
+
+
 class ValueDriftTest(MetricTest):
     def to_test(self) -> MetricTestProto:
         raise NotImplementedError()
@@ -451,6 +458,10 @@ class ValueDriftCalculation(SingleValueCalculation[ValueDrift]):
                         status=TestStatus.FAIL if drift.drift_detected else TestStatus.SUCCESS,
                         metric_config=self.to_metric_config(),
                         test_config={},
+                        bound_test=ValueDriftBoundTest(
+                            test=ValueDriftTest(),
+                            metric_fingerprint=self.to_metric().metric_id,
+                        ),
                     )
                 ]
             )

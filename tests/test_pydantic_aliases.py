@@ -19,6 +19,7 @@ from evidently.base_metric import MetricResult
 from evidently.collector.config import CollectorTrigger
 from evidently.collector.storage import CollectorStorage
 from evidently.features.generated_features import BaseDescriptor
+from evidently.features.generated_features import FeatureDescriptor
 from evidently.features.generated_features import GeneratedFeatures
 from evidently.features.llm_judge import BaseLLMPromptTemplate
 from evidently.future.datasets import Descriptor
@@ -77,6 +78,7 @@ REGISTRY_MAPPING: Dict[Type[PolymorphicModel], str] = {
     MetricResult: "evidently.metrics._registry",
     BoundTest: "evidently.future._registry",
     Descriptor: "evidently.future.descriptors._registry",
+    FeatureDescriptor: "evidently.descriptors._registry",
 }
 
 
