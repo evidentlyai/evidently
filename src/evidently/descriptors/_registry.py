@@ -162,16 +162,6 @@ register_type_alias(
 
 register_type_alias(
     FeatureDescriptor,
-    "evidently.descriptors.llm_judges_multiclass.BrandSafetyLLMEval",
-    "evidently:descriptor:BrandSafetyLLMEval",
-)
-register_type_alias(
-    FeatureDescriptor,
-    "evidently.descriptors.llm_judges_multiclass.MulticlassClassificationLLMEval",
+    "evidently.descriptors.llm_judges.MulticlassClassificationLLMEval",
     "evidently:descriptor:MulticlassClassificationLLMEval",
-)
-register_type_alias(
-    FeatureDescriptor,
-    "evidently.descriptors.llm_judges_multiclass.RelevanceLLMEval",
-    "evidently:descriptor:RelevanceLLMEval",
 )
