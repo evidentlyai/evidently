@@ -116,6 +116,7 @@ register_type_alias(Metric, "evidently.future.metrics.classification.Classificat
 register_type_alias(Metric, "evidently.future.metrics.classification.DummyClassificationQuality", "evidently:metric_v2:DummyClassificationQuality")
 
 register_type_alias(BoundTest, "evidently.future.metric_types.ByLabelCountBoundTest", "evidently:bound_test:ByLabelCountBoundTest")
+register_type_alias(BoundTest, "evidently.future.metrics.column_statistics.ValueDriftBoundTest", "evidently:bound_test:ValueDriftBoundTest")
 register_type_alias(Metric, "evidently.future.metric_types.ByLabelCountMetric", "evidently:metric_v2:ByLabelCountMetric")
 
 register_type_alias(Metric, "evidently.future.metric_types.ColumnMetric", "evidently:metric_v2:ColumnMetric")
