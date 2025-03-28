@@ -2,26 +2,17 @@ from abc import ABC
 from abc import abstractmethod
 from typing import ClassVar
 from typing import Dict
-from typing import List
-from typing import Literal
 from typing import Optional
-from typing import Sequence
-from typing import Tuple
-from typing import Union
 
-from evidently._pydantic_compat import Field
 from evidently.base_metric import ColumnName
-from evidently.core import ColumnType
 from evidently.features.generated_features import FeatureDescriptor
 from evidently.features.generated_features import GeneratedFeatures
 from evidently.features.llm_judge import BaseLLMPromptTemplate
 from evidently.features.llm_judge import BinaryClassificationPromptTemplate
 from evidently.features.llm_judge import LLMJudge
+from evidently.features.llm_judge import MulticlassClassificationPromptTemplate
 from evidently.features.llm_judge import Uncertainty
-from evidently.pydantic_utils import EnumValueMixin
-from evidently.pydantic_utils import autoregister
 from evidently.utils.llm.base import LLMMessage
-from evidently.utils.llm.prompts import PromptBlock
 
 
 class BaseLLMEval(FeatureDescriptor, ABC):
@@ -361,111 +352,6 @@ class CompletenessLLMEval(BinaryClassificationLLMEval):
         input_columns = super().get_input_columns(column_name)
         input_columns.update({self.context: "context"})
         return input_columns
-
-
-@autoregister
-class MulticlassClassificationPromptTemplate(BaseLLMPromptTemplate, EnumValueMixin):
-    class Config:
-        type_alias = "evidently:prompt_template:MulticlassClassificationPromptTemplate"
-
-    criteria: str = ""
-    instructions_template: str = (
-        "Use the following categories for classification:\n{__categories__}\n{__scoring__}\nThink step by step."
-    )
-
-    anchor_start: str = "___text_starts_here___"
-    anchor_end: str = "___text_ends_here___"
-    uncertainty: Union[Literal["UNKNOWN"], str] = "UNKNOWN"
-
-    category_criteria: Dict[str, str] = {}
-
-    include_category: bool = True
-    include_reasoning: bool = False
-    include_score: bool = False
-    score_range: Tuple[float, float] = (0.0, 1.0)
-
-    output_column: str = "category"
-    output_reasoning_column: str = "reasoning"
-    output_score_column_prefix: str = "score"
-
-    pre_messages: List[LLMMessage] = Field(default_factory=list)
-
-    def get_blocks(self) -> Sequence[PromptBlock]:
-        fields: Dict[str, Tuple[str, str]] = {}
-        if self.include_category:
-            cat = " or ".join(self.category_criteria.keys())
-            if self.uncertainty == Uncertainty.UNKNOWN:
-                cat += " or UNKNOWN"
-            fields["category"] = (cat, self.output_column)
-        if self.include_score:
-            fields.update(
-                {
-                    f"score_{cat}": (f"<score for {cat} here>", self.get_score_column(cat))
-                    for cat in self.category_criteria.keys()
-                }
-            )
-        if self.include_reasoning:
-            fields["reasoning"] = ("<reasoning here>", self.output_reasoning_column)
-        return [
-            PromptBlock.simple(self.criteria),
-            PromptBlock.simple(
-                f"Classify text between {self.anchor_start} and {self.anchor_end} "
-                f"into categories: " + " or ".join(self.category_criteria.keys()) + "."
-            ),
-            PromptBlock.input().anchored(self.anchor_start, self.anchor_end),
-            PromptBlock.simple(self._instructions()),
-            PromptBlock.json_output(**fields),
-        ]
-
-    def get_score_column(self, category: str) -> str:
-        return f"{self.output_score_column_prefix}_{category}"
-
-    def list_output_columns(self) -> List[str]:
-        result = []
-        if self.include_category:
-            result.append(self.output_column)
-        if self.include_score:
-            result.extend(self.get_score_column(cat) for cat in self.category_criteria.keys())
-        if self.include_reasoning:
-            result.append(self.output_reasoning_column)
-        return result
-
-    def get_main_output_column(self) -> str:
-        return self.output_column
-
-    def get_type(self, subcolumn: Optional[str]) -> ColumnType:
-        if subcolumn == self.output_reasoning_column:
-            return ColumnType.Text
-        if subcolumn == self.output_column or subcolumn is None:
-            return ColumnType.Categorical
-        if subcolumn.startswith(self.output_score_column_prefix):
-            return ColumnType.Numerical
-        raise ValueError(f"Unknown subcolumn {subcolumn}")
-
-    def _instructions(self):
-        categories = (
-            (
-                "\n".join(f"{cat}: {crit}" for cat, crit in self.category_criteria.items())
-                + "\n"
-                + f"{self._uncertainty_class()}: use this category only if the information provided "
-                f"is not sufficient to make a clear determination\n"
-            )
-            if self.include_category
-            else ""
-        )
-        lower, upper = self.score_range
-        scoring = (f"For each category, score text in range from {lower} to {upper}") if self.include_score else ""
-        return self.instructions_template.format(__categories__=categories, __scoring__=scoring)
-
-    def _uncertainty_class(self):
-        if self.uncertainty.upper() == "UNKNOWN":
-            return "UNKNOWN"
-        if self.uncertainty not in self.category_criteria:
-            raise ValueError(f"Unknown uncertainty value: {self.uncertainty}")
-        return self.uncertainty
-
-    def get_messages(self, values, template: Optional[str] = None) -> List[LLMMessage]:
-        return [*self.pre_messages, *super().get_messages(values, template)]
 
 
 class MulticlassClassificationLLMEval(BaseLLMEval):
