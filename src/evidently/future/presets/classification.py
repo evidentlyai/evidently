@@ -56,6 +56,7 @@ class ClassificationQuality(MetricContainer):
         tnr_tests: SingleValueMetricTests = None,
         fpr_tests: SingleValueMetricTests = None,
         fnr_tests: SingleValueMetricTests = None,
+        include_tests: bool = True,
     ):
         self._accuracy_tests = accuracy_tests
         self._precision_tests = precision_tests
@@ -71,6 +72,7 @@ class ClassificationQuality(MetricContainer):
         self._conf_matrix = conf_matrix
         self._pr_curve = pr_curve
         self._pr_table = pr_table
+        super().__init__(include_tests=include_tests)
 
     def generate_metrics(self, context: "Context") -> Sequence[MetricOrContainer]:
         classification = context.data_definition.get_classification("default")
@@ -80,25 +82,25 @@ class ClassificationQuality(MetricContainer):
         metrics: List[Metric]
 
         metrics = [
-            Accuracy(probas_threshold=self._probas_threshold, tests=self._accuracy_tests),
-            Precision(probas_threshold=self._probas_threshold, tests=self._precision_tests),
-            Recall(probas_threshold=self._probas_threshold, tests=self._recall_tests),
-            F1Score(probas_threshold=self._probas_threshold, tests=self._f1score_tests),
+            Accuracy(probas_threshold=self._probas_threshold, tests=self._get_tests(self._accuracy_tests)),
+            Precision(probas_threshold=self._probas_threshold, tests=self._get_tests(self._precision_tests)),
+            Recall(probas_threshold=self._probas_threshold, tests=self._get_tests(self._recall_tests)),
+            F1Score(probas_threshold=self._probas_threshold, tests=self._get_tests(self._f1score_tests)),
         ]
         if classification.prediction_probas is not None:
             metrics.extend(
                 [
-                    RocAuc(probas_threshold=self._probas_threshold, tests=self._rocauc_test),
-                    LogLoss(probas_threshold=self._probas_threshold, tests=self._logloss_test),
+                    RocAuc(probas_threshold=self._probas_threshold, tests=self._get_tests(self._rocauc_test)),
+                    LogLoss(probas_threshold=self._probas_threshold, tests=self._get_tests(self._logloss_test)),
                 ]
             )
         if isinstance(classification, BinaryClassification):
             metrics.extend(
                 [
-                    TPR(probas_threshold=self._probas_threshold, tests=self._tpr_test),
-                    TNR(probas_threshold=self._probas_threshold, tests=self._tnr_test),
-                    FPR(probas_threshold=self._probas_threshold, tests=self._fpr_test),
-                    FNR(probas_threshold=self._probas_threshold, tests=self._fnr_test),
+                    TPR(probas_threshold=self._probas_threshold, tests=self._get_tests(self._tpr_test)),
+                    TNR(probas_threshold=self._probas_threshold, tests=self._get_tests(self._tnr_test)),
+                    FPR(probas_threshold=self._probas_threshold, tests=self._get_tests(self._fpr_test)),
+                    FNR(probas_threshold=self._probas_threshold, tests=self._get_tests(self._fnr_test)),
                 ]
             )
         return metrics
@@ -144,6 +146,7 @@ class ClassificationQualityByLabel(MetricContainer):
         precision_tests: ByLabelMetricTests = None,
         recall_tests: ByLabelMetricTests = None,
         rocauc_tests: ByLabelMetricTests = None,
+        include_tests: bool = True,
     ):
         self._probas_threshold = probas_threshold
         self._k = k
@@ -151,20 +154,27 @@ class ClassificationQualityByLabel(MetricContainer):
         self._precision_tests = precision_tests
         self._recall_tests = recall_tests
         self._rocauc_tests = rocauc_tests
+        super().__init__(include_tests=include_tests)
 
     def generate_metrics(self, context: "Context") -> Sequence[MetricOrContainer]:
         classification = context.data_definition.get_classification("default")
         if classification is None:
             raise ValueError("Cannot use ClassificationPreset without a classification configration")
         return [
-            F1ByLabel(probas_threshold=self._probas_threshold, k=self._k, tests=self._f1score_tests),
-            PrecisionByLabel(probas_threshold=self._probas_threshold, k=self._k, tests=self._precision_tests),
-            RecallByLabel(probas_threshold=self._probas_threshold, k=self._k, tests=self._recall_tests),
+            F1ByLabel(probas_threshold=self._probas_threshold, k=self._k, tests=self._get_tests(self._f1score_tests)),
+            PrecisionByLabel(
+                probas_threshold=self._probas_threshold, k=self._k, tests=self._get_tests(self._precision_tests)
+            ),
+            RecallByLabel(
+                probas_threshold=self._probas_threshold, k=self._k, tests=self._get_tests(self._recall_tests)
+            ),
         ] + (
             []
             if classification.prediction_probas is None
             else [
-                RocAucByLabel(probas_threshold=self._probas_threshold, k=self._k, tests=self._rocauc_tests),
+                RocAucByLabel(
+                    probas_threshold=self._probas_threshold, k=self._k, tests=self._get_tests(self._rocauc_tests)
+                ),
             ]
         )
 
@@ -192,6 +202,7 @@ class ClassificationDummyQuality(MetricContainer):
     ):
         self._probas_threshold = probas_threshold
         self._k = k
+        super().__init__(include_tests=True)
 
     def generate_metrics(self, context: "Context") -> Sequence[MetricOrContainer]:
         return [
@@ -232,7 +243,9 @@ class ClassificationPreset(MetricContainer):
         precision_by_label_tests: ByLabelMetricTests = None,
         recall_by_label_tests: ByLabelMetricTests = None,
         rocauc_by_label_tests: ByLabelMetricTests = None,
+        include_tests: bool = True,
     ):
+        super().__init__(include_tests=include_tests)
         self._probas_threshold = probas_threshold
         self._quality = ClassificationQuality(
             probas_threshold=probas_threshold,
@@ -249,6 +262,7 @@ class ClassificationPreset(MetricContainer):
             tnr_tests=tnr_tests,
             fpr_tests=fpr_tests,
             fnr_tests=fnr_tests,
+            include_tests=include_tests,
         )
         self._quality_by_label = ClassificationQualityByLabel(
             probas_threshold=probas_threshold,
@@ -256,10 +270,11 @@ class ClassificationPreset(MetricContainer):
             precision_tests=precision_by_label_tests,
             recall_tests=recall_by_label_tests,
             rocauc_tests=rocauc_by_label_tests,
+            include_tests=include_tests,
         )
         self._roc_auc: Optional[RocAuc] = RocAuc(
             probas_threshold=probas_threshold,
-            tests=rocauc_tests,
+            tests=self._get_tests(rocauc_tests),
         )
 
     def generate_metrics(self, context: "Context") -> Sequence[MetricOrContainer]:

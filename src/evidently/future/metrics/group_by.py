@@ -67,6 +67,7 @@ class GroupBy(MetricContainer):
     def __init__(self, metric: Metric, column_name: str):
         self._column_name = column_name
         self._metric = metric
+        super().__init__(True)
 
     def generate_metrics(self, context: Context) -> Sequence[MetricOrContainer]:
         labels = context.column(self._column_name).labels()
