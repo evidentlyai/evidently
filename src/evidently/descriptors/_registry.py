@@ -159,3 +159,9 @@ register_type_alias(
 register_type_alias(
     FeatureDescriptor, "evidently.descriptors.is_valid_json_descriptor.IsValidJSON", "evidently:descriptor:IsValidJSON"
 )
+
+register_type_alias(
+    FeatureDescriptor,
+    "evidently.descriptors.llm_judges.MulticlassClassificationLLMEval",
+    "evidently:descriptor:MulticlassClassificationLLMEval",
+)
