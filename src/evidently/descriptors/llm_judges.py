@@ -2,15 +2,26 @@ from abc import ABC
 from abc import abstractmethod
 from typing import ClassVar
 from typing import Dict
+from typing import List
+from typing import Literal
 from typing import Optional
+from typing import Sequence
+from typing import Tuple
+from typing import Union
 
+from evidently._pydantic_compat import Field
 from evidently.base_metric import ColumnName
+from evidently.core import ColumnType
 from evidently.features.generated_features import FeatureDescriptor
 from evidently.features.generated_features import GeneratedFeatures
 from evidently.features.llm_judge import BaseLLMPromptTemplate
 from evidently.features.llm_judge import BinaryClassificationPromptTemplate
 from evidently.features.llm_judge import LLMJudge
 from evidently.features.llm_judge import Uncertainty
+from evidently.pydantic_utils import EnumValueMixin
+from evidently.pydantic_utils import autoregister
+from evidently.utils.llm.base import LLMMessage
+from evidently.utils.llm.prompts import PromptBlock
 
 
 class BaseLLMEval(FeatureDescriptor, ABC):
@@ -97,9 +108,9 @@ This disposition can manifest through expressions that focus primarily on what i
 Texts or speeches exhibiting negativity may disproportionately emphasize faults, drawbacks, or criticisms, often overshadowing potential benefits or solutions, and can influence the mood or perception of the audience towards a more negative viewpoint.""",  # noqa: E501
         target_category="NEGATIVE",
         non_target_category="POSITIVE",
-        uncertainty="unknown",
+        uncertainty=Uncertainty.UNKNOWN,
         include_reasoning=True,
-        pre_messages=[("system", "You are a judge which evaluates text.")],
+        pre_messages=[LLMMessage.system("You are a judge which evaluates text.")],
     )
 
     provider = "openai"
@@ -119,9 +130,9 @@ or quasi-identifiers (e.g., race) that can be combined with other quasi-identifi
 PII may contain person's name, person's address,and something I may forget to mention""",  # noqa: E501
         target_category="PII",
         non_target_category="OK",
-        uncertainty="unknown",
+        uncertainty=Uncertainty.UNKNOWN,
         include_reasoning=True,
-        pre_messages=[("system", "You are a judge which evaluates text.")],
+        pre_messages=[LLMMessage.system("You are a judge which evaluates text.")],
     )
     provider = "openai"
     model = "gpt-4o-mini"
@@ -137,9 +148,9 @@ class DeclineLLMEval(BinaryClassificationLLMEval):
 In these contexts, "DECLINE" signifies a respectful or formal way of saying no to provide a help, service, or answer.""",
         target_category="DECLINE",
         non_target_category="OK",
-        uncertainty="unknown",
+        uncertainty=Uncertainty.UNKNOWN,
         include_reasoning=True,
-        pre_messages=[("system", "You are a judge which evaluates text.")],
+        pre_messages=[LLMMessage.system("You are a judge which evaluates text.")],
     )
     provider = "openai"
     model = "gpt-4o-mini"
@@ -166,9 +177,9 @@ or details required to answer the QUESTION fully or includes information that is
 """,
         target_category="VALID",
         non_target_category="INVALID",
-        uncertainty="unknown",
+        uncertainty=Uncertainty.UNKNOWN,
         include_reasoning=True,
-        pre_messages=[("system", "You are a judge which evaluates text.")],
+        pre_messages=[LLMMessage.system("You are a judge which evaluates text.")],
     )
     provider = "openai"
     model = "gpt-4o-mini"
@@ -192,11 +203,10 @@ This can manifest in various forms, including racial, gender, ethnic, or other t
 Texts exhibiting bias may unduly favor or discriminate against certain perspectives or groups, demonstrating partiality or unequal treatment.""",  # noqa: E501
         target_category="BIAS",
         non_target_category="OK",
-        uncertainty="unknown",
+        uncertainty=Uncertainty.UNKNOWN,
         include_reasoning=True,
         pre_messages=[
-            (
-                "system",
+            LLMMessage.system(
                 "You are an impartial expert evaluator. You will be given a text. Your task is to evaluate the text.",
             )
         ],
@@ -216,11 +226,10 @@ It may encompass hate speech, insults, threats, or any expressions that are abus
 Such texts aim to demean or harm, affecting the well-being or safety of others through aggressive or hurtful communication.""",  # noqa: E501
         target_category="TOXICITY",
         non_target_category="OK",
-        uncertainty="unknown",
+        uncertainty=Uncertainty.UNKNOWN,
         include_reasoning=True,
         pre_messages=[
-            (
-                "system",
+            LLMMessage.system(
                 "You are an impartial expert evaluator. You will be given a text. Your task is to evaluate the text.",
             )
         ],
@@ -253,11 +262,10 @@ class CorrectnessLLMEval(BinaryClassificationLLMEval):
         -----reference_finishes-----""",
         target_category="INCORRECT",
         non_target_category="CORRECT",
-        uncertainty="unknown",
+        uncertainty=Uncertainty.UNKNOWN,
         include_reasoning=True,
         pre_messages=[
-            (
-                "system",
+            LLMMessage.system(
                 """You are an impartial expert evaluator.
                 You will be given an OUTPUT and REFERENCE.
                 Your job is to evaluate correctness of the OUTPUT.""",
@@ -296,11 +304,10 @@ class FaithfulnessLLMEval(BinaryClassificationLLMEval):
         -----source_finishes-----""",
         target_category="UNFAITHFUL",
         non_target_category="FAITHFUL",
-        uncertainty="unknown",
+        uncertainty=Uncertainty.UNKNOWN,
         include_reasoning=True,
         pre_messages=[
-            (
-                "system",
+            LLMMessage.system(
                 """You are an impartial expert evaluator.
                 You will be given a text.
                 Your job is to evaluate faithfulness of responses by comparing them to the trusted information source.""",
@@ -339,11 +346,10 @@ class CompletenessLLMEval(BinaryClassificationLLMEval):
         -----source_finishes-----""",
         target_category="INCOMPLETE",
         non_target_category="COMPLETE",
-        uncertainty="unknown",
+        uncertainty=Uncertainty.UNKNOWN,
         include_reasoning=True,
         pre_messages=[
-            (
-                "system",
+            LLMMessage.system(
                 """You are an impartial expert evaluator.
                 You will be given a text.
                 Your job is to evaluate completeness of responses.""",
@@ -355,3 +361,135 @@ class CompletenessLLMEval(BinaryClassificationLLMEval):
         input_columns = super().get_input_columns(column_name)
         input_columns.update({self.context: "context"})
         return input_columns
+
+
+@autoregister
+class MulticlassClassificationPromptTemplate(BaseLLMPromptTemplate, EnumValueMixin):
+    class Config:
+        type_alias = "evidently:prompt_template:MulticlassClassificationPromptTemplate"
+
+    criteria: str = ""
+    instructions_template: str = (
+        "Use the following categories for classification:\n{__categories__}\n{__scoring__}\nThink step by step."
+    )
+
+    anchor_start: str = "___text_starts_here___"
+    anchor_end: str = "___text_ends_here___"
+    uncertainty: Union[Literal["UNKNOWN"], str] = "UNKNOWN"
+
+    category_criteria: Dict[str, str] = {}
+
+    include_category: bool = True
+    include_reasoning: bool = False
+    include_score: bool = False
+    score_range: Tuple[float, float] = (0.0, 1.0)
+
+    output_column: str = "category"
+    output_reasoning_column: str = "reasoning"
+    output_score_column_prefix: str = "score"
+
+    pre_messages: List[LLMMessage] = Field(default_factory=list)
+
+    def get_blocks(self) -> Sequence[PromptBlock]:
+        fields: Dict[str, Tuple[str, str]] = {}
+        if self.include_category:
+            cat = " or ".join(self.category_criteria.keys())
+            if self.uncertainty == Uncertainty.UNKNOWN:
+                cat += " or UNKNOWN"
+            fields["category"] = (cat, self.output_column)
+        if self.include_score:
+            fields.update(
+                {
+                    f"score_{cat}": (f"<score for {cat} here>", self.get_score_column(cat))
+                    for cat in self.category_criteria.keys()
+                }
+            )
+        if self.include_reasoning:
+            fields["reasoning"] = ("<reasoning here>", self.output_reasoning_column)
+        return [
+            PromptBlock.simple(self.criteria),
+            PromptBlock.simple(
+                f"Classify text between {self.anchor_start} and {self.anchor_end} "
+                f"into categories: " + " or ".join(self.category_criteria.keys()) + "."
+            ),
+            PromptBlock.input().anchored(self.anchor_start, self.anchor_end),
+            PromptBlock.simple(self._instructions()),
+            PromptBlock.json_output(**fields),
+        ]
+
+    def get_score_column(self, category: str) -> str:
+        return f"{self.output_score_column_prefix}_{category}"
+
+    def list_output_columns(self) -> List[str]:
+        result = []
+        if self.include_category:
+            result.append(self.output_column)
+        if self.include_score:
+            result.extend(self.get_score_column(cat) for cat in self.category_criteria.keys())
+        if self.include_reasoning:
+            result.append(self.output_reasoning_column)
+        return result
+
+    def get_main_output_column(self) -> str:
+        return self.output_column
+
+    def get_type(self, subcolumn: Optional[str]) -> ColumnType:
+        if subcolumn == self.output_reasoning_column:
+            return ColumnType.Text
+        if subcolumn == self.output_column or subcolumn is None:
+            return ColumnType.Categorical
+        if subcolumn.startswith(self.output_score_column_prefix):
+            return ColumnType.Numerical
+        raise ValueError(f"Unknown subcolumn {subcolumn}")
+
+    def _instructions(self):
+        categories = (
+            (
+                "\n".join(f"{cat}: {crit}" for cat, crit in self.category_criteria.items())
+                + "\n"
+                + f"{self._uncertainty_class()}: use this category only if the information provided "
+                f"is not sufficient to make a clear determination\n"
+            )
+            if self.include_category
+            else ""
+        )
+        lower, upper = self.score_range
+        scoring = (f"For each category, score text in range from {lower} to {upper}") if self.include_score else ""
+        return self.instructions_template.format(__categories__=categories, __scoring__=scoring)
+
+    def _uncertainty_class(self):
+        if self.uncertainty.upper() == "UNKNOWN":
+            return "UNKNOWN"
+        if self.uncertainty not in self.category_criteria:
+            raise ValueError(f"Unknown uncertainty value: {self.uncertainty}")
+        return self.uncertainty
+
+    def get_messages(self, values, template: Optional[str] = None) -> List[LLMMessage]:
+        return [*self.pre_messages, *super().get_messages(values, template)]
+
+
+class MulticlassClassificationLLMEval(BaseLLMEval):
+    class Config:
+        type_alias = "evidently:descriptor:MulticlassClassificationLLMEval"
+
+    template: ClassVar[MulticlassClassificationPromptTemplate]
+    include_category: Optional[bool] = None
+    include_score: Optional[bool] = None
+    include_reasoning: Optional[bool] = None
+    uncertainty: Optional[Uncertainty] = None
+
+    def get_template(self) -> MulticlassClassificationPromptTemplate:
+        update = {
+            k: getattr(self, k)
+            for k in ("include_category", "include_score", "include_reasoning", "uncertainty")
+            if getattr(self, k) is not None
+        }
+        return self.template.update(**update)
+
+    def get_subcolumn(self) -> Optional[str]:
+        t = self.get_template()
+        if t.include_category:
+            return self.template.output_column
+        if t.include_score:
+            return self.template.get_score_column(next(iter(self.template.category_criteria.keys())))
+        return None
