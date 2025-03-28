@@ -111,11 +111,10 @@ def create_descriptor_function(feature_class: Type[GeneratedFeatures]):
     if has_display_name:
         class_args += ", display_name=alias"
     res = f"""
-class {name}(FeatureDescriptor):
-    def __init__(self, {args_str}{kwargs_str}):
+def {name}({args_str}{kwargs_str}):
         from {feature_class.__module__} import {feature_class.__name__} as {feature_class.__name__}V1
         feature = {class_name}V1({class_args})
-        super().__init__(feature, alias=alias)
+        return FeatureDescriptor(feature=feature, alias=alias)
 """
     for substr, repl in REPLACES.items():
         res = res.replace(substr, repl)
@@ -144,11 +143,10 @@ def create_llm_descriptor_functions(feature_class: Type[BaseLLMEval]):
     if has_display_name:
         class_args += ", display_name=alias"
     res = f"""
-class {name}(FeatureDescriptor):
-    def __init__(self, column_name: str, {args_str}{kwargs_str}):
-        from {feature_class.__module__} import {feature_class.__name__} as {feature_class.__name__}V1
-        feature = {class_name}V1({class_args}).feature(column_name)
-        super().__init__(feature, alias=alias)
+def {name}(column_name: str, {args_str}{kwargs_str}):
+    from {feature_class.__module__} import {feature_class.__name__} as {feature_class.__name__}V1
+    feature = {class_name}V1({class_args}).feature(column_name)
+    return FeatureDescriptor(feature=feature, alias=alias)
     """
     for substr, repl in REPLACES.items():
         res = res.replace(substr, repl)

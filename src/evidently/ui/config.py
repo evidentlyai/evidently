@@ -42,7 +42,7 @@ class ConfigContext(ComponentContext):
 
     @property
     def components(self) -> List[Component]:
-        return list(self.components_mapping.values())
+        return list(sorted(self.components_mapping.values(), key=lambda x: -x.get_priority()))
 
     def get_dependencies(self) -> Dict[str, Provide]:
         res = {}

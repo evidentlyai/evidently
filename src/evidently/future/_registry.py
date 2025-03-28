@@ -6,6 +6,8 @@ from evidently.future.metric_types import MetricResult
 from evidently.future.metric_types import MetricTest
 from evidently.pydantic_utils import register_type_alias
 
+from .descriptors import _registry as descriptors_registry
+
 register_type_alias(Metric, "evidently.future.backport.TestsConfig", "evidently:metric_v2:TestsConfig")
 register_type_alias(Metric, "evidently.future.metric_types.ByLabelMetric", "evidently:metric_v2:ByLabelMetric")
 register_type_alias(Metric, "evidently.future.metric_types.CountMetric", "evidently:metric_v2:CountMetric")
@@ -126,3 +128,4 @@ register_type_alias(MetricResult, "evidently.future.metric_types.ByLabelValue", 
 register_type_alias(MetricResult, "evidently.future.metric_types.CountValue", "evidently:metric_result_v2:CountValue")
 register_type_alias(MetricResult, "evidently.future.metric_types.MeanStdValue", "evidently:metric_result_v2:MeanStdValue")
 register_type_alias(MetricResult, "evidently.future.metric_types.SingleValue", "evidently:metric_result_v2:SingleValue")
+__all__ = ["descriptors_registry"]

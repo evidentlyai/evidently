@@ -22,6 +22,7 @@ from evidently.features.generated_features import BaseDescriptor
 from evidently.features.generated_features import FeatureDescriptor
 from evidently.features.generated_features import GeneratedFeatures
 from evidently.features.llm_judge import BaseLLMPromptTemplate
+from evidently.future.datasets import Descriptor
 from evidently.future.metric_types import BoundTest
 from evidently.future.metric_types import Metric as MetricV2
 from evidently.future.metric_types import MetricResult as MetricResultV2
@@ -73,8 +74,10 @@ REGISTRY_MAPPING: Dict[Type[PolymorphicModel], str] = {
     TestParameters: "evidently.tests._registry",
     MetricTest: "evidently.future._registry",
     MetricV2: "evidently.future._registry",
+    MetricResultV2: "evidently.future._registry",
     MetricResult: "evidently.metrics._registry",
     BoundTest: "evidently.future._registry",
+    Descriptor: "evidently.future.descriptors._registry",
     FeatureDescriptor: "evidently.descriptors._registry",
 }
 
@@ -143,6 +146,7 @@ def test_all_aliases_correct():
         MetricResultV2: MetricResultV2.__alias_type__,
         MetricTest: MetricTest.__alias_type__,
         BoundTest: BoundTest.__alias_type__,
+        Descriptor: Descriptor.__alias_type__,
     }
     skip = [Component]
     skip_literal = [EvidentlyBaseModel, WithTestAndMetricDependencies, BasePreset]
