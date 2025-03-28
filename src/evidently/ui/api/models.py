@@ -1,6 +1,4 @@
-import dataclasses
 import datetime
-from dataclasses import dataclass
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -98,8 +96,7 @@ class TestSuiteModel(BaseModel):
         )
 
 
-@dataclass
-class DashboardInfoModel:
+class DashboardInfoModel(BaseModel):
     name: str
     widgets: List[BaseWidgetInfo]
     min_timestamp: Optional[datetime.datetime] = None
@@ -107,7 +104,10 @@ class DashboardInfoModel:
 
     @classmethod
     def from_dashboard_info(cls, dashboard_info: DashboardInfo):
-        return cls(**dataclasses.asdict(dashboard_info))
+        return DashboardInfo(
+            name=dashboard_info.name,
+            widgets=dashboard_info.widgets,
+        )
 
     @classmethod
     async def from_project_with_time_range(

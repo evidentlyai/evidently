@@ -12,8 +12,8 @@ from evidently.future.metric_types import BoundTest
 from evidently.future.metric_types import SingleValue
 from evidently.future.metric_types import SingleValueCalculation
 from evidently.future.metric_types import SingleValueMetric
-from evidently.future.metric_types import TMetric
 from evidently.future.metric_types import TResult
+from evidently.future.metric_types import TSingleValueMetric
 from evidently.future.metrics._legacy import LegacyMetricCalculation
 from evidently.future.tests import Reference
 from evidently.future.tests import eq
@@ -40,8 +40,8 @@ class RowCount(SingleValueMetric):
 class RowCountCalculation(SingleValueCalculation[RowCount]):
     def calculate(self, context: "Context", current_data: Dataset, reference_data: Optional[Dataset]):
         return (
-            SingleValue(current_data.stats().row_count),
-            None if reference_data is None else SingleValue(reference_data.stats().row_count),
+            self.result(current_data.stats().row_count),
+            None if reference_data is None else self.result(reference_data.stats().row_count),
         )
 
     def display_name(self) -> str:
@@ -73,15 +73,23 @@ class ColumnCountCalculation(SingleValueCalculation[ColumnCount]):
     def _calculate_for_dataset(self, dataset: Dataset) -> SingleValue:
         definition = dataset._data_definition
         if self.metric.column_type is None:
-            return SingleValue(dataset.stats().column_count)
+            return self.result(dataset.stats().column_count)
         elif self.metric.column_type == ColumnType.Numerical:
-            return SingleValue(len([col for col in definition.get_numerical_columns() if dataset.column(col)]))
+            return self.result(
+                len([col for col in definition.get_numerical_columns() if dataset.column(col)]),
+            )
         elif self.metric.column_type == ColumnType.Categorical:
-            return SingleValue(len([col for col in definition.get_categorical_columns() if dataset.column(col)]))
+            return self.result(
+                len([col for col in definition.get_categorical_columns() if dataset.column(col)]),
+            )
         elif self.metric.column_type == ColumnType.Text:
-            return SingleValue(len([col for col in definition.get_text_columns() if dataset.column(col)]))
+            return self.result(
+                len([col for col in definition.get_text_columns() if dataset.column(col)]),
+            )
         elif self.metric.column_type == ColumnType.Datetime:
-            return SingleValue(len([col for col in definition.get_datetime_columns() if dataset.column(col)]))
+            return self.result(
+                len([col for col in definition.get_datetime_columns() if dataset.column(col)]),
+            )
         raise ValueError(f"Column count does not support {self.metric.column_type} type")
 
 
@@ -89,8 +97,9 @@ TLegacyResult = TypeVar("TLegacyResult", bound=LegacyMetricResult)
 
 
 class DatasetSummaryBasedMetricCalculation(
-    LegacyMetricCalculation[TResult, TMetric, DatasetSummaryMetricResult, DatasetSummaryMetric],
-    Generic[TResult, TMetric],
+    LegacyMetricCalculation[TResult, TSingleValueMetric, DatasetSummaryMetricResult, DatasetSummaryMetric],
+    SingleValueCalculation[TSingleValueMetric],
+    Generic[TResult, TSingleValueMetric],
     abc.ABC,
 ):
     _legacy_metric: Optional[DatasetSummaryMetric] = None
@@ -120,8 +129,8 @@ class DuplicatedRowCountCalculation(DatasetSummaryBasedMetricCalculation[SingleV
     ):
         value = legacy_result.current.number_of_duplicated_rows
         return (
-            SingleValue(value),
-            None if legacy_result.reference is None else SingleValue(legacy_result.reference.number_of_duplicated_rows),
+            self.result(value),
+            None if legacy_result.reference is None else self.result(legacy_result.reference.number_of_duplicated_rows),
         )
 
     def display_name(self) -> str:
@@ -147,10 +156,10 @@ class DuplicatedColumnsCountCalculation(DatasetSummaryBasedMetricCalculation[Sin
     ):
         value = legacy_result.current.number_of_duplicated_columns
         return (
-            SingleValue(value),
+            self.result(value),
             None
             if legacy_result.reference is None
-            else SingleValue(legacy_result.reference.number_of_duplicated_columns),
+            else self.result(legacy_result.reference.number_of_duplicated_columns),
         )
 
     def display_name(self) -> str:
@@ -172,10 +181,10 @@ class AlmostDuplicatedColumnsCountCalculation(
     ):
         value = legacy_result.current.number_of_almost_duplicated_columns
         return (
-            SingleValue(value),
+            self.result(value),
             None
             if legacy_result.reference is None
-            else SingleValue(legacy_result.reference.number_of_almost_duplicated_columns),
+            else self.result(legacy_result.reference.number_of_almost_duplicated_columns),
         )
 
     def display_name(self) -> str:
@@ -203,10 +212,10 @@ class AlmostConstantColumnsCountCalculation(
     ):
         value = legacy_result.current.number_of_almost_constant_columns
         return (
-            SingleValue(value),
+            self.result(value),
             None
             if legacy_result.reference is None
-            else SingleValue(legacy_result.reference.number_of_almost_constant_columns),
+            else self.result(legacy_result.reference.number_of_almost_constant_columns),
         )
 
     def display_name(self) -> str:
@@ -232,8 +241,8 @@ class EmptyRowsCountCalculation(DatasetSummaryBasedMetricCalculation[SingleValue
     ):
         value = legacy_result.current.number_of_empty_rows
         return (
-            SingleValue(value),
-            None if legacy_result.reference is None else SingleValue(legacy_result.reference.number_of_empty_rows),
+            self.result(value),
+            None if legacy_result.reference is None else self.result(legacy_result.reference.number_of_empty_rows),
         )
 
     def display_name(self) -> str:
@@ -259,8 +268,8 @@ class EmptyColumnsCountCalculation(DatasetSummaryBasedMetricCalculation[SingleVa
     ):
         value = legacy_result.current.number_of_empty_columns
         return (
-            SingleValue(value),
-            None if legacy_result.reference is None else SingleValue(legacy_result.reference.number_of_empty_columns),
+            self.result(value),
+            None if legacy_result.reference is None else self.result(legacy_result.reference.number_of_empty_columns),
         )
 
     def display_name(self) -> str:
@@ -286,10 +295,10 @@ class ConstantColumnsCountCalculation(DatasetSummaryBasedMetricCalculation[Singl
     ):
         value = legacy_result.current.number_of_constant_columns
         return (
-            SingleValue(value),
+            self.result(value),
             None
             if legacy_result.reference is None
-            else SingleValue(legacy_result.reference.number_of_constant_columns),
+            else self.result(legacy_result.reference.number_of_constant_columns),
         )
 
     def display_name(self) -> str:
@@ -315,8 +324,8 @@ class DatasetMissingValueCountCalculation(DatasetSummaryBasedMetricCalculation[S
     ):
         value = legacy_result.current.number_of_missing_values
         return (
-            SingleValue(value),
-            None if legacy_result.reference is None else SingleValue(legacy_result.reference.number_of_missing_values),
+            self.result(value),
+            None if legacy_result.reference is None else self.result(legacy_result.reference.number_of_missing_values),
         )
 
     def display_name(self) -> str:

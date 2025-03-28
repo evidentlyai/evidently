@@ -191,7 +191,7 @@ class ClassificationQualityByFeatureTableRenderer(MetricRenderer):
         ref_predictions = result.reference.predictions if result.reference is not None else None
         columns = result.columns
         if ref_predictions is not None:
-            labels = np.union1d(curr_predictions.labels, ref_predictions.labels).tolist()
+            labels = list(set(curr_predictions.labels + ref_predictions.labels))
         else:
             labels = curr_predictions.labels
 
@@ -244,8 +244,8 @@ class ClassificationQualityByFeatureTableRenderer(MetricRenderer):
             # write plot data in table as additional data
             additional_graphs_data.append(
                 AdditionalGraphInfo(
-                    "All" + "_" + str(feature_name),
-                    {"data": fig_json["data"], "layout": fig_json["layout"]},
+                    id="All" + "_" + str(feature_name),
+                    params={"data": fig_json["data"], "layout": fig_json["layout"]},
                 )
             )
 
@@ -364,8 +364,8 @@ class ClassificationQualityByFeatureTableRenderer(MetricRenderer):
                     # write plot data in table as additional data
                     additional_graphs_data.append(
                         AdditionalGraphInfo(
-                            feature_name + "_" + str(label),
-                            {"data": fig_json["data"], "layout": fig_json["layout"]},
+                            id=feature_name + "_" + str(label),
+                            params={"data": fig_json["data"], "layout": fig_json["layout"]},
                         )
                     )
             # labels plots
@@ -391,8 +391,8 @@ class ClassificationQualityByFeatureTableRenderer(MetricRenderer):
                     # write plot data in table as additional data
                     additional_graphs_data.append(
                         AdditionalGraphInfo(
-                            feature_name + "_" + str(label),
-                            {"data": fig_json["data"], "layout": fig_json["layout"]},
+                            id=feature_name + "_" + str(label),
+                            params={"data": fig_json["data"], "layout": fig_json["layout"]},
                         )
                     )
         return [

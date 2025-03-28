@@ -19,6 +19,9 @@ MetricOrContainer = Union[Metric, "MetricContainer"]
 
 
 class MetricContainer(abc.ABC):
+    def __init__(self, include_tests: bool = True):
+        self.include_tests = include_tests
+
     @abc.abstractmethod
     def generate_metrics(self, context: "Context") -> Sequence[MetricOrContainer]:
         raise NotImplementedError()
@@ -50,7 +53,15 @@ class MetricContainer(abc.ABC):
             else:
                 raise ValueError(f"invalid metric type {type(item)}")
 
+    def _get_tests(self, tests):
+        if tests is not None:
+            return tests
+        if self.include_tests:
+            return None
+        return []
+
 
 class ColumnMetricContainer(MetricContainer, abc.ABC):
-    def __init__(self, column: str):
+    def __init__(self, column: str, include_tests: bool = True):
+        super().__init__(include_tests=include_tests)
         self._column = column

@@ -60,6 +60,7 @@ export const SnapshotsListTemplate = ({
   LinkToSnapshot,
   onReloadSnapshots,
   onDeleteSnapshot,
+  downloadLink,
   ActionsWrapper = ({ children }) => <>{children}</>
 }: {
   query: Partial<Record<string, string>>
@@ -78,6 +79,7 @@ export const SnapshotsListTemplate = ({
   }
   onReloadSnapshots: () => void
   onDeleteSnapshot: ({ snapshotId }: { snapshotId: string }) => void
+  downloadLink: DownloadSnapshotURL
 }) => {
   const [sortByTimestamp, setSortByTimestamp] = useState<undefined | 'desc' | 'asc'>('desc')
   const [isCollapsedJson, setIsCollapsedJson] = useLocalStorage('show-full-json-metadata', false)
@@ -280,9 +282,7 @@ export const SnapshotsListTemplate = ({
                         disabled={disabled ?? false}
                         downloadLink={
                           // better type safety
-                          (
-                            '/api/projects/{project_id}/{snapshot_id}/download' satisfies DownloadSnapshotURL
-                          )
+                          downloadLink
                             .replace('{project_id}', projectId)
                             .replace('{snapshot_id}', snapshot.id)
                         }

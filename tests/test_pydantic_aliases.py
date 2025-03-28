@@ -24,6 +24,7 @@ from evidently.features.llm_judge import BaseLLMPromptTemplate
 from evidently.future.datasets import Descriptor
 from evidently.future.metric_types import BoundTest
 from evidently.future.metric_types import Metric as MetricV2
+from evidently.future.metric_types import MetricResult as MetricResultV2
 from evidently.future.metric_types import MetricTest
 from evidently.metric_preset.metric_preset import MetricPreset
 from evidently.metrics.data_drift.embedding_drift_methods import DriftMethod
@@ -139,6 +140,7 @@ def test_all_aliases_correct():
         PromptBlock: "prompt_block",
         PromptTemplate: "prompt_template",
         MetricV2: MetricV2.__alias_type__,
+        MetricResultV2: MetricResultV2.__alias_type__,
         MetricTest: MetricTest.__alias_type__,
         BoundTest: BoundTest.__alias_type__,
         Descriptor: Descriptor.__alias_type__,

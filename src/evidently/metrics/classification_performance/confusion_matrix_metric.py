@@ -1,7 +1,6 @@
 from typing import Dict
 from typing import List
 from typing import Optional
-from typing import Union
 
 from evidently._pydantic_compat import BaseModel
 from evidently.base_metric import InputData
@@ -9,6 +8,7 @@ from evidently.base_metric import MetricResult
 from evidently.calculations.classification_performance import calculate_matrix
 from evidently.core import IncludeTags
 from evidently.metric_results import ConfusionMatrix
+from evidently.metric_results import Label
 from evidently.metrics.classification_performance.base_classification_metric import ThresholdClassificationMetric
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options.base import AnyOptions
@@ -89,7 +89,7 @@ class ClassificationConfusionMatrix(
 class ClassificationConfusionMatrixRenderer(MetricRenderer):
     def render_html(self, obj: ClassificationConfusionMatrix) -> List[BaseWidgetInfo]:
         metric_result = obj.get_result()
-        target_names: Optional[Dict[Union[int, str], str]]
+        target_names: Optional[Dict[Label, str]]
         if isinstance(metric_result.target_names, list):
             target_names = {idx: str(item) for idx, item in enumerate(metric_result.target_names)}
         else:

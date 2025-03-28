@@ -2,6 +2,7 @@ import json
 from typing import ClassVar
 from typing import Dict
 from typing import Optional
+from typing import Type
 
 import pandas as pd
 
@@ -17,14 +18,14 @@ class JSONSchemaMatch(GeneratedFeature):
 
     __feature_type__: ClassVar = ColumnType.Categorical
     column_name: str
-    expected_schema: Dict[str, type]
+    expected_schema: Dict[str, Type]
     validate_types: bool
     exact_match: bool
 
     def __init__(
         self,
         column_name: str,
-        expected_schema: Dict[str, type],  # type: ignore[valid-type]
+        expected_schema: Dict[str, Type],
         validate_types: bool = False,
         exact_match: bool = False,
         display_name: Optional[str] = None,

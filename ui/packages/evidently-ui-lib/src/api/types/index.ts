@@ -31,10 +31,7 @@ export type DashboardInfoModel = Omit<Schemas['DashboardInfoModel'], 'widgets'> 
 export type VersionModel = Schemas['Version']
 export type MetadataModel = ReportModel['metadata']
 
-export type DownloadSnapshotURL = Extract<
-  keyof BackendPaths,
-  '/api/projects/{project_id}/{snapshot_id}/download'
->
+export type DownloadSnapshotURL = keyof BackendPaths
 
 ///////////////////////////////
 ///  EXTENDED TYPES FOR UI

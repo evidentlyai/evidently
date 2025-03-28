@@ -4,7 +4,6 @@ import html
 import json
 import os
 import shutil
-from dataclasses import asdict
 from enum import Enum
 from typing import Dict
 from typing import List
@@ -84,7 +83,7 @@ def save_data_file(
 
 
 def dashboard_info_to_json(dashboard_info: DashboardInfo):
-    asdict_result = asdict(dashboard_info)
+    asdict_result = dashboard_info.dict()
     for widget in asdict_result["widgets"]:
         widget.pop("additionalGraphs", None)
     return json.dumps(asdict_result, cls=NumpyEncoder)

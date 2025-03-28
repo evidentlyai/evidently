@@ -57,6 +57,7 @@ export const Component = () => {
         snapshots={reports}
         type='reports'
         LinkToSnapshot={LinkToSnapshot}
+        downloadLink={'/api/projects/{project_id}/{snapshot_id}/download'}
         onDeleteSnapshot={({ snapshotId }) =>
           deleteSnapshotFetcher.submit({
             data: { snapshotId, projectId },

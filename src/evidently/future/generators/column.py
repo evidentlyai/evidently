@@ -33,6 +33,7 @@ class ColumnMetricGenerator(MetricContainer):
         self.columns = columns
         self.column_types = column_types
         self.metric_kwargs = metric_kwargs or {}
+        super().__init__(include_tests=True)
 
     def _instantiate_metric(self, column: str) -> MetricOrContainer:
         return self.metric_type(column=column, **self.metric_kwargs)

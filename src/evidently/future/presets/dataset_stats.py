@@ -57,8 +57,9 @@ class ValueStats(ColumnMetricContainer):
         q50_tests: SingleValueMetricTests = None,
         q75_tests: SingleValueMetricTests = None,
         unique_values_count_tests: ByLabelMetricTests = None,
+        include_tests: bool = True,
     ):
-        super().__init__(column=column)
+        super().__init__(column=column, include_tests=include_tests)
         self._row_count_tests = row_count_tests
         self._missing_values_count_tests = missing_values_count_tests
         self._min_tests = min_tests
@@ -72,23 +73,23 @@ class ValueStats(ColumnMetricContainer):
 
     def generate_metrics(self, context: Context) -> Sequence[MetricOrContainer]:
         metrics: List[Metric] = [
-            RowCount(tests=self._row_count_tests),
-            MissingValueCount(column=self._column, tests=self._missing_values_count_tests),
+            RowCount(tests=self._get_tests(self._row_count_tests)),
+            MissingValueCount(column=self._column, tests=self._get_tests(self._missing_values_count_tests)),
         ]
         column_type = context.column(self._column).column_type
         if column_type == ColumnType.Numerical:
             metrics += [
-                MinValue(column=self._column, tests=self._min_tests),
-                MaxValue(column=self._column, tests=self._max_tests),
-                MeanValue(column=self._column, tests=self._mean_tests),
-                StdValue(column=self._column, tests=self._std_tests),
-                QuantileValue(column=self._column, quantile=0.25, tests=self._q25_tests),
-                QuantileValue(column=self._column, quantile=0.5, tests=self._q50_tests),
-                QuantileValue(column=self._column, quantile=0.75, tests=self._q75_tests),
+                MinValue(column=self._column, tests=self._get_tests(self._min_tests)),
+                MaxValue(column=self._column, tests=self._get_tests(self._max_tests)),
+                MeanValue(column=self._column, tests=self._get_tests(self._mean_tests)),
+                StdValue(column=self._column, tests=self._get_tests(self._std_tests)),
+                QuantileValue(column=self._column, quantile=0.25, tests=self._get_tests(self._q25_tests)),
+                QuantileValue(column=self._column, quantile=0.5, tests=self._get_tests(self._q50_tests)),
+                QuantileValue(column=self._column, quantile=0.75, tests=self._get_tests(self._q75_tests)),
             ]
         if column_type == ColumnType.Categorical:
             metrics += [
-                UniqueValueCount(column=self._column, tests=self._unique_values_count_tests),
+                UniqueValueCount(column=self._column, tests=self._get_tests(self._unique_values_count_tests)),
             ]
         if column_type == ColumnType.Datetime:
             metrics += [
@@ -122,7 +123,7 @@ class ValueStats(ColumnMetricContainer):
     def _render_numerical(self, context: "Context") -> List[BaseWidgetInfo]:
         result = context.get_metric_result(
             MinValue(column=self._column, tests=self._min_tests).get_metric_id(),
-        ).widget[0]
+        ).get_widgets()[0]
         return [
             rich_data(
                 title=self._column,
@@ -167,7 +168,7 @@ class ValueStats(ColumnMetricContainer):
     def _render_categorical(self, context: "Context") -> List[BaseWidgetInfo]:
         result = context.get_metric_result(
             UniqueValueCount(column=self._column, tests=self._unique_values_count_tests),
-        ).widget[0]
+        ).get_widgets()[0]
         return [
             rich_data(
                 title=self._column,
@@ -202,7 +203,7 @@ class ValueStats(ColumnMetricContainer):
         unique_value_count = UniqueValueCount(column=self._column, tests=self._unique_values_count_tests)
         result = context.get_metric_result(
             unique_value_count,
-        ).widget[0]
+        ).get_widgets()[0]
         return [
             rich_data(
                 title=self._column,
@@ -236,7 +237,7 @@ class ValueStats(ColumnMetricContainer):
         raise NotImplementedError()
 
     def _render_datetime(self, context: "Context") -> List[BaseWidgetInfo]:
-        result = context.get_metric_result(MinValue(column=self._column, tests=[]).get_metric_id()).widget[0]
+        result = context.get_metric_result(MinValue(column=self._column, tests=[]).get_metric_id()).get_widgets()[0]
         return [
             rich_data(
                 title=self._column,
@@ -270,14 +271,14 @@ class ValueStats(ColumnMetricContainer):
         if context.has_reference:
             return [
                 convert(context.get_metric_result(metric)),
-                convert(context.get_reference_metric_result(metric)),
+                convert(context.get_reference_metric_result(metric.metric_id)),
             ]
         return [convert(context.get_metric_result(metric))]
 
     def _most_common_value(self, unique_value: MetricResult):
         if not isinstance(unique_value, ByLabelCountValue):
             raise ValueError("Most common value must be of type 'ByLabelCountValue'")
-        first = sorted(unique_value.counts.items(), key=lambda x: x[1], reverse=True)[0]
+        first = sorted(unique_value.counts.items(), key=lambda x: x[1].value, reverse=True)[0]
         return f"Label: {first[0]} count: {first[1]}"
 
     def _label_count(
@@ -289,14 +290,14 @@ class ValueStats(ColumnMetricContainer):
         result = context.get_metric_result(metric)
         assert isinstance(result, ByLabelCountValue)
         if context.has_reference:
-            ref_result = context.get_reference_metric_result(metric)
+            ref_result = context.get_reference_metric_result(metric.metric_id)
             assert isinstance(ref_result, ByLabelCountValue)
             return [
-                f"{result.counts[label]} ({(result.shares[label] * 100):0.0f}%)",
-                f"{ref_result.counts[label]} ({(ref_result.shares[label] * 100):0.0f}%)",
+                f"{result.counts[label]} ({(result.shares[label].value * 100):0.0f}%)",
+                f"{ref_result.counts[label]} ({(ref_result.shares[label].value * 100):0.0f}%)",
             ]
         return [
-            f"{result.counts[label]} ({(result.shares[label] * 100):0.0f}%)",
+            f"{result.counts[label]} ({(result.shares[label].value * 100):0.0f}%)",
         ]
 
 
@@ -313,6 +314,7 @@ class DatasetStats(MetricContainer):
         empty_column_count_tests: SingleValueMetricTests = None,
         constant_columns_count_tests: SingleValueMetricTests = None,
         dataset_missing_value_count_tests: SingleValueMetricTests = None,
+        include_tests: bool = True,
     ):
         self.duplicated_row_count_tests = duplicated_row_count_tests
         self.duplicated_column_count_tests = duplicated_column_count_tests
@@ -324,23 +326,24 @@ class DatasetStats(MetricContainer):
         self.dataset_missing_value_count_tests = dataset_missing_value_count_tests
         self.column_count_tests = column_count_tests
         self.row_count_tests = row_count_tests
+        super().__init__(include_tests=include_tests)
 
     def generate_metrics(self, context: Context) -> Sequence[MetricOrContainer]:
         return [
-            RowCount(tests=self.row_count_tests),
-            ColumnCount(tests=self.column_count_tests),
+            RowCount(tests=self._get_tests(self.row_count_tests)),
+            ColumnCount(tests=self._get_tests(self.column_count_tests)),
             ColumnCount(column_type=ColumnType.Numerical, tests=[]),
             ColumnCount(column_type=ColumnType.Categorical, tests=[]),
             ColumnCount(column_type=ColumnType.Datetime, tests=[]),
             ColumnCount(column_type=ColumnType.Text, tests=[]),
-            DuplicatedRowCount(tests=self.duplicated_row_count_tests),
-            DuplicatedColumnsCount(tests=self.duplicated_column_count_tests),
-            AlmostDuplicatedColumnsCount(tests=self.almost_duplicated_column_count_tests),
-            AlmostConstantColumnsCount(tests=self.almost_constant_column_count_tests),
-            EmptyRowsCount(tests=self.empty_row_count_tests),
-            EmptyColumnsCount(tests=self.empty_column_count_tests),
-            ConstantColumnsCount(tests=self.constant_columns_count_tests),
-            DatasetMissingValueCount(tests=self.dataset_missing_value_count_tests),
+            DuplicatedRowCount(tests=self._get_tests(self.duplicated_row_count_tests)),
+            DuplicatedColumnsCount(tests=self._get_tests(self.duplicated_column_count_tests)),
+            AlmostDuplicatedColumnsCount(tests=self._get_tests(self.almost_duplicated_column_count_tests)),
+            AlmostConstantColumnsCount(tests=self._get_tests(self.almost_constant_column_count_tests)),
+            EmptyRowsCount(tests=self._get_tests(self.empty_row_count_tests)),
+            EmptyColumnsCount(tests=self._get_tests(self.empty_column_count_tests)),
+            ConstantColumnsCount(tests=self._get_tests(self.constant_columns_count_tests)),
+            DatasetMissingValueCount(tests=self._get_tests(self.dataset_missing_value_count_tests)),
         ]
 
     def render(
@@ -348,8 +351,8 @@ class DatasetStats(MetricContainer):
         context: "Context",
         child_widgets: Optional[List[Tuple[Optional[MetricId], List[BaseWidgetInfo]]]] = None,
     ) -> List[BaseWidgetInfo]:
-        metric = DatasetSummaryMetric()
-        _, render = context.get_legacy_metric(metric, _default_input_data_generator)
+        legacy_metric = DatasetSummaryMetric()
+        _, render = context.get_legacy_metric(legacy_metric, _default_input_data_generator)
         for metric in self.list_metrics(context):
             link_metric(render, metric)
         return render
@@ -375,20 +378,27 @@ class TextEvals(MetricContainer):
         columns: Optional[List[str]] = None,
         row_count_tests: SingleValueMetricTests = None,
         column_tests: Optional[Dict[str, ValueStatsTests]] = None,
+        include_tests: bool = True,
     ):
         self._columns = columns
         self._value_stats: List[ValueStats] = []
         self._row_count_tests = row_count_tests
         self._column_tests = column_tests
+        super().__init__(include_tests=include_tests)
 
     def generate_metrics(self, context: Context) -> Sequence[MetricOrContainer]:
         if self._columns is None:
             cols = context.data_definition.numerical_descriptors + context.data_definition.categorical_descriptors
         else:
             cols = self._columns
-        metrics: List[MetricOrContainer] = [RowCount(tests=self._row_count_tests)]
+        metrics: List[MetricOrContainer] = [RowCount(tests=self._get_tests(self._row_count_tests))]
         self._value_stats = [
-            ValueStats(column, **(self._column_tests or {}).get(column, ValueStatsTests()).__dict__) for column in cols
+            ValueStats(
+                column,
+                **(self._column_tests or {}).get(column, ValueStatsTests()).__dict__,
+                include_tests=self.include_tests,
+            )
+            for column in cols
         ]
         metrics.extend(list(chain(*[vs.metrics(context)[1:] for vs in self._value_stats])))
         return metrics
@@ -419,6 +429,7 @@ class DataSummaryPreset(MetricContainer):
         constant_columns_count_tests: SingleValueMetricTests = None,
         dataset_missing_value_count_tests: SingleValueMetricTests = None,
         column_tests: Optional[Dict[str, ValueStatsTests]] = None,
+        include_tests: bool = True,
     ):
         self.duplicated_row_count_tests = duplicated_row_count_tests
         self.duplicated_column_count_tests = duplicated_column_count_tests
@@ -432,6 +443,7 @@ class DataSummaryPreset(MetricContainer):
         self.row_count_tests = row_count_tests
         self._columns = columns
         self._column_tests = column_tests
+        super().__init__(include_tests=include_tests)
 
     def generate_metrics(self, context: Context) -> Sequence[MetricOrContainer]:
         columns_ = context.data_definition.get_categorical_columns() + context.data_definition.get_numerical_columns()
@@ -446,8 +458,11 @@ class DataSummaryPreset(MetricContainer):
             empty_column_count_tests=self.empty_column_count_tests,
             constant_columns_count_tests=self.constant_columns_count_tests,
             dataset_missing_value_count_tests=self.dataset_missing_value_count_tests,
+            include_tests=self.include_tests,
         )
-        self._text_evals = TextEvals(self._columns or columns_, column_tests=self._column_tests)
+        self._text_evals = TextEvals(
+            self._columns or columns_, column_tests=self._column_tests, include_tests=self.include_tests
+        )
         return self._dataset_stats.metrics(context) + self._text_evals.metrics(context)
 
     def render(

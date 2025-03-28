@@ -53,6 +53,7 @@ class DataDriftPreset(MetricContainer):
         self.embeddings_drift_method = embeddings_drift_method
         self.embeddings = embeddings
         self.columns = columns
+        super().__init__(include_tests=True)
 
     def generate_metrics(self, context: Context) -> Sequence[MetricOrContainer]:
         types = [ColumnType.Numerical, ColumnType.Categorical, ColumnType.Text]
