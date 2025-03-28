@@ -129,7 +129,7 @@ class ClassificationLiftTable(Metric[ClassificationLiftTableResults]):
                         prediction.prediction_probas[label],
                     )
                 )
-                lift_table[int(label)] = calculate_lift_table(binded)
+                lift_table[int(label)] = calculate_lift_table(binded)  # type: ignore[arg-type]
         return lift_table
 
 

@@ -16,6 +16,7 @@ from evidently.future.tests.reference import Reference
 from evidently.utils.types import ApproxValue
 
 ThresholdType = Union[float, int, ApproxValue, Reference]
+ThresholdValue = Union[float, int, ApproxValue]
 
 
 class ComparisonTest(MetricTest):
@@ -25,22 +26,24 @@ class ComparisonTest(MetricTest):
     __reference_relation__: ClassVar[str]
 
     @abc.abstractmethod
-    def check(self, value: Value, threshold: Value) -> bool:
+    def check(self, value: Value, threshold: ThresholdValue) -> bool:
         raise NotImplementedError
 
     def to_test(self) -> SingleValueTest:
         def func(context: Context, metric: MetricCalculationBase, value: SingleValue):
-            threshold = self.get_threshold(context, value.metric_value_location)
+            threshold = self.get_threshold(context, value.get_metric_value_location())
             title_threshold = f"{threshold:0.3f}"
             if isinstance(self.threshold, Reference):
                 title_threshold = "Reference"
                 if isinstance(threshold, ApproxValue):
                     title_threshold += f" ± {threshold.tolerance:0.3f}"
             return MetricTestResult(
-                self.__short_name__,
-                f"{value.display_name()}: {self.__full_name__} {title_threshold}",
-                f"Actual value {value.value:0.3f} {'<' if value.value < threshold else '>='} {threshold:0.3f}",
-                TestStatus.SUCCESS if self.check(value.value, threshold) else TestStatus.FAIL,
+                id=self.__short_name__,
+                name=f"{value.display_name}: {self.__full_name__} {title_threshold}",
+                description=f"Actual value {value.value:0.3f} {'<' if value.value < threshold else '>='} {threshold:0.3f}",
+                status=TestStatus.SUCCESS if self.check(value.value, threshold) else TestStatus.FAIL,
+                metric_config=metric.to_metric_config(),
+                test_config=self.dict(),
             )
 
         return func
@@ -59,7 +62,7 @@ class LessOrEqualMetricTest(ComparisonTest):
     __full_name__: ClassVar[str] = "Less or Equal"
     __reference_relation__ = "less"
 
-    def check(self, value: Value, threshold: Value) -> bool:
+    def check(self, value: Value, threshold: ThresholdValue) -> bool:
         return value <= threshold
 
 
@@ -72,7 +75,7 @@ class GreaterOrEqualMetricTest(ComparisonTest):
     __full_name__: ClassVar[str] = "Greater or Equal"
     __reference_relation__: ClassVar[str] = "greater"
 
-    def check(self, value: Value, threshold: Value):
+    def check(self, value: Value, threshold: ThresholdValue):
         return value >= threshold
 
 
@@ -85,7 +88,7 @@ class GreaterThanMetricTest(ComparisonTest):
     __full_name__: ClassVar[str] = "Greater"
     __reference_relation__: ClassVar[str] = "greater"
 
-    def check(self, value: Value, threshold: Value):
+    def check(self, value: Value, threshold: ThresholdValue):
         return value > threshold
 
 
@@ -98,7 +101,7 @@ class LessThanMetricTest(ComparisonTest):
     __full_name__: ClassVar[str] = "Less"
     __reference_relation__ = "less"
 
-    def check(self, value: Value, threshold: Value):
+    def check(self, value: Value, threshold: ThresholdValue):
         return value < threshold
 
 
@@ -112,7 +115,7 @@ class EqualMetricTestBase(MetricTest, abc.ABC):
     def is_equal(self, context: Context, value: SingleValue):
         expected: Union[float, int, ApproxValue]
         if isinstance(self.expected, Reference):
-            result = value.metric_value_location.value(context, DatasetType.Reference)
+            result = value.get_metric_value_location().value(context, DatasetType.Reference)
             expected = ApproxValue(result.value, self.expected.relative, self.expected.absolute)
         else:
             expected = self.expected
@@ -131,10 +134,12 @@ class EqualMetricTest(EqualMetricTestBase):
         def func(context: Context, metric: MetricCalculationBase, value: SingleValue):
             expected, title_expected, is_equal = self.is_equal(context, value)
             return MetricTestResult(
-                "eq",
-                f"{metric.display_name()}: Equal {title_expected}",
-                f"Actual value {value.value:0.3f} {f', but expected {expected:0.3f}' if not is_equal else ''}",
-                TestStatus.SUCCESS if is_equal else TestStatus.FAIL,
+                id="eq",
+                name=f"{metric.display_name()}: Equal {title_expected}",
+                description=f"Actual value {value.value:0.3f} {f', but expected {expected:0.3f}' if not is_equal else ''}",
+                status=TestStatus.SUCCESS if is_equal else TestStatus.FAIL,
+                metric_config=metric.to_metric_config(),
+                test_config=self.dict(),
             )
 
         return func
@@ -149,10 +154,12 @@ class NotEqualMetricTest(EqualMetricTestBase):
         def func(context: Context, metric: MetricCalculationBase, value: SingleValue):
             expected, title_expected, is_equal = self.is_equal(context, value)
             return MetricTestResult(
-                "not_eq",
-                f"{metric.display_name()}: Not equal {title_expected}",
-                f"Actual value {value.value} {f', but expected not {expected}' if is_equal else ''}",
-                TestStatus.SUCCESS if not is_equal else TestStatus.FAIL,
+                id="not_eq",
+                name=f"{metric.display_name()}: Not equal {title_expected}",
+                description=f"Actual value {value.value} {f', but expected not {expected}' if is_equal else ''}",
+                status=TestStatus.SUCCESS if not is_equal else TestStatus.FAIL,
+                metric_config=metric.to_metric_config(),
+                test_config=self.dict(),
             )
 
         return func

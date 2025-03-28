@@ -1,4 +1,3 @@
-import dataclasses
 import warnings
 from collections import defaultdict
 from datetime import datetime
@@ -237,17 +236,29 @@ class Report(ReportBase):
             for info_item in html_info:
                 for additional_graph in info_item.get_additional_graphs():
                     if isinstance(additional_graph, AdditionalGraphInfo):
-                        additional_graphs.append(DetailsInfo("", additional_graph.params, additional_graph.id))
+                        additional_graphs.append(
+                            DetailsInfo(
+                                title="",
+                                info=additional_graph.params,
+                                id=additional_graph.id,
+                            )
+                        )
                     else:
-                        additional_graphs.append(DetailsInfo("", additional_graph, additional_graph.id))
+                        additional_graphs.append(
+                            DetailsInfo(
+                                title="",
+                                info=additional_graph,
+                                id=additional_graph.id,
+                            )
+                        )
 
             metrics_results.extend(html_info)
 
         return (
             "evidently_dashboard_" + str(new_id()).replace("-", ""),
-            DashboardInfo("Report", widgets=metrics_results),
+            DashboardInfo(name="Report", widgets=metrics_results),
             {
-                f"{item.id}": dataclasses.asdict(item.info) if dataclasses.is_dataclass(item.info) else item.info
+                f"{item.id}": item.info.dict() if not isinstance(item.info, dict) else item.info
                 for item in additional_graphs
             },
         )

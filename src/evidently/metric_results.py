@@ -17,10 +17,9 @@ from evidently._pydantic_compat import parse_obj_as
 from evidently._pydantic_compat import validator
 from evidently.base_metric import MetricResult
 from evidently.core import IncludeTags
+from evidently.core import Label
 from evidently.core import pydantic_type_validator
 from evidently.pipeline.column_mapping import TargetNames
-
-Label = Union[int, str]
 
 try:
     List.__getitem__.__closure__[0].cell_contents.cache_clear()  # type: ignore

@@ -28,9 +28,10 @@ from evidently.future.metric_types import MetricCalculationBase
 from evidently.future.metric_types import MetricId
 from evidently.future.metric_types import MetricResult
 from evidently.future.metric_types import MetricTestResult
-from evidently.future.metric_types import SingleValueLocation
 from evidently.future.metric_types import metric_tests_widget
 from evidently.future.metric_types import render_widgets
+from evidently.future.serialization import ReportModel
+from evidently.future.serialization import SnapshotModel
 from evidently.model.widget import BaseWidgetInfo
 from evidently.model.widget import link_metric
 from evidently.pipeline.column_mapping import ColumnMapping
@@ -68,11 +69,11 @@ class ContextColumnData:
 
 
 class ReferenceMetricNotFound(BaseException):
-    def __init__(self, metric: Metric):
-        self.metric = metric
+    def __init__(self, metric_id: MetricId):
+        self.metric_id = metric_id
 
     def __str__(self):
-        return f"Reference data not found for {str(self.metric)} ({self.metric.metric_id})"
+        return f"Reference data not found for {str(self.metric_id)}"
 
 
 class Context:
@@ -108,22 +109,19 @@ class Context:
         self._current_graph_level = prev_level[calc.id]
         if calc.id not in self._metrics:
             current_result, reference_result = calc.call(self)
-            current_result.set_display_name(calc.display_name())
             link_metric(current_result.widget, calc.to_metric())
-            current_result._metric = calc
-            current_result._metric_value_location = SingleValueLocation(calc.to_metric())
+            metric_config = calc.to_metric_config()
+            current_result.set_metric_location(metric_config)
             self._metrics[calc.id] = current_result
             if reference_result is not None:
-                reference_result._metric = calc
-                reference_result.set_display_name(calc.display_name())
                 link_metric(reference_result.widget, calc.to_metric())
-                reference_result._metric_value_location = SingleValueLocation(calc.to_metric())
+                reference_result.set_metric_location(metric_config)
                 self._reference_metrics[calc.id] = reference_result
             test_results = {
                 tc: tc.run_test(self, calc, current_result) for tc in calc.to_metric().get_bound_tests(self)
             }
             if test_results and len(test_results) > 0:
-                current_result.set_tests(test_results)
+                current_result.set_tests(list(test_results.values()))
         self._current_graph_level = prev_level
         return typing.cast(TResultType, self._metrics[calc.id])
 
@@ -137,10 +135,10 @@ class Context:
     def get_metric(self, metric: MetricId) -> MetricCalculationBase[TResultType]:
         return self._metrics_graph[metric]["_self"]
 
-    def get_reference_metric_result(self, metric: Metric) -> MetricResult:
-        if metric.metric_id not in self._reference_metrics:
-            raise ReferenceMetricNotFound(metric)
-        return self._reference_metrics[metric.metric_id]
+    def get_reference_metric_result(self, metric_id: MetricId) -> MetricResult:
+        if metric_id not in self._reference_metrics:
+            raise ReferenceMetricNotFound(metric_id)
+        return self._reference_metrics[metric_id]
 
     def get_legacy_metric(
         self,
@@ -262,11 +260,28 @@ class Snapshot:
     _metrics: Dict[MetricId, MetricResult]
     _snapshot_item: List[SnapshotItem]
     _widgets: List[BaseWidgetInfo]
+    _tests_widgets: List[BaseWidgetInfo]
+    _top_level_metrics: List[MetricId]
+    _timestamp: datetime
+    _tags: List[str]
+    _metadata: Dict[str, MetadataValueType]
 
-    def __init__(self, report: "Report"):
+    def __init__(
+        self,
+        report: "Report",
+        timestamp: datetime,
+        metadata: Dict[str, MetadataValueType],
+        tags: List[str],
+    ):
         self._report = report
         self._context = Context(report)
         self._snapshot_item = []
+        self._metrics = {}
+        self._top_level_metrics = []
+        self._tests_widgets = []
+        self._timestamp = timestamp
+        self._tags = tags
+        self._metadata = metadata
 
     @property
     def context(self) -> Context:
@@ -277,7 +292,9 @@ class Snapshot:
         return self._report
 
     def _run_items(
-        self, items: Sequence[MetricOrContainer], metric_results: Dict[MetricId, MetricResult]
+        self,
+        items: Sequence[MetricOrContainer],
+        metric_results: Dict[MetricId, MetricResult],
     ) -> Tuple[List[SnapshotItem], List[BaseWidgetInfo]]:
         widgets: List[BaseWidgetInfo] = []
         snapshot_items: List[SnapshotItem] = []
@@ -290,33 +307,29 @@ class Snapshot:
             else:
                 calc = item.to_calculation()
                 metric_results[calc.id] = self.context.calculate_metric(calc)
-                widget = metric_results[calc.id].widget
+                widget = metric_results[calc.id].get_widgets()
                 widgets.extend(widget)
                 snapshot_items.append(SnapshotItem(calc.id, widget))
         return snapshot_items, widgets
 
     def run(self, current_data: Dataset, reference_data: Optional[Dataset]):
         self.context.init_dataset(current_data, reference_data)
-        self._snapshot_item, self._widgets = self._run_items(self.report.items(), {})
+        self._metrics = {}
+        self._snapshot_item, self._widgets = self._run_items(self.report.items(), self._metrics)
+        self._top_level_metrics = list(self.context._metrics_graph.keys())
+        metrics_results = [self._metrics.get(result) for result in self._top_level_metrics]
+        tests = list(chain(*[result.tests for result in metrics_results if result is not None]))
+        if len(tests) > 0:
+            self._tests_widgets = [
+                metric_tests_stats(tests),
+                metric_tests_widget(tests),
+            ]
 
     def _repr_html_(self):
         from evidently.renderers.html_widgets import group_widget
 
-        results = [
-            (
-                metric,
-                self._context.get_metric_result(metric).widget,
-                self._context.get_metric_result(metric),
-            )
-            for metric in self.context._metrics_graph.keys()
-        ]
+        widgets_to_render: List[BaseWidgetInfo] = [group_widget(title="", widgets=self._widgets)] + self._tests_widgets
 
-        tests = list(chain(*[result[2].tests.values() for result in results]))
-        widgets_to_render: List[BaseWidgetInfo] = [group_widget(title="", widgets=self._widgets)]
-
-        if len(tests) > 0:
-            widgets_to_render.append(metric_tests_stats(tests))
-            widgets_to_render.append(metric_tests_widget(tests))
         return render_widgets(widgets_to_render)
 
     def render_only_fingerprint(self, fingerprint: str):
@@ -327,13 +340,13 @@ class Snapshot:
         results = [
             (
                 metric,
-                self._context.get_metric_result(metric).widget,
-                self._context.get_metric_result(metric),
+                self._metrics[metric].get_widgets(),
+                self._metrics[metric],
             )
-            for metric in self.context._metrics_graph.keys()
+            for metric in self._top_level_metrics
         ]
 
-        tests = list(chain(*[result[2].tests.values() for result in results]))
+        tests = list(chain(*[result[2].tests for result in results]))
         widgets = [w for w in self._widgets if fingerprint in (w.linked_metrics or [])]
         widgets_to_render: List[BaseWidgetInfo] = [group_widget(title="", widgets=widgets)]
 
@@ -341,19 +354,6 @@ class Snapshot:
             widgets_to_render.append(metric_tests_stats(tests))
             widgets_to_render.append(metric_tests_widget(tests))
         return HTML(render_widgets(widgets_to_render))
-
-    def dict(self) -> dict:
-        return {
-            "metrics": [
-                self.context.get_metric_result(metric).to_dict()  # type: ignore[attr-defined]
-                for metric in self.context._metrics_graph.keys()
-            ],
-            "tests": {
-                test.get_fingerprint(): test_result.dict()
-                for metric in self.context._metrics_graph.keys()
-                for test, test_result in self.context.get_metric_result(metric).tests.items()  # type: ignore[attr-defined]
-            },
-        }
 
     def json(self) -> str:
         return json.dumps(self.dict(), cls=NumpyEncoder)
@@ -373,8 +373,54 @@ class Snapshot:
 
         return snapshot_v2_to_v1(self)
 
+    def dumps(self) -> str:
+        return json.dumps(self.dump_dict(), cls=NumpyEncoder)
+
+    def dump_dict(self) -> dict:
+        snapshot = SnapshotModel(
+            report=ReportModel(items=[]),
+            timestamp=self._timestamp,
+            metadata=self._metadata,
+            tags=self._tags,
+            metric_results=self._metrics,
+            top_level_metrics=self._top_level_metrics,
+            widgets=self._widgets,
+            tests_widgets=self._tests_widgets,
+        )
+        return snapshot.dict()
+
+    @staticmethod
+    def loads(data: str) -> "Snapshot":
+        return Snapshot.load_dict(json.loads(data))
+
+    @staticmethod
+    def load_dict(data: dict) -> "Snapshot":
+        model = SnapshotModel.parse_obj(data)
+        snapshot = Snapshot(report=Report([]), timestamp=model.timestamp, metadata=model.metadata, tags=model.tags)
+        snapshot._metrics = model.metric_results
+        snapshot._top_level_metrics = model.top_level_metrics
+        snapshot._widgets = model.widgets
+        snapshot._tests_widgets = model.tests_widgets
+        return snapshot
+
+    def dict(self) -> dict:
+        return {
+            "metrics": [
+                self._metrics[metric].to_dict() if self._metrics.get(metric) is not None else {}
+                for metric in self._top_level_metrics
+            ],
+            "tests": [
+                test_result.dict() for metric in self._top_level_metrics for test_result in self._metrics[metric].tests
+            ],
+        }
+
 
 class Report:
+    metrics: List[MetricOrContainer]
+    metadata: Dict[str, MetadataValueType]
+    tags: List[str]
+    include_tests: bool
+
     def __init__(
         self,
         metrics: List[MetricOrContainer],
@@ -386,7 +432,7 @@ class Report:
         dataset_id: str = None,
         include_tests: bool = False,
     ):
-        self._metrics = metrics
+        self.metrics = metrics
         self.metadata = metadata or {}
         self.tags = tags or []
         self._timestamp: Optional[datetime] = None
@@ -405,16 +451,24 @@ class Report:
         current_data: PossibleDatasetTypes,
         reference_data: Optional[PossibleDatasetTypes] = None,
         timestamp: Optional[datetime] = None,
+        metadata: Dict[str, MetadataValueType] = None,
+        tags: List[str] = None,
     ) -> Snapshot:
-        self._timestamp = timestamp or datetime.now()
         current_dataset = Dataset.from_any(current_data)
         reference_dataset = Dataset.from_any(reference_data) if reference_data is not None else None
-        snapshot = Snapshot(self)
+        _timestamp = timestamp or datetime.now()
+        _metadata = self.metadata.copy()
+        if metadata is not None:
+            _metadata.update(metadata)
+        _tags = self.tags.copy()
+        if tags is not None:
+            _tags.extend(tags)
+        snapshot = Snapshot(self, _timestamp, _metadata, _tags)
         snapshot.run(current_dataset, reference_dataset)
         return snapshot
 
     def items(self) -> Sequence[MetricOrContainer]:
-        return self._metrics
+        return self.metrics
 
     def set_batch_size(self, batch_size: str):
         self.metadata["batch_size"] = batch_size

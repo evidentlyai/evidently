@@ -1,5 +1,4 @@
 import abc
-import dataclasses
 from abc import ABC
 from enum import Enum
 from typing import TYPE_CHECKING
@@ -13,6 +12,8 @@ from typing import Type
 from typing import TypeVar
 from typing import Union
 
+from evidently._pydantic_compat import BaseModel
+from evidently._pydantic_compat import Field
 from evidently.base_metric import BaseResult
 from evidently.base_metric import Metric
 from evidently.base_metric import MetricResult
@@ -31,8 +32,7 @@ if TYPE_CHECKING:
     from evidently.suite.base_suite import Context
 
 
-@dataclasses.dataclass
-class GroupData:
+class GroupData(BaseModel):
     id: str
     title: str
     description: str
@@ -40,12 +40,11 @@ class GroupData:
     severity: Optional[str] = None
 
 
-@dataclasses.dataclass
-class GroupTypeData:
+class GroupTypeData(BaseModel):
     id: str
     title: str
     # possible values with description, if empty will use simple view (no severity, description and sorting).
-    values: List[GroupData] = dataclasses.field(default_factory=list)
+    values: List[GroupData] = Field(default_factory=list)
 
     def add_value(self, data: GroupData):
         self.values.append(data)
@@ -53,29 +52,29 @@ class GroupTypeData:
 
 class GroupingTypes:
     ByFeature = GroupTypeData(
-        "by_feature",
-        "By feature",
-        [
+        id="by_feature",
+        title="By feature",
+        values=[
             GroupData(
-                "no group",
-                "Dataset-level tests",
-                "Some tests cannot be grouped by feature",
+                id="no group",
+                title="Dataset-level tests",
+                description="Some tests cannot be grouped by feature",
             )
         ],
     )
-    ByClass = GroupTypeData("by_class", "By class", [])
+    ByClass = GroupTypeData(id="by_class", title="By class", values=[])
     TestGroup = GroupTypeData(
-        "test_group",
-        "By test group",
-        [
+        id="test_group",
+        title="By test group",
+        values=[
             GroupData(
-                "no group",
-                "Ungrouped",
-                "Some tests don’t belong to any group under the selected condition",
+                id="no group",
+                title="Ungrouped",
+                description="Some tests don’t belong to any group under the selected condition",
             )
         ],
     )
-    TestType = GroupTypeData("test_type", "By test type", [])
+    TestType = GroupTypeData(id="test_type", title="By test type", values=[])
 
 
 DEFAULT_GROUP = [
@@ -86,7 +85,7 @@ DEFAULT_GROUP = [
 ]
 
 
-class TestStatus(Enum):
+class TestStatus(str, Enum):
     # Constants for test result status
     SUCCESS = "SUCCESS"  # the test was passed
     FAIL = "FAIL"  # success pass for the test

@@ -68,6 +68,7 @@ export const Component = () => {
         onReloadSnapshots={() =>
           reloadSnapshotsFetcher.submit({ data: { projectId }, paramsToReplace: { projectId } })
         }
+        downloadLink={'/api/projects/{project_id}/{snapshot_id}/download'}
       />
     </>
   )

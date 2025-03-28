@@ -17,10 +17,12 @@ class IsInMetricTest(MetricTest):
         def func(context: Context, metric: MetricCalculationBase, value: SingleValue) -> MetricTestResult:
             check_value = value.value in self.values
             return MetricTestResult(
-                "is_in",
-                f"{metric.display_name()}: Value in list [{', '.join(str(x) for x in self.values)}]",
-                f"Actual value: {value.value}",
-                TestStatus.SUCCESS if check_value else TestStatus.FAIL,
+                id="is_in",
+                name=f"{metric.display_name()}: Value in list [{', '.join(str(x) for x in self.values)}]",
+                description=f"Actual value: {value.value}",
+                status=TestStatus.SUCCESS if check_value else TestStatus.FAIL,
+                metric_config=metric.to_metric_config(),
+                test_config=self.dict(),
             )
 
         return func
@@ -37,10 +39,12 @@ class NotInMetricTest(MetricTest):
         def func(context: Context, metric: MetricCalculationBase, value: SingleValue) -> MetricTestResult:
             check_value = value.value not in self.values
             return MetricTestResult(
-                "not_in",
-                f"{metric.display_name()}: Value not in list [{', '.join(str(x) for x in self.values)}]",
-                f"Actual value: {value.value}",
-                TestStatus.SUCCESS if check_value else TestStatus.FAIL,
+                id="not_in",
+                name=f"{metric.display_name()}: Value not in list [{', '.join(str(x) for x in self.values)}]",
+                description=f"Actual value: {value.value}",
+                status=TestStatus.SUCCESS if check_value else TestStatus.FAIL,
+                metric_config=metric.to_metric_config(),
+                test_config=self.dict(),
             )
 
         return func

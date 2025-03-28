@@ -1,4 +1,3 @@
-import dataclasses
 import datetime
 from typing import TYPE_CHECKING
 from typing import ClassVar
@@ -31,9 +30,7 @@ from evidently.future.metric_types import TResult
 from evidently.future.report import Context
 from evidently.future.report import Snapshot as SnapshotV2
 from evidently.metric_results import Label
-from evidently.model.widget import AdditionalGraphInfo
 from evidently.model.widget import BaseWidgetInfo
-from evidently.model.widget import PlotlyGraphInfo
 from evidently.options.base import Options
 from evidently.pipeline.column_mapping import RecomType
 from evidently.pipeline.column_mapping import TargetNames
@@ -118,8 +115,8 @@ class MeanStdValueV1(MetricResultV2Adapter):
 def _create_metric_result_widget(metric_result: MetricResultV2, ignore_widget: bool) -> List[dict]:
     if ignore_widget:
         return []
-    widgets = list(metric_result.widget)
-    return [dataclasses.asdict(w) for w in widgets]
+    widgets = list(metric_result.get_widgets())
+    return [w.dict() for w in widgets]
 
 
 def metric_result_v2_to_v1(metric_result: MetricResultV2, ignore_widget: bool = False) -> MetricResultV1:
@@ -131,25 +128,25 @@ def metric_result_v2_to_v1(metric_result: MetricResultV2, ignore_widget: bool = 
     if isinstance(metric_result, ByLabelValue):
         return ByLabelValueV1(
             widget=_create_metric_result_widget(metric_result, ignore_widget),
-            values=metric_result.values,
+            values={k: v.value for k, v in metric_result.values.items()},
         )
     if isinstance(metric_result, ByLabelCountValue):
         return ByLabelCountValueV1(
             widget=_create_metric_result_widget(metric_result, ignore_widget),
-            counts=metric_result.counts,
-            shares=metric_result.shares,
+            counts={k: v.value for k, v in metric_result.counts.items()},
+            shares={k: v.value for k, v in metric_result.shares.items()},
         )
     if isinstance(metric_result, CountValue):
         return CountValueV1(
             widget=_create_metric_result_widget(metric_result, ignore_widget),
-            count=metric_result.count,
-            share=metric_result.share,
+            count=metric_result.count.value,
+            share=metric_result.share.value,
         )
     if isinstance(metric_result, MeanStdValue):
         return MeanStdValueV1(
             widget=_create_metric_result_widget(metric_result, ignore_widget),
-            mean=metric_result.mean,
-            std=metric_result.std,
+            mean=metric_result.mean.value,
+            std=metric_result.std.value,
         )
     raise NotImplementedError(metric_result.__class__.__name__)
 
@@ -181,32 +178,16 @@ class MetricV2PresetAdapter(MetricV1[MetricResultV2Adapter]):
         raise NotImplementedError()
 
 
-def _unwrap_widget_info(data: dict) -> BaseWidgetInfo:
-    base_version = BaseWidgetInfo(**data)
-    if base_version.widgets is not None and isinstance(base_version.widgets, list):
-        for idx, item in enumerate(base_version.widgets):
-            base_version.widgets[idx] = _unwrap_widget_info(item)
-    if base_version.additionalGraphs is not None and isinstance(base_version.additionalGraphs, list):
-        for idx, item in enumerate(base_version.additionalGraphs):
-            if "type" in item:
-                base_version.additionalGraphs[idx] = _unwrap_widget_info(item)
-            elif "data" in item:
-                base_version.additionalGraphs[idx] = PlotlyGraphInfo(**item)
-            else:
-                base_version.additionalGraphs[idx] = AdditionalGraphInfo(**item)
-    return base_version
-
-
 @default_renderer(MetricV2PresetAdapter)
 class MetricV2PresetAdapterRenderer(MetricRenderer):
     def render_html(self, obj: MetricV2PresetAdapter) -> List[BaseWidgetInfo]:
-        return [_unwrap_widget_info(w) for w in obj.get_result().widget]
+        return [BaseWidgetInfo.parse_obj(w) for w in obj.get_result().widget]
 
 
 @default_renderer(MetricV2Adapter)
 class MetricV2AdapterRenderer(MetricRenderer):
     def render_html(self, obj: MetricV2Adapter) -> List[BaseWidgetInfo]:
-        return [_unwrap_widget_info(w) for w in obj.get_result().widget]
+        return [BaseWidgetInfo.parse_obj(w) for w in obj.get_result().widget]
 
 
 def metric_v2_to_v1(metric: MetricV2) -> MetricV1:
@@ -251,7 +232,7 @@ def snapshot_v2_to_v1(snapshot: SnapshotV2) -> SnapshotV1:
     metrics: List[MetricV1] = []
     metric_results: List[MetricResultV1] = []
     tests: List[TestV1] = []
-    tests_v2: List[BoundTest] = []
+    tests_v2: List[MetricTestResult] = []
     test_results: List[TestResultV1] = []
     context = snapshot.context
     saved_metrics = set()
@@ -265,9 +246,9 @@ def snapshot_v2_to_v1(snapshot: SnapshotV2) -> SnapshotV1:
             metric_results.append(metric_result_v2_to_v1(metric_result))
             saved_metrics.add(item.metric_id)
 
-            for test_config, test_result in (metric_result._tests or {}).items():
-                tests_v2.append(test_config)
-                tests.append(TestV2Adapter(test=test_config))
+            for test_result in metric_result.tests or []:
+                tests_v2.append(test_result)
+                tests.append(TestV2Adapter(test=test_result.bound_test))
                 test_results.append(
                     TestResultV1(
                         name=test_result.name,
@@ -280,7 +261,7 @@ def snapshot_v2_to_v1(snapshot: SnapshotV2) -> SnapshotV1:
         else:  # metric preset wrapper
             adapter = MetricV2PresetAdapter(id=str(uuid7()))
             metrics.append(adapter)
-            metric_results.append(PresetMetricValueV1(widget=[dataclasses.asdict(w) for w in item.widgets]))
+            metric_results.append(PresetMetricValueV1(widget=[w.dict() for w in item.widgets]))
 
     for metric_id, metric_result in context._metrics.items():
         if metric_id in saved_metrics:
@@ -290,9 +271,9 @@ def snapshot_v2_to_v1(snapshot: SnapshotV2) -> SnapshotV1:
         metrics.append(metric_v2_to_v1(metric))
         metric_results.append(metric_result_v2_to_v1(metric_result, ignore_widget=True))
 
-        for test_config, test_result in (metric_result._tests or {}).items():
-            tests_v2.append(test_config)
-            tests.append(TestV2Adapter(test=test_config))
+        for test_result in metric_result.tests or []:
+            tests_v2.append(test_result)
+            tests.append(TestV2Adapter(test=test_result.bound_test))
             test_results.append(
                 TestResultV1(
                     name=test_result.name,
@@ -323,12 +304,12 @@ def snapshot_v2_to_v1(snapshot: SnapshotV2) -> SnapshotV1:
             for x in context.data_definition.numerical_descriptors
         }
     )
-    snapshot = SnapshotV1(
+    snapshot_v1 = SnapshotV1(
         id=new_id(),
         name="",
-        timestamp=snapshot.report._timestamp,
-        metadata=dict(snapshot.report.metadata),
-        tags=snapshot.report.tags,
+        timestamp=snapshot._timestamp,
+        metadata=dict(snapshot._metadata),
+        tags=snapshot._tags,
         suite=ContextPayload(
             metrics=metrics,
             metric_results=metric_results,
@@ -341,20 +322,22 @@ def snapshot_v2_to_v1(snapshot: SnapshotV2) -> SnapshotV1:
         test_ids=[],
         options=Options.from_any_options(None),
     )
-    snapshot.metadata["version"] = "2"
+    snapshot_v1.metadata["version"] = "2"
     if len(tests) > 0:
-        test_widgets = snapshot.as_test_suite()._build_dashboard_info()[1].widgets
-        tests_config = TestsConfig(tests=tests_v2)
-        snapshot.suite.metrics.append(MetricV2Adapter(metric=tests_config, fingerprint=tests_config.get_fingerprint()))
-        widgets_dict = [dataclasses.asdict(w) for w in test_widgets]
+        test_widgets = snapshot_v1.as_test_suite()._build_dashboard_info()[1].widgets
+        tests_config = TestsConfig(tests=[v.test_config for v in tests_v2])
+        snapshot_v1.suite.metrics.append(
+            MetricV2Adapter(metric=tests_config, fingerprint=tests_config.get_fingerprint())
+        )
+        widgets_dict = [w.dict() for w in test_widgets]
         for wd in widgets_dict:
             params = wd.get("params", {})
             params["v2_test"] = True
             wd["params"] = params
-        snapshot.suite.metric_results.append(SingleValueV1(widget=widgets_dict, value=0))
-        snapshot.metrics_ids.append(len(metrics))
+        snapshot_v1.suite.metric_results.append(SingleValueV1(widget=widgets_dict, value=0))
+        snapshot_v1.metrics_ids.append(len(metrics))
 
-    return snapshot
+    return snapshot_v1
 
 
 class DashboardPanelV2(DashboardPanel):
@@ -404,7 +387,7 @@ class TestV2Parameters(TestParameters):
 
 
 class TestsConfig(MetricV2):
-    tests: List[BoundTest] = []
+    tests: List[dict] = []
 
     def to_calculation(self):
         raise NotImplementedError
@@ -413,7 +396,7 @@ class TestsConfig(MetricV2):
         raise NotImplementedError
 
     def get_bound_tests(self, context: Context) -> List[BoundTest]:
-        return self.tests
+        raise NotImplementedError
 
 
 def main():

@@ -2,6 +2,7 @@
 # fmt: off
 from evidently.future.metric_types import BoundTest
 from evidently.future.metric_types import Metric
+from evidently.future.metric_types import MetricResult
 from evidently.future.metric_types import MetricTest
 from evidently.pydantic_utils import register_type_alias
 
@@ -118,3 +119,9 @@ register_type_alias(BoundTest, "evidently.future.metric_types.ByLabelCountBoundT
 register_type_alias(Metric, "evidently.future.metric_types.ByLabelCountMetric", "evidently:metric_v2:ByLabelCountMetric")
 
 register_type_alias(Metric, "evidently.future.metric_types.ColumnMetric", "evidently:metric_v2:ColumnMetric")
+
+register_type_alias(MetricResult, "evidently.future.metric_types.ByLabelCountValue", "evidently:metric_result_v2:ByLabelCountValue")
+register_type_alias(MetricResult, "evidently.future.metric_types.ByLabelValue", "evidently:metric_result_v2:ByLabelValue")
+register_type_alias(MetricResult, "evidently.future.metric_types.CountValue", "evidently:metric_result_v2:CountValue")
+register_type_alias(MetricResult, "evidently.future.metric_types.MeanStdValue", "evidently:metric_result_v2:MeanStdValue")
+register_type_alias(MetricResult, "evidently.future.metric_types.SingleValue", "evidently:metric_result_v2:SingleValue")

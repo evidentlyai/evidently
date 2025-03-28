@@ -12,6 +12,8 @@ from typing import Union
 import pandas as pd
 import uuid6
 
+from evidently._pydantic_compat import BaseModel
+from evidently._pydantic_compat import Field
 from evidently.model.widget import AdditionalGraphInfo
 from evidently.model.widget import BaseWidgetInfo
 from evidently.model.widget import PlotlyGraphInfo
@@ -63,15 +65,13 @@ class MetricRenderer(Generic[TMetric], BaseRenderer):
         raise NotImplementedError()
 
 
-@dataclasses.dataclass
-class DetailsInfo:
+class DetailsInfo(BaseModel):
     title: str
     info: Union[BaseWidgetInfo, Any]
-    id: str = dataclasses.field(default_factory=lambda: str(uuid6.uuid7()))
+    id: str = Field(default_factory=lambda: str(uuid6.uuid7()))
 
 
-@dataclasses.dataclass
-class TestHtmlInfo:
+class TestHtmlInfo(BaseModel):
     name: str
     description: str
     test_fingerprint: str
@@ -80,7 +80,7 @@ class TestHtmlInfo:
     groups: Dict[str, str]
 
     def with_details(self, title: str, info: BaseWidgetInfo):
-        self.details.append(DetailsInfo(title, info))
+        self.details.append(DetailsInfo(title=title, info=info))
         return self
 
 

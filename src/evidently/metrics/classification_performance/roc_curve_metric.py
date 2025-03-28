@@ -70,7 +70,7 @@ class ClassificationRocCurve(Metric[ClassificationRocCurveResults]):
         target_names: Optional[TargetNames],
     ) -> ROCCurve:
         labels = prediction.labels
-        tn: Dict[Union[int, str], str] = {}
+        tn: Dict[Union[int, str, None], str] = {}
         if target_names is None:
             tn = {}
         elif isinstance(target_names, list):

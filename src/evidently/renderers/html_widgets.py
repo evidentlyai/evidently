@@ -15,6 +15,7 @@ from uuid6 import uuid7
 
 from evidently.metric_results import Distribution
 from evidently.metric_results import HistogramData
+from evidently.metric_results import Label
 from evidently.metric_results import LiftCurve
 from evidently.metric_results import PRCurve
 from evidently.metric_results import ROCCurve
@@ -339,7 +340,7 @@ def widget_tabs(*, title: str = "", size: WidgetSize = WidgetSize.FULL, tabs: Li
         title=title,
         type=WidgetType.TABS.value,
         size=size.value,
-        tabs=[TabInfo(str(uuid7()), tab.title, tab.widget) for tab in tabs],
+        tabs=[TabInfo(id=str(uuid7()), title=tab.title, widget=tab.widget) for tab in tabs],
     )
 
 
@@ -887,8 +888,8 @@ def get_class_separation_plot_data(
 
 
 def get_class_separation_plot_data_agg(
-    current_plot: Dict[Union[int, str], pd.DataFrame],
-    reference_plot: Optional[Dict[Union[int, str], pd.DataFrame]],
+    current_plot: Dict[Label, pd.DataFrame],
+    reference_plot: Optional[Dict[Label, pd.DataFrame]],
     target_name: str,
     color_options: ColorOptions,
 ) -> List[Tuple[str, BaseWidgetInfo]]:

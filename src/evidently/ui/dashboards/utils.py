@@ -15,10 +15,12 @@ import plotly.io as pio
 from evidently._pydantic_compat import BaseModel
 from evidently.base_metric import ColumnName
 from evidently.base_metric import Metric
+from evidently.future.metric_types import MetricTest
 from evidently.pydantic_utils import EvidentlyBaseModel
 from evidently.tests.base_test import Test
 from evidently.tests.base_test import TestStatus
 
+from ...future.metric_types import BoundTest
 from ..storage.utils import iterate_obj_fields
 
 if TYPE_CHECKING:
@@ -137,9 +139,9 @@ def _get_hover_params(items: Set[TMT]) -> Dict[TMT, List[str]]:
         return {}
     params: Dict[str, Dict[TMT, Set[str]]] = defaultdict(lambda: defaultdict(set))
     for item in items:
-        item_fields = item
+        item_fields: Union[Metric, Test, MetricTest, BoundTest] = item
         if isinstance(item, TestV2Adapter):
-            item_fields = item.test.test
+            item_fields = item.test
         for path, value in iterate_obj_fields(item_fields, [], early_stop=_hover_params_early_stop):
             if path == "type":
                 continue

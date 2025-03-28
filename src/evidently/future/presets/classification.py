@@ -282,5 +282,5 @@ class ClassificationPreset(MetricContainer):
         return (
             self._quality.render(context)
             + self._quality_by_label.render(context)
-            + ([] if self._roc_auc is None else context.get_metric_result(self._roc_auc).widget)
+            + ([] if self._roc_auc is None else context.get_metric_result(self._roc_auc).get_widgets())
         )

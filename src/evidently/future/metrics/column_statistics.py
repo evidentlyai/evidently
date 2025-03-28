@@ -16,7 +16,6 @@ from evidently.future.datasets import DatasetColumn
 from evidently.future.metric_types import BoundTest
 from evidently.future.metric_types import ByLabelCountCalculation
 from evidently.future.metric_types import ByLabelCountMetric
-from evidently.future.metric_types import ByLabelCountValue
 from evidently.future.metric_types import ColumnMetric
 from evidently.future.metric_types import CountCalculation
 from evidently.future.metric_types import CountMetric
@@ -25,9 +24,9 @@ from evidently.future.metric_types import MetricTest
 from evidently.future.metric_types import MetricTestProto
 from evidently.future.metric_types import MetricTestResult
 from evidently.future.metric_types import SingleValue
-from evidently.future.metric_types import SingleValueBoundTest
 from evidently.future.metric_types import SingleValueCalculation
 from evidently.future.metric_types import SingleValueMetric
+from evidently.future.metric_types import TestConfig
 from evidently.future.metric_types import TMetric
 from evidently.future.metrics._legacy import LegacyMetricCalculation
 from evidently.future.report import Context
@@ -110,7 +109,7 @@ class StatisticsCalculation(SingleValueCalculation[TStatisticsMetric]):
         if reference_data is not None:
             ref_value = self.calculate_value(reference_data.column(self.column))
             header += f", reference: {ref_value:.3f}"
-        result = SingleValue(value)
+        result = self.result(value)
         result.widget = distribution(
             f"{self.display_name()}: {header}",
             current_data.column(self.column),
@@ -118,7 +117,7 @@ class StatisticsCalculation(SingleValueCalculation[TStatisticsMetric]):
         )
         return (
             result,
-            None if ref_value is None else SingleValue(ref_value),
+            None if ref_value is None else self.result(ref_value),
         )
 
     @abc.abstractmethod
@@ -248,13 +247,14 @@ class CategoryCountCalculation(CountCalculation[CategoryCount]):
         try:
             counts = column.data.value_counts()
             if all(isinstance(c, bool) for c in self.metric.categories):
-                value = counts[self.metric.categories[0]]  # only one boolean label is possible here
+                #  only one boolean label is possible here
+                value = counts[self.metric.categories[0]]  # type: ignore[index]
             else:
                 value = counts.loc[self.metric.categories].sum()  # type: ignore[index]
         except KeyError:
             value = 0
         total = column.data.count()
-        return CountValue(value, value / total)
+        return self.result(value, value / total)
 
 
 class InRangeValueCount(ColumnMetric, CountMetric):
@@ -282,7 +282,7 @@ class InRangeValueCountCalculation(CountCalculation[InRangeValueCount]):
         column = dataset.column(self.metric.column)
         value = column.data.between(self.metric.left, self.metric.right).sum()
         total = column.data.count()
-        return CountValue(value, value / total)
+        return self.result(value, value / total)
 
 
 class OutRangeValueCount(ColumnMetric, CountMetric):
@@ -310,7 +310,7 @@ class OutRangeValueCountCalculation(CountCalculation[OutRangeValueCount]):
         column = dataset.column(self.metric.column)
         value = column.data.between(self.metric.left, self.metric.right).sum()
         total = column.data.count()
-        return CountValue(total - value, (total - value) / total)
+        return self.result(total - value, (total - value) / total)
 
 
 class InListValueCount(ColumnMetric, CountMetric):
@@ -337,7 +337,7 @@ class InListValueCountCalculation(CountCalculation[InListValueCount]):
         column = dataset.column(self.metric.column)
         value = column.data.value_counts().loc[self.metric.values].sum()  # type: ignore[index]
         total = column.data.count()
-        return CountValue(value, value / total)
+        return self.result(value, value / total)
 
 
 class OutListValueCount(ColumnMetric, CountMetric):
@@ -364,7 +364,7 @@ class OutListValueCountCalculation(CountCalculation[OutListValueCount]):
         column = dataset.column(self.metric.column)
         value = column.data.value_counts().loc[self.metric.values].sum()  # type: ignore[index]
         total = column.data.count()
-        return CountValue(total - value, (total - value) / total)
+        return self.result(total - value, (total - value) / total)
 
 
 class MissingValueCount(ColumnMetric, CountMetric):
@@ -392,7 +392,7 @@ class MissingValueCountCalculation(CountCalculation[MissingValueCount]):
         column = dataset.column(self.metric.column)
         value = column.data.count()
         total = len(column.data)
-        return CountValue(total - value, (total - value) / total)
+        return self.result(total - value, (total - value) / total)
 
 
 class ValueDrift(ColumnMetric, SingleValueMetric):
@@ -402,6 +402,9 @@ class ValueDrift(ColumnMetric, SingleValueMetric):
 
 class ValueDriftTest(MetricTest):
     def to_test(self) -> MetricTestProto:
+        raise NotImplementedError()
+
+    def to_config(self) -> TestConfig:
         raise NotImplementedError()
 
 
@@ -427,28 +430,29 @@ class ValueDriftCalculation(SingleValueCalculation[ValueDrift]):
                 cat_feature_names=[column] if column_type == ColumnType.Categorical else [],
                 text_feature_names=[column] if column_type == ColumnType.Text else [],
                 datetime_feature_names=[column] if column_type == ColumnType.Datetime else [],
+                target_names=None,
             ),
             column_type=column_type,
             agg_data=True,
         )
 
-        result = SingleValue(drift.drift_score)
+        result = self.result(drift.drift_score)
         result.widget = self._render(drift, Options(), ColorOptions())
         if self.metric.tests is None and context.configuration.include_tests:
             # todo: move to _default_tests
             result.set_tests(
-                {
-                    SingleValueBoundTest(
-                        metric_fingerprint=self.metric.get_fingerprint(), test=ValueDriftTest()
-                    ): MetricTestResult(
-                        "drift",
-                        f"Value Drift for column {self.metric.column}",
-                        f"Drift score is {drift.drift_score:0.2f}. "
+                [
+                    MetricTestResult(
+                        id="drift",
+                        name=f"Value Drift for column {self.metric.column}",
+                        description=f"Drift score is {drift.drift_score:0.2f}. "
                         f"The drift detection method is {drift.stattest_name}. "
                         f"The drift threshold is {drift.stattest_threshold:0.2f}.",
                         status=TestStatus.FAIL if drift.drift_detected else TestStatus.SUCCESS,
+                        metric_config=self.to_metric_config(),
+                        test_config={},
                     )
-                }
+                ]
             )
         return result
 
@@ -621,7 +625,10 @@ class DriftedColumnCalculation(CountCalculation[DriftedColumnsCount], LegacyDrif
     def calculate_value(
         self, context: Context, legacy_result: DatasetDriftMetricResults, render: List[BaseWidgetInfo]
     ) -> CountValue:
-        result = CountValue(legacy_result.number_of_drifted_columns, legacy_result.share_of_drifted_columns)
+        result = self.result(
+            legacy_result.number_of_drifted_columns,
+            legacy_result.share_of_drifted_columns,
+        )
         return result
 
     def display_name(self) -> str:
@@ -639,7 +646,7 @@ class UniqueValueCountCalculation(ByLabelCountCalculation[UniqueValueCount]):
     def calculate(self, context: "Context", current_data: Dataset, reference_data: Optional[Dataset]):
         current_result = self._calculate_value(current_data)
         current_result.widget = distribution(
-            f"Unique value count: {self.metric.column}",
+            self.display_name(),
             current_data.column(self.metric.column),
             None if reference_data is None else reference_data.column(self.metric.column),
         )
@@ -650,13 +657,13 @@ class UniqueValueCountCalculation(ByLabelCountCalculation[UniqueValueCount]):
         )
 
     def display_name(self) -> str:
-        return "Unique Value Count"
+        return f"Unique Value Count: {self.metric.column}"
 
     def count_label_display_name(self, label: Label) -> str:
-        return f"Unique Value Count for label {label}"
+        return f"{self.display_name()} for label {label}"
 
     def share_label_display_name(self, label: Label) -> str:
-        return f"Unique Value Share for label {label}"
+        return f"{self.display_name()} for label {label}"
 
     def _calculate_value(self, dataset: Dataset):
         df = dataset.as_dataframe()
@@ -664,5 +671,5 @@ class UniqueValueCountCalculation(ByLabelCountCalculation[UniqueValueCount]):
         total = len(df)
 
         res = value_counts.to_dict()
-        result = ByLabelCountValue(res, {k: v / total for k, v in res.items()})  # type: ignore[arg-type]
+        result = self.result(res, {k: v / total for k, v in res.items()})  # type: ignore[arg-type]
         return result
