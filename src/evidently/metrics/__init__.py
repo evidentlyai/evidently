@@ -72,6 +72,7 @@ from .regression_performance.regression_dummy_metric import RegressionDummyMetri
 from .regression_performance.regression_performance_metrics import RegressionPerformanceMetrics
 from .regression_performance.regression_quality import RegressionQualityMetric
 from .regression_performance.top_error import RegressionTopErrorMetric
+from .bleu_metric import BLEUMetric
 
 __all__ = [
     "ClassificationClassBalance",
@@ -141,5 +142,6 @@ __all__ = [
     "ScoreDistribution",
     "MRRKMetric",
     "RecCasesTable",
+    "BLEUMetric",
     "_registry",
 ]
