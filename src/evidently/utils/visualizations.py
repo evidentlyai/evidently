@@ -12,7 +12,7 @@ from pandas.api.types import is_datetime64_any_dtype
 from plotly import graph_objs as go
 from plotly.subplots import make_subplots
 from scipy import stats
-from scipy.linalg.basic import LinAlgError
+from scipy.linalg import LinAlgError
 
 from evidently.metric_results import ContourData
 from evidently.metric_results import Distribution
