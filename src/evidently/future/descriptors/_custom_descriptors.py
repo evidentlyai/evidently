@@ -48,7 +48,7 @@ class CustomDescriptor(Descriptor):
         else:
             self._func = None
             self.func = func
-        super().__init__(alias=alias or f"custom_descriptor:{self.func.__name__}")
+        super().__init__(alias=alias or f"custom_descriptor:{self.func}")
 
     def generate_data(self, dataset: "Dataset", options: Options) -> Union[DatasetColumn, Dict[str, DatasetColumn]]:
         if self._func is None:

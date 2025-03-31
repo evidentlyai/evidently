@@ -291,7 +291,7 @@ class FeatureDescriptor(Descriptor):
 
     def __init__(self, feature: GeneratedFeatures, alias: Optional[str] = None):
         # this is needed because we try to access it before super call
-        feature = feature if isinstance(feature, GeneratedFeatures) else parse_obj_as(GeneratedFeatures, feature)
+        feature = feature if isinstance(feature, GeneratedFeatures) else parse_obj_as(GeneratedFeatures, feature)  # type: ignore[type-abstract]
         feature_columns = feature.list_columns()
         super().__init__(feature=feature, alias=alias or f"{feature_columns[0].display_name}")
 
