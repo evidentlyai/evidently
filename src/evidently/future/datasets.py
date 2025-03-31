@@ -15,6 +15,7 @@ import numpy as np
 import pandas as pd
 
 from evidently._pydantic_compat import BaseModel
+from evidently._pydantic_compat import parse_obj_as
 from evidently.base_metric import DisplayName
 from evidently.core import ColumnType
 from evidently.features.generated_features import GeneratedFeatures
@@ -289,6 +290,8 @@ class FeatureDescriptor(Descriptor):
     feature: GeneratedFeatures
 
     def __init__(self, feature: GeneratedFeatures, alias: Optional[str] = None):
+        # this is needed because we try to access it before super call
+        feature = feature if isinstance(feature, GeneratedFeatures) else parse_obj_as(GeneratedFeatures, feature)
         feature_columns = feature.list_columns()
         super().__init__(feature=feature, alias=alias or f"{feature_columns[0].display_name}")
 
