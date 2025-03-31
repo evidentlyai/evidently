@@ -277,7 +277,7 @@ class PolymorphicModel(BaseModel):
                 try:
                     subcls = import_string(classpath)
                 except ImportError as e:
-                    raise ValueError(f"Error importing subclass from '{classpath}'") from e
+                    raise ValueError(f"Error importing subclass from '{classpath}' {e.args[0]}") from e
             return subcls.validate(value)  # type: ignore[return-value]
         return super().validate(value)  # type: ignore[misc]
 
