@@ -377,6 +377,9 @@ class Snapshot:
         return json.dumps(self.dump_dict(), cls=NumpyEncoder)
 
     def dump_dict(self) -> dict:
+        return self.to_snapshot_model().dict()
+
+    def to_snapshot_model(self):
         snapshot = SnapshotModel(
             report=ReportModel(items=[]),
             timestamp=self._timestamp,
@@ -387,7 +390,7 @@ class Snapshot:
             widgets=self._widgets,
             tests_widgets=self._tests_widgets,
         )
-        return snapshot.dict()
+        return snapshot
 
     @staticmethod
     def loads(data: str) -> "Snapshot":
