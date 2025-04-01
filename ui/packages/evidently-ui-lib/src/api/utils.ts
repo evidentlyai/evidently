@@ -1,4 +1,4 @@
-import type { OptionalID, StrictID } from '~/api/types/utils'
+import type { ErrorData, OptionalID, StrictID } from '~/api/types/utils'
 
 export const ensureID: <Entity extends OptionalID>(e: Entity) => StrictID<Entity> = (e) => {
   if (e.id) {
@@ -19,3 +19,6 @@ export const expectJsonRequest = (request: Request) => {
     throw new Response('Unsupported Media Type', { status: 415 })
   }
 }
+
+export const isSuccessData = <T>(e: T): e is Exclude<T, ErrorData> =>
+  !e || typeof e !== 'object' || !('error' in e)
