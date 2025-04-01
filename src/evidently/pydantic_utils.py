@@ -277,7 +277,7 @@ class PolymorphicModel(BaseModel):
                 try:
                     subcls = import_string(classpath)
                 except ImportError as e:
-                    raise ValueError(f"Error importing subclass from '{classpath}'") from e
+                    raise ValueError(f"Error importing subclass from '{classpath}' {e.args[0]}") from e
             return subcls.validate(value)  # type: ignore[return-value]
         return super().validate(value)  # type: ignore[misc]
 
@@ -584,3 +584,14 @@ def get_object_hash_deprecated(obj: Union[BaseModel, dict]):
     if isinstance(obj, BaseModel):
         obj = obj.dict()
     return hashlib.md5(json.dumps(obj, cls=NumpyEncoder).encode("utf8"), **md5_kwargs).hexdigest()  # nosec: B324
+
+
+class AutoAliasMixin:
+    __alias_type__: ClassVar[str]
+
+    @classmethod
+    def __get_type__(cls):
+        config = cls.__dict__.get("Config")
+        if config is not None and config.__dict__.get("type_alias") is not None:
+            return config.type_alias
+        return f"evidently:{cls.__alias_type__}:{cls.__name__}"

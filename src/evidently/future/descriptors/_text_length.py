@@ -13,12 +13,14 @@ from evidently.options.base import Options
 
 
 class TextLength(Descriptor):
+    column_name: str
+
     def __init__(self, column_name: str, alias: Optional[str] = None):
-        super().__init__(alias or "text_length")
-        self._column_name: str = column_name
+        self.column_name: str = column_name
+        super().__init__(alias=alias or "text_length")
 
     def generate_data(self, dataset: "Dataset", options: Options) -> Union[DatasetColumn, Dict[str, DatasetColumn]]:
-        column_items_lengths = dataset.as_dataframe()[self._column_name].apply(_apply)
+        column_items_lengths = dataset.as_dataframe()[self.column_name].apply(_apply)
         return DatasetColumn(type=ColumnType.Numerical, data=column_items_lengths)
 
 

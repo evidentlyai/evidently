@@ -32,6 +32,7 @@ from evidently.metric_results import Label
 from evidently.model.dashboard import DashboardInfo
 from evidently.model.widget import AdditionalGraphInfo
 from evidently.model.widget import BaseWidgetInfo
+from evidently.pydantic_utils import AutoAliasMixin
 from evidently.pydantic_utils import EvidentlyBaseModel
 from evidently.pydantic_utils import Fingerprint
 from evidently.pydantic_utils import FrozenBaseModel
@@ -50,17 +51,6 @@ if TYPE_CHECKING:
 
 
 MetricId = str
-
-
-class AutoAliasMixin:
-    __alias_type__: ClassVar[str]
-
-    @classmethod
-    def __get_type__(cls):
-        config = cls.__dict__.get("Config")
-        if config is not None and config.__dict__.get("type_alias") is not None:
-            return config.type_alias
-        return f"evidently:{cls.__alias_type__}:{cls.__name__}"
 
 
 class MetricConfig(FrozenBaseModel):

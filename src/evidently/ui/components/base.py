@@ -60,6 +60,11 @@ class ComponentContext:
 class Component(PolymorphicModel, ABC):
     __section__: ClassVar[str] = ""
     __require__: ClassVar[List[Type["Component"]]] = []
+    __priority__: ClassVar[int] = 0
+    priority: Optional[int] = None
+
+    def get_priority(self) -> int:
+        return self.priority if self.priority is not None else self.__priority__
 
     def get_requirements(self) -> List[Type["Component"]]:
         return self.__require__
