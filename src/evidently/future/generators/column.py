@@ -45,18 +45,19 @@ class ColumnMetricGenerator(MetricContainer):
                 metric_type, ColumnMetricContainer
             ), "metric_type must be a subclass of ColumnMetric or ColumnMetricContainer"
             metric_type_alias = metric_type.__get_type__()
+            _metric_type = metric_type
         if metric_type is None:
             assert metric_type_alias is not None, "metric_type must be specified if metric_type is not provided"
             try:
-                metric_type = Metric.load_alias(metric_type_alias)
+                _metric_type = Metric.load_alias(metric_type_alias)
             except ValidationError:
-                metric_type = MetricContainer.load_alias(metric_type_alias)
-            assert issubclass(metric_type, ColumnMetric) or issubclass(
-                metric_type, ColumnMetricContainer
+                _metric_type = MetricContainer.load_alias(metric_type_alias)
+            assert isinstance(metric_type, type) and (
+                issubclass(metric_type, ColumnMetric) or issubclass(metric_type, ColumnMetricContainer)
             ), "metric_type_alias must be an alias of ColumnMetric or ColumnMetricContainer subclass"
         assert metric_type_alias is not None, "metric_type_alias or metric_type must be specified"
         self.metric_type_alias = metric_type_alias
-        self._metric_type = metric_type
+        self._metric_type = _metric_type
         self.columns = columns
         self.column_types = column_types
         self.metric_kwargs = metric_kwargs or {}

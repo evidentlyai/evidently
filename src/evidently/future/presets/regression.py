@@ -33,10 +33,10 @@ class RegressionQuality(MetricContainer):
     pred_actual_plot: bool = False
     error_plot: bool = False
     error_distr: bool = False
-    mean_error_tests: Optional[MeanStdMetricTests] = None
-    mape_tests: Optional[MeanStdMetricTests] = None
+    mean_error_tests: MeanStdMetricTests
+    mape_tests: MeanStdMetricTests
     rmse_tests: SingleValueMetricTests = None
-    mae_tests: Optional[MeanStdMetricTests] = None
+    mae_tests: MeanStdMetricTests
     r2score_tests: SingleValueMetricTests = None
     abs_max_error_tests: SingleValueMetricTests = None
 
@@ -146,10 +146,10 @@ class RegressionDummyQuality(MetricContainer):
 
 
 class RegressionPreset(MetricContainer):
-    mean_error_tests: Optional[MeanStdMetricTests] = None
-    mape_tests: Optional[MeanStdMetricTests] = None
+    mean_error_tests: MeanStdMetricTests
+    mape_tests: MeanStdMetricTests
     rmse_tests: SingleValueMetricTests = None
-    mae_tests: Optional[MeanStdMetricTests] = None
+    mae_tests: MeanStdMetricTests
     r2score_tests: SingleValueMetricTests = None
     abs_max_error_tests: SingleValueMetricTests = None
 
