@@ -15,7 +15,6 @@ from evidently.ui.dashboards import DashboardPanelPlot
 from evidently.ui.dashboards import PanelValue
 from evidently.ui.dashboards import PlotType
 from evidently.ui.dashboards import ReportFilter
-from evidently.ui.remote import RemoteWorkspace
 from evidently.ui.workspace import Workspace
 from evidently.ui.workspace import WorkspaceBase
 

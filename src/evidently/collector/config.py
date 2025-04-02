@@ -23,8 +23,8 @@ from evidently.report import Report
 from evidently.suite.base_suite import MetadataValueType
 from evidently.test_suite import TestSuite
 from evidently.tests.base_test import Test
-from evidently.ui.remote import RemoteWorkspace
 from evidently.ui.workspace import CloudWorkspace
+from evidently.ui.workspace.remote import RemoteWorkspace
 from evidently.ui.workspace.view import WorkspaceView
 from evidently.utils import NumpyEncoder
 
