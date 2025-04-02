@@ -72,6 +72,9 @@ class MetricContainer(AutoAliasMixin, EvidentlyBaseModel, abc.ABC):
         return []
 
 
+MetricOrContainer = Union[Metric, MetricContainer]
+
+
 class ColumnMetricContainer(MetricContainer, abc.ABC):
     column: str
 

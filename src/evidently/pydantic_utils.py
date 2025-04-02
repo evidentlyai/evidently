@@ -262,8 +262,11 @@ class PolymorphicModel(BaseModel):
     def validate(cls: Type[TPM], value: Any) -> TPM:
         if isinstance(value, dict) and "type" in value:
             typename = value.pop("type")
-            subcls = cls.load_alias(typename)
-            return subcls.validate(value)  # type: ignore[return-value]
+            try:
+                subcls = cls.load_alias(typename)
+                return subcls.validate(value)  # type: ignore[return-value]
+            finally:
+                value["type"] = typename
         return super().validate(value)  # type: ignore[misc]
 
     @classmethod
