@@ -35,6 +35,7 @@ from evidently.future.serialization import SnapshotModel
 from evidently.model.widget import BaseWidgetInfo
 from evidently.model.widget import link_metric
 from evidently.pipeline.column_mapping import ColumnMapping
+from evidently.pydantic_utils import Fingerprint
 from evidently.renderers.base_renderer import DEFAULT_RENDERERS
 from evidently.renderers.html_widgets import CounterData
 from evidently.renderers.html_widgets import WidgetSize
@@ -84,7 +85,7 @@ class Context:
     _input_data: Tuple[Dataset, Optional[Dataset]]
     _current_graph_level: dict
     _legacy_metrics: Dict[str, Tuple[object, List[BaseWidgetInfo]]]
-    _metrics_container: Dict[int, List[MetricOrContainer]]
+    _metrics_container: Dict[Fingerprint, List[MetricOrContainer]]
 
     def __init__(self, report: "Report"):
         self._metrics = {}
@@ -175,11 +176,13 @@ class Context:
     def has_reference(self) -> bool:
         return self._input_data[1] is not None
 
-    def metrics_container(self, metric_container_hash: int) -> Optional[List[MetricOrContainer]]:
-        return self._metrics_container.get(metric_container_hash)
+    def metrics_container(self, metric_container_fingerprint: Fingerprint) -> Optional[List[MetricOrContainer]]:
+        return self._metrics_container.get(metric_container_fingerprint)
 
-    def set_metric_container_data(self, metric_container_hash: int, items: List[MetricOrContainer]) -> None:
-        self._metrics_container[metric_container_hash] = items
+    def set_metric_container_data(
+        self, metric_container_fingerprint: Fingerprint, items: List[MetricOrContainer]
+    ) -> None:
+        self._metrics_container[metric_container_fingerprint] = items
 
 
 def _default_input_data_generator(context: "Context") -> InputData:

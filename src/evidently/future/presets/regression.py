@@ -3,6 +3,7 @@ from typing import Optional
 from typing import Sequence
 from typing import Tuple
 
+from evidently._pydantic_compat import PrivateAttr
 from evidently.future.container import MetricContainer
 from evidently.future.container import MetricOrContainer
 from evidently.future.metric_types import MeanStdMetricTests
@@ -29,6 +30,16 @@ from evidently.model.widget import link_metric
 
 
 class RegressionQuality(MetricContainer):
+    pred_actual_plot: bool = False
+    error_plot: bool = False
+    error_distr: bool = False
+    mean_error_tests: Optional[MeanStdMetricTests] = None
+    mape_tests: Optional[MeanStdMetricTests] = None
+    rmse_tests: SingleValueMetricTests = None
+    mae_tests: Optional[MeanStdMetricTests] = None
+    r2score_tests: SingleValueMetricTests = None
+    abs_max_error_tests: SingleValueMetricTests = None
+
     def __init__(
         self,
         pred_actual_plot: bool = False,
@@ -42,28 +53,28 @@ class RegressionQuality(MetricContainer):
         abs_max_error_tests: SingleValueMetricTests = None,
         include_tests: bool = True,
     ):
-        self._pred_actual_plot = pred_actual_plot
-        self._error_plot = error_plot
-        self._error_distr = error_distr
-        self._mean_error_tests = mean_error_tests or MeanStdMetricTests()
-        self._mape_tests = mape_tests or MeanStdMetricTests()
-        self._rmse_tests = rmse_tests
-        self._mae_tests = mae_tests or MeanStdMetricTests()
-        self._r2score_tests = r2score_tests
-        self._abs_max_error_tests = abs_max_error_tests
+        self.pred_actual_plot = pred_actual_plot
+        self.error_plot = error_plot
+        self.error_distr = error_distr
+        self.mean_error_tests = mean_error_tests or MeanStdMetricTests()
+        self.mape_tests = mape_tests or MeanStdMetricTests()
+        self.rmse_tests = rmse_tests
+        self.mae_tests = mae_tests or MeanStdMetricTests()
+        self.r2score_tests = r2score_tests
+        self.abs_max_error_tests = abs_max_error_tests
         super().__init__(include_tests=include_tests)
 
     def generate_metrics(self, context: Context) -> Sequence[MetricOrContainer]:
         return [
             MeanError(
-                mean_tests=self._get_tests(self._mean_error_tests.mean),
-                std_tests=self._get_tests(self._mean_error_tests.std),
+                mean_tests=self._get_tests(self.mean_error_tests.mean),
+                std_tests=self._get_tests(self.mean_error_tests.std),
             ),
-            MAPE(mean_tests=self._get_tests(self._mape_tests.mean), std_tests=self._get_tests(self._mape_tests.std)),
-            RMSE(tests=self._get_tests(self._rmse_tests)),
-            MAE(mean_tests=self._get_tests(self._mae_tests.mean), std_tests=self._get_tests(self._mae_tests.std)),
-            R2Score(tests=self._get_tests(self._r2score_tests)),
-            AbsMaxError(tests=self._get_tests(self._abs_max_error_tests)),
+            MAPE(mean_tests=self._get_tests(self.mape_tests.mean), std_tests=self._get_tests(self.mape_tests.std)),
+            RMSE(tests=self._get_tests(self.rmse_tests)),
+            MAE(mean_tests=self._get_tests(self.mae_tests.mean), std_tests=self._get_tests(self.mae_tests.std)),
+            R2Score(tests=self._get_tests(self.r2score_tests)),
+            AbsMaxError(tests=self._get_tests(self.abs_max_error_tests)),
         ]
 
     def render(
@@ -75,17 +86,17 @@ class RegressionQuality(MetricContainer):
             RegressionQualityMetric(),
             _gen_regression_input_data,
         )[1]
-        if self._pred_actual_plot:
+        if self.pred_actual_plot:
             widgets += context.get_legacy_metric(
                 RegressionPredictedVsActualPlot(),
                 _gen_regression_input_data,
             )[1]
-        if self._error_plot:
+        if self.error_plot:
             widgets += context.get_legacy_metric(
                 RegressionErrorPlot(),
                 _gen_regression_input_data,
             )[1]
-        if self._error_distr:
+        if self.error_distr:
             widgets += context.get_legacy_metric(
                 RegressionErrorDistribution(),
                 _gen_regression_input_data,
@@ -96,6 +107,10 @@ class RegressionQuality(MetricContainer):
 
 
 class RegressionDummyQuality(MetricContainer):
+    mae_tests: SingleValueMetricTests = None
+    mape_tests: SingleValueMetricTests = None
+    rmse_tests: SingleValueMetricTests = None
+
     def __init__(
         self,
         mae_tests: SingleValueMetricTests = None,
@@ -103,16 +118,16 @@ class RegressionDummyQuality(MetricContainer):
         rmse_tests: SingleValueMetricTests = None,
         include_tests: bool = True,
     ):
-        self._mae_tests = mae_tests
-        self._mape_tests = mape_tests
-        self._rmse_tests = rmse_tests
+        self.mae_tests = mae_tests
+        self.mape_tests = mape_tests
+        self.rmse_tests = rmse_tests
         super().__init__(include_tests=include_tests)
 
     def generate_metrics(self, context: Context) -> Sequence[MetricOrContainer]:
         return [
-            DummyMAE(tests=self._get_tests(self._mae_tests)),
-            DummyMAPE(tests=self._get_tests(self._mape_tests)),
-            DummyRMSE(tests=self._get_tests(self._rmse_tests)),
+            DummyMAE(tests=self._get_tests(self.mae_tests)),
+            DummyMAPE(tests=self._get_tests(self.mape_tests)),
+            DummyRMSE(tests=self._get_tests(self.rmse_tests)),
         ]
 
     def render(
@@ -131,7 +146,14 @@ class RegressionDummyQuality(MetricContainer):
 
 
 class RegressionPreset(MetricContainer):
-    _quality: Optional[RegressionQuality] = None
+    mean_error_tests: Optional[MeanStdMetricTests] = None
+    mape_tests: Optional[MeanStdMetricTests] = None
+    rmse_tests: SingleValueMetricTests = None
+    mae_tests: Optional[MeanStdMetricTests] = None
+    r2score_tests: SingleValueMetricTests = None
+    abs_max_error_tests: SingleValueMetricTests = None
+
+    _quality: Optional[RegressionQuality] = PrivateAttr(None)
 
     def __init__(
         self,
@@ -144,12 +166,12 @@ class RegressionPreset(MetricContainer):
         include_tests: bool = True,
     ):
         self._quality = None
-        self._mean_error_tests = mean_error_tests or MeanStdMetricTests()
-        self._mape_tests = mape_tests or MeanStdMetricTests()
-        self._rmse_tests = rmse_tests
-        self._mae_tests = mae_tests or MeanStdMetricTests()
-        self._r2score_tests = r2score_tests
-        self._abs_max_error_tests = abs_max_error_tests
+        self.mean_error_tests = mean_error_tests or MeanStdMetricTests()
+        self.mape_tests = mape_tests or MeanStdMetricTests()
+        self.rmse_tests = rmse_tests
+        self.mae_tests = mae_tests or MeanStdMetricTests()
+        self.r2score_tests = r2score_tests
+        self.abs_max_error_tests = abs_max_error_tests
         super().__init__(include_tests=include_tests)
 
     def generate_metrics(self, context: Context) -> Sequence[MetricOrContainer]:
@@ -157,18 +179,18 @@ class RegressionPreset(MetricContainer):
             True,
             True,
             True,
-            self._mean_error_tests,
-            self._mape_tests,
-            self._rmse_tests,
-            self._mae_tests,
-            self._r2score_tests,
-            self._abs_max_error_tests,
+            self.mean_error_tests,
+            self.mape_tests,
+            self.rmse_tests,
+            self.mae_tests,
+            self.r2score_tests,
+            self.abs_max_error_tests,
             include_tests=self.include_tests,
         )
         return self._quality.metrics(context) + [
-            MAPE(mean_tests=self._get_tests(self._mape_tests.mean), std_tests=self._get_tests(self._mape_tests.std)),
-            AbsMaxError(tests=self._get_tests(self._abs_max_error_tests)),
-            R2Score(tests=self._get_tests(self._r2score_tests)),
+            MAPE(mean_tests=self._get_tests(self.mape_tests.mean), std_tests=self._get_tests(self.mape_tests.std)),
+            AbsMaxError(tests=self._get_tests(self.abs_max_error_tests)),
+            R2Score(tests=self._get_tests(self.r2score_tests)),
         ]
 
     def render(
@@ -181,8 +203,8 @@ class RegressionPreset(MetricContainer):
         return (
             self._quality.render(context)
             + context.get_metric_result(
-                MAPE(mean_tests=self._mape_tests.mean, std_tests=self._mape_tests.std),
+                MAPE(mean_tests=self.mape_tests.mean, std_tests=self.mape_tests.std),
             ).get_widgets()
-            + context.get_metric_result(AbsMaxError(tests=self._abs_max_error_tests)).get_widgets()
-            + context.get_metric_result(R2Score(tests=self._r2score_tests)).get_widgets()
+            + context.get_metric_result(AbsMaxError(tests=self.abs_max_error_tests)).get_widgets()
+            + context.get_metric_result(R2Score(tests=self.r2score_tests)).get_widgets()
         )

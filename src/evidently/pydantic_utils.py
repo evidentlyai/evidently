@@ -208,7 +208,7 @@ class PolymorphicModel(BaseModel):
     __config__: ClassVar[Type[Config]] = Config
 
     @classmethod
-    def __get_type__(cls):
+    def __get_type__(cls) -> str:
         config = cls.__dict__.get("Config")
         if config is not None and config.__dict__.get("type_alias") is not None:
             return config.type_alias
@@ -262,24 +262,29 @@ class PolymorphicModel(BaseModel):
     def validate(cls: Type[TPM], value: Any) -> TPM:
         if isinstance(value, dict) and "type" in value:
             typename = value.pop("type")
-            key = (get_base_class(cls), typename)  # type: ignore[arg-type]
-            if key in LOADED_TYPE_ALIASES:
-                subcls = LOADED_TYPE_ALIASES[key]
-            else:
-                if key in TYPE_ALIASES:
-                    classpath = TYPE_ALIASES[key]
-                else:
-                    if "." not in typename:
-                        raise ValueError(f'Unknown alias "{typename}"')
-                    classpath = typename
-                if not any(classpath.startswith(p) for p in ALLOWED_TYPE_PREFIXES):
-                    raise ValueError(f"{classpath} does not match any allowed prefixes")
-                try:
-                    subcls = import_string(classpath)
-                except ImportError as e:
-                    raise ValueError(f"Error importing subclass from '{classpath}' {e.args[0]}") from e
+            subcls = cls.load_alias(typename)
             return subcls.validate(value)  # type: ignore[return-value]
         return super().validate(value)  # type: ignore[misc]
+
+    @classmethod
+    def load_alias(cls, typename):
+        key = (get_base_class(cls), typename)  # type: ignore[arg-type]
+        if key in LOADED_TYPE_ALIASES:
+            subcls = LOADED_TYPE_ALIASES[key]
+        else:
+            if key in TYPE_ALIASES:
+                classpath = TYPE_ALIASES[key]
+            else:
+                if "." not in typename:
+                    raise ValueError(f'Unknown alias "{typename}"')
+                classpath = typename
+            if not any(classpath.startswith(p) for p in ALLOWED_TYPE_PREFIXES):
+                raise ValueError(f"{classpath} does not match any allowed prefixes")
+            try:
+                subcls = import_string(classpath)
+            except ImportError as e:
+                raise ValueError(f"Error importing subclass from '{classpath}' {e.args[0]}") from e
+        return subcls
 
 
 def get_value_fingerprint(value: Any) -> FingerprintPart:
@@ -590,7 +595,7 @@ class AutoAliasMixin:
     __alias_type__: ClassVar[str]
 
     @classmethod
-    def __get_type__(cls):
+    def __get_type__(cls) -> str:
         config = cls.__dict__.get("Config")
         if config is not None and config.__dict__.get("type_alias") is not None:
             return config.type_alias

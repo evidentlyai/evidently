@@ -22,6 +22,21 @@ from evidently.options.data_drift import DataDriftOptions
 
 
 class DataDriftPreset(MetricContainer):
+    columns: Optional[List[str]] = None
+    embeddings: Optional[List[str]] = None
+    embeddings_drift_method: Optional[Dict[str, DriftMethod]] = None
+    drift_share: float = 0.5
+    method: Optional[PossibleStatTestType] = None
+    cat_method: Optional[PossibleStatTestType] = None
+    num_method: Optional[PossibleStatTestType] = None
+    text_method: Optional[PossibleStatTestType] = None
+    per_column_method: Optional[Dict[str, PossibleStatTestType]] = None
+    threshold: Optional[float] = None
+    cat_threshold: Optional[float] = None
+    num_threshold: Optional[float] = None
+    text_threshold: Optional[float] = None
+    per_column_threshold: Optional[Dict[str, float]] = None
+
     def __init__(
         self,
         columns: Optional[List[str]] = None,
@@ -38,6 +53,7 @@ class DataDriftPreset(MetricContainer):
         num_threshold: Optional[float] = None,
         text_threshold: Optional[float] = None,
         per_column_threshold: Optional[Dict[str, float]] = None,
+        include_tests: bool = True,
     ):
         self.per_column_threshold = per_column_threshold
         self.text_threshold = text_threshold

@@ -6,6 +6,7 @@ from evidently.future.metric_types import MetricResult
 from evidently.future.metric_types import MetricTest
 from evidently.pydantic_utils import register_type_alias
 
+from .container import MetricContainer
 from .descriptors import _registry as descriptors_registry
 
 register_type_alias(Metric, "evidently.future.backport.TestsConfig", "evidently:metric_v2:TestsConfig")
@@ -128,4 +129,21 @@ register_type_alias(MetricResult, "evidently.future.metric_types.ByLabelValue", 
 register_type_alias(MetricResult, "evidently.future.metric_types.CountValue", "evidently:metric_result_v2:CountValue")
 register_type_alias(MetricResult, "evidently.future.metric_types.MeanStdValue", "evidently:metric_result_v2:MeanStdValue")
 register_type_alias(MetricResult, "evidently.future.metric_types.SingleValue", "evidently:metric_result_v2:SingleValue")
+
+register_type_alias(MetricContainer, "evidently.future.container.ColumnMetricContainer", "evidently:metric_container:ColumnMetricContainer")
+register_type_alias(MetricContainer, "evidently.future.generators.column.ColumnMetricGenerator", "evidently:metric_container:ColumnMetricGenerator")
+register_type_alias(MetricContainer, "evidently.future.metrics.group_by.GroupBy", "evidently:metric_container:GroupBy")
+register_type_alias(MetricContainer, "evidently.future.presets.classification.ClassificationDummyQuality", "evidently:metric_container:ClassificationDummyQuality")
+register_type_alias(MetricContainer, "evidently.future.presets.classification.ClassificationPreset", "evidently:metric_container:ClassificationPreset")
+register_type_alias(MetricContainer, "evidently.future.presets.classification.ClassificationQuality", "evidently:metric_container:ClassificationQuality")
+register_type_alias(MetricContainer, "evidently.future.presets.classification.ClassificationQualityByLabel", "evidently:metric_container:ClassificationQualityByLabel")
+register_type_alias(MetricContainer, "evidently.future.presets.dataset_stats.DataSummaryPreset", "evidently:metric_container:DataSummaryPreset")
+register_type_alias(MetricContainer, "evidently.future.presets.dataset_stats.DatasetStats", "evidently:metric_container:DatasetStats")
+register_type_alias(MetricContainer, "evidently.future.presets.dataset_stats.TextEvals", "evidently:metric_container:TextEvals")
+register_type_alias(MetricContainer, "evidently.future.presets.dataset_stats.ValueStats", "evidently:metric_container:ValueStats")
+register_type_alias(MetricContainer, "evidently.future.presets.drift.DataDriftPreset", "evidently:metric_container:DataDriftPreset")
+register_type_alias(MetricContainer, "evidently.future.presets.regression.RegressionDummyQuality", "evidently:metric_container:RegressionDummyQuality")
+register_type_alias(MetricContainer, "evidently.future.presets.regression.RegressionPreset", "evidently:metric_container:RegressionPreset")
+register_type_alias(MetricContainer, "evidently.future.presets.regression.RegressionQuality", "evidently:metric_container:RegressionQuality")
+
 __all__ = ["descriptors_registry"]
