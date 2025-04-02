@@ -290,7 +290,24 @@ class ClassificationPreset(MetricContainer):
         rocauc_by_label_tests: ByLabelMetricTests = None,
         include_tests: bool = True,
     ):
-        self.include_tests = include_tests
+        super().__init__(
+            include_tests=include_tests,
+            probas_threshold=probas_threshold,
+            accuracy_tests=accuracy_tests,
+            precision_tests=precision_tests,
+            recall_tests=recall_tests,
+            f1score_tests=f1score_tests,
+            rocauc_tests=rocauc_tests,
+            logloss_tests=logloss_tests,
+            tpr_tests=tpr_tests,
+            tnr_tests=tnr_tests,
+            fpr_tests=fpr_tests,
+            fnr_tests=fnr_tests,
+            f1score_by_label_tests=f1score_by_label_tests,
+            precision_by_label_tests=precision_by_label_tests,
+            recall_by_label_tests=recall_by_label_tests,
+            rocauc_by_label_tests=rocauc_by_label_tests,
+        )
         self._quality = ClassificationQuality(
             probas_threshold=probas_threshold,
             conf_matrix=True,
@@ -319,24 +336,6 @@ class ClassificationPreset(MetricContainer):
         self._roc_auc: Optional[RocAuc] = RocAuc(
             probas_threshold=probas_threshold,
             tests=self._get_tests(rocauc_tests),
-        )
-        super().__init__(
-            include_tests=include_tests,
-            probas_threshold=probas_threshold,
-            accuracy_tests=accuracy_tests,
-            precision_tests=precision_tests,
-            recall_tests=recall_tests,
-            f1score_tests=f1score_tests,
-            rocauc_tests=rocauc_tests,
-            logloss_tests=logloss_tests,
-            tpr_tests=tpr_tests,
-            tnr_tests=tnr_tests,
-            fpr_tests=fpr_tests,
-            fnr_tests=fnr_tests,
-            f1score_by_label_tests=f1score_by_label_tests,
-            precision_by_label_tests=precision_by_label_tests,
-            recall_by_label_tests=recall_by_label_tests,
-            rocauc_by_label_tests=rocauc_by_label_tests,
         )
 
     def generate_metrics(self, context: "Context") -> Sequence[MetricOrContainer]:

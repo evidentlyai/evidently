@@ -11,14 +11,15 @@ from typing import Union
 
 from evidently import ColumnType
 from evidently._pydantic_compat import PrivateAttr
+from evidently._pydantic_compat import ValidationError
 from evidently.future.container import ColumnMetricContainer
 from evidently.future.container import MetricContainer
 from evidently.future.container import MetricOrContainer
 from evidently.future.metric_types import ColumnMetric
+from evidently.future.metric_types import Metric
 from evidently.future.metric_types import MetricId
 from evidently.future.report import Context
 from evidently.model.widget import BaseWidgetInfo
-from evidently.pydantic_utils import EvidentlyBaseModel
 
 ColumnTypeStr = Union[ColumnType, str]
 
@@ -46,7 +47,10 @@ class ColumnMetricGenerator(MetricContainer):
             metric_type_alias = metric_type.__get_type__()
         if metric_type is None:
             assert metric_type_alias is not None, "metric_type must be specified if metric_type is not provided"
-            metric_type = EvidentlyBaseModel.load_alias(metric_type_alias)
+            try:
+                metric_type = Metric.load_alias(metric_type_alias)
+            except ValidationError:
+                metric_type = MetricContainer.load_alias(metric_type_alias)
             assert issubclass(metric_type, ColumnMetric) or issubclass(
                 metric_type, ColumnMetricContainer
             ), "metric_type_alias must be an alias of ColumnMetric or ColumnMetricContainer subclass"
