@@ -10,10 +10,13 @@ from typing import Type
 from typing import Union
 
 from evidently import ColumnType
+from evidently._pydantic_compat import PrivateAttr
+from evidently._pydantic_compat import ValidationError
 from evidently.future.container import ColumnMetricContainer
 from evidently.future.container import MetricContainer
 from evidently.future.container import MetricOrContainer
 from evidently.future.metric_types import ColumnMetric
+from evidently.future.metric_types import Metric
 from evidently.future.metric_types import MetricId
 from evidently.future.report import Context
 from evidently.model.widget import BaseWidgetInfo
@@ -22,21 +25,46 @@ ColumnTypeStr = Union[ColumnType, str]
 
 
 class ColumnMetricGenerator(MetricContainer):
+    metric_type_alias: str
+    _metric_type: Union[Type[ColumnMetric], Type[ColumnMetricContainer]] = PrivateAttr()
+    columns: Optional[List[str]] = None
+    column_types: Union[ColumnTypeStr, List[ColumnTypeStr], Literal["all"]] = "all"
+    metric_kwargs: Dict[str, Any]
+
     def __init__(
         self,
-        metric_type: Union[Type[ColumnMetric], Type[ColumnMetricContainer]],
+        metric_type: Optional[Union[Type[ColumnMetric], Type[ColumnMetricContainer]]] = None,
         columns: Optional[List[str]] = None,
         column_types: Union[ColumnTypeStr, List[ColumnTypeStr], Literal["all"]] = "all",
         metric_kwargs: Optional[Dict[str, Any]] = None,
+        metric_type_alias: Optional[str] = None,
+        include_tests: bool = True,
     ):
-        self.metric_type = metric_type
+        if isinstance(metric_type, type):
+            assert issubclass(metric_type, ColumnMetric) or issubclass(
+                metric_type, ColumnMetricContainer
+            ), "metric_type must be a subclass of ColumnMetric or ColumnMetricContainer"
+            metric_type_alias = metric_type.__get_type__()
+            _metric_type = metric_type
+        if metric_type is None:
+            assert metric_type_alias is not None, "metric_type must be specified if metric_type is not provided"
+            try:
+                _metric_type = Metric.load_alias(metric_type_alias)
+            except ValidationError:
+                _metric_type = MetricContainer.load_alias(metric_type_alias)
+            assert isinstance(_metric_type, type) and (
+                issubclass(_metric_type, ColumnMetric) or issubclass(_metric_type, ColumnMetricContainer)
+            ), "metric_type_alias must be an alias of ColumnMetric or ColumnMetricContainer subclass"
+        assert metric_type_alias is not None, "metric_type_alias or metric_type must be specified"
+        self.metric_type_alias = metric_type_alias
+        self._metric_type = _metric_type
         self.columns = columns
         self.column_types = column_types
         self.metric_kwargs = metric_kwargs or {}
         super().__init__(include_tests=True)
 
     def _instantiate_metric(self, column: str) -> MetricOrContainer:
-        return self.metric_type(column=column, **self.metric_kwargs)
+        return self._metric_type(column=column, **self.metric_kwargs)
 
     def generate_metrics(self, context: "Context") -> Sequence[MetricOrContainer]:
         if self.columns is not None:

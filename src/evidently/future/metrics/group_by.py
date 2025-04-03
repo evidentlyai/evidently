@@ -64,14 +64,17 @@ class GroupByMetricCalculation(MetricCalculation[TResult, GroupByMetric]):
 
 
 class GroupBy(MetricContainer):
-    def __init__(self, metric: Metric, column_name: str):
-        self._column_name = column_name
-        self._metric = metric
-        super().__init__(True)
+    metric: Metric
+    column_name: str
+
+    def __init__(self, metric: Metric, column_name: str, include_tests: bool = True):
+        self.column_name = column_name
+        self.metric = metric
+        super().__init__(include_tests=True)
 
     def generate_metrics(self, context: Context) -> Sequence[MetricOrContainer]:
-        labels = context.column(self._column_name).labels()
-        return [GroupByMetric(metric=self._metric, column_name=self._column_name, label=label) for label in labels]
+        labels = context.column(self.column_name).labels()
+        return [GroupByMetric(metric=self.metric, column_name=self.column_name, label=label) for label in labels]
 
     def label_metric(self, label: object) -> Metric:
-        return GroupByMetric(metric=self._metric, column_name=self._column_name, label=label)
+        return GroupByMetric(metric=self.metric, column_name=self.column_name, label=label)
