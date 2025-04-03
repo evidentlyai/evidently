@@ -80,6 +80,7 @@ class NumericCharacteristics(ColumnCharacteristics):
     infinite_percentage: Optional[float]
     most_common: Optional[Union[int, float]]
     most_common_percentage: Optional[float]
+    skew: Optional[float]
 
 
 class CategoricalCharacteristics(ColumnCharacteristics):
@@ -501,6 +502,7 @@ class ColumnSummaryMetric(UsesRawDataMixin, ColumnMetric[ColumnSummaryResult]):
                 infinite_percentage=stats.infinite_percentage,
                 most_common=stats.most_common_value,
                 most_common_percentage=stats.most_common_value_percentage,
+                skew=stats.skew
             )
         if stats.feature_type == "cat":
             return CategoricalCharacteristics(
@@ -820,6 +822,7 @@ class ColumnSummaryMetricRenderer(MetricRenderer):
                 ("50%", "p50", None),
                 ("75%", "p75", None),
                 ("max", "max", None),
+                ("skew", "skew", None),
                 ("unique", "unique", "unique_percentage"),
                 ("most common", "most_common", "most_common_percentage"),
                 ("missing", "missing", "missing_percentage"),
