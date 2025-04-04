@@ -5,22 +5,22 @@ from typing import Optional
 import pandas as pd
 import pytest
 
-from evidently.base_metric import ColumnName
-from evidently.base_metric import DatasetType
-from evidently.base_metric import InputData
-from evidently.base_metric import Metric
-from evidently.base_metric import MetricResult
-from evidently.core import ColumnType
-from evidently.features.generated_features import GeneratedFeature
-from evidently.metrics import ColumnValueRangeMetric
-from evidently.metrics.base_metric import generate_column_metrics
-from evidently.options.base import Options
-from evidently.options.option import Option
-from evidently.pipeline.column_mapping import ColumnMapping
+from evidently.legacy.base_metric import ColumnName
+from evidently.legacy.base_metric import DatasetType
+from evidently.legacy.base_metric import InputData
+from evidently.legacy.base_metric import Metric
+from evidently.legacy.base_metric import MetricResult
+from evidently.legacy.core import ColumnType
+from evidently.legacy.features.generated_features import GeneratedFeature
+from evidently.legacy.metrics import ColumnValueRangeMetric
+from evidently.legacy.metrics.base_metric import generate_column_metrics
+from evidently.legacy.options.base import Options
+from evidently.legacy.options.option import Option
+from evidently.legacy.pipeline.column_mapping import ColumnMapping
+from evidently.legacy.report import Report
+from evidently.legacy.utils.data_preprocessing import DataDefinition
 from evidently.pydantic_utils import FingerprintPart
 from evidently.pydantic_utils import get_value_fingerprint
-from evidently.report import Report
-from evidently.utils.data_preprocessing import DataDefinition
 
 
 def test_metric_generator():

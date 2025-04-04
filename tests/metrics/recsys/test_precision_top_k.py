@@ -4,13 +4,13 @@ import numpy as np
 import pandas as pd
 
 from evidently._pydantic_compat import parse_obj_as
-from evidently.base_metric import MetricResult
-from evidently.metrics import PrecisionTopKMetric
-from evidently.metrics.recsys.base_top_k import TopKMetricResult
-from evidently.pipeline.column_mapping import ColumnMapping
-from evidently.pipeline.column_mapping import RecomType
-from evidently.report import Report
-from evidently.utils import NumpyEncoder
+from evidently.legacy.base_metric import MetricResult
+from evidently.legacy.metrics import PrecisionTopKMetric
+from evidently.legacy.metrics.recsys.base_top_k import TopKMetricResult
+from evidently.legacy.pipeline.column_mapping import ColumnMapping
+from evidently.legacy.pipeline.column_mapping import RecomType
+from evidently.legacy.report import Report
+from evidently.legacy.utils import NumpyEncoder
 
 
 def test_value():

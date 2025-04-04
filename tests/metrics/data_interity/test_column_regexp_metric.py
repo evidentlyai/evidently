@@ -4,11 +4,11 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from evidently.metrics import ColumnRegExpMetric
-from evidently.metrics.data_integrity.column_regexp_metric import DataIntegrityValueByRegexpMetricResult
-from evidently.metrics.data_integrity.column_regexp_metric import DataIntegrityValueByRegexpStat
-from evidently.pipeline.column_mapping import ColumnMapping
-from evidently.report import Report
+from evidently.legacy.metrics import ColumnRegExpMetric
+from evidently.legacy.metrics.data_integrity.column_regexp_metric import DataIntegrityValueByRegexpMetricResult
+from evidently.legacy.metrics.data_integrity.column_regexp_metric import DataIntegrityValueByRegexpStat
+from evidently.legacy.pipeline.column_mapping import ColumnMapping
+from evidently.legacy.report import Report
 
 
 @pytest.mark.parametrize(

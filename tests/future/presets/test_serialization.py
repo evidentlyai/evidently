@@ -6,21 +6,21 @@ import pytest
 
 from evidently._pydantic_compat import import_string
 from evidently._pydantic_compat import parse_obj_as
-from evidently.future.container import MetricContainer
-from evidently.future.generators import ColumnMetricGenerator
-from evidently.future.metrics import MinValue
-from evidently.future.metrics.group_by import GroupBy
-from evidently.future.presets import ClassificationDummyQuality
-from evidently.future.presets import ClassificationPreset
-from evidently.future.presets import ClassificationQuality
-from evidently.future.presets import ClassificationQualityByLabel
-from evidently.future.presets import DataDriftPreset
-from evidently.future.presets import DatasetStats
-from evidently.future.presets import DataSummaryPreset
-from evidently.future.presets import RegressionDummyQuality
-from evidently.future.presets import RegressionPreset
-from evidently.future.presets import RegressionQuality
-from evidently.future.presets import TextEvals
+from evidently.core.container import MetricContainer
+from evidently.generators import ColumnMetricGenerator
+from evidently.metrics import MinValue
+from evidently.metrics.group_by import GroupBy
+from evidently.presets import ClassificationDummyQuality
+from evidently.presets import ClassificationPreset
+from evidently.presets import ClassificationQuality
+from evidently.presets import ClassificationQualityByLabel
+from evidently.presets import DataDriftPreset
+from evidently.presets import DatasetStats
+from evidently.presets import DataSummaryPreset
+from evidently.presets import RegressionDummyQuality
+from evidently.presets import RegressionPreset
+from evidently.presets import RegressionQuality
+from evidently.presets import TextEvals
 from evidently.pydantic_utils import TYPE_ALIASES
 
 
@@ -29,7 +29,10 @@ def load_all_preset_types():
         cp for (base, _), cp in TYPE_ALIASES.items() if isinstance(base, type) and issubclass(base, MetricContainer)
     ]
     for cp in classpaths:
-        import_string(cp)
+        try:
+            import_string(cp)
+        except ImportError as e:
+            raise ImportError(f"Cannot import preset type {cp}") from e
 
 
 load_all_preset_types()

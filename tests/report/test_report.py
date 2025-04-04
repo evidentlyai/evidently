@@ -3,14 +3,14 @@ from typing import List
 
 import pandas as pd
 
-from evidently.base_metric import InputData
-from evidently.base_metric import Metric
-from evidently.base_metric import MetricResult
-from evidently.metric_results import Distribution
-from evidently.model.widget import BaseWidgetInfo
-from evidently.renderers.base_renderer import MetricRenderer
-from evidently.renderers.base_renderer import default_renderer
-from evidently.report import Report
+from evidently.legacy.base_metric import InputData
+from evidently.legacy.base_metric import Metric
+from evidently.legacy.base_metric import MetricResult
+from evidently.legacy.metric_results import Distribution
+from evidently.legacy.model.widget import BaseWidgetInfo
+from evidently.legacy.renderers.base_renderer import MetricRenderer
+from evidently.legacy.renderers.base_renderer import default_renderer
+from evidently.legacy.report import Report
 
 
 class MockMetricResult(MetricResult):

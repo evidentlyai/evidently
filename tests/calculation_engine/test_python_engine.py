@@ -1,15 +1,15 @@
 import pandas as pd
 
-from evidently.base_metric import GenericInputData
-from evidently.base_metric import InputData
-from evidently.base_metric import Metric
-from evidently.calculation_engine.engine import metric_implementation
-from evidently.calculation_engine.python_engine import PythonEngine
-from evidently.calculation_engine.python_engine import PythonMetricImplementation
-from evidently.pipeline.column_mapping import ColumnMapping
-from evidently.renderers.base_renderer import DEFAULT_RENDERERS
-from evidently.suite.base_suite import Context
-from evidently.suite.base_suite import States
+from evidently.legacy.base_metric import GenericInputData
+from evidently.legacy.base_metric import InputData
+from evidently.legacy.base_metric import Metric
+from evidently.legacy.calculation_engine.engine import metric_implementation
+from evidently.legacy.calculation_engine.python_engine import PythonEngine
+from evidently.legacy.calculation_engine.python_engine import PythonMetricImplementation
+from evidently.legacy.pipeline.column_mapping import ColumnMapping
+from evidently.legacy.renderers.base_renderer import DEFAULT_RENDERERS
+from evidently.legacy.suite.base_suite import Context
+from evidently.legacy.suite.base_suite import States
 
 
 class OldTypeSimpleMetric(Metric[int]):

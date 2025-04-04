@@ -1,10 +1,10 @@
-from evidently.core import ColumnType
-from evidently.test_preset import DataDriftTestPreset
-from evidently.tests import TestAllFeaturesValueDrift
-from evidently.tests import TestEmbeddingsDrift
-from evidently.tests import TestShareOfDriftedColumns
-from evidently.utils.data_preprocessing import ColumnDefinition
-from evidently.utils.data_preprocessing import DataDefinition
+from evidently.legacy.core import ColumnType
+from evidently.legacy.test_preset import DataDriftTestPreset
+from evidently.legacy.tests import TestAllFeaturesValueDrift
+from evidently.legacy.tests import TestEmbeddingsDrift
+from evidently.legacy.tests import TestShareOfDriftedColumns
+from evidently.legacy.utils.data_preprocessing import ColumnDefinition
+from evidently.legacy.utils.data_preprocessing import DataDefinition
 
 
 def test_embeddings_data_drift_preset():

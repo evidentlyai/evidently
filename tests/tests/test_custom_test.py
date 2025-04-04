@@ -4,9 +4,9 @@ import pandas as pd
 import pytest
 from sklearn.metrics import r2_score
 
-from evidently.base_metric import InputData
-from evidently.test_suite import TestSuite
-from evidently.tests.custom_test import CustomValueTest
+from evidently.legacy.base_metric import InputData
+from evidently.legacy.test_suite import TestSuite
+from evidently.legacy.tests.custom_test import CustomValueTest
 
 
 def r2_func(data: InputData):

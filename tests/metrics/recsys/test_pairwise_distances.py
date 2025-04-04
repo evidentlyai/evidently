@@ -2,10 +2,10 @@ import numpy as np
 import pandas as pd
 from numpy.testing import assert_allclose
 
-from evidently.metrics.recsys.pairwise_distance import PairwiseDistance
-from evidently.pipeline.column_mapping import ColumnMapping
-from evidently.pipeline.column_mapping import RecomType
-from evidently.report import Report
+from evidently.legacy.metrics.recsys.pairwise_distance import PairwiseDistance
+from evidently.legacy.pipeline.column_mapping import ColumnMapping
+from evidently.legacy.pipeline.column_mapping import RecomType
+from evidently.legacy.report import Report
 
 
 def test_curr():

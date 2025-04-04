@@ -2,10 +2,10 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from evidently.future.datasets import Dataset
-from evidently.future.metric_types import CountValue
-from evidently.future.metrics import DatasetMissingValueCount
-from evidently.future.report import Report
+from evidently.core.datasets import Dataset
+from evidently.core.metric_types import CountValue
+from evidently.core.report import Report
+from evidently.metrics import DatasetMissingValueCount
 
 
 @pytest.mark.parametrize(

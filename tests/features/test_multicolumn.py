@@ -4,14 +4,14 @@ from typing import Optional
 import pandas as pd
 
 from evidently._pydantic_compat import PrivateAttr
-from evidently.base_metric import ColumnName
-from evidently.core import ColumnType
-from evidently.features.feature_generator import FeatureGenerator
-from evidently.features.generated_features import GeneratedFeatures
-from evidently.metrics import ColumnSummaryMetric
-from evidently.options.base import Options
-from evidently.report import Report
-from evidently.utils.data_preprocessing import DataDefinition
+from evidently.legacy.base_metric import ColumnName
+from evidently.legacy.core import ColumnType
+from evidently.legacy.features.feature_generator import FeatureGenerator
+from evidently.legacy.features.generated_features import GeneratedFeatures
+from evidently.legacy.metrics import ColumnSummaryMetric
+from evidently.legacy.options.base import Options
+from evidently.legacy.report import Report
+from evidently.legacy.utils.data_preprocessing import DataDefinition
 
 
 class MultiColumnFeature(GeneratedFeatures):

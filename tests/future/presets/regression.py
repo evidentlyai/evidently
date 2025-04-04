@@ -1,13 +1,13 @@
 import pandas as pd
 import pytest
 
-from evidently.future.datasets import DataDefinition
-from evidently.future.datasets import Dataset
-from evidently.future.datasets import Regression
-from evidently.future.metric_types import MeanStdMetricTests
-from evidently.future.presets import RegressionQuality
-from evidently.future.report import Report
-from evidently.future.tests import lt
+from evidently.core.datasets import DataDefinition
+from evidently.core.datasets import Dataset
+from evidently.core.datasets import Regression
+from evidently.core.metric_types import MeanStdMetricTests
+from evidently.core.report import Report
+from evidently.presets import RegressionQuality
+from evidently.tests import lt
 
 
 @pytest.mark.parametrize(

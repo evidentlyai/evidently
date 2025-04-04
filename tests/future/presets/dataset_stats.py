@@ -2,11 +2,11 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from evidently.future.datasets import DataDefinition
-from evidently.future.datasets import Dataset
-from evidently.future.metric_types import ByLabelCountValue
-from evidently.future.presets import ValueStats
-from evidently.future.report import Report
+from evidently.core.datasets import DataDefinition
+from evidently.core.datasets import Dataset
+from evidently.core.metric_types import ByLabelCountValue
+from evidently.core.report import Report
+from evidently.presets import ValueStats
 
 
 @pytest.mark.parametrize(

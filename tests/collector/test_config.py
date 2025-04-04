@@ -5,10 +5,10 @@ from unittest.mock import Mock
 import pytest
 
 from evidently._pydantic_compat import ValidationError
-from evidently.collector.config import IntervalTrigger
-from evidently.collector.config import RowsCountOrIntervalTrigger
-from evidently.collector.config import RowsCountTrigger
-from evidently.collector.storage import CollectorStorage
+from evidently.legacy.collector.config import IntervalTrigger
+from evidently.legacy.collector.config import RowsCountOrIntervalTrigger
+from evidently.legacy.collector.config import RowsCountTrigger
+from evidently.legacy.collector.storage import CollectorStorage
 
 
 def test_interval_trigger_work():
