@@ -29,7 +29,7 @@ def create_data():
         reviews = reviews_data.frame
 
     else:
-        reviews = pd.read_parquet(pathlib.Path(__file__).parent.joinpath("../../../../test_data/reviews.parquet"))
+        reviews = pd.read_parquet(pathlib.Path(__file__).parent.joinpath("../../../../../test_data/reviews.parquet"))
 
     for name, rs in (
         ("TheOtherStore", 0),

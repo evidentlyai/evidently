@@ -23,7 +23,7 @@ def create_data():
         adult_data = datasets.fetch_openml(name="adult", version=2, as_frame="auto")
         adult = adult_data.frame
     else:
-        adult = pd.read_parquet(pathlib.Path(__file__).parent.joinpath("../../../../test_data/adults.parquet"))
+        adult = pd.read_parquet(pathlib.Path(__file__).parent.joinpath("../../../../../test_data/adults.parquet"))
 
     reference = adult[~adult.education.isin(["Some-college", "HS-grad", "Bachelors"])]
     current = adult[adult.education.isin(["Some-college", "HS-grad", "Bachelors"])]
