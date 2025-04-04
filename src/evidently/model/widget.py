@@ -76,6 +76,9 @@ class WidgetType(Enum):
 
 # @dataclass
 class BaseWidgetInfo(BaseModel):
+    class Config:
+        smart_union = True
+
     type: str
     title: str
     size: int
