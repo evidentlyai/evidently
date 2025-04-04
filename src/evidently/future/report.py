@@ -60,6 +60,8 @@ class ContextColumnData:
         self._labels = None
 
     def labels(self):
+        if self.column_type != ColumnType.Categorical:
+            raise AttributeError("labels() is not supported for non-categorical columns")
         if self._labels is None:
             self._labels = list(self._column.data.unique())
         return self._labels

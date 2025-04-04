@@ -900,6 +900,7 @@ class ByLabelCountBoundTest(BoundTest[ByLabelCountValue]):
 
 
 class ByLabelCountMetric(Metric):
+    replace_nan: Optional[Label] = None
     tests: Optional[Dict[Label, List[MetricTest]]] = None
     share_tests: Optional[Dict[Label, List[MetricTest]]] = None
 

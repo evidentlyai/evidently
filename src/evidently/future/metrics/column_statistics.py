@@ -678,7 +678,10 @@ class UniqueValueCountCalculation(ByLabelCountCalculation[UniqueValueCount]):
 
     def _calculate_value(self, dataset: Dataset):
         df = dataset.as_dataframe()
-        value_counts = df[self.metric.column].value_counts(dropna=False)
+        col = df[self.metric.column]
+        if self.metric.replace_nan is not None:
+            col = col.fillna(self.metric.replace_nan)
+        value_counts = col.value_counts(dropna=True)
         total = len(df)
 
         res = value_counts.to_dict()
