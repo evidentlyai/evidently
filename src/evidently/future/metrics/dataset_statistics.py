@@ -9,9 +9,13 @@ from evidently.base_metric import MetricResult as LegacyMetricResult
 from evidently.core import ColumnType
 from evidently.future.datasets import Dataset
 from evidently.future.metric_types import BoundTest
+from evidently.future.metric_types import CountCalculation
+from evidently.future.metric_types import CountMetric
+from evidently.future.metric_types import CountValue
 from evidently.future.metric_types import SingleValue
 from evidently.future.metric_types import SingleValueCalculation
 from evidently.future.metric_types import SingleValueMetric
+from evidently.future.metric_types import TCountMetric
 from evidently.future.metric_types import TResult
 from evidently.future.metric_types import TSingleValueMetric
 from evidently.future.metrics._legacy import LegacyMetricCalculation
@@ -96,18 +100,33 @@ class ColumnCountCalculation(SingleValueCalculation[ColumnCount]):
 TLegacyResult = TypeVar("TLegacyResult", bound=LegacyMetricResult)
 
 
-class DatasetSummaryBasedMetricCalculation(
-    LegacyMetricCalculation[TResult, TSingleValueMetric, DatasetSummaryMetricResult, DatasetSummaryMetric],
-    SingleValueCalculation[TSingleValueMetric],
-    Generic[TResult, TSingleValueMetric],
-    abc.ABC,
-):
+class LegacyDatasetSummaryMixin:
     _legacy_metric: Optional[DatasetSummaryMetric] = None
 
     def legacy_metric(self) -> DatasetSummaryMetric:
         if self._legacy_metric is None:
             self._legacy_metric = DatasetSummaryMetric()
         return self._legacy_metric
+
+
+class DatasetSummarySingleValueCalculation(
+    LegacyDatasetSummaryMixin,
+    LegacyMetricCalculation[TResult, TSingleValueMetric, DatasetSummaryMetricResult, DatasetSummaryMetric],
+    SingleValueCalculation[TSingleValueMetric],
+    Generic[TResult, TSingleValueMetric],
+    abc.ABC,
+):
+    pass
+
+
+class DatasetSummaryCountValueCalculation(
+    LegacyDatasetSummaryMixin,
+    LegacyMetricCalculation[TResult, TCountMetric, DatasetSummaryMetricResult, DatasetSummaryMetric],
+    CountCalculation[TCountMetric],
+    Generic[TResult, TCountMetric],
+    abc.ABC,
+):
+    pass
 
 
 class DuplicatedRowCount(SingleValueMetric):
@@ -120,7 +139,7 @@ class DuplicatedRowCount(SingleValueMetric):
         ]
 
 
-class DuplicatedRowCountCalculation(DatasetSummaryBasedMetricCalculation[SingleValue, DuplicatedRowCount]):
+class DuplicatedRowCountCalculation(DatasetSummarySingleValueCalculation[SingleValue, DuplicatedRowCount]):
     def calculate_value(
         self,
         context: "Context",
@@ -147,7 +166,7 @@ class DuplicatedColumnsCount(SingleValueMetric):
         ]
 
 
-class DuplicatedColumnsCountCalculation(DatasetSummaryBasedMetricCalculation[SingleValue, DuplicatedColumnsCount]):
+class DuplicatedColumnsCountCalculation(DatasetSummarySingleValueCalculation[SingleValue, DuplicatedColumnsCount]):
     def calculate_value(
         self,
         context: "Context",
@@ -171,7 +190,7 @@ class AlmostDuplicatedColumnsCount(SingleValueMetric):
 
 
 class AlmostDuplicatedColumnsCountCalculation(
-    DatasetSummaryBasedMetricCalculation[SingleValue, AlmostDuplicatedColumnsCount]
+    DatasetSummarySingleValueCalculation[SingleValue, AlmostDuplicatedColumnsCount]
 ):
     def calculate_value(
         self,
@@ -202,7 +221,7 @@ class AlmostConstantColumnsCount(SingleValueMetric):
 
 
 class AlmostConstantColumnsCountCalculation(
-    DatasetSummaryBasedMetricCalculation[SingleValue, AlmostConstantColumnsCount]
+    DatasetSummarySingleValueCalculation[SingleValue, AlmostConstantColumnsCount]
 ):
     def calculate_value(
         self,
@@ -232,7 +251,7 @@ class EmptyRowsCount(SingleValueMetric):
         ]
 
 
-class EmptyRowsCountCalculation(DatasetSummaryBasedMetricCalculation[SingleValue, EmptyRowsCount]):
+class EmptyRowsCountCalculation(DatasetSummarySingleValueCalculation[SingleValue, EmptyRowsCount]):
     def calculate_value(
         self,
         context: "Context",
@@ -259,7 +278,7 @@ class EmptyColumnsCount(SingleValueMetric):
         ]
 
 
-class EmptyColumnsCountCalculation(DatasetSummaryBasedMetricCalculation[SingleValue, EmptyColumnsCount]):
+class EmptyColumnsCountCalculation(DatasetSummarySingleValueCalculation[SingleValue, EmptyColumnsCount]):
     def calculate_value(
         self,
         context: "Context",
@@ -286,7 +305,7 @@ class ConstantColumnsCount(SingleValueMetric):
         ]
 
 
-class ConstantColumnsCountCalculation(DatasetSummaryBasedMetricCalculation[SingleValue, ConstantColumnsCount]):
+class ConstantColumnsCountCalculation(DatasetSummarySingleValueCalculation[SingleValue, ConstantColumnsCount]):
     def calculate_value(
         self,
         context: "Context",
@@ -305,17 +324,17 @@ class ConstantColumnsCountCalculation(DatasetSummaryBasedMetricCalculation[Singl
         return "Count of constant columns in dataset"
 
 
-class DatasetMissingValueCount(SingleValueMetric):
+class DatasetMissingValueCount(CountMetric):
     def _default_tests(self, context: "Context") -> List[BoundTest]:
-        return [eq(0).bind_single(self.get_fingerprint())]
+        return [eq(0).bind_count(self.get_fingerprint(), is_count=True)]
 
     def _default_tests_with_reference(self, context: "Context") -> List[BoundTest]:
         return [
-            eq(Reference(relative=0.1)).bind_single(self.get_fingerprint()),
+            eq(Reference(relative=0.1)).bind_count(self.get_fingerprint(), is_count=True),
         ]
 
 
-class DatasetMissingValueCountCalculation(DatasetSummaryBasedMetricCalculation[SingleValue, DatasetMissingValueCount]):
+class DatasetMissingValueCountCalculation(DatasetSummaryCountValueCalculation[CountValue, DatasetMissingValueCount]):
     def calculate_value(
         self,
         context: "Context",
@@ -324,9 +343,14 @@ class DatasetMissingValueCountCalculation(DatasetSummaryBasedMetricCalculation[S
     ):
         value = legacy_result.current.number_of_missing_values
         return (
-            self.result(value),
-            None if legacy_result.reference is None else self.result(legacy_result.reference.number_of_missing_values),
+            self.result(value, value / legacy_result.current.number_of_rows),
+            None
+            if legacy_result.reference is None
+            else self.result(
+                legacy_result.reference.number_of_missing_values,
+                legacy_result.reference.number_of_missing_values / legacy_result.reference.number_of_rows,
+            ),
         )
 
     def display_name(self) -> str:
-        return "Count of missing values in dataset"
+        return "Count and share of missing values in dataset"

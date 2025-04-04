@@ -324,6 +324,7 @@ class DatasetStats(MetricContainer):
     empty_column_count_tests: SingleValueMetricTests = None
     constant_columns_count_tests: SingleValueMetricTests = None
     dataset_missing_value_count_tests: SingleValueMetricTests = None
+    dataset_missing_value_share_tests: SingleValueMetricTests = None
 
     def __init__(
         self,
@@ -337,6 +338,7 @@ class DatasetStats(MetricContainer):
         empty_column_count_tests: SingleValueMetricTests = None,
         constant_columns_count_tests: SingleValueMetricTests = None,
         dataset_missing_value_count_tests: SingleValueMetricTests = None,
+        dataset_missing_value_share_tests: SingleValueMetricTests = None,
         include_tests: bool = True,
     ):
         self.duplicated_row_count_tests = duplicated_row_count_tests
@@ -347,6 +349,7 @@ class DatasetStats(MetricContainer):
         self.empty_column_count_tests = empty_column_count_tests
         self.constant_columns_count_tests = constant_columns_count_tests
         self.dataset_missing_value_count_tests = dataset_missing_value_count_tests
+        self.dataset_missing_value_share_tests = dataset_missing_value_share_tests
         self.column_count_tests = column_count_tests
         self.row_count_tests = row_count_tests
         super().__init__(include_tests=include_tests)
@@ -366,7 +369,10 @@ class DatasetStats(MetricContainer):
             EmptyRowsCount(tests=self._get_tests(self.empty_row_count_tests)),
             EmptyColumnsCount(tests=self._get_tests(self.empty_column_count_tests)),
             ConstantColumnsCount(tests=self._get_tests(self.constant_columns_count_tests)),
-            DatasetMissingValueCount(tests=self._get_tests(self.dataset_missing_value_count_tests)),
+            DatasetMissingValueCount(
+                tests=self._get_tests(self.dataset_missing_value_count_tests),
+                share_tests=self._get_tests(self.dataset_missing_value_share_tests),
+            ),
         ]
 
     def render(
