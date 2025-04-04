@@ -128,7 +128,7 @@ class Context:
         self._current_graph_level = prev_level
         return typing.cast(TResultType, self._metrics[calc.id])
 
-    def get_metric_result(self, metric: Union[MetricId, Metric, MetricCalculationBase[TResultType]]) -> TResultType:
+    def get_metric_result(self, metric: Union[MetricId, Metric, MetricCalculationBase[TResultType]]) -> MetricResult:
         if isinstance(metric, MetricId):
             return self._metrics[metric]
         if isinstance(metric, Metric):
