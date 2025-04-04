@@ -4,10 +4,10 @@ from typing import Tuple
 
 from pandas import DataFrame
 
-from evidently import metrics
 from evidently.core.datasets import DataDefinition
 from evidently.core.datasets import Dataset
 from evidently.core.report import Report
+from evidently.legacy import metrics
 from evidently.legacy.pipeline.column_mapping import ColumnMapping
 from evidently.legacy.renderers.html_widgets import WidgetSize
 from evidently.legacy.ui.dashboards import CounterAgg
