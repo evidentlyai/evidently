@@ -7,8 +7,6 @@ from typing import Optional
 from typing import TypeVar
 from typing import Union
 
-import numpy as np
-
 from evidently.calculations.data_drift import ColumnDataDriftMetrics
 from evidently.calculations.data_drift import get_one_column_drift
 from evidently.calculations.stattests import PossibleStatTestType
@@ -687,7 +685,5 @@ class UniqueValueCountCalculation(ByLabelCountCalculation[UniqueValueCount]):
         total = len(df)
 
         res = value_counts.to_dict()
-        if np.nan in res:
-            res[None] = res.pop(np.nan)
         result = self.result(res, {k: v / total for k, v in res.items()})  # type: ignore[arg-type]
         return result
