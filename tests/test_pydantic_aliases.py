@@ -12,6 +12,7 @@ import pytest
 
 import evidently
 from evidently._pydantic_compat import import_string
+from evidently.core import registries
 from evidently.core.container import MetricContainer
 from evidently.core.datasets import Descriptor
 from evidently.core.metric_types import BoundTest
@@ -25,6 +26,7 @@ from evidently.legacy.base_metric import MetricResult
 from evidently.legacy.collector.config import CollectorTrigger
 from evidently.legacy.collector.storage import CollectorStorage
 from evidently.legacy.features.generated_features import BaseDescriptor
+from evidently.legacy.features.generated_features import FeatureDescriptor
 from evidently.legacy.features.generated_features import GeneratedFeatures
 from evidently.legacy.features.llm_judge import BaseLLMPromptTemplate
 from evidently.legacy.metric_preset.metric_preset import MetricPreset
@@ -69,16 +71,24 @@ def find_all_subclasses(
 
 
 REGISTRY_MAPPING: Dict[Type[PolymorphicModel], str] = {
-    # Test: "evidently.legacy.tests._registry",
-    # TestParameters: "evidently.legacy.tests._registry",
-    # MetricTest: "evidently._future_registry",
-    # MetricV2: "evidently._future_registry",
-    # MetricContainer: "evidently._future_registry",
-    # MetricResultV2: "evidently._future_registry",
-    # MetricResult: "evidently.legacy.metrics._registry",
-    # BoundTest: "evidently._future_registry",
-    # Descriptor: "evidently.descriptors._registry",
-    # FeatureDescriptor: "evidently.legacy.descriptors._registry",
+    # legacy
+    Test: "evidently.legacy.tests._registry",
+    TestParameters: "evidently.legacy.tests._registry",
+    TestPreset: "evidently.legacy.test_preset._registry",
+    MetricResult: "evidently.legacy.metrics._registry",
+    Metric: "evidently.legacy.metrics._registry",
+    MetricPreset: "evidently.legacy.metric_preset._registry",
+    FeatureDescriptor: "evidently.legacy.descriptors._registry",
+    GeneratedFeatures: "evidently.legacy.features._registry",
+    PromptBlock: "evidently.legacy.utils.llm._registry",
+    PromptTemplate: "evidently.legacy.utils.llm._registry",
+    # new api
+    MetricTest: registries.metric_tests.__name__,
+    MetricV2: registries.metrics.__name__,
+    MetricContainer: registries.presets.__name__,
+    MetricResultV2: registries.metric_results.__name__,
+    BoundTest: registries.bound_tests.__name__,
+    Descriptor: registries.descriptors.__name__,
 }
 
 
