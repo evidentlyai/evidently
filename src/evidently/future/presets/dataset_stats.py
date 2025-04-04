@@ -218,14 +218,12 @@ class ValueStats(ColumnMetricContainer):
 
     def _render_categorical_binary(self, context: "Context") -> List[BaseWidgetInfo]:
         unique_value_count = self._categorical_unique_value_count_metric()
-        result: MetricResult = context.get_metric_result(
-            unique_value_count,
-        )
+        result: ByLabelCountValue = context.get_metric_result(unique_value_count)  # type: ignore[assignment]
         assert isinstance(result, ByLabelCountValue)
 
-        ref_result: Optional[MetricResult] = None
+        ref_result: Optional[ByLabelCountValue] = None
         if context.has_reference:
-            ref_result = context.get_reference_metric_result(unique_value_count.metric_id)
+            ref_result = context.get_reference_metric_result(unique_value_count.metric_id)  # type: ignore[assignment]
             assert isinstance(ref_result, ByLabelCountValue)
 
         metrics_widget = result.get_widgets()[0]
