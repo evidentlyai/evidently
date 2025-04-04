@@ -60,6 +60,8 @@ class ContextColumnData:
         self._labels = None
 
     def labels(self):
+        if self.column_type != ColumnType.Categorical:
+            raise AttributeError("labels() is not supported for non-categorical columns")
         if self._labels is None:
             self._labels = list(self._column.data.unique())
         return self._labels
@@ -126,7 +128,7 @@ class Context:
         self._current_graph_level = prev_level
         return typing.cast(TResultType, self._metrics[calc.id])
 
-    def get_metric_result(self, metric: Union[MetricId, Metric, MetricCalculationBase[TResultType]]) -> MetricResult:
+    def get_metric_result(self, metric: Union[MetricId, Metric, MetricCalculationBase[TResultType]]) -> TResultType:
         if isinstance(metric, MetricId):
             return self._metrics[metric]
         if isinstance(metric, Metric):

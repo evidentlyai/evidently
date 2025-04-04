@@ -55,6 +55,7 @@ class ValueStats(ColumnMetricContainer):
     q50_tests: SingleValueMetricTests = None
     q75_tests: SingleValueMetricTests = None
     unique_values_count_tests: ByLabelMetricTests = None
+    replace_nan: Label = None
 
     def __init__(
         self,
@@ -70,6 +71,7 @@ class ValueStats(ColumnMetricContainer):
         q75_tests: SingleValueMetricTests = None,
         unique_values_count_tests: ByLabelMetricTests = None,
         include_tests: bool = True,
+        replace_nan: Label = None,
     ):
         self.row_count_tests = row_count_tests
         self.missing_values_count_tests = missing_values_count_tests
@@ -81,7 +83,13 @@ class ValueStats(ColumnMetricContainer):
         self.q50_tests = q50_tests
         self.q75_tests = q75_tests
         self.unique_values_count_tests = unique_values_count_tests
+        self.replace_nan = replace_nan
         super().__init__(column=column, include_tests=include_tests)
+
+    def _categorical_unique_value_count_metric(self) -> UniqueValueCount:
+        return UniqueValueCount(
+            column=self.column, tests=self._get_tests(self.unique_values_count_tests), replace_nan=self.replace_nan
+        )
 
     def generate_metrics(self, context: Context) -> Sequence[MetricOrContainer]:
         metrics: List[Metric] = [
@@ -100,9 +108,7 @@ class ValueStats(ColumnMetricContainer):
                 QuantileValue(column=self.column, quantile=0.75, tests=self._get_tests(self.q75_tests)),
             ]
         if column_type == ColumnType.Categorical:
-            metrics += [
-                UniqueValueCount(column=self.column, tests=self._get_tests(self.unique_values_count_tests)),
-            ]
+            metrics += [self._categorical_unique_value_count_metric()]
         if column_type == ColumnType.Datetime:
             metrics += [
                 MinValue(column=self.column, tests=[]),
@@ -178,9 +184,8 @@ class ValueStats(ColumnMetricContainer):
         ]
 
     def _render_categorical(self, context: "Context") -> List[BaseWidgetInfo]:
-        result = context.get_metric_result(
-            UniqueValueCount(column=self.column, tests=self.unique_values_count_tests),
-        ).get_widgets()[0]
+        unique_value_metric = self._categorical_unique_value_count_metric()
+        result = context.get_metric_result(unique_value_metric).get_widgets()[0]
         return [
             rich_data(
                 title=self.column,
@@ -202,7 +207,7 @@ class ValueStats(ColumnMetricContainer):
                         "label": "most common",
                         "values": self._get_metric(
                             context,
-                            UniqueValueCount(column=self.column, tests=self.unique_values_count_tests),
+                            unique_value_metric,
                             convert=self._most_common_value,
                         ),
                     },
@@ -212,10 +217,17 @@ class ValueStats(ColumnMetricContainer):
         ]
 
     def _render_categorical_binary(self, context: "Context") -> List[BaseWidgetInfo]:
-        unique_value_count = UniqueValueCount(column=self.column, tests=self.unique_values_count_tests)
-        result = context.get_metric_result(
+        unique_value_count = self._categorical_unique_value_count_metric()
+        result: ByLabelCountValue = context.get_metric_result(
             unique_value_count,
-        ).get_widgets()[0]
+        )
+        ref_result: Optional[ByLabelCountValue] = None
+        if context.has_reference:
+            ref = context.get_reference_metric_result(unique_value_count.metric_id)
+            assert isinstance(ref, ByLabelCountValue)
+            ref_result = ref
+
+        metrics_widget = result.get_widgets()[0]
         return [
             rich_data(
                 title=self.column,
@@ -237,11 +249,11 @@ class ValueStats(ColumnMetricContainer):
                 + [
                     {
                         "label": f"{label}",
-                        "values": self._label_count(context, unique_value_count, label),
+                        "values": self._label_count(result, ref_result, label),
                     }
-                    for label in context.column(self.column).labels()
+                    for label in result.counts.keys()
                 ],
-                graph=result.params,
+                graph=metrics_widget.params,
             )
         ]
 
@@ -295,15 +307,11 @@ class ValueStats(ColumnMetricContainer):
 
     def _label_count(
         self,
-        context: "Context",
-        metric: UniqueValueCount,
+        result: ByLabelCountValue,
+        ref_result: Optional[ByLabelCountValue],
         label: Label,
     ):
-        result = context.get_metric_result(metric)
-        assert isinstance(result, ByLabelCountValue)
-        if context.has_reference:
-            ref_result = context.get_reference_metric_result(metric.metric_id)
-            assert isinstance(ref_result, ByLabelCountValue)
+        if ref_result is not None:
             return [
                 f"{result.counts[label]} ({(result.shares[label].value * 100):0.0f}%)",
                 f"{ref_result.counts[label]} ({(ref_result.shares[label].value * 100):0.0f}%)",
