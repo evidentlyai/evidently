@@ -5,11 +5,11 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from evidently.metrics import RegressionErrorBiasTable
-from evidently.options.agg_data import RenderOptions
-from evidently.options.base import Options
-from evidently.pipeline.column_mapping import ColumnMapping
-from evidently.report import Report
+from evidently.legacy.metrics import RegressionErrorBiasTable
+from evidently.legacy.options.agg_data import RenderOptions
+from evidently.legacy.options.base import Options
+from evidently.legacy.pipeline.column_mapping import ColumnMapping
+from evidently.legacy.report import Report
 
 
 @pytest.mark.parametrize(

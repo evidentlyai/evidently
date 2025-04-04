@@ -1,9 +1,9 @@
 import pandas as pd
 import pytest
 
-from evidently.features.is_valid_json_feature import IsValidJSON
-from evidently.pipeline.column_mapping import ColumnMapping
-from evidently.utils.data_preprocessing import create_data_definition
+from evidently.legacy.features.is_valid_json_feature import IsValidJSON
+from evidently.legacy.pipeline.column_mapping import ColumnMapping
+from evidently.legacy.utils.data_preprocessing import create_data_definition
 
 
 @pytest.mark.parametrize(

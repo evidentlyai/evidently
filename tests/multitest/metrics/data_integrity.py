@@ -2,20 +2,20 @@ import datetime
 
 import pandas as pd
 
-from evidently.metric_results import Histogram
-from evidently.metric_results import HistogramData
-from evidently.metrics.data_integrity.column_missing_values_metric import ColumnMissingValuesMetric
-from evidently.metrics.data_integrity.column_regexp_metric import ColumnRegExpMetric
-from evidently.metrics.data_integrity.column_summary_metric import CategoricalCharacteristics
-from evidently.metrics.data_integrity.column_summary_metric import ColumnSummaryMetric
-from evidently.metrics.data_integrity.column_summary_metric import ColumnSummaryResult
-from evidently.metrics.data_integrity.column_summary_metric import DataInTime
-from evidently.metrics.data_integrity.column_summary_metric import DataInTimePlots
-from evidently.metrics.data_integrity.column_summary_metric import DataQualityPlot
-from evidently.metrics.data_integrity.column_summary_metric import NumericCharacteristics
-from evidently.metrics.data_integrity.dataset_missing_values_metric import DatasetMissingValuesMetric
-from evidently.metrics.data_integrity.dataset_summary_metric import DatasetSummaryMetric
-from evidently.pipeline.column_mapping import ColumnMapping
+from evidently.legacy.metric_results import Histogram
+from evidently.legacy.metric_results import HistogramData
+from evidently.legacy.metrics.data_integrity.column_missing_values_metric import ColumnMissingValuesMetric
+from evidently.legacy.metrics.data_integrity.column_regexp_metric import ColumnRegExpMetric
+from evidently.legacy.metrics.data_integrity.column_summary_metric import CategoricalCharacteristics
+from evidently.legacy.metrics.data_integrity.column_summary_metric import ColumnSummaryMetric
+from evidently.legacy.metrics.data_integrity.column_summary_metric import ColumnSummaryResult
+from evidently.legacy.metrics.data_integrity.column_summary_metric import DataInTime
+from evidently.legacy.metrics.data_integrity.column_summary_metric import DataInTimePlots
+from evidently.legacy.metrics.data_integrity.column_summary_metric import DataQualityPlot
+from evidently.legacy.metrics.data_integrity.column_summary_metric import NumericCharacteristics
+from evidently.legacy.metrics.data_integrity.dataset_missing_values_metric import DatasetMissingValuesMetric
+from evidently.legacy.metrics.data_integrity.dataset_summary_metric import DatasetSummaryMetric
+from evidently.legacy.pipeline.column_mapping import ColumnMapping
 from tests.multitest.conftest import AssertExpectedResult
 from tests.multitest.conftest import Error
 from tests.multitest.conftest import NoopOutcome

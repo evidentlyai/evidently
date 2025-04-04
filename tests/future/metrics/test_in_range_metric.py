@@ -1,4 +1,4 @@
-from evidently.future.metrics import InRangeValueCount
+from evidently.metrics import InRangeValueCount
 
 
 def test_in_range_metric():

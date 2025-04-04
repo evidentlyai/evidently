@@ -3,8 +3,8 @@ import pandas as pd
 import pytest
 
 from evidently._pydantic_compat import BaseModel
+from evidently.legacy.utils.types import ApproxValue
 from evidently.pydantic_utils import PolymorphicModel
-from evidently.utils.types import ApproxValue
 
 # for np.testing.assert_equal to work with ApproxValue
 np.core.numeric.ScalarType = np.core.numeric.ScalarType + (ApproxValue,)  # type: ignore[attr-defined]

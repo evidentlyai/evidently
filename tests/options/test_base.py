@@ -1,7 +1,7 @@
-from evidently.options import ColorOptions
-from evidently.options.base import Options
-from evidently.options.color_scheme import GREY
-from evidently.options.option import Option
+from evidently.legacy.options import ColorOptions
+from evidently.legacy.options.base import Options
+from evidently.legacy.options.color_scheme import GREY
+from evidently.legacy.options.option import Option
 
 
 def test_options_creation():

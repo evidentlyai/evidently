@@ -5,8 +5,8 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from evidently.utils import NumpyEncoder
-from evidently.utils.types import ApproxValue
+from evidently.legacy.utils import NumpyEncoder
+from evidently.legacy.utils.types import ApproxValue
 
 
 @pytest.mark.parametrize(

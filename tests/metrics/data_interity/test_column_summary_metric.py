@@ -3,9 +3,9 @@ import json
 import pandas as pd
 import pytest
 
-from evidently.metrics import ColumnSummaryMetric
-from evidently.pipeline.column_mapping import ColumnMapping
-from evidently.report import Report
+from evidently.legacy.metrics import ColumnSummaryMetric
+from evidently.legacy.pipeline.column_mapping import ColumnMapping
+from evidently.legacy.report import Report
 
 
 @pytest.mark.parametrize(

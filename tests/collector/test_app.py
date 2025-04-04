@@ -7,12 +7,12 @@ import pytest
 from litestar.testing import TestClient
 
 from evidently._pydantic_compat import parse_obj_as
-from evidently.collector.app import check_snapshots_factory
-from evidently.collector.config import CollectorConfig
-from evidently.collector.config import CollectorServiceConfig
-from evidently.ui.storage.common import NoopAuthManager
-from evidently.ui.storage.local import create_local_project_manager
-from evidently.ui.workspace.view import WorkspaceView
+from evidently.legacy.collector.app import check_snapshots_factory
+from evidently.legacy.collector.config import CollectorConfig
+from evidently.legacy.collector.config import CollectorServiceConfig
+from evidently.legacy.ui.storage.common import NoopAuthManager
+from evidently.legacy.ui.storage.local import create_local_project_manager
+from evidently.legacy.ui.workspace.view import WorkspaceView
 from tests.ui.conftest import HEADERS
 from tests.ui.conftest import _dumps
 

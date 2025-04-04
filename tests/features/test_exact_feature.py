@@ -1,9 +1,9 @@
 import pandas as pd
 import pytest
 
-from evidently.features.exact_match_feature import ExactMatchFeature
-from evidently.pipeline.column_mapping import ColumnMapping
-from evidently.utils.data_preprocessing import create_data_definition
+from evidently.legacy.features.exact_match_feature import ExactMatchFeature
+from evidently.legacy.pipeline.column_mapping import ColumnMapping
+from evidently.legacy.utils.data_preprocessing import create_data_definition
 
 
 @pytest.mark.parametrize(

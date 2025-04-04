@@ -14,11 +14,11 @@ from typing import Union
 
 import evidently
 from evidently._pydantic_compat import BaseModel
-from evidently.base_metric import Metric
-from evidently.base_metric import MetricResult
+from evidently.legacy.base_metric import Metric
+from evidently.legacy.base_metric import MetricResult
+from evidently.legacy.report import Report
+from evidently.legacy.utils.types import ApproxValue
 from evidently.pydantic_utils import PolymorphicModel
-from evidently.report import Report
-from evidently.utils.types import ApproxValue
 from tests.conftest import smart_assert_equal
 
 

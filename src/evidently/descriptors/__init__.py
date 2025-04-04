@@ -1,89 +1,95 @@
-from . import _registry
-from .BERTScore_descriptor import BERTScore
-from .contains_link_descriptor import ContainsLink
-from .custom_descriptor import CustomColumnEval
-from .custom_descriptor import CustomPairColumnEval
-from .exact_match_descriptor import ExactMatch
-from .hf_descriptor import HuggingFaceModel
-from .hf_descriptor import HuggingFaceToxicityModel
-from .is_valid_json_descriptor import IsValidJSON
-from .is_valid_python_descriptor import IsValidPython
-from .is_valid_sql_descriptor import IsValidSQL
-from .json_match_descriptor import JSONMatch
-from .json_schema_match_descriptor import JSONSchemaMatch
-from .llm_judges import BiasLLMEval
-from .llm_judges import CompletenessLLMEval
-from .llm_judges import ContextQualityLLMEval
-from .llm_judges import CorrectnessLLMEval
-from .llm_judges import DeclineLLMEval
-from .llm_judges import FaithfulnessLLMEval
-from .llm_judges import LLMEval
-from .llm_judges import NegativityLLMEval
-from .llm_judges import PIILLMEval
-from .llm_judges import ToxicityLLMEval
-from .non_letter_character_percentage_descriptor import NonLetterCharacterPercentage
-from .oov_words_percentage_descriptor import OOV
-from .openai_descriptor import OpenAIPrompting
-from .regexp_descriptor import RegExp
-from .semantic_similarity import SemanticSimilarity
-from .sentence_count_descriptor import SentenceCount
-from .sentiment_descriptor import Sentiment
-from .text_contains_descriptor import Contains
-from .text_contains_descriptor import DoesNotContain
-from .text_contains_descriptor import ItemMatch
-from .text_contains_descriptor import ItemNoMatch
-from .text_length_descriptor import TextLength
-from .text_part_descriptor import BeginsWith
-from .text_part_descriptor import EndsWith
-from .trigger_words_presence_descriptor import TriggerWordsPresence
-from .word_count_descriptor import WordCount
-from .words_descriptor import ExcludesWords
-from .words_descriptor import IncludesWords
-from .words_descriptor import WordMatch
-from .words_descriptor import WordNoMatch
+from ._context_relevance import ContextRelevance
+from ._custom_descriptors import CustomColumnDescriptor
+from ._custom_descriptors import CustomDescriptor
+from ._text_length import TextLength
+from .generated_descriptors import BeginsWith
+from .generated_descriptors import BERTScore
+from .generated_descriptors import BiasLLMEval
+from .generated_descriptors import BinaryClassificationLLMEval
+from .generated_descriptors import CompletenessLLMEval
+from .generated_descriptors import Contains
+from .generated_descriptors import ContainsLink
+from .generated_descriptors import ContextQualityLLMEval
+from .generated_descriptors import CorrectnessLLMEval
+from .generated_descriptors import DeclineLLMEval
+from .generated_descriptors import DoesNotContain
+from .generated_descriptors import EndsWith
+from .generated_descriptors import ExactMatch
+from .generated_descriptors import ExcludesWords
+from .generated_descriptors import FaithfulnessLLMEval
+from .generated_descriptors import HuggingFace
+from .generated_descriptors import HuggingFaceToxicity
+from .generated_descriptors import IncludesWords
+from .generated_descriptors import IsValidJSON
+from .generated_descriptors import IsValidPython
+from .generated_descriptors import IsValidSQL
+from .generated_descriptors import ItemMatch
+from .generated_descriptors import ItemNoMatch
+from .generated_descriptors import JSONMatch
+from .generated_descriptors import JSONSchemaMatch
+from .generated_descriptors import LLMEval
+from .generated_descriptors import LLMJudge
+from .generated_descriptors import NegativityLLMEval
+from .generated_descriptors import NonLetterCharacterPercentage
+from .generated_descriptors import OOVWordsPercentage
+from .generated_descriptors import OpenAI
+from .generated_descriptors import PIILLMEval
+from .generated_descriptors import RegExp
+from .generated_descriptors import SemanticSimilarity
+from .generated_descriptors import SentenceCount
+from .generated_descriptors import Sentiment
+from .generated_descriptors import ToxicityLLMEval
+from .generated_descriptors import TriggerWordsPresent
+from .generated_descriptors import WordCount
+from .generated_descriptors import WordMatch
+from .generated_descriptors import WordNoMatch
+from .generated_descriptors import WordsPresence
 
 __all__ = [
+    "CustomColumnDescriptor",
+    "CustomDescriptor",
+    "TextLength",
     "BERTScore",
-    "CustomColumnEval",
-    "CustomPairColumnEval",
-    "HuggingFaceModel",
-    "HuggingFaceToxicityModel",
-    "LLMEval",
-    "NegativityLLMEval",
-    "PIILLMEval",
-    "DeclineLLMEval",
-    "ContextQualityLLMEval",
-    "BiasLLMEval",
-    "ToxicityLLMEval",
-    "CorrectnessLLMEval",
-    "FaithfulnessLLMEval",
-    "CompletenessLLMEval",
-    "OpenAIPrompting",
-    "NonLetterCharacterPercentage",
-    "OOV",
     "BeginsWith",
     "Contains",
-    "EndsWith",
+    "ContainsLink",
     "DoesNotContain",
+    "EndsWith",
+    "ExactMatch",
+    "ExcludesWords",
+    "HuggingFace",
+    "HuggingFaceToxicity",
     "IncludesWords",
+    "IsValidJSON",
+    "IsValidPython",
+    "IsValidSQL",
     "ItemMatch",
     "ItemNoMatch",
-    "ExcludesWords",
-    "TextLength",
-    "TriggerWordsPresence",
-    "WordCount",
+    "JSONMatch",
+    "JSONSchemaMatch",
+    "LLMJudge",
+    "NonLetterCharacterPercentage",
+    "OOVWordsPercentage",
+    "OpenAI",
+    "RegExp",
     "SemanticSimilarity",
     "SentenceCount",
     "Sentiment",
-    "ExactMatch",
-    "RegExp",
-    "ContainsLink",
+    "TriggerWordsPresent",
+    "WordCount",
     "WordMatch",
     "WordNoMatch",
-    "IsValidJSON",
-    "IsValidSQL",
-    "JSONSchemaMatch",
-    "IsValidPython",
-    "_registry",
-    "JSONMatch",
+    "WordsPresence",
+    "BiasLLMEval",
+    "BinaryClassificationLLMEval",
+    "ContextQualityLLMEval",
+    "DeclineLLMEval",
+    "LLMEval",
+    "NegativityLLMEval",
+    "PIILLMEval",
+    "ToxicityLLMEval",
+    "CompletenessLLMEval",
+    "FaithfulnessLLMEval",
+    "CorrectnessLLMEval",
+    "ContextRelevance",
 ]

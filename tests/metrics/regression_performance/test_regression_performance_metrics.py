@@ -1,9 +1,9 @@
 import numpy as np
 import pandas as pd
 
-from evidently.metrics import RegressionPerformanceMetrics
-from evidently.pipeline.column_mapping import ColumnMapping
-from evidently.report import Report
+from evidently.legacy.metrics import RegressionPerformanceMetrics
+from evidently.legacy.pipeline.column_mapping import ColumnMapping
+from evidently.legacy.report import Report
 
 
 def test_regression_performance_metrics() -> None:

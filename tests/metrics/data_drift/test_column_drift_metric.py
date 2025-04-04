@@ -4,15 +4,15 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from evidently.calculation_engine.python_engine import PythonEngine
-from evidently.calculations.stattests import StatTest
-from evidently.calculations.stattests import psi_stat_test
-from evidently.calculations.stattests.registry import _impls
-from evidently.calculations.stattests.registry import add_stattest_impl
-from evidently.core import ColumnType
-from evidently.metrics import ColumnDriftMetric
-from evidently.pipeline.column_mapping import ColumnMapping
-from evidently.report import Report
+from evidently.legacy.calculation_engine.python_engine import PythonEngine
+from evidently.legacy.calculations.stattests import StatTest
+from evidently.legacy.calculations.stattests import psi_stat_test
+from evidently.legacy.calculations.stattests.registry import _impls
+from evidently.legacy.calculations.stattests.registry import add_stattest_impl
+from evidently.legacy.core import ColumnType
+from evidently.legacy.metrics import ColumnDriftMetric
+from evidently.legacy.pipeline.column_mapping import ColumnMapping
+from evidently.legacy.report import Report
 
 test_stattest = StatTest(
     name="test_stattest",

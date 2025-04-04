@@ -30,7 +30,7 @@ If the column_mapping is not specified or set as None, we use the default mappin
 Example 
 
 ```python
-from evidently import ColumnMapping
+from evidently.legacy.pipeline.column_mapping import ColumnMapping
 
 column_mapping = ColumnMapping()
 
@@ -59,9 +59,9 @@ You can choose one or several Metric Presets to generate a pre-built report:
 To generate the chosen report and explore it in the Jupyter notebook run these commands:
 
 ```python
-from evidently.report import Report
-from evidently.metric_preset import DataDriftPreset
-from evidently.metric_preset import TargetDriftPreset
+from evidently.legacy.report import Report
+from evidently.legacy.metric_preset import DataDriftPreset
+from evidently.legacy.metric_preset import TargetDriftPreset
 
 drift_report = Report(metrics=[DataDriftPreset(), TargetDriftPreset()])
 drift_report.run(reference_data=reference, current_data=current)

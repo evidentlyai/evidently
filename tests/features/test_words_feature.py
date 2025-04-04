@@ -3,12 +3,12 @@ from typing import List
 import pandas as pd
 import pytest
 
-from evidently.features.words_feature import ExcludesWords
-from evidently.features.words_feature import IncludesWords
-from evidently.features.words_feature import WordMatch
-from evidently.features.words_feature import WordNoMatch
-from evidently.pipeline.column_mapping import ColumnMapping
-from evidently.utils.data_preprocessing import create_data_definition
+from evidently.legacy.features.words_feature import ExcludesWords
+from evidently.legacy.features.words_feature import IncludesWords
+from evidently.legacy.features.words_feature import WordMatch
+from evidently.legacy.features.words_feature import WordNoMatch
+from evidently.legacy.pipeline.column_mapping import ColumnMapping
+from evidently.legacy.utils.data_preprocessing import create_data_definition
 
 input_data = [
     "Who are you and where are my apples and grapes?",

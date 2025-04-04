@@ -3,17 +3,17 @@ from datetime import datetime
 import pandas as pd
 import pytest
 
-from evidently.core import ColumnType
-from evidently.pipeline.column_mapping import ColumnMapping
-from evidently.utils.data_preprocessing import NUMBER_UNIQUE_AS_CATEGORICAL
-from evidently.utils.data_preprocessing import ColumnDefinition
-from evidently.utils.data_preprocessing import ColumnPresenceState
-from evidently.utils.data_preprocessing import DataDefinition
-from evidently.utils.data_preprocessing import PredictionColumns
-from evidently.utils.data_preprocessing import _get_column_presence
-from evidently.utils.data_preprocessing import _get_column_type
-from evidently.utils.data_preprocessing import _InputData
-from evidently.utils.data_preprocessing import create_data_definition
+from evidently.legacy.core import ColumnType
+from evidently.legacy.pipeline.column_mapping import ColumnMapping
+from evidently.legacy.utils.data_preprocessing import NUMBER_UNIQUE_AS_CATEGORICAL
+from evidently.legacy.utils.data_preprocessing import ColumnDefinition
+from evidently.legacy.utils.data_preprocessing import ColumnPresenceState
+from evidently.legacy.utils.data_preprocessing import DataDefinition
+from evidently.legacy.utils.data_preprocessing import PredictionColumns
+from evidently.legacy.utils.data_preprocessing import _get_column_presence
+from evidently.legacy.utils.data_preprocessing import _get_column_type
+from evidently.legacy.utils.data_preprocessing import _InputData
+from evidently.legacy.utils.data_preprocessing import create_data_definition
 
 
 def test_get_columns():

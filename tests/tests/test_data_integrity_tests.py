@@ -5,29 +5,29 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from evidently.pipeline.column_mapping import ColumnMapping
-from evidently.test_suite import TestSuite
-from evidently.tests import TestColumnAllConstantValues
-from evidently.tests import TestColumnAllUniqueValues
-from evidently.tests import TestColumnNumberOfDifferentMissingValues
-from evidently.tests import TestColumnNumberOfMissingValues
-from evidently.tests import TestColumnRegExp
-from evidently.tests import TestColumnShareOfMissingValues
-from evidently.tests import TestColumnsType
-from evidently.tests import TestNumberOfColumns
-from evidently.tests import TestNumberOfColumnsWithMissingValues
-from evidently.tests import TestNumberOfConstantColumns
-from evidently.tests import TestNumberOfDifferentMissingValues
-from evidently.tests import TestNumberOfDuplicatedColumns
-from evidently.tests import TestNumberOfDuplicatedRows
-from evidently.tests import TestNumberOfEmptyColumns
-from evidently.tests import TestNumberOfEmptyRows
-from evidently.tests import TestNumberOfMissingValues
-from evidently.tests import TestNumberOfRows
-from evidently.tests import TestNumberOfRowsWithMissingValues
-from evidently.tests import TestShareOfColumnsWithMissingValues
-from evidently.tests import TestShareOfMissingValues
-from evidently.tests import TestShareOfRowsWithMissingValues
+from evidently.legacy.pipeline.column_mapping import ColumnMapping
+from evidently.legacy.test_suite import TestSuite
+from evidently.legacy.tests import TestColumnAllConstantValues
+from evidently.legacy.tests import TestColumnAllUniqueValues
+from evidently.legacy.tests import TestColumnNumberOfDifferentMissingValues
+from evidently.legacy.tests import TestColumnNumberOfMissingValues
+from evidently.legacy.tests import TestColumnRegExp
+from evidently.legacy.tests import TestColumnShareOfMissingValues
+from evidently.legacy.tests import TestColumnsType
+from evidently.legacy.tests import TestNumberOfColumns
+from evidently.legacy.tests import TestNumberOfColumnsWithMissingValues
+from evidently.legacy.tests import TestNumberOfConstantColumns
+from evidently.legacy.tests import TestNumberOfDifferentMissingValues
+from evidently.legacy.tests import TestNumberOfDuplicatedColumns
+from evidently.legacy.tests import TestNumberOfDuplicatedRows
+from evidently.legacy.tests import TestNumberOfEmptyColumns
+from evidently.legacy.tests import TestNumberOfEmptyRows
+from evidently.legacy.tests import TestNumberOfMissingValues
+from evidently.legacy.tests import TestNumberOfRows
+from evidently.legacy.tests import TestNumberOfRowsWithMissingValues
+from evidently.legacy.tests import TestShareOfColumnsWithMissingValues
+from evidently.legacy.tests import TestShareOfMissingValues
+from evidently.legacy.tests import TestShareOfRowsWithMissingValues
 
 
 def test_data_integrity_test_number_of_columns() -> None:

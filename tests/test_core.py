@@ -1,9 +1,9 @@
 from typing import List
 from typing import Union
 
-from evidently.core import BaseResult
-from evidently.core import IncludeTags
-from evidently.core import get_all_fields_tags
+from evidently.legacy.core import BaseResult
+from evidently.legacy.core import IncludeTags
+from evidently.legacy.core import get_all_fields_tags
 
 
 class A(BaseResult):

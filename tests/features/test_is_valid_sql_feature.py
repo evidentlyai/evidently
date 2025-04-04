@@ -1,8 +1,8 @@
 import pandas as pd
 
-from evidently.features.is_valid_sql_feature import IsValidSQL
-from evidently.pipeline.column_mapping import ColumnMapping
-from evidently.utils.data_preprocessing import create_data_definition
+from evidently.legacy.features.is_valid_sql_feature import IsValidSQL
+from evidently.legacy.pipeline.column_mapping import ColumnMapping
+from evidently.legacy.utils.data_preprocessing import create_data_definition
 
 
 def test_is_valid_sql_feature():

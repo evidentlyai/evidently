@@ -5,9 +5,9 @@ import pandas as pd
 import pytest
 from pytest import approx
 
-from evidently.metrics.data_drift.data_drift_table import DataDriftTable
-from evidently.pipeline.column_mapping import ColumnMapping
-from evidently.report import Report
+from evidently.legacy.metrics.data_drift.data_drift_table import DataDriftTable
+from evidently.legacy.pipeline.column_mapping import ColumnMapping
+from evidently.legacy.report import Report
 
 
 @pytest.mark.parametrize(

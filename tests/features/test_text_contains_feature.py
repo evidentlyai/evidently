@@ -3,12 +3,12 @@ from typing import List
 import pandas as pd
 import pytest
 
-from evidently.features.text_contains_feature import Contains
-from evidently.features.text_contains_feature import DoesNotContain
-from evidently.features.text_contains_feature import ItemMatch
-from evidently.features.text_contains_feature import ItemNoMatch
-from evidently.pipeline.column_mapping import ColumnMapping
-from evidently.utils.data_preprocessing import create_data_definition
+from evidently.legacy.features.text_contains_feature import Contains
+from evidently.legacy.features.text_contains_feature import DoesNotContain
+from evidently.legacy.features.text_contains_feature import ItemMatch
+from evidently.legacy.features.text_contains_feature import ItemNoMatch
+from evidently.legacy.pipeline.column_mapping import ColumnMapping
+from evidently.legacy.utils.data_preprocessing import create_data_definition
 
 test_data = [
     "a b c d e f g h",

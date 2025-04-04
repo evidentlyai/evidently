@@ -10,7 +10,7 @@ import pandas as pd
 from sklearn import datasets
 from sklearn import ensemble
 
-from evidently.pipeline.column_mapping import ColumnMapping
+from evidently.legacy.pipeline.column_mapping import ColumnMapping
 
 
 class DatasetTags(Enum):

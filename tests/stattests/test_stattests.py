@@ -4,20 +4,20 @@ import pytest
 from pytest import approx
 from scipy import stats
 
-from evidently.calculations.stattests import z_stat_test
-from evidently.calculations.stattests.anderson_darling_stattest import anderson_darling_test
-from evidently.calculations.stattests.chisquare_stattest import chi_stat_test
-from evidently.calculations.stattests.cramer_von_mises_stattest import cramer_von_mises
-from evidently.calculations.stattests.energy_distance import energy_dist_test
-from evidently.calculations.stattests.epps_singleton_stattest import epps_singleton_test
-from evidently.calculations.stattests.fisher_exact_stattest import fisher_exact_test
-from evidently.calculations.stattests.g_stattest import g_test
-from evidently.calculations.stattests.hellinger_distance import hellinger_stat_test
-from evidently.calculations.stattests.mann_whitney_urank_stattest import mann_whitney_u_stat_test
-from evidently.calculations.stattests.mmd_stattest import empirical_mmd
-from evidently.calculations.stattests.t_test import t_test
-from evidently.calculations.stattests.tvd_stattest import tvd_test
-from evidently.core import ColumnType
+from evidently.legacy.calculations.stattests import z_stat_test
+from evidently.legacy.calculations.stattests.anderson_darling_stattest import anderson_darling_test
+from evidently.legacy.calculations.stattests.chisquare_stattest import chi_stat_test
+from evidently.legacy.calculations.stattests.cramer_von_mises_stattest import cramer_von_mises
+from evidently.legacy.calculations.stattests.energy_distance import energy_dist_test
+from evidently.legacy.calculations.stattests.epps_singleton_stattest import epps_singleton_test
+from evidently.legacy.calculations.stattests.fisher_exact_stattest import fisher_exact_test
+from evidently.legacy.calculations.stattests.g_stattest import g_test
+from evidently.legacy.calculations.stattests.hellinger_distance import hellinger_stat_test
+from evidently.legacy.calculations.stattests.mann_whitney_urank_stattest import mann_whitney_u_stat_test
+from evidently.legacy.calculations.stattests.mmd_stattest import empirical_mmd
+from evidently.legacy.calculations.stattests.t_test import t_test
+from evidently.legacy.calculations.stattests.tvd_stattest import tvd_test
+from evidently.legacy.core import ColumnType
 
 
 def test_freq_obs_eq_freq_exp() -> None:

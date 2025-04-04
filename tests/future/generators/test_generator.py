@@ -1,8 +1,8 @@
 import pandas as pd
 
-from evidently.future.generators import ColumnMetricGenerator
-from evidently.future.presets import ValueStats
-from evidently.future.report import Report
+from evidently.core.report import Report
+from evidently.generators import ColumnMetricGenerator
+from evidently.presets import ValueStats
 
 
 def test_generator_renders():

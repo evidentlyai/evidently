@@ -1,4 +1,4 @@
-from evidently.future.metrics import OutRangeValueCount
+from evidently.metrics import OutRangeValueCount
 
 
 def test_out_range_metric():

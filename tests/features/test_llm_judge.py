@@ -9,18 +9,18 @@ from typing import Union
 import pandas as pd
 import pytest
 
-from evidently.descriptors import NegativityLLMEval
-from evidently.features.llm_judge import BinaryClassificationPromptTemplate
-from evidently.features.llm_judge import LLMJudge
-from evidently.features.llm_judge import LLMMessage
-from evidently.features.llm_judge import LLMWrapper
-from evidently.metric_preset import TextEvals
-from evidently.options.base import Options
-from evidently.report import Report
-from evidently.utils.data_preprocessing import DataDefinition
-from evidently.utils.llm.errors import LLMResponseParseError
-from evidently.utils.llm.wrapper import LLMResult
-from evidently.utils.llm.wrapper import llm_provider
+from evidently.legacy.descriptors import NegativityLLMEval
+from evidently.legacy.features.llm_judge import BinaryClassificationPromptTemplate
+from evidently.legacy.features.llm_judge import LLMJudge
+from evidently.legacy.features.llm_judge import LLMMessage
+from evidently.legacy.features.llm_judge import LLMWrapper
+from evidently.legacy.metric_preset import TextEvals
+from evidently.legacy.options.base import Options
+from evidently.legacy.report import Report
+from evidently.legacy.utils.data_preprocessing import DataDefinition
+from evidently.legacy.utils.llm.errors import LLMResponseParseError
+from evidently.legacy.utils.llm.wrapper import LLMResult
+from evidently.legacy.utils.llm.wrapper import llm_provider
 
 
 def _LLMPromptTemplate(

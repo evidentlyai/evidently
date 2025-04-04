@@ -1,7 +1,7 @@
 import pandas as pd
 
-from evidently.test_preset import DataStabilityTestPreset
-from evidently.test_suite import TestSuite
+from evidently.legacy.test_preset import DataStabilityTestPreset
+from evidently.legacy.test_suite import TestSuite
 
 
 def test_data_stability_preset():

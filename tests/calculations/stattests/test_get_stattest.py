@@ -1,7 +1,7 @@
 import pandas as pd
 import pytest
 
-from evidently.calculations.stattests import get_stattest
+from evidently.legacy.calculations.stattests import get_stattest
 
 
 @pytest.mark.parametrize(

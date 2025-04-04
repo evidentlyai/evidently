@@ -4,9 +4,9 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from evidently.metrics import DatasetCorrelationsMetric
-from evidently.pipeline.column_mapping import ColumnMapping
-from evidently.report import Report
+from evidently.legacy.metrics import DatasetCorrelationsMetric
+from evidently.legacy.pipeline.column_mapping import ColumnMapping
+from evidently.legacy.report import Report
 
 
 def test_dataset_correlation_metric_success() -> None:

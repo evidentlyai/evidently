@@ -3,10 +3,10 @@ from typing import List
 import pandas as pd
 import pytest
 
-from evidently.features.text_part_feature import BeginsWith
-from evidently.features.text_part_feature import EndsWith
-from evidently.pipeline.column_mapping import ColumnMapping
-from evidently.utils.data_preprocessing import create_data_definition
+from evidently.legacy.features.text_part_feature import BeginsWith
+from evidently.legacy.features.text_part_feature import EndsWith
+from evidently.legacy.pipeline.column_mapping import ColumnMapping
+from evidently.legacy.utils.data_preprocessing import create_data_definition
 
 test_data = [
     "abcdefg",

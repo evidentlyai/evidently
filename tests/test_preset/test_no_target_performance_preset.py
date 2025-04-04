@@ -1,14 +1,14 @@
-from evidently.core import ColumnType
-from evidently.test_preset import NoTargetPerformanceTestPreset
-from evidently.tests import TestAllColumnsShareOfMissingValues
-from evidently.tests import TestCatColumnsOutOfListValues
-from evidently.tests import TestColumnsType
-from evidently.tests import TestEmbeddingsDrift
-from evidently.tests import TestNumColumnsMeanInNSigmas
-from evidently.tests import TestNumColumnsOutOfRangeValues
-from evidently.tests import TestShareOfDriftedColumns
-from evidently.utils.data_preprocessing import ColumnDefinition
-from evidently.utils.data_preprocessing import DataDefinition
+from evidently.legacy.core import ColumnType
+from evidently.legacy.test_preset import NoTargetPerformanceTestPreset
+from evidently.legacy.tests import TestAllColumnsShareOfMissingValues
+from evidently.legacy.tests import TestCatColumnsOutOfListValues
+from evidently.legacy.tests import TestColumnsType
+from evidently.legacy.tests import TestEmbeddingsDrift
+from evidently.legacy.tests import TestNumColumnsMeanInNSigmas
+from evidently.legacy.tests import TestNumColumnsOutOfRangeValues
+from evidently.legacy.tests import TestShareOfDriftedColumns
+from evidently.legacy.utils.data_preprocessing import ColumnDefinition
+from evidently.legacy.utils.data_preprocessing import DataDefinition
 
 
 def test_embeddings_data_drift_preset():

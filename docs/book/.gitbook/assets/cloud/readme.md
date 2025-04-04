@@ -1,1 +1,0 @@
-Evidently Cloud visual assets.

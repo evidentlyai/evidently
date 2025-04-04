@@ -1,8 +1,8 @@
 import pandas as pd
 
-from evidently.pipeline.column_mapping import ColumnMapping
-from evidently.test_preset import DataDriftTestPreset
-from evidently.test_suite import TestSuite
+from evidently.legacy.pipeline.column_mapping import ColumnMapping
+from evidently.legacy.test_preset import DataDriftTestPreset
+from evidently.legacy.test_suite import TestSuite
 
 
 def test_data_drift_preset():

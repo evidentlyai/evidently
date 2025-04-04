@@ -1,8 +1,8 @@
 import pandas as pd
 
-from evidently.features.custom_feature import CustomSingleColumnFeature
-from evidently.pipeline.column_mapping import ColumnMapping
-from evidently.utils.data_preprocessing import create_data_definition
+from evidently.legacy.features.custom_feature import CustomSingleColumnFeature
+from evidently.legacy.pipeline.column_mapping import ColumnMapping
+from evidently.legacy.utils.data_preprocessing import create_data_definition
 
 
 def test_custom_feature():

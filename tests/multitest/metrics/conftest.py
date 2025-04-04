@@ -11,7 +11,7 @@ from _pytest.mark import Mark
 from _pytest.mark import ParameterSet
 from _pytest.python import Metafunc
 
-from evidently.base_metric import Metric
+from evidently.legacy.base_metric import Metric
 from tests.multitest.conftest import TestOutcome
 from tests.multitest.datasets import DatasetTags
 from tests.multitest.datasets import TestDataset

@@ -2,9 +2,9 @@ import json
 
 import pandas as pd
 
-from evidently.metrics import ColumnQuantileMetric
-from evidently.pipeline.column_mapping import ColumnMapping
-from evidently.report import Report
+from evidently.legacy.metrics import ColumnQuantileMetric
+from evidently.legacy.pipeline.column_mapping import ColumnMapping
+from evidently.legacy.report import Report
 
 
 def test_same_type_metric_in_one_json_report() -> None:

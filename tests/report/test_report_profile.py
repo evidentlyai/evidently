@@ -3,10 +3,10 @@ import pandas as pd
 import pytest
 from sklearn.datasets import load_breast_cancer
 
-from evidently.metric_preset import ClassificationPreset
-from evidently.report import Report
-from evidently.test_preset import BinaryClassificationTestPreset
-from evidently.test_suite import TestSuite
+from evidently.legacy.metric_preset import ClassificationPreset
+from evidently.legacy.report import Report
+from evidently.legacy.test_preset import BinaryClassificationTestPreset
+from evidently.legacy.test_suite import TestSuite
 
 
 @pytest.fixture

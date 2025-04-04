@@ -2,11 +2,11 @@ import json
 
 import pandas as pd
 
-from evidently.pipeline.column_mapping import ColumnMapping
-from evidently.test_suite import TestSuite
-from evidently.tests import TestColumnDrift
-from evidently.tests import TestNumberOfDriftedColumns
-from evidently.tests import TestShareOfDriftedColumns
+from evidently.legacy.pipeline.column_mapping import ColumnMapping
+from evidently.legacy.test_suite import TestSuite
+from evidently.legacy.tests import TestColumnDrift
+from evidently.legacy.tests import TestNumberOfDriftedColumns
+from evidently.legacy.tests import TestShareOfDriftedColumns
 
 
 def test_data_drift_test_number_of_drifted_features() -> None:

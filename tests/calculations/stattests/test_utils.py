@@ -2,10 +2,10 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from evidently.calculations.stattests.tvd_stattest import _total_variation_distance
-from evidently.calculations.stattests.utils import generate_fisher2x2_contingency_table
-from evidently.calculations.stattests.utils import get_unique_not_nan_values_list_from_series
-from evidently.calculations.stattests.utils import permutation_test
+from evidently.legacy.calculations.stattests.tvd_stattest import _total_variation_distance
+from evidently.legacy.calculations.stattests.utils import generate_fisher2x2_contingency_table
+from evidently.legacy.calculations.stattests.utils import get_unique_not_nan_values_list_from_series
+from evidently.legacy.calculations.stattests.utils import permutation_test
 
 
 @pytest.mark.parametrize(

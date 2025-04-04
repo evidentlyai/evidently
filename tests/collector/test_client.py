@@ -6,13 +6,13 @@ from typing import Optional
 import pandas as pd
 import pytest
 
-from evidently.collector.app import run
-from evidently.collector.client import CollectorClient
-from evidently.collector.config import CollectorConfig
-from evidently.collector.config import IntervalTrigger
-from evidently.collector.config import ReportConfig
-from evidently.test_suite import TestSuite
-from evidently.tests import TestNumberOfOutRangeValues
+from evidently.legacy.collector.app import run
+from evidently.legacy.collector.client import CollectorClient
+from evidently.legacy.collector.config import CollectorConfig
+from evidently.legacy.collector.config import IntervalTrigger
+from evidently.legacy.collector.config import ReportConfig
+from evidently.legacy.test_suite import TestSuite
+from evidently.legacy.tests import TestNumberOfOutRangeValues
 
 COLLECTOR_ID = "1"
 PROJECT_ID = "2"

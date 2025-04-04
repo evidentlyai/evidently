@@ -5,10 +5,10 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from evidently.metrics import DataQualityStabilityMetric
-from evidently.metrics.data_quality.stability_metric import DataQualityStabilityMetricResult
-from evidently.pipeline.column_mapping import ColumnMapping
-from evidently.report import Report
+from evidently.legacy.metrics import DataQualityStabilityMetric
+from evidently.legacy.metrics.data_quality.stability_metric import DataQualityStabilityMetricResult
+from evidently.legacy.pipeline.column_mapping import ColumnMapping
+from evidently.legacy.report import Report
 
 
 @pytest.mark.parametrize(

@@ -2,8 +2,8 @@ import inspect
 
 import pytest
 
-from evidently.cli import app
-from evidently.ui.demo_projects import DEMO_PROJECTS_NAMES
+from evidently.legacy.cli import app
+from evidently.legacy.ui.demo_projects import DEMO_PROJECTS_NAMES
 
 
 @pytest.fixture()

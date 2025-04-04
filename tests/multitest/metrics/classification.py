@@ -1,28 +1,40 @@
 import numpy as np
 import pandas as pd
 
-from evidently.metric_results import ConfusionMatrix
-from evidently.metric_results import DatasetClassificationQuality
-from evidently.metric_results import Histogram
-from evidently.metric_results import HistogramData
-from evidently.metrics.classification_performance.class_balance_metric import ClassificationClassBalance
-from evidently.metrics.classification_performance.class_balance_metric import ClassificationClassBalanceResult
-from evidently.metrics.classification_performance.class_separation_metric import ClassificationClassSeparationPlot
-from evidently.metrics.classification_performance.classification_dummy_metric import ClassificationDummyMetric
-from evidently.metrics.classification_performance.classification_quality_metric import ClassificationQualityMetric
-from evidently.metrics.classification_performance.classification_quality_metric import ClassificationQualityMetricResult
-from evidently.metrics.classification_performance.confusion_matrix_metric import ClassificationConfusionMatrix
-from evidently.metrics.classification_performance.confusion_matrix_metric import ClassificationConfusionMatrixResult
-from evidently.metrics.classification_performance.lift_curve_metric import ClassificationLiftCurve
-from evidently.metrics.classification_performance.lift_table_metric import ClassificationLiftTable
-from evidently.metrics.classification_performance.pr_curve_metric import ClassificationPRCurve
-from evidently.metrics.classification_performance.pr_table_metric import ClassificationPRTable
-from evidently.metrics.classification_performance.probability_distribution_metric import ClassificationProbDistribution
-from evidently.metrics.classification_performance.quality_by_class_metric import ClassificationQualityByClass
-from evidently.metrics.classification_performance.quality_by_feature_table import ClassificationQualityByFeatureTable
-from evidently.metrics.classification_performance.roc_curve_metric import ClassificationRocCurve
-from evidently.pipeline.column_mapping import ColumnMapping
-from evidently.tests.utils import approx_result
+from evidently.legacy.metric_results import ConfusionMatrix
+from evidently.legacy.metric_results import DatasetClassificationQuality
+from evidently.legacy.metric_results import Histogram
+from evidently.legacy.metric_results import HistogramData
+from evidently.legacy.metrics.classification_performance.class_balance_metric import ClassificationClassBalance
+from evidently.legacy.metrics.classification_performance.class_balance_metric import ClassificationClassBalanceResult
+from evidently.legacy.metrics.classification_performance.class_separation_metric import (
+    ClassificationClassSeparationPlot,
+)
+from evidently.legacy.metrics.classification_performance.classification_dummy_metric import ClassificationDummyMetric
+from evidently.legacy.metrics.classification_performance.classification_quality_metric import (
+    ClassificationQualityMetric,
+)
+from evidently.legacy.metrics.classification_performance.classification_quality_metric import (
+    ClassificationQualityMetricResult,
+)
+from evidently.legacy.metrics.classification_performance.confusion_matrix_metric import ClassificationConfusionMatrix
+from evidently.legacy.metrics.classification_performance.confusion_matrix_metric import (
+    ClassificationConfusionMatrixResult,
+)
+from evidently.legacy.metrics.classification_performance.lift_curve_metric import ClassificationLiftCurve
+from evidently.legacy.metrics.classification_performance.lift_table_metric import ClassificationLiftTable
+from evidently.legacy.metrics.classification_performance.pr_curve_metric import ClassificationPRCurve
+from evidently.legacy.metrics.classification_performance.pr_table_metric import ClassificationPRTable
+from evidently.legacy.metrics.classification_performance.probability_distribution_metric import (
+    ClassificationProbDistribution,
+)
+from evidently.legacy.metrics.classification_performance.quality_by_class_metric import ClassificationQualityByClass
+from evidently.legacy.metrics.classification_performance.quality_by_feature_table import (
+    ClassificationQualityByFeatureTable,
+)
+from evidently.legacy.metrics.classification_performance.roc_curve_metric import ClassificationRocCurve
+from evidently.legacy.pipeline.column_mapping import ColumnMapping
+from evidently.legacy.tests.utils import approx_result
 from tests.multitest.conftest import AssertExpectedResult
 from tests.multitest.conftest import NoopOutcome
 from tests.multitest.conftest import make_approx_type

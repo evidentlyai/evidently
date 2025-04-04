@@ -5,9 +5,9 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from evidently.metrics import ColumnQuantileMetric
-from evidently.pipeline.column_mapping import ColumnMapping
-from evidently.report import Report
+from evidently.legacy.metrics import ColumnQuantileMetric
+from evidently.legacy.pipeline.column_mapping import ColumnMapping
+from evidently.legacy.report import Report
 
 
 def test_data_quality_quantile_metric_success() -> None:

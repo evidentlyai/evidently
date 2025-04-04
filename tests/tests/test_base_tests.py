@@ -1,10 +1,10 @@
 import pandas as pd
 import pytest
 
-from evidently.test_suite import TestSuite
-from evidently.tests import TestColumnShareOfMissingValues
-from evidently.tests.base_test import TestValueCondition
-from evidently.tests.base_test import generate_column_tests
+from evidently.legacy.test_suite import TestSuite
+from evidently.legacy.tests import TestColumnShareOfMissingValues
+from evidently.legacy.tests.base_test import TestValueCondition
+from evidently.legacy.tests.base_test import generate_column_tests
 
 
 @pytest.mark.parametrize(

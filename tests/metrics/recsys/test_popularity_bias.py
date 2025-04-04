@@ -1,10 +1,10 @@
 import pandas as pd
 import pytest
 
-from evidently.metrics import PopularityBias
-from evidently.pipeline.column_mapping import ColumnMapping
-from evidently.pipeline.column_mapping import RecomType
-from evidently.report import Report
+from evidently.legacy.metrics import PopularityBias
+from evidently.legacy.pipeline.column_mapping import ColumnMapping
+from evidently.legacy.pipeline.column_mapping import RecomType
+from evidently.legacy.report import Report
 
 
 @pytest.mark.parametrize("k, expected_coverage", ((1, 1 / 3.0), (2, 2 / 3.0), (3, 1.0)))

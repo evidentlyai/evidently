@@ -326,9 +326,10 @@ class EvidentlyBaseModel(FrozenBaseModel, PolymorphicModel):
         is_base_type = True
 
     def get_fingerprint(self) -> Fingerprint:
-        return hashlib.md5(
-            (self.__get_classpath__() + str(self.get_fingerprint_parts())).encode("utf8"), **md5_kwargs
-        ).hexdigest()
+        classpath = self.__get_classpath__()
+        if ".legacy" in classpath:
+            classpath = classpath.replace(".legacy", "")
+        return hashlib.md5((classpath + str(self.get_fingerprint_parts())).encode("utf8"), **md5_kwargs).hexdigest()
 
     def get_fingerprint_parts(self) -> Tuple[FingerprintPart, ...]:
         return tuple(
@@ -353,8 +354,8 @@ class WithTestAndMetricDependencies(EvidentlyBaseModel):
         type_alias = "evidently:test:WithTestAndMetricDependencies"
 
     def __evidently_dependencies__(self):
-        from evidently.base_metric import Metric
-        from evidently.tests.base_test import Test
+        from evidently.legacy.base_metric import Metric
+        from evidently.legacy.tests.base_test import Test
 
         for field_name, field in itertools.chain(
             self.__dict__.items(), ((pa, getattr(self, pa, None)) for pa in self.__private_attributes__)
@@ -472,7 +473,7 @@ class FieldPath:
         for name, field in self._cls.__fields__.items():
             field_value = field.type_
             # todo: do something with recursive imports
-            from evidently.core import get_field_tags
+            from evidently.legacy.core import get_field_tags
 
             field_tags = get_field_tags(self._cls, name)
             if field_tags is not None and (exclude is not None and any(t in exclude for t in field_tags)):
@@ -493,13 +494,13 @@ class FieldPath:
     def _list_with_tags(self, current_tags: Set["IncludeTags"]) -> List[Tuple[List[Any], Set["IncludeTags"]]]:
         if not isinstance(self._cls, type) or not issubclass(self._cls, BaseModel):
             return [(self._path, current_tags)]
-        from evidently.core import BaseResult
+        from evidently.legacy.core import BaseResult
 
         if issubclass(self._cls, BaseResult) and self._cls.__config__.extract_as_obj:
             return [(self._path, current_tags)]
         res = []
-        from evidently.future.backport import ByLabelCountValueV1
-        from evidently.future.backport import ByLabelValueV1
+        from evidently.ui.backport import ByLabelCountValueV1
+        from evidently.ui.backport import ByLabelValueV1
 
         if issubclass(self._cls, ByLabelValueV1):
             res.append((self._path + ["values"], current_tags.union({IncludeTags.Render})))
@@ -510,7 +511,7 @@ class FieldPath:
             field_value = field.type_
 
             # todo: do something with recursive imports
-            from evidently.core import get_field_tags
+            from evidently.legacy.core import get_field_tags
 
             field_tags = get_field_tags(self._cls, name)
 
@@ -566,7 +567,7 @@ class FieldPath:
         return res
 
     def get_field_tags(self, path: List[str]) -> Optional[Set["IncludeTags"]]:
-        from evidently.base_metric import BaseResult
+        from evidently.legacy.base_metric import BaseResult
 
         if not isinstance(self._cls, type) or not issubclass(self._cls, BaseResult):
             return None
@@ -575,7 +576,7 @@ class FieldPath:
             return self_tags
         field_name, *path = path
         # todo: do something with recursive imports
-        from evidently.core import get_field_tags
+        from evidently.legacy.core import get_field_tags
 
         field_tags = get_field_tags(self._cls, field_name)
         return self_tags.union(field_tags).union(self.child(field_name).get_field_tags(path) or tuple())
@@ -587,7 +588,7 @@ def series_validator(value):
 
 
 def get_object_hash_deprecated(obj: Union[BaseModel, dict]):
-    from evidently.utils import NumpyEncoder
+    from evidently.legacy.utils import NumpyEncoder
 
     if isinstance(obj, BaseModel):
         obj = obj.dict()

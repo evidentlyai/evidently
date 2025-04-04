@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from evidently.features.is_valid_python_feature import IsValidPython
+from evidently.legacy.features.is_valid_python_feature import IsValidPython
 
 
 @pytest.mark.parametrize(

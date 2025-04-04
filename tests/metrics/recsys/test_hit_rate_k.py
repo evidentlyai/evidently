@@ -1,10 +1,10 @@
 import numpy as np
 import pandas as pd
 
-from evidently.metrics import HitRateKMetric
-from evidently.pipeline.column_mapping import ColumnMapping
-from evidently.pipeline.column_mapping import RecomType
-from evidently.report import Report
+from evidently.legacy.metrics import HitRateKMetric
+from evidently.legacy.pipeline.column_mapping import ColumnMapping
+from evidently.legacy.pipeline.column_mapping import RecomType
+from evidently.legacy.report import Report
 
 
 def test_hit_rate_value():

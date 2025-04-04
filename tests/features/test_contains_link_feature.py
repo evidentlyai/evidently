@@ -1,8 +1,8 @@
 import pandas as pd
 
-from evidently.features.contains_link_feature import ContainsLink
-from evidently.pipeline.column_mapping import ColumnMapping
-from evidently.utils.data_preprocessing import create_data_definition
+from evidently.legacy.features.contains_link_feature import ContainsLink
+from evidently.legacy.pipeline.column_mapping import ColumnMapping
+from evidently.legacy.utils.data_preprocessing import create_data_definition
 
 
 def test_contains_link_feature():
