@@ -14,7 +14,7 @@ runs:
       with:
         python-version: "3.11"
         architecture: "x64"
-        cache: "pip"
+#        cache: "pip"
 
     - name: Install Evidently
       if: steps.cache-ui-types.outputs.cache-hit != 'true'
