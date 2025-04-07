@@ -14,12 +14,15 @@ from typing import Union
 from typing import overload
 
 import pandas as pd
+import uuid6
 from requests import HTTPError
 from requests import Response
 
 from evidently._pydantic_compat import BaseModel
+from evidently._pydantic_compat import Field
 from evidently._pydantic_compat import PrivateAttr
 from evidently._pydantic_compat import parse_obj_as
+from evidently.errors import EvidentlyError
 from evidently.future.datasets import DataDefinition
 from evidently.future.datasets import Dataset
 from evidently.future.report import Snapshot
@@ -32,8 +35,10 @@ from evidently.ui.storage.common import SECRET_HEADER_NAME
 from evidently.ui.type_aliases import STR_UUID
 from evidently.ui.type_aliases import DatasetID
 from evidently.ui.type_aliases import OrgID
+from evidently.ui.type_aliases import PanelID
 from evidently.ui.type_aliases import ProjectID
 from evidently.ui.type_aliases import SnapshotID
+from evidently.ui.type_aliases import TabID
 from evidently.ui.workspace.cloud import ACCESS_TOKEN_COOKIE
 from evidently.ui.workspace.cloud import TOKEN_HEADER_NAME
 from evidently.ui.workspace.cloud import NamedBytesIO
@@ -79,7 +84,7 @@ class WorkspaceBase(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def get_project(self, project_id: STR_UUID) -> Optional[Project]:
+    def get_project(self, project_id: STR_UUID) -> Optional["_CloudProject"]:
         raise NotImplementedError
 
     @abstractmethod
@@ -193,11 +198,10 @@ class RemoteWorkspace(RemoteBase, WorkspaceBase):  # todo: reuse cloud ws
         assert p is not None
         return p
 
-    def get_project(self, project_id: STR_UUID) -> Optional[Project]:
+    def get_project(self, project_id: STR_UUID) -> Optional["_CloudProject"]:
         try:
-            return self._request(f"/api/projects/{project_id}/info", "GET", response_model=ProjectV2).bind_workspace(
-                self
-            )
+            _project = self._request(f"/api/projects/{project_id}/info", "GET", response_model=ProjectV2)
+            return _CloudProject(_project.id, _project.name, _project.description, self)
         except (HTTPError,) as e:
             try:
                 data = e.response.json()  # type: ignore[attr-defined]
@@ -408,3 +412,186 @@ class CloudWorkspace(RemoteWorkspace):
         data = snapshot.dump_dict()
         resp: Response = self._request(f"/api/v2/snapshots/{project_id}", method="POST", body=data)
         return uuid.UUID(resp.json()["snapshot_id"])
+
+
+class DashboardTabModel(BaseModel):
+    id: TabID = Field(default_factory=uuid6.uuid7)
+    title: Optional[str]
+    panels: List[PanelID]
+
+
+class SeriesSelector(BaseModel):
+    tags: List[str] = Field(default_factory=list)
+    metadata: Dict[str, str] = Field(default_factory=dict)
+    metric_type: str
+    labels: Dict[str, str] = Field(default_factory=dict)
+
+
+class DashboardPanelModel(BaseModel):
+    id: PanelID = Field(default_factory=uuid6.uuid7)
+    title: Optional[str]
+    size: Optional[str]
+    series_selector: List[SeriesSelector]
+    params: Dict[str, str]
+
+
+class DashboardModel(BaseModel):
+    tabs: List[DashboardTabModel]
+    panels: List[DashboardPanelModel]
+
+
+class _CloudProjectDashboard:
+    _project_id: ProjectID
+    _workspace: CloudWorkspace
+
+    def __init__(self, project_id: ProjectID, workspace: CloudWorkspace):
+        self._project_id = project_id
+        self._workspace = workspace
+
+    def add_tab(self, tab: str):
+        _dashboard_model = self._fetch_model()
+        if any([t.title == tab for t in _dashboard_model.tabs]):
+            raise EvidentlyError(f"Tab {tab} already exists in project {self._project_id} dashboard")
+        _dashboard_model.tabs.append(DashboardTabModel(title=tab, panels=[]))
+
+        self._save_dashboard(_dashboard_model)
+
+    def delete_tab(self, tab: str):
+        _dashboard_model = self._fetch_model()
+        new_tabs = [t for t in _dashboard_model.tabs if t.title != tab]
+        _dashboard_model.tabs = new_tabs
+        self._save_dashboard(_dashboard_model)
+
+    def add_panel(self, panel: DashboardPanelModel, tab: Optional[str] = None, create_if_not_exists: bool = True):
+        _dashboard_model = self._fetch_model()
+        _dashboard_model.panels.append(panel)
+        _tab_id = None
+        if tab is not None:
+            for dashboard_tab in _dashboard_model.tabs:
+                if dashboard_tab.title == tab:
+                    dashboard_tab.panels.append(panel.id)
+                    _tab_id = dashboard_tab.id
+            if _tab_id is None and create_if_not_exists:
+                new_tab_id = uuid.uuid4()
+                _dashboard_model.tabs.append(DashboardTabModel(id=new_tab_id, title=tab, panels=[]))
+                _tab_id = new_tab_id
+            elif _tab_id is None and not create_if_not_exists:
+                raise EvidentlyError(
+                    f"Tab {tab} is missing in project {self._project_id} and create_if_not_exists is False"
+                )
+        else:
+            if len(_dashboard_model.tabs) == 0:
+                new_tab_id = uuid.uuid4()
+                _dashboard_model.tabs.append(DashboardTabModel(id=new_tab_id, title="General", panels=[]))
+            _tab_id = _dashboard_model.tabs[0].id
+
+        assert _tab_id is not None
+        for dashboard_tab in _dashboard_model.tabs:
+            if dashboard_tab.id == _tab_id:
+                dashboard_tab.panels.append(panel.id)
+                break
+
+        self._save_dashboard(_dashboard_model)
+
+    def delete_panel(self, panel: str, tab: str):
+        _dashboard_model = self._fetch_model()
+        _tab = None
+        for t in _dashboard_model.tabs:
+            if t.title == tab:
+                _tab = t
+
+        if _tab is None:
+            raise EvidentlyError(f"Tab {tab} does not exist in project {self._project_id} dashboard")
+
+        new_panels = [p.id for p in _dashboard_model.panels if p.id in _tab.panels and p.title != panel]
+        _tab.panels = new_panels
+
+        self._save_dashboard(_dashboard_model)
+
+    def _fetch_model(self) -> DashboardModel:
+        data = self._workspace._request(f"/api/v2/dashboards/{self._project_id}", method="GET").json()
+        return parse_obj_as(DashboardModel, data)
+
+    def _save_dashboard(self, dashboard: DashboardModel):
+        self._workspace._request(f"/api/v2/dashboards/{self._project_id}", method="POST", body=dashboard.dict())
+
+    def model(self):
+        return self._fetch_model()
+
+    def __repr__(self):
+        _model = self.model()
+        return f"Dashboard for project {self._project_id}\n  " + "\n  ".join(
+            f"Tab '{tab.title}' ({tab.id})\n    "
+            + "\n    ".join(
+                f"Panel '{p.title}' ({p.id})\n      "
+                + "\n      ".join(
+                    f"Series metric_type={s.metric_type}"
+                    + f" (tags={s.tags},metadata={s.metadata})"
+                    + f" labels={s.labels}"
+                    for s in p.series_selector
+                )
+                for p in _model.panels
+                if p.id in tab.panels
+            )
+            for tab in _model.tabs
+        )
+
+
+class _CloudProject:
+    _id: ProjectID
+    _name: str
+    _description: Optional[str]
+    _dashboard: _CloudProjectDashboard
+
+    _workspace: CloudWorkspace
+
+    def __init__(self, id: ProjectID, name: str, description: Optional[str], workspace: CloudWorkspace):
+        self._id = id
+        self._name = name
+        self._description = description
+        self._workspace = workspace
+        self._dashboard = _CloudProjectDashboard(id, workspace)
+
+    def add_run(self, snapshot: Snapshot, include_data: bool = False) -> SnapshotID:
+        return self._workspace.add_run(self.id, snapshot, include_data)
+
+    @property
+    def id(self) -> ProjectID:
+        return self._id
+
+    @property
+    def name(self) -> str:
+        return self._name
+
+    @name.setter
+    def name(self, value: str):
+        self._name = value
+
+    @property
+    def description(self) -> Optional[str]:
+        return self._description
+
+    @description.setter
+    def description(self, value: str):
+        self._description = value
+
+    @property
+    def dashboard(self) -> _CloudProjectDashboard:
+        return self._dashboard
+
+    def save(self):
+        self._workspace._request(
+            f"/api/v2/projects/{self._id}",
+            method="PATCH",
+            body=Project(
+                id=self._id,
+                name=self._name,
+                description=self._description,
+            ).dict(),
+        )
+
+    def __repr__(self):
+        return f"""Project ID: {self._id}
+Project Name: {self._name}
+Project Description: {self._description}
+        """
