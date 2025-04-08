@@ -53,6 +53,9 @@ class Alert(BaseModel):
 
 
 class AdditionalGraphInfo(BaseModel):
+    class Config:
+        extra = "forbid"
+
     id: str
     params: dict
 
