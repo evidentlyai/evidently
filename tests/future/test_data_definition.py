@@ -4,10 +4,10 @@ import random
 import pandas as pd
 import pytest
 
-from evidently import ColumnType
-from evidently.future.datasets import DataDefinition
-from evidently.future.datasets import Dataset
-from evidently.future.datasets import infer_column_type
+from evidently.core.datasets import DataDefinition
+from evidently.core.datasets import Dataset
+from evidently.core.datasets import infer_column_type
+from evidently.legacy.core import ColumnType
 
 
 @pytest.mark.parametrize(

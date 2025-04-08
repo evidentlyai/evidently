@@ -12,37 +12,38 @@ import pytest
 
 import evidently
 from evidently._pydantic_compat import import_string
-from evidently.base_metric import BasePreset
-from evidently.base_metric import ColumnName
-from evidently.base_metric import Metric
-from evidently.base_metric import MetricResult
-from evidently.collector.config import CollectorTrigger
-from evidently.collector.storage import CollectorStorage
-from evidently.features.generated_features import BaseDescriptor
-from evidently.features.generated_features import FeatureDescriptor
-from evidently.features.generated_features import GeneratedFeatures
-from evidently.features.llm_judge import BaseLLMPromptTemplate
-from evidently.future.container import MetricContainer
-from evidently.future.datasets import Descriptor
-from evidently.future.metric_types import BoundTest
-from evidently.future.metric_types import Metric as MetricV2
-from evidently.future.metric_types import MetricResult as MetricResultV2
-from evidently.future.metric_types import MetricTest
-from evidently.metric_preset.metric_preset import MetricPreset
-from evidently.metrics.data_drift.embedding_drift_methods import DriftMethod
+from evidently.core import registries
+from evidently.core.container import MetricContainer
+from evidently.core.datasets import Descriptor
+from evidently.core.metric_types import BoundTest
+from evidently.core.metric_types import Metric as MetricV2
+from evidently.core.metric_types import MetricResult as MetricResultV2
+from evidently.core.metric_types import MetricTest
+from evidently.legacy.base_metric import BasePreset
+from evidently.legacy.base_metric import ColumnName
+from evidently.legacy.base_metric import Metric
+from evidently.legacy.base_metric import MetricResult
+from evidently.legacy.collector.config import CollectorTrigger
+from evidently.legacy.collector.storage import CollectorStorage
+from evidently.legacy.features.generated_features import BaseDescriptor
+from evidently.legacy.features.generated_features import FeatureDescriptor
+from evidently.legacy.features.generated_features import GeneratedFeatures
+from evidently.legacy.features.llm_judge import BaseLLMPromptTemplate
+from evidently.legacy.metric_preset.metric_preset import MetricPreset
+from evidently.legacy.metrics.data_drift.embedding_drift_methods import DriftMethod
+from evidently.legacy.test_preset.test_preset import TestPreset
+from evidently.legacy.tests.base_test import Test
+from evidently.legacy.tests.base_test import TestParameters
+from evidently.legacy.ui.components.base import Component
+from evidently.legacy.ui.dashboards.base import DashboardPanel
+from evidently.legacy.utils.llm.prompts import PromptBlock
+from evidently.legacy.utils.llm.prompts import PromptTemplate
 from evidently.pydantic_utils import TYPE_ALIASES
 from evidently.pydantic_utils import EvidentlyBaseModel
 from evidently.pydantic_utils import PolymorphicModel
 from evidently.pydantic_utils import WithTestAndMetricDependencies
 from evidently.pydantic_utils import get_base_class
 from evidently.pydantic_utils import is_not_abstract
-from evidently.test_preset.test_preset import TestPreset
-from evidently.tests.base_test import Test
-from evidently.tests.base_test import TestParameters
-from evidently.ui.components.base import Component
-from evidently.ui.dashboards.base import DashboardPanel
-from evidently.utils.llm.prompts import PromptBlock
-from evidently.utils.llm.prompts import PromptTemplate
 
 T = TypeVar("T")
 
@@ -70,17 +71,24 @@ def find_all_subclasses(
 
 
 REGISTRY_MAPPING: Dict[Type[PolymorphicModel], str] = {
-    # DashboardPanel: "evidently.ui._registry",
-    Test: "evidently.tests._registry",
-    TestParameters: "evidently.tests._registry",
-    MetricTest: "evidently.future._registry",
-    MetricV2: "evidently.future._registry",
-    MetricContainer: "evidently.future._registry",
-    MetricResultV2: "evidently.future._registry",
-    MetricResult: "evidently.metrics._registry",
-    BoundTest: "evidently.future._registry",
-    Descriptor: "evidently.future.descriptors._registry",
-    FeatureDescriptor: "evidently.descriptors._registry",
+    # legacy
+    Test: "evidently.legacy.tests._registry",
+    TestParameters: "evidently.legacy.tests._registry",
+    TestPreset: "evidently.legacy.test_preset._registry",
+    MetricResult: "evidently.legacy.metrics._registry",
+    Metric: "evidently.legacy.metrics._registry",
+    MetricPreset: "evidently.legacy.metric_preset._registry",
+    FeatureDescriptor: "evidently.legacy.descriptors._registry",
+    GeneratedFeatures: "evidently.legacy.features._registry",
+    PromptBlock: "evidently.legacy.utils.llm._registry",
+    PromptTemplate: "evidently.legacy.utils.llm._registry",
+    # new api
+    MetricTest: registries.metric_tests.__name__,
+    MetricV2: registries.metrics.__name__,
+    MetricContainer: registries.presets.__name__,
+    MetricResultV2: registries.metric_results.__name__,
+    BoundTest: registries.bound_tests.__name__,
+    Descriptor: registries.descriptors.__name__,
 }
 
 
@@ -118,10 +126,12 @@ def test_all_aliases_registered():
     assert len(not_registered) == 0, "Not all aliases registered"
 
 
-@pytest.mark.parametrize("classpath", list(TYPE_ALIASES.values()))
-def test_all_registered_classpath_exist(classpath):
+@pytest.mark.parametrize(
+    "base_class,classpath", [(base_class, classpath) for (base_class, _), classpath in TYPE_ALIASES.items()]
+)
+def test_all_registered_classpath_exist(base_class: Type[PolymorphicModel], classpath):
     try:
-        import_string(classpath)
+        base_class.load_alias(classpath)
     except ImportError:
         assert False, f"wrong classpath registered '{classpath}'"
 

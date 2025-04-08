@@ -6,8 +6,8 @@ from typing import Set
 import pandas as pd
 import pytest
 
-from evidently.base_metric import Metric
-from evidently.report import Report
+from evidently.legacy.base_metric import Metric
+from evidently.legacy.report import Report
 from tests.conftest import slow
 from tests.conftest import smart_assert_equal
 from tests.multitest.conftest import Error

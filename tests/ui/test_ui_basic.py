@@ -1,9 +1,9 @@
 import pytest
 from litestar.testing import TestClient
 
-from evidently.ui.app import create_app
-from evidently.ui.demo_projects import DEMO_PROJECTS
-from evidently.ui.local_service import LocalConfig
+from evidently.legacy.ui.app import create_app
+from evidently.legacy.ui.demo_projects import DEMO_PROJECTS
+from evidently.legacy.ui.local_service import LocalConfig
 from tests.conftest import slow
 
 

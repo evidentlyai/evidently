@@ -6,12 +6,12 @@ import pandas as pd
 import pytest
 from pytest import approx
 
-from evidently.metric_results import ColumnCorrelations
-from evidently.metric_results import DistributionIncluded
-from evidently.metrics.data_quality.column_correlations_metric import ColumnCorrelationsMetric
-from evidently.metrics.data_quality.column_correlations_metric import ColumnCorrelationsMetricResult
-from evidently.pipeline.column_mapping import ColumnMapping
-from evidently.report import Report
+from evidently.legacy.metric_results import ColumnCorrelations
+from evidently.legacy.metric_results import DistributionIncluded
+from evidently.legacy.metrics.data_quality.column_correlations_metric import ColumnCorrelationsMetric
+from evidently.legacy.metrics.data_quality.column_correlations_metric import ColumnCorrelationsMetricResult
+from evidently.legacy.pipeline.column_mapping import ColumnMapping
+from evidently.legacy.report import Report
 
 
 @pytest.mark.parametrize(

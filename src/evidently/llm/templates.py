@@ -1,0 +1,4 @@
+from evidently.legacy.descriptors.llm_judges import BinaryClassificationPromptTemplate
+from evidently.legacy.descriptors.llm_judges import MulticlassClassificationPromptTemplate
+
+__all__ = ["BinaryClassificationPromptTemplate", "MulticlassClassificationPromptTemplate"]

@@ -1,19 +1,19 @@
 import pandas as pd
 import pytest
 
-from evidently.future.datasets import BinaryClassification
-from evidently.future.datasets import DataDefinition
-from evidently.future.datasets import Dataset
-from evidently.future.datasets import Regression
-from evidently.future.descriptors import TextLength
-from evidently.future.report import Report
-from evidently.future.tests import Reference
-from evidently.future.tests import eq
-from evidently.future.tests import gt
-from evidently.future.tests import gte
-from evidently.future.tests import lt
-from evidently.future.tests import lte
-from evidently.utils.types import ApproxValue
+from evidently.core.datasets import BinaryClassification
+from evidently.core.datasets import DataDefinition
+from evidently.core.datasets import Dataset
+from evidently.core.datasets import Regression
+from evidently.core.report import Report
+from evidently.descriptors import TextLength
+from evidently.legacy.utils.types import ApproxValue
+from evidently.tests import Reference
+from evidently.tests import eq
+from evidently.tests import gt
+from evidently.tests import gte
+from evidently.tests import lt
+from evidently.tests import lte
 
 
 @pytest.fixture
@@ -76,16 +76,16 @@ def regression_sample_dataset():
 
 # Classification Metrics Tests
 def test_classification_metrics(sample_dataset):
-    from evidently.future.metrics import FNR
-    from evidently.future.metrics import FPR
-    from evidently.future.metrics import TNR
-    from evidently.future.metrics import TPR
-    from evidently.future.metrics import Accuracy
-    from evidently.future.metrics import F1Score
-    from evidently.future.metrics import LogLoss
-    from evidently.future.metrics import Precision
-    from evidently.future.metrics import Recall
-    from evidently.future.metrics import RocAuc
+    from evidently.metrics import FNR
+    from evidently.metrics import FPR
+    from evidently.metrics import TNR
+    from evidently.metrics import TPR
+    from evidently.metrics import Accuracy
+    from evidently.metrics import F1Score
+    from evidently.metrics import LogLoss
+    from evidently.metrics import Precision
+    from evidently.metrics import Recall
+    from evidently.metrics import RocAuc
 
     report = Report(
         [
@@ -107,10 +107,10 @@ def test_classification_metrics(sample_dataset):
 
 
 def test_classification_by_label_metrics(sample_dataset):
-    from evidently.future.metrics import F1ByLabel
-    from evidently.future.metrics import PrecisionByLabel
-    from evidently.future.metrics import RecallByLabel
-    from evidently.future.metrics import RocAucByLabel
+    from evidently.metrics import F1ByLabel
+    from evidently.metrics import PrecisionByLabel
+    from evidently.metrics import RecallByLabel
+    from evidently.metrics import RocAucByLabel
 
     report = Report(
         [
@@ -126,9 +126,9 @@ def test_classification_by_label_metrics(sample_dataset):
 
 
 def test_dummy_classification_metrics(sample_dataset):
-    from evidently.future.metrics import DummyF1Score
-    from evidently.future.metrics import DummyPrecision
-    from evidently.future.metrics import DummyRecall
+    from evidently.metrics import DummyF1Score
+    from evidently.metrics import DummyPrecision
+    from evidently.metrics import DummyRecall
 
     report = Report(
         [
@@ -144,12 +144,12 @@ def test_dummy_classification_metrics(sample_dataset):
 
 # Column Statistics Tests
 def test_column_statistics_metrics(sample_dataset):
-    from evidently.future.metrics.column_statistics import MaxValue
-    from evidently.future.metrics.column_statistics import MeanValue
-    from evidently.future.metrics.column_statistics import MedianValue
-    from evidently.future.metrics.column_statistics import MinValue
-    from evidently.future.metrics.column_statistics import QuantileValue
-    from evidently.future.metrics.column_statistics import StdValue
+    from evidently.metrics.column_statistics import MaxValue
+    from evidently.metrics.column_statistics import MeanValue
+    from evidently.metrics.column_statistics import MedianValue
+    from evidently.metrics.column_statistics import MinValue
+    from evidently.metrics.column_statistics import QuantileValue
+    from evidently.metrics.column_statistics import StdValue
 
     report = Report(
         [
@@ -169,12 +169,12 @@ def test_column_statistics_metrics(sample_dataset):
 
 # Value Count Tests
 def test_value_count_metrics(sample_dataset):
-    from evidently.future.metrics import CategoryCount
-    from evidently.future.metrics import InListValueCount
-    from evidently.future.metrics import InRangeValueCount
-    from evidently.future.metrics import MissingValueCount
-    from evidently.future.metrics import OutListValueCount
-    from evidently.future.metrics import OutRangeValueCount
+    from evidently.metrics import CategoryCount
+    from evidently.metrics import InListValueCount
+    from evidently.metrics import InRangeValueCount
+    from evidently.metrics import MissingValueCount
+    from evidently.metrics import OutListValueCount
+    from evidently.metrics import OutRangeValueCount
 
     report = Report(
         [
@@ -209,9 +209,9 @@ def test_value_count_metrics(sample_dataset):
 
 # Dataset Structure Tests
 def test_dataset_structure_metrics(sample_dataset):
-    from evidently.future.metrics import ColumnCount
-    from evidently.future.metrics import DuplicatedRowCount
-    from evidently.future.metrics import RowCount
+    from evidently.metrics import ColumnCount
+    from evidently.metrics import DuplicatedRowCount
+    from evidently.metrics import RowCount
 
     report = Report(
         [
@@ -227,12 +227,12 @@ def test_dataset_structure_metrics(sample_dataset):
 
 # Regression Metrics Tests
 def test_regression_metrics(regression_sample_dataset):
-    from evidently.future.metrics import MAE
-    from evidently.future.metrics import MAPE
-    from evidently.future.metrics import RMSE
-    from evidently.future.metrics import AbsMaxError
-    from evidently.future.metrics import MeanError
-    from evidently.future.metrics import R2Score
+    from evidently.metrics import MAE
+    from evidently.metrics import MAPE
+    from evidently.metrics import RMSE
+    from evidently.metrics import AbsMaxError
+    from evidently.metrics import MeanError
+    from evidently.metrics import R2Score
 
     report = Report(
         [
@@ -250,9 +250,9 @@ def test_regression_metrics(regression_sample_dataset):
 
 
 def test_dummy_regression_metrics(regression_sample_dataset):
-    from evidently.future.metrics import DummyMAE
-    from evidently.future.metrics import DummyMAPE
-    from evidently.future.metrics import DummyRMSE
+    from evidently.metrics import DummyMAE
+    from evidently.metrics import DummyMAPE
+    from evidently.metrics import DummyRMSE
 
     report = Report(
         [
@@ -268,9 +268,9 @@ def test_dummy_regression_metrics(regression_sample_dataset):
 
 # Preset Tests
 def test_classification_presets(sample_dataset):
-    from evidently.future.presets import ClassificationDummyQuality
-    from evidently.future.presets import ClassificationQuality
-    from evidently.future.presets import ClassificationQualityByLabel
+    from evidently.presets import ClassificationDummyQuality
+    from evidently.presets import ClassificationQuality
+    from evidently.presets import ClassificationQualityByLabel
 
     report = Report(
         [
@@ -285,7 +285,7 @@ def test_classification_presets(sample_dataset):
 
 
 def test_data_drift_preset(sample_dataset):
-    from evidently.future.presets import DataDriftPreset
+    from evidently.presets import DataDriftPreset
 
     report = Report([DataDriftPreset()])
     snapshot = report.run(sample_dataset, sample_dataset)
@@ -293,7 +293,7 @@ def test_data_drift_preset(sample_dataset):
 
 
 def test_value_stats_preset(sample_dataset):
-    from evidently.future.presets import ValueStats
+    from evidently.presets import ValueStats
 
     report = Report(
         [
@@ -307,7 +307,7 @@ def test_value_stats_preset(sample_dataset):
 
 
 def test_dataset_stats_preset(sample_dataset):
-    from evidently.future.presets import DatasetStats
+    from evidently.presets import DatasetStats
 
     report = Report([DatasetStats()])
     snapshot = report.run(sample_dataset, sample_dataset)
@@ -315,7 +315,7 @@ def test_dataset_stats_preset(sample_dataset):
 
 
 def test_regression_preset(regression_sample_dataset):
-    from evidently.future.presets import RegressionPreset
+    from evidently.presets import RegressionPreset
 
     report = Report([RegressionPreset()])
     snapshot = report.run(regression_sample_dataset, regression_sample_dataset)

@@ -3,21 +3,21 @@ from typing import Tuple
 import pandas as pd
 import pytest
 
-from evidently.calculation_engine.python_engine import PythonEngine
-from evidently.calculations.stattests import StatTest
-from evidently.calculations.stattests import chi_stat_test
-from evidently.calculations.stattests import get_stattest
-from evidently.calculations.stattests import jensenshannon_stat_test
-from evidently.calculations.stattests import kl_div_stat_test
-from evidently.calculations.stattests import ks_stat_test
-from evidently.calculations.stattests import psi_stat_test
-from evidently.calculations.stattests import wasserstein_stat_test
-from evidently.calculations.stattests import z_stat_test
-from evidently.calculations.stattests.registry import StatTestInvalidFeatureTypeError
-from evidently.calculations.stattests.registry import StatTestNotFoundError
-from evidently.calculations.stattests.registry import add_stattest_impl
-from evidently.calculations.stattests.registry import create_impl_wrapper
-from evidently.core import ColumnType
+from evidently.legacy.calculation_engine.python_engine import PythonEngine
+from evidently.legacy.calculations.stattests import StatTest
+from evidently.legacy.calculations.stattests import chi_stat_test
+from evidently.legacy.calculations.stattests import get_stattest
+from evidently.legacy.calculations.stattests import jensenshannon_stat_test
+from evidently.legacy.calculations.stattests import kl_div_stat_test
+from evidently.legacy.calculations.stattests import ks_stat_test
+from evidently.legacy.calculations.stattests import psi_stat_test
+from evidently.legacy.calculations.stattests import wasserstein_stat_test
+from evidently.legacy.calculations.stattests import z_stat_test
+from evidently.legacy.calculations.stattests.registry import StatTestInvalidFeatureTypeError
+from evidently.legacy.calculations.stattests.registry import StatTestNotFoundError
+from evidently.legacy.calculations.stattests.registry import add_stattest_impl
+from evidently.legacy.calculations.stattests.registry import create_impl_wrapper
+from evidently.legacy.core import ColumnType
 
 
 def _custom_stattest(

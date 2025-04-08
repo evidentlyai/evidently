@@ -9,16 +9,16 @@ from litestar.datastructures import State
 from litestar.testing import TestClient
 
 from evidently._pydantic_compat import BaseModel
-from evidently.ui.app import create_app
-from evidently.ui.base import Project
-from evidently.ui.components.base import Component
-from evidently.ui.components.base import ComponentContext
-from evidently.ui.components.storage import LocalStorageComponent
-from evidently.ui.local_service import LocalConfig
-from evidently.ui.local_service import LocalServiceComponent
-from evidently.ui.managers.projects import ProjectManager
-from evidently.ui.security.service import SecurityService
-from evidently.utils import NumpyEncoder
+from evidently.legacy.ui.app import create_app
+from evidently.legacy.ui.base import Project
+from evidently.legacy.ui.components.base import Component
+from evidently.legacy.ui.components.base import ComponentContext
+from evidently.legacy.ui.components.storage import LocalStorageComponent
+from evidently.legacy.ui.local_service import LocalConfig
+from evidently.legacy.ui.local_service import LocalServiceComponent
+from evidently.legacy.ui.managers.projects import ProjectManager
+from evidently.legacy.ui.security.service import SecurityService
+from evidently.legacy.utils import NumpyEncoder
 
 HEADERS = {"Content-Type": "application/json"}
 
