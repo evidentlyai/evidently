@@ -39,11 +39,10 @@ Evidently is very modular. You can start with one-off evaluations or host a full
 
 **Reports** compute and summarize various data, ML and LLM quality evals.
 * Start with Presets and built-in metrics or customize.
-* Out-of-the-box interactive visuals.
 * Best for experiments, exploratory analysis and debugging.
-* View Reports in Python or export as JSON, Python dictionary, HTML, or view in monitoring UI.
+* View interactive Reports in Python or export as JSON, Python dictionary, HTML, or view in monitoring UI.
 
-You can convert your Report into a **Test Suite** by adding pass/fail conditions on Metric values.
+You can convert your Report into a **Test Suite** by adding pass/fail conditions.
 * Best for regression testing, CI/CD checks, or data validation.
 * Zero setup option: auto-generate test conditions from the reference dataset.
 * Simple syntax to set test conditions as `gt` (greater than), `lt` (less than), etc.
