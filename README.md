@@ -87,42 +87,57 @@ conda install -c conda-forge evidently
 
 > This is a simple Hello World. Check the Tutorials for more: [LLM evaluation](https://docs.evidentlyai.com/quickstart_llm).
 
-Import the Report, evaluation Preset and toy tabular dataset.
+Import the necessary components:
 
 ```python
 import pandas as pd
-from sklearn import datasets
-
+from evidently.future.datasets import Dataset, DataDefinition, Descriptor
+from evidently.future.descriptors import Sentiment, TextLength, Contains
 from evidently.future.report import Report
-from evidently.future.presets import DataDriftPreset
-
-iris_data = datasets.load_iris(as_frame=True)
-iris_frame = iris_data.frame
+from evidently.future.presets import TextEvals
 ```
 
-Run the **Data Drift** evaluation preset that will test for shift in column distributions. Take the first 60 rows of the dataframe as "current" data and the following as reference.  Get the output in Jupyter notebook:
+Create a toy dataset with questions and answers. 
+
+```python
+eval_df = pd.DataFrame([
+    ["What is the capital of Japan?", "The capital of Japan is Tokyo."],
+    ["Who painted the Mona Lisa?", "Leonardo da Vinci."],
+    ["Can you write an essay?", "I'm sorry, but I can't assist with homework."]], 
+                       columns=["question", "answer"])
+```
+
+Create an Evidently Dataset object and add `descriptors`: row-level evaluators. We'll check for sentiment of each response, its length and whether it contains words indicative of denial.
+
+```python
+eval_dataset = Dataset.from_pandas(pd.DataFrame(eval_df),
+data_definition=DataDefinition(),
+descriptors=[
+    Sentiment("answer", alias="Sentiment"),
+    TextLength("answer", alias="Length"),
+    Contains("answer", items=['sorry', 'apologize'], mode="any", alias="Denials")
+])
+```
+
+You can view the dataframe with added scores:
+
+```python
+eval_dataset.as_dataframe()
+```
+
+To get a summary Report to see the distribution of scores:
 
 ```python
 report = Report([
-    DataDriftPreset(method="psi")
-],
-include_tests="True")
-my_eval = report.run(iris_frame.iloc[:60], iris_frame.iloc[60:])
+    TextEvals()
+])
+
+my_eval = report.run(eval_dataset)
 my_eval
-```
-
-You can also save an HTML file. You'll need to open it from the destination folder.
-
-```python
-my_eval.save_html("file.html")
-```
-
-To get the output as JSON or Python dictionary:
-```python
-my_eval.json()
+# my_eval.json()
 # my_eval.dict()
 ```
-You can choose other Presets, create Reports from indiviudal Metrics and configure pass/fail conditions. 
+You can also choose other evaluators, including LLM-as-a-judge and configure pass/fail conditions. 
 
 ### Data and ML evals
 
@@ -166,7 +181,8 @@ my_eval.json()
 You can choose other Presets, create Reports from indiviudal Metrics and configure pass/fail conditions. 
 
 ## Monitoring dashboard
-> This launches a demo project in the Evidently UI. Check tutorials for [Self-hosting](https://docs.evidentlyai.com/tutorials-and-examples/tutorial-monitoring) or [Evidently Cloud](https://docs.evidentlyai.com/tutorials-and-examples/tutorial-cloud).
+
+> This launches a demo project in the locally hosted Evidently UI. Sign up for [Evidently Cloud](https://docs.evidentlyai.com/docs/setup/cloud) to instantly get a managed version with additional features..
 
 Recommended step: create a virtual environment and activate it.
 ```
