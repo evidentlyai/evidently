@@ -24,7 +24,7 @@
 
 # :bar_chart: What is Evidently?
 
-Evidently is an open-source Python library for ML and LLM evaluation and observability. It helps evaluate, test, and monitor AI-powered systems and data pipelines from experimentation to production. 
+Evidently is an open-source Python library to evaluate, test, and monitor ML and LLM systems—from experiments to production.
 
 * 🔡 Works with tabular and text data.
 * ✨ Supports evals for predictive and generative tasks, from classification to RAG.
@@ -42,7 +42,7 @@ Evidently is very modular. You can start with one-off evaluations or host a full
 * Best for experiments, exploratory analysis and debugging.
 * View interactive Reports in Python or export as JSON, Python dictionary, HTML, or view in monitoring UI.
 
-You can convert your Report into a **Test Suite** by adding pass/fail conditions.
+Turn any Report into a **Test Suite** by adding pass/fail conditions.
 * Best for regression testing, CI/CD checks, or data validation.
 * Zero setup option: auto-generate test conditions from the reference dataset.
 * Simple syntax to set test conditions as `gt` (greater than), `lt` (less than), etc.
@@ -59,7 +59,7 @@ You can choose:
 * Self-host the open-source version. [Live demo](https://demo.evidentlyai.com).
 * Sign up for [Evidently Cloud](https://www.evidentlyai.com/register) (Recommended).
 
-Evidently Cloud offers a generous free tier and extra features like dataset and user management, alerting, and no-code evals.
+Evidently Cloud offers a generous free tier and extra features like dataset and user management, alerting, and no-code evals. [Compare OSS vs Cloud](https://docs.evidentlyai.com/faq/oss_vs_cloud).
 
 | Dashboard |
 |--|
@@ -67,7 +67,7 @@ Evidently Cloud offers a generous free tier and extra features like dataset and 
 
 # :woman_technologist: Install Evidently
 
-Evidently is available as a PyPI package. To install it using pip package manager, run:
+To install from PyPI:
 
 ```sh
 pip install evidently
@@ -181,7 +181,7 @@ You can choose other Presets, create Reports from indiviudal Metrics and configu
 
 ## Monitoring dashboard
 
-> This launches a demo project in the locally hosted Evidently UI. Sign up for [Evidently Cloud](https://docs.evidentlyai.com/docs/setup/cloud) to instantly get a managed version with additional features..
+> This launches a demo project in the locally hosted Evidently UI. Sign up for [Evidently Cloud](https://docs.evidentlyai.com/docs/setup/cloud) to instantly get a managed version with additional features.
 
 Recommended step: create a virtual environment and activate it.
 ```
@@ -195,7 +195,7 @@ After installing Evidently (`pip install evidently`), run the Evidently UI with 
 evidently ui --demo-projects all
 ```
 
-Access Evidently UI service in your browser. Go to the **localhost:8000**.
+Visit **localhost:8000** to access the UI. 
 
 # 🚦 What can you evaluate?
 
