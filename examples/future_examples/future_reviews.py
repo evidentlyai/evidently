@@ -1,55 +1,44 @@
 from datetime import datetime
 from datetime import timedelta
 
-import pandas as pd 
 import numpy as np
 from sklearn import datasets
 
-from evidently.legacy.core import ColumnType
-
-from evidently.ui.backport import snapshot_v2_to_v1
-
-from evidently.core.datasets import DataDefinition
-from evidently.core.datasets import Dataset
-from evidently.core.datasets import DatasetColumn
-from evidently.core.datasets import Descriptor
-from evidently.core.datasets import MulticlassClassification
+from evidently import DataDefinition
+from evidently import Dataset
+from evidently import MulticlassClassification
+from evidently import Report
 from evidently.descriptors import (
-    TextLength, 
-    NonLetterCharacterPercentage, 
-    OOVWordsPercentage, 
-    RegExp, 
+    TextLength,
+    NonLetterCharacterPercentage,
+    OOVWordsPercentage,
+    RegExp,
     Sentiment,
-    TriggerWordsPresent,)
-
-from evidently.core.report import Report
-
-from evidently.presets import DatasetStats
-from evidently.presets import ClassificationQuality
-from evidently.metrics import ValueDrift, RowCount, ColumnCount, Precision, UniqueValueCount
-from evidently.metrics.column_statistics import CategoryCount
-from evidently.metrics.column_statistics import MeanValue
-from evidently.metrics.column_statistics import InRangeValueCount
-
+    TriggerWordsPresent, )
+# from evidently.legacy.ui.demo_projects import DemoProject
+# from evidently.legacy.ui.workspace import WorkspaceBase
+from evidently.legacy.renderers.html_widgets import WidgetSize
+from evidently.legacy.tests.base_test import TestStatus
 from evidently.legacy.ui.base import Project
-from evidently.legacy.ui.type_aliases import ZERO_UUID
-from evidently.legacy.ui.workspace import Workspace
-
 from evidently.legacy.ui.dashboards import CounterAgg
 from evidently.legacy.ui.dashboards import DashboardPanelCounter
 from evidently.legacy.ui.dashboards import DashboardPanelHistogram
 from evidently.legacy.ui.dashboards import DashboardPanelPlot
-from evidently.legacy.ui.dashboards import DashboardPanelTestSuiteCounter
 from evidently.legacy.ui.dashboards import DashboardPanelTestSuite
+from evidently.legacy.ui.dashboards import DashboardPanelTestSuiteCounter
 from evidently.legacy.ui.dashboards import PanelValue
 from evidently.legacy.ui.dashboards import PlotType
-from evidently.legacy.ui.dashboards import TestSuitePanelType
 from evidently.legacy.ui.dashboards import ReportFilter
 from evidently.legacy.ui.dashboards import TestFilter
-from evidently.legacy.tests.base_test import TestStatus
-#from evidently.legacy.ui.demo_projects import DemoProject
-#from evidently.legacy.ui.workspace import WorkspaceBase
-from evidently.legacy.renderers.html_widgets import WidgetSize
+from evidently.legacy.ui.dashboards import TestSuitePanelType
+from evidently.legacy.ui.type_aliases import ZERO_UUID
+from evidently.legacy.ui.workspace import Workspace
+from evidently.metrics import ValueDrift, RowCount, ColumnCount, Precision, UniqueValueCount
+from evidently.metrics.column_statistics import CategoryCount
+from evidently.metrics.column_statistics import InRangeValueCount
+from evidently.metrics.column_statistics import MeanValue
+from evidently.presets import ClassificationQuality
+from evidently.presets import DatasetStats
 
 
 def create_data():
