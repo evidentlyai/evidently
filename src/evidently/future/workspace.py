@@ -4,6 +4,7 @@ import uuid
 from abc import ABC
 from abc import abstractmethod
 from json import JSONDecodeError
+from typing import Any
 from typing import Dict
 from typing import List
 from typing import Literal
@@ -420,24 +421,27 @@ class DashboardTabModel(BaseModel):
     panels: List[PanelID]
 
 
-class SeriesSelector(BaseModel):
+class PanelMetric(BaseModel):
+    legend: Optional[str] = None
+    view_params: Dict[str, Any] = Field(default_factory=dict)
     tags: List[str] = Field(default_factory=list)
     metadata: Dict[str, str] = Field(default_factory=dict)
-    metric_type: str
-    labels: Dict[str, str] = Field(default_factory=dict)
+    metric: str
+    metric_labels: Dict[str, str] = Field(default_factory=dict)
 
 
-class DashboardPanelModel(BaseModel):
+class DashboardPanelPlot(BaseModel):
     id: PanelID = Field(default_factory=uuid6.uuid7)
     title: Optional[str]
-    size: Optional[str]
-    series_selector: List[SeriesSelector]
-    params: Dict[str, str]
+    subtitle: Optional[str]
+    size: str = "full"
+    values: List[PanelMetric]
+    plot_params: Dict[str, Any] = Field(default_factory=dict)
 
 
 class DashboardModel(BaseModel):
     tabs: List[DashboardTabModel]
-    panels: List[DashboardPanelModel]
+    panels: List[DashboardPanelPlot]
 
 
 class _CloudProjectDashboard:
@@ -462,7 +466,7 @@ class _CloudProjectDashboard:
         _dashboard_model.tabs = new_tabs
         self._save_dashboard(_dashboard_model)
 
-    def add_panel(self, panel: DashboardPanelModel, tab: Optional[str] = None, create_if_not_exists: bool = True):
+    def add_panel(self, panel: DashboardPanelPlot, tab: Optional[str] = None, create_if_not_exists: bool = True):
         _dashboard_model = self._fetch_model()
         _dashboard_model.panels.append(panel)
         _tab_id = None
@@ -525,10 +529,10 @@ class _CloudProjectDashboard:
             + "\n    ".join(
                 f"Panel '{p.title}' ({p.id})\n      "
                 + "\n      ".join(
-                    f"Series metric_type={s.metric_type}"
+                    f"Series metric={s.metric}{(' as ' + s.legend) if s.legend else ''}"
                     + f" (tags={s.tags},metadata={s.metadata})"
-                    + f" labels={s.labels}"
-                    for s in p.series_selector
+                    + f" metric_labels={s.metric_labels} view_params={s.view_params}"
+                    for s in p.values
                 )
                 for p in _model.panels
                 if p.id in tab.panels
