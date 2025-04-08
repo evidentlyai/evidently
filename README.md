@@ -85,81 +85,85 @@ conda install -c conda-forge evidently
 
 ### LLM evals 
 
-> This is a simple Hello World. Check the Tutorials for more: [Tabular data](https://docs.evidentlyai.com/quickstart_ml) or [LLM evaluation](https://docs.evidentlyai.com/quickstart_llm).
+> This is a simple Hello World. Check the Tutorials for more: [LLM evaluation](https://docs.evidentlyai.com/quickstart_llm).
 
-Import the **Test Suite**, evaluation Preset and toy tabular dataset.
+Import the Report, evaluation Preset and toy tabular dataset.
 
 ```python
 import pandas as pd
-
 from sklearn import datasets
 
-from evidently.test_suite import TestSuite
-from evidently.test_preset import DataStabilityTestPreset
+from evidently.future.report import Report
+from evidently.future.presets import DataDriftPreset
 
 iris_data = datasets.load_iris(as_frame=True)
 iris_frame = iris_data.frame
 ```
 
-Split the `DataFrame` into reference and current. Run the **Data Stability** Test Suite that will automatically generate checks on column value ranges, missing values, etc. from the reference. Get the output in Jupyter notebook:
+Run the **Data Drift** evaluation preset that will test for shift in column distributions. Take the first 60 rows of the dataframe as "current" data and the following as reference.  Get the output in Jupyter notebook:
 
 ```python
-data_stability= TestSuite(tests=[
-    DataStabilityTestPreset(),
-])
-data_stability.run(current_data=iris_frame.iloc[:60], reference_data=iris_frame.iloc[60:], column_mapping=None)
-data_stability
+report = Report([
+    DataDriftPreset(method="psi")
+],
+include_tests="True")
+my_eval = report.run(iris_frame.iloc[:60], iris_frame.iloc[60:])
+my_eval
 ```
 
 You can also save an HTML file. You'll need to open it from the destination folder.
 
 ```python
-data_stability.save_html("file.html")
+my_eval.save_html("file.html")
 ```
 
-To get the output as JSON:
+To get the output as JSON or Python dictionary:
 ```python
-data_stability.json()
+my_eval.json()
+# my_eval.dict()
 ```
-You can choose other Presets, individual Tests and set conditions.
+You can choose other Presets, create Reports from indiviudal Metrics and configure pass/fail conditions. 
 
 ### Data and ML evals
 
-Import the **Report**, evaluation Preset and toy tabular dataset.
+> This is a simple Hello World. Check the Tutorials for more: [Tabular data](https://docs.evidentlyai.com/quickstart_ml).
+
+Import the Report, evaluation Preset and toy tabular dataset.
 
 ```python
 import pandas as pd
-
 from sklearn import datasets
 
-from evidently.report import Report
-from evidently.metric_preset import DataDriftPreset
+from evidently.future.report import Report
+from evidently.future.presets import DataDriftPreset
 
 iris_data = datasets.load_iris(as_frame=True)
 iris_frame = iris_data.frame
 ```
 
-Run the **Data Drift** Report that will compare column distributions between `current` and `reference`:
-```python
-data_drift_report = Report(metrics=[
-    DataDriftPreset(),
-])
+Run the **Data Drift** evaluation preset that will test for shift in column distributions. Take the first 60 rows of the dataframe as "current" data and the following as reference.  Get the output in Jupyter notebook:
 
-data_drift_report.run(current_data=iris_frame.iloc[:60], reference_data=iris_frame.iloc[60:], column_mapping=None)
-data_drift_report
-
-```
-Save the report as HTML. You'll later need to open it from the destination folder.
 ```python
-data_drift_report.save_html("file.html")
+report = Report([
+    DataDriftPreset(method="psi")
+],
+include_tests="True")
+my_eval = report.run(iris_frame.iloc[:60], iris_frame.iloc[60:])
+my_eval
 ```
 
-To get the output as JSON:
+You can also save an HTML file. You'll need to open it from the destination folder.
+
 ```python
-data_drift_report.json()
+my_eval.save_html("file.html")
 ```
 
-You can choose other Presets and individual Metrics, including LLM evaluations for text data.
+To get the output as JSON or Python dictionary:
+```python
+my_eval.json()
+# my_eval.dict()
+```
+You can choose other Presets, create Reports from indiviudal Metrics and configure pass/fail conditions. 
 
 ## Monitoring dashboard
 > This launches a demo project in the Evidently UI. Check tutorials for [Self-hosting](https://docs.evidentlyai.com/tutorials-and-examples/tutorial-monitoring) or [Evidently Cloud](https://docs.evidentlyai.com/tutorials-and-examples/tutorial-cloud).
