@@ -63,7 +63,7 @@ Evidently Cloud offers a generous free tier and extra features like dataset and 
 
 | Dashboard |
 |--|
-|![Dashboard example](docs/book/.gitbook/assets/main/dashboard.gif)|
+|![Dashboard example](https://github.com/evidentlyai/docs/blob/eb1630cdd80d31d55921ff4d34fc7b5e6e9c9f90/images/dashboard_llm_tabs.gif)|
 
 # :woman_technologist: Install Evidently
 
