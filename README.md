@@ -22,47 +22,36 @@
   <a href="https://www.evidentlyai.com/register">Evidently Cloud</a>
 </p>
 
-# :new: New release
-
-**Evidently 0.4.25**. LLM evaluation -> [Tutorial](https://docs.evidentlyai.com/tutorials-and-examples/tutorial-llm)
-
 # :bar_chart: What is Evidently?
 
 Evidently is an open-source Python library for ML and LLM evaluation and observability. It helps evaluate, test, and monitor AI-powered systems and data pipelines from experimentation to production. 
 
-* 🔡 Works with tabular, text data, and embeddings.
+* 🔡 Works with tabular and text data.
 * ✨ Supports predictive and generative systems, from classification to RAG.
 * 📚 100+ built-in metrics from data drift detection to LLM judges.
-* 🛠️ Python interface for custom metrics and tests. 
+* 🛠️ Python interface for custom metrics. 
 * 🚦 Both offline evals and live monitoring.
 * 💻 Open architecture: easily export data and integrate with existing tools. 
 
-Evidently is very modular. You can start with one-off evaluations using `Reports` or `Test Suites` in Python or get a real-time monitoring `Dashboard` service.
+Evidently is very modular. You can start with one-off evaluations using `Reports` in Python or host a monitoring `Dashboard` service.
 
-## 1. Reports
+## 1. Reports and Test Suites 
 
-**Reports** compute various data, ML and LLM quality metrics. You can start with Presets or customize.
+**Reports** compute and summarize various data, ML and LLM quality metrics. You can start with Presets or customize.
 * Out-of-the-box interactive visuals.
-* Best for exploratory analysis and debugging.
-* Get results in Python, export as JSON, Python dictionary, HTML, DataFrame, or view in monitoring UI.
+* Best for experiments, exploratory analysis and debugging.
+* Get results in Python, export as JSON, Python dictionary, HTML, or view in monitoring UI.
+
+You can convert your Report into a **Test Suite** by adding pass/fail conditions on Metric values.
+* Best for regression testing, CI/CD checks, or data validation.
+* Zero setup option: auto-generate test conditions from the reference dataset.
+* Simple syntax to set test conditions as `gt` (greater than), `lt` (less than), etc.
 
 | Reports |
 |--|
-|![Report example](docs/book/.gitbook/assets/main/reports-min.png)|
+|![Report example](https://github.com/evidentlyai/docs/blob/eb1630cdd80d31d55921ff4d34fc7b5e6e9c9f90/images/concepts/report_test_preview.gif))|
 
-## 2. Test Suites
-
-**Test Suites** check for defined conditions on metric values and return a pass or fail result.
-* Best for regression testing, CI/CD checks, or data validation pipelines.
-* Zero setup option: auto-generate test conditions from the reference dataset.
-* Simple syntax to set custom test conditions as `gt` (greater than), `lt` (less than), etc.
-* Get results in Python, export as JSON, Python dictionary, HTML, DataFrame, or view in monitoring UI.
-
-| Test Suite |
-|--|
-|![Test example](docs/book/.gitbook/assets/main/tests.gif)|
-
-## 3. Monitoring Dashboard
+## 2. Monitoring Dashboard
 
 **Monitoring UI** service helps visualize metrics and test results over time.
 
@@ -70,7 +59,7 @@ You can choose:
 * Self-host the open-source version. [Live demo](https://demo.evidentlyai.com).
 * Sign up for [Evidently Cloud](https://www.evidentlyai.com/register) (Recommended).
 
-Evidently Cloud offers a generous free tier and extra features like user management, alerting, and no-code evals.
+Evidently Cloud offers a generous free tier and extra features like dataset and user management, alerting, and no-code evals.
 
 | Dashboard |
 |--|
@@ -91,8 +80,11 @@ conda install -c conda-forge evidently
 
 # :arrow_forward: Getting started
 
-### Option 1: Test Suites
-> This is a simple Hello World. Check the Tutorials for more: [Tabular data](https://docs.evidentlyai.com/tutorials-and-examples/tutorial_reports_tests) or [LLM evaluation](https://docs.evidentlyai.com/tutorials-and-examples/tutorial-llm).
+## Reports
+
+### LLM evals 
+
+> This is a simple Hello World. Check the Tutorials for more: [Tabular data](https://docs.evidentlyai.com/quickstart_ml) or [LLM evaluation](https://docs.evidentlyai.com/quickstart_llm).
 
 Import the **Test Suite**, evaluation Preset and toy tabular dataset.
 
@@ -130,7 +122,7 @@ data_stability.json()
 ```
 You can choose other Presets, individual Tests and set conditions.
 
-### Option 2: Reports
+### Data and ML evals
 
 Import the **Report**, evaluation Preset and toy tabular dataset.
 
@@ -168,7 +160,7 @@ data_drift_report.json()
 
 You can choose other Presets and individual Metrics, including LLM evaluations for text data.
 
-### Option 3: ML monitoring dashboard
+## Monitoring dashboard
 > This launches a demo project in the Evidently UI. Check tutorials for [Self-hosting](https://docs.evidentlyai.com/tutorials-and-examples/tutorial-monitoring) or [Evidently Cloud](https://docs.evidentlyai.com/tutorials-and-examples/tutorial-cloud).
 
 Recommended step: create a virtual environment and activate it.
@@ -187,7 +179,7 @@ Access Evidently UI service in your browser. Go to the **localhost:8000**.
 
 # 🚦 What can you evaluate?
 
-Evidently has 100+ built-in evals. You can also add custom ones. Each metric has an optional visualization: you can use it in `Reports`, `Test Suites`, or plot on a `Dashboard`.
+Evidently has 100+ built-in evals. You can also add custom ones. 
 
 Here are examples of things you can check:
 
@@ -207,16 +199,7 @@ Here are examples of things you can check:
 We welcome contributions! Read the [Guide](CONTRIBUTING.md) to learn more.
 
 # :books: Documentation
-For more information, refer to a complete <a href="https://docs.evidentlyai.com">Documentation</a>. You can start with the tutorials:
-* [Get Started with Tabular and ML Evaluation](https://docs.evidentlyai.com/tutorials-and-examples/tutorial_reports_tests)
-* [Get Started with LLM Evaluation](https://docs.evidentlyai.com/tutorials-and-examples/tutorial-llm)
-* [Self-hosting ML monitoring Dashboard](https://docs.evidentlyai.com/tutorials-and-examples/tutorial-monitoring)
-* [Cloud ML monitoring Dashboard](https://docs.evidentlyai.com/tutorials-and-examples/tutorial-cloud)
-
-See more examples in the [Docs]([https://docs.evidentlyai.com/tutorials-and-examples](https://docs.evidentlyai.com/tutorials-and-examples/examples)).
-
-## How-to guides
-Explore the [How-to guides](https://github.com/evidentlyai/evidently/tree/main/examples/how_to_questions) to understand specific features in Evidently.
+For more examples, refer to a complete <a href="https://docs.evidentlyai.com">Documentation</a>.
 
 # :white_check_mark: Discord Community
 If you want to chat and connect, join our [Discord community](https://discord.gg/xZjKRaNp8b)!
