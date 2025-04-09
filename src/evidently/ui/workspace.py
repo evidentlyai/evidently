@@ -1,9 +1,11 @@
+import abc
 import io
 import os
 import uuid
 from abc import ABC
 from abc import abstractmethod
 from json import JSONDecodeError
+from typing import Any
 from typing import Dict
 from typing import List
 from typing import Literal
@@ -14,26 +16,29 @@ from typing import Union
 from typing import overload
 
 import pandas as pd
+import uuid6
 from requests import HTTPError
 from requests import Response
 
 from evidently._pydantic_compat import BaseModel
-from evidently._pydantic_compat import PrivateAttr
+from evidently._pydantic_compat import Field
 from evidently._pydantic_compat import parse_obj_as
 from evidently.core.datasets import DataDefinition
 from evidently.core.datasets import Dataset
 from evidently.core.report import Snapshot
+from evidently.errors import EvidentlyError
+from evidently.legacy.core import new_id
 from evidently.legacy.ui.api.models import OrgModel
 from evidently.legacy.ui.api.service import EVIDENTLY_APPLICATION_NAME
 from evidently.legacy.ui.base import Org
-from evidently.legacy.ui.base import Project
-from evidently.legacy.ui.dashboards import DashboardConfig
 from evidently.legacy.ui.storage.common import SECRET_HEADER_NAME
 from evidently.legacy.ui.type_aliases import STR_UUID
 from evidently.legacy.ui.type_aliases import DatasetID
 from evidently.legacy.ui.type_aliases import OrgID
+from evidently.legacy.ui.type_aliases import PanelID
 from evidently.legacy.ui.type_aliases import ProjectID
 from evidently.legacy.ui.type_aliases import SnapshotID
+from evidently.legacy.ui.type_aliases import TabID
 from evidently.legacy.ui.workspace.cloud import ACCESS_TOKEN_COOKIE
 from evidently.legacy.ui.workspace.cloud import TOKEN_HEADER_NAME
 from evidently.legacy.ui.workspace.cloud import NamedBytesIO
@@ -42,12 +47,208 @@ from evidently.legacy.ui.workspace.remote import RemoteBase
 from evidently.legacy.ui.workspace.remote import T
 
 
-class ProjectV2(Project):
-    _workspace: Optional["WorkspaceBase"] = PrivateAttr(None)
+class DashboardTabModel(BaseModel):
+    id: TabID = Field(default_factory=uuid6.uuid7)
+    title: Optional[str]
+    panels: List[PanelID]
 
-    def bind_workspace(self, ws: "WorkspaceBase") -> "ProjectV2":
-        self._workspace = ws
-        return self
+
+class PanelMetric(BaseModel):
+    legend: Optional[str] = None
+    tags: List[str] = Field(default_factory=list)
+    metadata: Dict[str, str] = Field(default_factory=dict)
+    metric: str
+    metric_labels: Dict[str, str] = Field(default_factory=dict)
+    view_params: Dict[str, Any] = Field(default_factory=dict)
+
+
+class DashboardPanelPlot(BaseModel):
+    id: PanelID = Field(default_factory=uuid6.uuid7)
+    title: str
+    subtitle: Optional[str]
+    size: Optional[str]
+    values: List[PanelMetric]
+    plot_params: Dict[str, Any] = Field(default_factory=dict)
+
+
+class DashboardModel(BaseModel):
+    tabs: List[DashboardTabModel]
+    panels: List[DashboardPanelPlot]
+
+
+class ProjectDashboard:
+    @property
+    @abc.abstractmethod
+    def project_id(self) -> ProjectID:
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def add_tab(self, tab: str):
+        raise NotImplementedError
+
+    @abstractmethod
+    def delete_tab(self, tab: str):
+        raise NotImplementedError
+
+    @abstractmethod
+    def add_panel(self, panel: DashboardPanelPlot, tab: Optional[str], create_if_not_exists: bool = True):
+        raise NotImplementedError
+
+    @abstractmethod
+    def delete_panel(self, panel: str, tab: str):
+        raise NotImplementedError
+
+    @abstractmethod
+    def model(self) -> DashboardModel:
+        raise NotImplementedError
+
+    def __repr__(self):
+        _model = self.model()
+        return f"Dashboard for project {self.project_id}\n  " + "\n  ".join(
+            f"Tab '{tab.title}' ({tab.id})\n    "
+            + "\n    ".join(
+                f"Panel '{p.title}' ({p.id})\n      "
+                + "\n      ".join(
+                    f"Series metric_type={s.metric}"
+                    + f" (tags={s.tags},metadata={s.metadata})"
+                    + f" labels={s.metric_labels}"
+                    for s in p.values
+                )
+                for p in _model.panels
+                if p.id in tab.panels
+            )
+            for tab in _model.tabs
+        )
+
+
+class _RemoteProjectDashboard(ProjectDashboard):
+    _project_id: ProjectID
+    _workspace: "WorkspaceBase"
+
+    def __init__(self, project_id: ProjectID, workspace: "WorkspaceBase"):
+        self._project_id = project_id
+        self._workspace = workspace
+
+    @property
+    def project_id(self) -> ProjectID:
+        return self._project_id
+
+    def add_tab(self, tab: str):
+        _dashboard_model = self.model()
+        if any([t.title == tab for t in _dashboard_model.tabs]):
+            raise EvidentlyError(f"Tab {tab} already exists in project {self._project_id} dashboard")
+        _dashboard_model.tabs.append(DashboardTabModel(title=tab, panels=[]))
+        self._workspace.save_dashboard(self.project_id, _dashboard_model)
+
+    def delete_tab(self, tab: str):
+        _dashboard_model = self.model()
+        new_tabs = [t for t in _dashboard_model.tabs if t.title != tab]
+        _dashboard_model.tabs = new_tabs
+        self._workspace.save_dashboard(self.project_id, _dashboard_model)
+
+    def add_panel(self, panel: DashboardPanelPlot, tab: Optional[str] = None, create_if_not_exists: bool = True):
+        _dashboard_model = self.model()
+        _dashboard_model.panels.append(panel)
+        _tab_id = None
+        if tab is not None:
+            for dashboard_tab in _dashboard_model.tabs:
+                if dashboard_tab.title == tab:
+                    dashboard_tab.panels.append(panel.id)
+                    _tab_id = dashboard_tab.id
+            if _tab_id is None and create_if_not_exists:
+                new_tab_id = uuid.uuid4()
+                _dashboard_model.tabs.append(DashboardTabModel(id=new_tab_id, title=tab, panels=[]))
+                _tab_id = new_tab_id
+            elif _tab_id is None and not create_if_not_exists:
+                raise EvidentlyError(
+                    f"Tab {tab} is missing in project {self._project_id} and create_if_not_exists is False"
+                )
+        else:
+            if len(_dashboard_model.tabs) == 0:
+                new_tab_id = uuid.uuid4()
+                _dashboard_model.tabs.append(DashboardTabModel(id=new_tab_id, title="General", panels=[]))
+            _tab_id = _dashboard_model.tabs[0].id
+
+        assert _tab_id is not None
+        for dashboard_tab in _dashboard_model.tabs:
+            if dashboard_tab.id == _tab_id:
+                dashboard_tab.panels.append(panel.id)
+                break
+        self._workspace.save_dashboard(self.project_id, _dashboard_model)
+
+    def delete_panel(self, panel: str, tab: str):
+        _dashboard_model = self.model()
+        _tab = None
+        for t in _dashboard_model.tabs:
+            if t.title == tab:
+                _tab = t
+
+        if _tab is None:
+            raise EvidentlyError(f"Tab {tab} does not exist in project {self._project_id} dashboard")
+
+        new_panels = [p.id for p in _dashboard_model.panels if p.id in _tab.panels and p.title != panel]
+        _tab.panels = new_panels
+
+        self._workspace.save_dashboard(self.project_id, _dashboard_model)
+
+    def model(self):
+        return self._workspace.get_dashboard(self.project_id)
+
+
+class ProjectModel(BaseModel):
+    id: ProjectID = Field(default_factory=new_id)
+    name: str
+    description: Optional[str] = None
+    org_id: Optional[OrgID] = None
+
+
+class Project:
+    _project: ProjectModel
+    _dashboard: ProjectDashboard
+    _workspace: "WorkspaceBase"
+
+    def __init__(
+        self,
+        project: ProjectModel,
+        dashboard: ProjectDashboard,
+        workspace: "WorkspaceBase",
+    ):
+        self._project = project
+        self._workspace = workspace
+        self._dashboard = dashboard
+
+    @property
+    def id(self) -> ProjectID:
+        return self._project.id
+
+    @property
+    def name(self) -> str:
+        return self._project.name
+
+    @name.setter
+    def name(self, value: str):
+        self._project.name = value
+
+    @property
+    def description(self) -> Optional[str]:
+        return self._project.description
+
+    @description.setter
+    def description(self, value: str):
+        self._project.description = value
+
+    def save(self):
+        self._workspace.update_project(self._project)
+
+    @property
+    def dashboard(self) -> ProjectDashboard:
+        return self._dashboard
+
+    def __repr__(self):
+        return f"""Project ID: {self.id}
+Project Name: {self.name}
+Project Description: {self.description}
+        """
 
 
 class SnapshotLink(BaseModel):
@@ -64,10 +265,9 @@ class WorkspaceBase(ABC):
         org_id: Optional[OrgID] = None,
     ) -> Project:
         project = self.add_project(
-            Project(
+            ProjectModel(
                 name=name,
                 description=description,
-                dashboard=DashboardConfig(name=name, panels=[]),
                 org_id=org_id,
             ),
             org_id,
@@ -75,7 +275,7 @@ class WorkspaceBase(ABC):
         return project
 
     @abstractmethod
-    def add_project(self, project: Project, org_id: Optional[OrgID] = None) -> Project:
+    def add_project(self, project: ProjectModel, org_id: Optional[OrgID] = None) -> Project:
         raise NotImplementedError
 
     @abstractmethod
@@ -88,6 +288,10 @@ class WorkspaceBase(ABC):
 
     @abstractmethod
     def list_projects(self, org_id: Optional[OrgID] = None) -> Sequence[Project]:
+        raise NotImplementedError
+
+    @abstractmethod
+    def update_project(self, project: ProjectModel):
         raise NotImplementedError
 
     @abstractmethod
@@ -134,6 +338,14 @@ class WorkspaceBase(ABC):
     ) -> DatasetID:
         raise NotImplementedError
 
+    @abc.abstractmethod
+    def save_dashboard(self, project_id: ProjectID, dashboard: DashboardModel):
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def get_dashboard(self, project_id: ProjectID) -> DashboardModel:
+        raise NotImplementedError
+
 
 class Workspace(WorkspaceBase, ABC):  # todo: local workspace after UI for v2
     pass
@@ -148,16 +360,12 @@ class RemoteWorkspace(RemoteBase, WorkspaceBase):  # todo: reuse cloud ws
             response = self._request("/api/version", "GET")
             assert response.json()["application"] == EVIDENTLY_APPLICATION_NAME
         except (HTTPError, JSONDecodeError, KeyError, AssertionError) as e:
-            raise ValueError(f"Evidenly API not available at {self.base_url}") from e
+            raise ValueError(f"Evidently API not available at {self.base_url}") from e
 
     def __init__(self, base_url: str, secret: Optional[str] = None):
         self.base_url = base_url
         self.secret = secret
         self.verify()
-
-    @classmethod
-    def create(cls, base_url: str):
-        return RemoteWorkspace(base_url)
 
     def _prepare_request(
         self,
@@ -182,7 +390,7 @@ class RemoteWorkspace(RemoteBase, WorkspaceBase):  # todo: reuse cloud ws
             r.headers[SECRET_HEADER_NAME] = self.secret
         return r
 
-    def add_project(self, project: Project, org_id: Optional[OrgID] = None) -> Project:
+    def add_project(self, project: ProjectModel, org_id: Optional[OrgID] = None) -> Project:
         params = {}
         if org_id:
             params["org_id"] = str(org_id)
@@ -190,13 +398,19 @@ class RemoteWorkspace(RemoteBase, WorkspaceBase):  # todo: reuse cloud ws
             "/api/v2/projects", "POST", query_params=params, body=project.dict(), response_model=ProjectID
         )
         p = self.get_project(project_id)
-        assert p is not None
+        if p is None:
+            raise EvidentlyError(
+                f"Failed to receive updated information about project" f" after creation (project_id={project_id})"
+            )
         return p
 
-    def get_project(self, project_id: STR_UUID) -> Optional[Project]:
+    def get_project(self, project_id: STR_UUID) -> Optional["Project"]:
         try:
-            return self._request(f"/api/projects/{project_id}/info", "GET", response_model=ProjectV2).bind_workspace(
-                self
+            _project = self._request(f"/api/projects/{project_id}/info", "GET", response_model=ProjectModel)
+            return Project(
+                project=_project,
+                dashboard=_RemoteProjectDashboard(_project.id, self),
+                workspace=self,
             )
         except (HTTPError,) as e:
             try:
@@ -211,8 +425,15 @@ class RemoteWorkspace(RemoteBase, WorkspaceBase):  # todo: reuse cloud ws
         return self._request(f"/api/v2/projects/{project_id}", "DELETE")
 
     def list_projects(self, org_id: Optional[OrgID] = None) -> Sequence[Project]:
-        projects = self._request("/api/v2/projects", "GET", response_model=List[ProjectV2])
-        return [p.bind_workspace(self) for p in projects]
+        projects = self._request("/api/v2/projects", "GET", response_model=List[ProjectModel])
+        return [Project(p, _RemoteProjectDashboard(p.id, self), self) for p in projects]
+
+    def update_project(self, project: ProjectModel):
+        self._request(
+            f"/api/v2/projects/{project.id}",
+            method="PATCH",
+            body=project.dict(),
+        )
 
     def _add_run(self, project_id: STR_UUID, snapshot: Snapshot):
         raise NotImplementedError  # todo: snapshot api
@@ -221,8 +442,8 @@ class RemoteWorkspace(RemoteBase, WorkspaceBase):  # todo: reuse cloud ws
         raise NotImplementedError  # todo: snapshot api
 
     def search_project(self, project_name: str, org_id: Optional[OrgID] = None) -> Sequence[Project]:
-        projects = self._request(f"/api/projects/search/{project_name}", "GET", response_model=List[ProjectV2])
-        return [p.bind_workspace(self) for p in projects]
+        projects = self._request(f"/api/projects/search/{project_name}", "GET", response_model=List[ProjectModel])
+        return [Project(p, _RemoteProjectDashboard(p.id, self), self) for p in projects]
 
     def add_dataset(
         self,
@@ -233,6 +454,13 @@ class RemoteWorkspace(RemoteBase, WorkspaceBase):  # todo: reuse cloud ws
         link: Optional[SnapshotLink] = None,
     ) -> DatasetID:
         raise NotImplementedError("Adding datasets is not supported yet")
+
+    def save_dashboard(self, project_id: ProjectID, dashboard: DashboardModel):
+        self._request(f"/api/v2/dashboards/{project_id}", method="POST", body=dashboard.dict())
+
+    def get_dashboard(self, project_id: ProjectID) -> DashboardModel:
+        data = self._request(f"/api/v2/dashboards/{project_id}", method="GET").json()
+        return parse_obj_as(DashboardModel, data)
 
 
 class CloudWorkspace(RemoteWorkspace):
@@ -361,7 +589,7 @@ class CloudWorkspace(RemoteWorkspace):
     def create_org(self, name: str) -> Org:
         return self._request("/api/orgs", "POST", body=Org(name=name).dict(), response_model=OrgModel).to_org()
 
-    def list_orgs(self) -> List[OrgModel]:
+    def list_orgs(self) -> List[Org]:
         return [o.to_org() for o in self._request("/api/orgs", "GET", response_model=List[OrgModel])]
 
     def add_dataset(
