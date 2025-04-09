@@ -6,8 +6,6 @@ import type { components, paths } from '~/api/types/endpoints'
 // use Schemas['BaseWidgetInfo'] instead
 import type { WidgetInfo } from '~/api'
 
-import type { Expect, StrictID, TYPE_SATISFIED } from '~/api/types/utils'
-
 export type BackendPaths = paths
 ///////////////////////////////
 ///  TYPES
