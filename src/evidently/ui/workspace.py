@@ -5,7 +5,6 @@ import uuid
 from abc import ABC
 from abc import abstractmethod
 from json import JSONDecodeError
-from typing import Any
 from typing import Dict
 from typing import List
 from typing import Literal
@@ -16,16 +15,14 @@ from typing import Union
 from typing import overload
 
 import pandas as pd
-import uuid6
 from requests import HTTPError
 from requests import Response
 
-from evidently._pydantic_compat import BaseModel
-from evidently._pydantic_compat import Field
 from evidently._pydantic_compat import parse_obj_as
 from evidently.core.datasets import DataDefinition
 from evidently.core.datasets import Dataset
 from evidently.core.report import Snapshot
+from evidently.core.serialization import SnapshotModel
 from evidently.errors import EvidentlyError
 from evidently.legacy.core import new_id
 from evidently.legacy.ui.api.models import OrgModel
@@ -35,90 +32,70 @@ from evidently.legacy.ui.storage.common import SECRET_HEADER_NAME
 from evidently.legacy.ui.type_aliases import STR_UUID
 from evidently.legacy.ui.type_aliases import DatasetID
 from evidently.legacy.ui.type_aliases import OrgID
-from evidently.legacy.ui.type_aliases import PanelID
 from evidently.legacy.ui.type_aliases import ProjectID
 from evidently.legacy.ui.type_aliases import SnapshotID
-from evidently.legacy.ui.type_aliases import TabID
 from evidently.legacy.ui.workspace.cloud import ACCESS_TOKEN_COOKIE
 from evidently.legacy.ui.workspace.cloud import TOKEN_HEADER_NAME
 from evidently.legacy.ui.workspace.cloud import NamedBytesIO
 from evidently.legacy.ui.workspace.cloud import read_multipart_response
 from evidently.legacy.ui.workspace.remote import RemoteBase
 from evidently.legacy.ui.workspace.remote import T
+from evidently.ui.models import DashboardModel
+from evidently.ui.models import DashboardPanelPlot
+from evidently.ui.models import DashboardTabModel
+from evidently.ui.models import ProjectDashboard
+from evidently.ui.models import ProjectModel
+from evidently.ui.models import SnapshotLink
+from evidently.ui.storage.local.base import LocalState
 
 
-class DashboardTabModel(BaseModel):
-    id: TabID = Field(default_factory=uuid6.uuid7)
-    title: Optional[str]
-    panels: List[PanelID]
+class Project:
+    _project: ProjectModel
+    _dashboard: ProjectDashboard
+    _workspace: "WorkspaceBase"
 
+    def __init__(
+        self,
+        project: ProjectModel,
+        dashboard: ProjectDashboard,
+        workspace: "WorkspaceBase",
+    ):
+        self._project = project
+        self._workspace = workspace
+        self._dashboard = dashboard
 
-class PanelMetric(BaseModel):
-    legend: Optional[str] = None
-    tags: List[str] = Field(default_factory=list)
-    metadata: Dict[str, str] = Field(default_factory=dict)
-    metric: str
-    metric_labels: Dict[str, str] = Field(default_factory=dict)
-    view_params: Dict[str, Any] = Field(default_factory=dict)
-
-
-class DashboardPanelPlot(BaseModel):
-    id: PanelID = Field(default_factory=uuid6.uuid7)
-    title: str
-    subtitle: Optional[str]
-    size: Optional[str]
-    values: List[PanelMetric]
-    plot_params: Dict[str, Any] = Field(default_factory=dict)
-
-
-class DashboardModel(BaseModel):
-    tabs: List[DashboardTabModel]
-    panels: List[DashboardPanelPlot]
-
-
-class ProjectDashboard:
     @property
-    @abc.abstractmethod
-    def project_id(self) -> ProjectID:
-        raise NotImplementedError
+    def id(self) -> ProjectID:
+        return self._project.id
 
-    @abc.abstractmethod
-    def add_tab(self, tab: str):
-        raise NotImplementedError
+    @property
+    def name(self) -> str:
+        return self._project.name
 
-    @abstractmethod
-    def delete_tab(self, tab: str):
-        raise NotImplementedError
+    @name.setter
+    def name(self, value: str):
+        self._project.name = value
 
-    @abstractmethod
-    def add_panel(self, panel: DashboardPanelPlot, tab: Optional[str], create_if_not_exists: bool = True):
-        raise NotImplementedError
+    @property
+    def description(self) -> Optional[str]:
+        return self._project.description
 
-    @abstractmethod
-    def delete_panel(self, panel: str, tab: str):
-        raise NotImplementedError
+    @description.setter
+    def description(self, value: str):
+        self._project.description = value
 
-    @abstractmethod
-    def model(self) -> DashboardModel:
-        raise NotImplementedError
+    def save(self):
+        self._workspace.update_project(self._project)
+
+    @property
+    def dashboard(self) -> ProjectDashboard:
+        return self._dashboard
 
     def __repr__(self):
-        _model = self.model()
-        return f"Dashboard for project {self.project_id}\n  " + "\n  ".join(
-            f"Tab '{tab.title}' ({tab.id})\n    "
-            + "\n    ".join(
-                f"Panel '{p.title}' ({p.id})\n      "
-                + "\n      ".join(
-                    f"Series metric_type={s.metric}"
-                    + f" (tags={s.tags},metadata={s.metadata})"
-                    + f" labels={s.metric_labels}"
-                    for s in p.values
-                )
-                for p in _model.panels
-                if p.id in tab.panels
-            )
-            for tab in _model.tabs
-        )
+        return f"""Project ID: {self.id}
+Project Name: {self.name}
+Project Description: {self.description}
+        """
 
 
 class _RemoteProjectDashboard(ProjectDashboard):
@@ -195,68 +172,6 @@ class _RemoteProjectDashboard(ProjectDashboard):
         return self._workspace.get_dashboard(self.project_id)
 
 
-class ProjectModel(BaseModel):
-    id: ProjectID = Field(default_factory=new_id)
-    name: str
-    description: Optional[str] = None
-    org_id: Optional[OrgID] = None
-
-
-class Project:
-    _project: ProjectModel
-    _dashboard: ProjectDashboard
-    _workspace: "WorkspaceBase"
-
-    def __init__(
-        self,
-        project: ProjectModel,
-        dashboard: ProjectDashboard,
-        workspace: "WorkspaceBase",
-    ):
-        self._project = project
-        self._workspace = workspace
-        self._dashboard = dashboard
-
-    @property
-    def id(self) -> ProjectID:
-        return self._project.id
-
-    @property
-    def name(self) -> str:
-        return self._project.name
-
-    @name.setter
-    def name(self, value: str):
-        self._project.name = value
-
-    @property
-    def description(self) -> Optional[str]:
-        return self._project.description
-
-    @description.setter
-    def description(self, value: str):
-        self._project.description = value
-
-    def save(self):
-        self._workspace.update_project(self._project)
-
-    @property
-    def dashboard(self) -> ProjectDashboard:
-        return self._dashboard
-
-    def __repr__(self):
-        return f"""Project ID: {self.id}
-Project Name: {self.name}
-Project Description: {self.description}
-        """
-
-
-class SnapshotLink(BaseModel):
-    snapshot_id: SnapshotID
-    dataset_type: str
-    dataset_subtype: str
-
-
 class WorkspaceBase(ABC):
     def create_project(
         self,
@@ -320,7 +235,15 @@ class WorkspaceBase(ABC):
         return snapshot_id
 
     @abstractmethod
-    def delete_snapshot(self, project_id: STR_UUID, snapshot_id: STR_UUID):
+    def delete_run(self, project_id: STR_UUID, snapshot_id: STR_UUID):
+        raise NotImplementedError
+
+    @abstractmethod
+    def get_run(self, project_id: STR_UUID, snapshot_id: STR_UUID) -> Optional[SnapshotModel]:
+        raise NotImplementedError
+
+    @abstractmethod
+    def list_runs(self, project_id: STR_UUID) -> Sequence[SnapshotID]:
         raise NotImplementedError
 
     @abstractmethod
@@ -347,8 +270,64 @@ class WorkspaceBase(ABC):
         raise NotImplementedError
 
 
-class Workspace(WorkspaceBase, ABC):  # todo: local workspace after UI for v2
-    pass
+class Workspace(WorkspaceBase):
+    def __init__(self, path: str):
+        self.path = path
+        self.state = LocalState(self.path)
+
+    def add_project(self, project: ProjectModel, org_id: Optional[OrgID] = None) -> Project:
+        pwd = self.state.write_project(project)
+        dashboard = _RemoteProjectDashboard(project.id, self)
+        return Project(pwd.project, dashboard, self)
+
+    def get_project(self, project_id: STR_UUID) -> Optional[Project]:
+        try:
+            pwd = self.state.read_project(project_id)
+        except FileNotFoundError:
+            return None
+        return Project(pwd.project, _RemoteProjectDashboard(pwd.project.id, self), self)
+
+    def delete_project(self, project_id: STR_UUID):
+        self.state.delete_project(project_id)
+
+    def list_projects(self, org_id: Optional[OrgID] = None) -> Sequence[Project]:
+        return [self.get_project(project_id) for project_id in self.state.list_projects()]
+
+    def update_project(self, project: ProjectModel):
+        self.state.write_project(project)
+
+    def _add_run(self, project_id: STR_UUID, snapshot: Snapshot) -> SnapshotID:
+        snapshot_id = new_id()
+        self.state.write_snapshot(project_id, snapshot_id, snapshot.to_snapshot_model())
+        return snapshot_id
+
+    def get_run(self, project_id: STR_UUID, snapshot_id: STR_UUID) -> Optional[SnapshotModel]:
+        return self.state.read_snapshot(project_id, snapshot_id)
+
+    def list_runs(self, project_id: STR_UUID) -> Sequence[SnapshotID]:
+        return self.state.list_snapshots(project_id)
+
+    def delete_run(self, project_id: STR_UUID, snapshot_id: STR_UUID):
+        self.state.delete_snapshot(project_id, snapshot_id)
+
+    def search_project(self, project_name: str, org_id: Optional[OrgID] = None) -> Sequence[Project]:
+        return [p for p in self.list_projects(org_id) if p.name == project_name]
+
+    def add_dataset(
+        self,
+        project_id: STR_UUID,
+        dataset: Dataset,
+        name: str,
+        description: Optional[str],
+        link: Optional[SnapshotLink] = None,
+    ) -> DatasetID:
+        raise NotImplementedError("Datasets are not supported yet in local workspace")
+
+    def save_dashboard(self, project_id: ProjectID, dashboard: DashboardModel):
+        self.state.write_dashboard(project_id, dashboard)
+
+    def get_dashboard(self, project_id: ProjectID) -> DashboardModel:
+        return self.state.read_dashboard(project_id)
 
 
 class RemoteWorkspace(RemoteBase, WorkspaceBase):  # todo: reuse cloud ws
@@ -438,7 +417,13 @@ class RemoteWorkspace(RemoteBase, WorkspaceBase):  # todo: reuse cloud ws
     def _add_run(self, project_id: STR_UUID, snapshot: Snapshot):
         raise NotImplementedError  # todo: snapshot api
 
-    def delete_snapshot(self, project_id: STR_UUID, snapshot_id: STR_UUID):
+    def delete_run(self, project_id: STR_UUID, snapshot_id: STR_UUID):
+        raise NotImplementedError  # todo: snapshot api
+
+    def get_run(self, project_id: STR_UUID, snapshot_id: STR_UUID) -> Optional[SnapshotModel]:
+        raise NotImplementedError  # todo: snapshot api
+
+    def list_runs(self, project_id: STR_UUID) -> Sequence[SnapshotID]:
         raise NotImplementedError  # todo: snapshot api
 
     def search_project(self, project_name: str, org_id: Optional[OrgID] = None) -> Sequence[Project]:
