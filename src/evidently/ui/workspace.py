@@ -99,6 +99,14 @@ class ProjectDashboard:
         raise NotImplementedError
 
     @abstractmethod
+    def clear_tab(self, tag: str):
+        raise NotImplementedError
+
+    @abstractmethod
+    def clear_dashboard(self):
+        raise NotImplementedError
+
+    @abstractmethod
     def model(self) -> DashboardModel:
         raise NotImplementedError
 
@@ -186,13 +194,36 @@ class _RemoteProjectDashboard(ProjectDashboard):
         if _tab is None:
             raise EvidentlyError(f"Tab {tab} does not exist in project {self._project_id} dashboard")
 
-        new_panels = [p.id for p in _dashboard_model.panels if p.id in _tab.panels and p.title != panel]
-        _tab.panels = new_panels
+        new_panels = [p for p in _dashboard_model.panels if p.id in _tab.panels and p.title != panel]
+        _tab.panels = [p.id for p in new_panels]
+        _dashboard_model.panels = new_panels
 
         self._workspace.save_dashboard(self.project_id, _dashboard_model)
 
     def model(self):
         return self._workspace.get_dashboard(self.project_id)
+
+    def clear_tab(self, tab: str):
+        _dashboard_model = self.model()
+        _tab = None
+        for t in _dashboard_model.tabs:
+            if t.title == tab:
+                _tab = t
+
+        if _tab is None:
+            raise EvidentlyError(f"Tab {tab} does not exist in project {self._project_id} dashboard")
+
+        new_panels = [p for p in _dashboard_model.panels if p not in _tab.panels]
+        _dashboard_model.panels = new_panels
+        _tab.panels = []
+
+        self._workspace.save_dashboard(self.project_id, _dashboard_model)
+
+    def clear_dashboard(self):
+        _dashboard_model = self.model()
+        _dashboard_model.panels = []
+        _dashboard_model.tabs = []
+        self._workspace.save_dashboard(self.project_id, _dashboard_model)
 
 
 class ProjectModel(BaseModel):
