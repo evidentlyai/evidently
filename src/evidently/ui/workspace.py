@@ -459,8 +459,8 @@ class RemoteWorkspace(RemoteBase, WorkspaceBase):  # todo: reuse cloud ws
         self._request(f"/api/v2/dashboards/{project_id}", method="POST", body=dashboard.dict())
 
     def get_dashboard(self, project_id: ProjectID) -> DashboardModel:
-        data = self._request(f"/api/v2/dashboards/{project_id}", method="GET").json()
-        return parse_obj_as(DashboardModel, data)
+        data = self._request(f"/api/v2/dashboards/{project_id}", method="GET", response_model=DashboardModel)
+        return data
 
 
 class CloudWorkspace(RemoteWorkspace):
