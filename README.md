@@ -7,7 +7,7 @@
 <a href="https://github.com/evidentlyai/evidently/blob/main/LICENSE" target="_blank"><img src="https://img.shields.io/github/license/evidentlyai/evidently" alt="License"></a>
 <a href="https://pypi.org/project/evidently/" target="_blank"><img src="https://img.shields.io/pypi/v/evidently" alt="PyPi"></a>
 
-![Evidently](/docs/images/gh_header.png)
+![Evidently](/images/gh_header.png)
 
 </p>
 <p align="center">
