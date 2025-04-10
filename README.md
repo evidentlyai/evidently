@@ -90,10 +90,10 @@ Import the necessary components:
 
 ```python
 import pandas as pd
-from evidently.future.datasets import Dataset, DataDefinition, Descriptor
-from evidently.future.descriptors import Sentiment, TextLength, Contains
-from evidently.future.report import Report
-from evidently.future.presets import TextEvals
+from evidently import Report
+from evidently import Dataset, DataDefinition
+from evidently.descriptors import Sentiment, TextLength, Contains
+from evidently.presets import TextEvals
 ```
 
 Create a toy dataset with questions and answers. 
@@ -148,7 +148,7 @@ Import the Report, evaluation Preset and toy tabular dataset.
 import pandas as pd
 from sklearn import datasets
 
-from evidently.report import Report
+from evidently import Report
 from evidently.presets import DataDriftPreset
 
 iris_data = datasets.load_iris(as_frame=True)
