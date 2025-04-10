@@ -11,7 +11,7 @@ from evidently.core.report import Report
 from . import _registry
 from ._version import __version__
 from ._version import version_info
-from .legacy.nbextension import _jupyter_nbextension_paths
+from .nbextension import _jupyter_nbextension_paths
 
 __all__ = [
     "__version__",

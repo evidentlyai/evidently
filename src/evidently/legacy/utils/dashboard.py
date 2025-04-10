@@ -13,7 +13,7 @@ import evidently
 from evidently.legacy.model.dashboard import DashboardInfo
 from evidently.legacy.utils import NumpyEncoder
 
-STATIC_PATH = os.path.join(evidently.__path__[0], "legacy", "nbextension", "static")
+STATIC_PATH = os.path.join(evidently.__path__[0], "nbextension", "static")
 
 
 class SaveMode(Enum):
