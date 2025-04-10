@@ -2,7 +2,6 @@ import datetime
 
 import pytest
 import uuid6
-from pytest_lazy_fixtures import lf
 
 from evidently.core.report import Report
 from evidently.core.report import Snapshot
@@ -15,7 +14,7 @@ from evidently.ui.workspace import WorkspaceBase
 
 
 @pytest.fixture
-def local_workspace(tmpdir):
+def workspace(tmpdir):
     return Workspace(str(tmpdir))
 
 
@@ -45,23 +44,17 @@ def mock_dashboard():
     )
 
 
-for_all_workspaces = pytest.mark.parametrize("workspace", [lf("local_workspace")])
-
-
-@for_all_workspaces
 def test_add_get_project(workspace: WorkspaceBase, mock_project: ProjectModel):
     workspace.add_project(mock_project)
     assert workspace.get_project(mock_project.id)._project == mock_project
 
 
-@for_all_workspaces
 def test_list_project(workspace: WorkspaceBase, mock_project: ProjectModel):
     assert len(workspace.list_projects()) == 0
     workspace.add_project(mock_project)
     assert len(workspace.list_projects()) == 1
 
 
-@for_all_workspaces
 def test_delete_project(workspace: WorkspaceBase, mock_project: ProjectModel):
     assert len(workspace.list_projects()) == 0
     workspace.add_project(mock_project)
@@ -70,14 +63,12 @@ def test_delete_project(workspace: WorkspaceBase, mock_project: ProjectModel):
     assert len(workspace.list_projects()) == 0
 
 
-@for_all_workspaces
 def test_add_snapshot(workspace: WorkspaceBase, mock_project: ProjectModel, mock_snapshot):
     project = workspace.add_project(mock_project)
     workspace.add_run(project.id, mock_snapshot)
     # todo
 
 
-@for_all_workspaces
 def test_list_snapshot(workspace: WorkspaceBase, mock_project: ProjectModel, mock_snapshot):
     project = workspace.add_project(mock_project)
     assert len(workspace.list_runs(project.id)) == 0
@@ -85,7 +76,6 @@ def test_list_snapshot(workspace: WorkspaceBase, mock_project: ProjectModel, moc
     assert len(workspace.list_runs(project.id)) == 1
 
 
-@for_all_workspaces
 def test_delete_snapshot(workspace: WorkspaceBase, mock_project: ProjectModel, mock_snapshot):
     project = workspace.add_project(mock_project)
     assert len(workspace.list_runs(project.id)) == 0
@@ -95,7 +85,6 @@ def test_delete_snapshot(workspace: WorkspaceBase, mock_project: ProjectModel, m
     assert len(workspace.list_runs(project.id)) == 0
 
 
-@for_all_workspaces
 def test_add_get_dashboard(workspace: WorkspaceBase, mock_project: ProjectModel, mock_dashboard):
     project = workspace.add_project(mock_project)
     workspace.save_dashboard(project.id, mock_dashboard)
