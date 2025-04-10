@@ -29,13 +29,13 @@ Evidently is an open-source Python library to evaluate, test, and monitor ML and
 * 🔡 Works with tabular and text data.
 * ✨ Supports evals for predictive and generative tasks, from classification to RAG.
 * 📚 100+ built-in metrics from data drift detection to LLM judges.
-* 🛠️ Python interface for custom metrics. 
+* 🛠️ Python interface for custom metrics.
 * 🚦 Both offline evals and live monitoring.
-* 💻 Open architecture: easily export data and integrate with existing tools. 
+* 💻 Open architecture: easily export data and integrate with existing tools.
 
 Evidently is very modular. You can start with one-off evaluations or host a full monitoring service.
 
-## 1. Reports and Test Suites 
+## 1. Reports and Test Suites
 
 **Reports** compute and summarize various data, ML and LLM quality evals.
 * Start with Presets and built-in metrics or customize.
@@ -82,7 +82,7 @@ conda install -c conda-forge evidently
 
 ## Reports
 
-### LLM evals 
+### LLM evals
 
 > This is a simple Hello World. Check the Tutorials for more: [LLM evaluation](https://docs.evidentlyai.com/quickstart_llm).
 
@@ -96,13 +96,13 @@ from evidently.descriptors import Sentiment, TextLength, Contains
 from evidently.presets import TextEvals
 ```
 
-Create a toy dataset with questions and answers. 
+Create a toy dataset with questions and answers.
 
 ```python
 eval_df = pd.DataFrame([
     ["What is the capital of Japan?", "The capital of Japan is Tokyo."],
     ["Who painted the Mona Lisa?", "Leonardo da Vinci."],
-    ["Can you write an essay?", "I'm sorry, but I can't assist with homework."]], 
+    ["Can you write an essay?", "I'm sorry, but I can't assist with homework."]],
                        columns=["question", "answer"])
 ```
 
@@ -136,7 +136,7 @@ my_eval
 # my_eval.json()
 # my_eval.dict()
 ```
-You can also choose other evaluators, including LLM-as-a-judge and configure pass/fail conditions. 
+You can also choose other evaluators, including LLM-as-a-judge and configure pass/fail conditions.
 
 ### Data and ML evals
 
@@ -177,7 +177,7 @@ To get the output as JSON or Python dictionary:
 my_eval.json()
 # my_eval.dict()
 ```
-You can choose other Presets, create Reports from indiviudal Metrics and configure pass/fail conditions. 
+You can choose other Presets, create Reports from indiviudal Metrics and configure pass/fail conditions.
 
 ## Monitoring dashboard
 
@@ -195,11 +195,11 @@ After installing Evidently (`pip install evidently`), run the Evidently UI with 
 evidently ui --demo-projects all
 ```
 
-Visit **localhost:8000** to access the UI. 
+Visit **localhost:8000** to access the UI.
 
 # 🚦 What can you evaluate?
 
-Evidently has 100+ built-in evals. You can also add custom ones. 
+Evidently has 100+ built-in evals. You can also add custom ones.
 
 Here are examples of things you can check:
 
