@@ -51,6 +51,7 @@ class ProjectModel(BaseModel):
     name: str
     description: Optional[str] = None
     org_id: Optional[OrgID] = None
+    version: str = "2"
 
 
 class ProjectDashboard:

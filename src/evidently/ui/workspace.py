@@ -84,18 +84,6 @@ class Project:
     def description(self, value: str):
         self._project.description = value
 
-    @abstractmethod
-    def clear_tab(self, tag: str):
-        raise NotImplementedError
-
-    @abstractmethod
-    def clear_dashboard(self):
-        raise NotImplementedError
-
-    @abstractmethod
-    def model(self) -> DashboardModel:
-        raise NotImplementedError
-
     def save(self):
         self._workspace.update_project(self._project)
 
@@ -108,6 +96,13 @@ class Project:
 Project Name: {self.name}
 Project Description: {self.description}
         """
+
+    def dict(self):
+        return self._project.dict()
+
+    @property
+    def version(self):
+        return self._project.version
 
 
 class _RemoteProjectDashboard(ProjectDashboard):
