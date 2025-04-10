@@ -364,6 +364,10 @@ class Workspace(WorkspaceBase):
     def get_dashboard(self, project_id: ProjectID) -> DashboardModel:
         return self.state.read_dashboard(project_id)
 
+    @classmethod
+    def create(cls, path: str = "workspace"):
+        return Workspace(path)
+
 
 class RemoteWorkspace(RemoteBase, WorkspaceBase):  # todo: reuse cloud ws
     def get_url(self):

@@ -8,12 +8,13 @@ from evidently.core.serialization import SnapshotModel
 from evidently.legacy.ui.storage.local.base import FSLocation
 from evidently.legacy.ui.type_aliases import ProjectID
 from evidently.legacy.ui.type_aliases import SnapshotID
-from evidently.ui.workspace import DashboardModel
-from evidently.ui.workspace import ProjectModel
+from evidently.legacy.utils import NumpyEncoder
+from evidently.ui.models import DashboardModel
+from evidently.ui.models import ProjectModel
 
 DOT_JSON = ".json"
 
-PROJECT_FILE_NAME = "project.json"
+PROJECT_FILE_NAME = "metadata.json"
 SNAPSHOTS_DIR_NAME = "snapshots"
 
 
@@ -51,13 +52,13 @@ class LocalState:
         else:
             data = ProjectWithDashboards(project=project, dashboard=DashboardModel(tabs=[], panels=[]))
         with self.location.open(self._project_path(project.id), "w") as f:
-            f.write(data.json())
+            json.dump(data.dict(), f, cls=NumpyEncoder, indent=2)
         return data
 
     def write_snapshot(self, project_id: ProjectID, snapshot_id: SnapshotID, snapshot: SnapshotModel):
         self.location.makedirs(self._snapshot_dir(project_id))
         with self.location.open(self._snapshot_path(project_id, snapshot_id), "w") as f:
-            f.write(snapshot.json())
+            json.dump(snapshot.dict(), f, cls=NumpyEncoder)
 
     def read_snapshot(self, project_id: ProjectID, snapshot_id: SnapshotID) -> SnapshotModel:
         with self.location.open(self._snapshot_path(project_id, snapshot_id)) as f:
@@ -79,7 +80,7 @@ class LocalState:
         project = self.read_project(project_id)
         project.dashboard = dashboard
         with self.location.open(self._project_path(project_id), "w") as f:
-            f.write(project.json())
+            json.dump(project.dict(), f, cls=NumpyEncoder, indent=2)
 
     def read_dashboard(self, project_id: ProjectID) -> DashboardModel:
         project = self.read_project(project_id)
