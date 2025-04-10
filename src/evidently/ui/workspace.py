@@ -231,6 +231,7 @@ class ProjectModel(BaseModel):
     name: str
     description: Optional[str] = None
     org_id: Optional[OrgID] = None
+    version: str = "2"
 
 
 class Project:
@@ -280,6 +281,13 @@ class Project:
 Project Name: {self.name}
 Project Description: {self.description}
         """
+
+    def dict(self):
+        return self._project.dict()
+
+    @property
+    def version(self):
+        return self._project.version
 
 
 class SnapshotLink(BaseModel):
