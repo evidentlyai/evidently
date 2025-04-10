@@ -22,47 +22,36 @@
   <a href="https://www.evidentlyai.com/register">Evidently Cloud</a>
 </p>
 
-# :new: New release
-
-**Evidently 0.4.25**. LLM evaluation -> [Tutorial](https://docs.evidentlyai.com/tutorials-and-examples/tutorial-llm)
-
 # :bar_chart: What is Evidently?
 
-Evidently is an open-source Python library for ML and LLM evaluation and observability. It helps evaluate, test, and monitor AI-powered systems and data pipelines from experimentation to production. 
+Evidently is an open-source Python library to evaluate, test, and monitor ML and LLM systems—from experiments to production.
 
-* 🔡 Works with tabular, text data, and embeddings.
-* ✨ Supports predictive and generative systems, from classification to RAG.
+* 🔡 Works with tabular and text data.
+* ✨ Supports evals for predictive and generative tasks, from classification to RAG.
 * 📚 100+ built-in metrics from data drift detection to LLM judges.
-* 🛠️ Python interface for custom metrics and tests. 
+* 🛠️ Python interface for custom metrics. 
 * 🚦 Both offline evals and live monitoring.
 * 💻 Open architecture: easily export data and integrate with existing tools. 
 
-Evidently is very modular. You can start with one-off evaluations using `Reports` or `Test Suites` in Python or get a real-time monitoring `Dashboard` service.
+Evidently is very modular. You can start with one-off evaluations or host a full monitoring service.
 
-## 1. Reports
+## 1. Reports and Test Suites 
 
-**Reports** compute various data, ML and LLM quality metrics. You can start with Presets or customize.
-* Out-of-the-box interactive visuals.
-* Best for exploratory analysis and debugging.
-* Get results in Python, export as JSON, Python dictionary, HTML, DataFrame, or view in monitoring UI.
+**Reports** compute and summarize various data, ML and LLM quality evals.
+* Start with Presets and built-in metrics or customize.
+* Best for experiments, exploratory analysis and debugging.
+* View interactive Reports in Python or export as JSON, Python dictionary, HTML, or view in monitoring UI.
+
+Turn any Report into a **Test Suite** by adding pass/fail conditions.
+* Best for regression testing, CI/CD checks, or data validation.
+* Zero setup option: auto-generate test conditions from the reference dataset.
+* Simple syntax to set test conditions as `gt` (greater than), `lt` (less than), etc.
 
 | Reports |
 |--|
-|![Report example](docs/book/.gitbook/assets/main/reports-min.png)|
+|![Report example](https://github.com/evidentlyai/docs/blob/eb1630cdd80d31d55921ff4d34fc7b5e6e9c9f90/images/concepts/report_test_preview.gif)|
 
-## 2. Test Suites
-
-**Test Suites** check for defined conditions on metric values and return a pass or fail result.
-* Best for regression testing, CI/CD checks, or data validation pipelines.
-* Zero setup option: auto-generate test conditions from the reference dataset.
-* Simple syntax to set custom test conditions as `gt` (greater than), `lt` (less than), etc.
-* Get results in Python, export as JSON, Python dictionary, HTML, DataFrame, or view in monitoring UI.
-
-| Test Suite |
-|--|
-|![Test example](docs/book/.gitbook/assets/main/tests.gif)|
-
-## 3. Monitoring Dashboard
+## 2. Monitoring Dashboard
 
 **Monitoring UI** service helps visualize metrics and test results over time.
 
@@ -70,15 +59,15 @@ You can choose:
 * Self-host the open-source version. [Live demo](https://demo.evidentlyai.com).
 * Sign up for [Evidently Cloud](https://www.evidentlyai.com/register) (Recommended).
 
-Evidently Cloud offers a generous free tier and extra features like user management, alerting, and no-code evals.
+Evidently Cloud offers a generous free tier and extra features like dataset and user management, alerting, and no-code evals. [Compare OSS vs Cloud](https://docs.evidentlyai.com/faq/oss_vs_cloud).
 
 | Dashboard |
 |--|
-|![Dashboard example](docs/book/.gitbook/assets/main/dashboard.gif)|
+|![Dashboard example](https://github.com/evidentlyai/docs/blob/eb1630cdd80d31d55921ff4d34fc7b5e6e9c9f90/images/dashboard_llm_tabs.gif)|
 
 # :woman_technologist: Install Evidently
 
-Evidently is available as a PyPI package. To install it using pip package manager, run:
+To install from PyPI:
 
 ```sh
 pip install evidently
@@ -91,85 +80,108 @@ conda install -c conda-forge evidently
 
 # :arrow_forward: Getting started
 
-### Option 1: Test Suites
-> This is a simple Hello World. Check the Tutorials for more: [Tabular data](https://docs.evidentlyai.com/tutorials-and-examples/tutorial_reports_tests) or [LLM evaluation](https://docs.evidentlyai.com/tutorials-and-examples/tutorial-llm).
+## Reports
 
-Import the **Test Suite**, evaluation Preset and toy tabular dataset.
+### LLM evals 
+
+> This is a simple Hello World. Check the Tutorials for more: [LLM evaluation](https://docs.evidentlyai.com/quickstart_llm).
+
+Import the necessary components:
 
 ```python
 import pandas as pd
+from evidently.future.datasets import Dataset, DataDefinition, Descriptor
+from evidently.future.descriptors import Sentiment, TextLength, Contains
+from evidently.future.report import Report
+from evidently.future.presets import TextEvals
+```
 
+Create a toy dataset with questions and answers. 
+
+```python
+eval_df = pd.DataFrame([
+    ["What is the capital of Japan?", "The capital of Japan is Tokyo."],
+    ["Who painted the Mona Lisa?", "Leonardo da Vinci."],
+    ["Can you write an essay?", "I'm sorry, but I can't assist with homework."]], 
+                       columns=["question", "answer"])
+```
+
+Create an Evidently Dataset object and add `descriptors`: row-level evaluators. We'll check for sentiment of each response, its length and whether it contains words indicative of denial.
+
+```python
+eval_dataset = Dataset.from_pandas(pd.DataFrame(eval_df),
+data_definition=DataDefinition(),
+descriptors=[
+    Sentiment("answer", alias="Sentiment"),
+    TextLength("answer", alias="Length"),
+    Contains("answer", items=['sorry', 'apologize'], mode="any", alias="Denials")
+])
+```
+
+You can view the dataframe with added scores:
+
+```python
+eval_dataset.as_dataframe()
+```
+
+To get a summary Report to see the distribution of scores:
+
+```python
+report = Report([
+    TextEvals()
+])
+
+my_eval = report.run(eval_dataset)
+my_eval
+# my_eval.json()
+# my_eval.dict()
+```
+You can also choose other evaluators, including LLM-as-a-judge and configure pass/fail conditions. 
+
+### Data and ML evals
+
+> This is a simple Hello World. Check the Tutorials for more: [Tabular data](https://docs.evidentlyai.com/quickstart_ml).
+
+Import the Report, evaluation Preset and toy tabular dataset.
+
+```python
+import pandas as pd
 from sklearn import datasets
 
-from evidently.legacy.test_suite import TestSuite
-from evidently.legacy.test_preset import DataStabilityTestPreset
+from evidently.report import Report
+from evidently.presets import DataDriftPreset
 
 iris_data = datasets.load_iris(as_frame=True)
 iris_frame = iris_data.frame
 ```
 
-Split the `DataFrame` into reference and current. Run the **Data Stability** Test Suite that will automatically generate checks on column value ranges, missing values, etc. from the reference. Get the output in Jupyter notebook:
+Run the **Data Drift** evaluation preset that will test for shift in column distributions. Take the first 60 rows of the dataframe as "current" data and the following as reference.  Get the output in Jupyter notebook:
 
 ```python
-data_stability= TestSuite(tests=[
-    DataStabilityTestPreset(),
-])
-data_stability.run(current_data=iris_frame.iloc[:60], reference_data=iris_frame.iloc[60:], column_mapping=None)
-data_stability
+report = Report([
+    DataDriftPreset(method="psi")
+],
+include_tests="True")
+my_eval = report.run(iris_frame.iloc[:60], iris_frame.iloc[60:])
+my_eval
 ```
 
 You can also save an HTML file. You'll need to open it from the destination folder.
 
 ```python
-data_stability.save_html("file.html")
+my_eval.save_html("file.html")
 ```
 
-To get the output as JSON:
+To get the output as JSON or Python dictionary:
 ```python
-data_stability.json()
+my_eval.json()
+# my_eval.dict()
 ```
-You can choose other Presets, individual Tests and set conditions.
+You can choose other Presets, create Reports from indiviudal Metrics and configure pass/fail conditions. 
 
-### Option 2: Reports
+## Monitoring dashboard
 
-Import the **Report**, evaluation Preset and toy tabular dataset.
-
-```python
-import pandas as pd
-
-from sklearn import datasets
-
-from evidently.legacy.report import Report
-from evidently.legacy.metric_preset import DataDriftPreset
-
-iris_data = datasets.load_iris(as_frame=True)
-iris_frame = iris_data.frame
-```
-
-Run the **Data Drift** Report that will compare column distributions between `current` and `reference`:
-```python
-data_drift_report = Report(metrics=[
-    DataDriftPreset(),
-])
-
-data_drift_report.run(current_data=iris_frame.iloc[:60], reference_data=iris_frame.iloc[60:], column_mapping=None)
-data_drift_report
-
-```
-Save the report as HTML. You'll later need to open it from the destination folder.
-```python
-data_drift_report.save_html("file.html")
-```
-
-To get the output as JSON:
-```python
-data_drift_report.json()
-```
-
-You can choose other Presets and individual Metrics, including LLM evaluations for text data.
-
-### Option 3: ML monitoring dashboard
-> This launches a demo project in the Evidently UI. Check tutorials for [Self-hosting](https://docs.evidentlyai.com/tutorials-and-examples/tutorial-monitoring) or [Evidently Cloud](https://docs.evidentlyai.com/tutorials-and-examples/tutorial-cloud).
+> This launches a demo project in the locally hosted Evidently UI. Sign up for [Evidently Cloud](https://docs.evidentlyai.com/docs/setup/cloud) to instantly get a managed version with additional features.
 
 Recommended step: create a virtual environment and activate it.
 ```
@@ -183,11 +195,11 @@ After installing Evidently (`pip install evidently`), run the Evidently UI with 
 evidently ui --demo-projects all
 ```
 
-Access Evidently UI service in your browser. Go to the **localhost:8000**.
+Visit **localhost:8000** to access the UI. 
 
 # 🚦 What can you evaluate?
 
-Evidently has 100+ built-in evals. You can also add custom ones. Each metric has an optional visualization: you can use it in `Reports`, `Test Suites`, or plot on a `Dashboard`.
+Evidently has 100+ built-in evals. You can also add custom ones. 
 
 Here are examples of things you can check:
 
@@ -207,16 +219,7 @@ Here are examples of things you can check:
 We welcome contributions! Read the [Guide](CONTRIBUTING.md) to learn more.
 
 # :books: Documentation
-For more information, refer to a complete <a href="https://docs.evidentlyai.com">Documentation</a>. You can start with the tutorials:
-* [Get Started with Tabular and ML Evaluation](https://docs.evidentlyai.com/tutorials-and-examples/tutorial_reports_tests)
-* [Get Started with LLM Evaluation](https://docs.evidentlyai.com/tutorials-and-examples/tutorial-llm)
-* [Self-hosting ML monitoring Dashboard](https://docs.evidentlyai.com/tutorials-and-examples/tutorial-monitoring)
-* [Cloud ML monitoring Dashboard](https://docs.evidentlyai.com/tutorials-and-examples/tutorial-cloud)
-
-See more examples in the [Docs]([https://docs.evidentlyai.com/tutorials-and-examples](https://docs.evidentlyai.com/tutorials-and-examples/examples)).
-
-## How-to guides
-Explore the [How-to guides](https://github.com/evidentlyai/evidently/tree/main/examples/how_to_questions) to understand specific features in Evidently.
+For more examples, refer to a complete <a href="https://docs.evidentlyai.com">Documentation</a>.
 
 # :white_check_mark: Discord Community
 If you want to chat and connect, join our [Discord community](https://discord.gg/xZjKRaNp8b)!
