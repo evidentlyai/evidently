@@ -13,8 +13,8 @@ import evidently
 from evidently._pydantic_compat import BaseModel
 from evidently._pydantic_compat import Field
 from evidently._pydantic_compat import parse_obj_as
-from evidently.base_metric import MetricResult
-from evidently.tests.base_test import EnumValueMixin
+from evidently.legacy.base_metric import MetricResult
+from evidently.legacy.tests.base_test import EnumValueMixin
 
 
 @pytest.fixture

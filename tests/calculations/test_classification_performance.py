@@ -3,14 +3,14 @@ import pandas as pd
 import pytest
 from sklearn import metrics
 
-from evidently.calculations.classification_performance import calculate_confusion_by_classes
-from evidently.calculations.classification_performance import calculate_metrics
-from evidently.calculations.classification_performance import get_prediction_data
-from evidently.metric_results import ConfusionMatrix
-from evidently.metric_results import DatasetColumns
-from evidently.metric_results import DatasetUtilityColumns
-from evidently.metric_results import PredictionData
-from evidently.pipeline.column_mapping import ColumnMapping
+from evidently.legacy.calculations.classification_performance import calculate_confusion_by_classes
+from evidently.legacy.calculations.classification_performance import calculate_metrics
+from evidently.legacy.calculations.classification_performance import get_prediction_data
+from evidently.legacy.metric_results import ConfusionMatrix
+from evidently.legacy.metric_results import DatasetColumns
+from evidently.legacy.metric_results import DatasetUtilityColumns
+from evidently.legacy.metric_results import PredictionData
+from evidently.legacy.pipeline.column_mapping import ColumnMapping
 
 
 def test_calculate_confusion_by_classes():

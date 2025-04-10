@@ -5,12 +5,12 @@ from typing import Union
 import pandas as pd
 import pytest
 
-from evidently.calculations.data_drift import ensure_prediction_column_is_string
-from evidently.calculations.data_drift import get_one_column_drift
-from evidently.core import ColumnType
-from evidently.options.data_drift import DataDriftOptions
-from evidently.pipeline.column_mapping import ColumnMapping
-from evidently.utils.data_operations import process_columns
+from evidently.legacy.calculations.data_drift import ensure_prediction_column_is_string
+from evidently.legacy.calculations.data_drift import get_one_column_drift
+from evidently.legacy.core import ColumnType
+from evidently.legacy.options.data_drift import DataDriftOptions
+from evidently.legacy.pipeline.column_mapping import ColumnMapping
+from evidently.legacy.utils.data_operations import process_columns
 
 
 @pytest.mark.parametrize(

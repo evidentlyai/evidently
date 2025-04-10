@@ -148,8 +148,8 @@ Import the Report, evaluation Preset and toy tabular dataset.
 import pandas as pd
 from sklearn import datasets
 
-from evidently.future.report import Report
-from evidently.future.presets import DataDriftPreset
+from evidently.report import Report
+from evidently.presets import DataDriftPreset
 
 iris_data = datasets.load_iris(as_frame=True)
 iris_frame = iris_data.frame

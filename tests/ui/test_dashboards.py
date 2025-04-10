@@ -4,16 +4,16 @@ from typing import Dict
 import pytest
 
 from evidently._pydantic_compat import parse_obj_as
-from evidently.base_metric import ColumnName
-from evidently.base_metric import InputData
-from evidently.base_metric import Metric
-from evidently.base_metric import MetricResult
-from evidently.base_metric import TResult
-from evidently.descriptors import OOV
+from evidently.legacy.base_metric import ColumnName
+from evidently.legacy.base_metric import InputData
+from evidently.legacy.base_metric import Metric
+from evidently.legacy.base_metric import MetricResult
+from evidently.legacy.base_metric import TResult
+from evidently.legacy.descriptors import OOV
+from evidently.legacy.ui.dashboards import PanelValue
+from evidently.legacy.ui.dashboards.utils import _get_hover_params
+from evidently.legacy.ui.dashboards.utils import getattr_nested
 from evidently.pydantic_utils import EvidentlyBaseModel
-from evidently.ui.dashboards import PanelValue
-from evidently.ui.dashboards.utils import _get_hover_params
-from evidently.ui.dashboards.utils import getattr_nested
 
 
 class A(MetricResult):

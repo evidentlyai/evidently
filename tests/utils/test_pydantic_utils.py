@@ -7,10 +7,10 @@ import pytest
 
 from evidently._pydantic_compat import ValidationError
 from evidently._pydantic_compat import parse_obj_as
-from evidently.base_metric import Metric
-from evidently.base_metric import MetricResult
-from evidently.core import IncludeTags
-from evidently.core import get_all_fields_tags
+from evidently.legacy.base_metric import Metric
+from evidently.legacy.base_metric import MetricResult
+from evidently.legacy.core import IncludeTags
+from evidently.legacy.core import get_all_fields_tags
 from evidently.pydantic_utils import ALLOWED_TYPE_PREFIXES
 from evidently.pydantic_utils import EvidentlyBaseModel
 from evidently.pydantic_utils import FieldPath

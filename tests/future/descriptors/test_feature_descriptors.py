@@ -4,15 +4,15 @@ from typing import Optional
 
 import pandas as pd
 
-from evidently import ColumnType
 from evidently._pydantic_compat import parse_obj_as
-from evidently.base_metric import ColumnName
-from evidently.features.generated_features import GeneratedFeatures
-from evidently.future.datasets import Dataset
-from evidently.future.datasets import Descriptor
-from evidently.future.datasets import FeatureDescriptor
-from evidently.options.base import Options
-from evidently.utils.data_preprocessing import DataDefinition
+from evidently.core.datasets import Dataset
+from evidently.core.datasets import Descriptor
+from evidently.core.datasets import FeatureDescriptor
+from evidently.legacy.base_metric import ColumnName
+from evidently.legacy.core import ColumnType
+from evidently.legacy.features.generated_features import GeneratedFeatures
+from evidently.legacy.options.base import Options
+from evidently.legacy.utils.data_preprocessing import DataDefinition
 
 
 class MockGeneratedFeature(GeneratedFeatures):

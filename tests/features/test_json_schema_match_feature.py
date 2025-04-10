@@ -4,7 +4,7 @@ from typing import Dict
 import pandas as pd
 import pytest
 
-from evidently.features.json_schema_match_feature import JSONSchemaMatch
+from evidently.legacy.features.json_schema_match_feature import JSONSchemaMatch
 
 
 @pytest.mark.parametrize(

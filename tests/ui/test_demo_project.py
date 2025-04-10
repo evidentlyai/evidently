@@ -1,8 +1,8 @@
 import pytest
 
-from evidently.ui.demo_projects import DEMO_PROJECTS
-from evidently.ui.demo_projects import DEMO_PROJECTS_NAMES
-from evidently.ui.workspace import Workspace
+from evidently.legacy.ui.demo_projects import DEMO_PROJECTS
+from evidently.legacy.ui.demo_projects import DEMO_PROJECTS_NAMES
+from evidently.legacy.ui.workspace import Workspace
 from tests.conftest import slow
 
 

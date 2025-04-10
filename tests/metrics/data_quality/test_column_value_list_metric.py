@@ -6,11 +6,11 @@ import pandas as pd
 import pytest
 
 from evidently._pydantic_compat import parse_obj_as
-from evidently.metrics import ColumnValueListMetric
-from evidently.metrics.data_quality.column_value_list_metric import ColumnValueListMetricResult
-from evidently.metrics.data_quality.column_value_list_metric import ValueListStat
-from evidently.pipeline.column_mapping import ColumnMapping
-from evidently.report import Report
+from evidently.legacy.metrics import ColumnValueListMetric
+from evidently.legacy.metrics.data_quality.column_value_list_metric import ColumnValueListMetricResult
+from evidently.legacy.metrics.data_quality.column_value_list_metric import ValueListStat
+from evidently.legacy.pipeline.column_mapping import ColumnMapping
+from evidently.legacy.report import Report
 
 
 @pytest.mark.parametrize(

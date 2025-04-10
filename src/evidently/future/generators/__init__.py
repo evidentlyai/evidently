@@ -1,3 +1,1 @@
-from .column import ColumnMetricGenerator
-
-__all__ = ["ColumnMetricGenerator"]
+from evidently.generators import *  # noqa: F403

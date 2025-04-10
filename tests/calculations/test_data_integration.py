@@ -2,9 +2,9 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from evidently.calculations.data_integration import get_number_of_all_pandas_missed_values
-from evidently.calculations.data_integration import get_number_of_almost_constant_columns
-from evidently.calculations.data_integration import get_number_of_almost_duplicated_columns
+from evidently.legacy.calculations.data_integration import get_number_of_all_pandas_missed_values
+from evidently.legacy.calculations.data_integration import get_number_of_almost_constant_columns
+from evidently.legacy.calculations.data_integration import get_number_of_almost_duplicated_columns
 
 
 @pytest.mark.parametrize(

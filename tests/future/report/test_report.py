@@ -1,15 +1,15 @@
 import pandas as pd
 import pytest
 
-from evidently.future.datasets import Dataset
-from evidently.future.metrics import CategoryCount
-from evidently.future.metrics import MeanValue
-from evidently.future.metrics import MinValue
-from evidently.future.metrics import RowCount
-from evidently.future.report import Report
-from evidently.future.report import Snapshot
-from evidently.future.tests import eq
-from evidently.future.tests import lt
+from evidently.core.datasets import Dataset
+from evidently.core.report import Report
+from evidently.core.report import Snapshot
+from evidently.metrics import CategoryCount
+from evidently.metrics import MeanValue
+from evidently.metrics import MinValue
+from evidently.metrics import RowCount
+from evidently.tests import eq
+from evidently.tests import lt
 
 
 @pytest.mark.parametrize(

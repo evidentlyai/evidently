@@ -1,6 +1,6 @@
 import pytest
 
-from evidently.tests.utils import approx
+from evidently.legacy.tests.utils import approx
 
 
 @pytest.mark.parametrize(

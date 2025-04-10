@@ -1,9 +1,9 @@
 import pandas as pd
 import pytest
 
-from evidently.features.BERTScore_feature import BERTScoreFeature
-from evidently.pipeline.column_mapping import ColumnMapping
-from evidently.utils.data_preprocessing import create_data_definition
+from evidently.legacy.features.BERTScore_feature import BERTScoreFeature
+from evidently.legacy.pipeline.column_mapping import ColumnMapping
+from evidently.legacy.utils.data_preprocessing import create_data_definition
 
 test_data = [
     ("The quick brown fox jumps over the lazy dog", "A fast brown fox leaps over a lazy dog"),

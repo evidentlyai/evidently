@@ -1,7 +1,7 @@
 import pandas as pd
 
-from evidently.base_metric import InputData
-from evidently.metrics.custom_metric import CustomValueMetric
+from evidently.legacy.base_metric import InputData
+from evidently.legacy.metrics.custom_metric import CustomValueMetric
 from tests.multitest.conftest import AssertResultFields
 from tests.multitest.datasets import TestDataset
 from tests.multitest.metrics.conftest import TestMetric
