@@ -47,6 +47,7 @@ from .dataset_statistics import DuplicatedRowCount
 from .dataset_statistics import EmptyColumnsCount
 from .dataset_statistics import EmptyRowsCount
 from .dataset_statistics import RowCount
+from .group_by import GroupBy
 from .recsys import MAP
 from .recsys import MRR
 from .recsys import NDCG
@@ -66,6 +67,7 @@ from .regression import MeanError
 from .regression import R2Score
 
 __all__ = [
+    "GroupBy",
     # column statistics metrics
     "CategoryCount",
     "ValueDrift",
