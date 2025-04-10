@@ -21,10 +21,10 @@ class CustomColumnDescriptor(Descriptor):
         self.column_name = column_name
         if callable(func):
             self._func = func
-            self.func = f"{func.__module__}.{func.__name__}"
+            func = f"{func.__module__}.{func.__name__}"
         else:
             self._func = None
-            self.func = func
+        self.func = func
         super().__init__(alias=alias or f"custom_column_descriptor:{func}")
 
     def generate_data(self, dataset: Dataset, options: Options) -> Union[DatasetColumn, Dict[str, DatasetColumn]]:
@@ -44,11 +44,11 @@ class CustomDescriptor(Descriptor):
     def __init__(self, func: Union[str, CustomDescriptorCallable], alias: Optional[str] = None):
         if callable(func):
             self._func = func
-            self.func = f"{func.__module__}.{func.__name__}"
+            func = f"{func.__module__}.{func.__name__}"
         else:
             self._func = None
-            self.func = func
-        super().__init__(alias=alias or f"custom_descriptor:{self.func}")
+        self.func = func
+        super().__init__(alias=alias or f"custom_descriptor:{func}")
 
     def generate_data(self, dataset: "Dataset", options: Options) -> Union[DatasetColumn, Dict[str, DatasetColumn]]:
         if self._func is None:
