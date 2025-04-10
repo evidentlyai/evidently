@@ -7,11 +7,12 @@ from evidently.core.datasets import MulticlassClassification
 from evidently.core.datasets import Recsys
 from evidently.core.datasets import Regression
 from evidently.core.report import Report
+from evidently.legacy.core import ColumnType
 
 from . import _registry
 from ._version import __version__
 from ._version import version_info
-from .legacy.nbextension import _jupyter_nbextension_paths
+from .nbextension import _jupyter_nbextension_paths
 
 __all__ = [
     "__version__",
@@ -25,4 +26,5 @@ __all__ = [
     "MulticlassClassification",
     "Regression",
     "Recsys",
+    "ColumnType",  # legacy support
 ]
