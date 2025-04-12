@@ -56,7 +56,9 @@ def _is_int_column(data: SparkSeries, column_name: str) -> bool:
     )
 
 
-def hist_bin_doane(data: SparkSeries, column_name: str) -> Tuple[int, Optional[float], Optional[float]]:
+def hist_bin_doane(
+    data: SparkSeries, column_name: str, int_min_width: bool = True
+) -> Tuple[int, Optional[float], Optional[float]]:
     """
     Doane's histogram bin estimator.
 
@@ -72,7 +74,7 @@ def hist_bin_doane(data: SparkSeries, column_name: str) -> Tuple[int, Optional[f
         if sigma > 0.0:
             g1 = calculate_stats(data, column_name, lambda x: sf.mean(sf.pow(((sf.col(x) - dmean) / sigma), 3)))
             width = (dmax - dmin) / (1.0 + np.log2(size) + np.log2(1.0 + np.absolute(g1) / sg1))
-            if _is_int_column(data, column_name) and width < 1:
+            if int_min_width and _is_int_column(data, column_name) and width < 1:
                 width = 1
             return int(np.ceil((dmax - dmin) / width)), dmax, dmin
     return 1, None, None

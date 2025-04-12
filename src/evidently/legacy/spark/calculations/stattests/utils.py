@@ -28,7 +28,9 @@ def get_binned_data(
 
     if feature_type == ColumnType.Numerical:  # and n_vals > 20:
         bins, dmax, dmin = hist_bin_doane(
-            current_data.dropna(subset=[column_name]).union(reference_data.dropna(subset=[column_name])), column_name
+            current_data.dropna(subset=[column_name]).union(reference_data.dropna(subset=[column_name])),
+            column_name,
+            int_min_width=False,
         )
         reference_percents = (
             get_histogram(reference_data, column_name=column_name, nbinsx=bins, density=False, dmax=dmax, dmin=dmin)[0]
