@@ -80,7 +80,14 @@ def histogram_bin_edges_doane(data):
 
     bin_edges = None
 
-    first_edge, last_edge = a.min(), a.max()
+    if a.size == 0:
+        first_edge, last_edge = 0, 1
+    else:
+        first_edge, last_edge = a.min(), a.max()
+
+    if first_edge == last_edge:
+        first_edge = first_edge - 0.5
+        last_edge = last_edge + 0.5
 
     if a.size == 0:
         n_equal_bins = 1
