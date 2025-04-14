@@ -40,13 +40,57 @@ from evidently.legacy.ui.workspace.cloud import NamedBytesIO
 from evidently.legacy.ui.workspace.cloud import read_multipart_response
 from evidently.legacy.ui.workspace.remote import RemoteBase
 from evidently.legacy.ui.workspace.remote import T
-from evidently.ui.models import DashboardModel
-from evidently.ui.models import DashboardPanelPlot
-from evidently.ui.models import DashboardTabModel
-from evidently.ui.models import ProjectDashboard
-from evidently.ui.models import ProjectModel
-from evidently.ui.models import SnapshotLink
+from evidently.sdk.models import DashboardModel
+from evidently.sdk.models import DashboardPanelPlot
+from evidently.sdk.models import DashboardTabModel
+from evidently.sdk.models import ProjectModel
+from evidently.sdk.models import SnapshotLink
 from evidently.ui.storage.local.base import LocalState
+
+
+class ProjectDashboard:
+    @property
+    @abc.abstractmethod
+    def project_id(self) -> ProjectID:
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def add_tab(self, tab: str):
+        raise NotImplementedError
+
+    @abstractmethod
+    def delete_tab(self, tab: str):
+        raise NotImplementedError
+
+    @abstractmethod
+    def add_panel(self, panel: DashboardPanelPlot, tab: Optional[str], create_if_not_exists: bool = True):
+        raise NotImplementedError
+
+    @abstractmethod
+    def delete_panel(self, panel: str, tab: str):
+        raise NotImplementedError
+
+    @abstractmethod
+    def model(self) -> DashboardModel:
+        raise NotImplementedError
+
+    def __repr__(self):
+        _model = self.model()
+        return f"Dashboard for project {self.project_id}\n  " + "\n  ".join(
+            f"Tab '{tab.title}' ({tab.id})\n    "
+            + "\n    ".join(
+                f"Panel '{p.title}' ({p.id})\n      "
+                + "\n      ".join(
+                    f"Series metric_type={s.metric}"
+                    + f" (tags={s.tags},metadata={s.metadata})"
+                    + f" labels={s.metric_labels}"
+                    for s in p.values
+                )
+                for p in _model.panels
+                if p.id in tab.panels
+            )
+            for tab in _model.tabs
+        )
 
 
 class Project:
@@ -449,7 +493,9 @@ class RemoteWorkspace(RemoteBase, WorkspaceBase):  # todo: reuse cloud ws
         )
 
     def _add_run(self, project_id: STR_UUID, snapshot: Snapshot):
-        raise NotImplementedError  # todo: snapshot api
+        data = snapshot.dump_dict()
+        resp: Response = self._request(f"/api/v2/snapshots/{project_id}", method="POST", body=data)
+        return uuid.UUID(resp.json()["snapshot_id"])
 
     def delete_run(self, project_id: STR_UUID, snapshot_id: STR_UUID):
         raise NotImplementedError  # todo: snapshot api

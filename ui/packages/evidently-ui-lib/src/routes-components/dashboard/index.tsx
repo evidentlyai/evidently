@@ -35,11 +35,11 @@ export const ProjectDashboard = ({
         />
       </DateFilter>
 
-      <DashboardViewParamsContext.Provider
-        value={{ isXaxisAsCategorical, OnClickedPointComponent, OnHoveredPlotComponent }}
-      >
-        {Widgets}
-      </DashboardViewParamsContext.Provider>
+      {/*<DashboardViewParamsContext.Provider*/}
+      {/*  value={{ isXaxisAsCategorical, OnClickedPointComponent, OnHoveredPlotComponent }}*/}
+      {/*>*/}
+      {/*  {Widgets}*/}
+      {/*</DashboardViewParamsContext.Provider>*/}
     </>
   )
 }

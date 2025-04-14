@@ -1,5 +1,4 @@
-import abc
-from abc import abstractmethod
+from datetime import datetime
 from typing import Any
 from typing import Dict
 from typing import List
@@ -10,6 +9,7 @@ import uuid6
 from evidently._pydantic_compat import BaseModel
 from evidently._pydantic_compat import Field
 from evidently.legacy.core import new_id
+from evidently.legacy.suite.base_suite import SnapshotLinks
 from evidently.legacy.ui.type_aliases import OrgID
 from evidently.legacy.ui.type_aliases import PanelID
 from evidently.legacy.ui.type_aliases import ProjectID
@@ -54,52 +54,15 @@ class ProjectModel(BaseModel):
     version: str = "2"
 
 
-class ProjectDashboard:
-    @property
-    @abc.abstractmethod
-    def project_id(self) -> ProjectID:
-        raise NotImplementedError
-
-    @abc.abstractmethod
-    def add_tab(self, tab: str):
-        raise NotImplementedError
-
-    @abstractmethod
-    def delete_tab(self, tab: str):
-        raise NotImplementedError
-
-    @abstractmethod
-    def add_panel(self, panel: DashboardPanelPlot, tab: Optional[str], create_if_not_exists: bool = True):
-        raise NotImplementedError
-
-    @abstractmethod
-    def delete_panel(self, panel: str, tab: str):
-        raise NotImplementedError
-
-    @abstractmethod
-    def model(self) -> DashboardModel:
-        raise NotImplementedError
-
-    def __repr__(self):
-        _model = self.model()
-        return f"Dashboard for project {self.project_id}\n  " + "\n  ".join(
-            f"Tab '{tab.title}' ({tab.id})\n    "
-            + "\n    ".join(
-                f"Panel '{p.title}' ({p.id})\n      "
-                + "\n      ".join(
-                    f"Series metric_type={s.metric}"
-                    + f" (tags={s.tags},metadata={s.metadata})"
-                    + f" labels={s.metric_labels}"
-                    for s in p.values
-                )
-                for p in _model.panels
-                if p.id in tab.panels
-            )
-            for tab in _model.tabs
-        )
-
-
 class SnapshotLink(BaseModel):
     snapshot_id: SnapshotID
     dataset_type: str
     dataset_subtype: str
+
+
+class SnapshotMetadataModel(BaseModel):
+    id: SnapshotID
+    metadata: Dict[str, str]
+    tags: List[str]
+    timestamp: datetime
+    links: SnapshotLinks

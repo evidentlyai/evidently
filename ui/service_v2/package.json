@@ -1,0 +1,29 @@
+{
+  "name": "service_v2",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "type-check": "tsc --build",
+    "build": "vite build",
+    "code-check": "biome check",
+    "preview": "vite preview",
+    "test": "playwright test"
+  },
+  "dependencies": {
+    "evidently-ui-lib": "workspace:*",
+    "@mui/x-charts": "^7.28.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "wait-on": "^7.1.0",
+    "@playwright/test": "^1.43.0",
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
+    "vite": "^5.2.12",
+    "@vitejs/plugin-react-swc": "^3.7.0",
+    "vite-tsconfig-paths": "^4.2.1",
+    "typescript": "^5.7.2"
+  }
+}

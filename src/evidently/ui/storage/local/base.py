@@ -10,8 +10,8 @@ from evidently.legacy.ui.type_aliases import STR_UUID
 from evidently.legacy.ui.type_aliases import ProjectID
 from evidently.legacy.ui.type_aliases import SnapshotID
 from evidently.legacy.utils import NumpyEncoder
-from evidently.ui.models import DashboardModel
-from evidently.ui.models import ProjectModel
+from evidently.sdk.models import DashboardModel
+from evidently.sdk.models import ProjectModel
 
 DOT_JSON = ".json"
 
