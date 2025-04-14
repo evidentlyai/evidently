@@ -10,18 +10,22 @@ from typing_extensions import Annotated
 from evidently._pydantic_compat import parse_obj_as
 from evidently.core.serialization import SnapshotModel
 from evidently.legacy.utils import NumpyEncoder
+from evidently.sdk.models import DashboardModel
 from evidently.sdk.models import SnapshotMetadataModel
 from evidently.ui.service.base import BlobStorage
 from evidently.ui.service.base import DataStorage
 from evidently.ui.service.base import EntityType
 from evidently.ui.service.base import Project
 from evidently.ui.service.base import ProjectMetadataStorage
+from evidently.ui.service.base import SeriesFilter
+from evidently.ui.service.base import SeriesResponse
 from evidently.ui.service.errors import NotEnoughPermissions
 from evidently.ui.service.errors import ProjectNotFound
 from evidently.ui.service.managers.auth import AuthManager
 from evidently.ui.service.managers.auth import DefaultRole
 from evidently.ui.service.managers.auth import Permission
 from evidently.ui.service.managers.base import BaseManager
+from evidently.ui.service.services.dashbord.base import DashboardManager
 from evidently.ui.service.type_aliases import OrgID
 from evidently.ui.service.type_aliases import ProjectID
 from evidently.ui.service.type_aliases import SnapshotID
@@ -33,6 +37,7 @@ SNAPSHOTS = "snapshots"
 
 class ProjectManager(BaseManager):
     project_metadata: ProjectMetadataStorage
+    dashboard_manager: DashboardManager
     auth_manager: AuthManager
     blob_storage: BlobStorage
     data_storage: DataStorage
@@ -43,6 +48,7 @@ class ProjectManager(BaseManager):
         auth_manager: Annotated[AuthManager, Dependency()],
         blob_storage: Annotated[BlobStorage, Dependency()],
         data_storage: Annotated[DataStorage, Dependency()],
+        dashboard_manager: Annotated[DashboardManager, Dependency()],
         **dependencies,
     ):
         super().__init__(**dependencies)
@@ -50,6 +56,7 @@ class ProjectManager(BaseManager):
         self.auth_manager: AuthManager = auth_manager
         self.blob_storage = blob_storage
         self.data_storage = data_storage
+        self.dashboard_manager = dashboard_manager
 
     async def create_project(
         self,
@@ -147,8 +154,8 @@ class ProjectManager(BaseManager):
         snapshot_id = await self.project_metadata.add_snapshot(project_id, snapshot)
         blob_id = self._create_path_for_snapshot(project_id, snapshot_id)
         await self.blob_storage.put_blob(blob_id, json.dumps(snapshot.dict(), cls=NumpyEncoder))
+        await self.data_storage.add_snapshot_points(project_id, snapshot_id, snapshot)
         return snapshot_id
-        # await self.data_storage.extract_points(project_id, snapshot) # TODO: points for dashboards
 
     async def delete_snapshot(self, user_id: UserID, project_id: ProjectID, snapshot_id: SnapshotID):
         user = await self.auth_manager.get_or_default_user(user_id)
@@ -218,3 +225,47 @@ class ProjectManager(BaseManager):
 
     def _create_path_for_snapshot(self, project_id: ProjectID, snapshot_id: SnapshotID):
         return posixpath.join(str(project_id), SNAPSHOTS, str(snapshot_id)) + ".json"
+
+    async def get_project_dashboard(self, user_id: UserID, project_id: ProjectID) -> DashboardModel:
+        if not await self.auth_manager.check_entity_permission(
+            user_id,
+            EntityType.Project,
+            project_id,
+            Permission.PROJECT_READ,
+        ):
+            raise ProjectNotFound()
+        return await self.dashboard_manager.get_dashboard(project_id)
+
+    async def save_project_dashboard(self, user_id: UserID, project_id: ProjectID, dashboard: DashboardModel):
+        if not await self.auth_manager.check_entity_permission(
+            user_id,
+            EntityType.Project,
+            project_id,
+            Permission.PROJECT_READ,
+        ):
+            raise ProjectNotFound()
+        if not await self.auth_manager.check_entity_permission(
+            user_id,
+            EntityType.Project,
+            project_id,
+            Permission.PROJECT_WRITE,
+        ):
+            raise NotEnoughPermissions()
+        await self.dashboard_manager.save_dashboard(project_id, dashboard)
+
+    async def get_data_series(
+        self,
+        user_id: UserID,
+        project_id: ProjectID,
+        series_filter: List[SeriesFilter],
+        start_time: Optional[datetime],
+        end_time: Optional[datetime],
+    ) -> SeriesResponse:
+        if not await self.auth_manager.check_entity_permission(
+            user_id,
+            EntityType.Project,
+            project_id,
+            Permission.PROJECT_READ,
+        ):
+            raise ProjectNotFound()
+        return await self.data_storage.get_data_series(project_id, series_filter, start_time, end_time)

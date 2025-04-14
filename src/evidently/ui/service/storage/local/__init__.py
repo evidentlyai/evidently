@@ -2,6 +2,7 @@ from fsspec.implementations.local import LocalFileSystem
 
 from ...managers.auth import AuthManager
 from ...managers.projects import ProjectManager
+from ...services.dashbord.file import JsonFileDashboardManager
 from ..common import NoopAuthManager
 from .base import FSSpecBlobStorage
 from .base import InMemoryDataStorage
@@ -30,6 +31,7 @@ def create_local_project_manager(path: str, autorefresh: bool, auth: AuthManager
         blob_storage=FSSpecBlobStorage(base_path=path),
         data_storage=data,
         auth_manager=auth or NoopAuthManager(),
+        dashboard_manager=JsonFileDashboardManager(path=path),
     )
     state.project_manager = project_manager
 

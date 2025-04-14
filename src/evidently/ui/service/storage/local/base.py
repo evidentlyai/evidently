@@ -2,6 +2,7 @@ import contextlib
 import datetime
 import json
 import posixpath
+import uuid
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -12,9 +13,15 @@ import uuid6
 from fsspec import AbstractFileSystem
 from fsspec import get_fs_token_paths
 
+from evidently._pydantic_compat import BaseModel
 from evidently._pydantic_compat import PrivateAttr
 from evidently._pydantic_compat import ValidationError
 from evidently._pydantic_compat import parse_obj_as
+from evidently.core.metric_types import ByLabelCountValue
+from evidently.core.metric_types import ByLabelValue
+from evidently.core.metric_types import CountValue
+from evidently.core.metric_types import MeanStdValue
+from evidently.core.metric_types import SingleValue
 from evidently.core.serialization import SnapshotModel
 from evidently.legacy.suite.base_suite import Snapshot
 from evidently.legacy.suite.base_suite import SnapshotLinks
@@ -25,6 +32,10 @@ from evidently.ui.service.base import BlobStorage
 from evidently.ui.service.base import DataStorage
 from evidently.ui.service.base import Project
 from evidently.ui.service.base import ProjectMetadataStorage
+from evidently.ui.service.base import Series
+from evidently.ui.service.base import SeriesFilter
+from evidently.ui.service.base import SeriesResponse
+from evidently.ui.service.base import SeriesSource
 from evidently.ui.service.base import User
 from evidently.ui.service.dashboards.base import PanelValue
 from evidently.ui.service.dashboards.base import ReportFilter
@@ -273,14 +284,28 @@ class JsonFileProjectMetadataStorage(ProjectMetadataStorage):
         self.state.reload_snapshots(project_id=project_id, force=True)
 
 
+class MetricItem(BaseModel):
+    snapshot_id: SnapshotID
+    timestamp: datetime.datetime
+    metric_id: str
+    metric_type: str
+    params: Dict[str, str]
+    value: float
+
+
 class InMemoryDataStorage(DataStorage):
     path: str
 
     _state: LocalState = PrivateAttr(None)
+    _metrics_points: Dict[uuid.UUID, Dict[uuid.UUID, List[MetricItem]]] = PrivateAttr(None)
 
     def __init__(self, path: str, local_state: Optional[LocalState] = None):
         self.path = path
         self._state = local_state or LocalState.load(self.path, None)
+        self._metrics_points = {}
+        for project_id, snapshots in self._state.snapshots.items():
+            for snapshot_id, snapshot in snapshots.items():
+                self._add_snapshot_points_sync(project_id, snapshot_id, snapshot)
 
     @property
     def state(self):
@@ -317,3 +342,158 @@ class InMemoryDataStorage(DataStorage):
                         PointInfo(report.timestamp, report.id, self.parse_value(cls, metric_field_value))
                     )
         return points
+
+    async def add_snapshot_points(self, project_id: ProjectID, snapshot_id: SnapshotID, snapshot: SnapshotModel):
+        return self._add_snapshot_points_sync(project_id, snapshot_id, snapshot)
+
+    def _add_snapshot_points_sync(self, project_id: ProjectID, snapshot_id: SnapshotID, snapshot: SnapshotModel):
+        for result in snapshot.metric_results.values():
+            if isinstance(result, SingleValue):
+                self._add_value(project_id, snapshot_id, snapshot.timestamp, result)
+            elif isinstance(result, ByLabelValue):
+                for value in result.values.values():
+                    self._add_value(project_id, snapshot_id, snapshot.timestamp, value)
+            elif isinstance(result, CountValue):
+                self._add_value(project_id, snapshot_id, snapshot.timestamp, result.count)
+                self._add_value(project_id, snapshot_id, snapshot.timestamp, result.share)
+            elif isinstance(result, MeanStdValue):
+                self._add_value(project_id, snapshot_id, snapshot.timestamp, result.mean)
+                self._add_value(project_id, snapshot_id, snapshot.timestamp, result.std)
+            elif isinstance(result, ByLabelCountValue):
+                for value in result.counts.values():
+                    self._add_value(project_id, snapshot_id, snapshot.timestamp, value)
+                for value in result.shares.values():
+                    self._add_value(project_id, snapshot_id, snapshot.timestamp, value)
+            else:
+                raise ValueError(f"type {type(result)} isn't supported")
+
+    def _add_value(
+        self,
+        project_id: ProjectID,
+        snapshot_id: SnapshotID,
+        timestamp: datetime,
+        result: SingleValue,
+    ) -> None:
+        params = {}
+        for k, v in result.metric_value_location.param.items():
+            if k in params:
+                raise ValueError("duplicated key?")
+            params[k] = str(v)
+        for k, v in result.metric_value_location.metric.params.items():
+            if k in ["type", "tests", "count_tests", "share_tests", "mean_tests", "std_tests"]:
+                continue
+            params[k] = str(v)
+        if project_id not in self._metrics_points:
+            self._metrics_points[project_id] = {}
+        if snapshot_id not in self._metrics_points[project_id]:
+            self._metrics_points[project_id][snapshot_id] = []
+        self._metrics_points[project_id][snapshot_id].append(
+            MetricItem(
+                snapshot_id=snapshot_id,
+                timestamp=timestamp,
+                metric_id=result.metric_value_location.metric.metric_id,
+                metric_type=result.metric_value_location.metric.params["type"],
+                params=params,
+                value=result.value,
+            )
+        )
+
+    async def get_data_series(
+        self,
+        project_id: ProjectID,
+        series_filter: List[SeriesFilter],
+        start_time: Optional[datetime.datetime],
+        end_time: Optional[datetime.datetime],
+    ) -> SeriesResponse:
+        matching_snapshots = []
+        sources = []
+        series = {}
+        for snapshot_id, snapshot in self.state.snapshots[project_id].items():
+            if start_time is not None and snapshot.timestamp < start_time:
+                continue
+            if end_time is not None and snapshot.timestamp > end_time:
+                continue
+            for filter_item in series_filter:
+                if (
+                    set(snapshot.tags) >= set(filter_item.tags)
+                    and snapshot.metadata.items() >= filter_item.metadata.items()
+                ):
+                    matching_snapshots.append((snapshot_id, snapshot.timestamp, snapshot))
+        matching_snapshots = sorted(matching_snapshots, key=lambda x: (x[1], x[0]))
+        matching_snapshots_map = {snapshot_id: snapshot for snapshot_id, timestamp, snapshot in matching_snapshots}
+
+        last_snapshot = None
+        series_filters_map = {}
+        index = 0
+        for snapshot_id, timestamp, snapshot in matching_snapshots:
+            for item in self._metrics_points.get(project_id, {}).get(snapshot_id, []):
+                metric_type = item.metric_type
+                params = item.params
+                snapshot_tags = matching_snapshots_map[snapshot_id].tags
+                snapshot_metadata = matching_snapshots_map[snapshot_id].metadata
+                value = item.value
+                filter = None
+                for f in series_filter:
+                    if f.metric == metric_type and f.metric_labels.items() <= params.items():
+                        filter = f
+                        break
+                if filter is None:
+                    continue
+                if set(filter.tags) >= set(snapshot_tags) and filter.metadata.items() <= snapshot_metadata.items():
+                    continue
+
+                if last_snapshot is None:
+                    last_snapshot = snapshot_id
+                    sources.append(SeriesSource(snapshot_id=snapshot_id, timestamp=timestamp))
+                if last_snapshot != snapshot_id:
+                    last_snapshot = snapshot_id
+                    sources.append(SeriesSource(snapshot_id=snapshot_id, timestamp=timestamp))
+                    index += 1
+                series_id = metric_type + ":" + ",".join([f"{k}={v}" for k, v in params.items()])
+                key = (
+                    metric_type,
+                    frozenset(params.items()),
+                    frozenset(snapshot_tags),
+                    frozenset(snapshot_metadata.items()),
+                )
+                filter_index = series_filters_map.get(key)
+                if filter_index is None:
+                    filter_index = _find_filter_index(
+                        series_filter, metric_type, params, snapshot_tags, snapshot_metadata
+                    )
+                    series_filters_map[key] = filter_index
+
+                if filter_index is None:
+                    raise ValueError("No filters found for series ({})")
+
+                if series_id not in series:
+                    series[series_id] = Series(
+                        metric_type=metric_type,
+                        filter_index=filter_index,
+                        params=params,
+                        values=([None] * index) + [value],
+                    )
+                else:
+                    if len(series[series_id].values) < index:
+                        series[series_id].values.extend([None] * (index - len(series[series_id].values)))
+                    series[series_id].values.append(value)
+
+        return SeriesResponse(sources=sources, series=list(series.values()))
+
+
+def _find_filter_index(
+    filters: List[SeriesFilter],
+    metric_type: str,
+    params: Dict[str, str],
+    snapshot_tags: List[str],
+    snapshot_metadata: Dict[str, str],
+) -> Optional[int]:
+    for idx, series_filter in enumerate(filters):
+        if (
+            series_filter.metric == metric_type
+            and series_filter.metric_labels.items() <= params.items()
+            and set(series_filter.tags) <= set(snapshot_tags)
+            and series_filter.metadata.items() <= snapshot_metadata.items()
+        ):
+            return idx
+    return None

@@ -10,18 +10,18 @@ import {
   getValidDate,
   useDashboardFilterParamsDebounced
 } from 'evidently-ui-lib/routes-components/dashboard'
-import {
-  type DashboardFilterQueryParams,
-  getProjectDashboard
-} from 'evidently-ui-lib/routes-components/dashboard/data'
+import type { DashboardFilterQueryParams } from 'evidently-ui-lib/routes-components/dashboard/data'
 
-import { DashboardWidgets } from 'evidently-ui-lib/components/DashboardWidgets'
+import { JSONParseExtended } from 'evidently-ui-lib/api/JsonParser.ts'
+import { responseParser } from 'evidently-ui-lib/api/client-heplers.ts'
+import type { DashboardInfoModel } from 'evidently-ui-lib/api/types'
 import {
   HintOnHoverToPlot,
   type PlotMouseEventType
 } from 'evidently-ui-lib/components/OnClickedPoint'
 import { Box, Stack } from 'evidently-ui-lib/shared-dependencies/mui-material'
 import { useParams } from 'evidently-ui-lib/shared-dependencies/react-router-dom'
+import { DashboardPanelsWithTabs } from '~/Components/Dashboard/ProjectDashboard.tsx'
 import { clientAPI } from '~/api'
 import { RouterLink } from '~/routes/components'
 
@@ -43,8 +43,13 @@ export const loadData = ({
   query
 }: loadDataArgs<{ queryKeys: DashboardFilterQueryParams }>) => {
   const { projectId } = params as Params
-
-  return getProjectDashboard({ api: clientAPI, projectId, query })
+  return clientAPI
+    .GET('/api/v2/dashboards/{project_id}', {
+      params: { path: { project_id: projectId }, query },
+      parseAs: 'text'
+    })
+    .then(responseParser())
+    .then(JSONParseExtended<DashboardInfoModel>)
 }
 
 export const Component = () => {
@@ -73,7 +78,7 @@ export const Component = () => {
 
   return (
     <ProjectDashboard
-      Widgets={<DashboardWidgets widgets={data.widgets} />}
+      Widgets={<DashboardPanelsWithTabs data={data} />}
       dateFilterProps={{ dates, setDates, dateRange }}
       OnClickedPointComponent={GoToSnapshotByPoint}
       OnHoveredPlotComponent={HintOnHoverToPlot}

@@ -15,6 +15,7 @@ from evidently.ui.service.api.static import assets_router
 from evidently.ui.service.components.base import AppBuilder
 from evidently.ui.service.components.base import ComponentContext
 from evidently.ui.service.components.base import ServiceComponent
+from evidently.ui.service.components.dashboard import DashboardComponent
 from evidently.ui.service.components.security import NoSecurityComponent
 from evidently.ui.service.components.security import SecurityComponent
 from evidently.ui.service.components.storage import LocalStorageComponent
@@ -108,3 +109,4 @@ class LocalConfig(AppConfig):
     service: ServiceComponent = LocalServiceComponent()
     storage: StorageComponent = LocalStorageComponent()
     telemetry: TelemetryComponent = TelemetryComponent()
+    dashboard: DashboardComponent = DashboardComponent()

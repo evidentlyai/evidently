@@ -6,6 +6,7 @@ import { SnapshotIdLazy } from './snapshot-view/import'
 import { DashboardLazy } from './dashboard/import'
 
 import { Route } from 'evidently-ui-lib/router-utils/router-builder'
+import { LoadPanelPointsAPIV2 } from './api/load-panel-points/import'
 import { Home } from './home/import'
 import { Project } from './project/import'
 import { ProjectsLayout } from './projects-layout/import'
@@ -18,6 +19,9 @@ import { TestSuitesList } from './test-suites-list/import'
 export const routes = [
   Route(Home, {
     children: [
+      Route(LoadPanelPointsAPIV2, {
+        path: 'v2/projects/:projectId/api/load-panel-points'
+      } as const),
       Route(ProjectsList, { index: true } as const),
       Route(ProjectsLayout, {
         path: 'projects',

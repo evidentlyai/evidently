@@ -1,11 +1,10 @@
 import type { BatchMetricDataModel, DashboardModel } from 'api/types'
-import { useProjectInfo } from 'contexts/project'
 import { useWidgetWrapper } from 'evidently-ui-lib/contexts/WidgetWrapper'
 import { Grid, Typography } from 'evidently-ui-lib/shared-dependencies/mui-material'
-import { useLoader } from 'new-routes/hooks'
+import { useParams } from 'evidently-ui-lib/shared-dependencies/react-router-dom'
 import { useEffect } from 'react'
 import type React from 'react'
-import invariant from 'tiny-invariant'
+import { useLoader } from 'routes/hooks'
 import { DashboardPanel } from './DashboardPanel'
 import { DashboardPanelSkeleton } from './DashboardPanelSkeleton'
 import { getSeriesListTypeHash } from './utils'
@@ -56,11 +55,7 @@ const getSizeForGridItem = (
 }
 
 const RenderPanelByDataFetch = ({ panel }: { panel: PanelType }) => {
-  const { project } = useProjectInfo()
-  invariant(project)
-
-  const { id: projectId } = project
-
+  const { projectId } = useParams()
   const panelPointsFetcher = useLoader('/v2/projects/:projectId/api/load-panel-points')
   const pointsData = panelPointsFetcher.data
 

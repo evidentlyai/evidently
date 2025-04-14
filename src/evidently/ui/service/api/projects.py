@@ -28,11 +28,13 @@ from evidently.legacy.report.report import METRIC_PRESETS
 from evidently.legacy.test_suite.test_suite import TEST_GENERATORS
 from evidently.legacy.test_suite.test_suite import TEST_PRESETS
 from evidently.legacy.utils import NumpyEncoder
+from evidently.sdk.models import DashboardModel
 from evidently.sdk.models import SnapshotMetadataModel
 from evidently.ui.service.api.models import DashboardInfoModel
 from evidently.ui.service.api.models import ReportModel
+from evidently.ui.service.base import BatchMetricData
 from evidently.ui.service.base import Project
-from evidently.ui.service.dashboards.base import DashboardPanel
+from evidently.ui.service.base import SeriesResponse
 from evidently.ui.service.managers.projects import ProjectManager
 from evidently.ui.service.type_aliases import OrgID
 from evidently.ui.service.type_aliases import ProjectID
@@ -147,15 +149,20 @@ async def path_snapshot_metadata_dependency(
 
 @get("/{project_id:uuid}/{snapshot_id:uuid}/graphs_data/{graph_id:str}")
 async def get_snapshot_graph_data(
-    snapshot_metadata: Annotated[SnapshotMetadataModel, Dependency()],
+    user_id: UserID,
+    project_id: ProjectID,
+    snapshot_id: SnapshotID,
+    project_manager: Annotated[ProjectManager, Dependency(skip_validation=True)],
     graph_id: Annotated[str, Parameter(title="id of graph in snapshot")],
     log_event: Callable,
 ) -> str:
-    graph = (await snapshot_metadata.get_additional_graphs()).get(graph_id)
-    if graph is None:
-        raise HTTPException(status_code=404, detail="Graph not found")
+    snapshot = await project_manager.load_snapshot(user_id, project_id, snapshot_id)
     log_event("get_snapshot_graph_data")
-    return json.dumps(graph.dict() if not isinstance(graph, dict) else graph, cls=NumpyEncoder)
+    for widget in snapshot.widgets:
+        for graph in widget.additionalGraphs:
+            if graph_id == graph.id:
+                return json.dumps(graph.dict() if not isinstance(graph, dict) else graph, cls=NumpyEncoder)
+    raise HTTPException(status_code=404, detail="Graph not found")
 
 
 @get("/{project_id:uuid}/{snapshot_id:uuid}/download")
@@ -225,33 +232,29 @@ async def get_snapshot_metadata(
     return snapshot_metadata
 
 
-@get("/{project_id:uuid}/dashboard/panels")
-async def list_project_dashboard_panels(
-    project: Annotated[Project, Dependency()],
-    log_event: Callable,
-) -> List[DashboardPanel]:
-    log_event("list_project_dashboard_panels")
-    return list(project.dashboard.panels)
-
-
-@get("/{project_id:uuid}/dashboard")
+@get("/dashboards/{project_id:uuid}")
 async def project_dashboard(
-    project: Annotated[Project, Dependency()],
-    # TODO: no datetime, as it unable to validate '2023-07-09T02:03'
+    user_id: UserID,
+    project_id: ProjectID,
+    project_manager: Annotated[ProjectManager, Dependency(skip_validation=True)],
     log_event: Callable,
-    timestamp_start: Optional[str] = None,
-    timestamp_end: Optional[str] = None,
-) -> str:
-    timestamp_start_ = datetime.datetime.fromisoformat(timestamp_start) if timestamp_start else None
-    timestamp_end_ = datetime.datetime.fromisoformat(timestamp_end) if timestamp_end else None
-
-    info = await DashboardInfoModel.from_project_with_time_range(
-        project,
-        timestamp_start=timestamp_start_,
-        timestamp_end=timestamp_end_,
-    )
+) -> DashboardModel:
+    dashboard = await project_manager.get_project_dashboard(user_id, project_id)
     log_event("project_dashboard")
-    return json.dumps(info.dict() if not isinstance(info, dict) else info, cls=NumpyEncoder)
+    return dashboard
+
+
+@post("/dashboards/{project_id:uuid}")
+async def save_project_dashboard(
+    user_id: UserID,
+    project_id: ProjectID,
+    data: DashboardModel,
+    project_manager: Annotated[ProjectManager, Dependency(skip_validation=True)],
+    log_event: Callable,
+) -> DashboardModel:
+    dashboard = await project_manager.save_project_dashboard(user_id, project_id, data)
+    log_event("save_project_dashboard")
+    return dashboard
 
 
 @post(["/v2/projects", "/projects"])
@@ -324,6 +327,27 @@ async def delete_snapshot(
     log_event("delete_snapshot")
 
 
+@post("/snapshots/{project_id:uuid}/data_series_batch")
+async def get_metrics_data_batch(
+    project_id: ProjectID,
+    user_id: UserID,
+    data: BatchMetricData,
+    project_manager: Annotated[ProjectManager, Dependency(skip_validation=True)],
+    timestamp_start: Optional[str] = None,
+    timestamp_end: Optional[str] = None,
+) -> SeriesResponse:
+    timestamp_start_ = datetime.datetime.fromisoformat(timestamp_start) if timestamp_start else None
+    timestamp_end_ = datetime.datetime.fromisoformat(timestamp_end) if timestamp_end else None
+    series = await project_manager.get_data_series(
+        user_id,
+        project_id,
+        data.series_filter or [],
+        timestamp_start_,
+        timestamp_end_,
+    )
+    return series
+
+
 def create_projects_api(guard: Callable) -> Router:
     return Router(
         "",
@@ -332,6 +356,9 @@ def create_projects_api(guard: Callable) -> Router:
                 "/v2",
                 route_handlers=[
                     add_snapshot,
+                    project_dashboard,
+                    save_project_dashboard,
+                    get_metrics_data_batch,
                 ],
             ),
             Router(
@@ -344,8 +371,6 @@ def create_projects_api(guard: Callable) -> Router:
                     get_snapshot_graph_data,
                     get_snapshot_data,
                     get_snapshot_download,
-                    list_project_dashboard_panels,
-                    project_dashboard,
                     list_snapshots,
                     get_snapshot_metadata,
                 ],

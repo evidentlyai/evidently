@@ -8,6 +8,7 @@ from typing import IO
 from typing import TYPE_CHECKING
 from typing import Any
 from typing import ClassVar
+from typing import Dict
 from typing import Iterator
 from typing import List
 from typing import Optional
@@ -44,12 +45,43 @@ from evidently.legacy.utils import NumpyEncoder
 from evidently.legacy.utils.dashboard import TemplateParams
 from evidently.legacy.utils.dashboard import inline_iframe_html_template
 from evidently.legacy.utils.sync import sync_api
+from evidently.sdk.models import DashboardModel
 from evidently.sdk.models import SnapshotMetadataModel
 
 if TYPE_CHECKING:
     from evidently.ui.service.managers.projects import ProjectManager
 
 AnySnapshot = Union[Snapshot, SnapshotV2]
+
+
+class SeriesFilter(BaseModel):
+    tags: List[str]
+    metadata: Dict[str, str]
+    metric: str
+    metric_labels: Dict[str, str]
+
+
+class BatchMetricData(BaseModel):
+    timestamp_start: Optional[datetime.datetime] = None
+    timestamp_end: Optional[datetime.datetime] = None
+    series_filter: Optional[List[SeriesFilter]] = None
+
+
+class Series(BaseModel):
+    metric_type: str
+    filter_index: int
+    params: Dict[str, str]
+    values: List[Optional[float]]
+
+
+class SeriesSource(BaseModel):
+    snapshot_id: SnapshotID
+    timestamp: datetime.datetime
+
+
+class SeriesResponse(BaseModel):
+    sources: List[SeriesSource]
+    series: List[Series]
 
 
 class BlobMetadata(BaseModel):
@@ -270,6 +302,12 @@ class BlobStorage(ABC):
         raise NotImplementedError
 
 
+class ProjectDashboardStorage:
+    @abstractmethod
+    async def get_project_dashboard(self, project_id: ProjectID) -> DashboardModel:
+        raise NotImplementedError
+
+
 class DataStorage(ABC):
     @abstractmethod
     async def extract_points(self, project_id: ProjectID, snapshot: Snapshot):
@@ -303,4 +341,18 @@ class DataStorage(ABC):
         timestamp_start: Optional[datetime.datetime],
         timestamp_end: Optional[datetime.datetime],
     ) -> DataPointsAsType[PointType]:
+        raise NotImplementedError
+
+    @abstractmethod
+    async def add_snapshot_points(self, project_id: ProjectID, snapshot_id: SnapshotID, snapshot: SnapshotModel):
+        raise NotImplementedError
+
+    @abstractmethod
+    async def get_data_series(
+        self,
+        project_id: ProjectID,
+        series_filter: List[SeriesFilter],
+        start_time: Optional[datetime.datetime],
+        end_time: Optional[datetime.datetime],
+    ) -> SeriesResponse:
         raise NotImplementedError
