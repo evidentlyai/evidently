@@ -266,8 +266,8 @@ class DatasetColumn:
     type: ColumnType
     data: pd.Series
 
-    def __init__(self, type: ColumnType, data: pd.Series) -> None:
-        self.type = type
+    def __init__(self, type: Union[str, ColumnType], data: pd.Series) -> None:
+        self.type = ColumnType(type)
         self.data = data
 
 
@@ -483,7 +483,7 @@ class PandasDataset(Dataset):
         data: pd.DataFrame,
         data_definition: Optional[DataDefinition] = None,
     ):
-        self._data = data
+        self._data = data.copy()
         if (
             data_definition is None
             or data_definition.datetime_columns is None
