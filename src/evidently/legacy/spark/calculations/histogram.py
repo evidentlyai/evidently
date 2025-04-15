@@ -4,6 +4,9 @@ from typing import Tuple
 
 import numpy as np
 from pyspark.sql import functions as sf
+from pyspark.sql.types import IntegerType
+from pyspark.sql.types import LongType
+from pyspark.sql.types import ShortType
 
 from evidently.legacy.spark.base import SparkSeries
 from evidently.legacy.spark.utils import calculate_stats
@@ -46,7 +49,16 @@ def get_histogram(
     return n, bin_edges
 
 
-def hist_bin_doane(data: SparkSeries, column_name: str) -> Tuple[int, Optional[float], Optional[float]]:
+def _is_int_column(data: SparkSeries, column_name: str) -> bool:
+    return any(
+        field.name == column_name and isinstance(field.dataType, (IntegerType, LongType, ShortType))
+        for field in data.schema.fields
+    )
+
+
+def hist_bin_doane(
+    data: SparkSeries, column_name: str, int_min_width: bool = True
+) -> Tuple[int, Optional[float], Optional[float]]:
     """
     Doane's histogram bin estimator.
 
@@ -62,6 +74,8 @@ def hist_bin_doane(data: SparkSeries, column_name: str) -> Tuple[int, Optional[f
         if sigma > 0.0:
             g1 = calculate_stats(data, column_name, lambda x: sf.mean(sf.pow(((sf.col(x) - dmean) / sigma), 3)))
             width = (dmax - dmin) / (1.0 + np.log2(size) + np.log2(1.0 + np.absolute(g1) / sg1))
+            if int_min_width and _is_int_column(data, column_name) and width < 1:
+                width = 1
             return int(np.ceil((dmax - dmin) / width)), dmax, dmin
     return 1, None, None
 

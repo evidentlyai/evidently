@@ -7,6 +7,7 @@ import pandas as pd
 
 from evidently.legacy.utils.visualizations import choose_agg_period
 from evidently.legacy.utils.visualizations import get_gaussian_kde
+from evidently.legacy.utils.visualizations import histogram_bin_edges_doane
 from evidently.legacy.utils.visualizations import is_possible_contour
 
 MAX_CATEGORIES = 5
@@ -33,7 +34,7 @@ def make_hist_for_num_plot(curr: pd.Series, ref: pd.Series = None):
     result = {}
     if ref is not None:
         ref = ref.dropna()
-    bins = np.histogram_bin_edges(pd.concat([curr.dropna(), ref]), bins="doane")
+    bins = histogram_bin_edges_doane(pd.concat([curr.dropna(), ref]))
     curr_hist = np.histogram(curr, bins=bins)
     result["current"] = make_hist_df(curr_hist)
     if ref is not None:
