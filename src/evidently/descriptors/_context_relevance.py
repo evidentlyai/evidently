@@ -187,7 +187,7 @@ class ContextRelevance(Descriptor):
         self.method = method
         self.method_params = method_params
         self.input = input
-        self.context = contexts
+        self.contexts = contexts
         super().__init__(alias=alias or f"Ranking for {input} with {contexts}")
 
     def generate_data(
