@@ -655,13 +655,14 @@ class UniqueValueCount(ColumnMetric, ByLabelCountMetric):
 
 class UniqueValueCountCalculation(ByLabelCountCalculation[UniqueValueCount]):
     def calculate(self, context: "Context", current_data: Dataset, reference_data: Optional[Dataset]):
-        current_result = self._calculate_value(current_data)
+        values = self._all_unique_values(current_data, reference_data)
+        current_result = self._calculate_value(current_data, values)
         current_result.widget = distribution(
             self.display_name(),
             current_data.column(self.metric.column),
             None if reference_data is None else reference_data.column(self.metric.column),
         )
-        reference_result = None if reference_data is None else self._calculate_value(reference_data)
+        reference_result = None if reference_data is None else self._calculate_value(reference_data, values)
         return (
             current_result,
             reference_result,
@@ -676,7 +677,13 @@ class UniqueValueCountCalculation(ByLabelCountCalculation[UniqueValueCount]):
     def share_label_display_name(self, label: Label) -> str:
         return f"{self.display_name()} for label {label}"
 
-    def _calculate_value(self, dataset: Dataset):
+    def _all_unique_values(self, current: Dataset, reference: Optional[Dataset]) -> set:
+        values = set(current.as_dataframe()[self.metric.column].unique())
+        if reference is not None:
+            values.update(reference.as_dataframe()[self.metric.column].unique())
+        return values
+
+    def _calculate_value(self, dataset: Dataset, values: set):
         df = dataset.as_dataframe()
         col = df[self.metric.column]
         if self.metric.replace_nan is not None:
@@ -684,6 +691,7 @@ class UniqueValueCountCalculation(ByLabelCountCalculation[UniqueValueCount]):
         value_counts = col.value_counts(dropna=True)
         total = len(df)
 
-        res = value_counts.to_dict()
+        res = {v: 0 for v in values}
+        res.update(value_counts.to_dict())
         result = self.result(res, {k: v / total for k, v in res.items()})  # type: ignore[arg-type]
         return result
