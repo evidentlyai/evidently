@@ -1,14 +1,14 @@
-import { clientAPI } from 'api'
-import type { BatchMetricDataModel } from 'api/types'
+import { clientAPIV2 } from 'api'
 import { JSONParseExtended } from 'evidently-ui-lib/api/JsonParser'
 import { responseParser } from 'evidently-ui-lib/api/client-heplers'
+import type { BatchMetricDataModel } from 'evidently-ui-lib/api/types'
 import type { GetParams, loadDataArgs } from 'evidently-ui-lib/router-utils/types'
 
 ///////////////////
 //    ROUTE
 ///////////////////
 
-export const currentRoutePath = '/v2/projects/:projectId/api/load-panel-points'
+export const currentRoutePath = '/projects/:projectId/load-panel-points'
 type CurrentRouteParams = GetParams<typeof currentRoutePath>
 
 ///////////////////
@@ -17,16 +17,16 @@ type CurrentRouteParams = GetParams<typeof currentRoutePath>
 export const loadData = ({ query, params }: loadDataArgs<{ queryKeys: 'body' }>) => {
   const { projectId: project_id } = params as CurrentRouteParams
 
-  const body = JSONParseExtended<BatchMetricDataModel>(query.body)
+  const body = JSONParseExtended<BatchMetricDataModel>(query.body ?? '')
 
-  if (body.series && body.series.length === 0) {
+  if (body.series_filter && body.series_filter.length === 0) {
     return {
       sources: [],
       series: []
     }
   }
 
-  return clientAPI
+  return clientAPIV2
     .POST('/api/v2/snapshots/{project_id}/data_series_batch', {
       params: { path: { project_id } },
       body

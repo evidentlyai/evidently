@@ -43,11 +43,10 @@ export const Component = () => {
   } = useCurrentRouteParams<CurrentRoute>()
 
   const isReports = useMatchRouter({ path: '/projects/:projectId/reports' })
-  const isTestSuites = useMatchRouter({ path: '/projects/:projectId/test-suites' })
 
   const { projectId } = params
 
-  const selectedTab = isReports ? TABS.reports : isTestSuites ? TABS['test-suites'] : TABS.index
+  const selectedTab = isReports ? TABS.reports : TABS.index
 
   return (
     <ProjectLayoutTemplate project={project}>

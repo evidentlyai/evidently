@@ -1,4 +1,4 @@
-import type { DashboardModel } from 'api/types'
+import type { DashboardModel } from 'evidently-ui-lib/api/types'
 import { widgetWrapperContext } from 'evidently-ui-lib/contexts/WidgetWrapper'
 import { Box } from 'evidently-ui-lib/shared-dependencies/mui-material'
 import { useMemo, useState } from 'react'

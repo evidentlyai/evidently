@@ -10,8 +10,8 @@ import {
 } from '@mui/x-charts'
 import { ResponsiveChartContainer } from '@mui/x-charts/ResponsiveChartContainer'
 import type { SeriesProviderProps } from '@mui/x-charts/context/SeriesProvider'
-import type { SeriesModel } from 'api/types'
 import dayjs from 'dayjs'
+import type { SeriesModel } from 'evidently-ui-lib/api/types'
 import {
   Box,
   Card,

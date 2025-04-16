@@ -14,7 +14,7 @@ import type { DashboardFilterQueryParams } from 'evidently-ui-lib/routes-compone
 
 import { JSONParseExtended } from 'evidently-ui-lib/api/JsonParser.ts'
 import { responseParser } from 'evidently-ui-lib/api/client-heplers.ts'
-import type { DashboardInfoModel } from 'evidently-ui-lib/api/types'
+import type { DashboardModel } from 'evidently-ui-lib/api/types'
 import {
   HintOnHoverToPlot,
   type PlotMouseEventType
@@ -22,7 +22,7 @@ import {
 import { Box, Stack } from 'evidently-ui-lib/shared-dependencies/mui-material'
 import { useParams } from 'evidently-ui-lib/shared-dependencies/react-router-dom'
 import { DashboardPanelsWithTabs } from '~/Components/Dashboard/ProjectDashboard.tsx'
-import { clientAPI } from '~/api'
+import { clientAPIV2 } from '~/api'
 import { RouterLink } from '~/routes/components'
 
 ///////////////////
@@ -43,19 +43,19 @@ export const loadData = ({
   query
 }: loadDataArgs<{ queryKeys: DashboardFilterQueryParams }>) => {
   const { projectId } = params as Params
-  return clientAPI
+  return clientAPIV2
     .GET('/api/v2/dashboards/{project_id}', {
       params: { path: { project_id: projectId }, query },
       parseAs: 'text'
     })
     .then(responseParser())
-    .then(JSONParseExtended<DashboardInfoModel>)
+    .then(JSONParseExtended<DashboardModel>)
 }
 
 export const Component = () => {
   const { loaderData: data, query, setQuery } = useCurrentRouteParams<CurrentRoute>()
 
-  const dateRange = getDataRange(data)
+  const dateRange = getDataRange({ min_timestamp: null, max_timestamp: null })
 
   const { dates, setDates } = useDashboardFilterParamsDebounced({
     dates: {
@@ -98,9 +98,7 @@ const GoToSnapshotByPoint = ({ event }: { event: PlotMouseEventType }) => {
     return <></>
   }
 
-  const snapshot_type = 'metric_fingerprint' in customdata ? 'report' : 'test-suite'
-
-  const linkToSnapshot = `/projects/:projectId/${snapshot_type}s/:snapshotId` as const
+  const linkToSnapshot = '/projects/:projectId/reports/:snapshotId' as const
 
   return (
     <>
@@ -118,7 +116,7 @@ const GoToSnapshotByPoint = ({ event }: { event: PlotMouseEventType }) => {
           <RouterLink
             type='button'
             to={linkToSnapshot}
-            title={`View ${snapshot_type.split('-').join(' ')}`}
+            title='View report'
             variant='outlined'
             paramsToReplace={{ projectId, snapshotId: customdata.snapshot_id }}
           />
