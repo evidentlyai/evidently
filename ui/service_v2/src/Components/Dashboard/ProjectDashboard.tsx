@@ -1,7 +1,6 @@
 import type { DashboardModel } from 'api/types'
 import { widgetWrapperContext } from 'evidently-ui-lib/contexts/WidgetWrapper'
-import { useIsAnyLoaderOrActionRunning } from 'evidently-ui-lib/router-utils/hooks'
-import { Box, Tab, Tabs } from 'evidently-ui-lib/shared-dependencies/mui-material'
+import { Box } from 'evidently-ui-lib/shared-dependencies/mui-material'
 import { useMemo, useState } from 'react'
 import React from 'react'
 import { DrawDashboardPanels } from './DrawDashboardPanels'
@@ -32,8 +31,6 @@ export const DashboardPanelsWithTabs = ({
       ),
     [tabs, allPanels]
   )
-
-  const isLoading = useIsAnyLoaderOrActionRunning()
 
   const allTabsMeppedPanelIds = panelsForTabs.flat().map(({ id }) => id)
   const restPanels = allPanels.filter(({ id }) => !allTabsMeppedPanelIds.includes(id))
@@ -74,37 +71,11 @@ export const DashboardPanelsWithTabs = ({
 
   return (
     <>
-      <Box pl={1} pr={4} display={'flex'} gap={2} justifyContent={'space-between'}>
-        <Tabs
-          sx={{ maxWidth: { xs: 1, md: 0.85 } }}
-          value={tabIndex}
-          onChange={(_, value) => setTabIndex(value)}
-          variant='scrollable'
-          scrollButtons='auto'
-          selectionFollowsFocus
-          allowScrollButtonsMobile
-        >
-          {tabs.map(({ id, title }) => (
-            <Tab key={id} label={title} />
-          ))}
-
-          {isShowRestTab && <Tab label={'(Others)'} />}
-        </Tabs>
-      </Box>
-
       <Box p={2}>
         <GlobalDataForPanelWrapper.Provider value={globalData}>
           <widgetWrapperContext.Provider value={{ WidgetWrapper: PanelWrapper }}>
-            {panelsForTabs.map((tabPanels, index) => (
-              <Box key={tabs[index].id}>
-                {index === tabIndex && <DrawDashboardPanels panels={tabPanels} />}
-              </Box>
-            ))}
-
             <Box>
-              {isShowRestTab && tabIndex === tabs.length && (
-                <DrawDashboardPanels panels={restPanels} />
-              )}
+              <DrawDashboardPanels panels={allPanels} />
             </Box>
           </widgetWrapperContext.Provider>
         </GlobalDataForPanelWrapper.Provider>

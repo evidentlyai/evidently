@@ -4,6 +4,7 @@ import posixpath
 from typing import List
 from typing import Optional
 
+from litestar.exceptions import HTTPException
 from litestar.params import Dependency
 from typing_extensions import Annotated
 
@@ -251,6 +252,8 @@ class ProjectManager(BaseManager):
             Permission.PROJECT_WRITE,
         ):
             raise NotEnoughPermissions()
+        if len(dashboard.tabs) > 0:
+            raise HTTPException(status_code=400, detail="Multiple tabs are not supported in Evidently OSS")
         await self.dashboard_manager.save_dashboard(project_id, dashboard)
 
     async def get_data_series(
