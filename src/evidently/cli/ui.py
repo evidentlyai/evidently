@@ -2,9 +2,9 @@ import os
 from typing import Optional
 
 import uuid6
-from click import BadParameter
-from click import echo
+from typer import BadParameter
 from typer import Option
+from typer import echo
 
 from evidently.cli.main import app
 from evidently.legacy.ui.demo_projects import DEMO_PROJECTS_NAMES

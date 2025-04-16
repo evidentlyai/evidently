@@ -339,10 +339,12 @@ class InMemoryDataStorage(DataStorage):
         self,
         project_id: ProjectID,
         snapshot_id: SnapshotID,
-        timestamp: datetime,
+        timestamp: datetime.datetime,
         result: SingleValue,
     ) -> None:
         params = {}
+        if result.metric_value_location is None:
+            raise ValueError("metric_value_location should be set")
         for k, v in result.metric_value_location.param.items():
             if k in params:
                 raise ValueError("duplicated key?")

@@ -5,13 +5,13 @@ from typing import List
 from evidently._pydantic_compat import BaseModel
 from evidently._pydantic_compat import parse_obj_as
 from evidently.core.serialization import SnapshotModel
-from evidently.legacy.ui.storage.local.base import FSLocation
-from evidently.legacy.ui.type_aliases import STR_UUID
-from evidently.legacy.ui.type_aliases import ProjectID
-from evidently.legacy.ui.type_aliases import SnapshotID
 from evidently.legacy.utils import NumpyEncoder
 from evidently.sdk.models import DashboardModel
 from evidently.sdk.models import ProjectModel
+from evidently.ui.service.storage.local.base import FSLocation
+from evidently.ui.service.type_aliases import STR_UUID
+from evidently.ui.service.type_aliases import ProjectID
+from evidently.ui.service.type_aliases import SnapshotID
 
 DOT_JSON = ".json"
 

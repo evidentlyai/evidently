@@ -2,7 +2,6 @@ from typer import Typer
 
 app = Typer(
     context_settings={"help_option_names": ["-h", "--help"]},
-    pretty_exceptions_enable=False,
 )
 
 

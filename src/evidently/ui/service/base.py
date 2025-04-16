@@ -23,7 +23,6 @@ from evidently._pydantic_compat import PrivateAttr
 from evidently.core.report import Snapshot as SnapshotV2
 from evidently.core.serialization import SnapshotModel
 from evidently.legacy.core import new_id
-from evidently.legacy.model.dashboard import DashboardInfo
 from evidently.legacy.suite.base_suite import Snapshot
 from evidently.legacy.ui.dashboards.base import DashboardConfig
 from evidently.legacy.ui.type_aliases import BlobID
@@ -34,8 +33,6 @@ from evidently.legacy.ui.type_aliases import SnapshotID
 from evidently.legacy.ui.type_aliases import TeamID
 from evidently.legacy.ui.type_aliases import UserID
 from evidently.legacy.utils import NumpyEncoder
-from evidently.legacy.utils.dashboard import TemplateParams
-from evidently.legacy.utils.dashboard import inline_iframe_html_template
 from evidently.legacy.utils.sync import sync_api
 from evidently.sdk.models import DashboardModel
 from evidently.sdk.models import SnapshotMetadataModel
@@ -181,32 +178,6 @@ class Project(Entity):
     async def get_snapshot_metadata_async(self, id: SnapshotID) -> SnapshotMetadataModel:
         return await self.project_manager.get_snapshot_metadata(self._user_id, self.id, id)
 
-    async def build_dashboard_info_async(
-        self,
-        timestamp_start: Optional[datetime.datetime],
-        timestamp_end: Optional[datetime.datetime],
-    ) -> DashboardInfo:
-        return await self.dashboard.build(self.project_manager.data_storage, self.id, timestamp_start, timestamp_end)
-
-    async def show_dashboard_async(
-        self,
-        timestamp_start: Optional[datetime.datetime] = None,
-        timestamp_end: Optional[datetime.datetime] = None,
-    ):
-        dashboard_info = await self.build_dashboard_info_async(timestamp_start, timestamp_end)
-        template_params = TemplateParams(
-            dashboard_id="pd_" + str(new_id()).replace("-", ""),
-            dashboard_info=dashboard_info,
-            additional_graphs={},
-        )
-        # pylint: disable=import-outside-toplevel
-        try:
-            from IPython.display import HTML
-
-            return HTML(inline_iframe_html_template(params=template_params))
-        except ImportError as err:
-            raise Exception("Cannot import HTML from IPython.display, no way to show html") from err
-
     async def reload_async(self, reload_snapshots: bool = False):
         # fixme: reload snapshots
         project = await self.project_manager.get_project(self._user_id, self.id)
@@ -219,8 +190,6 @@ class Project(Entity):
     load_snapshot = sync_api(load_snapshot_async)
     delete_snapshot = sync_api(delete_snapshot_async)
     list_snapshots = sync_api(list_snapshots_async)
-    show_dashboard = sync_api(show_dashboard_async)
-    build_dashboard_info = sync_api(build_dashboard_info_async)
     get_snapshot_metadata = sync_api(get_snapshot_metadata_async)
     add_snapshot = sync_api(add_snapshot_async)
     reload = sync_api(reload_async)

@@ -13,7 +13,7 @@ from .base import LocalState
 def start_workspace_watchdog(path: str, state: LocalState):
     from watchdog.observers import Observer
 
-    from evidently.legacy.ui.storage.local.watcher import WorkspaceDirHandler
+    from evidently.ui.service.storage.local.watcher import WorkspaceDirHandler
 
     observer = Observer()
     observer.schedule(WorkspaceDirHandler(state), path, recursive=True)
