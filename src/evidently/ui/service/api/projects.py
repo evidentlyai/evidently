@@ -327,6 +327,63 @@ async def delete_snapshot(
     log_event("delete_snapshot")
 
 
+class MetricsList(BaseModel):
+    metrics: List[str]
+
+
+class LabelsList(BaseModel):
+    labels: List[str]
+
+
+class LabelValuesList(BaseModel):
+    label_values: List[str]
+
+
+@get("/snapshots/{project_id:uuid}/metrics")
+async def get_metrics(
+    project_id: ProjectID,
+    user_id: UserID,
+    tags: Optional[str],
+    metadata: Optional[str],
+    project_manager: Annotated[ProjectManager, Dependency(skip_validation=True)],
+) -> MetricsList:
+    _tags: List[str] = [] if tags is None else json.loads(tags)
+    _metadata: Dict[str, str] = {} if metadata is None else json.loads(metadata)
+    metrics = await project_manager.get_metrics(user_id, project_id, _tags, _metadata)
+    return MetricsList(metrics=metrics)
+
+
+@get("/snapshots/{project_id:uuid}/labels")
+async def get_metric_labels(
+    project_id: ProjectID,
+    user_id: UserID,
+    tags: Optional[str],
+    metadata: Optional[str],
+    metric_type: str,
+    project_manager: Annotated[ProjectManager, Dependency(skip_validation=True)],
+) -> LabelsList:
+    _tags: List[str] = [] if tags is None else json.loads(tags)
+    _metadata: Dict[str, str] = {} if metadata is None else json.loads(metadata)
+    labels = await project_manager.get_metric_labels(user_id, project_id, _tags, _metadata, metric_type)
+    return LabelsList(labels=labels)
+
+
+@get("/snapshots/{project_id:uuid}/label_values")
+async def get_metric_label_values(
+    project_id: ProjectID,
+    user_id: UserID,
+    tags: Optional[str],
+    metadata: Optional[str],
+    metric_type: str,
+    label: str,
+    project_manager: Annotated[ProjectManager, Dependency(skip_validation=True)],
+) -> LabelValuesList:
+    _tags: List[str] = [] if tags is None else json.loads(tags)
+    _metadata: Dict[str, str] = {} if metadata is None else json.loads(metadata)
+    values = await project_manager.get_metric_label_values(user_id, project_id, _tags, _metadata, metric_type, label)
+    return LabelValuesList(label_values=values)
+
+
 @post("/snapshots/{project_id:uuid}/data_series_batch")
 async def get_metrics_data_batch(
     project_id: ProjectID,
@@ -359,6 +416,9 @@ def create_projects_api(guard: Callable) -> Router:
                     project_dashboard,
                     save_project_dashboard,
                     get_metrics_data_batch,
+                    get_metrics,
+                    get_metric_labels,
+                    get_metric_label_values,
                 ],
             ),
             Router(

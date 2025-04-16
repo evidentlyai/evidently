@@ -11,6 +11,7 @@ import {
 import { ResponsiveChartContainer } from '@mui/x-charts/ResponsiveChartContainer'
 import type { SeriesProviderProps } from '@mui/x-charts/context/SeriesProvider'
 import type { SeriesModel } from 'api/types'
+import dayjs from 'dayjs'
 import {
   Box,
   Card,
@@ -59,10 +60,9 @@ export const DashboardPanel = ({
 
     assertNever(plotType)
   })
-
   const xAxis = [
     {
-      data: data.sources.map((e) => e.timestamp),
+      data: data.sources.map((e) => dayjs(e.timestamp).format('YYYY-MM-DD HH:mm:ss')),
       scaleType: 'band' as const
     }
   ]

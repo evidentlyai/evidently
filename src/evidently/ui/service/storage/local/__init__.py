@@ -31,7 +31,7 @@ def create_local_project_manager(path: str, autorefresh: bool, auth: AuthManager
         blob_storage=FSSpecBlobStorage(base_path=path),
         data_storage=data,
         auth_manager=auth or NoopAuthManager(),
-        dashboard_manager=JsonFileDashboardManager(path=path),
+        dashboard_manager=JsonFileDashboardManager(path=path, local_state=state),
     )
     state.project_manager = project_manager
 

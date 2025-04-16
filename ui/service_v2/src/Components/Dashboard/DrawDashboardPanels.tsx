@@ -103,6 +103,7 @@ const RenderPanelByDataFetch = ({ panel }: { panel: PanelType }) => {
         description={subtitle}
         data={pointsData}
         plotType={originalPlotType}
+        counterAgg={panel.plot_params?.aggregation}
       />
     )
   }

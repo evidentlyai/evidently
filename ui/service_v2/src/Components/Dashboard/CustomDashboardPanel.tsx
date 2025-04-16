@@ -66,7 +66,7 @@ export const CustomDashboardPanel = ({
                 >
                   <Box>
                     <Typography variant='h2' align={'center'}>
-                      {getValue(s.values, counterAgg ?? 'last')?.toPrecision(3)}
+                      {getValue(s.values, counterAgg ?? 'last')?.toFixed(2)}
                     </Typography>
                     <Typography component={'pre'} align={'center'}>
                       {`${s.metric_type.split(':').at(-1)}\n${jsonToKeyValueRowString(s.params)}`}

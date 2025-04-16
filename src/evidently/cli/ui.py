@@ -2,6 +2,8 @@ import os
 from typing import Optional
 
 import uuid6
+from click import BadParameter
+from click import echo
 from typer import Option
 
 from evidently.cli.main import app
@@ -41,24 +43,24 @@ def ui(
 
     from evidently.ui.service.app import get_config
     from evidently.ui.service.app import run
+    from evidently.ui.service.demo_projects import DEMO_PROJECTS
+    from evidently.ui.workspace import Workspace
 
-    # from evidently.ui.demo_projects import DEMO_PROJECTS
+    demos = demo_projects.split(",") if demo_projects else []
+    if "all" in demos:
+        demos = DEMO_PROJECTS_NAMES
+    missing = [dp for dp in demos if dp not in DEMO_PROJECTS]
+    if missing:
+        raise BadParameter(f"Unknown demo project name '{missing[0]}'")
 
-    # demos = demo_projects.split(",") if demo_projects else []
-    # if "all" in demos:
-    #     demos = DEMO_PROJECTS_NAMES
-    # missing = [dp for dp in demos if dp not in DEMO_PROJECTS]
-    # if missing:
-    #     raise BadParameter(f"Unknown demo project name '{missing[0]}'")
-    #
-    # if demos:
-    #     ws = Workspace.create(workspace)
-    #     for demo_project in demos:
-    #         dp = DEMO_PROJECTS[demo_project]
-    #
-    #         has_demo_project = any(p.name == dp.name for p in ws.list_projects())
-    #         if not has_demo_project:
-    #             echo(f"Generating demo project '{dp.name}'...")
-    #             dp.create(workspace)
+    if demos:
+        ws = Workspace.create(workspace)
+        for demo_project in demos:
+            dp = DEMO_PROJECTS[demo_project]
+
+            has_demo_project = any(p.name == dp.name for p in ws.list_projects())
+            if not has_demo_project:
+                echo(f"Generating demo project '{dp.name}'...")
+                dp.create(workspace)
     config = get_config(host=host, port=port, workspace=workspace, secret=secret)
     run(config)

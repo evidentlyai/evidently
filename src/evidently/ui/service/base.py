@@ -6,14 +6,12 @@ from abc import abstractmethod
 from enum import Enum
 from typing import IO
 from typing import TYPE_CHECKING
-from typing import Any
 from typing import ClassVar
 from typing import Dict
 from typing import Iterator
 from typing import List
 from typing import Optional
 from typing import Set
-from typing import Type
 from typing import TypeVar
 from typing import Union
 
@@ -22,21 +20,15 @@ import uuid6
 from evidently._pydantic_compat import BaseModel
 from evidently._pydantic_compat import Field
 from evidently._pydantic_compat import PrivateAttr
-from evidently._pydantic_compat import parse_obj_as
 from evidently.core.report import Snapshot as SnapshotV2
 from evidently.core.serialization import SnapshotModel
 from evidently.legacy.core import new_id
 from evidently.legacy.model.dashboard import DashboardInfo
 from evidently.legacy.suite.base_suite import Snapshot
 from evidently.legacy.ui.dashboards.base import DashboardConfig
-from evidently.legacy.ui.dashboards.base import PanelValue
-from evidently.legacy.ui.dashboards.base import ReportFilter
 from evidently.legacy.ui.type_aliases import BlobID
-from evidently.legacy.ui.type_aliases import DataPoints
-from evidently.legacy.ui.type_aliases import DataPointsAsType
 from evidently.legacy.ui.type_aliases import EntityID
 from evidently.legacy.ui.type_aliases import OrgID
-from evidently.legacy.ui.type_aliases import PointType
 from evidently.legacy.ui.type_aliases import ProjectID
 from evidently.legacy.ui.type_aliases import SnapshotID
 from evidently.legacy.ui.type_aliases import TeamID
@@ -310,40 +302,6 @@ class ProjectDashboardStorage:
 
 class DataStorage(ABC):
     @abstractmethod
-    async def extract_points(self, project_id: ProjectID, snapshot: Snapshot):
-        raise NotImplementedError
-
-    async def load_points(
-        self,
-        project_id: ProjectID,
-        filter: "ReportFilter",
-        values: List["PanelValue"],
-        timestamp_start: Optional[datetime.datetime],
-        timestamp_end: Optional[datetime.datetime],
-    ) -> DataPoints:
-        return await self.load_points_as_type(float, project_id, filter, values, timestamp_start, timestamp_end)
-
-    @staticmethod
-    def parse_value(cls: Type[PointType], value: Any) -> PointType:
-        if isinstance(value, cls):
-            return value
-        if isinstance(value, str):
-            value = json.loads(value)
-        return parse_obj_as(cls, value)
-
-    @abstractmethod
-    async def load_points_as_type(
-        self,
-        cls: Type[PointType],
-        project_id: ProjectID,
-        filter: "ReportFilter",
-        values: List["PanelValue"],
-        timestamp_start: Optional[datetime.datetime],
-        timestamp_end: Optional[datetime.datetime],
-    ) -> DataPointsAsType[PointType]:
-        raise NotImplementedError
-
-    @abstractmethod
     async def add_snapshot_points(self, project_id: ProjectID, snapshot_id: SnapshotID, snapshot: SnapshotModel):
         raise NotImplementedError
 
@@ -355,4 +313,29 @@ class DataStorage(ABC):
         start_time: Optional[datetime.datetime],
         end_time: Optional[datetime.datetime],
     ) -> SeriesResponse:
+        raise NotImplementedError
+
+    @abstractmethod
+    async def get_metrics(self, project_id: ProjectID, tags: List[str], metadata: Dict[str, str]) -> List[str]:
+        raise NotImplementedError
+
+    @abstractmethod
+    async def get_metric_labels(
+        self,
+        project_id: ProjectID,
+        tags: List[str],
+        metadata: Dict[str, str],
+        metric: str,
+    ) -> List[str]:
+        raise NotImplementedError
+
+    @abstractmethod
+    async def get_metric_label_values(
+        self,
+        project_id: ProjectID,
+        tags: List[str],
+        metadata: Dict[str, str],
+        metric: str,
+        label: str,
+    ) -> List[str]:
         raise NotImplementedError

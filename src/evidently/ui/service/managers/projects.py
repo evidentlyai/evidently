@@ -1,6 +1,7 @@
 import datetime
 import json
 import posixpath
+from typing import Dict
 from typing import List
 from typing import Optional
 
@@ -255,6 +256,57 @@ class ProjectManager(BaseManager):
         if len(dashboard.tabs) > 1:
             raise HTTPException(status_code=400, detail="Multiple tabs are not supported in Evidently OSS")
         await self.dashboard_manager.save_dashboard(project_id, dashboard)
+
+    async def get_metrics(
+        self,
+        user_id: UserID,
+        project_id: ProjectID,
+        tags: List[str],
+        metadata: Dict[str, str],
+    ):
+        if not await self.auth_manager.check_entity_permission(
+            user_id,
+            EntityType.Project,
+            project_id,
+            Permission.PROJECT_READ,
+        ):
+            raise ProjectNotFound()
+        return await self.data_storage.get_metrics(project_id, tags, metadata)
+
+    async def get_metric_labels(
+        self,
+        user_id: UserID,
+        project_id: ProjectID,
+        tags: List[str],
+        metadata: Dict[str, str],
+        metric: str,
+    ):
+        if not await self.auth_manager.check_entity_permission(
+            user_id,
+            EntityType.Project,
+            project_id,
+            Permission.PROJECT_READ,
+        ):
+            raise ProjectNotFound()
+        return await self.data_storage.get_metric_labels(project_id, tags, metadata, metric)
+
+    async def get_metric_label_values(
+        self,
+        user_id: UserID,
+        project_id: ProjectID,
+        tags: List[str],
+        metadata: Dict[str, str],
+        metric: str,
+        label: str,
+    ):
+        if not await self.auth_manager.check_entity_permission(
+            user_id,
+            EntityType.Project,
+            project_id,
+            Permission.PROJECT_READ,
+        ):
+            raise ProjectNotFound()
+        return await self.data_storage.get_metric_label_values(project_id, tags, metadata, metric, label)
 
     async def get_data_series(
         self,

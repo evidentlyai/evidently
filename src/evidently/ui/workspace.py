@@ -63,7 +63,7 @@ class ProjectDashboard:
         raise NotImplementedError
 
     @abstractmethod
-    def add_panel(self, panel: DashboardPanelPlot, tab: Optional[str], create_if_not_exists: bool = True):
+    def add_panel(self, panel: DashboardPanelPlot, tab: Optional[str] = None, create_if_not_exists: bool = True):
         raise NotImplementedError
 
     @abstractmethod
@@ -350,16 +350,16 @@ class Workspace(WorkspaceBase):
         self.state = LocalState(self.path)
 
     def add_project(self, project: ProjectModel, org_id: Optional[OrgID] = None) -> Project:
-        pwd = self.state.write_project(project)
+        project_model = self.state.write_project(project)
         dashboard = _RemoteProjectDashboard(project.id, self)
-        return Project(pwd.project, dashboard, self)
+        return Project(project_model, dashboard, self)
 
     def get_project(self, project_id: STR_UUID) -> Optional[Project]:
         try:
-            pwd = self.state.read_project(project_id)
+            project_model = self.state.read_project(project_id)
         except FileNotFoundError:
             return None
-        return Project(pwd.project, _RemoteProjectDashboard(pwd.project.id, self), self)
+        return Project(project_model, _RemoteProjectDashboard(project_model.id, self), self)
 
     def delete_project(self, project_id: STR_UUID):
         self.state.delete_project(project_id)

@@ -19,6 +19,13 @@ export const loadData = ({ query, params }: loadDataArgs<{ queryKeys: 'body' }>)
 
   const body = JSONParseExtended<BatchMetricDataModel>(query.body)
 
+  if (body.series && body.series.length === 0) {
+    return {
+      sources: [],
+      series: []
+    }
+  }
+
   return clientAPI
     .POST('/api/v2/snapshots/{project_id}/data_series_batch', {
       params: { path: { project_id } },
