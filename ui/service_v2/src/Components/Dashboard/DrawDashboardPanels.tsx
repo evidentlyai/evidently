@@ -5,6 +5,7 @@ import { useParams } from 'evidently-ui-lib/shared-dependencies/react-router-dom
 import { useEffect } from 'react'
 import type React from 'react'
 import { useLoader } from 'routes/hooks'
+import { CustomDashboardPanel } from './CustomDashboardPanel'
 import { DashboardPanel } from './DashboardPanel'
 import { DashboardPanelSkeleton } from './DashboardPanelSkeleton'
 import { getSeriesListTypeHash } from './utils'
@@ -93,10 +94,21 @@ const RenderPanelByDataFetch = ({ panel }: { panel: PanelType }) => {
   //  CAST `Panel` PARAMETERS
   ////////////////////////////////////////////
 
+  const originalPlotType = panel.plot_params?.plot_type
+  if (originalPlotType === 'text' || originalPlotType === 'counter') {
+    return (
+      <CustomDashboardPanel
+        height={height}
+        title={title}
+        description={subtitle}
+        data={pointsData}
+        plotType={originalPlotType}
+      />
+    )
+  }
+
   const plotType =
-    (panel.plot_params?.plot_type === 'line' || panel.plot_params?.plot_type === 'bar'
-      ? panel.plot_params.plot_type
-      : null) ?? 'line'
+    (originalPlotType === 'line' || originalPlotType === 'bar' ? originalPlotType : null) ?? 'line'
 
   const isStacked = Boolean(panel.plot_params?.is_stacked)
 
