@@ -252,7 +252,7 @@ class ProjectManager(BaseManager):
             Permission.PROJECT_WRITE,
         ):
             raise NotEnoughPermissions()
-        if len(dashboard.tabs) > 0:
+        if len(dashboard.tabs) > 1:
             raise HTTPException(status_code=400, detail="Multiple tabs are not supported in Evidently OSS")
         await self.dashboard_manager.save_dashboard(project_id, dashboard)
 
