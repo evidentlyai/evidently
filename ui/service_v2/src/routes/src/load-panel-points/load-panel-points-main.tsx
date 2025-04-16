@@ -11,6 +11,10 @@ import type { GetParams, loadDataArgs } from 'evidently-ui-lib/router-utils/type
 export const currentRoutePath = '/projects/:projectId/load-panel-points'
 type CurrentRouteParams = GetParams<typeof currentRoutePath>
 
+const crumb = { title: 'Dashboard' }
+
+export const handle = { crumb }
+
 ///////////////////
 //    LOADER
 ///////////////////
@@ -20,10 +24,10 @@ export const loadData = ({ query, params }: loadDataArgs<{ queryKeys: 'body' }>)
   const body = JSONParseExtended<BatchMetricDataModel>(query.body ?? '')
 
   if (body.series_filter && body.series_filter.length === 0) {
-    return {
+    return Promise.resolve({
       sources: [],
       series: []
-    }
+    })
   }
 
   return clientAPIV2
