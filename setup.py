@@ -113,7 +113,7 @@ setup_args = dict(
             # dependencies from fsspec[full]
         ],
     },
-    entry_points={"console_scripts": ["evidently=evidently.legacy.cli:app"]},
+    entry_points={"console_scripts": ["evidently=evidently.cli:app"]},
 )
 
 
