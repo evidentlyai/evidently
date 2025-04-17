@@ -7,7 +7,7 @@ from typer import Option
 from typer import echo
 
 from evidently.cli.main import app
-from evidently.legacy.ui.demo_projects import DEMO_PROJECTS_NAMES
+from evidently.ui.service.demo_projects import DEMO_PROJECTS_NAMES
 
 
 def setup_deterministic_generation_uuid(seed: int = 8754):
