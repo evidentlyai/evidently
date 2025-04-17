@@ -24,7 +24,6 @@ from evidently.core.report import Snapshot as SnapshotV2
 from evidently.core.serialization import SnapshotModel
 from evidently.legacy.core import new_id
 from evidently.legacy.suite.base_suite import Snapshot
-from evidently.legacy.ui.dashboards.base import DashboardConfig
 from evidently.legacy.ui.type_aliases import BlobID
 from evidently.legacy.ui.type_aliases import EntityID
 from evidently.legacy.ui.type_aliases import OrgID
@@ -131,7 +130,6 @@ class Project(Entity):
     id: ProjectID = Field(default_factory=new_id)
     name: str
     description: Optional[str] = None
-    dashboard: "DashboardConfig" = Field(default_factory=_default_dashboard)
 
     team_id: Optional[TeamID] = None
     org_id: Optional[OrgID] = None

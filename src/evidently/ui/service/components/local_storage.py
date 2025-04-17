@@ -2,17 +2,17 @@ from typing import Callable
 from typing import ClassVar
 from typing import Optional
 
-from evidently.legacy.ui.base import BlobStorage
-from evidently.legacy.ui.base import DataStorage
-from evidently.legacy.ui.base import ProjectMetadataStorage
-from evidently.legacy.ui.components.base import FactoryComponent
-from evidently.legacy.ui.components.storage import BlobStorageComponent
-from evidently.legacy.ui.components.storage import DataStorageComponent
-from evidently.legacy.ui.components.storage import MetadataStorageComponent
-from evidently.legacy.ui.storage.local import FSSpecBlobStorage
-from evidently.legacy.ui.storage.local import InMemoryDataStorage
-from evidently.legacy.ui.storage.local import JsonFileProjectMetadataStorage
-from evidently.legacy.ui.storage.local import LocalState
+from evidently.ui.service.base import BlobStorage
+from evidently.ui.service.base import DataStorage
+from evidently.ui.service.base import ProjectMetadataStorage
+from evidently.ui.service.components.base import FactoryComponent
+from evidently.ui.service.components.storage import BlobStorageComponent
+from evidently.ui.service.components.storage import DataStorageComponent
+from evidently.ui.service.components.storage import MetadataStorageComponent
+from evidently.ui.service.storage.local import FSSpecBlobStorage
+from evidently.ui.service.storage.local import InMemoryDataStorage
+from evidently.ui.service.storage.local import JsonFileProjectMetadataStorage
+from evidently.ui.service.storage.local import LocalState
 
 
 class FSSpecBlobComponent(BlobStorageComponent):

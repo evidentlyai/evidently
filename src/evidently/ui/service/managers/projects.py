@@ -68,13 +68,10 @@ class ProjectManager(BaseManager):
         description: Optional[str] = None,
         org_id: Optional[TeamID] = None,
     ) -> Project:
-        from evidently.ui.service.dashboards import DashboardConfig
-
         project = await self.add_project(
             Project(
                 name=name,
                 description=description,
-                dashboard=DashboardConfig(name=name, panels=[]),
                 team_id=team_id,
                 org_id=org_id,
             ),
