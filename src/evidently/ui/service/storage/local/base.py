@@ -433,7 +433,7 @@ class InMemoryDataStorage(DataStorage):
         matching_snapshots_map = {snapshot_id: snapshot for snapshot_id, timestamp, snapshot in matching_snapshots}
 
         last_snapshot = None
-        series_filters_map = {}
+        series_filters_map: Dict[tuple, int] = {}
         index = 0
         for snapshot_id, timestamp, snapshot in matching_snapshots:
             for item in self._metrics_points.get(project_id, {}).get(snapshot_id, []):

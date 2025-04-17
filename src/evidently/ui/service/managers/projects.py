@@ -92,7 +92,7 @@ class ProjectManager(BaseManager):
             ):
                 raise NotEnoughPermissions()
 
-        project.created_at = project.created_at or datetime.datetime.now()
+        project.created_at = project.created_at or datetime.now()
         project = (await self.project_metadata.add_project(project, user, org_id)).bind(self, user.id)
         await self.auth_manager.grant_entity_role(
             user.id,
