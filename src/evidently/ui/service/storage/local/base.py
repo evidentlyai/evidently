@@ -473,7 +473,8 @@ class InMemoryDataStorage(DataStorage):
                     filter_index = _find_filter_index(
                         series_filter, metric_type, params, snapshot_tags, snapshot_metadata
                     )
-                    series_filters_map[key] = filter_index
+                    if filter_index is not None:
+                        series_filters_map[key] = filter_index
 
                 if filter_index is None and len(series_filter) > 0:
                     raise ValueError("No filters found for series ({})")
