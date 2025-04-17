@@ -3,6 +3,8 @@ import os
 import zipfile
 from datetime import datetime
 from datetime import time
+from datetime import timedelta
+from itertools import cycle
 from typing import Tuple
 
 import pandas as pd
@@ -72,6 +74,40 @@ def create_data():
     return Dataset.from_pandas(current, data_definition), Dataset.from_pandas(reference, data_definition)
 
 
+def snapshot_tags_generator():
+    tags = [
+        "production_critical",
+        "city_bikes_hourly",
+        "tabular_data",
+        "regression_batch_model",
+        "high_seasonality",
+        "numerical_features",
+        "categorical_features",
+        "no_missing_values",
+    ]
+
+    yield from cycle(
+        [
+            [tags[0], tags[1], tags[2]],
+            [tags[1]],
+            [],
+            [tags[2]],
+            [tags[3], tags[4]],
+            [],
+            [tags[4], tags[5], tags[6], tags[7]],
+            [],
+            [],
+        ]
+    )
+
+
+SNAPSHOT_TAGS = snapshot_tags_generator()
+
+
+def next_snapshot_tags():
+    return next(SNAPSHOT_TAGS)
+
+
 def create_snapshot(i: int, data: Tuple[Dataset, Dataset]):
     current, reference = data
     report = Report(
@@ -84,7 +120,19 @@ def create_snapshot(i: int, data: Tuple[Dataset, Dataset]):
 
     report.set_batch_size("daily")
 
-    snapshot = report.run(current, reference)
+    new_current = Dataset.from_pandas(
+        data=current.as_dataframe()[
+            datetime(2023, 1, 29) + timedelta(days=i) : datetime(2023, 1, 29) + timedelta(i + 1)
+        ],
+        data_definition=current.data_definition,
+    )
+
+    snapshot = report.run(
+        new_current,
+        reference,
+        timestamp=datetime(2023, 1, 29) + timedelta(days=i + 1),
+        tags=next_snapshot_tags(),
+    )
 
     return snapshot
 
