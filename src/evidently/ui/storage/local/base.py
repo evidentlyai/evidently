@@ -8,7 +8,7 @@ from evidently.core.serialization import SnapshotModel
 from evidently.legacy.utils import NumpyEncoder
 from evidently.sdk.models import DashboardModel
 from evidently.sdk.models import ProjectModel
-from evidently.ui.service.storage.local.base import FSLocation
+from evidently.ui.service.storage.fslocation import FSLocation
 from evidently.ui.service.type_aliases import STR_UUID
 from evidently.ui.service.type_aliases import ProjectID
 from evidently.ui.service.type_aliases import SnapshotID
