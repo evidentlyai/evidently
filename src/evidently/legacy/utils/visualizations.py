@@ -29,6 +29,97 @@ if TYPE_CHECKING:
 OPTIMAL_POINTS = 150
 
 
+def _doane_width(x, first_edge, last_edge):
+    if x.size > 2:
+        sg1 = np.sqrt(6.0 * (x.size - 2) / ((x.size + 1.0) * (x.size + 3)))
+        sigma = np.std(x)
+        if sigma > 0.0:
+            # These three operations add up to
+            # g1 = np.mean(((x - np.mean(x)) / sigma)**3)
+            # but use only one temp array instead of three
+            temp = x - np.mean(x)
+            np.true_divide(temp, sigma, temp)
+            np.power(temp, 3, temp)
+            g1 = np.mean(temp)
+            return _unsigned_subtract(last_edge, first_edge) / (
+                1.0 + np.log2(x.size) + np.log2(1.0 + np.absolute(g1) / sg1)
+            )
+    return 0.0
+
+
+def _unsigned_subtract(a, b):
+    """
+    Subtract two values where a >= b, and produce an unsigned result
+
+    This is needed when finding the difference between the upper and lower
+    bound of an int16 histogram
+    """
+    # coerce to a single type
+    signed_to_unsigned = {
+        np.byte: np.ubyte,
+        np.short: np.ushort,
+        np.intc: np.uintc,
+        np.int_: np.uint,
+        np.longlong: np.ulonglong,
+    }
+    dt = np.result_type(a, b)
+    try:
+        unsigned_dt = signed_to_unsigned[dt.type]
+    except KeyError:
+        return np.subtract(a, b, dtype=dt)
+    else:
+        # we know the inputs are integers, and we are deliberately casting
+        # signed to unsigned.  The input may be negative python integers so
+        # ensure we pass in arrays with the initial dtype (related to NEP 50).
+        return np.subtract(np.asarray(a, dtype=dt), np.asarray(b, dtype=dt), casting="unsafe", dtype=unsigned_dt)
+
+
+def histogram_bin_edges_doane(data):
+    """Backport of numpy 2.1.0 doane bin edges calculation"""
+    a = np.asarray(data)
+
+    bin_edges = None
+
+    if a.size == 0:
+        first_edge, last_edge = 0, 1
+    else:
+        first_edge, last_edge = a.min(), a.max()
+
+    if first_edge == last_edge:
+        first_edge = first_edge - 0.5
+        last_edge = last_edge + 0.5
+
+    if a.size == 0:
+        n_equal_bins = 1
+    else:
+        # Do not call selectors on empty arrays
+        width = _doane_width(a, first_edge, last_edge)
+        if width:
+            if np.issubdtype(a.dtype, np.integer) and width < 1:
+                width = 1
+            n_equal_bins = int(np.ceil(_unsigned_subtract(last_edge, first_edge) / width))
+        else:
+            # Width can be zero for some estimators, e.g. FD when
+            # the IQR of the data is zero.
+            n_equal_bins = 1
+
+    if n_equal_bins is not None:
+        # gh-10322 means that type resolution rules are dependent on array
+        # shapes. To avoid this causing problems, we pick a type now and stick
+        # with it throughout.
+        bin_type = np.result_type(first_edge, last_edge, a)
+        if np.issubdtype(bin_type, np.integer):
+            bin_type = np.result_type(bin_type, float)
+
+        # bin edges must be computed
+        bin_edges = np.linspace(first_edge, last_edge, n_equal_bins + 1, endpoint=True, dtype=bin_type)
+        if np.any(bin_edges[:-1] >= bin_edges[1:]):
+            raise ValueError(f"Too many bins for data range. Cannot create {n_equal_bins} " f"finite-sized bins.")
+        return bin_edges
+    else:
+        return bin_edges
+
+
 def plot_distr(
     *, hist_curr: HistogramData, hist_ref: Optional[HistogramData] = None, orientation="v", color_options: ColorOptions
 ) -> go.Figure:
@@ -552,7 +643,7 @@ def histogram_for_data(
 ) -> Tuple[HistogramData, Optional[HistogramData]]:
     if ref is not None:
         ref = ref.dropna()
-    bins = np.histogram_bin_edges(pd.concat([curr.dropna(), ref]), bins="doane")
+    bins = histogram_bin_edges_doane(pd.concat([curr.dropna(), ref]))
     curr_hist = np.histogram(curr, bins=bins)
     current = make_hist_df(curr_hist)
     reference = None
@@ -727,7 +818,7 @@ def get_distribution_for_numerical_column(
     bins: Optional[Union[list, np.ndarray]] = None,
 ) -> Distribution:
     if bins is None:
-        bins = np.histogram_bin_edges(column, bins="doane")
+        bins = histogram_bin_edges_doane(column)
 
     histogram = np.histogram(column, bins=bins)
     return Distribution(
@@ -749,11 +840,11 @@ def get_distribution_for_column(
 
     elif column_type == "num":
         if reference is not None:
-            bins = np.histogram_bin_edges(pd.concat([current.dropna(), reference.dropna()]), bins="doane")
+            bins = histogram_bin_edges_doane(pd.concat([current.dropna(), reference.dropna()]))
             reference_distribution = get_distribution_for_numerical_column(reference, bins)
 
         else:
-            bins = np.histogram_bin_edges(current.dropna(), bins="doane")
+            bins = histogram_bin_edges_doane(current.dropna())
 
         current_distribution = get_distribution_for_numerical_column(current, bins)
 
