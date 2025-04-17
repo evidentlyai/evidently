@@ -6,9 +6,9 @@ import uuid6
 from evidently.core.report import Report
 from evidently.core.report import Snapshot
 from evidently.legacy.core import new_id
-from evidently.ui.models import DashboardModel
-from evidently.ui.models import DashboardPanelPlot
-from evidently.ui.models import ProjectModel
+from evidently.sdk.models import DashboardModel
+from evidently.sdk.models import DashboardPanelPlot
+from evidently.sdk.models import ProjectModel
 from evidently.ui.workspace import Workspace
 from evidently.ui.workspace import WorkspaceBase
 

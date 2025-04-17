@@ -30,7 +30,6 @@ from evidently.legacy.test_suite.test_suite import TEST_PRESETS
 from evidently.legacy.utils import NumpyEncoder
 from evidently.sdk.models import DashboardModel
 from evidently.sdk.models import SnapshotMetadataModel
-from evidently.ui.service.api.models import DashboardInfoModel
 from evidently.ui.service.api.models import ReportModel
 from evidently.ui.service.base import BatchMetricData
 from evidently.ui.service.base import Project
@@ -199,9 +198,7 @@ async def get_snapshot_data(
     log_event: Callable,
 ) -> str:
     snapshot = await project_manager.load_snapshot(user_id, project_id, snapshot_metadata.id)
-    info = DashboardInfoModel.from_dashboard_info(
-        dashboard_info=DashboardInfo(name="", widgets=snapshot.widgets + snapshot.tests_widgets)
-    )
+    info = DashboardInfo(name="", widgets=snapshot.widgets + snapshot.tests_widgets)
 
     log_event(
         "get_snapshot_data",
@@ -213,7 +210,7 @@ async def get_snapshot_data(
         test_presets=snapshot.metadata.get(TEST_PRESETS, []),
         test_generators=snapshot.metadata.get(TEST_GENERATORS, []),
     )
-    return json.dumps(info.dict() if not isinstance(info, dict) else info, cls=NumpyEncoder)
+    return json.dumps(info.dict(), cls=NumpyEncoder)
 
 
 @get("/{project_id:uuid}/{snapshot_id:uuid}/metadata")
