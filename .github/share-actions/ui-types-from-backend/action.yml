@@ -21,9 +21,15 @@ runs:
       run: pip install -e .
       shell: bash
 
-    - name: Caclulate types
+    - name: Calculate types (legacy)
       if: steps.cache-ui-types.outputs.cache-hit != 'true'
       run: |
         litestar --app evidently.legacy.ui.app:litestar_app schema openapi --output evidently-openapi-schema.yml
         npx openapi-typescript@6 ./evidently-openapi-schema.yml -o ui/packages/evidently-ui-lib/src/api/types/endpoints.d.ts
+      shell: bash
+    - name: Calculate types
+      if: steps.cache-ui-types.outputs.cache-hit != 'true'
+      run: |
+        litestar --app evidently.ui.service.app:litestar_app schema openapi --output evidently-v2-openapi-schema.yml
+        npx openapi-typescript@6 ./evidently-v2-openapi-schema.yml -o ui/packages/evidently-ui-lib/src/api/types/endpoints_v2.d.ts
       shell: bash
