@@ -25,7 +25,7 @@ def setup_deterministic_generation_uuid(seed: int = 8754):
     uuid6.uuid7 = deterministic_uuid
 
 
-@app.command("ui")
+@app.command("legacy_ui")
 def ui(
     host: str = Option("127.0.0.1", help="Service host"),
     port: int = Option(8000, help="Service port"),
