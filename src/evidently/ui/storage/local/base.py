@@ -1,5 +1,6 @@
 import json
 import posixpath
+import re
 from typing import List
 
 from evidently._pydantic_compat import BaseModel
@@ -18,6 +19,9 @@ DOT_JSON = ".json"
 PROJECT_FILE_NAME = "metadata.json"
 DASHBOARD_FILE_NAME = "dashboard.json"
 SNAPSHOTS_DIR_NAME = "snapshots"
+
+
+UUID_REGEX = re.compile("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$")
 
 
 class ProjectWithDashboards(BaseModel):
@@ -65,10 +69,21 @@ class LocalState:
             return parse_obj_as(SnapshotModel, json.load(f))
 
     def list_projects(self) -> List[ProjectID]:
-        return [ProjectID(p) for p in self.location.listdir(".")]
+        projects = []
+        for p in self.location.listdir("."):
+            if not UUID_REGEX.match(p):
+                continue
+            projects.append(ProjectID(p))
+        return projects
 
     def list_snapshots(self, project_id: STR_UUID) -> List[SnapshotID]:
-        return [SnapshotID(s[: -len(DOT_JSON)]) for s in self.location.listdir(self._snapshot_dir(project_id))]
+        snapshots = []
+        for s in self.location.listdir(self._snapshot_dir(project_id)):
+            sid = s[: -len(DOT_JSON)]
+            if not UUID_REGEX.match(sid):
+                continue
+            snapshots.append(SnapshotID(sid))
+        return snapshots
 
     def delete_project(self, project_id: STR_UUID):
         self.location.rmtree(str(project_id))

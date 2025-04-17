@@ -2,6 +2,7 @@ import contextlib
 import datetime
 import json
 import posixpath
+import re
 import uuid
 from typing import Dict
 from typing import List
@@ -47,6 +48,9 @@ from evidently.ui.storage.local.base import LocalState as WorkspaceLocalState
 
 SNAPSHOTS = "snapshots"
 METADATA_PATH = "metadata.json"
+
+
+UUID_REGEX = re.compile("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$")
 
 
 class FSSpecBlobStorage(BlobStorage):
@@ -125,7 +129,13 @@ class LocalState(WorkspaceLocalState):
         project = self.projects[project_id]
         self.location.invalidate_cache(path)
         for file in self.location.listdir(path):
-            snapshot_id = uuid6.UUID(posixpath.basename(file)[: -len(".json")])
+            filename = posixpath.basename(file)
+            if not filename.endswith(".json"):
+                continue
+            sid_str = filename[: -len(".json")]
+            if not UUID_REGEX.match(sid_str):
+                continue
+            snapshot_id = uuid6.UUID(sid_str)
             if snapshot_id in self.snapshots[project_id]:
                 continue
             self.reload_snapshot(project, snapshot_id, skip_errors)
