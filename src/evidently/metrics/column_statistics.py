@@ -689,7 +689,7 @@ class UniqueValueCountCalculation(ByLabelCountCalculation[UniqueValueCount]):
         if self.metric.replace_nan is not None:
             col = col.fillna(self.metric.replace_nan)
         value_counts = col.value_counts(dropna=True)
-        total = len(df)
+        total = len(df) or 1  # if no data all counts will be 0 in any case
 
         res = {v: 0 for v in values}
         res.update(value_counts.to_dict())
