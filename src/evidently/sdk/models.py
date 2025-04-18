@@ -8,6 +8,7 @@ import uuid6
 
 from evidently._pydantic_compat import BaseModel
 from evidently._pydantic_compat import Field
+from evidently._pydantic_compat import validator
 from evidently.legacy.core import new_id
 from evidently.legacy.suite.base_suite import SnapshotLinks
 from evidently.legacy.ui.type_aliases import OrgID
@@ -30,6 +31,13 @@ class PanelMetric(BaseModel):
     metric: str
     metric_labels: Dict[str, str] = Field(default_factory=dict)
     view_params: Dict[str, Any] = Field(default_factory=dict)
+
+    @classmethod
+    @validator("metric")
+    def metric_is_alias(cls, v):
+        if not v.startswith("evidently:metric_v2:"):
+            v = f"evidently:metric_v2:{v}"
+        return v
 
 
 class DashboardPanelPlot(BaseModel):
