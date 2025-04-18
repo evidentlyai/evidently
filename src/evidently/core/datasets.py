@@ -16,6 +16,7 @@ import pandas as pd
 
 from evidently._pydantic_compat import BaseModel
 from evidently._pydantic_compat import parse_obj_as
+from evidently.core.tests import GenericTest
 from evidently.legacy.base_metric import DisplayName
 from evidently.legacy.core import ColumnType
 from evidently.legacy.features.generated_features import GeneratedFeatures
@@ -271,13 +272,39 @@ class DatasetColumn:
         self.data = data
 
 
-class Descriptor(AutoAliasMixin, EvidentlyBaseModel):
+class DescriptorTest(AutoAliasMixin, EvidentlyBaseModel, abc.ABC):
+    __alias_type__: ClassVar[str] = "descriptor_test"
+
+    class Config:
+        is_base_type = True
+
+    @abstractmethod
+    def apply(self, row: pd.Series) -> bool:
+        raise NotImplementedError
+
+
+class DescriptorTestConverted:
+    @classmethod
+    def __get_validators__(cls):
+        yield cls.validate
+
+    @classmethod
+    def validate(cls, v: Union[DescriptorTest, GenericTest]) -> DescriptorTest:
+        if isinstance(v, GenericTest):
+            return v.for_descriptor()
+        if isinstance(v, DescriptorTest):
+            return v
+        raise ValueError(f"Invalid test type: {type(v).__name__}")
+
+
+class Descriptor(AutoAliasMixin, EvidentlyBaseModel, abc.ABC):
     class Config:
         is_base_type = True
 
     __alias_type__: ClassVar = "descriptor_v2"
 
     alias: str
+    tests: List[DescriptorTestConverted] = []
 
     @abc.abstractmethod
     def generate_data(
@@ -588,8 +615,18 @@ class PandasDataset(Dataset):
         new_columns = descriptor.generate_data(self, Options.from_any_options(options))
         if isinstance(new_columns, DatasetColumn):
             new_columns = {descriptor.alias: new_columns}
+        added_columns = []
         for col, value in new_columns.items():
-            self.add_column(_determine_desccriptor_column_name(col, self._data.columns.tolist()), value)
+            name = _determine_desccriptor_column_name(col, self._data.columns.tolist())
+            added_columns.append(name)
+            self.add_column(name, value)
+        for test in descriptor.tests:
+            assert isinstance(test, DescriptorTest)
+            test_result = self._data[added_columns].apply(test.apply, axis=1)
+            test_column_name = _determine_desccriptor_column_name(
+                descriptor.alias + "_test", self._data.columns.tolist()
+            )
+            self.add_column(test_column_name, DatasetColumn(ColumnType.Categorical, test_result))
 
     def _collect_stats(self, column_type: ColumnType, data: pd.Series):
         numerical_stats = None

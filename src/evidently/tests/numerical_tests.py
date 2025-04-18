@@ -12,7 +12,10 @@ from evidently.core.metric_types import SingleValueTest
 from evidently.core.metric_types import TestStatus
 from evidently.core.metric_types import Value
 from evidently.core.report import Context
+from evidently.core.tests import FactoryGenericTest
+from evidently.core.tests import GenericTest
 from evidently.legacy.utils.types import ApproxValue
+from evidently.tests.descriptors import EqualsDescriptorTest
 from evidently.tests.reference import Reference
 
 ThresholdType = Union[float, int, ApproxValue, Reference]
@@ -145,8 +148,11 @@ class EqualMetricTest(EqualMetricTestBase):
         return func
 
 
-def eq(expected: ThresholdType, is_critical: bool = True) -> MetricTest:
-    return EqualMetricTest(expected=expected, is_critical=is_critical)
+def eq(expected: ThresholdType, is_critical: bool = True) -> GenericTest:
+    return FactoryGenericTest(
+        lambda: EqualMetricTest(expected=expected, is_critical=is_critical),
+        lambda: EqualsDescriptorTest(expected=expected),
+    )
 
 
 class NotEqualMetricTest(EqualMetricTestBase):
