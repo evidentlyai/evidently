@@ -340,6 +340,12 @@ class CaseTest(Descriptor):
         return DatasetColumn(ColumnType.Categorical, res)
 
 
+def TestEquals(column: str, value: Any) -> CaseTest:
+    from evidently.tests import eq
+
+    return CaseTest(column, eq(value))
+
+
 class CaseSummary(Descriptor):
     success: bool = True
     rate: bool = True
