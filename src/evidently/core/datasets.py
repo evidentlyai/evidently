@@ -3,6 +3,7 @@ import copy
 import dataclasses
 from abc import abstractmethod
 from enum import Enum
+from typing import Any
 from typing import ClassVar
 from typing import Dict
 from typing import Generator
@@ -170,6 +171,7 @@ class DataDefinition(BaseModel):
     llm: Optional[LLMDefinition] = None
     numerical_descriptors: List[str] = []
     categorical_descriptors: List[str] = []
+    test_descriptors: List[str] = []
     ranking: Optional[List[Recsys]] = None
 
     def __init__(
@@ -185,6 +187,7 @@ class DataDefinition(BaseModel):
         llm: Optional[LLMDefinition] = None,
         numerical_descriptors: Optional[List[str]] = None,
         categorical_descriptors: Optional[List[str]] = None,
+        test_descriptors: Optional[List[str]] = None,
         ranking: Optional[List[Recsys]] = None,
     ):
         super().__init__()
@@ -199,6 +202,7 @@ class DataDefinition(BaseModel):
         self.llm = llm
         self.numerical_descriptors = numerical_descriptors if numerical_descriptors is not None else []
         self.categorical_descriptors = categorical_descriptors if categorical_descriptors is not None else []
+        self.test_descriptors = test_descriptors if test_descriptors is not None else []
         self.ranking = ranking
 
     def get_numerical_columns(self):
@@ -282,6 +286,10 @@ class DescriptorTest(AutoAliasMixin, EvidentlyBaseModel, abc.ABC):
     def apply(self, row: pd.Series) -> bool:
         raise NotImplementedError
 
+    @abstractmethod
+    def apply_single(self, value: Any) -> bool:
+        raise NotImplementedError
+
 
 class DescriptorTestConverted:
     @classmethod
@@ -304,13 +312,64 @@ class Descriptor(AutoAliasMixin, EvidentlyBaseModel, abc.ABC):
     __alias_type__: ClassVar = "descriptor_v2"
 
     alias: str
-    tests: List[DescriptorTestConverted] = []
 
     @abc.abstractmethod
     def generate_data(
         self, dataset: "Dataset", options: Options
     ) -> Union[DatasetColumn, Dict[DisplayName, DatasetColumn]]:
         raise NotImplementedError()
+
+
+class CaseTest(Descriptor):
+    column: str
+    test: DescriptorTest
+
+    def __init__(
+        self, column: str, test: Union[DescriptorTest, GenericTest], alias: Optional[str] = None, **data: Any
+    ) -> None:
+        self.column = column
+        self.test = test if isinstance(test, DescriptorTest) else test.for_descriptor()
+        super().__init__(alias=alias or f"test {column}", **data)
+
+    def generate_data(
+        self, dataset: "Dataset", options: Options
+    ) -> Union[DatasetColumn, Dict[DisplayName, DatasetColumn]]:
+        data = dataset.column(self.column)
+        assert isinstance(self.test, DescriptorTest)
+        res = data.data.apply(self.test.apply_single)
+        return DatasetColumn(ColumnType.Categorical, res)
+
+
+class CaseSummary(Descriptor):
+    success: bool = True
+    rate: bool = True
+    score: bool = True
+    all: bool = True
+    any: bool = True
+    score_weights: Optional[Dict[str, float]] = None
+
+    def generate_data(
+        self, dataset: "Dataset", options: Options
+    ) -> Union[DatasetColumn, Dict[DisplayName, DatasetColumn]]:
+        tests = dataset.data_definition.test_descriptors
+        summary_columns = {}
+        test_results = dataset.as_dataframe()[tests]
+        if self.success:
+            summary_columns["success"] = (ColumnType.Numerical, test_results.sum(axis=1))
+        if self.rate:
+            summary_columns["rate"] = (ColumnType.Numerical, test_results.sum(axis=1) / len(tests))
+        if self.all:
+            summary_columns["all"] = (ColumnType.Categorical, test_results.all(axis=1))
+        if self.any:
+            summary_columns["any"] = (ColumnType.Categorical, test_results.any(axis=1))
+        if self.score:
+            weights = self.score_weights or {t: 1 for t in tests}
+            total_weight = sum(weights.values())
+            summary_columns["score"] = (
+                ColumnType.Numerical,
+                sum(test_results[col] * weight / total_weight for col, weight in weights.items()),
+            )
+        return {key: DatasetColumn(ct, value) for key, (ct, value) in summary_columns.items()}
 
 
 class FeatureDescriptor(Descriptor):
@@ -615,18 +674,11 @@ class PandasDataset(Dataset):
         new_columns = descriptor.generate_data(self, Options.from_any_options(options))
         if isinstance(new_columns, DatasetColumn):
             new_columns = {descriptor.alias: new_columns}
-        added_columns = []
         for col, value in new_columns.items():
             name = _determine_desccriptor_column_name(col, self._data.columns.tolist())
-            added_columns.append(name)
             self.add_column(name, value)
-        for test in descriptor.tests:
-            assert isinstance(test, DescriptorTest)
-            test_result = self._data[added_columns].apply(test.apply, axis=1)
-            test_column_name = _determine_desccriptor_column_name(
-                descriptor.alias + "_test", self._data.columns.tolist()
-            )
-            self.add_column(test_column_name, DatasetColumn(ColumnType.Categorical, test_result))
+            if isinstance(descriptor, CaseTest):
+                self._data_definition.test_descriptors.append(name)
 
     def _collect_stats(self, column_type: ColumnType, data: pd.Series):
         numerical_stats = None
