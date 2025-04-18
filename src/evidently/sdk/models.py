@@ -32,7 +32,6 @@ class PanelMetric(BaseModel):
     metric_labels: Dict[str, str] = Field(default_factory=dict)
     view_params: Dict[str, Any] = Field(default_factory=dict)
 
-    @classmethod
     @validator("metric")
     def metric_is_alias(cls, v):
         if not v.startswith("evidently:metric_v2:"):
