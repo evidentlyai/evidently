@@ -1,4 +1,4 @@
-import type { BatchMetricDataModel, DashboardModel } from 'evidently-ui-lib/api/types'
+import type { BatchMetricDataModel, DashboardModel } from 'evidently-ui-lib/api/types/v2'
 import { useWidgetWrapper } from 'evidently-ui-lib/contexts/WidgetWrapper'
 import { Grid, Typography } from 'evidently-ui-lib/shared-dependencies/mui-material'
 import { useParams } from 'evidently-ui-lib/shared-dependencies/react-router-dom'

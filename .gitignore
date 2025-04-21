@@ -18,6 +18,7 @@ profile.json
 __pycache__
 
 evidently-openapi-schema.yml
+evidently-v2-openapi-schema
 
 # see .devcontainer/devcontainer.json
 test-workspace

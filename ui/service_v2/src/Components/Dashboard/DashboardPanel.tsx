@@ -11,7 +11,7 @@ import {
 import { ResponsiveChartContainer } from '@mui/x-charts/ResponsiveChartContainer'
 import type { SeriesProviderProps } from '@mui/x-charts/context/SeriesProvider'
 import dayjs from 'dayjs'
-import type { SeriesModel } from 'evidently-ui-lib/api/types'
+import type { SeriesModel } from 'evidently-ui-lib/api/types/v2'
 import {
   Box,
   Card,

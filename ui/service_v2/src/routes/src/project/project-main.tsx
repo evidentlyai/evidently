@@ -75,8 +75,4 @@ export const Component = () => {
   )
 }
 
-const TABS = {
-  reports: 'reports',
-  'test-suites': 'test-suites',
-  index: 'index'
-}
+const TABS = { reports: 'reports', index: 'index' }

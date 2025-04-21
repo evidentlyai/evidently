@@ -1,7 +1,7 @@
-import { clientAPIV2 } from 'api'
+import { clientAPI } from 'api'
 import { JSONParseExtended } from 'evidently-ui-lib/api/JsonParser'
 import { responseParser } from 'evidently-ui-lib/api/client-heplers'
-import type { BatchMetricDataModel } from 'evidently-ui-lib/api/types'
+import type { BatchMetricDataModel } from 'evidently-ui-lib/api/types/v2'
 import type { GetParams, loadDataArgs } from 'evidently-ui-lib/router-utils/types'
 
 ///////////////////
@@ -18,19 +18,16 @@ export const handle = { crumb }
 ///////////////////
 //    LOADER
 ///////////////////
-export const loadData = ({ query, params }: loadDataArgs<{ queryKeys: 'body' }>) => {
+export const loadData = async ({ query, params }: loadDataArgs<{ queryKeys: 'body' }>) => {
   const { projectId: project_id } = params as CurrentRouteParams
 
   const body = JSONParseExtended<BatchMetricDataModel>(query.body ?? '')
 
   if (body.series_filter && body.series_filter.length === 0) {
-    return Promise.resolve({
-      sources: [],
-      series: []
-    })
+    return { sources: [], series: [] }
   }
 
-  return clientAPIV2
+  return clientAPI
     .POST('/api/v2/snapshots/{project_id}/data_series_batch', {
       params: { path: { project_id } },
       body

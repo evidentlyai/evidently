@@ -1,4 +1,4 @@
-import type { SeriesModel } from 'evidently-ui-lib/api/types'
+import type { SeriesModel } from 'evidently-ui-lib/api/types/v2'
 import {
   Box,
   Card,
