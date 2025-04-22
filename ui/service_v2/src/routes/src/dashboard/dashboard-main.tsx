@@ -1,10 +1,10 @@
 import { JSONParseExtended } from 'evidently-ui-lib/api/JsonParser.ts'
 import { responseParser } from 'evidently-ui-lib/api/client-heplers.ts'
 import type { DashboardModel } from 'evidently-ui-lib/api/types/v2'
+import { DrawDashboardPanels } from 'evidently-ui-lib/components/v2/Dashboard/DrawDashboardPanels'
 import { useCurrentRouteParams } from 'evidently-ui-lib/router-utils/hooks'
 import type { CrumbDefinition } from 'evidently-ui-lib/router-utils/router-builder'
 import type { GetParams, loadDataArgs } from 'evidently-ui-lib/router-utils/types'
-import { DrawDashboardPanels } from '~/Components/Dashboard/DrawDashboardPanels'
 import { clientAPI } from '~/api'
 import type { GetRouteByPath } from '~/routes/types'
 
@@ -38,5 +38,5 @@ export const loadData = (
 export const Component = () => {
   const { loaderData: data } = useCurrentRouteParams<CurrentRoute>()
 
-  return <DrawDashboardPanels panels={data.panels} />
+  return <DrawDashboardPanels PanelComponent={() => <></>} panels={data.panels} />
 }

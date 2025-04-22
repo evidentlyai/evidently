@@ -7,31 +7,14 @@ import {
   Grid2 as Grid,
   Typography
 } from 'evidently-ui-lib/shared-dependencies/mui-material'
+import { jsonToKeyValueRowString } from '../utils'
 
-type PanelProps = {
+export type CustomPanelProps = {
   data: SeriesModel
   plotType: 'text' | 'counter'
-  isStacked?: boolean
   title?: string
   description?: string
-  height?: number
-  legendMarginRight?: number
   counterAgg?: string
-}
-
-function getValue(data: (number | null)[], counterAgg: 'last' | 'sum' | 'avg') {
-  if (data.length === 0) {
-    return null
-  }
-  if (counterAgg === 'last') {
-    return data[data.length - 1]
-  }
-  if (counterAgg === 'sum') {
-    return data.reduce((prev, curr) => (prev ?? 0) + (curr ?? 0), 0)
-  }
-  if (counterAgg === 'avg') {
-    return (data.reduce((prev, curr) => (prev ?? 0) + (curr ?? 0), 0) ?? 0) / data.length
-  }
 }
 
 export const CustomDashboardPanel = ({
@@ -40,7 +23,7 @@ export const CustomDashboardPanel = ({
   title,
   description,
   counterAgg
-}: PanelProps) => {
+}: CustomPanelProps) => {
   let agg: 'last' | 'sum' | 'avg' = 'last'
   if (counterAgg === 'last' || counterAgg === 'sum' || counterAgg === 'avg') {
     agg = counterAgg
@@ -63,6 +46,7 @@ export const CustomDashboardPanel = ({
         )}
 
         {(title || description) && plotType === 'counter' && <Divider sx={{ mb: 2, mt: 1 }} />}
+
         {plotType === 'counter' && (
           <Box sx={{ flexGrow: 1 }}>
             <Grid container spacing={2} justifyContent={'space-evenly'}>
@@ -86,9 +70,20 @@ export const CustomDashboardPanel = ({
   )
 }
 
-// biome-ignore lint/complexity/noBannedTypes: fine
-const jsonToKeyValueRowString = (o: Object) => {
-  return Object.entries(o)
-    .map(([k, v]) => `${k}: ${v}`)
-    .join('\n')
+function getValue(data: (number | null)[], counterAgg: 'last' | 'sum' | 'avg') {
+  if (data.length === 0) {
+    return null
+  }
+
+  if (counterAgg === 'last') {
+    return data[data.length - 1]
+  }
+
+  if (counterAgg === 'sum') {
+    return data.reduce((prev, curr) => (prev ?? 0) + (curr ?? 0), 0)
+  }
+
+  if (counterAgg === 'avg') {
+    return (data.reduce((prev, curr) => (prev ?? 0) + (curr ?? 0), 0) ?? 0) / data.length
+  }
 }
