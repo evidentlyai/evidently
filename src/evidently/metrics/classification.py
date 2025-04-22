@@ -62,7 +62,7 @@ class ClassificationQualityBase(SingleValueMetric):
 
 class ClassificationQuality(ClassificationQualityBase):
     def _default_tests_with_reference(self, context: Context) -> List[BoundTest]:
-        return [eq(Reference(relative=0.2)).bind_single(self.get_fingerprint())]
+        return [eq(Reference(relative=0.2)).for_metric().bind_single(self.get_fingerprint())]
 
     def _get_dummy_value(
         self, context: Context, dummy_type: Type["DummyClassificationQuality"], **kwargs

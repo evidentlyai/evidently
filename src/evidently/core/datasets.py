@@ -352,10 +352,10 @@ class DescriptorTest(BaseModel):
         alias: Optional[str] = None,
         **data: Any,
     ) -> None:
-        condition: ColumnCondition = (
+        c: ColumnCondition = (
             condition if isinstance(condition, ColumnCondition) else condition.for_descriptor().condition
         )
-        super().__init__(alias=alias, column=column, condition=condition, **data)
+        super().__init__(alias=alias, column=column, condition=c, **data)
 
     def to_descriptor(self, descriptor: Optional[Descriptor] = None) -> "Descriptor":
         if self.column is None:
@@ -462,7 +462,7 @@ class FeatureDescriptor(Descriptor):
             for col in self.feature.list_columns()
         }
 
-    def list_output_columns(self) -> Optional[List[str]]:
+    def list_output_columns(self) -> List[str]:
         return [c.name for c in self.feature.list_columns()]
 
 

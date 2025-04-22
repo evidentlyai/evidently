@@ -92,7 +92,7 @@ def distribution(
 
 class StatisticsMetric(ColumnMetric, SingleValueMetric):
     def _default_tests_with_reference(self, context: Context) -> List[BoundTest]:
-        return [eq(Reference(relative=0.1)).bind_single(self.get_fingerprint())]
+        return [eq(Reference(relative=0.1)).for_metric().bind_single(self.get_fingerprint())]
 
 
 TStatisticsMetric = TypeVar("TStatisticsMetric", bound=StatisticsMetric)
@@ -229,8 +229,8 @@ class CategoryCount(ColumnMetric, CountMetric):
 
     def _default_tests_with_reference(self, context: Context) -> List[BoundTest]:
         return [
-            eq(Reference(relative=0.1)).bind_count(self.get_fingerprint(), True),
-            eq(Reference(relative=0.1)).bind_count(self.get_fingerprint(), False),
+            eq(Reference(relative=0.1)).for_metric().bind_count(self.get_fingerprint(), True),
+            eq(Reference(relative=0.1)).for_metric().bind_count(self.get_fingerprint(), False),
         ]
 
 
@@ -265,8 +265,8 @@ class InRangeValueCount(ColumnMetric, CountMetric):
 
     def _default_tests_with_reference(self, context: Context) -> List[BoundTest]:
         return [
-            eq(Reference(relative=0.1)).bind_count(self.get_fingerprint(), True),
-            eq(Reference(relative=0.1)).bind_count(self.get_fingerprint(), False),
+            eq(Reference(relative=0.1)).for_metric().bind_count(self.get_fingerprint(), True),
+            eq(Reference(relative=0.1)).for_metric().bind_count(self.get_fingerprint(), False),
         ]
 
 
@@ -293,8 +293,8 @@ class OutRangeValueCount(ColumnMetric, CountMetric):
 
     def _default_tests_with_reference(self, context: Context) -> List[BoundTest]:
         return [
-            eq(Reference(relative=0.1)).bind_count(self.get_fingerprint(), True),
-            eq(Reference(relative=0.1)).bind_count(self.get_fingerprint(), False),
+            eq(Reference(relative=0.1)).for_metric().bind_count(self.get_fingerprint(), True),
+            eq(Reference(relative=0.1)).for_metric().bind_count(self.get_fingerprint(), False),
         ]
 
 
@@ -320,8 +320,8 @@ class InListValueCount(ColumnMetric, CountMetric):
 
     def _default_tests_with_reference(self, context: Context) -> List[BoundTest]:
         return [
-            eq(Reference(relative=0.1)).bind_count(self.get_fingerprint(), True),
-            eq(Reference(relative=0.1)).bind_count(self.get_fingerprint(), False),
+            eq(Reference(relative=0.1)).for_metric().bind_count(self.get_fingerprint(), True),
+            eq(Reference(relative=0.1)).for_metric().bind_count(self.get_fingerprint(), False),
         ]
 
 
@@ -347,8 +347,8 @@ class OutListValueCount(ColumnMetric, CountMetric):
 
     def _default_tests_with_reference(self, context: Context) -> List[BoundTest]:
         return [
-            eq(Reference(relative=0.1)).bind_count(self.get_fingerprint(), True),
-            eq(Reference(relative=0.1)).bind_count(self.get_fingerprint(), False),
+            eq(Reference(relative=0.1)).for_metric().bind_count(self.get_fingerprint(), True),
+            eq(Reference(relative=0.1)).for_metric().bind_count(self.get_fingerprint(), False),
         ]
 
 
@@ -371,12 +371,12 @@ class OutListValueCountCalculation(CountCalculation[OutListValueCount]):
 
 class MissingValueCount(ColumnMetric, CountMetric):
     def _default_tests(self, context: Context) -> List[BoundTest]:
-        return [eq(0).bind_count(self.get_fingerprint(), is_count=True)]
+        return [eq(0).for_metric().bind_count(self.get_fingerprint(), is_count=True)]
 
     def _default_tests_with_reference(self, context: Context) -> List[BoundTest]:
         return [
-            eq(Reference(relative=0.1)).bind_count(self.get_fingerprint(), True),
-            eq(Reference(relative=0.1)).bind_count(self.get_fingerprint(), False),
+            eq(Reference(relative=0.1)).for_metric().bind_count(self.get_fingerprint(), True),
+            eq(Reference(relative=0.1)).for_metric().bind_count(self.get_fingerprint(), False),
         ]
 
 
@@ -605,7 +605,7 @@ class DriftedColumnsCount(CountMetric):
     per_column_threshold: Optional[Dict[str, float]] = None
 
     def _default_tests_with_reference(self, context: Context) -> List[BoundTest]:
-        return [lt(self.drift_share).bind_count(self.get_fingerprint(), is_count=False)]
+        return [lt(self.drift_share).for_metric().bind_count(self.get_fingerprint(), is_count=False)]
 
 
 class LegacyDriftedColumnsMetric(
