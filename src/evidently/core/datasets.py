@@ -276,8 +276,8 @@ class DatasetColumn:
         self.data = data
 
 
-class DescriptorCondition(AutoAliasMixin, EvidentlyBaseModel, abc.ABC):
-    __alias_type__: ClassVar[str] = "descriptor_condition"
+class ColumnCondition(AutoAliasMixin, EvidentlyBaseModel, abc.ABC):
+    __alias_type__: ClassVar[str] = "column_condition"
 
     class Config:
         is_base_type = True
@@ -341,19 +341,19 @@ class SingleInputDescriptor(Descriptor, abc.ABC):
 
 
 class DescriptorTest(BaseModel):
-    condition: DescriptorCondition
+    condition: ColumnCondition
     column: Optional[str] = None
     alias: Optional[str] = None
 
     def __init__(
         self,
-        condition: Union[DescriptorCondition, GenericTest],
+        condition: Union[ColumnCondition, GenericTest],
         column: Optional[str] = None,
         alias: Optional[str] = None,
         **data: Any,
     ) -> None:
-        condition: DescriptorCondition = (
-            condition if isinstance(condition, DescriptorCondition) else condition.for_descriptor().condition
+        condition: ColumnCondition = (
+            condition if isinstance(condition, ColumnCondition) else condition.for_descriptor().condition
         )
         super().__init__(alias=alias, column=column, condition=condition, **data)
 
@@ -375,14 +375,14 @@ class DescriptorTest(BaseModel):
 
 class ColumnTest(SingleInputDescriptor):
     column: str
-    condition: DescriptorCondition
+    condition: ColumnCondition
 
     def __init__(
-        self, column: str, condition: Union[DescriptorCondition, GenericTest], alias: Optional[str] = None, **data: Any
+        self, column: str, condition: Union[ColumnCondition, GenericTest], alias: Optional[str] = None, **data: Any
     ) -> None:
         self.column = column
-        descriptor_condition: DescriptorCondition = (
-            condition if isinstance(condition, DescriptorCondition) else condition.for_descriptor().condition
+        descriptor_condition: ColumnCondition = (
+            condition if isinstance(condition, ColumnCondition) else condition.for_descriptor().condition
         )
         self.condition = descriptor_condition
         super().__init__(alias=alias or descriptor_condition.get_default_alias(column), **data)
