@@ -33,11 +33,11 @@ if typing.TYPE_CHECKING:
 
 class RowCount(SingleValueMetric):
     def _default_tests(self, context: "Context") -> List[BoundTest]:
-        return [gt(0).for_metric().bind_single(self.get_fingerprint())]
+        return [gt(0).bind_single(self.get_fingerprint())]
 
     def _default_tests_with_reference(self, context: "Context") -> List[BoundTest]:
         return [
-            eq(Reference(relative=0.1)).for_metric().bind_single(self.get_fingerprint()),
+            eq(Reference(relative=0.1)).bind_single(self.get_fingerprint()),
         ]
 
 
@@ -56,11 +56,11 @@ class ColumnCount(SingleValueMetric):
     column_type: Optional[ColumnType] = None
 
     def _default_tests(self, context: "Context") -> List[BoundTest]:
-        return [gt(0).for_metric().bind_single(self.get_fingerprint())]
+        return [gt(0).bind_single(self.get_fingerprint())]
 
     def _default_tests_with_reference(self, context: "Context") -> List[BoundTest]:
         return [
-            eq(Reference()).for_metric().bind_single(self.get_fingerprint()),
+            eq(Reference()).bind_single(self.get_fingerprint()),
         ]
 
 
@@ -131,11 +131,11 @@ class DatasetSummaryCountValueCalculation(
 
 class DuplicatedRowCount(SingleValueMetric):
     def _default_tests(self, context: "Context") -> List[BoundTest]:
-        return [eq(0).for_metric().bind_single(self.get_fingerprint())]
+        return [eq(0).bind_single(self.get_fingerprint())]
 
     def _default_tests_with_reference(self, context: "Context") -> List[BoundTest]:
         return [
-            eq(Reference(relative=0.1)).for_metric().bind_single(self.get_fingerprint()),
+            eq(Reference(relative=0.1)).bind_single(self.get_fingerprint()),
         ]
 
 
@@ -158,11 +158,11 @@ class DuplicatedRowCountCalculation(DatasetSummarySingleValueCalculation[SingleV
 
 class DuplicatedColumnsCount(SingleValueMetric):
     def _default_tests(self, context: "Context") -> List[BoundTest]:
-        return [eq(0).for_metric().bind_single(self.get_fingerprint())]
+        return [eq(0).bind_single(self.get_fingerprint())]
 
     def _default_tests_with_reference(self, context: "Context") -> List[BoundTest]:
         return [
-            lte(Reference()).for_metric().bind_single(self.get_fingerprint()),
+            lte(Reference()).bind_single(self.get_fingerprint()),
         ]
 
 
@@ -212,11 +212,11 @@ class AlmostDuplicatedColumnsCountCalculation(
 
 class AlmostConstantColumnsCount(SingleValueMetric):
     def _default_tests(self, context: "Context") -> List[BoundTest]:
-        return [eq(0).for_metric().bind_single(self.get_fingerprint())]
+        return [eq(0).bind_single(self.get_fingerprint())]
 
     def _default_tests_with_reference(self, context: "Context") -> List[BoundTest]:
         return [
-            lte(Reference()).for_metric().bind_single(self.get_fingerprint()),
+            lte(Reference()).bind_single(self.get_fingerprint()),
         ]
 
 
@@ -243,11 +243,11 @@ class AlmostConstantColumnsCountCalculation(
 
 class EmptyRowsCount(SingleValueMetric):
     def _default_tests(self, context: "Context") -> List[BoundTest]:
-        return [eq(0).for_metric().bind_single(self.get_fingerprint())]
+        return [eq(0).bind_single(self.get_fingerprint())]
 
     def _default_tests_with_reference(self, context: "Context") -> List[BoundTest]:
         return [
-            eq(Reference(relative=0.1)).for_metric().bind_single(self.get_fingerprint()),
+            eq(Reference(relative=0.1)).bind_single(self.get_fingerprint()),
         ]
 
 
@@ -270,11 +270,11 @@ class EmptyRowsCountCalculation(DatasetSummarySingleValueCalculation[SingleValue
 
 class EmptyColumnsCount(SingleValueMetric):
     def _default_tests(self, context: "Context") -> List[BoundTest]:
-        return [eq(0).for_metric().bind_single(self.get_fingerprint())]
+        return [eq(0).bind_single(self.get_fingerprint())]
 
     def _default_tests_with_reference(self, context: "Context") -> List[BoundTest]:
         return [
-            lte(Reference()).for_metric().bind_single(self.get_fingerprint()),
+            lte(Reference()).bind_single(self.get_fingerprint()),
         ]
 
 
@@ -297,11 +297,11 @@ class EmptyColumnsCountCalculation(DatasetSummarySingleValueCalculation[SingleVa
 
 class ConstantColumnsCount(SingleValueMetric):
     def _default_tests(self, context: "Context") -> List[BoundTest]:
-        return [eq(0).for_metric().bind_single(self.get_fingerprint())]
+        return [eq(0).bind_single(self.get_fingerprint())]
 
     def _default_tests_with_reference(self, context: "Context") -> List[BoundTest]:
         return [
-            lte(Reference()).for_metric().bind_single(self.get_fingerprint()),
+            lte(Reference()).bind_single(self.get_fingerprint()),
         ]
 
 
@@ -326,11 +326,11 @@ class ConstantColumnsCountCalculation(DatasetSummarySingleValueCalculation[Singl
 
 class DatasetMissingValueCount(CountMetric):
     def _default_tests(self, context: "Context") -> List[BoundTest]:
-        return [eq(0).for_metric().bind_count(self.get_fingerprint(), is_count=True)]
+        return [eq(0).bind_count(self.get_fingerprint(), is_count=True)]
 
     def _default_tests_with_reference(self, context: "Context") -> List[BoundTest]:
         return [
-            eq(Reference(relative=0.1)).for_metric().bind_count(self.get_fingerprint(), is_count=True),
+            eq(Reference(relative=0.1)).bind_count(self.get_fingerprint(), is_count=True),
         ]
 
 

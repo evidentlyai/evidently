@@ -37,7 +37,7 @@ class TopKBase(SingleValueMetric):
 
     def _default_tests_with_reference(self, context: Context) -> List[BoundTest]:
         return [
-            eq(Reference(relative=0.1)).for_metric().bind_single(self.get_fingerprint()),
+            eq(Reference(relative=0.1)).bind_single(self.get_fingerprint()),
         ]
 
 
@@ -159,7 +159,7 @@ class ScoreDistribution(SingleValueMetric):
 
     def _default_tests_with_reference(self, context: Context) -> List[BoundTest]:
         return [
-            eq(Reference(relative=0.1)).for_metric().bind_single(self.get_fingerprint()),
+            eq(Reference(relative=0.1)).bind_single(self.get_fingerprint()),
         ]
 
 

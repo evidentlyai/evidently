@@ -107,7 +107,7 @@ class MeanError(MeanStdMetric):
     error_normality: bool = False
 
     def _default_tests_with_reference(self, context: Context) -> List[BoundTest]:
-        return [eq(Reference(relative=0.1)).for_metric().bind_mean_std(self.get_fingerprint())]
+        return [eq(Reference(relative=0.1)).bind_mean_std(self.get_fingerprint())]
 
 
 class MeanErrorCalculation(LegacyRegressionMeanStdMetric[MeanError]):
@@ -137,11 +137,11 @@ class MAE(MeanStdMetric):
     error_normality: bool = False
 
     def _default_tests_with_reference(self, context: Context) -> List[BoundTest]:
-        return [eq(Reference(relative=0.1)).for_metric().bind_mean_std(self.get_fingerprint(), True)]
+        return [eq(Reference(relative=0.1)).bind_mean_std(self.get_fingerprint(), True)]
 
     def _default_tests(self, context: "Context") -> List[BoundTest]:
         dv: SingleValue = context.calculate_metric(DummyMAE().to_calculation())
-        return [lt(dv.value).for_metric().bind_mean_std(self.get_fingerprint())]
+        return [lt(dv.value).bind_mean_std(self.get_fingerprint())]
 
 
 class MAECalculation(LegacyRegressionMeanStdMetric[MAE]):
@@ -171,11 +171,11 @@ class RMSE(SingleValueMetric):
     error_normality: bool = False
 
     def _default_tests_with_reference(self, context: Context) -> List[BoundTest]:
-        return [eq(Reference(relative=0.1)).for_metric().bind_single(self.get_fingerprint())]
+        return [eq(Reference(relative=0.1)).bind_single(self.get_fingerprint())]
 
     def _default_tests(self, context: "Context") -> List[BoundTest]:
         dv: SingleValue = context.calculate_metric(DummyRMSE().to_calculation())
-        return [lt(dv.value).for_metric().bind_single(self.get_fingerprint())]
+        return [lt(dv.value).bind_single(self.get_fingerprint())]
 
 
 class RMSECalculation(LegacyRegressionSingleValueMetric[RMSE]):
@@ -196,11 +196,11 @@ class MAPE(MeanStdMetric):
     error_distr: bool = False
 
     def _default_tests_with_reference(self, context: Context) -> List[BoundTest]:
-        return [eq(Reference(relative=0.1)).for_metric().bind_mean_std(self.get_fingerprint())]
+        return [eq(Reference(relative=0.1)).bind_mean_std(self.get_fingerprint())]
 
     def _default_tests(self, context: "Context") -> List[BoundTest]:
         dv: SingleValue = context.calculate_metric(DummyMAPE().to_calculation())
-        return [lt(dv.value).for_metric().bind_mean_std(self.get_fingerprint())]
+        return [lt(dv.value).bind_mean_std(self.get_fingerprint())]
 
 
 class MAPECalculation(LegacyRegressionMeanStdMetric[MAPE]):
@@ -223,10 +223,10 @@ class R2Score(SingleValueMetric):
     error_normality: bool = False
 
     def _default_tests(self, context: Context) -> List[BoundTest]:
-        return [gt(0).for_metric().bind_single(self.get_fingerprint())]
+        return [gt(0).bind_single(self.get_fingerprint())]
 
     def _default_tests_with_reference(self, context: Context) -> List[BoundTest]:
-        return [eq(Reference(relative=0.1)).for_metric().bind_single(self.get_fingerprint())]
+        return [eq(Reference(relative=0.1)).bind_single(self.get_fingerprint())]
 
 
 class R2ScoreCalculation(LegacyRegressionSingleValueMetric[R2Score]):
@@ -247,7 +247,7 @@ class AbsMaxError(SingleValueMetric):
     error_normality: bool = False
 
     def _default_tests_with_reference(self, context: Context) -> List[BoundTest]:
-        return [eq(Reference(relative=0.1)).for_metric().bind_single(self.get_fingerprint())]
+        return [eq(Reference(relative=0.1)).bind_single(self.get_fingerprint())]
 
 
 class AbsMaxErrorCalculation(LegacyRegressionSingleValueMetric[AbsMaxError]):
