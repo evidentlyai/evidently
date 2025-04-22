@@ -1,5 +1,6 @@
 from typing import Callable
 from typing import Dict
+from typing import List
 from typing import Optional
 from typing import Union
 
@@ -32,6 +33,9 @@ class CustomColumnDescriptor(Descriptor):
             raise ValueError("CustomColumnDescriptor is not configured with callable func")
         column_data = dataset.column(self.column_name)
         return self._func(column_data)
+
+    def list_input_columns(self) -> Optional[List[str]]:
+        return [self.column_name]
 
 
 CustomDescriptorCallable = Callable[[Dataset], Union[DatasetColumn, Dict[str, DatasetColumn]]]

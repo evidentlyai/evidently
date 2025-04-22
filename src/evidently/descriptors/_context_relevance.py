@@ -214,3 +214,6 @@ class ContextRelevance(Descriptor):
         if self.output_scores:
             result[f"{self.alias} scores"] = scored_contexts
         return result
+
+    def list_input_columns(self) -> Optional[List[str]]:
+        return [self.input, self.contexts]

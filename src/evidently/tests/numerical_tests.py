@@ -12,10 +12,7 @@ from evidently.core.metric_types import SingleValueTest
 from evidently.core.metric_types import TestStatus
 from evidently.core.metric_types import Value
 from evidently.core.report import Context
-from evidently.core.tests import FactoryGenericTest
-from evidently.core.tests import GenericTest
 from evidently.legacy.utils.types import ApproxValue
-from evidently.tests.descriptors import EqualsDescriptorTest
 from evidently.tests.reference import Reference
 
 ThresholdType = Union[float, int, ApproxValue, Reference]
@@ -69,10 +66,6 @@ class LessOrEqualMetricTest(ComparisonTest):
         return value <= threshold
 
 
-def lte(threshold: ThresholdType, is_critical: bool = True) -> MetricTest:
-    return LessOrEqualMetricTest(threshold=threshold, is_critical=is_critical)
-
-
 class GreaterOrEqualMetricTest(ComparisonTest):
     __short_name__: ClassVar[str] = "ge"
     __full_name__: ClassVar[str] = "Greater or Equal"
@@ -80,10 +73,6 @@ class GreaterOrEqualMetricTest(ComparisonTest):
 
     def check(self, value: Value, threshold: ThresholdValue):
         return value >= threshold
-
-
-def gte(threshold: ThresholdType, is_critical: bool = True) -> MetricTest:
-    return GreaterOrEqualMetricTest(threshold=threshold, is_critical=is_critical)
 
 
 class GreaterThanMetricTest(ComparisonTest):
@@ -95,10 +84,6 @@ class GreaterThanMetricTest(ComparisonTest):
         return value > threshold
 
 
-def gt(threshold: ThresholdType, is_critical: bool = True) -> MetricTest:
-    return GreaterThanMetricTest(threshold=threshold, is_critical=is_critical)
-
-
 class LessThanMetricTest(ComparisonTest):
     __short_name__: ClassVar[str] = "lt"
     __full_name__: ClassVar[str] = "Less"
@@ -106,10 +91,6 @@ class LessThanMetricTest(ComparisonTest):
 
     def check(self, value: Value, threshold: ThresholdValue):
         return value < threshold
-
-
-def lt(threshold: ThresholdType, is_critical: bool = True) -> MetricTest:
-    return LessThanMetricTest(threshold=threshold, is_critical=is_critical)
 
 
 class EqualMetricTestBase(MetricTest, abc.ABC):
@@ -148,13 +129,6 @@ class EqualMetricTest(EqualMetricTestBase):
         return func
 
 
-def eq(expected: ThresholdType, is_critical: bool = True) -> GenericTest:
-    return FactoryGenericTest(
-        lambda: EqualMetricTest(expected=expected, is_critical=is_critical),
-        lambda: EqualsDescriptorTest(expected=expected),
-    )
-
-
 class NotEqualMetricTest(EqualMetricTestBase):
     def to_test(self) -> SingleValueTest:
         def func(context: Context, metric: MetricCalculationBase, value: SingleValue):
@@ -169,7 +143,3 @@ class NotEqualMetricTest(EqualMetricTestBase):
             )
 
         return func
-
-
-def not_eq(expected: ThresholdType, is_critical: bool = True) -> MetricTest:
-    return NotEqualMetricTest(expected=expected, is_critical=is_critical)

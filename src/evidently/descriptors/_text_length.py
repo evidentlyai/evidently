@@ -23,6 +23,9 @@ class TextLength(Descriptor):
         column_items_lengths = dataset.as_dataframe()[self.column_name].apply(_apply)
         return DatasetColumn(type=ColumnType.Numerical, data=column_items_lengths)
 
+    def list_input_columns(self) -> Optional[list[str]]:
+        return [self.column_name]
+
 
 def _apply(value: Any):
     if value is None or (isinstance(value, float) and np.isnan(value)):

@@ -1,15 +1,13 @@
 from typing import Any
 
-import pandas as pd
-
-from evidently.core.datasets import DescriptorTest
+from evidently.core.datasets import DescriptorCondition
 
 
-class EqualsDescriptorTest(DescriptorTest):
+class EqualsDescriptorCondition(DescriptorCondition):
     expected: Any
 
-    def apply(self, row: pd.Series) -> bool:
-        return any(r == self.expected for r in row)
-
-    def apply_single(self, value: Any) -> bool:
+    def check(self, value: Any) -> bool:
         return self.expected == value
+
+    def get_default_alias(self, column: str) -> str:
+        return f"{column}_test_equals_{self.expected}"
