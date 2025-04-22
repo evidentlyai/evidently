@@ -420,7 +420,7 @@ class TestSummary(Descriptor):
         if self.score:
             weights = self.score_weights or {t: 1 for t in tests}
             total_weight = sum(weights.values())
-            summary_columns["score"] = (
+            summary_columns["score"] = (  # type: ignore[assignment]
                 ColumnType.Numerical,
                 sum(test_results[col] * weight / total_weight for col, weight in weights.items()),
             )
