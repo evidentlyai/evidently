@@ -26,10 +26,14 @@ package_data_spec = {
     "evidently": [
         "nbextension/static/*.*js*",
         "nbextension/static/*.*woff2*",
-        "ui/assets/*",
-        "ui/assets/static/css/*",
-        "ui/assets/static/js/*",
-        "ui/assets/static/img/*",
+        "legacy/ui/assets/*",
+        "legacy/ui/assets/static/css/*",
+        "legacy/ui/assets/static/js/*",
+        "legacy/ui/assets/static/img/*",
+        "ui/service/assets/*",
+        "ui/service/assets/static/css/*",
+        "ui/service/assets/static/js/*",
+        "ui/service/assets/static/img/*",
     ]
 }
 
