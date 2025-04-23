@@ -16,4 +16,4 @@ export type GetSearchParamsAPIs<T extends 'get' | 'post'> = OmitNever<{
 export type SeriesModel = Schemas['SeriesResponse']
 export type BatchMetricDataModel = Schemas['BatchMetricData']
 export type DashboardModel = Schemas['DashboardModel']
-export type DashboardPanelPlotModel = Schemas['DashboardPanelPlot']
+export type DashboardPanelPlotModel = Schemas['DashboardModel']['panels'][number]
