@@ -26,13 +26,13 @@ export const loadData = () =>
 export const actions = {
   'delete-project': (args: ActionArgs<{ data: { project_id: string } }>) =>
     clientAPI
-      .DELETE('/api/projects/{project_id}', {
+      .DELETE('/api/v2/projects/{project_id}', {
         params: { path: { project_id: args.data.project_id } }
       })
       .then(responseParser({ notThrowExc: true })),
   'create-project': ({ data }: ActionArgs<{ data: { project: ProjectModel } }>) =>
     clientAPI
-      .POST('/api/projects', { body: data.project })
+      .POST('/api/v2/projects', { body: data.project })
       .then(responseParser({ notThrowExc: true })),
   'edit-project': (args: ActionArgs<{ data: { project: StrictID<ProjectModel> } }>) =>
     clientAPI
