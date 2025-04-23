@@ -401,16 +401,18 @@ class ColumnTest(SingleInputDescriptor):
 
 class TestSummary(Descriptor):
     success_count: bool = True
-    rate: bool = True
-    score: bool = True
-    all: bool = True
-    any: bool = True
+    rate: bool = False
+    score: bool = False
+    all: bool = False
+    any: bool = False
     score_weights: Optional[Dict[str, float]] = None
 
     def generate_data(
         self, dataset: "Dataset", options: Options
     ) -> Union[DatasetColumn, Dict[DisplayName, DatasetColumn]]:
         tests = dataset.data_definition.test_descriptors
+        if len(tests) == 0:
+            raise ValueError("No tests specified")
         summary_columns = {}
         test_results = dataset.as_dataframe()[tests]
         if self.success_count:
@@ -429,7 +431,12 @@ class TestSummary(Descriptor):
                 sum(test_results[col] * weight / total_weight for col, weight in weights.items()),
             )
         alias = self.alias or "summary"
-        return {f"{alias}_{key}": DatasetColumn(ct, value) for key, (ct, value) in summary_columns.items()}
+        result = {f"{alias}_{key}": DatasetColumn(ct, value) for key, (ct, value) in summary_columns.items()}
+        if len(tests) == 0:
+            raise ValueError("No summary columns specified")
+        if len(result) == 1:
+            return {alias: list(result.values())[0]}
+        return result
 
     def list_input_columns(self) -> Optional[List[str]]:
         if self.score and self.score_weights is not None:

@@ -1,4 +1,5 @@
 from typing import Any
+from typing import Set
 
 from evidently.core.datasets import ColumnCondition
 from evidently.tests.numerical_tests import ThresholdType
@@ -65,7 +66,7 @@ class GreaterEqualColumnCondition(ColumnCondition):
 
 
 class IsInColumnCondition(ColumnCondition):
-    values: set[Any]
+    values: Set[Any]
 
     def check(self, value: Any) -> bool:
         return value in self.values
@@ -75,7 +76,7 @@ class IsInColumnCondition(ColumnCondition):
 
 
 class IsNotInColumnCondition(ColumnCondition):
-    values: set[Any]
+    values: Set[Any]
 
     def check(self, value: Any) -> bool:
         return value not in self.values
