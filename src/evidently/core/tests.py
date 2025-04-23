@@ -2,8 +2,8 @@ from abc import abstractmethod
 from typing import TYPE_CHECKING
 from typing import Callable
 
-from ..legacy.core import Label
-from ..pydantic_utils import Fingerprint
+from evidently.legacy.core import Label
+from evidently.pydantic_utils import Fingerprint
 
 if TYPE_CHECKING:
     from .datasets import DescriptorTest

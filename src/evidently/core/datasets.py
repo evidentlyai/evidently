@@ -291,6 +291,9 @@ class ColumnCondition(AutoAliasMixin, EvidentlyBaseModel, abc.ABC):
         raise NotImplementedError
 
 
+AnyDescriptorTest = Union["DescriptorTest", "GenericTest"]
+
+
 class Descriptor(AutoAliasMixin, EvidentlyBaseModel, abc.ABC):
     class Config:
         is_base_type = True
@@ -300,9 +303,7 @@ class Descriptor(AutoAliasMixin, EvidentlyBaseModel, abc.ABC):
     alias: str
     tests: List["DescriptorTest"] = []
 
-    def __init__(
-        self, alias: str, tests: Optional[List[Union["DescriptorTest", "GenericTest"]]] = None, **data: Any
-    ) -> None:
+    def __init__(self, alias: str, tests: Optional[List[AnyDescriptorTest]] = None, **data: Any) -> None:
         self.alias = alias
         self.tests = [t if isinstance(t, DescriptorTest) else t.for_descriptor() for t in (tests or [])]
         super().__init__(**data)
@@ -373,6 +374,9 @@ class DescriptorTest(BaseModel):
         return ColumnTest(column, self.condition, self.alias or self.condition.get_default_alias(column))
 
 
+Descriptor.update_forward_refs()
+
+
 class ColumnTest(SingleInputDescriptor):
     column: str
     condition: ColumnCondition
@@ -436,11 +440,13 @@ class TestSummary(Descriptor):
 class FeatureDescriptor(Descriptor):
     feature: GeneratedFeatures
 
-    def __init__(self, feature: GeneratedFeatures, alias: Optional[str] = None):
+    def __init__(
+        self, feature: GeneratedFeatures, alias: Optional[str] = None, tests: Optional[List[AnyDescriptorTest]] = None
+    ):
         # this is needed because we try to access it before super call
         feature = feature if isinstance(feature, GeneratedFeatures) else parse_obj_as(GeneratedFeatures, feature)  # type: ignore[type-abstract]
         feature_columns = feature.list_columns()
-        super().__init__(feature=feature, alias=alias or f"{feature_columns[0].display_name}")
+        super().__init__(feature=feature, alias=alias or f"{feature_columns[0].display_name}", tests=tests)
 
     def get_dataset_column(self, column_name: str, values: pd.Series) -> DatasetColumn:
         column_type = self.feature.get_type(column_name)
