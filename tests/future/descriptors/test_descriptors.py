@@ -20,6 +20,7 @@ from evidently.descriptors import ContextRelevance
 from evidently.descriptors import CustomColumnDescriptor
 from evidently.descriptors import CustomDescriptor
 from evidently.descriptors import TextLength
+from evidently.legacy.utils.types import ApproxValue
 from evidently.tests import eq
 from tests.conftest import load_all_subtypes
 
@@ -50,7 +51,7 @@ all_descriptors: List[Tuple[Descriptor, Union[pd.Series, pd.DataFrame], Dict[str
     (
         ContextRelevance(alias="res", input="i", contexts="c"),
         pd.DataFrame({"i": ["input"], "c": ["context"]}),
-        {"res": pd.Series([0.6781195998191833])},
+        {"res": pd.Series([ApproxValue(0.6781195998191833)])},
     ),
 ]
 
