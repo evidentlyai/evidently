@@ -115,7 +115,7 @@ export const PlotDashboardPanel = ({
   )
 }
 
-export const PlotDashboardPanelSkeleton = ({
+export const DashboardPanelSkeleton = ({
   height = 350,
   title,
   subtitle

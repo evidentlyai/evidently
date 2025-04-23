@@ -1,5 +1,7 @@
 import type { DashboardPanelPlotModel } from '~/api/types/v2'
+import { assertNever } from '~/utils'
 import type { DashboardPanelProps } from './DashboardPanel'
+import type { CounterPanelProps } from './Panels/Counter'
 
 type Series = Partial<
   // biome-ignore lint/complexity/noBannedTypes: fine
@@ -24,11 +26,13 @@ export const jsonToKeyValueRowString = (o: Object) => {
 
 export const castRawPanelDataToDashboardPanelProps = (
   panel: DashboardPanelPlotModel
-): // @ts-ignore
-DashboardPanelProps => {
+): DashboardPanelProps => {
+  const emptyData = { series: [], sources: [] }
+  const title = panel.title ?? ''
+  const description = panel.subtitle ?? ''
+
   const originalPlotType = panel.plot_params?.plot_type
 
-  // @ts-ignore
   const plotType: DashboardPanelProps['plotType'] =
     (originalPlotType === 'line' ||
     originalPlotType === 'bar' ||
@@ -37,7 +41,39 @@ DashboardPanelProps => {
       ? originalPlotType
       : null) ?? 'line'
 
-  // if (plotType === 'bar' || plotType === 'text') {
-  //   return {}
-  // }
+  if (plotType === 'text') {
+    return { plotType: plotType, title, description }
+  }
+
+  if (plotType === 'counter') {
+    const originalCounterAgg = panel.plot_params?.aggregation
+    const counterAgg: CounterPanelProps['counterAgg'] =
+      originalCounterAgg === 'last' || originalCounterAgg === 'sum' || originalCounterAgg === 'avg'
+        ? originalCounterAgg
+        : 'last'
+
+    return { plotType: plotType, data: emptyData, title, description, counterAgg }
+  }
+
+  if (plotType === 'bar' || plotType === 'line') {
+    const height = 350
+    const isStacked = Boolean(panel.plot_params?.is_stacked)
+
+    const legendMarginRight =
+      typeof panel.plot_params?.legend_margin_right === 'number'
+        ? Number(panel.plot_params?.legend_margin_right)
+        : 300
+
+    return {
+      plotType,
+      data: emptyData,
+      title,
+      description,
+      isStacked,
+      legendMarginRight,
+      height
+    }
+  }
+
+  assertNever(plotType)
 }

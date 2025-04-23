@@ -5,6 +5,8 @@ import { DrawDashboardPanels } from 'evidently-ui-lib/components/v2/Dashboard/Dr
 import { useCurrentRouteParams } from 'evidently-ui-lib/router-utils/hooks'
 import type { CrumbDefinition } from 'evidently-ui-lib/router-utils/router-builder'
 import type { GetParams, loadDataArgs } from 'evidently-ui-lib/router-utils/types'
+import { Box } from 'evidently-ui-lib/shared-dependencies/mui-material'
+import { PanelComponet } from '~/Components/DashboardPanel'
 import { clientAPI } from '~/api'
 import type { GetRouteByPath } from '~/routes/types'
 
@@ -38,5 +40,9 @@ export const loadData = (
 export const Component = () => {
   const { loaderData: data } = useCurrentRouteParams<CurrentRoute>()
 
-  return <DrawDashboardPanels PanelComponent={() => <></>} panels={data.panels} />
+  return (
+    <Box py={2}>
+      <DrawDashboardPanels PanelComponent={PanelComponet} panels={data.panels} />
+    </Box>
+  )
 }
