@@ -7,6 +7,7 @@ mypy==1.1.1
 pandas-stubs
 pytest==7.4.4
 pytest-asyncio==0.23.7
+pytest-mock==3.14.0
 types-PyYAML==6.0.1
 types-requests==2.26.0
 types-dataclasses==0.6
