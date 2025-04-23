@@ -20,7 +20,6 @@ from evidently.descriptors import ContextRelevance
 from evidently.descriptors import CustomColumnDescriptor
 from evidently.descriptors import CustomDescriptor
 from evidently.descriptors import TextLength
-from evidently.legacy.utils.types import ApproxValue
 from evidently.tests import eq
 from tests.conftest import load_all_subtypes
 
@@ -38,6 +37,23 @@ def custom_col_descr(col: DatasetColumn) -> DatasetColumn:
     return DatasetColumn(ColumnType.Numerical, col.data)
 
 
+@pytest.fixture(autouse=True)
+def mock_semantic_scoring(mocker):
+    from evidently.descriptors._context_relevance import MeanAggregation
+    from evidently.descriptors._context_relevance import semantic_similarity_scoring as sss
+
+    def semantic_scoring_mock(question: DatasetColumn, context: DatasetColumn, options) -> DatasetColumn:
+        return DatasetColumn(ColumnType.Numerical, pd.Series([1] * len(question.data)))
+
+    mocker.patch(f"{sss.__module__}.{sss.__name__}", new=semantic_scoring_mock)
+    mocker.patch(
+        f"{sss.__module__}.METHODS",
+        new={
+            "semantic_similarity": (semantic_scoring_mock, MeanAggregation),
+        },
+    )
+
+
 all_descriptors: List[Tuple[Descriptor, Union[pd.Series, pd.DataFrame], Dict[str, pd.Series]]] = [
     (
         FeatureDescriptor(feature=MockGeneratedFeature(column="str", field="a"), alias="res"),
@@ -51,7 +67,7 @@ all_descriptors: List[Tuple[Descriptor, Union[pd.Series, pd.DataFrame], Dict[str
     (
         ContextRelevance(alias="res", input="i", contexts="c"),
         pd.DataFrame({"i": ["input"], "c": ["context"]}),
-        {"res": pd.Series([ApproxValue(0.6781195998191833)])},
+        {"res": pd.Series([1])},
     ),
 ]
 
