@@ -71,22 +71,24 @@ export const PlotDashboardPanel = ({
 
   return (
     <Card elevation={0}>
-      <CardContent>
-        {title && (
-          <Typography variant='h5' fontWeight={500} gutterBottom>
-            {title}
-          </Typography>
-        )}
+      <CardContent sx={{ px: 0 }}>
+        <Box px={3}>
+          {title && (
+            <Typography variant='h5' fontWeight={500} gutterBottom>
+              {title}
+            </Typography>
+          )}
 
-        {description && (
-          <Typography fontWeight={400} gutterBottom>
-            {description}
-          </Typography>
-        )}
+          {description && (
+            <Typography fontWeight={400} gutterBottom>
+              {description}
+            </Typography>
+          )}
+        </Box>
 
         {(title || description) && <Divider sx={{ mb: 2, mt: 1 }} />}
 
-        <Box height={height}>
+        <Box height={height} px={3}>
           <ResponsiveChartContainer
             series={series}
             xAxis={xAxis}
@@ -125,34 +127,38 @@ export const DashboardPanelSkeleton = ({
   isShowTitle
 }: { isShowTitle?: boolean; height?: number; title?: string; subtitle?: string }) => (
   <Card elevation={0}>
-    <CardContent>
-      {title && isShowTitle && (
-        <Typography variant='h5' fontWeight={500} gutterBottom>
-          {title}
-        </Typography>
-      )}
+    <CardContent sx={{ px: 0 }}>
+      <Box px={3}>
+        {title && isShowTitle && (
+          <Typography variant='h5' fontWeight={500} gutterBottom>
+            {title}
+          </Typography>
+        )}
 
-      {title && !isShowTitle && (
-        <Typography variant='h5' width={Math.max(title.length * 11, 450)}>
-          <Skeleton variant='text' animation='wave' />
-        </Typography>
-      )}
+        {title && !isShowTitle && (
+          <Typography variant='h5' width={Math.max(title.length * 11, 450)}>
+            <Skeleton variant='text' animation='wave' />
+          </Typography>
+        )}
 
-      {subtitle && isShowTitle && (
-        <Typography fontWeight={400} gutterBottom>
-          {subtitle}
-        </Typography>
-      )}
+        {subtitle && isShowTitle && (
+          <Typography fontWeight={400} gutterBottom>
+            {subtitle}
+          </Typography>
+        )}
 
-      {subtitle && !isShowTitle && (
-        <Typography>
-          <Skeleton variant='text' animation='wave' />
-        </Typography>
-      )}
+        {subtitle && !isShowTitle && (
+          <Typography>
+            <Skeleton variant='text' animation='wave' />
+          </Typography>
+        )}
+      </Box>
 
       {(title || subtitle) && <Divider sx={{ mb: 2, mt: 1 }} />}
 
-      <Skeleton variant='rectangular' height={height} animation='wave' />
+      <Box px={3}>
+        <Skeleton variant='rectangular' height={height} animation='wave' />
+      </Box>
     </CardContent>
   </Card>
 )
