@@ -68,7 +68,7 @@ class ClassificationPRCurve(Metric[ClassificationPRCurveResults]):
             binaraized_target.columns = ["target"]
             pr, rcl, thrs = metrics.precision_recall_curve(binaraized_target, prediction.prediction_probas.iloc[:, 0])
             if len(pr) > PR_CURVE_MAX_POINTS:
-                idx = np.linspace(0, len(thrs) - 1, PR_CURVE_MAX_POINTS).astype(int)
+                idx: np.ndarray = np.linspace(0, len(thrs) - 1, PR_CURVE_MAX_POINTS).astype(int)
                 pr = pr[idx + 1]
                 rcl = rcl[idx + 1]
                 thrs = thrs[idx]
@@ -86,7 +86,7 @@ class ClassificationPRCurve(Metric[ClassificationPRCurveResults]):
                     prediction.prediction_probas[label],
                 )
                 if len(pr) > PR_CURVE_MAX_POINTS:
-                    idx = np.linspace(0, len(thrs) - 1, PR_CURVE_MAX_POINTS).astype(int)
+                    idx: np.ndarray = np.linspace(0, len(thrs) - 1, PR_CURVE_MAX_POINTS).astype(int)
                     pr = pr[idx + 1]
                     rcl = rcl[idx + 1]
                     thrs = thrs[idx]
