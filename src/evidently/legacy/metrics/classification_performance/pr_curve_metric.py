@@ -1,6 +1,7 @@
 from typing import List
 from typing import Optional
 
+import numpy as np
 import pandas as pd
 from sklearn import metrics
 
@@ -20,6 +21,8 @@ from evidently.legacy.renderers.html_widgets import get_pr_rec_plot_data
 from evidently.legacy.renderers.html_widgets import header_text
 from evidently.legacy.renderers.html_widgets import widget_tabs
 from evidently.legacy.utils.data_operations import process_columns
+
+PR_CURVE_MAX_POINTS = 1000
 
 
 class ClassificationPRCurveResults(MetricResult):
@@ -64,6 +67,11 @@ class ClassificationPRCurve(Metric[ClassificationPRCurveResults]):
             binaraized_target = pd.DataFrame(binaraized_target[:, 0])
             binaraized_target.columns = ["target"]
             pr, rcl, thrs = metrics.precision_recall_curve(binaraized_target, prediction.prediction_probas.iloc[:, 0])
+            if len(pr) > PR_CURVE_MAX_POINTS:
+                idx = np.linspace(0, len(thrs) - 1, PR_CURVE_MAX_POINTS).astype(int)
+                pr = pr[idx + 1]
+                rcl = rcl[idx + 1]
+                thrs = thrs[idx]
             pr_curve[prediction.prediction_probas.columns[0]] = PRCurveData(
                 pr=pr.tolist(),
                 rcl=rcl.tolist(),
@@ -77,6 +85,11 @@ class ClassificationPRCurve(Metric[ClassificationPRCurveResults]):
                     binaraized_target[label],
                     prediction.prediction_probas[label],
                 )
+                if len(pr) > PR_CURVE_MAX_POINTS:
+                    idx = np.linspace(0, len(thrs) - 1, PR_CURVE_MAX_POINTS).astype(int)
+                    pr = pr[idx + 1]
+                    rcl = rcl[idx + 1]
+                    thrs = thrs[idx]
 
                 pr_curve[label] = PRCurveData(
                     pr=pr.tolist(),

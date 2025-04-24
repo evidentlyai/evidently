@@ -3,6 +3,7 @@ from typing import List
 from typing import Optional
 from typing import Union
 
+import numpy as np
 import pandas as pd
 from sklearn import metrics
 
@@ -23,6 +24,8 @@ from evidently.legacy.renderers.html_widgets import get_roc_auc_tab_data
 from evidently.legacy.renderers.html_widgets import header_text
 from evidently.legacy.renderers.html_widgets import widget_tabs
 from evidently.legacy.utils.data_operations import process_columns
+
+ROC_CURVE_MAX_POINTS = 1000
 
 
 class ClassificationRocCurveResults(MetricResult):
@@ -87,6 +90,11 @@ class ClassificationRocCurve(Metric[ClassificationRocCurveResults]):
             binaraized_target.columns = ["target"]
 
             fpr, tpr, thrs = metrics.roc_curve(binaraized_target, prediction.prediction_probas.iloc[:, 0])
+            if len(fpr) > ROC_CURVE_MAX_POINTS:
+                idx = np.linspace(0, len(fpr) - 1, ROC_CURVE_MAX_POINTS).astype(int)
+                fpr = fpr[idx]
+                tpr = tpr[idx]
+                thrs = thrs[idx]
             roc_curve[prediction.prediction_probas.columns[0]] = ROCCurveData(
                 fpr=fpr.tolist(), tpr=tpr.tolist(), thrs=thrs.tolist()
             )
@@ -97,6 +105,11 @@ class ClassificationRocCurve(Metric[ClassificationRocCurveResults]):
             for label in labels:
                 mapped_label = tn.get(label, label)
                 fpr, tpr, thrs = metrics.roc_curve(binaraized_target[label], prediction.prediction_probas[label])
+                if len(fpr) > ROC_CURVE_MAX_POINTS:
+                    idx = np.linspace(0, len(fpr) - 1, ROC_CURVE_MAX_POINTS).astype(int)
+                    fpr = fpr[idx]
+                    tpr = tpr[idx]
+                    thrs = thrs[idx]
                 roc_curve[mapped_label] = ROCCurveData(fpr=fpr.tolist(), tpr=tpr.tolist(), thrs=thrs.tolist())
         return roc_curve
 
