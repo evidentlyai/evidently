@@ -35,7 +35,7 @@ from evidently.legacy.metrics.data_drift.embedding_drift_methods import DriftMet
 from evidently.legacy.test_preset.test_preset import TestPreset
 from evidently.legacy.tests.base_test import Test
 from evidently.legacy.tests.base_test import TestParameters
-from evidently.legacy.ui.components.base import Component
+from evidently.legacy.ui.components.base import Component as ComponentLegacy
 from evidently.legacy.ui.dashboards.base import DashboardPanel
 from evidently.legacy.utils.llm.prompts import PromptBlock
 from evidently.legacy.utils.llm.prompts import PromptTemplate
@@ -45,6 +45,7 @@ from evidently.pydantic_utils import PolymorphicModel
 from evidently.pydantic_utils import WithTestAndMetricDependencies
 from evidently.pydantic_utils import get_base_class
 from evidently.pydantic_utils import is_not_abstract
+from evidently.ui.service.components.base import Component
 
 T = TypeVar("T")
 
@@ -164,7 +165,7 @@ def test_all_aliases_correct():
         MetricContainer: MetricContainer.__alias_type__,
         ColumnCondition: ColumnCondition.__alias_type__,
     }
-    skip = [Component]
+    skip = [Component, ComponentLegacy]
     skip_literal = [EvidentlyBaseModel, WithTestAndMetricDependencies, BasePreset]
     for cls in find_all_subclasses(PolymorphicModel, include_abstract=True):
         if cls in skip_literal or any(issubclass(cls, s) for s in skip) or not is_not_abstract(cls):

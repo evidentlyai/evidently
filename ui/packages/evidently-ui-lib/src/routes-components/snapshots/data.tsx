@@ -3,7 +3,7 @@ import type { ActionArgs } from '~/router-utils/types'
 
 export const getReports = ({ api, projectId }: API & { projectId: string }) =>
   api
-    .GET('/api/projects/{project_id}/reports', {
+    .GET('/api/projects/{project_id}/snapshots', {
       params: { path: { project_id: projectId } }
     })
     .then(responseParser())
