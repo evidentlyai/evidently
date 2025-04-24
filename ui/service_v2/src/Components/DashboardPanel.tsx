@@ -39,4 +39,4 @@ const RenderPanelByDataFetch = ({ panel }: { panel: DashboardPanelPlotModel }) =
   )
 }
 
-export const PanelComponet: PanelComponentType = RenderPanelByDataFetch
+export const PanelComponent: PanelComponentType = RenderPanelByDataFetch
