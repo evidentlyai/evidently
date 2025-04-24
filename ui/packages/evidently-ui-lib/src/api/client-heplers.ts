@@ -1,11 +1,5 @@
-import type createClient from 'openapi-fetch'
 import { json } from 'react-router-dom'
 import type { ErrorData, ErrorResponse } from '~/api/types/utils'
-
-import type { BackendPaths } from '~/api/types'
-
-export type API_CLIENT_TYPE = ReturnType<typeof createClient<BackendPaths>>
-export type API = { api: API_CLIENT_TYPE }
 
 // biome-ignore lint: <explanation>
 type ClientGenericResponse<D = any> =

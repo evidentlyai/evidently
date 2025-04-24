@@ -40,7 +40,7 @@ jobs:
             evidently_python:
               - .github/**
               - src/evidently/**
-              - '!src/evidently/ui/assets/**'
+              - '!src/evidently/**/ui/**/assets/**'
               - '!src/evidently/nbextension/**'
               - example_test.py
               - examples/**/*.ipynb

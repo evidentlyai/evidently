@@ -1,15 +1,13 @@
-import type { CrumbDefinition } from 'evidently-ui-lib/router-utils/router-builder'
-import {
-  getProjects,
-  getProjectsListActions
-} from 'evidently-ui-lib/routes-components/projectsList/data'
-import { Box, Grid, Typography } from 'evidently-ui-lib/shared-dependencies/mui-material'
-
-import type { GetRouteByPath } from '~/routes/types'
-
-import { clientAPI } from '~/api'
-
+import { responseParser } from 'evidently-ui-lib/api/client-heplers'
+import type { ProjectModel } from 'evidently-ui-lib/api/types'
+import type { StrictID } from 'evidently-ui-lib/api/types/utils'
+import { ensureIDInArray } from 'evidently-ui-lib/api/utils'
 import { useCurrentRouteParams } from 'evidently-ui-lib/router-utils/hooks'
+import type { CrumbDefinition } from 'evidently-ui-lib/router-utils/router-builder'
+import type { ActionArgs } from 'evidently-ui-lib/router-utils/types'
+import { Box, Grid, Typography } from 'evidently-ui-lib/shared-dependencies/mui-material'
+import { clientAPI } from '~/api'
+import type { GetRouteByPath } from '~/routes/types'
 import { AddNewProjectWrapper, ProjectCardWrapper } from './components'
 
 ///////////////////
@@ -22,9 +20,28 @@ export type CurrentRoute = GetRouteByPath<typeof currentRoutePath>
 const crumb: CrumbDefinition = { title: 'Projects' }
 export const handle = { crumb }
 
-export const loadData = () => getProjects({ api: clientAPI })
+export const loadData = () =>
+  clientAPI.GET('/api/projects').then(responseParser()).then(ensureIDInArray)
 
-export const actions = getProjectsListActions({ api: clientAPI })
+export const actions = {
+  'delete-project': (args: ActionArgs<{ data: { project_id: string } }>) =>
+    clientAPI
+      .DELETE('/api/v2/projects/{project_id}', {
+        params: { path: { project_id: args.data.project_id } }
+      })
+      .then(responseParser({ notThrowExc: true })),
+  'create-project': ({ data }: ActionArgs<{ data: { project: ProjectModel } }>) =>
+    clientAPI
+      .POST('/api/v2/projects', { body: data.project })
+      .then(responseParser({ notThrowExc: true })),
+  'edit-project': (args: ActionArgs<{ data: { project: StrictID<ProjectModel> } }>) =>
+    clientAPI
+      .POST('/api/projects/{project_id}/info', {
+        params: { path: { project_id: args.data.project.id } },
+        body: args.data.project
+      })
+      .then(responseParser({ notThrowExc: true }))
+}
 
 export const Component = () => {
   const { loaderData: projects } = useCurrentRouteParams<CurrentRoute>()

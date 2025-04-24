@@ -1,29 +1,25 @@
+import { JSONParseExtended } from 'evidently-ui-lib/api/JsonParser'
+import { responseParser } from 'evidently-ui-lib/api/client-heplers'
+import type { DashboardInfoModel, GetSearchParamsAPIs } from 'evidently-ui-lib/api/types'
+import { DashboardWidgets } from 'evidently-ui-lib/components/DashboardWidgets'
+import {
+  HintOnHoverToPlot,
+  type PlotMouseEventType
+} from 'evidently-ui-lib/components/OnClickedPoint'
+import { useCurrentRouteParams } from 'evidently-ui-lib/router-utils/hooks'
 import type { CrumbDefinition } from 'evidently-ui-lib/router-utils/router-builder'
 import type { GetParams, loadDataArgs } from 'evidently-ui-lib/router-utils/types'
-
-import type { GetRouteByPath } from '~/routes/types'
-
-import { useCurrentRouteParams } from 'evidently-ui-lib/router-utils/hooks'
 import {
   ProjectDashboard,
   getDataRange,
   getValidDate,
   useDashboardFilterParamsDebounced
 } from 'evidently-ui-lib/routes-components/dashboard'
-import {
-  type DashboardFilterQueryParams,
-  getProjectDashboard
-} from 'evidently-ui-lib/routes-components/dashboard/data'
-
-import { DashboardWidgets } from 'evidently-ui-lib/components/DashboardWidgets'
-import {
-  HintOnHoverToPlot,
-  type PlotMouseEventType
-} from 'evidently-ui-lib/components/OnClickedPoint'
 import { Box, Stack } from 'evidently-ui-lib/shared-dependencies/mui-material'
 import { useParams } from 'evidently-ui-lib/shared-dependencies/react-router-dom'
 import { clientAPI } from '~/api'
 import { RouterLink } from '~/routes/components'
+import type { GetRouteByPath } from '~/routes/types'
 
 ///////////////////
 //    ROUTE
@@ -38,13 +34,22 @@ const crumb: CrumbDefinition = { title: 'Dashboard' }
 
 export const handle = { crumb }
 
+const loadDashboardAPI = '/api/projects/{project_id}/dashboard'
+type LoadDashboardAPIQuery = GetSearchParamsAPIs<'get'>[typeof loadDashboardAPI]
+
 export const loadData = ({
   params,
   query
-}: loadDataArgs<{ queryKeys: DashboardFilterQueryParams }>) => {
+}: loadDataArgs<{ queryKeys: keyof LoadDashboardAPIQuery }>) => {
   const { projectId } = params as Params
 
-  return getProjectDashboard({ api: clientAPI, projectId, query })
+  return clientAPI
+    .GET(loadDashboardAPI, {
+      params: { path: { project_id: projectId }, query },
+      parseAs: 'text'
+    })
+    .then(responseParser())
+    .then(JSONParseExtended<DashboardInfoModel>)
 }
 
 export const Component = () => {

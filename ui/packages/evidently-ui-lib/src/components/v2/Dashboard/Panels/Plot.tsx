@@ -1,29 +1,27 @@
-import {
-  BarPlot,
-  ChartsAxisHighlight,
-  ChartsGrid,
-  ChartsLegend,
-  ChartsTooltip,
-  ChartsXAxis,
-  ChartsYAxis,
-  LinePlot
-} from '@mui/x-charts'
+import { BarPlot } from '@mui/x-charts/BarChart/BarPlot'
+import { ChartsAxisHighlight } from '@mui/x-charts/ChartsAxisHighlight/ChartsAxisHighlight'
+import { ChartsGrid } from '@mui/x-charts/ChartsGrid/ChartsGrid'
+import { ChartsLegend } from '@mui/x-charts/ChartsLegend/ChartsLegend'
+import { ChartsTooltip } from '@mui/x-charts/ChartsTooltip/ChartsTooltip'
+import { ChartsXAxis } from '@mui/x-charts/ChartsXAxis/ChartsXAxis'
+import { ChartsYAxis } from '@mui/x-charts/ChartsYAxis/ChartsYAxis'
+import { LinePlot } from '@mui/x-charts/LineChart/LinePlot'
 import { ResponsiveChartContainer } from '@mui/x-charts/ResponsiveChartContainer'
 import type { SeriesProviderProps } from '@mui/x-charts/context/SeriesProvider'
 import dayjs from 'dayjs'
-import type { SeriesModel } from 'evidently-ui-lib/api/types'
+import type { SeriesModel } from 'evidently-ui-lib/api/types/v2'
 import {
   Box,
   Card,
   CardContent,
   Divider,
+  Skeleton,
   Typography
 } from 'evidently-ui-lib/shared-dependencies/mui-material'
 import { assertNever } from 'evidently-ui-lib/utils/index'
+import { jsonToKeyValueRowString } from '../utils'
 
-type SeriesType = SeriesProviderProps['series'][number]
-
-type PanelProps = {
+export type PlotPanelProps = {
   data: SeriesModel
   plotType: 'bar' | 'line'
   isStacked?: boolean
@@ -33,7 +31,9 @@ type PanelProps = {
   legendMarginRight?: number
 }
 
-export const DashboardPanel = ({
+type SeriesType = SeriesProviderProps['series'][number]
+
+export const PlotDashboardPanel = ({
   data,
   plotType,
   title,
@@ -41,7 +41,7 @@ export const DashboardPanel = ({
   height = 350,
   legendMarginRight = 300,
   isStacked
-}: PanelProps) => {
+}: PlotPanelProps) => {
   const series: SeriesType[] = data.series.map(({ values: data, params, metric_type }) => {
     const defaultLabel = `${metric_type.split(':').at(-1)}\n${jsonToKeyValueRowString(params)}`
 
@@ -115,11 +115,43 @@ export const DashboardPanel = ({
   )
 }
 
-// biome-ignore lint/complexity/noBannedTypes: fine
-const jsonToKeyValueRowString = (o: Object) => {
-  const result = Object.entries(o)
-    .map(([k, v]) => `${k}: ${v}`)
-    .join('\n')
+export const DashboardPanelSkeleton = ({
+  height = 350,
+  title,
+  subtitle,
+  isShowTitle
+}: { isShowTitle?: boolean; height?: number; title?: string; subtitle?: string }) => {
+  return (
+    <Card elevation={0}>
+      <CardContent>
+        {title && isShowTitle && (
+          <Typography variant='h5' fontWeight={500} gutterBottom>
+            {title}
+          </Typography>
+        )}
 
-  return result
+        {title && !isShowTitle && (
+          <Typography variant='h5' width={Math.max(title.length * 11, 450)}>
+            <Skeleton variant='text' animation='wave' />
+          </Typography>
+        )}
+
+        {subtitle && isShowTitle && (
+          <Typography fontWeight={400} gutterBottom>
+            {subtitle}
+          </Typography>
+        )}
+
+        {subtitle && !isShowTitle && (
+          <Typography>
+            <Skeleton variant='text' animation='wave' />
+          </Typography>
+        )}
+
+        {(title || subtitle) && <Divider sx={{ mb: 2, mt: 1 }} />}
+
+        <Skeleton variant='rectangular' height={height} animation='wave' />
+      </CardContent>
+    </Card>
+  )
 }
