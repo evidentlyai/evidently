@@ -118,18 +118,31 @@ export const PlotDashboardPanel = ({
 export const DashboardPanelSkeleton = ({
   height = 350,
   title,
-  subtitle
-}: { height?: number; title?: string; subtitle?: string }) => {
+  subtitle,
+  isShowTitle
+}: { isShowTitle?: boolean; height?: number; title?: string; subtitle?: string }) => {
   return (
     <Card elevation={0}>
       <CardContent>
-        {title && (
+        {title && isShowTitle && (
+          <Typography variant='h5' fontWeight={500} gutterBottom>
+            {title}
+          </Typography>
+        )}
+
+        {title && !isShowTitle && (
           <Typography variant='h5' width={Math.max(title.length * 11, 450)}>
             <Skeleton variant='text' animation='wave' />
           </Typography>
         )}
 
-        {subtitle && (
+        {subtitle && isShowTitle && (
+          <Typography fontWeight={400} gutterBottom>
+            {subtitle}
+          </Typography>
+        )}
+
+        {subtitle && !isShowTitle && (
           <Typography>
             <Skeleton variant='text' animation='wave' />
           </Typography>
