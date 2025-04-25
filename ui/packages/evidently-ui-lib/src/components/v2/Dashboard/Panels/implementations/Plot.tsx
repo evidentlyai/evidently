@@ -20,10 +20,11 @@ import {
 } from 'evidently-ui-lib/shared-dependencies/mui-material'
 import { assertNever } from 'evidently-ui-lib/utils/index'
 import type { MakePanel } from '~/components/v2/Dashboard/Panels/types'
-import { jsonToKeyValueRowString } from '../../utils'
+import { formatLabelWithParams, jsonToKeyValueRowString } from '~/components/v2/Dashboard/utils'
 
 export type PlotPanelProps = MakePanel<{
   data: SeriesModel
+  labels: (string | undefined | null)[]
   type: 'bar' | 'line'
   size: 'full' | 'half'
   isStacked?: boolean
@@ -41,27 +42,33 @@ export const PlotDashboardPanel = ({
   title,
   description,
   height = 350,
+  labels,
   legendMarginRight = 300,
   isStacked
 }: PlotPanelProps) => {
-  const series: SeriesType[] = data.series.map(({ values: data, params, metric_type }) => {
-    const defaultLabel = `${metric_type.split(':').at(-1)}\n${jsonToKeyValueRowString(params)}`
+  const series: SeriesType[] = data.series.map(
+    ({ values: data, params, metric_type, filter_index }) => {
+      const metricName = metric_type.split(':').at(-1)
+      const defaultLabel = `${metricName}\n${jsonToKeyValueRowString(params)}`
 
-    const common = {
-      label: defaultLabel,
-      stack: isStacked ? 'total' : undefined
+      const customLabel = formatLabelWithParams({ label: labels?.[filter_index] ?? '', params })
+
+      const common = {
+        label: customLabel || defaultLabel,
+        stack: isStacked ? 'total' : undefined
+      }
+
+      if (type === 'line') {
+        return { type: type, data, ...common } satisfies SeriesType
+      }
+
+      if (type === 'bar') {
+        return { type: type, data, ...common } satisfies SeriesType
+      }
+
+      assertNever(type)
     }
-
-    if (type === 'line') {
-      return { type: type, data, ...common } satisfies SeriesType
-    }
-
-    if (type === 'bar') {
-      return { type: type, data, ...common } satisfies SeriesType
-    }
-
-    assertNever(type)
-  })
+  )
 
   const xAxis = [
     {

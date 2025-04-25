@@ -24,6 +24,21 @@ export const jsonToKeyValueRowString = (o: Object) => {
   return result
 }
 
+export const formatLabelWithParams = ({
+  label,
+  params
+}: {
+  label: string
+  params: Record<string, string | undefined>
+}) => {
+  const result = label.replace(
+    /\{\{([a-zA-Z_0-9]+)?\}\}/g,
+    (_, key) => params?.[key] ?? `{{${key}}}`
+  )
+
+  return result
+}
+
 export const getSizeForGridItem = (size: 'half' | 'full') => {
   if (size === 'full') {
     return { xs: 12, sm: 12, md: 12, lg: 12 }
@@ -54,6 +69,8 @@ export const castRawPanelDataToDashboardPanelProps = (
 
   const size = panel.size === 'full' || panel.size === 'half' ? panel.size : 'full'
 
+  const labels = panel.values.map((e) => e.legend)
+
   if (type === 'text') {
     return { type, size, title, description }
   }
@@ -66,7 +83,7 @@ export const castRawPanelDataToDashboardPanelProps = (
         ? originalCounterAgg
         : 'last'
 
-    return { type, size, title, description, counterAgg, data: emptyData }
+    return { type, size, title, description, counterAgg, data: emptyData, labels }
   }
 
   if (type === 'bar' || type === 'line') {
@@ -86,7 +103,8 @@ export const castRawPanelDataToDashboardPanelProps = (
       isStacked,
       legendMarginRight,
       height,
-      data: emptyData
+      data: emptyData,
+      labels
     }
   }
 
