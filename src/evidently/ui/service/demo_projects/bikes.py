@@ -176,12 +176,12 @@ def create_project(workspace: WorkspaceBase, name: str):
                 title="Target and Prediction",
                 values=[
                     PanelMetric(
-                        legend="Target (daily mean)",
+                        legend="Target (daily mean)\ncolumn: {{column}}",
                         metric="evidently:metric_v2:MeanValue",
                         metric_labels={"column": "cnt"},
                     ),
                     PanelMetric(
-                        legend="Prediction (daily mean)",
+                        legend="Prediction (daily mean)\ncolumn: {{column}}",
                         metric="evidently:metric_v2:MeanValue",
                         metric_labels={"column": "prediction"},
                     ),
@@ -196,7 +196,7 @@ def create_project(workspace: WorkspaceBase, name: str):
                 values=[
                     PanelMetric(
                         metric="evidently:metric_v2:MAE",
-                        legend="MAE",
+                        legend="MAE\nvalue type: {{value_type}}",
                     ),
                 ],
             )
@@ -208,7 +208,7 @@ def create_project(workspace: WorkspaceBase, name: str):
                 values=[
                     PanelMetric(
                         metric="evidently:metric_v2:MAPE",
-                        legend="MAPE",
+                        legend="MAPE\nvalue type: {{value_type}}",
                     ),
                 ],
             )

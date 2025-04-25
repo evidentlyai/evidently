@@ -7,18 +7,22 @@ import {
   Grid2 as Grid,
   Typography
 } from 'evidently-ui-lib/shared-dependencies/mui-material'
-import { jsonToKeyValueRowString } from '../utils'
+import type { MakePanel } from '~/components/v2/Dashboard/Panels/types'
+import { formatLabelWithParams, jsonToKeyValueRowString } from '~/components/v2/Dashboard/utils'
 
-export type CounterPanelProps = {
-  plotType: 'counter'
+export type CounterPanelProps = MakePanel<{
+  type: 'counter'
+  size: 'full' | 'half'
+  labels: (string | undefined | null)[]
   data: SeriesModel
   title?: string
   description?: string
   counterAgg: 'last' | 'sum' | 'avg'
-}
+}>
 
 export const CounterDashboardPanel = ({
   data,
+  labels,
   title,
   description,
   counterAgg
@@ -44,18 +48,30 @@ export const CounterDashboardPanel = ({
 
         <Box sx={{ flexGrow: 1, px: 3 }}>
           <Grid container spacing={2} justifyContent={'space-evenly'}>
-            {data.series.map(({ metric_type, params, values }) => (
-              <Grid key={`${metric_type.split(':').at(-1)}\n${jsonToKeyValueRowString(params)}`}>
-                <Box>
-                  <Typography variant='h2' align={'center'}>
-                    {getValue(values, counterAgg)?.toFixed(2)}
-                  </Typography>
-                  <Typography component={'pre'} align={'center'}>
-                    {`${metric_type.split(':').at(-1)}\n${jsonToKeyValueRowString(params)}`}
-                  </Typography>
-                </Box>
-              </Grid>
-            ))}
+            {data.series.map(({ metric_type, params, values, filter_index }) => {
+              const metricName = metric_type.split(':').at(-1)
+
+              const defaultLabel = `${metricName}\n${jsonToKeyValueRowString(params)}`
+              const customLabel = formatLabelWithParams({
+                label: labels?.[filter_index] ?? '',
+                params
+              })
+
+              const label = customLabel || defaultLabel
+
+              return (
+                <Grid key={label}>
+                  <Box>
+                    <Typography variant='h2' align={'center'}>
+                      {getValue(values, counterAgg)?.toFixed(2)}
+                    </Typography>
+                    <Typography component={'pre'} align={'center'}>
+                      {label}
+                    </Typography>
+                  </Box>
+                </Grid>
+              )
+            })}
           </Grid>
         </Box>
       </CardContent>

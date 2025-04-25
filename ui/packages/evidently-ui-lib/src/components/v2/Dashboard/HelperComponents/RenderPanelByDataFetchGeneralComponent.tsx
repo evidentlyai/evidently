@@ -1,8 +1,8 @@
 import { useEffect } from 'react'
 import type { DashboardPanelPlotModel, SeriesModel } from '~/api/types/v2'
-import { DashboardPanel } from './DashboardPanel'
-import { DashboardPanelSkeleton } from './Panels/Plot'
-import { castRawPanelDataToDashboardPanelProps, getSeriesListTypeHash } from './utils'
+import { DashboardPanel } from '~/components/v2/Dashboard/Panels/DashboardPanel'
+import { DashboardPanelSkeleton } from '~/components/v2/Dashboard/Panels/Skeleton'
+import { castRawPanelDataToDashboardPanelProps, getSeriesListTypeHash } from '../utils'
 
 type RenderPanelByDataFetchGeneralComponentProps = {
   panel: DashboardPanelPlotModel
@@ -17,7 +17,7 @@ export const RenderPanelByDataFetchGeneralComponent = ({
 }: RenderPanelByDataFetchGeneralComponentProps) => {
   const dashboardPanelProps = castRawPanelDataToDashboardPanelProps(panel)
 
-  const isNeedToFetchData = dashboardPanelProps.plotType !== 'text'
+  const isNeedToFetchData = dashboardPanelProps.type !== 'text'
 
   const seriesHashForTrackingChanges = getSeriesListTypeHash(panel.values)
 
