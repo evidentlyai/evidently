@@ -1,5 +1,9 @@
 import type { DashboardPanelPlotModel } from 'evidently-ui-lib/api/types/v2'
 import { Grid, Typography } from 'evidently-ui-lib/shared-dependencies/mui-material'
+import {
+  castRawPanelDataToDashboardPanelProps,
+  getSizeForGridItem
+} from '~/components/v2/Dashboard/utils'
 
 export type PanelComponentType = (args: { panel: DashboardPanelPlotModel }) => JSX.Element
 
@@ -17,29 +21,15 @@ export const DrawDashboardPanels = ({
 
   return (
     <Grid container spacing={3} direction='row' alignItems='stretch'>
-      {panels.map((panel) => (
-        <Grid item key={panel.id} {...getSizeForGridItem(panel.size)}>
-          <PanelComponent panel={panel} />
-        </Grid>
-      ))}
+      {panels.map((panel) => {
+        const dashboardPanelProps = castRawPanelDataToDashboardPanelProps(panel)
+
+        return (
+          <Grid item key={panel.id} {...getSizeForGridItem(dashboardPanelProps.size)}>
+            <PanelComponent panel={panel} />
+          </Grid>
+        )
+      })}
     </Grid>
   )
-}
-
-const getSizeForGridItem = (
-  size?: string | null
-): {
-  xs: 1 | 3 | 6 | 12
-  sm: 1 | 3 | 6 | 12
-  md: 1 | 3 | 6 | 12
-  lg: 1 | 3 | 6 | 12
-} => {
-  if (size === 'full') {
-    return { xs: 12, sm: 12, md: 12, lg: 12 }
-  }
-  if (size === 'half') {
-    return { xs: 12, sm: 12, md: 6, lg: 6 }
-  }
-
-  return { xs: 12, sm: 12, md: 12, lg: 12 }
 }

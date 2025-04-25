@@ -7,15 +7,17 @@ import {
   Grid2 as Grid,
   Typography
 } from 'evidently-ui-lib/shared-dependencies/mui-material'
-import { jsonToKeyValueRowString } from '../utils'
+import type { MakePanel } from '~/components/v2/Dashboard/Panels/types'
+import { jsonToKeyValueRowString } from '../../utils'
 
-export type CounterPanelProps = {
-  plotType: 'counter'
+export type CounterPanelProps = MakePanel<{
+  type: 'counter'
+  size: 'full' | 'half'
   data: SeriesModel
   title?: string
   description?: string
   counterAgg: 'last' | 'sum' | 'avg'
-}
+}>
 
 export const CounterDashboardPanel = ({
   data,

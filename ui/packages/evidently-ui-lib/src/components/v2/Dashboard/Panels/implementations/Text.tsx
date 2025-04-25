@@ -1,10 +1,12 @@
 import { Card, CardContent, Typography } from 'evidently-ui-lib/shared-dependencies/mui-material'
+import type { MakePanel } from '~/components/v2/Dashboard/Panels/types'
 
-export type TextPanelProps = {
-  plotType: 'text'
+export type TextPanelProps = MakePanel<{
+  type: 'text'
+  size: 'full' | 'half'
   title?: string
   description?: string
-}
+}>
 
 export const TextDashboardPanel = ({ title, description }: TextPanelProps) => {
   return (

@@ -16,27 +16,28 @@ import {
   Card,
   CardContent,
   Divider,
-  Skeleton,
   Typography
 } from 'evidently-ui-lib/shared-dependencies/mui-material'
 import { assertNever } from 'evidently-ui-lib/utils/index'
-import { jsonToKeyValueRowString } from '../utils'
+import type { MakePanel } from '~/components/v2/Dashboard/Panels/types'
+import { jsonToKeyValueRowString } from '../../utils'
 
-export type PlotPanelProps = {
+export type PlotPanelProps = MakePanel<{
   data: SeriesModel
-  plotType: 'bar' | 'line'
+  type: 'bar' | 'line'
+  size: 'full' | 'half'
   isStacked?: boolean
   title?: string
   description?: string
   height?: number
   legendMarginRight?: number
-}
+}>
 
 type SeriesType = SeriesProviderProps['series'][number]
 
 export const PlotDashboardPanel = ({
   data,
-  plotType,
+  type,
   title,
   description,
   height = 350,
@@ -51,15 +52,15 @@ export const PlotDashboardPanel = ({
       stack: isStacked ? 'total' : undefined
     }
 
-    if (plotType === 'line') {
-      return { type: plotType, data, ...common } satisfies SeriesType
+    if (type === 'line') {
+      return { type: type, data, ...common } satisfies SeriesType
     }
 
-    if (plotType === 'bar') {
-      return { type: plotType, data, ...common } satisfies SeriesType
+    if (type === 'bar') {
+      return { type: type, data, ...common } satisfies SeriesType
     }
 
-    assertNever(plotType)
+    assertNever(type)
   })
 
   const xAxis = [
@@ -119,46 +120,3 @@ export const PlotDashboardPanel = ({
     </Card>
   )
 }
-
-export const DashboardPanelSkeleton = ({
-  height = 350,
-  title,
-  subtitle,
-  isShowTitle
-}: { isShowTitle?: boolean; height?: number; title?: string; subtitle?: string }) => (
-  <Card elevation={0}>
-    <CardContent sx={{ px: 0 }}>
-      <Box px={3}>
-        {title && isShowTitle && (
-          <Typography variant='h5' fontWeight={500} gutterBottom>
-            {title}
-          </Typography>
-        )}
-
-        {title && !isShowTitle && (
-          <Typography variant='h5' width={Math.max(title.length * 11, 450)}>
-            <Skeleton variant='text' animation='wave' sx={{ mb: 1 }} />
-          </Typography>
-        )}
-
-        {subtitle && isShowTitle && (
-          <Typography fontWeight={400} gutterBottom>
-            {subtitle}
-          </Typography>
-        )}
-
-        {subtitle && !isShowTitle && (
-          <Typography>
-            <Skeleton variant='text' animation='wave' sx={{ mb: 1 }} />
-          </Typography>
-        )}
-      </Box>
-
-      {(title || subtitle) && <Divider sx={{ mb: 2, mt: 1 }} />}
-
-      <Box px={3}>
-        <Skeleton variant='rectangular' height={height} animation='wave' />
-      </Box>
-    </CardContent>
-  </Card>
-)

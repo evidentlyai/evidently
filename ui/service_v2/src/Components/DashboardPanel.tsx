@@ -1,6 +1,6 @@
 import type { BatchMetricDataModel, DashboardPanelPlotModel } from 'evidently-ui-lib/api/types/v2'
-import type { PanelComponentType } from 'evidently-ui-lib/components/v2/Dashboard/DrawDashboardPanels'
-import { RenderPanelByDataFetchGeneralComponent } from 'evidently-ui-lib/components/v2/Dashboard/RenderPanelByDataFetchGeneralComponent'
+import type { PanelComponentType } from 'evidently-ui-lib/components/v2/Dashboard/HelperComponents/DrawDashboardPanels'
+import { RenderPanelByDataFetchGeneralComponent } from 'evidently-ui-lib/components/v2/Dashboard/HelperComponents/RenderPanelByDataFetchGeneralComponent'
 import invariant from 'tiny-invariant'
 import { useProjectInfo } from '~/contexts/project'
 import { useLoader } from '~/routes/hooks'
