@@ -400,10 +400,10 @@ class ColumnTest(SingleInputDescriptor):
 
 
 class TestSummary(Descriptor):
-    success_count: bool = True
-    success_rate: bool = False
-    success_all: bool = False
+    success_all: bool = True
     success_any: bool = False
+    success_count: bool = False
+    success_rate: bool = False
     score: bool = False
     score_weights: Optional[Dict[str, float]] = None
 
