@@ -137,7 +137,7 @@ export const DashboardPanelSkeleton = ({
 
         {title && !isShowTitle && (
           <Typography variant='h5' width={Math.max(title.length * 11, 450)}>
-            <Skeleton variant='text' animation='wave' />
+            <Skeleton variant='text' animation='wave' sx={{ mb: 1 }} />
           </Typography>
         )}
 
@@ -149,7 +149,7 @@ export const DashboardPanelSkeleton = ({
 
         {subtitle && !isShowTitle && (
           <Typography>
-            <Skeleton variant='text' animation='wave' />
+            <Skeleton variant='text' animation='wave' sx={{ mb: 1 }} />
           </Typography>
         )}
       </Box>
