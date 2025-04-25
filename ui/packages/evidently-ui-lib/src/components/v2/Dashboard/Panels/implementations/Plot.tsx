@@ -49,7 +49,7 @@ export const PlotDashboardPanel = ({
   const series: SeriesType[] = data.series.map(
     ({ values: data, params, metric_type, filter_index }) => {
       const metricName = metric_type.split(':').at(-1)
-      const defaultLabel = `${metricName}\n${jsonToKeyValueRowString(params)}`
+      const defaultLabel = [metricName, jsonToKeyValueRowString(params)].filter(Boolean).join('\n')
 
       const customLabel = formatLabelWithParams({ label: labels?.[filter_index] ?? '', params })
 

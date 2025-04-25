@@ -48,10 +48,13 @@ export const CounterDashboardPanel = ({
 
         <Box sx={{ flexGrow: 1, px: 3 }}>
           <Grid container spacing={2} justifyContent={'space-evenly'}>
-            {data.series.map(({ metric_type, params, values, filter_index }) => {
+            {data.series.map(({ metric_type, params, values, filter_index }, index) => {
               const metricName = metric_type.split(':').at(-1)
 
-              const defaultLabel = `${metricName}\n${jsonToKeyValueRowString(params)}`
+              const defaultLabel = [metricName, jsonToKeyValueRowString(params)]
+                .filter(Boolean)
+                .join('\n')
+
               const customLabel = formatLabelWithParams({
                 label: labels?.[filter_index] ?? '',
                 params
@@ -60,7 +63,7 @@ export const CounterDashboardPanel = ({
               const label = customLabel || defaultLabel
 
               return (
-                <Grid key={label}>
+                <Grid key={`${index}:${defaultLabel}`}>
                   <Box>
                     <Typography variant='h2' align={'center'}>
                       {getValue(values, counterAgg)?.toFixed(2)}
