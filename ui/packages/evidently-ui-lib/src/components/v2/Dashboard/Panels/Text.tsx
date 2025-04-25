@@ -9,7 +9,7 @@ export type TextPanelProps = {
 export const TextDashboardPanel = ({ title, description }: TextPanelProps) => {
   return (
     <Card elevation={0}>
-      <CardContent>
+      <CardContent sx={{ p: '16px !important' }}>
         {title && (
           <Typography variant='h5' align='center' fontWeight={500} gutterBottom>
             {title}
