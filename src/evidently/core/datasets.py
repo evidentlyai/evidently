@@ -410,7 +410,7 @@ class TestSummary(Descriptor):
     def generate_data(
         self, dataset: "Dataset", options: Options
     ) -> Union[DatasetColumn, Dict[DisplayName, DatasetColumn]]:
-        tests = dataset.data_definition.test_descriptors
+        tests = dataset.data_definition.test_descriptors or []
         if len(tests) == 0:
             raise ValueError("No tests specified")
         summary_columns = {}
