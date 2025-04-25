@@ -25,22 +25,24 @@ export const CounterDashboardPanel = ({
 }: CounterPanelProps) => {
   return (
     <Card elevation={0}>
-      <CardContent>
-        {title && (
-          <Typography variant='h5' align='center' fontWeight={500} gutterBottom>
-            {title}
-          </Typography>
-        )}
+      <CardContent sx={{ px: 0 }}>
+        <Box px={3}>
+          {title && (
+            <Typography variant='h5' align='center' fontWeight={500} gutterBottom>
+              {title}
+            </Typography>
+          )}
 
-        {description && (
-          <Typography fontWeight={400} align='center' gutterBottom>
-            {description}
-          </Typography>
-        )}
+          {description && (
+            <Typography fontWeight={400} align='center' gutterBottom>
+              {description}
+            </Typography>
+          )}
+        </Box>
 
         {(title || description) && <Divider sx={{ mb: 2, mt: 1 }} />}
 
-        <Box sx={{ flexGrow: 1 }}>
+        <Box sx={{ flexGrow: 1, px: 3 }}>
           <Grid container spacing={2} justifyContent={'space-evenly'}>
             {data.series.map(({ metric_type, params, values }) => (
               <Grid key={`${metric_type.split(':').at(-1)}\n${jsonToKeyValueRowString(params)}`}>

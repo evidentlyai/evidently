@@ -6,6 +6,7 @@ import { ChartsTooltip } from '@mui/x-charts/ChartsTooltip/ChartsTooltip'
 import { ChartsXAxis } from '@mui/x-charts/ChartsXAxis/ChartsXAxis'
 import { ChartsYAxis } from '@mui/x-charts/ChartsYAxis/ChartsYAxis'
 import { LinePlot } from '@mui/x-charts/LineChart/LinePlot'
+import { MarkPlot } from '@mui/x-charts/LineChart/MarkPlot'
 import { ResponsiveChartContainer } from '@mui/x-charts/ResponsiveChartContainer'
 import type { SeriesProviderProps } from '@mui/x-charts/context/SeriesProvider'
 import dayjs from 'dayjs'
@@ -60,6 +61,7 @@ export const PlotDashboardPanel = ({
 
     assertNever(plotType)
   })
+
   const xAxis = [
     {
       data: data.sources.map((e) => dayjs(e.timestamp).format('YYYY-MM-DD HH:mm:ss')),
@@ -69,22 +71,24 @@ export const PlotDashboardPanel = ({
 
   return (
     <Card elevation={0}>
-      <CardContent>
-        {title && (
-          <Typography variant='h5' fontWeight={500} gutterBottom>
-            {title}
-          </Typography>
-        )}
+      <CardContent sx={{ px: 0 }}>
+        <Box px={3}>
+          {title && (
+            <Typography variant='h5' fontWeight={500} gutterBottom>
+              {title}
+            </Typography>
+          )}
 
-        {description && (
-          <Typography fontWeight={400} gutterBottom>
-            {description}
-          </Typography>
-        )}
+          {description && (
+            <Typography fontWeight={400} gutterBottom>
+              {description}
+            </Typography>
+          )}
+        </Box>
 
         {(title || description) && <Divider sx={{ mb: 2, mt: 1 }} />}
 
-        <Box height={height}>
+        <Box height={height} px={3}>
           <ResponsiveChartContainer
             series={series}
             xAxis={xAxis}
@@ -108,6 +112,7 @@ export const PlotDashboardPanel = ({
             <ChartsTooltip trigger={'axis'} />
             <ChartsAxisHighlight x={'band'} />
             <ChartsGrid horizontal />
+            <MarkPlot />
           </ResponsiveChartContainer>
         </Box>
       </CardContent>
@@ -120,10 +125,10 @@ export const DashboardPanelSkeleton = ({
   title,
   subtitle,
   isShowTitle
-}: { isShowTitle?: boolean; height?: number; title?: string; subtitle?: string }) => {
-  return (
-    <Card elevation={0}>
-      <CardContent>
+}: { isShowTitle?: boolean; height?: number; title?: string; subtitle?: string }) => (
+  <Card elevation={0}>
+    <CardContent sx={{ px: 0 }}>
+      <Box px={3}>
         {title && isShowTitle && (
           <Typography variant='h5' fontWeight={500} gutterBottom>
             {title}
@@ -132,7 +137,7 @@ export const DashboardPanelSkeleton = ({
 
         {title && !isShowTitle && (
           <Typography variant='h5' width={Math.max(title.length * 11, 450)}>
-            <Skeleton variant='text' animation='wave' />
+            <Skeleton variant='text' animation='wave' sx={{ mb: 1 }} />
           </Typography>
         )}
 
@@ -144,14 +149,16 @@ export const DashboardPanelSkeleton = ({
 
         {subtitle && !isShowTitle && (
           <Typography>
-            <Skeleton variant='text' animation='wave' />
+            <Skeleton variant='text' animation='wave' sx={{ mb: 1 }} />
           </Typography>
         )}
+      </Box>
 
-        {(title || subtitle) && <Divider sx={{ mb: 2, mt: 1 }} />}
+      {(title || subtitle) && <Divider sx={{ mb: 2, mt: 1 }} />}
 
+      <Box px={3}>
         <Skeleton variant='rectangular' height={height} animation='wave' />
-      </CardContent>
-    </Card>
-  )
-}
+      </Box>
+    </CardContent>
+  </Card>
+)
