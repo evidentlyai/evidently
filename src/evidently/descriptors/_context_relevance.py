@@ -12,6 +12,7 @@ from typing import Union
 import numpy as np
 import pandas as pd
 
+from evidently.core.datasets import AnyDescriptorTest
 from evidently.core.datasets import Dataset
 from evidently.core.datasets import DatasetColumn
 from evidently.core.datasets import Descriptor
@@ -180,6 +181,7 @@ class ContextRelevance(Descriptor):
         aggregation_method_params: Optional[Dict[str, object]] = None,
         output_scores: bool = False,
         alias: Optional[str] = None,
+        tests: Optional[List[AnyDescriptorTest]] = None,
     ):
         self.output_scores = output_scores
         self.aggregation_method = aggregation_method
@@ -188,7 +190,7 @@ class ContextRelevance(Descriptor):
         self.method_params = method_params
         self.input = input
         self.contexts = contexts
-        super().__init__(alias=alias or f"Ranking for {input} with {contexts}")
+        super().__init__(alias=alias or f"Ranking for {input} with {contexts}", tests=tests)
 
     def generate_data(
         self,
@@ -214,3 +216,6 @@ class ContextRelevance(Descriptor):
         if self.output_scores:
             result[f"{self.alias} scores"] = scored_contexts
         return result
+
+    def list_input_columns(self) -> Optional[List[str]]:
+        return [self.input, self.contexts]

@@ -3,6 +3,7 @@ import copy
 import dataclasses
 from abc import abstractmethod
 from enum import Enum
+from typing import Any
 from typing import ClassVar
 from typing import Dict
 from typing import Generator
@@ -16,6 +17,7 @@ import pandas as pd
 
 from evidently._pydantic_compat import BaseModel
 from evidently._pydantic_compat import parse_obj_as
+from evidently.core.tests import GenericTest
 from evidently.legacy.base_metric import DisplayName
 from evidently.legacy.core import ColumnType
 from evidently.legacy.features.generated_features import GeneratedFeatures
@@ -169,6 +171,7 @@ class DataDefinition(BaseModel):
     llm: Optional[LLMDefinition] = None
     numerical_descriptors: List[str] = []
     categorical_descriptors: List[str] = []
+    test_descriptors: List[str] = []
     ranking: Optional[List[Recsys]] = None
 
     def __init__(
@@ -184,6 +187,7 @@ class DataDefinition(BaseModel):
         llm: Optional[LLMDefinition] = None,
         numerical_descriptors: Optional[List[str]] = None,
         categorical_descriptors: Optional[List[str]] = None,
+        test_descriptors: Optional[List[str]] = None,
         ranking: Optional[List[Recsys]] = None,
     ):
         super().__init__()
@@ -198,6 +202,7 @@ class DataDefinition(BaseModel):
         self.llm = llm
         self.numerical_descriptors = numerical_descriptors if numerical_descriptors is not None else []
         self.categorical_descriptors = categorical_descriptors if categorical_descriptors is not None else []
+        self.test_descriptors = test_descriptors if test_descriptors is not None else []
         self.ranking = ranking
 
     def get_numerical_columns(self):
@@ -271,13 +276,37 @@ class DatasetColumn:
         self.data = data
 
 
-class Descriptor(AutoAliasMixin, EvidentlyBaseModel):
+class ColumnCondition(AutoAliasMixin, EvidentlyBaseModel, abc.ABC):
+    __alias_type__: ClassVar[str] = "column_condition"
+
+    class Config:
+        is_base_type = True
+
+    @abstractmethod
+    def check(self, value: Any) -> bool:
+        raise NotImplementedError
+
+    @abstractmethod
+    def get_default_alias(self, column: str) -> str:
+        raise NotImplementedError
+
+
+AnyDescriptorTest = Union["DescriptorTest", "GenericTest"]
+
+
+class Descriptor(AutoAliasMixin, EvidentlyBaseModel, abc.ABC):
     class Config:
         is_base_type = True
 
     __alias_type__: ClassVar = "descriptor_v2"
 
     alias: str
+    tests: List["DescriptorTest"] = []
+
+    def __init__(self, alias: str, tests: Optional[List[AnyDescriptorTest]] = None, **data: Any) -> None:
+        self.alias = alias
+        self.tests = [t if isinstance(t, DescriptorTest) else t.for_descriptor() for t in (tests or [])]
+        super().__init__(**data)
 
     @abc.abstractmethod
     def generate_data(
@@ -285,15 +314,146 @@ class Descriptor(AutoAliasMixin, EvidentlyBaseModel):
     ) -> Union[DatasetColumn, Dict[DisplayName, DatasetColumn]]:
         raise NotImplementedError()
 
+    def validate_input(self, data_definition: DataDefinition) -> None:
+        input_columns = self.list_input_columns()
+        if input_columns is not None:
+            all_columns = set(data_definition.get_columns(list(ColumnType)))
+            for column in input_columns:
+                if column not in all_columns:
+                    raise ValueError(
+                        f"Column {column} is not found in dataset. Available columns: [{', '.join(all_columns)}]"
+                    )
+
+    def list_output_columns(self) -> List[str]:  # todo: also types?
+        return [self.alias]
+
+    def list_input_columns(self) -> Optional[List[str]]:  # todo: make not optional
+        return None
+
+    def get_sub_descriptors(self) -> List["Descriptor"]:
+        return [t.to_descriptor(self) for t in self.tests]
+
+
+class SingleInputDescriptor(Descriptor, abc.ABC):
+    column: str
+
+    def list_input_columns(self) -> List[str]:
+        return [self.column]
+
+
+class DescriptorTest(BaseModel):
+    condition: ColumnCondition
+    column: Optional[str] = None
+    alias: Optional[str] = None
+
+    def __init__(
+        self,
+        condition: Union[ColumnCondition, GenericTest],
+        column: Optional[str] = None,
+        alias: Optional[str] = None,
+        **data: Any,
+    ) -> None:
+        c: ColumnCondition = (
+            condition if isinstance(condition, ColumnCondition) else condition.for_descriptor().condition
+        )
+        super().__init__(alias=alias, column=column, condition=c, **data)
+
+    def to_descriptor(self, descriptor: Optional[Descriptor] = None) -> "Descriptor":
+        if self.column is None:
+            if descriptor is None:
+                raise ValueError("Parent descriptor is required for test without column")
+            descriptor_columns = descriptor.list_output_columns()
+            if len(descriptor_columns) == 1:
+                column = descriptor_columns[0]
+            else:
+                raise ValueError(
+                    f"Column is required for test with multiple columns in parent descriptor: [{', '.join(descriptor_columns)}]"
+                )
+        else:
+            column = self.column
+        return ColumnTest(column, self.condition, self.alias or self.condition.get_default_alias(column))
+
+
+Descriptor.update_forward_refs()
+
+
+class ColumnTest(SingleInputDescriptor):
+    column: str
+    condition: ColumnCondition
+
+    def __init__(
+        self, column: str, condition: Union[ColumnCondition, GenericTest], alias: Optional[str] = None, **data: Any
+    ) -> None:
+        self.column = column
+        descriptor_condition: ColumnCondition = (
+            condition if isinstance(condition, ColumnCondition) else condition.for_descriptor().condition
+        )
+        self.condition = descriptor_condition
+        super().__init__(alias=alias or descriptor_condition.get_default_alias(column), **data)
+
+    def generate_data(
+        self, dataset: "Dataset", options: Options
+    ) -> Union[DatasetColumn, Dict[DisplayName, DatasetColumn]]:
+        data = dataset.column(self.column)
+        res = data.data.apply(self.condition.check)
+        return DatasetColumn(ColumnType.Categorical, res)
+
+
+class TestSummary(Descriptor):
+    success_all: bool = True
+    success_any: bool = False
+    success_count: bool = False
+    success_rate: bool = False
+    score: bool = False
+    score_weights: Optional[Dict[str, float]] = None
+
+    def generate_data(
+        self, dataset: "Dataset", options: Options
+    ) -> Union[DatasetColumn, Dict[DisplayName, DatasetColumn]]:
+        tests = dataset.data_definition.test_descriptors
+        if len(tests) == 0:
+            raise ValueError("No tests specified")
+        summary_columns = {}
+        test_results = dataset.as_dataframe()[tests]
+        if self.success_count:
+            summary_columns["success_count"] = (ColumnType.Numerical, test_results.sum(axis=1))
+        if self.success_rate:
+            summary_columns["success_rate"] = (ColumnType.Numerical, test_results.sum(axis=1) / len(tests))
+        if self.success_all:
+            summary_columns["success_all"] = (ColumnType.Categorical, test_results.all(axis=1))
+        if self.success_any:
+            summary_columns["success_any"] = (ColumnType.Categorical, test_results.any(axis=1))
+        if self.score:
+            weights = self.score_weights or {t: 1 for t in tests}
+            total_weight = sum(weights.values())
+            summary_columns["score"] = (  # type: ignore[assignment]
+                ColumnType.Numerical,
+                sum(test_results[col] * weight / total_weight for col, weight in weights.items()),
+            )
+        alias = self.alias or "summary"
+        result = {f"{alias}_{key}": DatasetColumn(ct, value) for key, (ct, value) in summary_columns.items()}
+        if len(tests) == 0:
+            raise ValueError("No summary columns specified")
+        if len(result) == 1:
+            return {alias: list(result.values())[0]}
+        return result
+
+    def list_input_columns(self) -> Optional[List[str]]:
+        if self.score and self.score_weights is not None:
+            return list(self.score_weights.keys())
+        return None
+
 
 class FeatureDescriptor(Descriptor):
     feature: GeneratedFeatures
 
-    def __init__(self, feature: GeneratedFeatures, alias: Optional[str] = None):
+    def __init__(
+        self, feature: GeneratedFeatures, alias: Optional[str] = None, tests: Optional[List[AnyDescriptorTest]] = None
+    ):
         # this is needed because we try to access it before super call
         feature = feature if isinstance(feature, GeneratedFeatures) else parse_obj_as(GeneratedFeatures, feature)  # type: ignore[type-abstract]
         feature_columns = feature.list_columns()
-        super().__init__(feature=feature, alias=alias or f"{feature_columns[0].display_name}")
+        super().__init__(feature=feature, alias=alias or f"{feature_columns[0].display_name}", tests=tests)
 
     def get_dataset_column(self, column_name: str, values: pd.Series) -> DatasetColumn:
         column_type = self.feature.get_type(column_name)
@@ -315,8 +475,11 @@ class FeatureDescriptor(Descriptor):
             for col in self.feature.list_columns()
         }
 
+    def list_output_columns(self) -> List[str]:
+        return [c.name for c in self.feature.list_columns()]
 
-def _determine_desccriptor_column_name(alias: str, columns: List[str]):
+
+def _determine_descriptor_column_name(alias: str, columns: List[str]):
     index = 1
     key = alias
     while key in columns:
@@ -585,11 +748,17 @@ class PandasDataset(Dataset):
             self._data_definition.categorical_descriptors.append(key)
 
     def add_descriptor(self, descriptor: Descriptor, options: AnyOptions = None):
+        descriptor.validate_input(self._data_definition)
         new_columns = descriptor.generate_data(self, Options.from_any_options(options))
         if isinstance(new_columns, DatasetColumn):
             new_columns = {descriptor.alias: new_columns}
         for col, value in new_columns.items():
-            self.add_column(_determine_desccriptor_column_name(col, self._data.columns.tolist()), value)
+            name = _determine_descriptor_column_name(col, self._data.columns.tolist())
+            self.add_column(name, value)
+            if isinstance(descriptor, ColumnTest):
+                self._data_definition.test_descriptors.append(name)
+        for sub in descriptor.get_sub_descriptors():
+            self.add_descriptor(sub, options)
 
     def _collect_stats(self, column_type: ColumnType, data: pd.Series):
         numerical_stats = None

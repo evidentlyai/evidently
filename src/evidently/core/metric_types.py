@@ -26,6 +26,7 @@ import typing_inspect
 
 from evidently._pydantic_compat import BaseModel
 from evidently._pydantic_compat import Field
+from evidently._pydantic_compat import validator
 from evidently.legacy.metric_results import Label
 from evidently.legacy.model.dashboard import DashboardInfo
 from evidently.legacy.model.widget import AdditionalGraphInfo
@@ -46,6 +47,7 @@ from evidently.pydantic_utils import PolymorphicModel
 
 from ._utils import not_implemented
 from .datasets import Dataset
+from .tests import GenericTest
 
 if TYPE_CHECKING:
     from evidently.core.report import Context
@@ -790,6 +792,18 @@ class SingleValueBoundTest(BoundTest[SingleValue]):
 SingleValueMetricTests = Optional[List[MetricTest]]
 
 
+def convert_test(test: Union[MetricTest, GenericTest]) -> MetricTest:
+    if isinstance(test, GenericTest):
+        return test.for_metric()
+    if isinstance(test, MetricTest):
+        return test
+    raise ValueError(f"test {test} is not a subclass of MetricTest")
+
+
+def convert_tests(tests: Optional[List[Union[MetricTest, GenericTest]]]):
+    return [convert_test(t) for t in tests] if tests is not None else None
+
+
 class SingleValueMetric(Metric):
     tests: SingleValueMetricTests = None
 
@@ -798,6 +812,10 @@ class SingleValueMetric(Metric):
             return self._get_all_default_tests(context)
         fingerprint = self.get_fingerprint()
         return [t.bind_single(fingerprint) for t in (self.tests or [])]
+
+    @validator("tests", pre=True)
+    def validate_tests(cls, v):
+        return convert_tests(v)
 
 
 TSingleValueMetric = TypeVar("TSingleValueMetric", bound=SingleValueMetric)
@@ -836,6 +854,10 @@ class ByLabelMetric(Metric):
             return self._get_all_default_tests(context)
         fingerprint = self.get_fingerprint()
         return [t.bind_by_label(fingerprint, label=label) for label, tests in (self.tests or {}).items() for t in tests]
+
+    @validator("tests", pre=True)
+    def validate_tests(cls, val):
+        return {k: convert_tests(v) for k, v in val.items()} if val is not None else None
 
 
 TByLabelMetric = TypeVar("TByLabelMetric", bound=ByLabelMetric)
@@ -988,6 +1010,14 @@ class CountMetric(Metric):
             t.bind_count(fingerprint, False) for t in (self.share_tests or [])
         ]
 
+    @validator("tests", pre=True)
+    def validate_tests(cls, v):
+        return convert_tests(v)
+
+    @validator("share_tests", pre=True)
+    def validate_share_tests(cls, v):
+        return convert_tests(v)
+
 
 TCountMetric = TypeVar("TCountMetric", bound=CountMetric)
 
@@ -1049,6 +1079,14 @@ class MeanStdMetric(Metric):
         return [t.bind_mean_std(fingerprint, True) for t in (self.mean_tests or [])] + [
             t.bind_mean_std(fingerprint, False) for t in (self.std_tests or [])
         ]
+
+    @validator("mean_tests", pre=True)
+    def validate_mean_tests(cls, v):
+        return convert_tests(v)
+
+    @validator("std_tests", pre=True)
+    def validate_std_tests(cls, v):
+        return convert_tests(v)
 
 
 TMeanStdMetric = TypeVar("TMeanStdMetric", bound=MeanStdMetric)

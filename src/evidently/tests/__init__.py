@@ -1,11 +1,11 @@
-from .categorical_tests import is_in
-from .categorical_tests import not_in
-from .numerical_tests import eq
-from .numerical_tests import gt
-from .numerical_tests import gte
-from .numerical_tests import lt
-from .numerical_tests import lte
-from .numerical_tests import not_eq
+from .aliases import eq
+from .aliases import gt
+from .aliases import gte
+from .aliases import is_in
+from .aliases import lt
+from .aliases import lte
+from .aliases import not_eq
+from .aliases import not_in
 from .reference import Reference
 
 __all__ = [

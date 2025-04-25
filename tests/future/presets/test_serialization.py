@@ -4,7 +4,6 @@ from typing import List
 
 import pytest
 
-from evidently._pydantic_compat import import_string
 from evidently._pydantic_compat import parse_obj_as
 from evidently.core.container import MetricContainer
 from evidently.generators import ColumnMetricGenerator
@@ -21,21 +20,9 @@ from evidently.presets import RegressionDummyQuality
 from evidently.presets import RegressionPreset
 from evidently.presets import RegressionQuality
 from evidently.presets import TextEvals
-from evidently.pydantic_utils import TYPE_ALIASES
+from tests.conftest import load_all_subtypes
 
-
-def load_all_preset_types():
-    classpaths = [
-        cp for (base, _), cp in TYPE_ALIASES.items() if isinstance(base, type) and issubclass(base, MetricContainer)
-    ]
-    for cp in classpaths:
-        try:
-            import_string(cp)
-        except ImportError as e:
-            raise ImportError(f"Cannot import preset type {cp}") from e
-
-
-load_all_preset_types()
+load_all_subtypes(MetricContainer)
 
 all_presets: List[MetricContainer] = [
     ClassificationPreset(),

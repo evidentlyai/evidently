@@ -14,6 +14,7 @@ import evidently
 from evidently._pydantic_compat import import_string
 from evidently.core import registries
 from evidently.core.container import MetricContainer
+from evidently.core.datasets import ColumnCondition
 from evidently.core.datasets import Descriptor
 from evidently.core.metric_types import BoundTest
 from evidently.core.metric_types import Metric as MetricV2
@@ -90,6 +91,7 @@ REGISTRY_MAPPING: Dict[Type[PolymorphicModel], str] = {
     MetricResultV2: registries.metric_results.__name__,
     BoundTest: registries.bound_tests.__name__,
     Descriptor: registries.descriptors.__name__,
+    ColumnCondition: registries.column_conditions.__name__,
 }
 
 
@@ -161,6 +163,7 @@ def test_all_aliases_correct():
         BoundTest: BoundTest.__alias_type__,
         Descriptor: Descriptor.__alias_type__,
         MetricContainer: MetricContainer.__alias_type__,
+        ColumnCondition: ColumnCondition.__alias_type__,
     }
     skip = [Component, ComponentLegacy]
     skip_literal = [EvidentlyBaseModel, WithTestAndMetricDependencies, BasePreset]
