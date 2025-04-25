@@ -401,10 +401,10 @@ class ColumnTest(SingleInputDescriptor):
 
 class TestSummary(Descriptor):
     success_count: bool = True
-    rate: bool = False
+    success_rate: bool = False
+    success_all: bool = False
+    success_any: bool = False
     score: bool = False
-    all: bool = False
-    any: bool = False
     score_weights: Optional[Dict[str, float]] = None
 
     def generate_data(
@@ -417,12 +417,12 @@ class TestSummary(Descriptor):
         test_results = dataset.as_dataframe()[tests]
         if self.success_count:
             summary_columns["success_count"] = (ColumnType.Numerical, test_results.sum(axis=1))
-        if self.rate:
-            summary_columns["rate"] = (ColumnType.Numerical, test_results.sum(axis=1) / len(tests))
-        if self.all:
-            summary_columns["all"] = (ColumnType.Categorical, test_results.all(axis=1))
-        if self.any:
-            summary_columns["any"] = (ColumnType.Categorical, test_results.any(axis=1))
+        if self.success_rate:
+            summary_columns["success_rate"] = (ColumnType.Numerical, test_results.sum(axis=1) / len(tests))
+        if self.success_all:
+            summary_columns["success_all"] = (ColumnType.Categorical, test_results.all(axis=1))
+        if self.success_any:
+            summary_columns["success_any"] = (ColumnType.Categorical, test_results.any(axis=1))
         if self.score:
             weights = self.score_weights or {t: 1 for t in tests}
             total_weight = sum(weights.values())
