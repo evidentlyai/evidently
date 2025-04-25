@@ -1,19 +1,16 @@
-import { test, expect, Page } from '@playwright/test'
+import { type Page, expect, test } from '@playwright/test'
 
 const goToFirstSnapshotAndExpanSomeWidgets = async ({
   projectName,
-  page,
-  isTestSuite
+  page
 }: {
   page: Page
-  isTestSuite: boolean
+
   projectName: string
 }) => {
   await page.goto('/')
   await page.getByRole('link', { name: projectName, exact: true }).click()
-  await page
-    .getByRole('tab', { name: isTestSuite ? 'Test suites' : 'Reports', exact: true })
-    .click()
+  await page.getByRole('tab', { name: 'Reports', exact: true }).click()
   await page.getByRole('link', { name: 'View', exact: true }).first().click()
   await page.waitForLoadState('networkidle')
 
@@ -40,17 +37,14 @@ const goToFirstSnapshotAndExpanSomeWidgets = async ({
 
 const VisualTestSnapshot = async ({
   page,
-  projectName,
-  isTestSuite
+  projectName
 }: {
   page: Page
   projectName: string
-  isTestSuite: boolean
 }) => {
   await goToFirstSnapshotAndExpanSomeWidgets({
     page,
-    projectName,
-    isTestSuite
+    projectName
   })
 
   await expect(page).toHaveScreenshot({ fullPage: true, maxDiffPixels: 150 })
@@ -58,32 +52,27 @@ const VisualTestSnapshot = async ({
 
 const goToSnapshotsList = async ({
   projectName,
-  page,
-  isTestSuite
+  page
 }: {
   page: Page
-  isTestSuite: boolean
   projectName: string
 }) => {
   await page.goto('/')
   await page.getByRole('link', { name: projectName }).click()
-  await page.getByRole('tab', { name: isTestSuite ? 'Test Suites' : 'Reports' }).click()
+  await page.getByRole('tab', { name: 'Reports' }).click()
   await page.waitForLoadState('networkidle')
 }
 
 const VisualTestSnapshotsList = async ({
   page,
-  projectName,
-  isTestSuite
+  projectName
 }: {
   page: Page
   projectName: string
-  isTestSuite: boolean
 }) => {
   await goToSnapshotsList({
     page,
-    projectName,
-    isTestSuite
+    projectName
   })
 
   await expect(page).toHaveScreenshot({ fullPage: true, maxDiffPixels: 150 })
@@ -97,13 +86,12 @@ const VisualTestDashboard = async ({ page, projectName }: { page: Page; projectN
 }
 
 const BikesDemoProjectName = 'Demo project - Bikes'
-const ReviewsDemoProjectName = 'Demo project - Reviews'
 
 /////////////////////
 ///   Home
 /////////////////////
 
-test(`Home`, async ({ page }) => {
+test('Home', async ({ page }) => {
   await page.goto('/')
   await page.waitForLoadState('networkidle')
   await expect(page).toHaveScreenshot({ fullPage: true, maxDiffPixels: 150 })
@@ -115,11 +103,7 @@ test(`Home`, async ({ page }) => {
 
 for (const project of [BikesDemoProjectName]) {
   test(`Reports List: ${project}`, async ({ page }) => {
-    await VisualTestSnapshotsList({ page, projectName: project, isTestSuite: false })
-  })
-
-  test(`Test Suites List: ${project}`, async ({ page }) => {
-    await VisualTestSnapshotsList({ page, projectName: project, isTestSuite: true })
+    await VisualTestSnapshotsList({ page, projectName: project })
   })
 }
 
@@ -127,7 +111,7 @@ for (const project of [BikesDemoProjectName]) {
 ///   Dashboards
 /////////////////////
 
-for (const project of [BikesDemoProjectName, ReviewsDemoProjectName]) {
+for (const project of [BikesDemoProjectName]) {
   test(`Dashboard: ${project}`, async ({ page }) => {
     await VisualTestDashboard({ page, projectName: project })
   })
@@ -137,12 +121,8 @@ for (const project of [BikesDemoProjectName, ReviewsDemoProjectName]) {
 ///   Snapshots
 /////////////////////
 
-for (const project of [BikesDemoProjectName, ReviewsDemoProjectName]) {
+for (const project of [BikesDemoProjectName]) {
   test(`Report: ${project}`, async ({ page }) => {
-    await VisualTestSnapshot({ page, projectName: project, isTestSuite: false })
+    await VisualTestSnapshot({ page, projectName: project })
   })
 }
-
-test(`Test Suite: ${BikesDemoProjectName}`, async ({ page }) => {
-  await VisualTestSnapshot({ page, projectName: BikesDemoProjectName, isTestSuite: true })
-})
