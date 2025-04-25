@@ -756,6 +756,8 @@ class PandasDataset(Dataset):
             name = _determine_descriptor_column_name(col, self._data.columns.tolist())
             self.add_column(name, value)
             if isinstance(descriptor, ColumnTest):
+                if self._data_definition.test_descriptors is None:
+                    self._data_definition.test_descriptors = []
                 self._data_definition.test_descriptors.append(name)
         for sub in descriptor.get_sub_descriptors():
             self.add_descriptor(sub, options)
