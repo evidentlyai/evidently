@@ -134,6 +134,8 @@ jobs:
         with:
           sparse-checkout: |
             ui
+            .dvc
+            .github
 
       - uses: actions/setup-python@v5
         with:
