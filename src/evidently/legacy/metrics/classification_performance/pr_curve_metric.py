@@ -63,12 +63,13 @@ class ClassificationPRCurve(Metric[ClassificationPRCurveResults]):
             raise ValueError("PR Curve can be calculated only on binary probabilistic predictions")
         binaraized_target = (target_data.to_numpy().reshape(-1, 1) == labels).astype(int)
         pr_curve: PRCurve = {}
+        idx: np.ndarray
         if len(labels) <= 2:
             binaraized_target = pd.DataFrame(binaraized_target[:, 0])
             binaraized_target.columns = ["target"]
             pr, rcl, thrs = metrics.precision_recall_curve(binaraized_target, prediction.prediction_probas.iloc[:, 0])
             if len(pr) > PR_CURVE_MAX_POINTS:
-                idx: np.ndarray = np.linspace(0, len(thrs) - 1, PR_CURVE_MAX_POINTS).astype(int)
+                idx = np.linspace(0, len(thrs) - 1, PR_CURVE_MAX_POINTS).astype(int)
                 pr = pr[idx + 1]
                 rcl = rcl[idx + 1]
                 thrs = thrs[idx]
@@ -86,7 +87,7 @@ class ClassificationPRCurve(Metric[ClassificationPRCurveResults]):
                     prediction.prediction_probas[label],
                 )
                 if len(pr) > PR_CURVE_MAX_POINTS:
-                    idx: np.ndarray = np.linspace(0, len(thrs) - 1, PR_CURVE_MAX_POINTS).astype(int)
+                    idx = np.linspace(0, len(thrs) - 1, PR_CURVE_MAX_POINTS).astype(int)
                     pr = pr[idx + 1]
                     rcl = rcl[idx + 1]
                     thrs = thrs[idx]

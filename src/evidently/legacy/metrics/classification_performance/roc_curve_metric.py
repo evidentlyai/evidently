@@ -85,13 +85,14 @@ class ClassificationRocCurve(Metric[ClassificationRocCurveResults]):
             raise ValueError("Roc Curve can be calculated only on binary probabilistic predictions")
         binaraized_target = (target_data.to_numpy().reshape(-1, 1) == labels).astype(int)
         roc_curve: ROCCurve = {}
+        idx: np.ndarray
         if len(labels) <= 2:
             binaraized_target = pd.DataFrame(binaraized_target[:, 0])
             binaraized_target.columns = ["target"]
 
             fpr, tpr, thrs = metrics.roc_curve(binaraized_target, prediction.prediction_probas.iloc[:, 0])
             if len(fpr) > ROC_CURVE_MAX_POINTS:
-                idx: np.ndarray = np.linspace(0, len(fpr) - 1, ROC_CURVE_MAX_POINTS).astype(int)
+                idx = np.linspace(0, len(fpr) - 1, ROC_CURVE_MAX_POINTS).astype(int)
                 fpr = fpr[idx]
                 tpr = tpr[idx]
                 thrs = thrs[idx]
@@ -106,7 +107,7 @@ class ClassificationRocCurve(Metric[ClassificationRocCurveResults]):
                 mapped_label = tn.get(label, label)
                 fpr, tpr, thrs = metrics.roc_curve(binaraized_target[label], prediction.prediction_probas[label])
                 if len(fpr) > ROC_CURVE_MAX_POINTS:
-                    idx: np.ndarray = np.linspace(0, len(fpr) - 1, ROC_CURVE_MAX_POINTS).astype(int)
+                    idx = np.linspace(0, len(fpr) - 1, ROC_CURVE_MAX_POINTS).astype(int)
                     fpr = fpr[idx]
                     tpr = tpr[idx]
                     thrs = thrs[idx]
