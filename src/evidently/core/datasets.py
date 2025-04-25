@@ -171,7 +171,7 @@ class DataDefinition(BaseModel):
     llm: Optional[LLMDefinition] = None
     numerical_descriptors: List[str] = []
     categorical_descriptors: List[str] = []
-    test_descriptors: List[str] = []
+    test_descriptors: Optional[List[str]] = None
     ranking: Optional[List[Recsys]] = None
 
     def __init__(
@@ -202,7 +202,7 @@ class DataDefinition(BaseModel):
         self.llm = llm
         self.numerical_descriptors = numerical_descriptors if numerical_descriptors is not None else []
         self.categorical_descriptors = categorical_descriptors if categorical_descriptors is not None else []
-        self.test_descriptors = test_descriptors if test_descriptors is not None else []
+        self.test_descriptors = test_descriptors
         self.ranking = ranking
 
     def get_numerical_columns(self):
