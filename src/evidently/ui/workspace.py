@@ -665,7 +665,7 @@ class CloudWorkspace(RemoteWorkspace):
         description: Optional[str],
         link: Optional[SnapshotLink] = None,
     ) -> DatasetID:
-        data_definition = dataset.data_definition.json()
+        data_definition = dataset.data_definition.json(exclude_none=True)
         file = NamedBytesIO(b"", "data.parquet")
         dataset.as_dataframe().to_parquet(file)
         file.seek(0)
