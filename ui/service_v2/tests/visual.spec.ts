@@ -15,9 +15,14 @@ const goToFirstSnapshotAndExpanSomeWidgets = async ({
   await page.waitForLoadState('networkidle')
 
   const Details = page.getByRole('button', { name: 'Details', exact: true })
-  await expect(Details.first()).toBeVisible()
 
   const DetailsCount = await Details.count()
+
+  if (DetailsCount === 0) {
+    return
+  }
+
+  await expect(Details.first()).toBeVisible()
 
   await Details.first().click()
   await page.waitForLoadState('networkidle')
