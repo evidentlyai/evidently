@@ -424,7 +424,7 @@ class TestSummary(Descriptor):
         self.success_rate = success_rate
         self.score = score
         self.score_weights = score_weights
-        super().__init__(alias=alias or "summary", tests=None, **data)
+        super().__init__(alias=alias or "summary", **data)
 
     def generate_data(
         self, dataset: "Dataset", options: Options
