@@ -138,6 +138,12 @@ def create_snapshot(i: int, data: Tuple[Dataset, Dataset]):
 
 
 def create_project(workspace: WorkspaceBase, name: str):
+    projects = workspace.list_projects()
+    existing_project = [p for p in projects if p.name == name]
+    if len(existing_project) > 0:
+        project = existing_project[0]
+        return project
+
     project = workspace.create_project(name)
     project.description = "A toy demo project using Bike Demand forecasting dataset"
 
