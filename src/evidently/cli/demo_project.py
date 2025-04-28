@@ -9,7 +9,7 @@ from evidently.ui.service.demo_projects import DEMO_PROJECTS
 
 @app.command("demo_project")
 def generate_demo_project(
-    project: str = Option(help="Project to generate"),
+    project: str = Option("all", help="Project to generate"),
     path: str = Option("workspace", help="Workspace path"),
 ):
     _project = DEMO_PROJECTS.get(project)
