@@ -8,7 +8,7 @@
       "ui/packages/evidently-ui-lib/src/**/endpoints_v2.d.ts",
       "ui/packages/evidently-ui-lib/.tsc-dts/**"
     ],
-    "include": ["ui/*/src/**", "ui/packages/*/src/**"]
+    "include": ["ui/*/src/**", "ui/*/tests/**", "ui/packages/*/src/**"]
   },
   "formatter": {
     "enabled": true,

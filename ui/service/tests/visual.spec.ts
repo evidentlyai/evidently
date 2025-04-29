@@ -1,4 +1,4 @@
-import { test, expect, Page } from '@playwright/test'
+import { type Page, expect, test } from '@playwright/test'
 
 const goToFirstSnapshotAndExpanSomeWidgets = async ({
   projectName,
@@ -103,7 +103,7 @@ const ReviewsDemoProjectName = 'Demo project - Reviews'
 ///   Home
 /////////////////////
 
-test(`Home`, async ({ page }) => {
+test('Home', async ({ page }) => {
   await page.goto('/')
   await page.waitForLoadState('networkidle')
   await expect(page).toHaveScreenshot({ fullPage: true, maxDiffPixels: 150 })
