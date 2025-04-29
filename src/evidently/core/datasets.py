@@ -407,6 +407,25 @@ class TestSummary(Descriptor):
     score: bool = False
     score_weights: Optional[Dict[str, float]] = None
 
+    def __init__(
+        self,
+        success_all: bool = True,
+        success_any: bool = False,
+        success_count: bool = False,
+        success_rate: bool = False,
+        score: bool = False,
+        score_weights: Optional[Dict[str, float]] = None,
+        alias: Optional[str] = None,
+        **data: Any,
+    ):
+        self.success_all = success_all
+        self.success_any = success_any
+        self.success_count = success_count
+        self.success_rate = success_rate
+        self.score = score
+        self.score_weights = score_weights
+        super().__init__(alias=alias or "summary", **data)
+
     def generate_data(
         self, dataset: "Dataset", options: Options
     ) -> Union[DatasetColumn, Dict[DisplayName, DatasetColumn]]:
@@ -476,7 +495,7 @@ class FeatureDescriptor(Descriptor):
         }
 
     def list_output_columns(self) -> List[str]:
-        return [c.name for c in self.feature.list_columns()]
+        return [c.display_name for c in self.feature.list_columns()]
 
 
 def _determine_descriptor_column_name(alias: str, columns: List[str]):

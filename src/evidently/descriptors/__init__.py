@@ -1,3 +1,6 @@
+from evidently.core.datasets import ColumnTest
+from evidently.core.datasets import TestSummary
+
 from ._context_relevance import ContextRelevance
 from ._custom_descriptors import CustomColumnDescriptor
 from ._custom_descriptors import CustomDescriptor
@@ -29,6 +32,7 @@ from .generated_descriptors import JSONMatch
 from .generated_descriptors import JSONSchemaMatch
 from .generated_descriptors import LLMEval
 from .generated_descriptors import LLMJudge
+from .generated_descriptors import MulticlassClassificationLLMEval
 from .generated_descriptors import NegativityLLMEval
 from .generated_descriptors import NonLetterCharacterPercentage
 from .generated_descriptors import OOVWordsPercentage
@@ -46,17 +50,25 @@ from .generated_descriptors import WordNoMatch
 from .generated_descriptors import WordsPresence
 
 __all__ = [
-    "CustomColumnDescriptor",
-    "CustomDescriptor",
-    "TextLength",
     "BERTScore",
     "BeginsWith",
+    "BiasLLMEval",
+    "BinaryClassificationLLMEval",
+    "ColumnTest",
+    "CompletenessLLMEval",
     "Contains",
     "ContainsLink",
+    "ContextQualityLLMEval",
+    "ContextRelevance",
+    "CorrectnessLLMEval",
+    "CustomColumnDescriptor",
+    "CustomDescriptor",
+    "DeclineLLMEval",
     "DoesNotContain",
     "EndsWith",
     "ExactMatch",
     "ExcludesWords",
+    "FaithfulnessLLMEval",
     "HuggingFace",
     "HuggingFaceToxicity",
     "IncludesWords",
@@ -67,29 +79,24 @@ __all__ = [
     "ItemNoMatch",
     "JSONMatch",
     "JSONSchemaMatch",
+    "LLMEval",
     "LLMJudge",
+    "MulticlassClassificationLLMEval",
+    "NegativityLLMEval",
     "NonLetterCharacterPercentage",
     "OOVWordsPercentage",
     "OpenAI",
+    "PIILLMEval",
     "RegExp",
     "SemanticSimilarity",
     "SentenceCount",
     "Sentiment",
+    "TestSummary",
+    "TextLength",
+    "ToxicityLLMEval",
     "TriggerWordsPresent",
     "WordCount",
     "WordMatch",
     "WordNoMatch",
     "WordsPresence",
-    "BiasLLMEval",
-    "BinaryClassificationLLMEval",
-    "ContextQualityLLMEval",
-    "DeclineLLMEval",
-    "LLMEval",
-    "NegativityLLMEval",
-    "PIILLMEval",
-    "ToxicityLLMEval",
-    "CompletenessLLMEval",
-    "FaithfulnessLLMEval",
-    "CorrectnessLLMEval",
-    "ContextRelevance",
 ]
