@@ -1,7 +1,6 @@
 import React, { useContext } from 'react'
 
 export type DashboardViewParams = {
-  isXaxisAsCategorical: boolean
   OnClickedPointComponent?: (data: { snapshotId: string }) => JSX.Element
 } | null
 

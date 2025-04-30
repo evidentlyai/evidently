@@ -7,9 +7,10 @@ import { useCurrentRouteParams } from 'evidently-ui-lib/router-utils/hooks'
 import type { CrumbDefinition } from 'evidently-ui-lib/router-utils/router-builder'
 import type { GetParams, loadDataArgs } from 'evidently-ui-lib/router-utils/types'
 import { Box, Stack } from 'evidently-ui-lib/shared-dependencies/mui-material'
-import { useParams } from 'evidently-ui-lib/shared-dependencies/react-router-dom'
+import invariant from 'tiny-invariant'
 import { PanelComponent } from '~/Components/DashboardPanel'
 import { clientAPI } from '~/api'
+import { useProjectInfo } from '~/contexts/project'
 import { RouterLink } from '~/routes/components'
 import type { GetRouteByPath } from '~/routes/types'
 
@@ -41,9 +42,8 @@ export const loadData = (
 }
 
 const GoToSnapshotByPoint = ({ snapshotId }: { snapshotId: string }) => {
-  const { projectId } = useParams() as Params
-
-  const linkToSnapshot = '/projects/:projectId/reports/:snapshotId' as const
+  const { project } = useProjectInfo()
+  invariant(project)
 
   return (
     <>
@@ -51,10 +51,10 @@ const GoToSnapshotByPoint = ({ snapshotId }: { snapshotId: string }) => {
         <Stack direction={'row'} alignItems={'end'} justifyContent={'end'} gap={2}>
           <RouterLink
             type='button'
-            to={linkToSnapshot}
+            to={'/projects/:projectId/reports/:snapshotId'}
             title='View Report'
             variant='outlined'
-            paramsToReplace={{ projectId, snapshotId }}
+            paramsToReplace={{ projectId: project.id, snapshotId }}
           />
         </Stack>
       </Box>
@@ -69,7 +69,6 @@ export const Component = () => {
     <Box py={2}>
       <DashboardViewParamsContext.Provider
         value={{
-          isXaxisAsCategorical: true,
           OnClickedPointComponent: GoToSnapshotByPoint
         }}
       >

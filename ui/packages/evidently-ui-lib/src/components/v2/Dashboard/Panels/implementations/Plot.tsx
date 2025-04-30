@@ -189,7 +189,11 @@ export const PlotDashboardPanel = ({
         </Box>
       </CardContent>
       {highlighted && OnClickComponent && (
-        <CardActions>
+        <CardActions
+          sx={{
+            justifyContent: 'flex-end'
+          }}
+        >
           <OnClickComponent snapshotId={data.sources[highlighted.index].snapshot_id} />
         </CardActions>
       )}
