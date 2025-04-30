@@ -45,6 +45,7 @@ from evidently.pydantic_utils import Fingerprint
 from evidently.pydantic_utils import FrozenBaseModel
 from evidently.pydantic_utils import PolymorphicModel
 
+from ._utils import _flatten
 from ._utils import not_implemented
 from .datasets import Dataset
 from .tests import GenericTest
@@ -179,6 +180,9 @@ class MetricResult(AutoAliasMixin, PolymorphicModel):
     @abc.abstractmethod
     def to_simple_dict(self) -> object:
         raise NotImplementedError()
+
+    def itervalues(self) -> typing.Iterable[Tuple[str, float]]:
+        yield from _flatten(self.to_simple_dict())
 
     def get_widgets(self) -> List[BaseWidgetInfo]:
         return self.widget or []

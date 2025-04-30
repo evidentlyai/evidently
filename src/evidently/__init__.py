@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
+from evidently.core.compare import compare
 from evidently.core.datasets import BinaryClassification
 from evidently.core.datasets import DataDefinition
 from evidently.core.datasets import Dataset
@@ -26,5 +27,6 @@ __all__ = [
     "MulticlassClassification",
     "Regression",
     "Recsys",
+    "compare",
     "ColumnType",  # legacy support
 ]

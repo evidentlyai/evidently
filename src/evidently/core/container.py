@@ -11,6 +11,7 @@ from typing import Union
 
 from evidently.core.metric_types import Metric
 from evidently.core.metric_types import MetricId
+from evidently.core.metric_types import convert_tests
 from evidently.legacy.model.widget import BaseWidgetInfo
 from evidently.pydantic_utils import AutoAliasMixin
 from evidently.pydantic_utils import EvidentlyBaseModel
@@ -66,7 +67,7 @@ class MetricContainer(AutoAliasMixin, EvidentlyBaseModel, abc.ABC):
 
     def _get_tests(self, tests):
         if tests is not None:
-            return tests
+            return convert_tests(tests)
         if self.include_tests:
             return None
         return []
