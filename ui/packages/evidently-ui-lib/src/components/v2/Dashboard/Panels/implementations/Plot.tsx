@@ -57,24 +57,22 @@ const BackgroundSelection = ({
 
   return (
     <>
-      {
-        //biome-ignore lint/a11y/useKeyWithClickEvents: No need for key support in this case }
-        <rect
-          x={left}
-          y={top}
-          width={width}
-          height={height}
-          opacity={0}
-          onClick={(e) => {
-            // @ts-ignore
-            const rec = e.target.getBoundingClientRect() // TODO: Fix this hack to track clicks
-            let newIndex = Math.floor((e.clientX - rec.x) / gapWidth)
-            newIndex =
-              newIndex < 0 ? 0 : newIndex >= xAxis.tickNumber ? xAxis.tickNumber - 1 : newIndex
-            onSelect(newIndex)
-          }}
-        />
-      }
+      {/* biome-ignore lint/a11y/useKeyWithClickEvents: No need for key support in this case */}
+      <rect
+        x={left}
+        y={top}
+        width={width}
+        height={height}
+        opacity={0}
+        onClick={(e) => {
+          // @ts-ignore
+          const rec = e.target.getBoundingClientRect() // TODO: Fix this hack to track clicks
+          let newIndex = Math.floor((e.clientX - rec.x) / gapWidth)
+          newIndex =
+            newIndex < 0 ? 0 : newIndex >= xAxis.tickNumber ? xAxis.tickNumber - 1 : newIndex
+          onSelect(newIndex)
+        }}
+      />
       {x && (
         <StyledRect
           x={left + gapWidth * x}
@@ -190,11 +188,11 @@ export const PlotDashboardPanel = ({
           </ResponsiveChartContainer>
         </Box>
       </CardContent>
-      <CardActions>
-        {highlighted && OnClickComponent && (
+      {highlighted && OnClickComponent && (
+        <CardActions>
           <OnClickComponent snapshotId={data.sources[highlighted.index].snapshot_id} />
-        )}
-      </CardActions>
+        </CardActions>
+      )}
     </Card>
   )
 }
