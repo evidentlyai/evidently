@@ -6,12 +6,10 @@ import { DashboardViewParamsContext } from 'evidently-ui-lib/contexts/DashboardV
 import { useCurrentRouteParams } from 'evidently-ui-lib/router-utils/hooks'
 import type { CrumbDefinition } from 'evidently-ui-lib/router-utils/router-builder'
 import type { GetParams, loadDataArgs } from 'evidently-ui-lib/router-utils/types'
-import { Box, Stack } from 'evidently-ui-lib/shared-dependencies/mui-material'
-import invariant from 'tiny-invariant'
+import { Box } from 'evidently-ui-lib/shared-dependencies/mui-material'
 import { PanelComponent } from '~/Components/DashboardPanel'
+import { OnClickedPointComponent } from '~/Components/GoToSnapshotButton'
 import { clientAPI } from '~/api'
-import { useProjectInfo } from '~/contexts/project'
-import { RouterLink } from '~/routes/components'
 import type { GetRouteByPath } from '~/routes/types'
 
 ///////////////////
@@ -41,37 +39,12 @@ export const loadData = (
     .then(JSONParseExtended<DashboardModel>)
 }
 
-const GoToSnapshotByPoint = ({ snapshotId }: { snapshotId: string }) => {
-  const { project } = useProjectInfo()
-  invariant(project)
-
-  return (
-    <>
-      <Box style={{ marginRight: 10 }}>
-        <Stack direction={'row'} alignItems={'end'} justifyContent={'end'} gap={2}>
-          <RouterLink
-            type='button'
-            to={'/projects/:projectId/reports/:snapshotId'}
-            title='View Report'
-            variant='outlined'
-            paramsToReplace={{ projectId: project.id, snapshotId }}
-          />
-        </Stack>
-      </Box>
-    </>
-  )
-}
-
 export const Component = () => {
   const { loaderData: data } = useCurrentRouteParams<CurrentRoute>()
 
   return (
     <Box py={2}>
-      <DashboardViewParamsContext.Provider
-        value={{
-          OnClickedPointComponent: GoToSnapshotByPoint
-        }}
-      >
+      <DashboardViewParamsContext.Provider value={{ OnClickedPointComponent }}>
         <DrawDashboardPanels PanelComponent={PanelComponent} panels={data.panels} />
       </DashboardViewParamsContext.Provider>
     </Box>
