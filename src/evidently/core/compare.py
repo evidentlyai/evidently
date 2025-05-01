@@ -1,6 +1,7 @@
 from collections import defaultdict
 from typing import Any
 from typing import Callable
+from typing import Dict
 from typing import List
 from typing import Union
 
@@ -31,7 +32,7 @@ def compare(
         raise ValueError("Index and runs must have same length")
 
     common_metrics = set.intersection(*[set(r._top_level_metrics) for r in runs])
-    result = defaultdict(dict)
+    result: Dict[str, Dict[int, float]] = defaultdict(dict)
     for i, run in enumerate(runs):
         result["index"][i] = _get_index(index, run, i)
         for metric_id in run._top_level_metrics:
