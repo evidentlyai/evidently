@@ -34,6 +34,7 @@ package_data_spec = {
         "ui/service/assets/static/css/*",
         "ui/service/assets/static/js/*",
         "ui/service/assets/static/img/*",
+        "py.typed",
     ]
 }
 
