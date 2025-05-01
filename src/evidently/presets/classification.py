@@ -8,9 +8,12 @@ from evidently.core.container import MetricContainer
 from evidently.core.container import MetricOrContainer
 from evidently.core.datasets import BinaryClassification
 from evidently.core.metric_types import ByLabelMetricTests
+from evidently.core.metric_types import GenericByLabelMetricTests
+from evidently.core.metric_types import GenericSingleValueMetricTests
 from evidently.core.metric_types import Metric
 from evidently.core.metric_types import MetricId
 from evidently.core.metric_types import SingleValueMetricTests
+from evidently.core.metric_types import convert_tests
 from evidently.core.report import Context
 from evidently.legacy.metrics import ClassificationConfusionMatrix
 from evidently.legacy.metrics import ClassificationDummyMetric
@@ -62,29 +65,29 @@ class ClassificationQuality(MetricContainer):
         conf_matrix: bool = False,
         pr_curve: bool = False,
         pr_table: bool = False,
-        accuracy_tests: SingleValueMetricTests = None,
-        precision_tests: SingleValueMetricTests = None,
-        recall_tests: SingleValueMetricTests = None,
-        f1score_tests: SingleValueMetricTests = None,
-        rocauc_tests: SingleValueMetricTests = None,
-        logloss_tests: SingleValueMetricTests = None,
-        tpr_tests: SingleValueMetricTests = None,
-        tnr_tests: SingleValueMetricTests = None,
-        fpr_tests: SingleValueMetricTests = None,
-        fnr_tests: SingleValueMetricTests = None,
+        accuracy_tests: GenericSingleValueMetricTests = None,
+        precision_tests: GenericSingleValueMetricTests = None,
+        recall_tests: GenericSingleValueMetricTests = None,
+        f1score_tests: GenericSingleValueMetricTests = None,
+        rocauc_tests: GenericSingleValueMetricTests = None,
+        logloss_tests: GenericSingleValueMetricTests = None,
+        tpr_tests: GenericSingleValueMetricTests = None,
+        tnr_tests: GenericSingleValueMetricTests = None,
+        fpr_tests: GenericSingleValueMetricTests = None,
+        fnr_tests: GenericSingleValueMetricTests = None,
         include_tests: bool = True,
     ):
-        self.accuracy_tests = accuracy_tests
-        self.precision_tests = precision_tests
-        self.recall_tests = recall_tests
-        self.f1score_tests = f1score_tests
-        self.rocauc_tests = rocauc_tests
-        self.logloss_tests = logloss_tests
-        self.tpr_tests = tpr_tests
-        self.tnr_tests = tnr_tests
-        self.fpr_tests = fpr_tests
-        self.fnr_tests = fnr_tests
-        self.probas_threshold = probas_threshold
+        self.accuracy_tests = convert_tests(accuracy_tests)
+        self.precision_tests = convert_tests(precision_tests)
+        self.recall_tests = convert_tests(recall_tests)
+        self.f1score_tests = convert_tests(f1score_tests)
+        self.rocauc_tests = convert_tests(rocauc_tests)
+        self.logloss_tests = convert_tests(logloss_tests)
+        self.tpr_tests = convert_tests(tpr_tests)
+        self.tnr_tests = convert_tests(tnr_tests)
+        self.fpr_tests = convert_tests(fpr_tests)
+        self.fnr_tests = convert_tests(fnr_tests)
+        self.probas_threshold = convert_tests(probas_threshold)
         self.conf_matrix = conf_matrix
         self.pr_curve = pr_curve
         self.pr_table = pr_table
@@ -165,18 +168,18 @@ class ClassificationQualityByLabel(MetricContainer):
         self,
         probas_threshold: Optional[float] = None,
         k: Optional[int] = None,
-        f1score_tests: ByLabelMetricTests = None,
-        precision_tests: ByLabelMetricTests = None,
-        recall_tests: ByLabelMetricTests = None,
-        rocauc_tests: ByLabelMetricTests = None,
+        f1score_tests: GenericByLabelMetricTests = None,
+        precision_tests: GenericByLabelMetricTests = None,
+        recall_tests: GenericByLabelMetricTests = None,
+        rocauc_tests: GenericByLabelMetricTests = None,
         include_tests: bool = True,
     ):
         self.probas_threshold = probas_threshold
         self.k = k
         self.f1score_tests = f1score_tests
-        self.precision_tests = precision_tests
-        self.recall_tests = recall_tests
-        self.rocauc_tests = rocauc_tests
+        self.precision_tests = convert_tests(precision_tests)
+        self.recall_tests = convert_tests(recall_tests)
+        self.rocauc_tests = convert_tests(rocauc_tests)
         super().__init__(include_tests=include_tests)
 
     def generate_metrics(self, context: "Context") -> Sequence[MetricOrContainer]:
@@ -274,39 +277,39 @@ class ClassificationPreset(MetricContainer):
     def __init__(
         self,
         probas_threshold: Optional[float] = None,
-        accuracy_tests: SingleValueMetricTests = None,
-        precision_tests: SingleValueMetricTests = None,
-        recall_tests: SingleValueMetricTests = None,
-        f1score_tests: SingleValueMetricTests = None,
-        rocauc_tests: SingleValueMetricTests = None,
-        logloss_tests: SingleValueMetricTests = None,
-        tpr_tests: SingleValueMetricTests = None,
-        tnr_tests: SingleValueMetricTests = None,
-        fpr_tests: SingleValueMetricTests = None,
-        fnr_tests: SingleValueMetricTests = None,
-        f1score_by_label_tests: ByLabelMetricTests = None,
-        precision_by_label_tests: ByLabelMetricTests = None,
-        recall_by_label_tests: ByLabelMetricTests = None,
-        rocauc_by_label_tests: ByLabelMetricTests = None,
+        accuracy_tests: GenericSingleValueMetricTests = None,
+        precision_tests: GenericSingleValueMetricTests = None,
+        recall_tests: GenericSingleValueMetricTests = None,
+        f1score_tests: GenericSingleValueMetricTests = None,
+        rocauc_tests: GenericSingleValueMetricTests = None,
+        logloss_tests: GenericSingleValueMetricTests = None,
+        tpr_tests: GenericSingleValueMetricTests = None,
+        tnr_tests: GenericSingleValueMetricTests = None,
+        fpr_tests: GenericSingleValueMetricTests = None,
+        fnr_tests: GenericSingleValueMetricTests = None,
+        f1score_by_label_tests: GenericByLabelMetricTests = None,
+        precision_by_label_tests: GenericByLabelMetricTests = None,
+        recall_by_label_tests: GenericByLabelMetricTests = None,
+        rocauc_by_label_tests: GenericByLabelMetricTests = None,
         include_tests: bool = True,
     ):
         super().__init__(
             include_tests=include_tests,
             probas_threshold=probas_threshold,
-            accuracy_tests=accuracy_tests,
-            precision_tests=precision_tests,
-            recall_tests=recall_tests,
-            f1score_tests=f1score_tests,
-            rocauc_tests=rocauc_tests,
-            logloss_tests=logloss_tests,
-            tpr_tests=tpr_tests,
-            tnr_tests=tnr_tests,
-            fpr_tests=fpr_tests,
-            fnr_tests=fnr_tests,
-            f1score_by_label_tests=f1score_by_label_tests,
-            precision_by_label_tests=precision_by_label_tests,
-            recall_by_label_tests=recall_by_label_tests,
-            rocauc_by_label_tests=rocauc_by_label_tests,
+            accuracy_tests=convert_tests(accuracy_tests),
+            precision_tests=convert_tests(precision_tests),
+            recall_tests=convert_tests(recall_tests),
+            f1score_tests=convert_tests(f1score_tests),
+            rocauc_tests=convert_tests(rocauc_tests),
+            logloss_tests=convert_tests(logloss_tests),
+            tpr_tests=convert_tests(tpr_tests),
+            tnr_tests=convert_tests(tnr_tests),
+            fpr_tests=convert_tests(fpr_tests),
+            fnr_tests=convert_tests(fnr_tests),
+            f1score_by_label_tests=convert_tests(f1score_by_label_tests),
+            precision_by_label_tests=convert_tests(precision_by_label_tests),
+            recall_by_label_tests=convert_tests(recall_by_label_tests),
+            rocauc_by_label_tests=convert_tests(rocauc_by_label_tests),
         )
         self._quality = ClassificationQuality(
             probas_threshold=probas_threshold,

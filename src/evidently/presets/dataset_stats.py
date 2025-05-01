@@ -13,10 +13,13 @@ from evidently.core.container import MetricContainer
 from evidently.core.container import MetricOrContainer
 from evidently.core.metric_types import ByLabelCountValue
 from evidently.core.metric_types import ByLabelMetricTests
+from evidently.core.metric_types import GenericByLabelMetricTests
+from evidently.core.metric_types import GenericSingleValueMetricTests
 from evidently.core.metric_types import Metric
 from evidently.core.metric_types import MetricId
 from evidently.core.metric_types import MetricResult
 from evidently.core.metric_types import SingleValueMetricTests
+from evidently.core.metric_types import convert_tests
 from evidently.core.report import Context
 from evidently.core.report import _default_input_data_generator
 from evidently.legacy.core import ColumnType
@@ -62,27 +65,27 @@ class ValueStats(ColumnMetricContainer):
         column: str,
         row_count_tests: SingleValueMetricTests = None,
         missing_values_count_tests: SingleValueMetricTests = None,
-        min_tests: SingleValueMetricTests = None,
-        max_tests: SingleValueMetricTests = None,
-        mean_tests: SingleValueMetricTests = None,
-        std_tests: SingleValueMetricTests = None,
-        q25_tests: SingleValueMetricTests = None,
-        q50_tests: SingleValueMetricTests = None,
-        q75_tests: SingleValueMetricTests = None,
-        unique_values_count_tests: ByLabelMetricTests = None,
+        min_tests: GenericSingleValueMetricTests = None,
+        max_tests: GenericSingleValueMetricTests = None,
+        mean_tests: GenericSingleValueMetricTests = None,
+        std_tests: GenericSingleValueMetricTests = None,
+        q25_tests: GenericSingleValueMetricTests = None,
+        q50_tests: GenericSingleValueMetricTests = None,
+        q75_tests: GenericSingleValueMetricTests = None,
+        unique_values_count_tests: GenericByLabelMetricTests = None,
         include_tests: bool = True,
         replace_nan: Label = None,
     ):
-        self.row_count_tests = row_count_tests
-        self.missing_values_count_tests = missing_values_count_tests
-        self.min_tests = min_tests
-        self.max_tests = max_tests
-        self.mean_tests = mean_tests
-        self.std_tests = std_tests
-        self.q25_tests = q25_tests
-        self.q50_tests = q50_tests
-        self.q75_tests = q75_tests
-        self.unique_values_count_tests = unique_values_count_tests
+        self.row_count_tests = convert_tests(row_count_tests)
+        self.missing_values_count_tests = convert_tests(missing_values_count_tests)
+        self.min_tests = convert_tests(min_tests)
+        self.max_tests = convert_tests(max_tests)
+        self.mean_tests = convert_tests(mean_tests)
+        self.std_tests = convert_tests(std_tests)
+        self.q25_tests = convert_tests(q25_tests)
+        self.q50_tests = convert_tests(q50_tests)
+        self.q75_tests = convert_tests(q75_tests)
+        self.unique_values_count_tests = convert_tests(unique_values_count_tests)
         self.replace_nan = replace_nan
         super().__init__(column=column, include_tests=include_tests)
 
@@ -335,30 +338,30 @@ class DatasetStats(MetricContainer):
 
     def __init__(
         self,
-        row_count_tests: SingleValueMetricTests = None,
-        column_count_tests: SingleValueMetricTests = None,
-        duplicated_row_count_tests: SingleValueMetricTests = None,
-        duplicated_column_count_tests: SingleValueMetricTests = None,
-        almost_duplicated_column_count_tests: SingleValueMetricTests = None,
-        almost_constant_column_count_tests: SingleValueMetricTests = None,
-        empty_row_count_tests: SingleValueMetricTests = None,
-        empty_column_count_tests: SingleValueMetricTests = None,
-        constant_columns_count_tests: SingleValueMetricTests = None,
-        dataset_missing_value_count_tests: SingleValueMetricTests = None,
-        dataset_missing_value_share_tests: SingleValueMetricTests = None,
+        row_count_tests: GenericSingleValueMetricTests = None,
+        column_count_tests: GenericSingleValueMetricTests = None,
+        duplicated_row_count_tests: GenericSingleValueMetricTests = None,
+        duplicated_column_count_tests: GenericSingleValueMetricTests = None,
+        almost_duplicated_column_count_tests: GenericSingleValueMetricTests = None,
+        almost_constant_column_count_tests: GenericSingleValueMetricTests = None,
+        empty_row_count_tests: GenericSingleValueMetricTests = None,
+        empty_column_count_tests: GenericSingleValueMetricTests = None,
+        constant_columns_count_tests: GenericSingleValueMetricTests = None,
+        dataset_missing_value_count_tests: GenericSingleValueMetricTests = None,
+        dataset_missing_value_share_tests: GenericSingleValueMetricTests = None,
         include_tests: bool = True,
     ):
-        self.duplicated_row_count_tests = duplicated_row_count_tests
-        self.duplicated_column_count_tests = duplicated_column_count_tests
-        self.almost_constant_column_count_tests = almost_constant_column_count_tests
-        self.almost_duplicated_column_count_tests = almost_duplicated_column_count_tests
-        self.empty_row_count_tests = empty_row_count_tests
-        self.empty_column_count_tests = empty_column_count_tests
-        self.constant_columns_count_tests = constant_columns_count_tests
-        self.dataset_missing_value_count_tests = dataset_missing_value_count_tests
-        self.dataset_missing_value_share_tests = dataset_missing_value_share_tests
-        self.column_count_tests = column_count_tests
-        self.row_count_tests = row_count_tests
+        self.duplicated_row_count_tests = convert_tests(duplicated_row_count_tests)
+        self.duplicated_column_count_tests = convert_tests(duplicated_column_count_tests)
+        self.almost_constant_column_count_tests = convert_tests(almost_constant_column_count_tests)
+        self.almost_duplicated_column_count_tests = convert_tests(almost_duplicated_column_count_tests)
+        self.empty_row_count_tests = convert_tests(empty_row_count_tests)
+        self.empty_column_count_tests = convert_tests(empty_column_count_tests)
+        self.constant_columns_count_tests = convert_tests(constant_columns_count_tests)
+        self.dataset_missing_value_count_tests = convert_tests(dataset_missing_value_count_tests)
+        self.dataset_missing_value_share_tests = convert_tests(dataset_missing_value_share_tests)
+        self.column_count_tests = convert_tests(column_count_tests)
+        self.row_count_tests = convert_tests(row_count_tests)
         super().__init__(include_tests=include_tests)
 
     def generate_metrics(self, context: Context) -> Sequence[MetricOrContainer]:
@@ -407,6 +410,9 @@ class ValueStatsTests:
     q75_tests: SingleValueMetricTests = None
     unique_values_count_tests: ByLabelMetricTests = None
 
+    def convert(self) -> "ValueStatsTests":
+        return ValueStatsTests(**{k: convert_tests(v) for k, v in dataclasses.asdict(self).items()})
+
 
 class TextEvals(MetricContainer):
     columns: Optional[List[str]] = None
@@ -416,13 +422,13 @@ class TextEvals(MetricContainer):
     def __init__(
         self,
         columns: Optional[List[str]] = None,
-        row_count_tests: SingleValueMetricTests = None,
+        row_count_tests: GenericSingleValueMetricTests = None,
         column_tests: Optional[Dict[str, ValueStatsTests]] = None,
         include_tests: bool = True,
     ):
         self.columns = columns
-        self.row_count_tests = row_count_tests
-        self.column_tests = column_tests
+        self.row_count_tests = convert_tests(row_count_tests)
+        self.column_tests = {k: v.convert() for k, v in column_tests.items()} if column_tests is not None else None
         super().__init__(include_tests=include_tests)
 
     def get_cols(self, context: Context):
@@ -477,31 +483,31 @@ class DataSummaryPreset(MetricContainer):
     def __init__(
         self,
         columns: Optional[List[str]] = None,
-        row_count_tests: SingleValueMetricTests = None,
-        column_count_tests: SingleValueMetricTests = None,
-        duplicated_row_count_tests: SingleValueMetricTests = None,
-        duplicated_column_count_tests: SingleValueMetricTests = None,
-        almost_duplicated_column_count_tests: SingleValueMetricTests = None,
-        almost_constant_column_count_tests: SingleValueMetricTests = None,
-        empty_row_count_tests: SingleValueMetricTests = None,
-        empty_column_count_tests: SingleValueMetricTests = None,
-        constant_columns_count_tests: SingleValueMetricTests = None,
-        dataset_missing_value_count_tests: SingleValueMetricTests = None,
+        row_count_tests: GenericSingleValueMetricTests = None,
+        column_count_tests: GenericSingleValueMetricTests = None,
+        duplicated_row_count_tests: GenericSingleValueMetricTests = None,
+        duplicated_column_count_tests: GenericSingleValueMetricTests = None,
+        almost_duplicated_column_count_tests: GenericSingleValueMetricTests = None,
+        almost_constant_column_count_tests: GenericSingleValueMetricTests = None,
+        empty_row_count_tests: GenericSingleValueMetricTests = None,
+        empty_column_count_tests: GenericSingleValueMetricTests = None,
+        constant_columns_count_tests: GenericSingleValueMetricTests = None,
+        dataset_missing_value_count_tests: GenericSingleValueMetricTests = None,
         column_tests: Optional[Dict[str, ValueStatsTests]] = None,
         include_tests: bool = True,
     ):
-        self.duplicated_row_count_tests = duplicated_row_count_tests
-        self.duplicated_column_count_tests = duplicated_column_count_tests
-        self.almost_constant_column_count_tests = almost_constant_column_count_tests
-        self.almost_duplicated_column_count_tests = almost_duplicated_column_count_tests
-        self.empty_row_count_tests = empty_row_count_tests
-        self.empty_column_count_tests = empty_column_count_tests
-        self.constant_columns_count_tests = constant_columns_count_tests
-        self.dataset_missing_value_count_tests = dataset_missing_value_count_tests
-        self.column_count_tests = column_count_tests
-        self.row_count_tests = row_count_tests
+        self.duplicated_row_count_tests = convert_tests(duplicated_row_count_tests)
+        self.duplicated_column_count_tests = convert_tests(duplicated_column_count_tests)
+        self.almost_constant_column_count_tests = convert_tests(almost_constant_column_count_tests)
+        self.almost_duplicated_column_count_tests = convert_tests(almost_duplicated_column_count_tests)
+        self.empty_row_count_tests = convert_tests(empty_row_count_tests)
+        self.empty_column_count_tests = convert_tests(empty_column_count_tests)
+        self.constant_columns_count_tests = convert_tests(constant_columns_count_tests)
+        self.dataset_missing_value_count_tests = convert_tests(dataset_missing_value_count_tests)
+        self.column_count_tests = convert_tests(column_count_tests)
+        self.row_count_tests = convert_tests(row_count_tests)
         self.columns = columns
-        self.column_tests = column_tests
+        self.column_tests = {k: v.convert() for k, v in column_tests.items()} if column_tests is not None else None
         super().__init__(include_tests=include_tests)
 
     def generate_metrics(self, context: Context) -> Sequence[MetricOrContainer]:
