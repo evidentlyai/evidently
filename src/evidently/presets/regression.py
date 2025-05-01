@@ -189,11 +189,14 @@ class RegressionPreset(MetricContainer):
             self.abs_max_error_tests,
             include_tests=self.include_tests,
         )
-        return self._quality.metrics(context) + [
-            MAPE(mean_tests=self._get_tests(self.mape_tests.mean), std_tests=self._get_tests(self.mape_tests.std)),
-            AbsMaxError(tests=self._get_tests(self.abs_max_error_tests)),
-            R2Score(tests=self._get_tests(self.r2score_tests)),
-        ]
+        return (
+            self._quality.metrics(context)
+            + [
+                # MAPE(mean_tests=self._get_tests(self.mape_tests.mean), std_tests=self._get_tests(self.mape_tests.std)),
+                # AbsMaxError(tests=self._get_tests(self.abs_max_error_tests)),
+                # R2Score(tests=self._get_tests(self.r2score_tests)),
+            ]
+        )
 
     def render(
         self,

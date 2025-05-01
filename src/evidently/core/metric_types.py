@@ -806,6 +806,8 @@ def convert_test(test: Union[MetricTest, GenericTest]) -> MetricTest:
 def convert_tests(tests: Optional[Union[GenericTestList, Dict[Label, GenericTestList]]]):
     if isinstance(tests, dict):
         return {label: convert_tests(tests) for label, tests in tests.items()}
+    if isinstance(tests, MeanStdMetricTests):
+        return MeanStdMetricTests(mean=convert_tests(tests.mean), std=convert_tests(tests.std))
     return [convert_test(t) for t in tests] if tests is not None else None
 
 
@@ -1075,9 +1077,7 @@ class MeanStdMetricTests(BaseModel):
     std: SingleValueMetricTests = None
 
     def __init__(self, mean: GenericSingleValueMetricTests = None, std: GenericSingleValueMetricTests = None):
-        self.mean = convert_tests(mean)
-        self.std = convert_tests(std)
-        super().__init__()
+        super().__init__(mean=convert_tests(mean), std=convert_tests(std))
 
 
 class MeanStdMetric(Metric):

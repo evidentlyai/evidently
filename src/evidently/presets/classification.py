@@ -176,7 +176,7 @@ class ClassificationQualityByLabel(MetricContainer):
     ):
         self.probas_threshold = probas_threshold
         self.k = k
-        self.f1score_tests = f1score_tests
+        self.f1score_tests = convert_tests(f1score_tests)
         self.precision_tests = convert_tests(precision_tests)
         self.recall_tests = convert_tests(recall_tests)
         self.rocauc_tests = convert_tests(rocauc_tests)
@@ -336,22 +336,19 @@ class ClassificationPreset(MetricContainer):
             rocauc_tests=rocauc_by_label_tests,
             include_tests=include_tests,
         )
-        self._roc_auc: Optional[RocAuc] = RocAuc(
-            probas_threshold=probas_threshold,
-            tests=self._get_tests(rocauc_tests),
-        )
+        self._roc_auc = None
+        # self._roc_auc: Optional[RocAuc] = RocAuc(
+        #     probas_threshold=probas_threshold,
+        #     tests=self._get_tests(rocauc_tests),
+        # )
 
     def generate_metrics(self, context: "Context") -> Sequence[MetricOrContainer]:
         classification = context.data_definition.get_classification("default")
         if classification is None:
             raise ValueError("Cannot use ClassificationPreset without a classification configration")
-        if classification.prediction_probas is None:
-            self._roc_auc = None
-        return (
-            self._quality.metrics(context)
-            + self._quality_by_label.metrics(context)
-            + ([] if self._roc_auc is None else [RocAuc(probas_threshold=self.probas_threshold)])
-        )
+        quality_metrics = self._quality.metrics(context)
+        self._roc_auc = next((m for m in quality_metrics if isinstance(m, RocAuc)), None)
+        return quality_metrics + self._quality_by_label.metrics(context)
 
     def render(
         self,
