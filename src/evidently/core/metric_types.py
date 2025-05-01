@@ -789,8 +789,10 @@ class SingleValueBoundTest(BoundTest[SingleValue]):
         return result
 
 
+GenericTestList = List[Union[MetricTest, GenericTest]]
+
 SingleValueMetricTests = Optional[List[MetricTest]]
-GenericSingleValueMetricTests = Union[SingleValueBoundTest, List[GenericTest]]
+GenericSingleValueMetricTests = Optional[GenericTestList]
 
 
 def convert_test(test: Union[MetricTest, GenericTest]) -> MetricTest:
@@ -799,9 +801,6 @@ def convert_test(test: Union[MetricTest, GenericTest]) -> MetricTest:
     if isinstance(test, MetricTest):
         return test
     raise ValueError(f"test {test} is not a subclass of MetricTest")
-
-
-GenericTestList = List[Union[MetricTest, GenericTest]]
 
 
 def convert_tests(tests: Optional[Union[GenericTestList, Dict[Label, GenericTestList]]]):
@@ -849,8 +848,9 @@ class ByLabelBoundTest(BoundTest[ByLabelValue]):
         return result
 
 
+GenericTestDict = Dict[Label, List[Union[MetricTest, GenericTest]]]
 ByLabelMetricTests = Optional[Dict[Label, List[MetricTest]]]
-GenericByLabelMetricTests = Union[ByLabelMetricTests, Dict[Label, List[GenericTest]]]
+GenericByLabelMetricTests = Optional[GenericTestDict]
 
 
 class ByLabelMetric(Metric):
