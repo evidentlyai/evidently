@@ -1,5 +1,5 @@
-import { CardActions } from '@mui/material'
-import { styled } from '@mui/material/styles'
+import { Stack } from '@mui/material'
+import { useTheme } from '@mui/material/styles'
 import { useDrawingArea, useXAxis } from '@mui/x-charts'
 import { BarPlot } from '@mui/x-charts/BarChart/BarPlot'
 import { ChartsAxisHighlight } from '@mui/x-charts/ChartsAxisHighlight/ChartsAxisHighlight'
@@ -22,6 +22,7 @@ import {
   Typography
 } from 'evidently-ui-lib/shared-dependencies/mui-material'
 import { assertNever } from 'evidently-ui-lib/utils/index'
+import { clamp } from 'evidently-ui-lib/utils/index'
 import { useState } from 'react'
 import type { MakePanel } from '~/components/v2/Dashboard/Panels/types'
 import { formatLabelWithParams, jsonToKeyValueRowString } from '~/components/v2/Dashboard/utils'
@@ -41,18 +42,10 @@ export type PlotPanelProps = MakePanel<{
 
 type SeriesType = SeriesProviderProps['series'][number]
 
-const StyledRect = styled('rect')<{ color: 'primary' | 'secondary' }>(({ theme, color }) => ({
-  fill: theme.palette.text[color],
-  shapeRendering: 'crispEdges',
-  pointerEvents: 'none'
-}))
-
-const BackgroundSelection = ({
-  x,
-  onSelect
-}: { x?: number; onSelect: (index: number) => void }) => {
+const HighlightSelectionCustom = ({ onSelect }: { onSelect: (index: number) => void }) => {
   const { left, top, width, height } = useDrawingArea()
   const xAxis = useXAxis()
+
   const gapWidth = width / xAxis.tickNumber
 
   return (
@@ -64,26 +57,40 @@ const BackgroundSelection = ({
         width={width}
         height={height}
         opacity={0}
+        style={{ cursor: 'pointer' }}
         onClick={(e) => {
           // @ts-ignore
-          const rec = e.target.getBoundingClientRect() // TODO: Fix this hack to track clicks
-          let newIndex = Math.floor((e.clientX - rec.x) / gapWidth)
-          newIndex =
-            newIndex < 0 ? 0 : newIndex >= xAxis.tickNumber ? xAxis.tickNumber - 1 : newIndex
+          const rect = e.target.getBoundingClientRect() // TODO: Fix this hack to track clicks
+
+          const index = Math.floor((e.clientX - rect.x) / gapWidth)
+
+          const newIndex = clamp({ value: index, min: 0, max: xAxis.tickNumber - 1 })
+
           onSelect(newIndex)
         }}
       />
-      {x && (
-        <StyledRect
-          x={left + gapWidth * x}
-          y={top}
-          width={gapWidth}
-          height={height}
-          color={'primary'}
-          opacity={0.1}
-        />
-      )}
     </>
+  )
+}
+
+const Highlight = ({ index }: { index: number }) => {
+  const { left, top, width, height } = useDrawingArea()
+  const xAxis = useXAxis()
+  const theme = useTheme()
+
+  const gapWidth = width / xAxis.tickNumber
+
+  return (
+    <rect
+      x={left + gapWidth * index}
+      y={top}
+      width={gapWidth}
+      height={height}
+      fill={theme.palette.text.primary}
+      shapeRendering={'crispEdges'}
+      pointerEvents={'none'}
+      opacity={0.1}
+    />
   )
 }
 
@@ -97,6 +104,11 @@ export const PlotDashboardPanel = ({
   legendMarginRight = 300,
   isStacked
 }: PlotPanelProps) => {
+  const viewParams = useDashboardViewParams()
+  const OnClickComponent = viewParams?.OnClickedPointComponent
+
+  const [highlightInfo, setHighlightInfo] = useState<{ index: number } | null>(null)
+
   const series: SeriesType[] = data.series.map(
     ({ values: data, params, metric_type, filter_index }) => {
       const metricName = metric_type.split(':').at(-1)
@@ -127,12 +139,9 @@ export const PlotDashboardPanel = ({
       scaleType: 'band' as const
     }
   ]
-  const viewParams = useDashboardViewParams()
-  const OnClickComponent = viewParams?.OnClickedPointComponent
 
-  const [highlighted, setHighlighted] = useState<{ series: string | number; index: number } | null>(
-    null
-  )
+  const selectedSnapshotId = highlightInfo && data.sources[highlightInfo.index].snapshot_id
+
   return (
     <Card elevation={0}>
       <CardContent sx={{ px: 0 }}>
@@ -151,6 +160,7 @@ export const PlotDashboardPanel = ({
         </Box>
 
         {(title || description) && <Divider sx={{ mb: 2, mt: 1 }} />}
+
         <Box height={height} px={3}>
           <ResponsiveChartContainer
             series={series}
@@ -159,8 +169,10 @@ export const PlotDashboardPanel = ({
           >
             <BarPlot />
             <LinePlot />
+
             <ChartsXAxis label='Timestamps' position='bottom' />
             <ChartsYAxis position='left' />
+
             <ChartsLegend
               slotProps={{
                 legend: {
@@ -172,31 +184,30 @@ export const PlotDashboardPanel = ({
                 }
               }}
             />
+
             <ChartsTooltip trigger={'axis'} />
-            <ChartsAxisHighlight x={'band'} />
             <ChartsGrid horizontal />
             <MarkPlot />
-            <BackgroundSelection
-              x={highlighted?.index}
-              onSelect={(x) =>
-                setHighlighted({
-                  index: x,
-                  series: ''
-                })
-              }
-            />
+
+            <ChartsAxisHighlight x={'band'} />
+
+            {OnClickComponent && (
+              <>
+                <HighlightSelectionCustom onSelect={(index) => setHighlightInfo({ index })} />
+                {highlightInfo && <Highlight {...highlightInfo} />}
+              </>
+            )}
           </ResponsiveChartContainer>
+
+          {OnClickComponent && selectedSnapshotId && (
+            <Box position={'relative'}>
+              <Stack position={'absolute'} top={-20} right={-15}>
+                <OnClickComponent snapshotId={selectedSnapshotId} />
+              </Stack>
+            </Box>
+          )}
         </Box>
       </CardContent>
-      {highlighted && OnClickComponent && (
-        <CardActions
-          sx={{
-            justifyContent: 'flex-end'
-          }}
-        >
-          <OnClickComponent snapshotId={data.sources[highlighted.index].snapshot_id} />
-        </CardActions>
-      )}
     </Card>
   )
 }
