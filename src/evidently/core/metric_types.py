@@ -289,7 +289,7 @@ class ByLabelValue(MetricResult):
         return list(self.values.keys())
 
     def get_label_result(self, label: Label) -> SingleValue:
-        value = self.values[label]
+        value = self.values.get(label, None)
         return value
 
     def set_metric_location(self, metric: MetricConfig):
@@ -309,8 +309,8 @@ class ByLabelCountValue(MetricResult):
         return list(self.counts.keys())
 
     def get_label_result(self, label: Label) -> Tuple[SingleValue, SingleValue]:
-        count = self.counts[label]
-        share = self.shares[label]
+        count = self.counts.get(label, 0)
+        share = self.shares.get(label, 0)
         return count, share
 
     def to_simple_dict(self) -> object:
