@@ -793,7 +793,9 @@ class SingleValueBoundTest(BoundTest[SingleValue]):
         return result
 
 
+GenericTestList = Optional[List[Union[MetricTest, GenericTest]]]
 SingleValueMetricTests = Optional[List[MetricTest]]
+GenericSingleValueMetricTests = Union[GenericTestList, SingleValueMetricTests]
 
 
 def convert_test(test: Union[MetricTest, GenericTest]) -> MetricTest:
@@ -804,7 +806,11 @@ def convert_test(test: Union[MetricTest, GenericTest]) -> MetricTest:
     raise ValueError(f"test {test} is not a subclass of MetricTest")
 
 
-def convert_tests(tests: Optional[List[Union[MetricTest, GenericTest]]]):
+def convert_tests(tests: Union[GenericSingleValueMetricTests, "GenericByLabelMetricTests", "MeanStdMetricTests"]):
+    if isinstance(tests, dict):
+        return {label: convert_tests(tests) for label, tests in tests.items()}
+    if isinstance(tests, MeanStdMetricTests):
+        return MeanStdMetricTests(mean=convert_tests(tests.mean), std=convert_tests(tests.std))
     return [convert_test(t) for t in tests] if tests is not None else None
 
 
@@ -847,7 +853,9 @@ class ByLabelBoundTest(BoundTest[ByLabelValue]):
         return result
 
 
+GenericTestDict = Optional[Dict[Label, List[Union[MetricTest, GenericTest]]]]
 ByLabelMetricTests = Optional[Dict[Label, List[MetricTest]]]
+GenericByLabelMetricTests = Union[GenericTestDict, ByLabelMetricTests]
 
 
 class ByLabelMetric(Metric):
@@ -1070,6 +1078,9 @@ class MeanStdBoundTest(BoundTest[MeanStdValue]):
 class MeanStdMetricTests(BaseModel):
     mean: SingleValueMetricTests = None
     std: SingleValueMetricTests = None
+
+    def __init__(self, mean: GenericSingleValueMetricTests = None, std: GenericSingleValueMetricTests = None):
+        super().__init__(mean=convert_tests(mean), std=convert_tests(std))
 
 
 class MeanStdMetric(Metric):
