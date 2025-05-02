@@ -24,7 +24,7 @@ const CounterWidgetContent: React.FunctionComponent<CounterWidgetProps> = (props
     ) : (
       <Grid container spacing={1} direction='row' alignItems='center'>
         {props.counters.map((counter) => (
-          <Grid item xs key={counter.label + counter.value} component={Box} height={'100%'}>
+          <Grid size='grow' key={counter.label + counter.value} component={Box} height={'100%'}>
             <Box>
               <CounterItem {...counter} />
             </Box>

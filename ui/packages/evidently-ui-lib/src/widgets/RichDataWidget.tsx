@@ -45,11 +45,11 @@ const RichDataWidget: React.FunctionComponent<RichDataParams & { widgetSize: num
   return (
     <React.Fragment>
       <Grid container spacing={2} justifyContent='center' alignItems='center'>
-        <Grid item xs={2}>
+        <Grid size={{ xs: 2 }}>
           <Typography variant={'h5'}>{props.header}</Typography>
           <Typography variant={'subtitle1'}>{props.description}</Typography>
         </Grid>
-        <Grid item xs={props.graph === undefined ? 10 : 5}>
+        <Grid size={{ xs: props.graph === undefined ? 10 : 5 }}>
           <Table>
             <TableHead>
               <TableRow>
@@ -77,7 +77,7 @@ const RichDataWidget: React.FunctionComponent<RichDataParams & { widgetSize: num
         {props.graph === undefined ? (
           <></>
         ) : (
-          <Grid item xs={5}>
+          <Grid size={{ xs: 5 }}>
             <Plot
               data={props.graph.data}
               layout={{
@@ -98,7 +98,7 @@ const RichDataWidget: React.FunctionComponent<RichDataParams & { widgetSize: num
           <></>
         ) : (
           <>
-            <Grid item xs={12}>
+            <Grid size={{ xs: 12 }}>
               <Button
                 variant='outlined'
                 startIcon={details ? <ExpandLessSharpIcon /> : <ExpandMoreSharpIcon />}
@@ -107,7 +107,7 @@ const RichDataWidget: React.FunctionComponent<RichDataParams & { widgetSize: num
                 Details
               </Button>
             </Grid>
-            <Grid item xs={12}>
+            <Grid size={{ xs: 12 }}>
               <Collapse in={details} mountOnEnter={true} unmountOnExit={true}>
                 <BigTableDetails details={props.details} widgetSize={props.widgetSize} />
               </Collapse>

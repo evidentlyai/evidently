@@ -4,7 +4,7 @@ import {
   Card,
   CardContent,
   Divider,
-  Grid2 as Grid,
+  Grid,
   Typography
 } from 'evidently-ui-lib/shared-dependencies/mui-material'
 import type { MakePanel } from '~/components/v2/Dashboard/Panels/types'

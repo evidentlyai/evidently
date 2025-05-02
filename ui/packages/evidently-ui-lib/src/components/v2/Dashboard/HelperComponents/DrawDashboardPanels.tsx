@@ -25,7 +25,7 @@ export const DrawDashboardPanels = ({
         const dashboardPanelProps = castRawPanelDataToDashboardPanelProps(panel)
 
         return (
-          <Grid item key={panel.id} {...getSizeForGridItem(dashboardPanelProps.size)}>
+          <Grid key={panel.id} size={getSizeForGridItem(dashboardPanelProps.size)}>
             <PanelComponent panel={panel} />
           </Grid>
         )

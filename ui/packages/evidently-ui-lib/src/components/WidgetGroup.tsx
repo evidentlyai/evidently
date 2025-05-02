@@ -8,7 +8,7 @@ interface WidgetGroupProps {
 }
 
 const WidgetGroup: React.FunctionComponent<WidgetGroupProps> = (props) => (
-  <Grid item xs={12} component={Box}>
+  <Grid size={{ xs: 12 }} component={Box}>
     <Typography variant={'h5'}>{props.title}</Typography>
     <Grid container spacing={3} padding={10}>
       {props.children}

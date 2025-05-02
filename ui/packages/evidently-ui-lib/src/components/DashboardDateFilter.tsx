@@ -80,8 +80,8 @@ export const DateFilter = ({
         alignItems={'flex-end'}
       >
         <>
-          {children && <Grid item>{children}</Grid>}
-          <Grid item xs={12} md={2}>
+          {children && <Grid>{children}</Grid>}
+          <Grid size={{ xs: 12, md: 2 }}>
             <FormControl fullWidth>
               <InputLabel>Period</InputLabel>
               <Select
@@ -123,11 +123,11 @@ export const DateFilter = ({
               </Select>
             </FormControl>
           </Grid>
-          <Grid item>
+          <Grid>
             <Box display={'flex'} alignItems={'center'} gap={2}>
               <DateTimePicker
                 minDate={undefined}
-                maxDate={dateRange.maxDate && dates?.dateTo}
+                maxDate={(dateRange.maxDate && dates?.dateTo) ?? undefined}
                 slotProps={{
                   textField: { variant: 'standard', error: required ? !dates.dateFrom : undefined }
                 }}
@@ -139,7 +139,7 @@ export const DateFilter = ({
                 <Typography> - </Typography>
               </Box>
               <DateTimePicker
-                minDate={dateRange.minDate && dates?.dateFrom}
+                minDate={(dateRange.minDate && dates?.dateFrom) ?? undefined}
                 maxDate={undefined}
                 slotProps={{
                   textField: {
@@ -153,7 +153,7 @@ export const DateFilter = ({
               />
             </Box>
           </Grid>
-          <Grid item xs={12}>
+          <Grid size={{ xs: 12 }}>
             <Collapse
               unmountOnExit
               in={Boolean(dates.dateFrom && dates.dateTo && dates.dateFrom?.isAfter(dates.dateTo))}

@@ -70,14 +70,14 @@ const Widget = (props: WidgetProps) => {
   const { WidgetWrapper } = useWidgetWrapper()
 
   return (
-    <Grid item {...Sizes(size)}>
+    <Grid size={Sizes(size)}>
       <WidgetWrapper id={id}>
         <Card elevation={0}>
           <CardContent>
             <Grid container spacing={1} direction={'column'}>
               {alertsPosition === 'row' ? (
-                <Grid container spacing={1} item>
-                  <Grid item xs={isAlertsExists && alertsPosition === 'row' ? 9 : 12}>
+                <Grid container spacing={1}>
+                  <Grid size={isAlertsExists && alertsPosition === 'row' ? 9 : 12}>
                     {title ? (
                       <Typography fontWeight={500} variant={'h5'}>
                         {title}
@@ -94,13 +94,12 @@ const Widget = (props: WidgetProps) => {
                       spacing={1}
                       direction={'column'}
                       justifyContent={'center'}
-                      item
-                      xs={3}
+                      size={3}
                     >
                       {alerts ? (
                         <React.Fragment>
                           {alertStats ? (
-                            <Grid item>
+                            <Grid>
                               <AlertStatBlock
                                 alertStats={alertStats}
                                 // classes={classes}
@@ -111,7 +110,7 @@ const Widget = (props: WidgetProps) => {
                           )}
                           {alerts.map((alert) => (
                             // biome-ignore lint/correctness/useJsxKeyInIterable: not reordered
-                            <Grid item>
+                            <Grid>
                               <AlertBlock data={alert} />
                             </Grid>
                           ))}
@@ -126,18 +125,18 @@ const Widget = (props: WidgetProps) => {
                 </Grid>
               ) : (
                 <React.Fragment>
-                  <Grid item>
+                  <Grid>
                     {title ? <Typography variant={'h5'}>{title}</Typography> : <div />}
                     <div>{content}</div>
                     {details ? <Typography variant={'subtitle1'}>{details}</Typography> : <div />}
                   </Grid>
                   {isAlertsExists ? (
-                    <Grid item xs>
+                    <Grid size={'grow'}>
                       <Grid container direction={'row'} spacing={1}>
                         {alerts ? (
                           <React.Fragment>
                             {alertStats ? (
-                              <Grid item xs>
+                              <Grid size={'grow'}>
                                 <AlertStatBlock
                                   alertStats={alertStats}
                                   // classes={classes}
@@ -148,7 +147,7 @@ const Widget = (props: WidgetProps) => {
                             )}
                             {alerts.map((alert) => (
                               // biome-ignore lint/correctness/useJsxKeyInIterable: not reordered
-                              <Grid item xs>
+                              <Grid size={'grow'}>
                                 <AlertBlock data={alert} />
                               </Grid>
                             ))}
@@ -166,7 +165,7 @@ const Widget = (props: WidgetProps) => {
               {isInsightsExists ? (
                 insights?.map((insight) => (
                   // biome-ignore lint/correctness/useJsxKeyInIterable: not reordered
-                  <Grid item xs sm md>
+                  <Grid size={'grow'}>
                     <InsightBlock data={insight} />
                   </Grid>
                 ))

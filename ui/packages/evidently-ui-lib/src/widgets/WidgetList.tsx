@@ -18,7 +18,7 @@ const WidgetList: React.FunctionComponent<WidgetListParams & { widgetSize: numbe
       {drawWidgets.map((wi) => (
         <WidgetRenderer key={wi.id} info={wi} />
       ))}
-      <Grid item xs={12}>
+      <Grid size={12}>
         <Button
           startIcon={<ArrowLeftIcon />}
           disabled={pageState.page === 0}
