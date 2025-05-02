@@ -92,7 +92,10 @@ class MetricValueLocation(BaseModel):
             label = self.params().get("label")
             if label is None or not isinstance(label, (bool, int, str)):
                 raise ValueError("label parameter not set in metric location")
-            return value.get_label_result(label)
+            result = value.get_label_result(label)
+            if result is None:
+                raise ValueError(f"label {label} does not exist in metric location")
+            return result
         if isinstance(value, CountValue):
             value_type = self.params().get("value_type")
             if value_type not in ["count", "share"]:
@@ -288,8 +291,10 @@ class ByLabelValue(MetricResult):
     def labels(self) -> List[Label]:
         return list(self.values.keys())
 
-    def get_label_result(self, label: Label) -> SingleValue:
-        value = self.values[label]
+    def get_label_result(self, label: Label) -> Optional[SingleValue]:
+        value = self.values.get(
+            label,
+        )
         return value
 
     def set_metric_location(self, metric: MetricConfig):
@@ -309,8 +314,20 @@ class ByLabelCountValue(MetricResult):
         return list(self.counts.keys())
 
     def get_label_result(self, label: Label) -> Tuple[SingleValue, SingleValue]:
-        count = self.counts[label]
-        share = self.shares[label]
+        count = self.counts.get(
+            label,
+            SingleValue(
+                value=0,
+                display_name=f"Missing label {label} count",
+            ),
+        )
+        share = self.shares.get(
+            label,
+            SingleValue(
+                value=0,
+                display_name=f"Missing label {label} share",
+            ),
+        )
         return count, share
 
     def to_simple_dict(self) -> object:
@@ -848,6 +865,16 @@ class ByLabelBoundTest(BoundTest[ByLabelValue]):
         metric_result: ByLabelValue,
     ) -> MetricTestResult:
         value = metric_result.get_label_result(self.label)
+        if value is None:
+            return MetricTestResult(
+                id="",
+                name="Missing label",
+                description=f"Missing label {self.label} for {calculation.display_name()} test",
+                metric_config=calculation.to_metric_config(),
+                test_config=self.dict(),
+                status=TestStatus.ERROR,
+                bound_test=self,
+            )
         result = self.test.run(context, calculation, value)
         result.bound_test = self
         return result
@@ -952,6 +979,10 @@ class ByLabelCountMetric(Metric):
             for label, tests in (self.share_tests or {}).items()
             for t in tests
         ]
+
+    @validator("tests", "share_tests", pre=True)
+    def validate_tests(cls, v):
+        return convert_tests(v)
 
 
 TByLabelCountMetric = TypeVar("TByLabelCountMetric", bound=ByLabelCountMetric)
