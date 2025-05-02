@@ -953,6 +953,10 @@ class ByLabelCountMetric(Metric):
             for t in tests
         ]
 
+    @validator("tests", "share_tests", pre=True)
+    def validate_tests(cls, v):
+        return convert_tests(v)
+
 
 TByLabelCountMetric = TypeVar("TByLabelCountMetric", bound=ByLabelCountMetric)
 
