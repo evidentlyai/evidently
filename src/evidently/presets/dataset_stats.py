@@ -8,6 +8,7 @@ from typing import Sequence
 from typing import Tuple
 
 from evidently._pydantic_compat import PrivateAttr
+from evidently._pydantic_compat import validator
 from evidently.core.container import ColumnMetricContainer
 from evidently.core.container import MetricContainer
 from evidently.core.container import MetricOrContainer
@@ -17,6 +18,7 @@ from evidently.core.metric_types import Metric
 from evidently.core.metric_types import MetricId
 from evidently.core.metric_types import MetricResult
 from evidently.core.metric_types import SingleValueMetricTests
+from evidently.core.metric_types import convert_tests
 from evidently.core.report import Context
 from evidently.core.report import _default_input_data_generator
 from evidently.legacy.core import ColumnType
@@ -56,6 +58,21 @@ class ValueStats(ColumnMetricContainer):
     q75_tests: SingleValueMetricTests = None
     unique_values_count_tests: ByLabelMetricTests = None
     replace_nan: Label = None
+
+    @validator(
+        "row_count_tests",
+        "missing_values_count_tests",
+        "min_tests",
+        "max_tests",
+        "mean_tests",
+        "std_tests",
+        "q25_tests",
+        "q50_tests",
+        "q75_tests",
+        pre=True,
+    )
+    def validate_tests(cls, v):
+        return convert_tests(v)
 
     def __init__(
         self,
