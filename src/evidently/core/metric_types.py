@@ -92,7 +92,10 @@ class MetricValueLocation(BaseModel):
             label = self.params().get("label")
             if label is None or not isinstance(label, (bool, int, str)):
                 raise ValueError("label parameter not set in metric location")
-            return value.get_label_result(label)
+            result = value.get_label_result(label)
+            if result is None:
+                raise ValueError(f"label {label} does not exist in metric location")
+            return result
         if isinstance(value, CountValue):
             value_type = self.params().get("value_type")
             if value_type not in ["count", "share"]:
@@ -288,13 +291,9 @@ class ByLabelValue(MetricResult):
     def labels(self) -> List[Label]:
         return list(self.values.keys())
 
-    def get_label_result(self, label: Label) -> SingleValue:
+    def get_label_result(self, label: Label) -> Optional[SingleValue]:
         value = self.values.get(
             label,
-            SingleValue(
-                value=None,
-                display_name=f"Missing label {label}",
-            ),
         )
         return value
 
@@ -866,6 +865,16 @@ class ByLabelBoundTest(BoundTest[ByLabelValue]):
         metric_result: ByLabelValue,
     ) -> MetricTestResult:
         value = metric_result.get_label_result(self.label)
+        if value is None:
+            return MetricTestResult(
+                id="",
+                name="Missing label",
+                description=f"Missing label {self.label} for {calculation.display_name()} test",
+                metric_config=calculation.to_metric_config(),
+                test_config=self.dict(),
+                status=TestStatus.ERROR,
+                bound_test=self,
+            )
         result = self.test.run(context, calculation, value)
         result.bound_test = self
         return result
