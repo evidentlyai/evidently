@@ -83,10 +83,10 @@ const Widget = (props: WidgetProps) => {
                         {title}
                       </Typography>
                     ) : (
-                      <div />
+                      <></>
                     )}
                     <div>{content}</div>
-                    {details ? <Typography variant={'subtitle1'}>{details}</Typography> : <div />}
+                    {details ? <Typography variant={'subtitle1'}>{details}</Typography> : <></>}
                   </Grid>
                   {isAlertsExists ? (
                     <Grid
@@ -106,7 +106,7 @@ const Widget = (props: WidgetProps) => {
                               />
                             </Grid>
                           ) : (
-                            <div />
+                            <></>
                           )}
                           {alerts.map((alert) => (
                             // biome-ignore lint/correctness/useJsxKeyInIterable: not reordered
@@ -116,19 +116,19 @@ const Widget = (props: WidgetProps) => {
                           ))}
                         </React.Fragment>
                       ) : (
-                        <div />
+                        <></>
                       )}
                     </Grid>
                   ) : (
-                    <div />
+                    <></>
                   )}
                 </Grid>
               ) : (
                 <React.Fragment>
                   <Grid>
-                    {title ? <Typography variant={'h5'}>{title}</Typography> : <div />}
+                    {title ? <Typography variant={'h5'}>{title}</Typography> : <></>}
                     <div>{content}</div>
-                    {details ? <Typography variant={'subtitle1'}>{details}</Typography> : <div />}
+                    {details ? <Typography variant={'subtitle1'}>{details}</Typography> : <></>}
                   </Grid>
                   {isAlertsExists ? (
                     <Grid size={'grow'}>
@@ -143,7 +143,7 @@ const Widget = (props: WidgetProps) => {
                                 />
                               </Grid>
                             ) : (
-                              <div />
+                              <></>
                             )}
                             {alerts.map((alert) => (
                               // biome-ignore lint/correctness/useJsxKeyInIterable: not reordered
@@ -153,12 +153,12 @@ const Widget = (props: WidgetProps) => {
                             ))}
                           </React.Fragment>
                         ) : (
-                          <div />
+                          <></>
                         )}
                       </Grid>
                     </Grid>
                   ) : (
-                    <div />
+                    <></>
                   )}
                 </React.Fragment>
               )}
@@ -170,7 +170,7 @@ const Widget = (props: WidgetProps) => {
                   </Grid>
                 ))
               ) : (
-                <div />
+                <></>
               )}
             </Grid>
           </CardContent>

@@ -52,7 +52,7 @@ const GraphMapping = new Map<
           data={row[def.field]}
         />
       ) : (
-        <div />
+        <></>
       )
   ],
   [
@@ -66,7 +66,7 @@ const GraphMapping = new Map<
           data={row[def.field]}
         />
       ) : (
-        <div />
+        <></>
       )
   ],
   [
@@ -80,7 +80,7 @@ const GraphMapping = new Map<
           data={row[def.field]}
         />
       ) : (
-        <div />
+        <></>
       )
   ]
 ])
@@ -146,7 +146,7 @@ const BigTableWidgetContent: React.FunctionComponent<BigTableWidgetProps> = (pro
                           longText={`${row.details?.insights[0].title}: ${row.details?.insights[0].text}`}
                         />
                       ) : (
-                        <div />
+                        <></>
                       )}
                     </React.Fragment>
                   ),

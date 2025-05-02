@@ -47,7 +47,7 @@ const BaseTabs: React.FunctionComponent<BaseTabsProps> = (props) => {
         {props.tabs.map((ti, idx) => (
           // biome-ignore lint/correctness/useJsxKeyInIterable: not reordered
           <div hidden={(props.activeTab === -1 ? 0 : props.activeTab) !== idx}>
-            {(props.activeTab === -1 ? 0 : props.activeTab) !== idx ? <div /> : ti.tab}
+            {(props.activeTab === -1 ? 0 : props.activeTab) !== idx ? <></> : ti.tab}
           </div>
         ))}
       </Box>
