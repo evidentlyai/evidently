@@ -31,7 +31,7 @@
     "@mui/icons-material": "^7.0.2",
     "@mui/material": "^7.0.2",
     "@mui/x-date-pickers": "^8.2.0",
-    "@mui/x-charts": "^7.28.0",
+    "@mui/x-charts": "^8.2.0",
     "@nivo/bar": "^0.62.0",
     "@nivo/line": "^0.62.0",
     "@nivo/scatterplot": "^0.62.0",
