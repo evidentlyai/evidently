@@ -802,7 +802,7 @@ def convert_test(test: Union[MetricTest, GenericTest]) -> MetricTest:
     raise ValueError(f"test {test} is not a subclass of MetricTest")
 
 
-def convert_tests(tests: Optional[Union[GenericTestList, Dict[Label, GenericTestList]]]):
+def convert_tests(tests: Union[GenericSingleValueMetricTests, "GenericByLabelMetricTests", "MeanStdMetricTests"]):
     if isinstance(tests, dict):
         return {label: convert_tests(tests) for label, tests in tests.items()}
     if isinstance(tests, MeanStdMetricTests):
