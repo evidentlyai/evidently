@@ -87,7 +87,7 @@ class ClassificationQuality(MetricContainer):
         self.tnr_tests = convert_tests(tnr_tests)
         self.fpr_tests = convert_tests(fpr_tests)
         self.fnr_tests = convert_tests(fnr_tests)
-        self.probas_threshold = convert_tests(probas_threshold)
+        self.probas_threshold = probas_threshold
         self.conf_matrix = conf_matrix
         self.pr_curve = pr_curve
         self.pr_table = pr_table
