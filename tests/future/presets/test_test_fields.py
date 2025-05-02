@@ -151,7 +151,7 @@ preset_types: Dict[Type[MetricContainer], Dict[str, Tuple[MetricTypeOrMetricChec
         "rocauc_by_label_tests": (RocAucByLabel, "tests"),
     },
     DataSummaryPreset: {
-        "row_count_tests": (RowCount, "tests"),
+        "row_count_tests": (lambda m: isinstance(m, RowCount) and m.tests, "tests"),
         "column_count_tests": (lambda m: isinstance(m, ColumnCount) and m.tests, "tests"),  # todo: duplicated metrics
         "duplicated_row_count_tests": (DuplicatedRowCount, "tests"),
         "duplicated_column_count_tests": (DuplicatedColumnsCount, "tests"),
@@ -173,7 +173,11 @@ preset_types: Dict[Type[MetricContainer], Dict[str, Tuple[MetricTypeOrMetricChec
         "r2score_tests": (R2Score, "tests"),
         "abs_max_error_tests": (AbsMaxError, "tests"),
     },
-    TextEvals: {"row_count_tests": (RowCount, "tests"), "column_tests": (Metric, value_stats_tests_check)},
+    TextEvals: {
+        "row_count_tests": (lambda x: isinstance(x, RowCount) and x.tests, "tests"),
+        # because of  duplicated RowCount metric in text evals
+        "column_tests": (lambda x: not isinstance(x, RowCount) or x.tests, value_stats_tests_check),
+    },
     RegressionDummyQuality: {
         "mae_tests": (DummyMAE, "tests"),
         "mape_tests": (DummyMAPE, "tests"),

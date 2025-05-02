@@ -416,18 +416,18 @@ class ValueStatsTests:
 
 class TextEvals(MetricContainer):
     columns: Optional[List[str]] = None
-    # row_count_tests: SingleValueMetricTests = None
+    row_count_tests: SingleValueMetricTests = None
     column_tests: Optional[Dict[str, ValueStatsTests]] = None
 
     def __init__(
         self,
         columns: Optional[List[str]] = None,
-        # row_count_tests: GenericSingleValueMetricTests = None,
+        row_count_tests: GenericSingleValueMetricTests = None,
         column_tests: Optional[Dict[str, ValueStatsTests]] = None,
         include_tests: bool = True,
     ):
         self.columns = columns
-        # self.row_count_tests = convert_tests(row_count_tests)
+        self.row_count_tests = convert_tests(row_count_tests)
         self.column_tests = {k: v.convert() for k, v in column_tests.items()} if column_tests is not None else None
         super().__init__(include_tests=include_tests)
 
@@ -453,8 +453,7 @@ class TextEvals(MetricContainer):
         ]
 
     def generate_metrics(self, context: Context) -> Sequence[MetricOrContainer]:
-        # metrics: List[MetricOrContainer] = [RowCount(tests=self._get_tests(self.row_count_tests))]
-        metrics: List[MetricOrContainer] = []
+        metrics: List[MetricOrContainer] = [RowCount(tests=self._get_tests(self.row_count_tests))]
         value_stats = self.get_value_stats(context)
         metrics.extend(list(chain(*[vs.metrics(context)[1:] for vs in value_stats])))
         return metrics

@@ -789,10 +789,9 @@ class SingleValueBoundTest(BoundTest[SingleValue]):
         return result
 
 
-GenericTestList = List[Union[MetricTest, GenericTest]]
-
+GenericTestList = Optional[List[Union[MetricTest, GenericTest]]]
 SingleValueMetricTests = Optional[List[MetricTest]]
-GenericSingleValueMetricTests = Optional[Union[GenericTestList, SingleValueMetricTests]]
+GenericSingleValueMetricTests = Union[GenericTestList, SingleValueMetricTests]
 
 
 def convert_test(test: Union[MetricTest, GenericTest]) -> MetricTest:
@@ -850,9 +849,9 @@ class ByLabelBoundTest(BoundTest[ByLabelValue]):
         return result
 
 
-GenericTestDict = Dict[Label, List[Union[MetricTest, GenericTest]]]
+GenericTestDict = Optional[Dict[Label, List[Union[MetricTest, GenericTest]]]]
 ByLabelMetricTests = Optional[Dict[Label, List[MetricTest]]]
-GenericByLabelMetricTests = Optional[GenericTestDict, ByLabelMetricTests]
+GenericByLabelMetricTests = Union[GenericTestDict, ByLabelMetricTests]
 
 
 class ByLabelMetric(Metric):
