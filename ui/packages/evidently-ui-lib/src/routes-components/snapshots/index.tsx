@@ -4,6 +4,7 @@ import {
   Box,
   Button,
   type ButtonOwnProps,
+  Checkbox,
   FormControlLabel,
   Grid,
   IconButton,
@@ -61,7 +62,8 @@ export const SnapshotsListTemplate = ({
   onReloadSnapshots,
   onDeleteSnapshot,
   downloadLink,
-  ActionsWrapper = ({ children }) => <>{children}</>
+  ActionsWrapper = ({ children }) => <>{children}</>,
+  snapshotSelection
 }: {
   query: Partial<Record<string, string>>
   projectId: string
@@ -80,6 +82,7 @@ export const SnapshotsListTemplate = ({
   onReloadSnapshots: () => void
   onDeleteSnapshot: ({ snapshotId }: { snapshotId: string }) => void
   downloadLink: DownloadSnapshotURL
+  snapshotSelection?: { title: string; action: (snapshots: string[]) => void }
 }) => {
   const [sortByTimestamp, setSortByTimestamp] = useState<undefined | 'desc' | 'asc'>('desc')
   const [isCollapsedJson, setIsCollapsedJson] = useLocalStorage('show-full-json-metadata', false)
@@ -132,6 +135,9 @@ export const SnapshotsListTemplate = ({
     [filteredSnapshotsByMetadata, sortByTimestamp]
   )
 
+  const [selectedSnapshots, setSelectedSnapshots] = useState<Set<string>>(new Set())
+  const isSnapshotSelected = (id: string) => selectedSnapshots.has(id)
+
   const FilterComponent = (
     <Box sx={{ padding: 2 }}>
       <Grid container gap={2} alignItems={'flex-end'} justifyContent={'space-around'}>
@@ -180,6 +186,21 @@ export const SnapshotsListTemplate = ({
                 refresh {type}
               </Button>
             </Box>
+            {snapshotSelection && (
+              <Box display='flex' justifyContent='flex-end'>
+                <Button
+                  sx={{ minWidth: 160 }}
+                  variant='outlined'
+                  onClick={() => {
+                    snapshotSelection.action(Array.from(selectedSnapshots.values()))
+                  }}
+                  color='primary'
+                  disabled={selectedSnapshots.size < 2}
+                >
+                  {snapshotSelection.title}
+                </Button>
+              </Box>
+            )}
           </Box>
         </Grid>
       </Grid>
@@ -203,6 +224,7 @@ export const SnapshotsListTemplate = ({
       <Table>
         <TableHead>
           <TableRow>
+            {snapshotSelection && <TableCell />}
             <TableCell>
               {type === 'reports'
                 ? 'Report ID'
@@ -242,6 +264,21 @@ export const SnapshotsListTemplate = ({
         <TableBody>
           {resultSnapshots.map((snapshot) => (
             <TableRow key={`r-${snapshot.id}`}>
+              {snapshotSelection && (
+                <TableCell padding='checkbox'>
+                  <Checkbox
+                    color='primary'
+                    checked={isSnapshotSelected(snapshot.id)}
+                    onChange={() =>
+                      setSelectedSnapshots((prev) => {
+                        const newSet = new Set(prev)
+                        prev.has(snapshot.id) ? newSet.delete(snapshot.id) : newSet.add(snapshot.id)
+                        return newSet
+                      })
+                    }
+                  />
+                </TableCell>
+              )}
               <TableCell>
                 <TextWithCopyIcon showText={snapshot.id} copyText={snapshot.id} />
               </TableCell>
