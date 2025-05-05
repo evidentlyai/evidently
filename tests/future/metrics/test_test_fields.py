@@ -250,6 +250,20 @@ def _try_fix(metric: Metric, expected_results: List[TestStatus], test_result: Me
                 return ln
             value = "555" if "SUCCESS" in ln else value
             return ln.replace("(0)", f"({value})")
+        if "[is_in" in ln:
+            try:
+                value = test_result.description.split("Actual value: ")[1].split(" ")[0]
+            except IndexError:
+                return ln
+            value = value if "SUCCESS" in ln else "555"
+            return ln.replace("[0]", f"[{value}]")
+        if "[not_in" in ln:
+            try:
+                value = test_result.description.split("Actual value: ")[1].split(" ")[0]
+            except IndexError:
+                return ln
+            value = "555" if "SUCCESS" in ln else value
+            return ln.replace("[0]", f"[{value}]")
 
         return ln
 
