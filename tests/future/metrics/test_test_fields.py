@@ -236,6 +236,21 @@ def _try_fix(metric: Metric, expected_results: List[TestStatus], test_result: Me
         if "[lt" in ln:
             value = "-555" if "FAIL" in ln else "555"
             return ln.replace("0", value).replace("-1", value)
+        if "[eq" in ln:
+            try:
+                value = test_result.description.split("Actual value ")[1].split(" ")[0]
+            except IndexError:
+                return ln
+            value = value if "SUCCESS" in ln else "555"
+            return ln.replace("(0)", f"({value})")
+        if "[not_eq" in ln:
+            try:
+                value = test_result.description.split("Actual value ")[1].split(" ")[0]
+            except IndexError:
+                return ln
+            value = "555" if "SUCCESS" in ln else value
+            return ln.replace("(0)", f"({value})")
+
         return ln
 
     fixed_line = fix(matched_line)
