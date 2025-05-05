@@ -90,18 +90,13 @@ export const castRawPanelDataToDashboardPanelProps = (
     const height = 350
     const isStacked = Boolean(panel.plot_params?.is_stacked)
 
-    const legendMarginRight =
-      typeof panel.plot_params?.legend_margin_right === 'number'
-        ? Number(panel.plot_params?.legend_margin_right)
-        : 300
-
     return {
       type,
       size,
       title,
       description,
       isStacked,
-      legendMarginRight,
+
       height,
       data: emptyData,
       labels

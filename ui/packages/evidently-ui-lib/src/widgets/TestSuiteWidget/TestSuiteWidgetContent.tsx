@@ -55,7 +55,7 @@ const TestGroup: React.FC<{ groupInfo: TestGroupData; tests: TestDataInfo[] }> =
           <Grid container spacing={2} style={{ padding: 10, paddingTop: 20 }}>
             {tests.map((test) => (
               // biome-ignore lint/correctness/useJsxKeyInIterable: not reordered
-              <Grid item xs={12}>
+              <Grid size={{ xs: 12 }}>
                 <TestInfo {...test} />
               </Grid>
             ))}
@@ -121,7 +121,7 @@ const GroupedSection: React.FC<GroupedSectionProps> = ({ type, groupsInfo, tests
           .sort((a, b) => (a[0].sortIndex ?? 0) - (b[0].sortIndex ?? 0))
           .map(([key, value]) => (
             // biome-ignore lint/correctness/useJsxKeyInIterable: not reordered
-            <Grid item xs={12}>
+            <Grid size={{ xs: 12 }}>
               <TestGroup groupInfo={key} tests={value} />
             </Grid>
           ))}
@@ -180,18 +180,18 @@ const TestSuiteWidgetContent: React.FC<TestSuiteWidgetParams> = ({ tests, testGr
   return (
     <>
       <Grid container spacing={2}>
-        <Grid item xs={12}>
+        <Grid size={{ xs: 12 }}>
           <TestSuiteFolding
             type={grouping.group_type}
             availableTypes={availableTypes}
             onChange={(type) => changeGrouping({ group_type: type })}
           />
         </Grid>
-        <Grid item xs={12}>
+        <Grid size={{ xs: 12 }}>
           <Grid container spacing={2}>
             {grouping.group_type === 'none' ? (
               tests.map((test) => (
-                <Grid item key={test.title + test.description} xs={12}>
+                <Grid size={{ xs: 12 }} key={test.title + test.description}>
                   <TestInfo {...test} />
                 </Grid>
               ))

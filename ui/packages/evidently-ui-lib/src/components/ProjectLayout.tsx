@@ -6,7 +6,7 @@ import type { StrictID } from '~/api/types/utils'
 const ProjectInfoLayout = ({ project }: { project: StrictID<ProjectModel> }) => {
   return (
     <Grid container spacing={2} direction='row' justifyContent='flex-start' alignItems='flex-end'>
-      <Grid item xs={12}>
+      <Grid size={{ xs: 12 }}>
         <Typography sx={{ color: '#aaa' }} variant='body2'>
           {`project id: ${project.id}`}
           <IconButton
