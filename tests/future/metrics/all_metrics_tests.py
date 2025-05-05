@@ -9,6 +9,7 @@ import pandas as pd
 from evidently import BinaryClassification
 from evidently import DataDefinition
 from evidently import Dataset
+from evidently import Recsys
 from evidently import Regression
 from evidently.core.metric_types import Metric
 from evidently.legacy.tests.base_test import TestStatus
@@ -98,7 +99,8 @@ classification_dataset = Dataset.from_pandas(
 classification_proba_dataset = Dataset.from_pandas(
     classification_df, data_definition=DataDefinition(classification=[BinaryClassification(target="target", prediction_probas="prediction_probas")])
 )
-
+recsys_df = pd.DataFrame({"user_id": [0, 1, 1], "target": [1, 0, 1], "prediction": [1, 0, 0]})
+recsys_dataset = Dataset.from_pandas(recsys_df, data_definition=DataDefinition(classification=[BinaryClassification()], ranking=[Recsys()]))
 all_metrics_test: List[Tuple[Dataset, Metric, Union[TestStatus, List[TestStatus]]]] = [
     (regression_dataset, AbsMaxError(tests=[eq(0)]), TestStatus.FAIL),
     (regression_dataset, AbsMaxError(tests=[eq(1)]), TestStatus.SUCCESS),
@@ -596,22 +598,22 @@ all_metrics_test: List[Tuple[Dataset, Metric, Union[TestStatus, List[TestStatus]
     (classification_dataset, F1Score(tests=[not_eq(0)]), TestStatus.SUCCESS),
     (classification_dataset, F1Score(tests=[not_in([0.5])]), TestStatus.FAIL),
     (classification_dataset, F1Score(tests=[not_in([0])]), TestStatus.SUCCESS),
-    (classification_dataset, FBetaTopK(k=1, tests=[eq(0)]), TestStatus.FAIL),
-    (classification_dataset, FBetaTopK(k=1, tests=[eq(0)]), TestStatus.SUCCESS),
-    (classification_dataset, FBetaTopK(k=1, tests=[gte(0)]), TestStatus.FAIL),
-    (classification_dataset, FBetaTopK(k=1, tests=[gte(0)]), TestStatus.SUCCESS),
-    (classification_dataset, FBetaTopK(k=1, tests=[gt(0)]), TestStatus.FAIL),
-    (classification_dataset, FBetaTopK(k=1, tests=[gt(0)]), TestStatus.SUCCESS),
-    (classification_dataset, FBetaTopK(k=1, tests=[is_in([0])]), TestStatus.FAIL),
-    (classification_dataset, FBetaTopK(k=1, tests=[is_in([0])]), TestStatus.SUCCESS),
-    (classification_dataset, FBetaTopK(k=1, tests=[lte(0)]), TestStatus.FAIL),
-    (classification_dataset, FBetaTopK(k=1, tests=[lte(0)]), TestStatus.SUCCESS),
-    (classification_dataset, FBetaTopK(k=1, tests=[lt(0)]), TestStatus.FAIL),
-    (classification_dataset, FBetaTopK(k=1, tests=[lt(0)]), TestStatus.SUCCESS),
-    (classification_dataset, FBetaTopK(k=1, tests=[not_eq(0)]), TestStatus.FAIL),
-    (classification_dataset, FBetaTopK(k=1, tests=[not_eq(0)]), TestStatus.SUCCESS),
-    (classification_dataset, FBetaTopK(k=1, tests=[not_in([0])]), TestStatus.FAIL),
-    (classification_dataset, FBetaTopK(k=1, tests=[not_in([0])]), TestStatus.SUCCESS),
+    (recsys_dataset, FBetaTopK(k=1, tests=[eq(0)]), TestStatus.FAIL),
+    (recsys_dataset, FBetaTopK(k=1, tests=[eq(1.000)]), TestStatus.SUCCESS),
+    (recsys_dataset, FBetaTopK(k=1, tests=[gte(555)]), TestStatus.FAIL),
+    (recsys_dataset, FBetaTopK(k=1, tests=[gte(0)]), TestStatus.SUCCESS),
+    (recsys_dataset, FBetaTopK(k=1, tests=[gt(555)]), TestStatus.FAIL),
+    (recsys_dataset, FBetaTopK(k=1, tests=[gt(0)]), TestStatus.SUCCESS),
+    (recsys_dataset, FBetaTopK(k=1, tests=[is_in([0])]), TestStatus.FAIL),
+    (recsys_dataset, FBetaTopK(k=1, tests=[is_in([1.0])]), TestStatus.SUCCESS),
+    (recsys_dataset, FBetaTopK(k=1, tests=[lte(0)]), TestStatus.FAIL),
+    (recsys_dataset, FBetaTopK(k=1, tests=[lte(555)]), TestStatus.SUCCESS),
+    (recsys_dataset, FBetaTopK(k=1, tests=[lt(0)]), TestStatus.FAIL),
+    (recsys_dataset, FBetaTopK(k=1, tests=[lt(555)]), TestStatus.SUCCESS),
+    (recsys_dataset, FBetaTopK(k=1, tests=[not_eq(1.0)]), TestStatus.FAIL),
+    (recsys_dataset, FBetaTopK(k=1, tests=[not_eq(0)]), TestStatus.SUCCESS),
+    (recsys_dataset, FBetaTopK(k=1, tests=[not_in([1.0])]), TestStatus.FAIL),
+    (recsys_dataset, FBetaTopK(k=1, tests=[not_in([0])]), TestStatus.SUCCESS),
     (classification_dataset, FNR(tests=[eq(0)]), TestStatus.FAIL),
     (classification_dataset, FNR(tests=[eq(0.500)]), TestStatus.SUCCESS),
     (classification_dataset, FNR(tests=[gte(555)]), TestStatus.FAIL),

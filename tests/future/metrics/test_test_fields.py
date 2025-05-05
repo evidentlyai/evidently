@@ -220,7 +220,7 @@ def _try_fix(metric: Metric, expected_results: List[TestStatus], test_result: Me
         return (
             " " + metric.__class__.__name__ + "(" in x
             and all(ts.value in x for ts in expected_results)
-            and all("(" + tf + "=" in x for tf in tested_fields)
+            and all(f"({tf}=" in x or f" {tf}=" in x for tf in tested_fields)
             and all("[" + METRIC_TEST_TYPE_MAPPING_INDEX[tt] + "(" in x for tt in tested_tests)
         )
 
@@ -271,7 +271,7 @@ def _try_fix(metric: Metric, expected_results: List[TestStatus], test_result: Me
     path.write_text("\n".join(line if line != matched_line else fixed_line for line in lines))
 
 
-FILTER_METRICS = []
+FILTER_METRICS = [FBetaTopK]
 
 if FILTER_METRICS:
     all_metrics_test = [t for t in all_metrics_test if t[1].__class__ in FILTER_METRICS]
