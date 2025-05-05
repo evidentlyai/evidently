@@ -91,9 +91,12 @@ simple_df = pd.DataFrame({"a": [1, 0, 3], "b": [4, 5, 6]})
 simple_dataset = Dataset.from_pandas(simple_df)
 regression_df = pd.DataFrame({"target": [1, 0, 3], "prediction": [1, 0, 4]})
 regression_dataset = Dataset.from_pandas(regression_df, data_definition=DataDefinition(regression=[Regression()]))
-classification_df = pd.DataFrame({"target": [1, 0, 1, 0], "prediction": [0, 0, 1, 1]})
+classification_df = pd.DataFrame({"target": [1, 0, 1, 0], "prediction": [0, 0, 1, 1], "prediction_probas": [0.5, 0.5, 0.5, 0.5]})
 classification_dataset = Dataset.from_pandas(
     classification_df, data_definition=DataDefinition(classification=[BinaryClassification()])
+)
+classification_proba_dataset = Dataset.from_pandas(
+    classification_df, data_definition=DataDefinition(classification=[BinaryClassification(target="target", prediction_probas="prediction_probas")])
 )
 
 all_metrics_test: List[Tuple[Dataset, Metric, Union[TestStatus, List[TestStatus]]]] = [
@@ -353,22 +356,22 @@ all_metrics_test: List[Tuple[Dataset, Metric, Union[TestStatus, List[TestStatus]
     (classification_dataset, DummyFPR(tests=[not_eq(1)]), TestStatus.SUCCESS),
     (classification_dataset, DummyFPR(tests=[not_in([0])]), TestStatus.FAIL),
     (classification_dataset, DummyFPR(tests=[not_in([1])]), TestStatus.SUCCESS),
-    (classification_dataset, DummyLogLoss(tests=[eq(0)]), TestStatus.FAIL),
-    (classification_dataset, DummyLogLoss(tests=[eq(0)]), TestStatus.SUCCESS),
-    (classification_dataset, DummyLogLoss(tests=[gte(0)]), TestStatus.FAIL),
-    (classification_dataset, DummyLogLoss(tests=[gte(0)]), TestStatus.SUCCESS),
-    (classification_dataset, DummyLogLoss(tests=[gt(0)]), TestStatus.FAIL),
-    (classification_dataset, DummyLogLoss(tests=[gt(0)]), TestStatus.SUCCESS),
-    (classification_dataset, DummyLogLoss(tests=[is_in([0])]), TestStatus.FAIL),
-    (classification_dataset, DummyLogLoss(tests=[is_in([0])]), TestStatus.SUCCESS),
-    (classification_dataset, DummyLogLoss(tests=[lte(0)]), TestStatus.FAIL),
-    (classification_dataset, DummyLogLoss(tests=[lte(0)]), TestStatus.SUCCESS),
-    (classification_dataset, DummyLogLoss(tests=[lt(0)]), TestStatus.FAIL),
-    (classification_dataset, DummyLogLoss(tests=[lt(0)]), TestStatus.SUCCESS),
-    (classification_dataset, DummyLogLoss(tests=[not_eq(0)]), TestStatus.FAIL),
-    (classification_dataset, DummyLogLoss(tests=[not_eq(0)]), TestStatus.SUCCESS),
-    (classification_dataset, DummyLogLoss(tests=[not_in([0])]), TestStatus.FAIL),
-    (classification_dataset, DummyLogLoss(tests=[not_in([0])]), TestStatus.SUCCESS),
+    (classification_proba_dataset, DummyLogLoss(tests=[eq(555)]), TestStatus.FAIL),
+    (classification_proba_dataset, DummyLogLoss(tests=[eq(0)]), TestStatus.SUCCESS),
+    (classification_proba_dataset, DummyLogLoss(tests=[gte(555)]), TestStatus.FAIL),
+    (classification_proba_dataset, DummyLogLoss(tests=[gte(0)]), TestStatus.SUCCESS),
+    (classification_proba_dataset, DummyLogLoss(tests=[gt(0)]), TestStatus.FAIL),
+    (classification_proba_dataset, DummyLogLoss(tests=[gt(-555)]), TestStatus.SUCCESS),
+    (classification_proba_dataset, DummyLogLoss(tests=[is_in([555])]), TestStatus.FAIL),
+    (classification_proba_dataset, DummyLogLoss(tests=[is_in([0])]), TestStatus.SUCCESS),
+    (classification_proba_dataset, DummyLogLoss(tests=[lte(-555)]), TestStatus.FAIL),
+    (classification_proba_dataset, DummyLogLoss(tests=[lte(0)]), TestStatus.SUCCESS),
+    (classification_proba_dataset, DummyLogLoss(tests=[lt(0)]), TestStatus.FAIL),
+    (classification_proba_dataset, DummyLogLoss(tests=[lt(555)]), TestStatus.SUCCESS),
+    (classification_proba_dataset, DummyLogLoss(tests=[not_eq(0)]), TestStatus.FAIL),
+    (classification_proba_dataset, DummyLogLoss(tests=[not_eq(555)]), TestStatus.SUCCESS),
+    (classification_proba_dataset, DummyLogLoss(tests=[not_in([0])]), TestStatus.FAIL),
+    (classification_proba_dataset, DummyLogLoss(tests=[not_in([555])]), TestStatus.SUCCESS),
     (classification_dataset, DummyMAE(tests=[eq(0)]), TestStatus.FAIL),
     (classification_dataset, DummyMAE(tests=[eq(0)]), TestStatus.SUCCESS),
     (classification_dataset, DummyMAE(tests=[gte(0)]), TestStatus.FAIL),
