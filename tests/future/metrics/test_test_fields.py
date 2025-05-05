@@ -20,7 +20,6 @@ from evidently.core.metric_types import ColumnMetric
 from evidently.core.metric_types import Metric
 from evidently.core.metric_types import MetricTest
 from evidently.legacy.tests.base_test import TestStatus
-from evidently.metrics import Accuracy
 from evidently.metrics import FBetaTopK
 from evidently.metrics import PrecisionTopK
 from evidently.metrics import RecallTopK
@@ -113,6 +112,8 @@ METRIC_TEST_TYPE_MAPPING: Dict[Type[MetricTest], Tuple[Callable, str]] = {
     GreaterOrEqualMetricTest: (gte, "0"),
 }
 
+METRIC_TEST_TYPE_MAPPING_INDEX = {tt: f.__name__ for tt, (f, _) in METRIC_TEST_TYPE_MAPPING.items()}
+
 TEST_FIELD_FACTORY_MAPPING: Dict[Type, Callable[[str], str]] = {dict: lambda x: f"{{0: [{x}]}}"}
 
 METRIC_ARGS: Dict[Type[Metric], str] = {
@@ -203,7 +204,7 @@ def _make_id(tp):
     return f"test_field-{metric.__class__.__name__}-{tested_fields_str}-{tested_types}-{', '.join(r.value for r in results)})"
 
 
-FILTER_METRICS = [Accuracy]
+FILTER_METRICS = []
 
 if FILTER_METRICS:
     all_metrics_test = [t for t in all_metrics_test if t[1].__class__ in FILTER_METRICS]
@@ -215,12 +216,14 @@ def _try_fix(metric: Metric, expected_results: List[TestStatus]):
     path = Path(__file__).parent / "all_metrics_tests.py"
     lines = path.read_text().splitlines()
     tested_fields = _get_tested_test_fields(metric)
+    tested_tests = [tt for tf in tested_fields for tt in _get_tested_test_types(metric, tf)]
 
     def line_check(x):
         return (
             metric.__class__.__name__ in x
             and all(ts.value in x for ts in expected_results)
             and all(tf in x for tf in tested_fields)
+            and all("[" + METRIC_TEST_TYPE_MAPPING_INDEX[tt] in x for tt in tested_tests)
         )
 
     matched_lines = [line for line in lines if line_check(line)]
@@ -239,6 +242,8 @@ def test_all_test_fields(dataset: Dataset, metric: Metric, expected_results: Uni
     statuses = [t.status for t in test_results]
     if isinstance(expected_results, TestStatus):
         expected_results = [expected_results]
+    if statuses != expected_results and TRY_FIX:
+        _try_fix(metric, expected_results)
     assert statuses == expected_results, "\n".join(
         f"{tr.description} should {status.value}" for tr, status in zip(test_results, expected_results)
     )
