@@ -185,7 +185,7 @@ export const ProjectCard: React.FC<ProjectProps> = ({
             sx={{ border: 'none', borderRadius: '50%' }}
             onChange={onAlterMode}
           >
-            <EditIcon />
+            <EditIcon data-testid='EditIcon' />
           </ToggleButton>
         </Box>
       </Box>
