@@ -233,6 +233,9 @@ def _try_fix(metric: Metric, expected_results: List[TestStatus], test_result: Me
         if "[gt" in ln:
             value = "555" if "FAIL" in ln else "-555"
             return ln.replace("0", value).replace("-1", value)
+        if "[lt" in ln:
+            value = "-555" if "FAIL" in ln else "555"
+            return ln.replace("0", value).replace("-1", value)
         return ln
 
     fixed_line = fix(matched_line)
