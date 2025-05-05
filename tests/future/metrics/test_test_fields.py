@@ -220,7 +220,7 @@ def _try_fix(metric: Metric, expected_results: List[TestStatus], test_result: Me
         return (
             " " + metric.__class__.__name__ + "(" in x
             and all(ts.value in x for ts in expected_results)
-            and all(tf in x for tf in tested_fields)
+            and all("(" + tf + "=" in x for tf in tested_fields)
             and all("[" + METRIC_TEST_TYPE_MAPPING_INDEX[tt] + "(" in x for tt in tested_tests)
         )
 
