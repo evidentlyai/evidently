@@ -271,7 +271,7 @@ def _try_fix(metric: Metric, expected_results: List[TestStatus], test_result: Me
     path.write_text("\n".join(line if line != matched_line else fixed_line for line in lines))
 
 
-FILTER_METRICS = [FBetaTopK]
+FILTER_METRICS = []
 
 if FILTER_METRICS:
     all_metrics_test = [t for t in all_metrics_test if t[1].__class__ in FILTER_METRICS]
