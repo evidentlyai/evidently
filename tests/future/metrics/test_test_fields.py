@@ -232,16 +232,18 @@ def _try_fix(metric: Metric, expected_results: List[TestStatus], test_result: Me
     def fix(ln: str) -> str:
         if "[gt" in ln:
             value = "555" if "FAIL" in ln else "-555"
-            return ln.replace("0", value).replace("-1", value)
+            return ln.replace("(0)", f"({value})").replace("(-1)", f"({value})")
         if "[lt" in ln:
             value = "-555" if "FAIL" in ln else "555"
-            return ln.replace("0", value).replace("-1", value)
+            return ln.replace("(0)", f"({value})").replace("(-1)", f"({value})")
         if "[eq" in ln:
             try:
                 value = test_result.description.split("Actual value ")[1].split(" ")[0]
             except IndexError:
                 return ln
             value = value if "SUCCESS" in ln else "555"
+            if "." in value and len(value) > 4:
+                value = f"ApproxValue({value}, absolute=0.01)"
             return ln.replace("(0)", f"({value})")
         if "[not_eq" in ln:
             try:
@@ -249,6 +251,8 @@ def _try_fix(metric: Metric, expected_results: List[TestStatus], test_result: Me
             except IndexError:
                 return ln
             value = "555" if "SUCCESS" in ln else value
+            if "." in value and len(value) > 4:
+                value = f"ApproxValue({value}, absolute=0.01)"
             return ln.replace("(0)", f"({value})")
         if "[is_in" in ln:
             try:
@@ -256,6 +260,8 @@ def _try_fix(metric: Metric, expected_results: List[TestStatus], test_result: Me
             except IndexError:
                 return ln
             value = value if "SUCCESS" in ln else "555"
+            if "." in value and len(value) > 4:
+                value = f"ApproxValue({value}, absolute=0.01)"
             return ln.replace("[0]", f"[{value}]")
         if "[not_in" in ln:
             try:
@@ -263,6 +269,8 @@ def _try_fix(metric: Metric, expected_results: List[TestStatus], test_result: Me
             except IndexError:
                 return ln
             value = "555" if "SUCCESS" in ln else value
+            if "." in value and len(value) > 4:
+                value = f"ApproxValue({value}, absolute=0.01)"
             return ln.replace("[0]", f"[{value}]")
 
         return ln

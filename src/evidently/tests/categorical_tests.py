@@ -8,13 +8,16 @@ from evidently.core.metric_types import SingleValue
 from evidently.core.metric_types import SingleValueTest
 from evidently.core.report import Context
 from evidently.legacy.tests.base_test import TestStatus
+from evidently.legacy.utils.types import ApproxValue
+
+InValueType = Union[int, str, float, ApproxValue]
 
 
 class IsInMetricTest(MetricTest):
     class Config:
         smart_union = True
 
-    values: List[Union[int, str, float]]
+    values: List[InValueType]
 
     def to_test(self) -> SingleValueTest:
         def func(context: Context, metric: MetricCalculationBase, value: SingleValue) -> MetricTestResult:
@@ -35,7 +38,7 @@ class NotInMetricTest(MetricTest):
     class Config:
         smart_union = True
 
-    values: List[Union[int, str, float]]
+    values: List[InValueType]
 
     def to_test(self) -> SingleValueTest:
         def func(context: Context, metric: MetricCalculationBase, value: SingleValue) -> MetricTestResult:
