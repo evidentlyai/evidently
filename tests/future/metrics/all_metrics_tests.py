@@ -87,45 +87,45 @@ from evidently.tests import not_in
 
 simple_df = pd.DataFrame({"a": [1, 2, 3], "b": [4, 5, 6]})
 simple_dataset = Dataset.from_pandas(simple_df)
-regression_df = pd.DataFrame({"a": [1, 2, 3], "b": [4, 5, 6]})
+regression_df = pd.DataFrame({"target": [1, 2, 3], "prediction": [1, 2, 4]})
 regression_dataset = Dataset.from_pandas(regression_df, data_definition=DataDefinition(regression=[Regression()]))
-classification_df = pd.DataFrame({"a": [1, 2, 3], "b": [4, 5, 6]})
+classification_df = pd.DataFrame({"target": [1, 0, 1, 0], "prediction": [0, 0, 1, 1]})
 classification_dataset = Dataset.from_pandas(
     classification_df, data_definition=DataDefinition(classification=[BinaryClassification()])
 )
 
 all_metrics_test: List[Tuple[Dataset, Metric, Union[TestStatus, List[TestStatus]]]] = [
     (regression_dataset, AbsMaxError(tests=[eq(0)]), TestStatus.FAIL),
-    (regression_dataset, AbsMaxError(tests=[eq(0)]), TestStatus.SUCCESS),
-    (regression_dataset, AbsMaxError(tests=[gte(0)]), TestStatus.FAIL),
+    (regression_dataset, AbsMaxError(tests=[eq(1)]), TestStatus.SUCCESS),
+    (regression_dataset, AbsMaxError(tests=[gte(2)]), TestStatus.FAIL),
     (regression_dataset, AbsMaxError(tests=[gte(0)]), TestStatus.SUCCESS),
-    (regression_dataset, AbsMaxError(tests=[gt(0)]), TestStatus.FAIL),
+    (regression_dataset, AbsMaxError(tests=[gt(2)]), TestStatus.FAIL),
     (regression_dataset, AbsMaxError(tests=[gt(0)]), TestStatus.SUCCESS),
     (regression_dataset, AbsMaxError(tests=[is_in([0])]), TestStatus.FAIL),
-    (regression_dataset, AbsMaxError(tests=[is_in([0])]), TestStatus.SUCCESS),
+    (regression_dataset, AbsMaxError(tests=[is_in([1])]), TestStatus.SUCCESS),
     (regression_dataset, AbsMaxError(tests=[lte(0)]), TestStatus.FAIL),
-    (regression_dataset, AbsMaxError(tests=[lte(0)]), TestStatus.SUCCESS),
+    (regression_dataset, AbsMaxError(tests=[lte(2)]), TestStatus.SUCCESS),
     (regression_dataset, AbsMaxError(tests=[lt(0)]), TestStatus.FAIL),
-    (regression_dataset, AbsMaxError(tests=[lt(0)]), TestStatus.SUCCESS),
-    (regression_dataset, AbsMaxError(tests=[not_eq(0)]), TestStatus.FAIL),
+    (regression_dataset, AbsMaxError(tests=[lt(2)]), TestStatus.SUCCESS),
+    (regression_dataset, AbsMaxError(tests=[not_eq(1)]), TestStatus.FAIL),
     (regression_dataset, AbsMaxError(tests=[not_eq(0)]), TestStatus.SUCCESS),
-    (regression_dataset, AbsMaxError(tests=[not_in([0])]), TestStatus.FAIL),
+    (regression_dataset, AbsMaxError(tests=[not_in([1])]), TestStatus.FAIL),
     (regression_dataset, AbsMaxError(tests=[not_in([0])]), TestStatus.SUCCESS),
     (classification_dataset, Accuracy(tests=[eq(0)]), TestStatus.FAIL),
-    (classification_dataset, Accuracy(tests=[eq(0)]), TestStatus.SUCCESS),
-    (classification_dataset, Accuracy(tests=[gte(0)]), TestStatus.FAIL),
+    (classification_dataset, Accuracy(tests=[eq(0.5)]), TestStatus.SUCCESS),
+    (classification_dataset, Accuracy(tests=[gte(1)]), TestStatus.FAIL),
     (classification_dataset, Accuracy(tests=[gte(0)]), TestStatus.SUCCESS),
-    (classification_dataset, Accuracy(tests=[gt(0)]), TestStatus.FAIL),
+    (classification_dataset, Accuracy(tests=[gt(1)]), TestStatus.FAIL),
     (classification_dataset, Accuracy(tests=[gt(0)]), TestStatus.SUCCESS),
     (classification_dataset, Accuracy(tests=[is_in([0])]), TestStatus.FAIL),
-    (classification_dataset, Accuracy(tests=[is_in([0])]), TestStatus.SUCCESS),
+    (classification_dataset, Accuracy(tests=[is_in([0.5])]), TestStatus.SUCCESS),
     (classification_dataset, Accuracy(tests=[lte(0)]), TestStatus.FAIL),
-    (classification_dataset, Accuracy(tests=[lte(0)]), TestStatus.SUCCESS),
+    (classification_dataset, Accuracy(tests=[lte(1)]), TestStatus.SUCCESS),
     (classification_dataset, Accuracy(tests=[lt(0)]), TestStatus.FAIL),
-    (classification_dataset, Accuracy(tests=[lt(0)]), TestStatus.SUCCESS),
-    (classification_dataset, Accuracy(tests=[not_eq(0)]), TestStatus.FAIL),
+    (classification_dataset, Accuracy(tests=[lt(1)]), TestStatus.SUCCESS),
+    (classification_dataset, Accuracy(tests=[not_eq(0.5)]), TestStatus.FAIL),
     (classification_dataset, Accuracy(tests=[not_eq(0)]), TestStatus.SUCCESS),
-    (classification_dataset, Accuracy(tests=[not_in([0])]), TestStatus.FAIL),
+    (classification_dataset, Accuracy(tests=[not_in([0.5])]), TestStatus.FAIL),
     (classification_dataset, Accuracy(tests=[not_in([0])]), TestStatus.SUCCESS),
     (simple_dataset, AlmostConstantColumnsCount(tests=[eq(0)]), TestStatus.FAIL),
     (simple_dataset, AlmostConstantColumnsCount(tests=[eq(0)]), TestStatus.SUCCESS),

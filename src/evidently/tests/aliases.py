@@ -156,21 +156,21 @@ def lte(
 
 
 @overload
-def is_in(values: List[Union[int, str]]) -> GenericTest: ...
+def is_in(values: List[Union[int, str, float]]) -> GenericTest: ...
 
 
 @overload
-def is_in(values: List[Union[int, str]], *, is_critical: bool = True) -> MetricTest: ...
+def is_in(values: List[Union[int, str, float]], *, is_critical: bool = True) -> MetricTest: ...
 
 
 @overload
 def is_in(
-    values: List[Union[int, str]], *, column: Optional[str] = None, alias: Optional[str] = None
+    values: List[Union[int, str, float]], *, column: Optional[str] = None, alias: Optional[str] = None
 ) -> DescriptorTest: ...
 
 
 def is_in(
-    values: List[Union[int, str]],
+    values: List[Union[int, str, float]],
     *,
     is_critical: bool = True,
     column: Optional[str] = None,
@@ -183,21 +183,21 @@ def is_in(
 
 
 @overload
-def not_in(values: List[Union[int, str]]) -> GenericTest: ...
+def not_in(values: List[Union[int, str, float]]) -> GenericTest: ...
 
 
 @overload
-def not_in(values: List[Union[int, str]], *, is_critical: bool = True) -> MetricTest: ...
+def not_in(values: List[Union[int, str, float]], *, is_critical: bool = True) -> MetricTest: ...
 
 
 @overload
 def not_in(
-    values: List[Union[int, str]], *, column: Optional[str] = None, alias: Optional[str] = None
+    values: List[Union[int, str, float]], *, column: Optional[str] = None, alias: Optional[str] = None
 ) -> DescriptorTest: ...
 
 
 def not_in(
-    values: List[Union[int, str]],
+    values: List[Union[int, str, float]],
     *,
     is_critical: bool = True,
     column: Optional[str] = None,

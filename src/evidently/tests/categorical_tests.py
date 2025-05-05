@@ -11,7 +11,10 @@ from evidently.legacy.tests.base_test import TestStatus
 
 
 class IsInMetricTest(MetricTest):
-    values: List[Union[int, str]]
+    class Config:
+        smart_union = True
+
+    values: List[Union[int, str, float]]
 
     def to_test(self) -> SingleValueTest:
         def func(context: Context, metric: MetricCalculationBase, value: SingleValue) -> MetricTestResult:
@@ -29,7 +32,10 @@ class IsInMetricTest(MetricTest):
 
 
 class NotInMetricTest(MetricTest):
-    values: List[Union[int, str]]
+    class Config:
+        smart_union = True
+
+    values: List[Union[int, str, float]]
 
     def to_test(self) -> SingleValueTest:
         def func(context: Context, metric: MetricCalculationBase, value: SingleValue) -> MetricTestResult:
