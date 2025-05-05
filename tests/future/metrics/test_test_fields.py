@@ -20,10 +20,14 @@ from evidently.core.metric_types import ColumnMetric
 from evidently.core.metric_types import Metric
 from evidently.core.metric_types import MetricTest
 from evidently.legacy.tests.base_test import TestStatus
+from evidently.metrics import ColumnCount
+from evidently.metrics import ConstantColumnsCount
+from evidently.metrics import DatasetMissingValueCount
 from evidently.metrics import FBetaTopK
 from evidently.metrics import PrecisionTopK
 from evidently.metrics import RecallTopK
 from evidently.metrics.column_statistics import CategoryCount
+from evidently.metrics.column_statistics import DriftedColumnsCount
 from evidently.metrics.column_statistics import InListValueCount
 from evidently.metrics.column_statistics import InRangeValueCount
 from evidently.metrics.column_statistics import OutListValueCount
@@ -200,16 +204,13 @@ def _make_id(tp):
         results = [results]
     tested_fields = _get_tested_test_fields(metric)
     tested_fields_str = ", ".join(tested_fields)
-    tested_types = ", ".join(t.__name__ for tf in tested_fields for t in _get_tested_test_types(metric, tf))
+    tested_types = ", ".join(
+        METRIC_TEST_TYPE_MAPPING_INDEX[t] for tf in tested_fields for t in _get_tested_test_types(metric, tf)
+    )
     return f"test_field-{metric.__class__.__name__}-{tested_fields_str}-{tested_types}-{', '.join(r.value for r in results)})"
 
 
-FILTER_METRICS = []
-
-if FILTER_METRICS:
-    all_metrics_test = [t for t in all_metrics_test if t[1].__class__ in FILTER_METRICS]
-
-TRY_FIX = True
+TRY_FIX = False
 
 
 def _try_fix(metric: Metric, expected_results: List[TestStatus]):
@@ -230,8 +231,14 @@ def _try_fix(metric: Metric, expected_results: List[TestStatus]):
     if not len(matched_lines) == 1:
         return
     matched_line = matched_lines[0]
-    fixed_line = matched_line.replace("0", "1")
+    fixed_line = matched_line.replace("1", "2").replace("0", "1")
     path.write_text("\n".join(line if line != matched_line else fixed_line for line in lines))
+
+
+FILTER_METRICS = [ColumnCount, ConstantColumnsCount, DatasetMissingValueCount, DriftedColumnsCount]
+
+if FILTER_METRICS:
+    all_metrics_test = [t for t in all_metrics_test if t[1].__class__ in FILTER_METRICS]
 
 
 @pytest.mark.parametrize("dataset,metric,expected_results", all_metrics_test, ids=list(map(_make_id, all_metrics_test)))
