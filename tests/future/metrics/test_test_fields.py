@@ -19,15 +19,12 @@ from evidently._pydantic_compat import ModelField
 from evidently.core.metric_types import ColumnMetric
 from evidently.core.metric_types import Metric
 from evidently.core.metric_types import MetricTest
+from evidently.core.metric_types import MetricTestResult
 from evidently.legacy.tests.base_test import TestStatus
-from evidently.metrics import ColumnCount
-from evidently.metrics import ConstantColumnsCount
-from evidently.metrics import DatasetMissingValueCount
 from evidently.metrics import FBetaTopK
 from evidently.metrics import PrecisionTopK
 from evidently.metrics import RecallTopK
 from evidently.metrics.column_statistics import CategoryCount
-from evidently.metrics.column_statistics import DriftedColumnsCount
 from evidently.metrics.column_statistics import InListValueCount
 from evidently.metrics.column_statistics import InRangeValueCount
 from evidently.metrics.column_statistics import OutListValueCount
@@ -210,10 +207,10 @@ def _make_id(tp):
     return f"test_field-{metric.__class__.__name__}-{tested_fields_str}-{tested_types}-{', '.join(r.value for r in results)})"
 
 
-TRY_FIX = False
+TRY_FIX = True
 
 
-def _try_fix(metric: Metric, expected_results: List[TestStatus]):
+def _try_fix(metric: Metric, expected_results: List[TestStatus], test_result: MetricTestResult):
     path = Path(__file__).parent / "all_metrics_tests.py"
     lines = path.read_text().splitlines()
     tested_fields = _get_tested_test_fields(metric)
@@ -224,18 +221,25 @@ def _try_fix(metric: Metric, expected_results: List[TestStatus]):
             metric.__class__.__name__ in x
             and all(ts.value in x for ts in expected_results)
             and all(tf in x for tf in tested_fields)
-            and all("[" + METRIC_TEST_TYPE_MAPPING_INDEX[tt] in x for tt in tested_tests)
+            and all("[" + METRIC_TEST_TYPE_MAPPING_INDEX[tt] + "(" in x for tt in tested_tests)
         )
 
     matched_lines = [line for line in lines if line_check(line)]
     if not len(matched_lines) == 1:
         return
     matched_line = matched_lines[0]
-    fixed_line = matched_line.replace("1", "2").replace("0", "1")
+
+    def fix(ln: str) -> str:
+        if "[gt" in ln:
+            value = "555" if "FAIL" in ln else "-555"
+            return ln.replace("0", value).replace("-1", value)
+        return ln
+
+    fixed_line = fix(matched_line)
     path.write_text("\n".join(line if line != matched_line else fixed_line for line in lines))
 
 
-FILTER_METRICS = [ColumnCount, ConstantColumnsCount, DatasetMissingValueCount, DriftedColumnsCount]
+FILTER_METRICS = []
 
 if FILTER_METRICS:
     all_metrics_test = [t for t in all_metrics_test if t[1].__class__ in FILTER_METRICS]
@@ -250,7 +254,7 @@ def test_all_test_fields(dataset: Dataset, metric: Metric, expected_results: Uni
     if isinstance(expected_results, TestStatus):
         expected_results = [expected_results]
     if statuses != expected_results and TRY_FIX:
-        _try_fix(metric, expected_results)
+        _try_fix(metric, expected_results, test_results[0])
     assert statuses == expected_results, "\n".join(
         f"{tr.description} should {status.value}" for tr, status in zip(test_results, expected_results)
     )
