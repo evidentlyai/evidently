@@ -1,14 +1,9 @@
 import type { SeriesModel } from 'evidently-ui-lib/api/types/v2'
-import {
-  Box,
-  Card,
-  CardContent,
-  Divider,
-  Grid,
-  Typography
-} from 'evidently-ui-lib/shared-dependencies/mui-material'
+import { Box, Grid, Typography } from 'evidently-ui-lib/shared-dependencies/mui-material'
 import type { MakePanel } from '~/components/v2/Dashboard/Panels/types'
 import { formatLabelWithParams, jsonToKeyValueRowString } from '~/components/v2/Dashboard/utils'
+import { PanelCardGeneral } from './helpers/general'
+import { getAggValue } from './helpers/utils'
 
 export type CounterPanelProps = MakePanel<{
   type: 'counter'
@@ -28,74 +23,40 @@ export const CounterDashboardPanel = ({
   counterAgg
 }: CounterPanelProps) => {
   return (
-    <Card elevation={0}>
-      <CardContent sx={{ px: 0 }}>
-        <Box px={3}>
-          {title && (
-            <Typography variant='h5' align='center' fontWeight={500} gutterBottom>
-              {title}
-            </Typography>
-          )}
+    <PanelCardGeneral title={title} description={description} textCenterAlign>
+      <Box>
+        <Grid container spacing={2} justifyContent={'space-evenly'}>
+          {data.series.map(({ metric_type, params, values, filter_index }, index) => {
+            const metricName = metric_type.split(':').at(-1)
 
-          {description && (
-            <Typography fontWeight={400} align='center' gutterBottom>
-              {description}
-            </Typography>
-          )}
-        </Box>
+            const defaultLabel = [metricName, jsonToKeyValueRowString(params)]
+              .filter(Boolean)
+              .join('\n')
 
-        {(title || description) && <Divider sx={{ mb: 2, mt: 1 }} />}
+            const customLabel = formatLabelWithParams({
+              label: labels?.[filter_index] ?? '',
+              params
+            })
 
-        <Box sx={{ flexGrow: 1, px: 3 }}>
-          <Grid container spacing={2} justifyContent={'space-evenly'}>
-            {data.series.map(({ metric_type, params, values, filter_index }, index) => {
-              const metricName = metric_type.split(':').at(-1)
+            const label = customLabel || defaultLabel
 
-              const defaultLabel = [metricName, jsonToKeyValueRowString(params)]
-                .filter(Boolean)
-                .join('\n')
+            const value = getAggValue(values, counterAgg)
 
-              const customLabel = formatLabelWithParams({
-                label: labels?.[filter_index] ?? '',
-                params
-              })
-
-              const label = customLabel || defaultLabel
-
-              return (
-                <Grid key={`${index}:${defaultLabel}`}>
-                  <Box>
-                    <Typography variant='h2' align={'center'}>
-                      {getValue(values, counterAgg)?.toFixed(2)}
-                    </Typography>
-                    <Typography component={'pre'} align={'center'}>
-                      {label}
-                    </Typography>
-                  </Box>
-                </Grid>
-              )
-            })}
-          </Grid>
-        </Box>
-      </CardContent>
-    </Card>
+            return (
+              <Grid key={`${index}:${defaultLabel}`}>
+                <Box>
+                  <Typography variant='h2' align={'center'}>
+                    {value}
+                  </Typography>
+                  <Typography component={'pre'} align={'center'}>
+                    {label}
+                  </Typography>
+                </Box>
+              </Grid>
+            )
+          })}
+        </Grid>
+      </Box>
+    </PanelCardGeneral>
   )
-}
-
-function getValue(data: (number | null)[], counterAgg: CounterPanelProps['counterAgg']) {
-  if (data.length === 0) {
-    return null
-  }
-
-  if (counterAgg === 'last') {
-    return data[data.length - 1]
-  }
-
-  if (counterAgg === 'sum') {
-    return data.reduce((prev, curr) => (prev ?? 0) + (curr ?? 0), 0)
-  }
-
-  if (counterAgg === 'avg') {
-    return (data.reduce((prev, curr) => (prev ?? 0) + (curr ?? 0), 0) ?? 0) / data.length
-  }
 }
