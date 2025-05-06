@@ -16,7 +16,10 @@ import {
   useXAxis
 } from '@mui/x-charts'
 import { BarPlot } from '@mui/x-charts'
-import type { UseChartSeriesParameters } from '@mui/x-charts/internals'
+import type {
+  UseChartCartesianAxisParameters,
+  UseChartSeriesParameters
+} from '@mui/x-charts/internals'
 
 import dayjs from 'dayjs'
 import type { SeriesModel } from 'evidently-ui-lib/api/types/v2'
@@ -46,6 +49,7 @@ export type PlotPanelProps = MakePanel<{
 }>
 
 type SeriesType = Exclude<UseChartSeriesParameters['series'], undefined>[number]
+type XAxisType = Exclude<UseChartCartesianAxisParameters['xAxis'], undefined>[number]
 
 const HighlightSelectionCustom = ({ onSelect }: { onSelect: (index: number) => void }) => {
   const { left, top, width, height } = useDrawingArea()
@@ -141,8 +145,9 @@ export const PlotDashboardPanel = ({
   const xAxis = [
     {
       data: data.sources.map((e) => dayjs(e.timestamp).format('YYYY-MM-DD HH:mm:ss')),
-      scaleType: 'band' as const
-    }
+      scaleType: 'band' as const,
+      height: 50
+    } satisfies XAxisType
   ]
 
   const selectedSnapshotId = highlightInfo && data.sources[highlightInfo.index].snapshot_id
@@ -173,7 +178,7 @@ export const PlotDashboardPanel = ({
                 <BarPlot />
                 <LinePlot />
 
-                <ChartsXAxis label='Timestamps' position='bottom' />
+                <ChartsXAxis label='Timestamps' position='bottom' labelStyle={{ fontSize: 18 }} />
                 <ChartsYAxis position='left' />
 
                 <ChartsTooltip trigger={'axis'} />
