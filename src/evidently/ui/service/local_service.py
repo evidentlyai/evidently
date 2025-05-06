@@ -1,4 +1,5 @@
 import logging
+import os
 import time
 from typing import Dict
 
@@ -37,6 +38,10 @@ def evidently_exception_handler(_: Request, exc: EvidentlyError) -> Response:
 class LocalServiceComponent(ServiceComponent):
     debug: bool = False
 
+    @property
+    def debug_enabled(self) -> bool:
+        return self.debug or os.environ.get("EVIDENTLY_DEBUG")
+
     def get_api_route_handlers(self, ctx: ComponentContext):
         guard = ctx.get_component(SecurityComponent).get_auth_guard()
         return [create_projects_api(guard), service_api()]
@@ -54,8 +59,8 @@ class LocalServiceComponent(ServiceComponent):
         assert isinstance(ctx, ConfigContext)
         builder.exception_handlers[EvidentlyServiceError] = evidently_service_exception_handler
         builder.exception_handlers[EvidentlyError] = evidently_exception_handler
-        builder.kwargs["debug"] = self.debug
-        if self.debug:
+        builder.kwargs["debug"] = self.debug_enabled
+        if self.debug_enabled:
             log_config = create_logging()
             builder.kwargs["logging_config"] = LoggingConfig(**log_config)
 

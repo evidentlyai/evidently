@@ -20,4 +20,4 @@ class JsonFileDashboardManager(DashboardManager):
         return self._state.read_dashboard(project_id)
 
     async def save_dashboard(self, project_id: ProjectID, dashboard: DashboardModel) -> None:
-        return await self._state.write_dashboard(project_id, dashboard)
+        return self._state.write_dashboard(project_id, dashboard)
