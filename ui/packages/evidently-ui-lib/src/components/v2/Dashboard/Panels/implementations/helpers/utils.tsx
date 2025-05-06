@@ -35,3 +35,48 @@ const _getAggValueInternal = (data: (number | null)[], counterAgg: 'last' | 'sum
     return (getSum() ?? 0) / data.length
   }
 }
+
+export const getLabel = ({
+  metric_type,
+  params,
+  labels,
+  filter_index
+}: {
+  metric_type: string
+  params: { [key: string]: string }
+  labels: (string | undefined | null)[]
+  filter_index: number
+}) => {
+  const metricName = metric_type.split(':').at(-1)
+  const defaultLabel = [metricName, jsonToKeyValueRowString(params)].filter(Boolean).join('\n')
+
+  const customLabel = formatLabelWithParams({ label: labels?.[filter_index] ?? '', params })
+
+  const label = customLabel || defaultLabel
+
+  return { label, defaultLabel }
+}
+
+// biome-ignore lint/complexity/noBannedTypes: fine
+const jsonToKeyValueRowString = (o: Object) => {
+  const result = Object.entries(o)
+    .map(([k, v]) => `${k}: ${v}`)
+    .join('\n')
+
+  return result
+}
+
+const formatLabelWithParams = ({
+  label,
+  params
+}: {
+  label: string
+  params: Record<string, string | undefined>
+}) => {
+  const result = label.replace(
+    /\{\{([a-zA-Z_0-9]+)?\}\}/g,
+    (_, key) => params?.[key] ?? `{{${key}}}`
+  )
+
+  return result
+}

@@ -18,10 +18,10 @@ import { assertNever } from 'evidently-ui-lib/utils/index'
 import { clamp } from 'evidently-ui-lib/utils/index'
 import { useState } from 'react'
 import type { MakePanel } from '~/components/v2/Dashboard/Panels/types'
-import { formatLabelWithParams, jsonToKeyValueRowString } from '~/components/v2/Dashboard/utils'
 import { useDashboardViewParams } from '~/contexts/DashboardViewParamsV2'
 import { PanelCardGeneral } from './helpers/general'
 import { MuiXChartPlotTemplate, type SeriesType, type XAxisType } from './helpers/mui'
+import { getLabel } from './helpers/utils'
 
 export type PlotPanelProps = MakePanel<{
   data: SeriesModel
@@ -45,13 +45,10 @@ export const PlotDashboardPanel = ({
 }: PlotPanelProps) => {
   const series: SeriesType[] = data.series.map(
     ({ values: data, params, metric_type, filter_index }) => {
-      const metricName = metric_type.split(':').at(-1)
-      const defaultLabel = [metricName, jsonToKeyValueRowString(params)].filter(Boolean).join('\n')
-
-      const customLabel = formatLabelWithParams({ label: labels?.[filter_index] ?? '', params })
+      const { label } = getLabel({ metric_type, params, labels, filter_index })
 
       const common = {
-        label: customLabel || defaultLabel,
+        label,
         stack: isStacked ? 'total' : undefined,
         labelMarkType: 'square' as const
       }

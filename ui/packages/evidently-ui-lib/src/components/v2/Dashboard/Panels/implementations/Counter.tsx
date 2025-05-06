@@ -1,9 +1,8 @@
 import type { SeriesModel } from 'evidently-ui-lib/api/types/v2'
 import { Box, Grid, Typography } from 'evidently-ui-lib/shared-dependencies/mui-material'
 import type { MakePanel } from '~/components/v2/Dashboard/Panels/types'
-import { formatLabelWithParams, jsonToKeyValueRowString } from '~/components/v2/Dashboard/utils'
 import { PanelCardGeneral } from './helpers/general'
-import { getAggValue } from './helpers/utils'
+import { getAggValue, getLabel } from './helpers/utils'
 
 export type CounterPanelProps = MakePanel<{
   type: 'counter'
@@ -12,7 +11,7 @@ export type CounterPanelProps = MakePanel<{
   data: SeriesModel
   title?: string
   description?: string
-  counterAgg: 'last' | 'sum' | 'avg'
+  aggregation: 'last' | 'sum' | 'avg'
 }>
 
 export const CounterDashboardPanel = ({
@@ -20,27 +19,16 @@ export const CounterDashboardPanel = ({
   labels,
   title,
   description,
-  counterAgg
+  aggregation
 }: CounterPanelProps) => {
   return (
     <PanelCardGeneral title={title} description={description} textCenterAlign>
       <Box>
         <Grid container spacing={2} justifyContent={'space-evenly'}>
           {data.series.map(({ metric_type, params, values, filter_index }, index) => {
-            const metricName = metric_type.split(':').at(-1)
+            const { label, defaultLabel } = getLabel({ metric_type, params, labels, filter_index })
 
-            const defaultLabel = [metricName, jsonToKeyValueRowString(params)]
-              .filter(Boolean)
-              .join('\n')
-
-            const customLabel = formatLabelWithParams({
-              label: labels?.[filter_index] ?? '',
-              params
-            })
-
-            const label = customLabel || defaultLabel
-
-            const value = getAggValue(values, counterAgg)
+            const value = getAggValue(values, aggregation)
 
             return (
               <Grid key={`${index}:${defaultLabel}`}>

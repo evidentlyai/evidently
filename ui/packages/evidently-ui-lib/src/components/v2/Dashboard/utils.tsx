@@ -1,7 +1,6 @@
 import type { DashboardPanelPlotModel } from '~/api/types/v2'
 import { assertNever } from '~/utils'
 import type { DashboardPanelProps } from './Panels/DashboardPanel'
-import type { CounterPanelProps } from './Panels/implementations/Counter'
 
 type Series = Partial<
   // biome-ignore lint/complexity/noBannedTypes: fine
@@ -14,30 +13,6 @@ export const getSeriesTypeHash = (s: Series) =>
 
 export const getSeriesListTypeHash = (seriesList: Series[]) =>
   seriesList.map(getSeriesTypeHash).join('|')
-
-// biome-ignore lint/complexity/noBannedTypes: fine
-export const jsonToKeyValueRowString = (o: Object) => {
-  const result = Object.entries(o)
-    .map(([k, v]) => `${k}: ${v}`)
-    .join('\n')
-
-  return result
-}
-
-export const formatLabelWithParams = ({
-  label,
-  params
-}: {
-  label: string
-  params: Record<string, string | undefined>
-}) => {
-  const result = label.replace(
-    /\{\{([a-zA-Z_0-9]+)?\}\}/g,
-    (_, key) => params?.[key] ?? `{{${key}}}`
-  )
-
-  return result
-}
 
 export const getSizeForGridItem = (size: 'half' | 'full') => {
   if (size === 'full') {
@@ -56,16 +31,25 @@ export const castRawPanelDataToDashboardPanelProps = (
   const emptyData = { series: [], sources: [] }
   const title = panel.title ?? ''
   const description = panel.subtitle ?? ''
+  const height = 350
 
   const originalType = panel.plot_params?.plot_type
 
-  const type: DashboardPanelProps['type'] =
-    (originalType === 'line' ||
-    originalType === 'bar' ||
-    originalType === 'text' ||
-    originalType === 'counter'
-      ? originalType
-      : null) ?? 'line'
+  const type = (originalType === 'line' ||
+  originalType === 'bar' ||
+  originalType === 'text' ||
+  originalType === 'counter' ||
+  originalType === 'pie'
+    ? originalType
+    : // trying cast to line
+      'line') satisfies DashboardPanelProps['type'] as DashboardPanelProps['type']
+
+  const originalAggregation = panel.plot_params?.aggregation
+
+  const aggregation: 'last' | 'sum' | 'avg' =
+    originalAggregation === 'last' || originalAggregation === 'sum' || originalAggregation === 'avg'
+      ? originalAggregation
+      : 'last'
 
   const size = panel.size === 'full' || panel.size === 'half' ? panel.size : 'full'
 
@@ -75,19 +59,15 @@ export const castRawPanelDataToDashboardPanelProps = (
     return { type, size, title, description }
   }
 
-  if (type === 'counter') {
-    const originalCounterAgg = panel.plot_params?.aggregation
+  if (type === 'counter' || type === 'pie') {
+    if (type === 'pie') {
+      return { type, size, title, description, aggregation, data: emptyData, labels, height }
+    }
 
-    const counterAgg: CounterPanelProps['counterAgg'] =
-      originalCounterAgg === 'last' || originalCounterAgg === 'sum' || originalCounterAgg === 'avg'
-        ? originalCounterAgg
-        : 'last'
-
-    return { type, size, title, description, counterAgg, data: emptyData, labels }
+    return { type, size, title, description, aggregation, data: emptyData, labels }
   }
 
   if (type === 'bar' || type === 'line') {
-    const height = 350
     const isStacked = Boolean(panel.plot_params?.is_stacked)
 
     return {
@@ -96,10 +76,9 @@ export const castRawPanelDataToDashboardPanelProps = (
       title,
       description,
       isStacked,
-
-      height,
       data: emptyData,
-      labels
+      labels,
+      height
     }
   }
 

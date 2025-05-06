@@ -34,7 +34,11 @@ export const PanelCardGeneral = ({
           )}
 
           {description && (
-            <Typography fontWeight={400} gutterBottom>
+            <Typography
+              align={textCenterAlign ? 'center' : undefined}
+              fontWeight={400}
+              gutterBottom
+            >
               {description}
             </Typography>
           )}
