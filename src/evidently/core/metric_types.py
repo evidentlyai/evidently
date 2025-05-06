@@ -315,7 +315,10 @@ class ByLabelCountValue(MetricResult):
 
     @property
     def _metric_config(self) -> MetricConfig:
-        val = next(iter(self.counts.values()))
+        try:
+            val = next(iter(self.counts.values()))
+        except StopIteration:
+            raise ValueError("Empty dataset")
         return val.metric_value_location.metric
 
     def _missing_label_value(self, label: Label, is_count: bool) -> SingleValue:
