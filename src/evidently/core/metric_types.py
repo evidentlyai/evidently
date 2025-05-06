@@ -313,20 +313,30 @@ class ByLabelCountValue(MetricResult):
     def labels(self) -> List[Label]:
         return list(self.counts.keys())
 
+    @property
+    def _metric_config(self) -> MetricConfig:
+        try:
+            val = next(iter(self.counts.values()))
+        except StopIteration:
+            raise ValueError("Empty dataset")
+        return val.get_metric_value_location().metric
+
+    def _missing_label_value(self, label: Label, is_count: bool) -> SingleValue:
+        val = SingleValue(
+            value=0,
+            display_name=f"Missing label {label} {'count' if is_count else 'share'}",
+        )
+        val.metric_value_location = by_label_count_value_location(self._metric_config, label, is_count=is_count)
+        return val
+
     def get_label_result(self, label: Label) -> Tuple[SingleValue, SingleValue]:
         count = self.counts.get(
             label,
-            SingleValue(
-                value=0,
-                display_name=f"Missing label {label} count",
-            ),
+            self._missing_label_value(label, is_count=True),
         )
         share = self.shares.get(
             label,
-            SingleValue(
-                value=0,
-                display_name=f"Missing label {label} share",
-            ),
+            self._missing_label_value(label, is_count=False),
         )
         return count, share
 
