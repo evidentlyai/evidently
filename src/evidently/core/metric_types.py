@@ -319,7 +319,7 @@ class ByLabelCountValue(MetricResult):
             val = next(iter(self.counts.values()))
         except StopIteration:
             raise ValueError("Empty dataset")
-        return val.metric_value_location.metric
+        return val.get_metric_value_location().metric
 
     def _missing_label_value(self, label: Label, is_count: bool) -> SingleValue:
         val = SingleValue(

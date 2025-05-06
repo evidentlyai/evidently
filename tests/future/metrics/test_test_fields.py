@@ -139,6 +139,21 @@ SKIP_TEST_TYPES = {ValueDriftTest}
 
 
 def test_all_metric_tested():
+    """If this test fails, you either added new metric or new test condition
+    In all_metrics_tests.py there is a list of all combinations which is now incomplete.
+    You can add output of the assert in this test to the list. Might need to tweak a little.
+
+    New Metric:
+    You can add additional kwargs in METRIC_ARGS constant for this test to generate valid test cases.
+    New Test Condition:
+    Add corresponding alias to METRIC_TEST_TYPE_MAPPING
+
+    After you added new test cases, run test_all_test_fields.
+    You need to adjust test conditions for tests to pass. You can do it manually or semi-automatically if TRY_FIX=True.
+    Just run test_all_test_fields and it will rewrite test conditions directly in all_metrics_tests.py.
+    It re-writes only failing tests so you can adjust conditions manually.
+    If you added new test condition you need to add logic for it in fix(line) function.
+    """
     all_metric_types = set(s for s in Metric.__subtypes__() if not isabstract(s))  # - SKIP_METRIC_TYPES
     all_metric_types = {mt for mt in all_metric_types if hasattr(mt, "__calculation_type__")}
     all_test_types = set(t for t in MetricTest.__subtypes__() if not isabstract(t)) - SKIP_TEST_TYPES
