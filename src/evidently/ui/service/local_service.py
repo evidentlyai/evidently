@@ -40,7 +40,7 @@ class LocalServiceComponent(ServiceComponent):
 
     @property
     def debug_enabled(self) -> bool:
-        return self.debug or os.environ.get("EVIDENTLY_DEBUG")
+        return self.debug or os.environ.get("EVIDENTLY_DEBUG") is not None
 
     def get_api_route_handlers(self, ctx: ComponentContext):
         guard = ctx.get_component(SecurityComponent).get_auth_guard()
