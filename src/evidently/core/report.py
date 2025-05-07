@@ -405,6 +405,10 @@ class Snapshot:
     @staticmethod
     def load_dict(data: dict) -> "Snapshot":
         model = SnapshotModel.parse_obj(data)
+        return Snapshot.load_model(model)
+
+    @staticmethod
+    def load_model(model: SnapshotModel) -> "Snapshot":
         snapshot = Snapshot(report=Report([]), timestamp=model.timestamp, metadata=model.metadata, tags=model.tags)
         snapshot._metrics = model.metric_results
         snapshot._top_level_metrics = model.top_level_metrics

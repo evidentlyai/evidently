@@ -229,8 +229,8 @@ async def get_snapshot_metadata(
     return snapshot_metadata
 
 
-@get("/dashboards/{project_id:uuid}")
-async def project_dashboard(
+@get("/{project_id:uuid}")
+async def get_dashboard(
     user_id: UserID,
     project_id: ProjectID,
     project_manager: Annotated[ProjectManager, Dependency(skip_validation=True)],
@@ -241,8 +241,8 @@ async def project_dashboard(
     return dashboard
 
 
-@post("/dashboards/{project_id:uuid}")
-async def save_project_dashboard(
+@post("/{project_id:uuid}")
+async def update_dashboard(
     user_id: UserID,
     project_id: ProjectID,
     data: DashboardModel,
@@ -254,7 +254,7 @@ async def save_project_dashboard(
     return dashboard
 
 
-@post(["/v2/projects", "/projects"])
+@post("/")
 async def add_project(
     data: Project,
     project_manager: Annotated[ProjectManager, Dependency(skip_validation=True)],
@@ -270,7 +270,7 @@ async def add_project(
     return p.id
 
 
-@patch(["/v2/projects/{project_id:uuid}"])
+@patch("/{project_id:uuid}")
 async def update_project(
     user_id: UserID,
     project_id: ProjectID,
@@ -283,7 +283,7 @@ async def update_project(
     return data.id
 
 
-@delete(["/v2/projects/{project_id:uuid}", "/projects/{project_id:uuid}"])
+@delete("/{project_id:uuid}")
 async def delete_project(
     project_id: Annotated[ProjectID, Parameter(title="id of project")],
     project_manager: Annotated[ProjectManager, Dependency(skip_validation=True)],
@@ -298,7 +298,7 @@ class AddSnapshotResponse(BaseModel):
     snapshot_id: SnapshotID
 
 
-@post("/snapshots/{project_id:uuid}")
+@post("/{project_id:uuid}")
 async def add_snapshot(
     project: Annotated[Project, Dependency()],
     body: bytes,
@@ -336,8 +336,8 @@ class LabelValuesList(BaseModel):
     label_values: List[str]
 
 
-@get("/snapshots/{project_id:uuid}/metrics")
-async def get_metrics(
+@get("/{project_id:uuid}/metrics")
+async def get_snapshots_metrics(
     project_id: ProjectID,
     user_id: UserID,
     tags: Optional[str],
@@ -350,8 +350,8 @@ async def get_metrics(
     return MetricsList(metrics=metrics)
 
 
-@get("/snapshots/{project_id:uuid}/labels")
-async def get_metric_labels(
+@get("/{project_id:uuid}/labels")
+async def get_snapshots_metric_labels(
     project_id: ProjectID,
     user_id: UserID,
     tags: Optional[str],
@@ -365,8 +365,8 @@ async def get_metric_labels(
     return LabelsList(labels=labels)
 
 
-@get("/snapshots/{project_id:uuid}/label_values")
-async def get_metric_label_values(
+@get("/{project_id:uuid}/label_values")
+async def get_snapshots_metric_label_values(
     project_id: ProjectID,
     user_id: UserID,
     tags: Optional[str],
@@ -381,8 +381,8 @@ async def get_metric_label_values(
     return LabelValuesList(label_values=values)
 
 
-@post("/snapshots/{project_id:uuid}/data_series_batch")
-async def get_metrics_data_batch(
+@post("/{project_id:uuid}/data_series_batch")
+async def get_snapshots_metrics_data_batch(
     project_id: ProjectID,
     user_id: UserID,
     data: BatchMetricData,
@@ -403,23 +403,12 @@ async def get_metrics_data_batch(
 
 
 def create_projects_api(guard: Callable) -> Router:
-    return Router(
-        "",
+    projects_router_v1 = Router(
+        "/projects",
         route_handlers=[
+            # read
             Router(
-                "/v2",
-                route_handlers=[
-                    add_snapshot,
-                    project_dashboard,
-                    save_project_dashboard,
-                    get_metrics_data_batch,
-                    get_metrics,
-                    get_metric_labels,
-                    get_metric_label_values,
-                ],
-            ),
-            Router(
-                "/projects",
+                "",
                 route_handlers=[
                     list_projects,
                     list_reports,
@@ -432,15 +421,31 @@ def create_projects_api(guard: Callable) -> Router:
                     get_snapshot_metadata,
                 ],
             ),
+            # write
             Router(
-                "/projects",
+                "",
                 route_handlers=[
+                    add_project,
+                    delete_project,
                     update_project_info,
                     reload_project_snapshots,
                     delete_snapshot,
                 ],
                 guards=[guard],
             ),
+        ],
+    )
+    projects_router_v2 = Router(
+        "/projects",
+        route_handlers=[
+            # read
+            Router(
+                "",
+                route_handlers=[
+                    list_projects,
+                ],
+            ),
+            # write
             Router(
                 "",
                 route_handlers=[
@@ -450,6 +455,55 @@ def create_projects_api(guard: Callable) -> Router:
                 ],
                 guards=[guard],
             ),
+        ],
+    )
+
+    dashboard_router_v2 = Router(
+        "/dashboards",
+        route_handlers=[
+            # read
+            Router(
+                "",
+                route_handlers=[
+                    get_dashboard,
+                ],
+            ),
+            # write
+            Router(
+                "",
+                route_handlers=[
+                    update_dashboard,
+                ],
+                guards=[guard],
+            ),
+        ],
+    )
+    snapshots_router_v2 = Router(
+        "/snapshots",
+        route_handlers=[
+            # read
+            Router(
+                "",
+                route_handlers=[
+                    get_snapshots_metrics_data_batch,
+                    get_snapshots_metrics,
+                    get_snapshots_metric_labels,
+                    get_snapshots_metric_label_values,
+                ],
+            ),
+            # write
+            Router(
+                "",
+                route_handlers=[add_snapshot],
+                guards=[guard],
+            ),
+        ],
+    )
+    return Router(
+        "",
+        route_handlers=[
+            Router("", route_handlers=[projects_router_v1]),
+            Router("v2", route_handlers=[projects_router_v2, snapshots_router_v2, dashboard_router_v2]),
         ],
     )
 
