@@ -4,8 +4,15 @@ export const DashboardPanelSkeleton = ({
   height = 350,
   title,
   subtitle,
-  isShowTitle
-}: { isShowTitle?: boolean; height?: number; title?: string; subtitle?: string }) => (
+  isShowTitle,
+  skipBody
+}: {
+  isShowTitle?: boolean
+  height?: number
+  title?: string
+  subtitle?: string
+  skipBody?: boolean
+}) => (
   <Card elevation={0}>
     <CardContent sx={{ px: 0 }}>
       <Box px={3}>
@@ -34,11 +41,13 @@ export const DashboardPanelSkeleton = ({
         )}
       </Box>
 
-      {(title || subtitle) && <Divider sx={{ mb: 2, mt: 1 }} />}
+      {(title || subtitle) && !skipBody && <Divider sx={{ mb: 2, mt: 1 }} />}
 
-      <Box px={3}>
-        <Skeleton variant='rectangular' height={height} animation='wave' />
-      </Box>
+      {!skipBody && (
+        <Box px={3}>
+          <Skeleton variant='rectangular' height={height} animation='wave' />
+        </Box>
+      )}
     </CardContent>
   </Card>
 )
