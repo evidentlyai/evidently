@@ -1,4 +1,4 @@
-import { Stack } from '@mui/material'
+import { Stack, type SxProps } from '@mui/material'
 import {
   ChartDataProvider,
   ChartsLegend,
@@ -18,13 +18,21 @@ export type XAxisType = Exclude<UseChartCartesianAxisParameters['xAxis'], undefi
 export const MuiXChartPlotTemplate = ({
   series,
   xAxis,
-  SurfaceComponents
-}: { series: SeriesType[]; xAxis?: XAxisType[]; SurfaceComponents?: React.ReactNode }) => {
+  SurfaceComponents,
+  sxChartsSurface
+}: {
+  series: SeriesType[]
+  xAxis?: XAxisType[]
+  SurfaceComponents?: React.ReactNode
+  sxChartsSurface?: SxProps
+}) => {
   return (
     <>
       <ChartDataProvider series={series} xAxis={xAxis} colors={blueberryTwilightPalette}>
         <Stack direction={'row'} gap={1} height={'100%'}>
-          <ChartsSurface>
+          <ChartsSurface
+            sx={[...(Array.isArray(sxChartsSurface) ? sxChartsSurface : [sxChartsSurface])]}
+          >
             {SurfaceComponents && SurfaceComponents}
 
             <MarkPlot />

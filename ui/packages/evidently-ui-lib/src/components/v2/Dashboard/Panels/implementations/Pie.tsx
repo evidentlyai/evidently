@@ -1,4 +1,4 @@
-import { ChartsTooltip, PiePlot } from '@mui/x-charts'
+import { ChartsTooltip, PiePlot, pieArcLabelClasses } from '@mui/x-charts'
 import type { SeriesModel } from 'evidently-ui-lib/api/types/v2'
 import type { MakePanel } from '~/components/v2/Dashboard/Panels/types'
 import { PanelCardGeneral } from './helpers/general'
@@ -56,7 +56,11 @@ export const PieDashboardPanel = ({
 
   return (
     <PanelCardGeneral title={title} description={description} height={height} textCenterAlign>
-      <MuiXChartPlotTemplate series={series} SurfaceComponents={<PieSurfaceComponents />} />
+      <MuiXChartPlotTemplate
+        series={series}
+        SurfaceComponents={<PieSurfaceComponents />}
+        sxChartsSurface={{ [`& .${pieArcLabelClasses.root}`]: { fontWeight: 'bold' } }}
+      />
     </PanelCardGeneral>
   )
 }

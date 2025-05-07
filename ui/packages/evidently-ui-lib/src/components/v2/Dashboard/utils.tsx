@@ -59,12 +59,12 @@ export const castRawPanelDataToDashboardPanelProps = (
     return { type, size, title, description }
   }
 
-  if (type === 'counter' || type === 'pie') {
-    if (type === 'pie') {
-      return { type, size, title, description, aggregation, data: emptyData, labels, height }
-    }
-
+  if (type === 'counter') {
     return { type, size, title, description, aggregation, data: emptyData, labels }
+  }
+
+  if (type === 'pie') {
+    return { type, size, title, description, aggregation, data: emptyData, labels, height }
   }
 
   if (type === 'bar' || type === 'line') {
