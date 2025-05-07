@@ -159,9 +159,14 @@ class RAG:
 LLMDefinition = Union[Completion, RAG]
 
 
+class ServiceColumns(BaseModel):
+    trace_link: str = "_evidently_trace_link"
+
+
 class DataDefinition(BaseModel):
     id_column: Optional[str] = None
     timestamp: Optional[str] = None
+    service_columns: Optional[ServiceColumns] = None
     numerical_columns: Optional[List[str]] = None
     categorical_columns: Optional[List[str]] = None
     text_columns: Optional[List[str]] = None
@@ -189,6 +194,7 @@ class DataDefinition(BaseModel):
         categorical_descriptors: Optional[List[str]] = None,
         test_descriptors: Optional[List[str]] = None,
         ranking: Optional[List[Recsys]] = None,
+        service_columns: Optional[ServiceColumns] = None,
     ):
         super().__init__()
         self.id_column = id_column
@@ -204,6 +210,7 @@ class DataDefinition(BaseModel):
         self.categorical_descriptors = categorical_descriptors if categorical_descriptors is not None else []
         self.test_descriptors = test_descriptors
         self.ranking = ranking
+        self.service_columns = service_columns
 
     def get_numerical_columns(self):
         return (self.numerical_columns or []) + (self.numerical_descriptors or [])
@@ -675,6 +682,10 @@ class PandasDataset(Dataset):
         ):
             reserved_fields = []
             if data_definition is not None:
+                if data_definition.service_columns is not None:
+                    reserved_fields.append(data_definition.service_columns.trace_link)
+                else:
+                    reserved_fields.append(ServiceColumns().trace_link)
                 if data_definition.timestamp is not None:
                     reserved_fields.append(data_definition.timestamp)
                 if data_definition.id_column is not None:
@@ -691,6 +702,8 @@ class PandasDataset(Dataset):
                     reserved_fields.extend(data_definition.numerical_descriptors)
                 if data_definition.categorical_descriptors is not None:
                     reserved_fields.extend(data_definition.categorical_descriptors)
+            else:
+                reserved_fields = [ServiceColumns().trace_link]
             generated_data_definition = self._generate_data_definition(data, reserved_fields)
             if data_definition is None:
                 self._data_definition = generated_data_definition
@@ -709,6 +722,11 @@ class PandasDataset(Dataset):
                     self._data_definition.text_columns = generated_data_definition.text_columns
                 if self._data_definition.timestamp is None and generated_data_definition.timestamp is not None:
                     self._data_definition.timestamp = generated_data_definition.timestamp
+                if (
+                    self._data_definition.service_columns is None
+                    and generated_data_definition.service_columns is not None
+                ):
+                    self._data_definition.service_columns = generated_data_definition.service_columns
         else:
             self._data_definition = copy.deepcopy(data_definition)
         (rows, columns) = data.shape
@@ -748,6 +766,7 @@ class PandasDataset(Dataset):
 
         return DataDefinition(
             timestamp=datetime[0] if len(datetime) == 1 else None,
+            service_columns=ServiceColumns(),
             numerical_columns=numerical,
             categorical_columns=categorical,
             datetime_columns=datetime if len(datetime) != 1 else [],
