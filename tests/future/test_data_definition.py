@@ -6,6 +6,7 @@ import pytest
 
 from evidently.core.datasets import DataDefinition
 from evidently.core.datasets import Dataset
+from evidently.core.datasets import ServiceColumns
 from evidently.core.datasets import infer_column_type
 from evidently.legacy.core import ColumnType
 
@@ -95,6 +96,13 @@ def test_infer_column_type(data: pd.Series, expected: ColumnType):
             ("datetime", "datetime_2"),
             ("text_1", "text_2"),
         ),
+        (
+            DataDefinition(service_columns=ServiceColumns(trace_link="another_trace_link")),
+            ("num_1", "num_2", "num_3"),
+            ("cat_1", "cat_2", "cat_3"),
+            ("datetime", "datetime_2"),
+            ("text_1", "text_2", "_evidently_trace_link"),
+        ),
     ],
 )
 def test_data_definition(definition, numerical, categorical, datetime_cols, text):
@@ -110,6 +118,7 @@ def test_data_definition(definition, numerical, categorical, datetime_cols, text
             datetime_2=pd.date_range("2025-01-01", periods=11, freq="D"),
             text_1=pd.Series(["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k"]),
             text_2=pd.Series(["a", "b", "c", "d", "e", "a", "b", "c", "d", "e", "f"]),
+            _evidently_trace_link=pd.Series(["a", "b", "c", "d", "e", "a", "b", "c", "d", "e", "f"]),
         )
     )
     dataset = Dataset.from_pandas(data, data_definition=definition)
