@@ -36,6 +36,7 @@ def ui(
         help=f"Comma-separated list of demo projects to generate. Possible values: [{'|'.join(['all'] + DEMO_PROJECTS_NAMES)}]",
     ),
     secret: Optional[str] = Option(None, help="Secret for writing operations"),
+    litestar_request_max_body_size: Optional[int] = Option(None, help="Request body size limit"),
 ):
     """Start Evidently UI service"""
     if os.environ.get("EXPERIMENTAL_DETERMINISTIC_UUID"):
@@ -62,5 +63,11 @@ def ui(
             if not has_demo_project:
                 echo(f"Generating demo project '{dp.name}'...")
                 dp.create(workspace)
-    config = get_config(host=host, port=port, workspace=workspace, secret=secret)
+    config = get_config(
+        host=host,
+        port=port,
+        workspace=workspace,
+        secret=secret,
+        request_max_body_size=litestar_request_max_body_size,
+    )
     run(config)

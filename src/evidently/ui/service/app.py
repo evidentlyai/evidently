@@ -1,4 +1,5 @@
 import os
+from typing import Optional
 
 import uvicorn
 
@@ -31,13 +32,16 @@ def get_config(
     host: str = "127.0.0.1",
     port: int = 8000,
     workspace: str = "workspace",
-    secret: str = None,
-    conf_path: str = None,
+    secret: Optional[str] = None,
+    conf_path: Optional[str] = None,
+    request_max_body_size: Optional[int] = None,
 ):
     settings.configure(settings_module=conf_path)
-    config = load_config(LocalConfig, settings)
+    config: LocalConfig = load_config(LocalConfig, settings)
     config.service.host = host
     config.service.port = port
+    if request_max_body_size is not None:
+        config.litestar.request_max_body_size = request_max_body_size
     if not isinstance(config.storage, LocalStorageComponent):
         raise ValueError("Storage component is not a LocalStorageComponent")
     config.storage.path = workspace
