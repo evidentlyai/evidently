@@ -66,7 +66,7 @@ class RemotePrompt(Prompt):
         return self._manager.get_version(self.project_id, self.id, version)
 
     def bump_version(self, content: str):
-        return self._manager.bump_prompt_version(self.id, content)
+        return self._manager.bump_prompt_version(self.project_id, self.id, content)
 
 
 class RemotePromptManager:
