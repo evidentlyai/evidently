@@ -1,10 +1,15 @@
 import uuid
 from datetime import datetime
 from typing import TYPE_CHECKING
+from typing import List
+from typing import Literal
 from typing import Optional
+from typing import Union
 
 from evidently._pydantic_compat import BaseModel
 from evidently._pydantic_compat import Field
+from evidently._pydantic_compat import PrivateAttr
+from evidently.errors import EvidentlyError
 from evidently.ui.service.type_aliases import ZERO_UUID
 from evidently.ui.service.type_aliases import ProjectID
 from evidently.ui.service.type_aliases import UserID
@@ -27,7 +32,7 @@ class Prompt(BaseModel):
     id: PromptID = ZERO_UUID
     project_id: ProjectID = ZERO_UUID
     name: str
-    metadata: PromptMetadata = PromptMetadata
+    metadata: PromptMetadata = PromptMetadata()
 
 
 class PromptVersionMetadata(BaseModel):
@@ -39,48 +44,94 @@ class PromptVersionMetadata(BaseModel):
 class PromptVersion(BaseModel):
     id: PromptVersionID = ZERO_UUID
     prompt_id: PromptID = ZERO_UUID
-    version: str
+    version: int
     metadata: PromptVersionMetadata = PromptVersionMetadata()
     content: str
+
+
+VersionOrLatest = Union[int, Literal["latest"]]
+
+
+class RemotePrompt(Prompt):
+    _manager: "RemotePromptManager" = PrivateAttr()
+
+    def bind(self, manager: "RemotePromptManager") -> "RemotePrompt":
+        self._manager = manager
+        return self
+
+    def list_versions(self) -> List[PromptVersion]:
+        return self._manager.list_versions(self.project_id, self.id)
+
+    def get_version(self, version: VersionOrLatest = "latest") -> PromptVersion:
+        return self._manager.get_version(self.project_id, self.id, version)
+
+    def bump_version(self, content: str):
+        return self._manager.bump_prompt_version(self.id, content)
 
 
 class RemotePromptManager:
     def __init__(self, workspace: "CloudWorkspace"):
         self._ws = workspace
 
-    def get_or_create_prompt(self, project_id: ProjectID, name: str) -> Prompt:
-        prompt = self.get_prompt(project_id, name)
-        if prompt is None:
+    def list_prompts(self, project_id: ProjectID) -> List[RemotePrompt]:
+        return [
+            p.bind(self)
+            for p in self._ws._request(f"/api/prompts/{project_id}/prompt", "GET", response_model=List[RemotePrompt])
+        ]
+
+    def get_or_create_prompt(self, project_id: ProjectID, name: str) -> RemotePrompt:
+        try:
+            return self.get_prompt(project_id, name)
+        except EvidentlyError as e:
+            if not e.get_message() == "EvidentlyError: prompt not found":
+                raise e
             return self.create_prompt(project_id, name)
-        return prompt
 
-    def get_prompt(self, project_id: ProjectID, name: str) -> Prompt:
+    def get_prompt(self, project_id: ProjectID, name: str) -> RemotePrompt:
         return self._ws._request(
-            f"/api/prompts/{project_id}/prompt-by-name", "GET", query_params={"name": name}, response_model=Prompt
-        )
+            f"/api/prompts/{project_id}/prompt-by-name", "GET", query_params={"name": name}, response_model=RemotePrompt
+        ).bind(self)
 
-    def get_prompt_by_id(self, prompt_id: PromptID) -> Prompt:
-        return self._ws._request("/api/prompts", "GET", response_model=Prompt)
-
-    def create_prompt(self, project_id: ProjectID, name: str) -> Prompt:
+    def get_prompt_by_id(self, project_id: ProjectID, prompt_id: PromptID) -> RemotePrompt:
         return self._ws._request(
-            f"/api/prompts/{project_id}",
+            f"/api/prompts/{project_id}/prompt/{prompt_id}", "GET", response_model=RemotePrompt
+        ).bind(self)
+
+    def create_prompt(self, project_id: ProjectID, name: str) -> RemotePrompt:
+        return self._ws._request(
+            f"/api/prompts/{project_id}/prompt",
             "POST",
             body=Prompt(name=name, metadata=PromptMetadata()).dict(),
-            response_model=Prompt,
+            response_model=RemotePrompt,
+        ).bind(self)
+
+    def list_versions(self, project_id: ProjectID, prompt_id: PromptID) -> List[PromptVersion]:
+        return self._ws._request(
+            f"/api/prompts/{project_id}/prompt/{prompt_id}/version", "GET", response_model=List[PromptVersion]
         )
 
-    def get_version(self, prompt_id: PromptID, version: str) -> PromptVersion:
-        project_id = self.get_prompt_by_id(prompt_id).project_id
+    def get_version(
+        self, project_id: ProjectID, prompt_id: PromptID, version: VersionOrLatest = "latest"
+    ) -> PromptVersion:
         return self._ws._request(
-            f"/api/prompts/{project_id}/prompts/{prompt_id}/version/{version}", "GET", response_model=PromptVersion
+            f"/api/prompts/{project_id}/prompt/{prompt_id}/version/{version}", "GET", response_model=PromptVersion
         )
 
-    def create_version(self, prompt_id: PromptID, version: str, content: str) -> PromptVersion:
-        project_id = self.get_prompt_by_id(prompt_id).project_id
+    def create_version(self, project_id: ProjectID, prompt_id: PromptID, version: int, content: str) -> PromptVersion:
         return self._ws._request(
-            f"/api/prompts/{project_id}/prompts/{prompt_id}/versions/",
+            f"/api/prompts/{project_id}/prompt/{prompt_id}/version",
             "POST",
             body=PromptVersion(version=version, content=content).dict(),
             response_model=PromptVersion,
         )
+
+    def bump_prompt_version(self, project_id: ProjectID, prompt_id: PromptID, content: str) -> PromptVersion:
+        # todo: single request?
+        try:
+            latest = self.get_version(project_id, prompt_id)
+            version = latest.version + 1
+        except EvidentlyError as e:
+            if e.get_message() != "EvidentlyError: prompt version not found":
+                raise e
+            version = 1
+        return self.create_version(project_id, prompt_id, version, content)
