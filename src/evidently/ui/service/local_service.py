@@ -4,6 +4,7 @@ import time
 from typing import Dict
 from typing import Optional
 
+import litestar
 from litestar import Litestar
 from litestar import Request
 from litestar import Response
@@ -117,7 +118,14 @@ class LitestarComponent(Component):
     request_max_body_size: Optional[int] = None
 
     def finalize(self, ctx: ComponentContext, app: Litestar):
-        app.request_max_body_size = self.request_max_body_size
+        if self.request_max_body_size is not None:
+            if hasattr(app, "request_max_body_size"):
+                app.request_max_body_size = self.request_max_body_size
+            else:
+                logging.warning(
+                    f"Litestar version {litestar.__version__.formatted()}"
+                    f" does not support 'request_max_body_size' parameter"
+                )
 
 
 class LocalConfig(AppConfig):
