@@ -1,3 +1,4 @@
+import json
 import uuid
 from datetime import datetime
 from typing import TYPE_CHECKING
@@ -68,6 +69,12 @@ class RemotePrompt(Prompt):
     def bump_version(self, content: str):
         return self._manager.bump_prompt_version(self.project_id, self.id, content)
 
+    def delete(self):
+        return self._manager.delete_prompt(self.project_id, self.id)
+
+    def delete_version(self, version_id: PromptVersionID):
+        return self._manager.delete_version(self.project_id, version_id)
+
 
 class RemotePromptManager:
     def __init__(self, workspace: "CloudWorkspace"):
@@ -105,6 +112,16 @@ class RemotePromptManager:
             response_model=RemotePrompt,
         ).bind(self)
 
+    def delete_prompt(self, project_id: ProjectID, prompt_id: PromptID):
+        return self._ws._request(f"/api/prompts/{project_id}/prompt/{prompt_id}", "DELETE")
+
+    def update_prompt(self, project_id: ProjectID, prompt: Prompt):
+        self._ws._request(
+            f"/api/prompts/{project_id}/prompt/{prompt.id}",
+            "PUT",
+            body=json.loads(prompt.json()),
+        )
+
     def list_versions(self, project_id: ProjectID, prompt_id: PromptID) -> List[PromptVersion]:
         return self._ws._request(
             f"/api/prompts/{project_id}/prompt/{prompt_id}/version", "GET", response_model=List[PromptVersion]
@@ -117,6 +134,11 @@ class RemotePromptManager:
             f"/api/prompts/{project_id}/prompt/{prompt_id}/version/{version}", "GET", response_model=PromptVersion
         )
 
+    def get_version_by_id(self, project_id: ProjectID, prompt_version_id: PromptVersionID) -> PromptVersion:
+        return self._ws._request(
+            f"/api/prompts/{project_id}/version/{prompt_version_id}", "GET", response_model=PromptVersion
+        )
+
     def create_version(self, project_id: ProjectID, prompt_id: PromptID, version: int, content: str) -> PromptVersion:
         return self._ws._request(
             f"/api/prompts/{project_id}/prompt/{prompt_id}/version",
@@ -124,6 +146,9 @@ class RemotePromptManager:
             body=PromptVersion(version=version, content=content).dict(),
             response_model=PromptVersion,
         )
+
+    def delete_version(self, project_id: ProjectID, prompt_version_id: PromptVersionID):
+        self._ws._request(f"/api/prompts/{project_id}/version/{prompt_version_id}", "DELETE")
 
     def bump_prompt_version(self, project_id: ProjectID, prompt_id: PromptID, content: str) -> PromptVersion:
         # todo: single request?
