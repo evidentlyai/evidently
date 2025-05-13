@@ -37,7 +37,7 @@ export const PieDashboardPanel = ({
       ...(/\bFAIL\b|\bFAILED\b/gi.test(label) ? { color: '#b70000' } : {}),
       ...(/\bSUCCESS\b|\bPASS\b|\bPASSED\b|\bOK\b/gi.test(label) ? { color: '#098249' } : {}),
       ...(/\bWARNING\b/gi.test(label) ? { color: '#ffad01' } : {}),
-      ...(/\ERROR\b/gi.test(label) ? { color: '#6B8BA4' } : {})
+      ...(/\bERROR\b/gi.test(label) ? { color: '#6B8BA4' } : {})
     }
   })
 
