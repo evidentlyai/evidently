@@ -79,9 +79,9 @@ def test_list_snapshot(workspace: WorkspaceBase, mock_project: ProjectModel, moc
 def test_delete_snapshot(workspace: WorkspaceBase, mock_project: ProjectModel, mock_snapshot):
     project = workspace.add_project(mock_project)
     assert len(workspace.list_runs(project.id)) == 0
-    run_id = workspace.add_run(project.id, mock_snapshot)
+    run = workspace.add_run(project.id, mock_snapshot)
     assert len(workspace.list_runs(project.id)) == 1
-    workspace.delete_run(project.id, run_id)
+    workspace.delete_run(project.id, run.id)
     assert len(workspace.list_runs(project.id)) == 0
 
 
