@@ -643,6 +643,7 @@ class CloudWorkspace(RemoteWorkspace):
         headers: Dict[str, str] = None,
         form_data: bool = False,
     ) -> Union[Response, T]:
+        cookies = cookies or {}
         try:
             res = super()._request(
                 path=path,
@@ -658,6 +659,22 @@ class CloudWorkspace(RemoteWorkspace):
             return res
         except HTTPError as e:
             if self._logged_in and e.response.status_code == 401:
+                # renew token and retry
+                self._jwt_token = self._get_jwt_token()
+                cookies[self.token_cookie_name] = self.jwt_token
+                return super()._request(
+                    path,
+                    method,
+                    query_params,
+                    body,
+                    response_model,
+                    cookies=cookies,
+                    headers=headers,
+                    form_data=form_data,
+                )
+            raise
+        except EvidentlyError as e:
+            if self._logged_in and e.get_message() == "EvidentlyError: Not authorized":
                 # renew token and retry
                 self._jwt_token = self._get_jwt_token()
                 cookies[self.token_cookie_name] = self.jwt_token
