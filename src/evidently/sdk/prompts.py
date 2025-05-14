@@ -75,6 +75,9 @@ class RemotePrompt(Prompt):
     def delete_version(self, version_id: PromptVersionID):
         return self._manager.delete_version(self.project_id, version_id)
 
+    def save(self):
+        self._manager.update_prompt(self.project_id, self)
+
 
 class RemotePromptManager:
     def __init__(self, workspace: "CloudWorkspace"):
@@ -83,7 +86,7 @@ class RemotePromptManager:
     def list_prompts(self, project_id: ProjectID) -> List[RemotePrompt]:
         return [
             p.bind(self)
-            for p in self._ws._request(f"/api/prompts/{project_id}/prompt", "GET", response_model=List[RemotePrompt])
+            for p in self._ws._request(f"/api/prompts/{project_id}/prompts", "GET", response_model=List[RemotePrompt])
         ]
 
     def get_or_create_prompt(self, project_id: ProjectID, name: str) -> RemotePrompt:
@@ -96,59 +99,59 @@ class RemotePromptManager:
 
     def get_prompt(self, project_id: ProjectID, name: str) -> RemotePrompt:
         return self._ws._request(
-            f"/api/prompts/{project_id}/prompt-by-name", "GET", query_params={"name": name}, response_model=RemotePrompt
+            f"/api/prompts/{project_id}/prompts/by-name/{name}", "GET", response_model=RemotePrompt
         ).bind(self)
 
     def get_prompt_by_id(self, project_id: ProjectID, prompt_id: PromptID) -> RemotePrompt:
         return self._ws._request(
-            f"/api/prompts/{project_id}/prompt/{prompt_id}", "GET", response_model=RemotePrompt
+            f"/api/prompts/{project_id}/prompts/{prompt_id}", "GET", response_model=RemotePrompt
         ).bind(self)
 
     def create_prompt(self, project_id: ProjectID, name: str) -> RemotePrompt:
         return self._ws._request(
-            f"/api/prompts/{project_id}/prompt",
+            f"/api/prompts/{project_id}/prompts",
             "POST",
             body=Prompt(name=name, metadata=PromptMetadata()).dict(),
             response_model=RemotePrompt,
         ).bind(self)
 
     def delete_prompt(self, project_id: ProjectID, prompt_id: PromptID):
-        return self._ws._request(f"/api/prompts/{project_id}/prompt/{prompt_id}", "DELETE")
+        return self._ws._request(f"/api/prompts/{project_id}/prompts/{prompt_id}", "DELETE")
 
     def update_prompt(self, project_id: ProjectID, prompt: Prompt):
         self._ws._request(
-            f"/api/prompts/{project_id}/prompt/{prompt.id}",
+            f"/api/prompts/{project_id}/prompts/{prompt.id}",
             "PUT",
             body=json.loads(prompt.json()),
         )
 
     def list_versions(self, project_id: ProjectID, prompt_id: PromptID) -> List[PromptVersion]:
         return self._ws._request(
-            f"/api/prompts/{project_id}/prompt/{prompt_id}/version", "GET", response_model=List[PromptVersion]
+            f"/api/prompts/{project_id}/prompts/{prompt_id}/versions", "GET", response_model=List[PromptVersion]
         )
 
     def get_version(
         self, project_id: ProjectID, prompt_id: PromptID, version: VersionOrLatest = "latest"
     ) -> PromptVersion:
         return self._ws._request(
-            f"/api/prompts/{project_id}/prompt/{prompt_id}/version/{version}", "GET", response_model=PromptVersion
+            f"/api/prompts/{project_id}/prompts/{prompt_id}/versions/{version}", "GET", response_model=PromptVersion
         )
 
     def get_version_by_id(self, project_id: ProjectID, prompt_version_id: PromptVersionID) -> PromptVersion:
         return self._ws._request(
-            f"/api/prompts/{project_id}/version/{prompt_version_id}", "GET", response_model=PromptVersion
+            f"/api/prompts/{project_id}/prompt-versions/{prompt_version_id}", "GET", response_model=PromptVersion
         )
 
     def create_version(self, project_id: ProjectID, prompt_id: PromptID, version: int, content: str) -> PromptVersion:
         return self._ws._request(
-            f"/api/prompts/{project_id}/prompt/{prompt_id}/version",
+            f"/api/prompts/{project_id}/prompts/{prompt_id}/versions",
             "POST",
             body=PromptVersion(version=version, content=content).dict(),
             response_model=PromptVersion,
         )
 
     def delete_version(self, project_id: ProjectID, prompt_version_id: PromptVersionID):
-        self._ws._request(f"/api/prompts/{project_id}/version/{prompt_version_id}", "DELETE")
+        self._ws._request(f"/api/prompts/{project_id}/prompt-versions/{prompt_version_id}", "DELETE")
 
     def bump_prompt_version(self, project_id: ProjectID, prompt_id: PromptID, content: str) -> PromptVersion:
         # todo: single request?
