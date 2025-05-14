@@ -255,7 +255,7 @@ class SnapshotRef(BaseModel):
     url: str
 
     def __repr__(self):
-        return self.url
+        return f"Run ID: {self.id}\nLink: {self.url}"
 
 
 class WorkspaceBase(ABC):
