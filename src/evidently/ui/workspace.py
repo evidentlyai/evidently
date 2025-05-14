@@ -50,6 +50,7 @@ from evidently.sdk.models import SnapshotLink
 from evidently.sdk.prompts import RemotePromptManager
 from evidently.ui.storage.local.base import SNAPSHOTS_DIR_NAME
 from evidently.ui.storage.local.base import LocalState
+from evidently.ui.utils import get_html_link_to_report
 
 
 class ProjectDashboard:
@@ -256,7 +257,10 @@ class SnapshotRef(BaseModel):
     url: str
 
     def __repr__(self):
-        return f"Run ID: {self.id}\nLink: {self.url}"
+        return f"Report ID: {self.id}\nLink: {self.url}"
+
+    def _repr_html_(self):
+        return get_html_link_to_report(url_to_report=self.url, report_id=self.id)
 
 
 class WorkspaceBase(ABC):
