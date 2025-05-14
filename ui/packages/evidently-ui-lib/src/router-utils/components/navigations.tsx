@@ -10,7 +10,12 @@ import {
   type TypographyProps
 } from '@mui/material'
 import type { HTMLAttributeAnchorTarget } from 'react'
-import { Navigate, type NavigateProps, Link as ReactRouterLink } from 'react-router-dom'
+import {
+  type LinkProps,
+  Navigate,
+  type NavigateProps,
+  Link as ReactRouterLink
+} from 'react-router-dom'
 import { makeRouteUrl } from 'router-utils/router-builder'
 import type { GetLinkParams, MatchAny } from 'router-utils/types'
 import { assertNever } from '~/utils'
@@ -44,7 +49,9 @@ const RouterLinkTemplate = (props: RouterLinkTemplateComponentProps) => {
   )
 }
 
-type RLB = {
+type CommonLinkProps = Omit<LinkProps, 'to' | 'relative'>
+
+type RLB = CommonLinkProps & {
   to: string
   title?: string
   target?: HTMLAttributeAnchorTarget | undefined
@@ -62,11 +69,12 @@ type RLL = {
   children?: React.ReactNode
   to: string
   title?: string
+  linkProps?: CommonLinkProps
 } & TypographyProps
 
-const RLLComponent = ({ children, to, title, ...typographyProps }: RLL) => {
+const RLLComponent = ({ children, to, title, linkProps, ...typographyProps }: RLL) => {
   return (
-    <Link component={ReactRouterLink} to={to} sx={typographyProps.sx}>
+    <Link component={ReactRouterLink} to={to} sx={typographyProps.sx} {...linkProps}>
       <>
         {title && <Typography {...typographyProps}>{title}</Typography>}
         {children}
@@ -75,7 +83,7 @@ const RLLComponent = ({ children, to, title, ...typographyProps }: RLL) => {
   )
 }
 
-type RLT = {
+type RLT = CommonLinkProps & {
   to: string
 } & TabProps
 
@@ -83,7 +91,7 @@ const RLTComponent = ({ to, ...tabProps }: RLT) => {
   return <Tab component={ReactRouterLink} to={to} {...tabProps} />
 }
 
-type RLI = { to: string; IconButtonProps?: IconButtonProps }
+type RLI = { to: string; IconButtonProps?: CommonLinkProps & IconButtonProps }
 
 const RLIComponent = ({ to, IconButtonProps }: RLI) => {
   return <IconButton component={ReactRouterLink} to={to} {...IconButtonProps} />

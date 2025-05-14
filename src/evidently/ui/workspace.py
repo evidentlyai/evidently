@@ -47,6 +47,7 @@ from evidently.sdk.models import DashboardPanelPlot
 from evidently.sdk.models import DashboardTabModel
 from evidently.sdk.models import ProjectModel
 from evidently.sdk.models import SnapshotLink
+from evidently.sdk.prompts import RemotePromptManager
 from evidently.ui.storage.local.base import SNAPSHOTS_DIR_NAME
 from evidently.ui.storage.local.base import LocalState
 
@@ -569,6 +570,7 @@ class CloudWorkspace(RemoteWorkspace):
         self._jwt_token: Optional[str] = None
         self._logged_in: bool = False
         super().__init__(base_url=url if url is not None else self.URL)
+        self.prompts = RemotePromptManager(self)
 
     def _get_jwt_token(self):
         return super()._request("/api/users/login", "GET", headers={TOKEN_HEADER_NAME: self.token}).text
