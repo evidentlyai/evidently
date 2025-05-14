@@ -13,11 +13,13 @@ from typing import Sequence
 from typing import Type
 from typing import Union
 from typing import overload
+from urllib.parse import urljoin
 
 import pandas as pd
 from requests import HTTPError
 from requests import Response
 
+from evidently._pydantic_compat import BaseModel
 from evidently._pydantic_compat import parse_obj_as
 from evidently.core.datasets import DataDefinition
 from evidently.core.datasets import Dataset
@@ -45,6 +47,7 @@ from evidently.sdk.models import DashboardPanelPlot
 from evidently.sdk.models import DashboardTabModel
 from evidently.sdk.models import ProjectModel
 from evidently.sdk.models import SnapshotLink
+from evidently.ui.storage.local.base import SNAPSHOTS_DIR_NAME
 from evidently.ui.storage.local.base import LocalState
 
 
@@ -246,6 +249,15 @@ class _RemoteProjectDashboard(ProjectDashboard):
         self._workspace.save_dashboard(self.project_id, _dashboard_model)
 
 
+class SnapshotRef(BaseModel):
+    id: SnapshotID
+    project_id: ProjectID
+    url: str
+
+    def __repr__(self):
+        return self.url
+
+
 class WorkspaceBase(ABC):
     def create_project(
         self,
@@ -287,7 +299,11 @@ class WorkspaceBase(ABC):
     def _add_run(self, project_id: STR_UUID, snapshot: Snapshot) -> SnapshotID:
         raise NotImplementedError
 
-    def add_run(self, project_id: STR_UUID, run: Snapshot, include_data: bool = False) -> SnapshotID:
+    @abstractmethod
+    def _get_snapshot_url(self, project_id: STR_UUID, snapshot_id: STR_UUID) -> str:
+        raise NotImplementedError
+
+    def add_run(self, project_id: STR_UUID, run: Snapshot, include_data: bool = False) -> SnapshotRef:
         snapshot_id = self._add_run(project_id, run)
         if include_data:
             current, reference = run.context._input_data
@@ -306,7 +322,7 @@ class WorkspaceBase(ABC):
                     None,
                     link=SnapshotLink(snapshot_id=snapshot_id, dataset_type="output", dataset_subtype="reference"),
                 )
-        return snapshot_id
+        return SnapshotRef(id=snapshot_id, project_id=project_id, url=self._get_snapshot_url(project_id, snapshot_id))
 
     @abstractmethod
     def delete_run(self, project_id: STR_UUID, snapshot_id: STR_UUID):
@@ -369,6 +385,9 @@ class Workspace(WorkspaceBase):
 
     def update_project(self, project: ProjectModel):
         self.state.write_project(project)
+
+    def _get_snapshot_url(self, project_id: STR_UUID, snapshot_id: STR_UUID) -> str:
+        return os.path.join(self.path, str(project_id), SNAPSHOTS_DIR_NAME, str(snapshot_id) + ".json")
 
     def _add_run(self, project_id: STR_UUID, snapshot: Snapshot) -> SnapshotID:
         snapshot_id = new_id()
@@ -491,6 +510,9 @@ class RemoteWorkspace(RemoteBase, WorkspaceBase):  # todo: reuse cloud ws
             method="PATCH",
             body=project.dict(),
         )
+
+    def _get_snapshot_url(self, project_id: STR_UUID, snapshot_id: STR_UUID) -> str:
+        return urljoin(self.base_url, f"/projects/{project_id}/reports/{snapshot_id}")
 
     def _add_run(self, project_id: STR_UUID, snapshot: Snapshot):
         data = snapshot.dump_dict()
@@ -696,6 +718,9 @@ class CloudWorkspace(RemoteWorkspace):
         df = pd.read_parquet(io.BytesIO(file_content))
         data_def = parse_obj_as(DataDefinition, metadata["data_definition"])
         return Dataset.from_pandas(df, data_definition=data_def)
+
+    def _get_snapshot_url(self, project_id: STR_UUID, snapshot_id: STR_UUID) -> str:
+        return urljoin(self.base_url, f"/v2/projects/{project_id}/explore/{snapshot_id}")
 
     def _add_run(self, project_id: STR_UUID, snapshot: Snapshot) -> SnapshotID:
         data = snapshot.dump_dict()
