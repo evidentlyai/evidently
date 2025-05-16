@@ -1,4 +1,4 @@
-HTML_LINK_TO_REPORT_TEMPLATE = """
+HTML_LINK_WITH_ID_TEMPLATE = """
 <style>
 .evidently-links.container {{
     padding: 10px;
@@ -48,13 +48,29 @@ HTML_LINK_TO_REPORT_TEMPLATE = """
 </style>
 
 <div class="evidently-links container">
-    <a target="_blank" href="{url_to_report}">View report</a>
+    <a target="_blank" href="{button_url}">{button_title}</a>
     <p>
-        <b>Report ID:</b> <span>{report_id}</span>
+        <b>{id_title}:</b> <span>{id}</span>
     </p>
 </div>
 """
 
 
-def get_html_link_to_report(*, url_to_report: str, report_id: str) -> str:
-    return HTML_LINK_TO_REPORT_TEMPLATE.format(url_to_report=url_to_report, report_id=report_id)
+def html_link_template(*, id: str, button_url: str, button_title: str, id_title: str) -> str:
+    params = dict(
+        id=id,
+        id_title=id_title,
+        button_title=button_title,
+        button_url=button_url,
+    )
+
+    return HTML_LINK_WITH_ID_TEMPLATE.format(**params)
+
+
+def get_html_link_to_report(*, url_to_report: str, report_id: str):
+    return html_link_template(
+        id=report_id,
+        id_title="Report ID",
+        button_title="View report",
+        button_url=url_to_report,
+    )
