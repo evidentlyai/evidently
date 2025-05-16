@@ -3,7 +3,6 @@ import datetime
 import json
 from abc import ABC
 from abc import abstractmethod
-from enum import Enum
 from typing import IO
 from typing import TYPE_CHECKING
 from typing import Any
@@ -14,7 +13,6 @@ from typing import List
 from typing import Optional
 from typing import Set
 from typing import Type
-from typing import TypeVar
 from typing import Union
 
 import uuid6
@@ -37,7 +35,6 @@ from evidently.legacy.ui.dashboards.test_suites import TestFilter
 from evidently.legacy.ui.type_aliases import BlobID
 from evidently.legacy.ui.type_aliases import DataPoints
 from evidently.legacy.ui.type_aliases import DataPointsAsType
-from evidently.legacy.ui.type_aliases import EntityID
 from evidently.legacy.ui.type_aliases import OrgID
 from evidently.legacy.ui.type_aliases import PointType
 from evidently.legacy.ui.type_aliases import ProjectID
@@ -49,6 +46,12 @@ from evidently.legacy.utils import NumpyEncoder
 from evidently.legacy.utils.dashboard import TemplateParams
 from evidently.legacy.utils.dashboard import inline_iframe_html_template
 from evidently.legacy.utils.sync import sync_api
+from evidently.ui.service.base import Entity
+from evidently.ui.service.base import EntityType
+from evidently.ui.service.base import Org
+from evidently.ui.service.base import Team
+from evidently.ui.service.base import User
+from evidently.ui.service.base import _default_dashboard
 
 if TYPE_CHECKING:
     from evidently.legacy.ui.managers.projects import ProjectManager
@@ -113,50 +116,6 @@ class SnapshotMetadata(BaseModel):
             report = await self.as_report_base()
             _, self._dashboard_info, self._additional_graphs = report._build_dashboard_info()
         return self._additional_graphs
-
-
-class EntityType(Enum):
-    Dataset = "dataset"
-    Project = "project"
-    Team = "team"
-    Org = "org"
-
-
-class Entity(BaseModel):
-    entity_type: ClassVar[EntityType]
-    id: EntityID
-
-
-class Org(Entity):
-    entity_type: ClassVar[EntityType] = EntityType.Org
-    id: OrgID = Field(default_factory=new_id)
-    name: str
-
-
-class Team(Entity):
-    entity_type: ClassVar[EntityType] = EntityType.Team
-    id: TeamID = Field(default_factory=new_id)
-    name: str
-    org_id: Optional[OrgID]
-
-
-UT = TypeVar("UT", bound="User")
-
-
-class User(BaseModel):
-    id: UserID = Field(default_factory=new_id)
-    name: str
-    email: str = ""
-
-    def merge(self: UT, other: "User") -> UT:
-        kwargs = {f: getattr(other, f, None) or getattr(self, f) for f in self.__fields__}
-        return self.__class__(**kwargs)
-
-
-def _default_dashboard():
-    from evidently.legacy.ui.dashboards import DashboardConfig
-
-    return DashboardConfig(name="", panels=[])
 
 
 class Project(Entity):
@@ -387,3 +346,18 @@ class DataStorage(ABC):
         timestamp_end: Optional[datetime.datetime],
     ) -> DataPointsAsType[PointType]:
         raise NotImplementedError
+
+
+__all__ = [
+    "EntityType",
+    "Entity",
+    "Org",
+    "Project",
+    "Team",
+    "User",
+    "DataStorage",
+    "ProjectMetadataStorage",
+    "Snapshot",
+    "BlobMetadata",
+    "AnySnapshot",
+]
