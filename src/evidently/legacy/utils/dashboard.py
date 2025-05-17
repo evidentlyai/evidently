@@ -167,23 +167,46 @@ def inline_iframe_html_template(params: TemplateParams):
     resize_script = """
         <script type="application/javascript">
             ;(function () {
-              if (window.evidentlyResizeIframeInterval) {
-                clearInterval(window.evidentlyResizeIframeInterval)
-                window.evidentlyResizeIframeInterval = null
+              const main = () => {
+                window.evidentlyResizeTargetAndIframePair ??= []
+                window.evidentlyResizeObserver ??= createObserver()
+
+                document.querySelectorAll('iframe.evidently-ui-iframe').forEach((iframe) => {
+                  iframe.onload = () => {
+                    const targetToObserveResize = iframe.contentWindow.document.body
+
+                    window.evidentlyResizeTargetAndIframePair.push([targetToObserveResize, iframe])
+                    window.evidentlyResizeObserver.observe(targetToObserveResize)
+                  }
+                })
               }
 
-              ;(function (INTERVAL = 100) {
-                window.evidentlyResizeIframeInterval = setInterval(() => {
-                  document
-                    .querySelectorAll('iframe.evidently-ui-iframe')
-                    .forEach((iframe) => (iframe?.checkVisibility() ?? true) && resizeIFrameHeightToFitContent(iframe))
-                }, INTERVAL)
+              const createObserver = () =>
+                new ResizeObserver((entities) => {
+                  for (const entity of entities) {
+                    const resizeTargetAndIframePair = window.evidentlyResizeTargetAndIframePair.find(
+                      ([target]) => entity.target.isSameNode(target)
+                    )
 
-                const getIframeHeight = (iframe) => iframe.contentWindow.document.body.scrollHeight
+                    if (!resizeTargetAndIframePair) {
+                      break
+                    }
 
-                const resizeIFrameHeightToFitContent = (iframe) =>
-                  iframe.height !== getIframeHeight(iframe) && (iframe.height = getIframeHeight(iframe))
-              })()
+                    const [, iframe] = resizeTargetAndIframePair
+
+                    const iframeHeight = iframe.contentWindow.document.body.scrollHeight
+                    const newHeight = iframeHeight + 10
+
+                    if (iframeHeight === 0 || Number(iframe.height) === newHeight) {
+                      break
+                    }
+
+                    // set new height
+                    iframe.height = newHeight
+                  }
+                })
+
+              main()
             })()
         </script>
     """
