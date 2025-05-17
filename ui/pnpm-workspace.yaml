@@ -4,3 +4,4 @@ packages:
   - 'service'
   - 'service_v2'
   - 'standalone'
+  - 'e2e-tests-for-metrics'
