@@ -13,7 +13,11 @@ const rootElement = document.getElementById('root')
 if (rootElement) {
   ReactDOM.createRoot(rootElement).render(
     <React.StrictMode>
-      <ThemeProvider theme={theme}>
+      <ThemeProvider
+        theme={theme}
+        // @ts-ignore // TODO: check new version of MUI
+        forceThemeRerender
+      >
         <CssBaseline />
         <RouterProvider router={router} />
       </ThemeProvider>

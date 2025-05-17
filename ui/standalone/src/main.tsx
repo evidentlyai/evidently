@@ -18,7 +18,11 @@ export function drawDashboard(
   if (element) {
     ReactDOM.createRoot(element).render(
       <React.StrictMode>
-        <ThemeProvider theme={theme}>
+        <ThemeProvider
+          theme={theme}
+          // @ts-ignore // TODO: check new version of MUI
+          forceThemeRerender
+        >
           <CssBaseline />
           <Box display={'flex'} justifyContent={'flex-end'} p={1}>
             <ThemeToggle />
