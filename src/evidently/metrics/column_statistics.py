@@ -7,6 +7,7 @@ from typing import Optional
 from typing import TypeVar
 from typing import Union
 
+from evidently.core.base_types import Label
 from evidently.core.datasets import Dataset
 from evidently.core.datasets import DatasetColumn
 from evidently.core.metric_types import BoundTest
@@ -34,7 +35,6 @@ from evidently.legacy.core import ColumnType
 from evidently.legacy.metric_results import DatasetColumns
 from evidently.legacy.metric_results import DatasetUtilityColumns
 from evidently.legacy.metric_results import HistogramData
-from evidently.legacy.metric_results import Label
 from evidently.legacy.metric_results import ScatterField
 from evidently.legacy.metrics import DatasetDriftMetric
 from evidently.legacy.metrics.data_drift.dataset_drift_metric import DatasetDriftMetricResults
@@ -199,21 +199,18 @@ class QuantileValueCalculation(StatisticsCalculation[QuantileValue]):
         return f"Quantile {self.metric.quantile} of {self.column}"
 
 
-CategoryCountLabel = Union[bool, Label]
-
-
 class CategoryCount(ColumnMetric, CountMetric):
     class Config:
         smart_union = True
 
-    category: Optional[CategoryCountLabel] = None
-    categories: List[CategoryCountLabel] = []
+    category: Optional[Label] = None
+    categories: List[Label] = []
 
     def __init__(
         self,
         column: str,
-        categories: Optional[List[CategoryCountLabel]] = None,
-        category: Optional[CategoryCountLabel] = None,
+        categories: Optional[List[Label]] = None,
+        category: Optional[Label] = None,
         tests: Optional[List[MetricTest]] = None,
         share_tests: Optional[List[MetricTest]] = None,
     ):

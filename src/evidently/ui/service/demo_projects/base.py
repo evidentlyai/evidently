@@ -7,8 +7,8 @@ from typing import Union
 
 from evidently import Dataset
 from evidently.core.report import Snapshot
+from evidently.ui.workspace import CloudWorkspace
 from evidently.ui.workspace import Project
-from evidently.ui.workspace import RemoteWorkspace
 from evidently.ui.workspace import Workspace
 from evidently.ui.workspace import WorkspaceBase
 
@@ -28,7 +28,7 @@ class DemoProject:
             ws = workspace
         else:
             if workspace.startswith("http"):
-                ws = RemoteWorkspace(workspace)
+                ws = CloudWorkspace(url=workspace)
             else:
                 ws = Workspace.create(workspace)
 

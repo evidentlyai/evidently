@@ -17,11 +17,11 @@ import pandas as pd
 
 from evidently._pydantic_compat import BaseModel
 from evidently._pydantic_compat import parse_obj_as
+from evidently.core.base_types import Label
 from evidently.core.tests import GenericTest
 from evidently.legacy.base_metric import DisplayName
 from evidently.legacy.core import ColumnType
 from evidently.legacy.features.generated_features import GeneratedFeatures
-from evidently.legacy.metric_results import Label
 from evidently.legacy.options.base import AnyOptions
 from evidently.legacy.options.base import Options
 from evidently.legacy.pipeline.column_mapping import ColumnMapping

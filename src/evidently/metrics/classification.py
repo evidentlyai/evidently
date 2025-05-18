@@ -8,6 +8,7 @@ from typing import Tuple
 from typing import Type
 from typing import TypeVar
 
+from evidently.core.base_types import Label
 from evidently.core.metric_types import BoundTest
 from evidently.core.metric_types import ByLabelCalculation
 from evidently.core.metric_types import ByLabelMetric
@@ -20,7 +21,6 @@ from evidently.core.report import Context
 from evidently.core.report import _default_input_data_generator
 from evidently.legacy.base_metric import InputData
 from evidently.legacy.base_metric import Metric
-from evidently.legacy.metric_results import Label
 from evidently.legacy.metrics import ClassificationConfusionMatrix
 from evidently.legacy.metrics import ClassificationDummyMetric
 from evidently.legacy.metrics import ClassificationLiftCurve
