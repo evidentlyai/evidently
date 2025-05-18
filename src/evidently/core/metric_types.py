@@ -376,6 +376,8 @@ def convert_types(val):
         return int(val)
     if isinstance(val, str):
         return val
+    if val is None:
+        return val
     raise ValueError(f"type {type(val)} not supported as Label")
 
 
