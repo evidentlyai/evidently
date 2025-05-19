@@ -109,6 +109,8 @@ class LegacyClassificationQualityByClass(
 
     def _relabel(self, context: "Context", label: Label) -> Label:
         classification = context.data_definition.get_classification("default")
+        if classification is None:
+            return label
         actual_labels = context.get_labels(classification.target, classification.prediction_labels)
         _label = None
         for actual_label in actual_labels:
@@ -120,8 +122,6 @@ class LegacyClassificationQualityByClass(
                 break
         if _label is None:
             raise ValueError(f"Failed to relabel {label}")
-        if classification is None:
-            return _label
         labels = classification.labels
         if labels is not None:
             return labels[_label]
