@@ -177,7 +177,7 @@ async def get_snapshot_download(
     s = Snapshot.load_dict(snapshot.dict())
     if report_format == "html":
         return Response(
-            s._repr_html_().encode("utf8"),
+            s.get_html_str(as_iframe=False).encode("utf8"),
             headers={"content-disposition": f"attachment;filename={snapshot_metadata.id}.html"},
         )
     if report_format == "json":
