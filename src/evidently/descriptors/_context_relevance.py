@@ -141,7 +141,7 @@ class HitAggregation(AggregationMethod[int]):
         return 1 if any([x >= self.threshold for x in scores]) else 0
 
 
-class HitRateAggregation(AggregationMethod[int]):
+class HitShareAggregation(AggregationMethod[float]):
     def __init__(self, threshold: float = 0.8):
         self.column_type = ColumnType.Categorical
         self.threshold = threshold
@@ -168,7 +168,7 @@ METHODS: Dict[str, Tuple[ScoringMethod, Type[MeanAggregation]]] = {
 AGGREGATION_METHODS = {
     "mean": MeanAggregation,
     "hit": HitAggregation,
-    "hit_rate": HitRateAggregation,
+    "hit_share": HitShareAggregation,
 }
 
 
