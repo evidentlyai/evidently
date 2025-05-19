@@ -61,22 +61,22 @@ class RemotePrompt(Prompt):
         return self
 
     def list_versions(self) -> List[PromptVersion]:
-        return self._manager.list_versions(self.project_id, self.id)
+        return self._manager.list_versions(self.id)
 
     def get_version(self, version: VersionOrLatest = "latest") -> PromptVersion:
-        return self._manager.get_version(self.project_id, self.id, version)
+        return self._manager.get_version(self.id, version)
 
     def bump_version(self, content: str):
-        return self._manager.bump_prompt_version(self.project_id, self.id, content)
+        return self._manager.bump_prompt_version(self.id, content)
 
     def delete(self):
-        return self._manager.delete_prompt(self.project_id, self.id)
+        return self._manager.delete_prompt(self.id)
 
     def delete_version(self, version_id: PromptVersionID):
-        return self._manager.delete_version(self.project_id, version_id)
+        return self._manager.delete_version(version_id)
 
     def save(self):
-        self._manager.update_prompt(self.project_id, self)
+        self._manager.update_prompt(self)
 
 
 class RemotePromptManager:
@@ -86,7 +86,9 @@ class RemotePromptManager:
     def list_prompts(self, project_id: ProjectID) -> List[RemotePrompt]:
         return [
             p.bind(self)
-            for p in self._ws._request(f"/api/prompts/{project_id}/prompts", "GET", response_model=List[RemotePrompt])
+            for p in self._ws._request(
+                "/api/prompts", "GET", query_params={"project_id": project_id}, response_model=List[RemotePrompt]
+            )
         ]
 
     def get_or_create_prompt(self, project_id: ProjectID, name: str) -> RemotePrompt:
@@ -99,67 +101,60 @@ class RemotePromptManager:
 
     def get_prompt(self, project_id: ProjectID, name: str) -> RemotePrompt:
         return self._ws._request(
-            f"/api/prompts/{project_id}/prompts/by-name/{name}", "GET", response_model=RemotePrompt
+            f"/api/prompts/by-name/{name}", "GET", query_params={"project_id": project_id}, response_model=RemotePrompt
         ).bind(self)
 
     def get_prompt_by_id(self, project_id: ProjectID, prompt_id: PromptID) -> RemotePrompt:
-        return self._ws._request(
-            f"/api/prompts/{project_id}/prompts/{prompt_id}", "GET", response_model=RemotePrompt
-        ).bind(self)
+        return self._ws._request(f"/api/prompts/{prompt_id}", "GET", response_model=RemotePrompt).bind(self)
 
     def create_prompt(self, project_id: ProjectID, name: str) -> RemotePrompt:
         return self._ws._request(
-            f"/api/prompts/{project_id}/prompts",
+            "/api/prompts/",
             "POST",
+            query_params={"project_id": project_id},
             body=Prompt(name=name, metadata=PromptMetadata()).dict(),
             response_model=RemotePrompt,
         ).bind(self)
 
-    def delete_prompt(self, project_id: ProjectID, prompt_id: PromptID):
-        return self._ws._request(f"/api/prompts/{project_id}/prompts/{prompt_id}", "DELETE")
+    def delete_prompt(self, prompt_id: PromptID):
+        return self._ws._request(f"/api/prompts/{prompt_id}", "DELETE")
 
-    def update_prompt(self, project_id: ProjectID, prompt: Prompt):
+    def update_prompt(self, prompt: Prompt):
         self._ws._request(
-            f"/api/prompts/{project_id}/prompts/{prompt.id}",
+            f"/api/prompts/{prompt.id}",
             "PUT",
             body=json.loads(prompt.json()),
         )
 
-    def list_versions(self, project_id: ProjectID, prompt_id: PromptID) -> List[PromptVersion]:
+    def list_versions(self, prompt_id: PromptID) -> List[PromptVersion]:
+        return self._ws._request(f"/api/prompts/{prompt_id}/versions", "GET", response_model=List[PromptVersion])
+
+    def get_version(self, prompt_id: PromptID, version: VersionOrLatest = "latest") -> PromptVersion:
+        return self._ws._request(f"/api/prompts/{prompt_id}/versions/{version}", "GET", response_model=PromptVersion)
+
+    def get_version_by_id(self, prompt_version_id: PromptVersionID) -> PromptVersion:
         return self._ws._request(
-            f"/api/prompts/{project_id}/prompts/{prompt_id}/versions", "GET", response_model=List[PromptVersion]
+            f"/api/prompts/prompt-versions/{prompt_version_id}", "GET", response_model=PromptVersion
         )
 
-    def get_version(
-        self, project_id: ProjectID, prompt_id: PromptID, version: VersionOrLatest = "latest"
-    ) -> PromptVersion:
+    def create_version(self, prompt_id: PromptID, version: int, content: str) -> PromptVersion:
         return self._ws._request(
-            f"/api/prompts/{project_id}/prompts/{prompt_id}/versions/{version}", "GET", response_model=PromptVersion
-        )
-
-    def get_version_by_id(self, project_id: ProjectID, prompt_version_id: PromptVersionID) -> PromptVersion:
-        return self._ws._request(
-            f"/api/prompts/{project_id}/prompt-versions/{prompt_version_id}", "GET", response_model=PromptVersion
-        )
-
-    def create_version(self, project_id: ProjectID, prompt_id: PromptID, version: int, content: str) -> PromptVersion:
-        return self._ws._request(
-            f"/api/prompts/{project_id}/prompts/{prompt_id}/versions",
+            f"/api/prompts/{prompt_id}/versions",
             "POST",
             body=PromptVersion(version=version, content=content).dict(),
             response_model=PromptVersion,
         )
 
-    def delete_version(self, project_id: ProjectID, prompt_version_id: PromptVersionID):
-        self._ws._request(f"/api/prompts/{project_id}/prompt-versions/{prompt_version_id}", "DELETE")
+    def delete_version(self, prompt_version_id: PromptVersionID):
+        self._ws._request(f"/api/prompts/prompt-versions/{prompt_version_id}", "DELETE")
 
-    def bump_prompt_version(self, project_id: ProjectID, prompt_id: PromptID, content: str) -> PromptVersion:
+    def bump_prompt_version(self, prompt_id: PromptID, content: str) -> PromptVersion:
         # todo: single request?
         try:
-            latest = self.get_version(project_id, prompt_id)
+            latest = self.get_version(prompt_id)
             version = latest.version + 1
         except EvidentlyError as e:
             if e.get_message() != "EvidentlyError: prompt version not found":
                 raise e
             version = 1
-        return self.create_version(project_id, prompt_id, version, content)
+        return self.create_version(prompt_id, version, content)

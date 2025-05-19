@@ -78,6 +78,8 @@ class BlobMetadata(BaseModel):
 
 
 class EntityType(Enum):
+    Prompt = "prompt"
+    PromptVersion = "prompt_version"
     Dataset = "dataset"
     Project = "project"
     Team = "team"
