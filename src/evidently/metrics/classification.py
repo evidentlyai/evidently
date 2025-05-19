@@ -8,6 +8,7 @@ from typing import Tuple
 from typing import Type
 from typing import TypeVar
 
+from evidently.core.base_types import Label
 from evidently.core.metric_types import BoundTest
 from evidently.core.metric_types import ByLabelCalculation
 from evidently.core.metric_types import ByLabelMetric
@@ -20,7 +21,6 @@ from evidently.core.report import Context
 from evidently.core.report import _default_input_data_generator
 from evidently.legacy.base_metric import InputData
 from evidently.legacy.base_metric import Metric
-from evidently.legacy.metric_results import Label
 from evidently.legacy.metrics import ClassificationConfusionMatrix
 from evidently.legacy.metrics import ClassificationDummyMetric
 from evidently.legacy.metrics import ClassificationLiftCurve
@@ -111,10 +111,21 @@ class LegacyClassificationQualityByClass(
         classification = context.data_definition.get_classification("default")
         if classification is None:
             return label
+        actual_labels = context.get_labels(classification.target, classification.prediction_labels)
+        _label = None
+        for actual_label in actual_labels:
+            if label == actual_label:
+                _label = label
+                break
+            if label == str(actual_label):
+                _label = actual_label
+                break
+        if _label is None:
+            raise ValueError(f"Failed to relabel {label}")
         labels = classification.labels
         if labels is not None:
-            return labels[label]
-        return label
+            return labels[_label]
+        return _label
 
     def get_additional_widgets(self, context: "Context") -> List[BaseWidgetInfo]:
         result = []

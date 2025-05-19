@@ -9,6 +9,7 @@ from typing import Tuple
 
 from evidently._pydantic_compat import PrivateAttr
 from evidently._pydantic_compat import validator
+from evidently.core.base_types import Label
 from evidently.core.container import ColumnMetricContainer
 from evidently.core.container import MetricContainer
 from evidently.core.container import MetricOrContainer
@@ -24,7 +25,6 @@ from evidently.core.metric_types import convert_tests
 from evidently.core.report import Context
 from evidently.core.report import _default_input_data_generator
 from evidently.legacy.core import ColumnType
-from evidently.legacy.metric_results import Label
 from evidently.legacy.metrics import DatasetSummaryMetric
 from evidently.legacy.model.widget import BaseWidgetInfo
 from evidently.legacy.model.widget import link_metric

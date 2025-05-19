@@ -22,12 +22,13 @@ from typing import Type
 from typing import TypeVar
 from typing import Union
 
+import numpy as np
 import typing_inspect
 
 from evidently._pydantic_compat import BaseModel
 from evidently._pydantic_compat import Field
 from evidently._pydantic_compat import validator
-from evidently.legacy.metric_results import Label
+from evidently.core.base_types import Label
 from evidently.legacy.model.dashboard import DashboardInfo
 from evidently.legacy.model.widget import AdditionalGraphInfo
 from evidently.legacy.model.widget import BaseWidgetInfo
@@ -288,6 +289,9 @@ class SingleValue(MetricResult):
 
 
 class ByLabelValue(MetricResult):
+    class Config:
+        smart_union = True
+
     values: Dict[Label, SingleValue]
 
     def labels(self) -> List[Label]:
@@ -307,8 +311,15 @@ class ByLabelValue(MetricResult):
     def to_simple_dict(self) -> object:
         return {k: v.value for k, v in self.values.items()}
 
+    @validator("values", pre=True)
+    def convert_labels(cls, value):
+        return {convert_types(k): v for k, v in value.items()}
+
 
 class ByLabelCountValue(MetricResult):
+    class Config:
+        smart_union = True
+
     counts: Dict[Label, SingleValue]
     shares: Dict[Label, SingleValue]
 
@@ -354,6 +365,22 @@ class ByLabelCountValue(MetricResult):
             v.metric_value_location = by_label_count_value_location(metric, k, True)
         for k, v in self.shares.items():
             v.metric_value_location = by_label_count_value_location(metric, k, False)
+
+    @validator("counts", "shares", pre=True)
+    def convert_labels(cls, value):
+        return {convert_types(k): v for k, v in value.items()}
+
+
+def convert_types(val):
+    if isinstance(val, (np.bool, bool)):
+        return bool(val)
+    if isinstance(val, (np.int16, np.int32, np.int64, int)):
+        return int(val)
+    if isinstance(val, str):
+        return val
+    if val is None:
+        return val
+    raise ValueError(f"type {type(val)} not supported as Label")
 
 
 class CountValue(MetricResult):
