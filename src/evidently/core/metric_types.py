@@ -38,6 +38,7 @@ from evidently.legacy.renderers.html_widgets import counter
 from evidently.legacy.renderers.html_widgets import table_data
 from evidently.legacy.tests.base_test import TestStatus
 from evidently.legacy.utils.dashboard import TemplateParams
+from evidently.legacy.utils.dashboard import file_html_template
 from evidently.legacy.utils.dashboard import inline_iframe_html_template
 from evidently.pydantic_utils import AutoAliasMixin
 from evidently.pydantic_utils import EvidentlyBaseModel
@@ -198,7 +199,7 @@ class MetricResult(AutoAliasMixin, PolymorphicModel):
         return str(self)
 
 
-def render_widgets(widgets: List[BaseWidgetInfo]):
+def render_widgets(widgets: List[BaseWidgetInfo], as_iframe: bool = False):
     items = []
     for info_item in widgets:
         for additional_graph in info_item.get_additional_graphs():
@@ -218,7 +219,8 @@ def render_widgets(widgets: List[BaseWidgetInfo]):
         dashboard_info=dashboard_info,
         additional_graphs=additional_graphs,
     )
-    return inline_iframe_html_template(template_params)
+
+    return inline_iframe_html_template(template_params) if as_iframe else file_html_template(template_params)
 
 
 TMetricReturn = Tuple[MetricResult, Optional[MetricResult]]
