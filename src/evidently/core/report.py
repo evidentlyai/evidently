@@ -331,15 +331,12 @@ class Snapshot:
                 metric_tests_widget(tests),
             ]
 
-    def get_html_str(self, as_iframe: bool):
+    def _repr_html_(self):
         from evidently.legacy.renderers.html_widgets import group_widget
 
         widgets_to_render: List[BaseWidgetInfo] = [group_widget(title="", widgets=self._widgets)] + self._tests_widgets
 
-        return render_widgets(widgets_to_render, as_iframe=as_iframe)
-
-    def _repr_html_(self):
-        return self.get_html_str(as_iframe=True)
+        return render_widgets(widgets_to_render)
 
     def render_only_fingerprint(self, fingerprint: str):
         from IPython.display import HTML
@@ -370,7 +367,7 @@ class Snapshot:
     def save_html(self, filename: Union[str, typing.IO]):
         if isinstance(filename, str):
             with open(filename, "w", encoding="utf-8") as out_file:
-                out_file.write(self.get_html_str(as_iframe=False))
+                out_file.write(self._repr_html_())
 
     def save_json(self, filename: Union[str, typing.IO]):
         if isinstance(filename, str):

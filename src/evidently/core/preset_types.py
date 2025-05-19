@@ -10,4 +10,4 @@ class PresetResult:
     widget: List[BaseWidgetInfo]
 
     def _repr_html_(self):
-        return render_widgets(self.widget, as_iframe=True)
+        return render_widgets(self.widget)
