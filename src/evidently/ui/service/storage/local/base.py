@@ -410,24 +410,35 @@ class InMemoryDataStorage(DataStorage):
                 snapshot_tags = matching_snapshots_map[snapshot_id].tags
                 snapshot_metadata = matching_snapshots_map[snapshot_id].metadata
                 value = item.value
-                filter = None
-                for f in series_filter:
-                    if f.metric in ("*", metric_type) and f.metric_labels.items() <= params.items():
-                        filter = f
-                        break
-                if filter is None:
-                    continue
-                if not (
-                    set(filter.tags) >= set(snapshot_tags) and filter.metadata.items() <= snapshot_metadata.items()
+
+                filter = next(
+                    (
+                        f
+                        for f in series_filter
+                        if f.metric in ("*", metric_type) and params.items() >= f.metric_labels.items()
+                    ),
+                    None,
+                )
+
+                if filter is None or not (
+                    set(snapshot_tags) >= set(filter.tags) and snapshot_metadata.items() >= filter.metadata.items()
                 ):
                     continue
 
                 if last_snapshot is None:
                     last_snapshot = snapshot_id
-                    sources.append(SeriesSource(snapshot_id=snapshot_id, timestamp=timestamp))
+                    sources.append(
+                        SeriesSource(
+                            snapshot_id=snapshot_id, timestamp=timestamp, tags=snapshot_tags, metadata=snapshot_metadata
+                        )
+                    )
                 if last_snapshot != snapshot_id:
                     last_snapshot = snapshot_id
-                    sources.append(SeriesSource(snapshot_id=snapshot_id, timestamp=timestamp))
+                    sources.append(
+                        SeriesSource(
+                            snapshot_id=snapshot_id, timestamp=timestamp, tags=snapshot_tags, metadata=snapshot_metadata
+                        )
+                    )
                     index += 1
                 series_id = metric_type + ":" + ",".join([f"{k}={v}" for k, v in params.items()])
                 key = (
