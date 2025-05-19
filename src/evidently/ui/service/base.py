@@ -65,6 +65,8 @@ class Series(BaseModel):
 class SeriesSource(BaseModel):
     snapshot_id: SnapshotID
     timestamp: datetime.datetime
+    tags: List[str]
+    metadata: Dict[str, str]
 
 
 class SeriesResponse(BaseModel):
