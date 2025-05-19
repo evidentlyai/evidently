@@ -193,15 +193,17 @@ class Context:
     def get_labels(self, target: str, prediction: Optional[str]) -> List[Label]:
         if self._labels is not None:
             return self._labels
-        current_labels = set(self._input_data[0].column(target).data) | set(
-            [] if prediction is None else self._input_data[0].column(prediction).data
+        current_labels = (
+            set(self._input_data[0].column(target).data)  # type: ignore[call-overload]
+            | set([] if prediction is None else self._input_data[0].column(prediction).data)  # type: ignore[call-overload]
         )
+        ref_data = self._input_data[1]
         reference_labels = (
             set()
-            if not self.has_reference
+            if not self.has_reference or ref_data is None
             else (
-                set(self._input_data[1].column(target).data)
-                | set([] if prediction is None else self._input_data[1].column(prediction).data)
+                set(ref_data.column(target).data)  # type: ignore[call-overload]
+                | set([] if prediction is None else ref_data.column(prediction).data)  # type: ignore[call-overload]
             )
         )
         self._labels = list(current_labels | reference_labels)
