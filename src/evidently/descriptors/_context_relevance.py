@@ -141,6 +141,15 @@ class HitAggregation(AggregationMethod[int]):
         return 1 if any([x >= self.threshold for x in scores]) else 0
 
 
+class HitRateAggregation(AggregationMethod[int]):
+    def __init__(self, threshold: float = 0.8):
+        self.column_type = ColumnType.Categorical
+        self.threshold = threshold
+
+    def do(self, scores: List[float]) -> float:
+        return float(sum([1 if x >= self.threshold else 0 for x in scores])) / len(scores)
+
+
 class ScoringMethod(Protocol):
     def __call__(
         self,
@@ -159,6 +168,7 @@ METHODS: Dict[str, Tuple[ScoringMethod, Type[MeanAggregation]]] = {
 AGGREGATION_METHODS = {
     "mean": MeanAggregation,
     "hit": HitAggregation,
+    "hit_rate": HitRateAggregation,
 }
 
 
