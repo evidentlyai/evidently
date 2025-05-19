@@ -1,5 +1,5 @@
 from typing import Union
 
-from pydantic import StrictBool
+from evidently._pydantic_compat import StrictBool
 
 Label = Union[StrictBool, int, str, None]

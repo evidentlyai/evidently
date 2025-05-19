@@ -109,12 +109,23 @@ class LegacyClassificationQualityByClass(
 
     def _relabel(self, context: "Context", label: Label) -> Label:
         classification = context.data_definition.get_classification("default")
+        actual_labels = context.get_labels(classification.target, classification.prediction_labels)
+        _label = None
+        for actual_label in actual_labels:
+            if label == actual_label:
+                _label = label
+                break
+            if label == str(actual_label):
+                _label = actual_label
+                break
+        if _label is None:
+            raise ValueError(f"Failed to relabel {label}")
         if classification is None:
-            return label
+            return _label
         labels = classification.labels
         if labels is not None:
-            return labels[label]
-        return label
+            return labels[_label]
+        return _label
 
     def get_additional_widgets(self, context: "Context") -> List[BaseWidgetInfo]:
         result = []
