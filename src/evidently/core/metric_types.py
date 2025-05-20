@@ -371,8 +371,27 @@ class ByLabelCountValue(MetricResult):
         return {convert_types(k): v for k, v in value.items()}
 
 
+try:
+    np_bool = np.bool  # type: ignore[attr-defined]
+except:  # noqa: E722
+    np_bool = bool
+
+
+try:
+    np_bool_ = np.bool_
+except:  # noqa: E722
+    np_bool_ = bool
+
+
 def convert_types(val):
-    if isinstance(val, (np.bool, bool)):
+    if isinstance(
+        val,
+        (
+            np_bool,
+            np_bool_,
+            bool,
+        ),
+    ):
         return bool(val)
     if isinstance(val, (np.int16, np.int32, np.int64, int)):
         return int(val)
