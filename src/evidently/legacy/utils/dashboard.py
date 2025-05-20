@@ -195,7 +195,7 @@ def inline_iframe_html_template(params: TemplateParams):
                     const [, iframe] = resizeTargetAndIframePair
 
                     const iframeHeight = iframe.contentWindow.document.body.scrollHeight
-                    const newHeight = iframeHeight + 10
+                    const newHeight = iframeHeight + 2.5
 
                     if (iframeHeight === 0 || Number(iframe.height) === newHeight) {
                       break
