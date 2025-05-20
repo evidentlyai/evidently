@@ -47,7 +47,7 @@ class Options(BaseModel):
             return self.custom[option_type]  # type: ignore[return-value]
         for possible_subclass in self.custom.keys():
             if issubclass(possible_subclass, option_type):
-                return self.custom[possible_subclass]
+                return self.custom[possible_subclass]  # type: ignore[return-value]
         return option_type()
 
     @classmethod
