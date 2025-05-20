@@ -374,13 +374,13 @@ class ByLabelCountValue(MetricResult):
 try:
     np_bool = np.bool  # type: ignore[attr-defined]
 except:  # noqa: E722
-    np_bool = bool
+    np_bool = bool  # type: ignore[assignment]
 
 
 try:
     np_bool_ = np.bool_
 except:  # noqa: E722
-    np_bool_ = bool
+    np_bool_ = bool  # type: ignore[assignment]
 
 
 def convert_types(val):
