@@ -137,7 +137,7 @@ const CustomAxesTooltipContent = () => {
 
   const dataIndex = tooltipData.at(0)?.dataIndex
 
-  const tags = dataIndex && data.sources[dataIndex] ? data.sources[dataIndex].tags : []
+  const tags = (typeof dataIndex === 'number' && data.sources?.[dataIndex]?.tags) || []
 
   return (
     <>
