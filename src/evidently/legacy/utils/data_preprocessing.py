@@ -546,7 +546,10 @@ def _get_column_presence(column_name: str, data: _InputData) -> ColumnPresenceSt
 
 def _get_column_cardinality(column_name: Optional[str], data: _InputData) -> float:
     if column_name in data.current.columns:
-        return data.current[column_name].nunique()
+        try:
+            return data.current[column_name].nunique()
+        except TypeError:
+            return data.current[column_name].count()
     return 0
 
 
@@ -571,12 +574,18 @@ def _get_column_type(
     ref_unique = None
     if data.reference is not None and column_name in data.reference.columns:
         ref_type = data.reference[column_name].dtype
-        ref_unique = data.reference[column_name].nunique()
+        try:
+            ref_unique = data.reference[column_name].nunique()
+        except TypeError:
+            ref_unique = None
     cur_type = None
     cur_unique = None
     if column_name in data.current.columns:
         cur_type = data.current[column_name].dtype
-        cur_unique = data.current[column_name].nunique()
+        try:
+            cur_unique = data.current[column_name].nunique()
+        except TypeError:
+            cur_unique = None
     if ref_type is not None and cur_type is not None:
         if ref_type != cur_type:
             available_set = ["i", "u", "f", "c", "m", "M"]
