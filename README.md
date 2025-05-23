@@ -183,7 +183,13 @@ You can choose other Presets, create Reports from indiviudal Metrics and configu
 
 This launches a demo project in the locally hosted Evidently UI. Sign up for [Evidently Cloud](https://docs.evidentlyai.com/docs/setup/cloud) to instantly get a managed version with additional features.
 
-Recommended step: create a virtual environment and activate it.
+
+if you have [uv](https://docs.astral.sh/uv/) you can run Evidently UI with a single command:
+```shell
+uv run --with evidently evidently ui --demo-projects all
+```
+
+If you haven't, create a virtual environment using the standard approach
 ```
 pip install virtualenv
 virtualenv venv
@@ -193,11 +199,6 @@ source venv/bin/activate
 After installing Evidently (`pip install evidently`), run the Evidently UI with the demo projects:
 ```
 evidently ui --demo-projects all
-```
-
-if you have [uv](https://docs.astral.sh/uv/) you can run Evidently UI with a single command:
-```shell
-uv run --with evidently evidently ui --demo-projects all
 ```
 
 Visit **localhost:8000** to access the UI.
