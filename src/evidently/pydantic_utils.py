@@ -25,6 +25,7 @@ from typing import Type
 from typing import TypeVar
 from typing import Union
 from typing import get_args
+from uuid import UUID
 
 import numpy as np
 from typing_inspect import is_union_type
@@ -310,6 +311,8 @@ def get_value_fingerprint(value: Any) -> FingerprintPart:
     if isinstance(value, (set, frozenset)):
         return tuple(get_value_fingerprint(v) for v in sorted(value, key=str))
     if isinstance(value, Callable):  # type: ignore
+        return hash(value)
+    if isinstance(value, UUID):
         return hash(value)
     raise NotImplementedError(
         f"Not implemented for value of type {value.__class__.__module__}.{value.__class__.__name__}"
