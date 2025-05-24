@@ -159,9 +159,7 @@ jobs:
         run: pip install -e .[dev,spark,fsspec,llm]
       - name: Run Tests
         if: runner.os == 'Windows'
-        run: |
-          SET JAVA_HOME=%JAVA_HOME_17_X64%
-          python -m pytest --durations=50
+        run: python -m pytest --durations=50
       - name: Run Tests
         if: runner.os == 'Linux' || runner.os == 'macOS'
         run: JAVA_HOME="${JAVA_HOME_17_X64:-$JAVA_HOME_17_arm64}" python -m pytest --durations=50
