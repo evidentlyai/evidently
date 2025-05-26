@@ -12,6 +12,7 @@ if v == 1:
     from pydantic import Field  # type: ignore[assignment]
     from pydantic import PrivateAttr
     from pydantic import SecretStr  # type: ignore[assignment]
+    from pydantic import StrictBool  # type: ignore[assignment]
     from pydantic import ValidationError  # type: ignore[assignment]
     from pydantic import create_model  # type: ignore[attr-defined,no-redef]
     from pydantic import parse_obj_as
@@ -40,6 +41,7 @@ else:
     from pydantic.v1 import Field  # type: ignore[assignment,no-redef]
     from pydantic.v1 import PrivateAttr  # type: ignore[assignment,no-redef]
     from pydantic.v1 import SecretStr  # type: ignore[assignment,no-redef]
+    from pydantic.v1 import StrictBool  # type: ignore[assignment,no-redef]
     from pydantic.v1 import ValidationError  # type: ignore[assignment,no-redef]
     from pydantic.v1 import create_model  # type: ignore[assignment,no-redef]
     from pydantic.v1 import parse_obj_as  # type: ignore[assignment,no-redef]
@@ -68,6 +70,7 @@ __all__ = [
     "parse_obj_as",
     "validator",
     "SecretStr",
+    "StrictBool",
     "SHAPE_DICT",
     "SHAPE_LIST",
     "SHAPE_SET",

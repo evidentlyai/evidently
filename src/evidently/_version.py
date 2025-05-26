@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-version_info = (0, 7, 5)
+version_info = (0, 7, 6)
 __version__ = ".".join(map(str, version_info))
 
 

@@ -111,7 +111,7 @@ setup_args = dict(
             "sqlvalidator>=0.0.20",
             "litellm>=1.60.4",
         ],
-        "spark": ["pyspark>=3.4.0"],
+        "spark": ["pyspark>=3.4.0,<4"],
         "fsspec": [
             "s3fs>=2024.9.0",
             "gcsfs>=2024.9.0",

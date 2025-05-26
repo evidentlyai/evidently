@@ -9,6 +9,7 @@ from typing import Union
 
 from uuid6 import uuid7
 
+from evidently.core.base_types import Label
 from evidently.core.datasets import DataDefinition
 from evidently.core.datasets import Dataset
 from evidently.core.metric_types import BoundTest
@@ -29,7 +30,6 @@ from evidently.legacy.base_metric import Metric as MetricV1
 from evidently.legacy.base_metric import MetricResult as MetricResultV1
 from evidently.legacy.core import ColumnType
 from evidently.legacy.core import new_id
-from evidently.legacy.metric_results import Label
 from evidently.legacy.model.widget import BaseWidgetInfo
 from evidently.legacy.options.base import Options
 from evidently.legacy.pipeline.column_mapping import RecomType
