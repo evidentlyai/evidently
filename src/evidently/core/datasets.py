@@ -650,6 +650,8 @@ def infer_column_type(column_data: pd.Series) -> ColumnType:
             return ColumnType.Categorical
     if column_data.dtype.name == "object":
         without_na = column_data.dropna()
+        if without_na.count() == 0:
+            return ColumnType.Unknown
         if isinstance(without_na.iloc[0], str) and isinstance(without_na.iloc[-1], str):
             if column_data.nunique() > (column_data.count() * 0.5):
                 return ColumnType.Text
