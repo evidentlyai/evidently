@@ -123,7 +123,7 @@ jobs:
         run: pnpm build
 
   ui-test:
-    name: UI playwright tests
+    name: UI service tests
     runs-on: ubuntu-22.04
     needs: changed_files
     if: ${{ github.event.pull_request.draft == false && needs.changed_files.outputs.evidently_python_any_modified == 'true' }}
@@ -178,6 +178,60 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: playwright-report
+          name: ui-service-playwright-report
           path: ui/service_v2/playwright-report/
+          retention-days: 30
+
+  html-visual-testing:
+    name: UI html visual tests
+    runs-on: ubuntu-22.04
+    needs: changed_files
+    if: ${{ github.event.pull_request.draft == false && needs.changed_files.outputs.evidently_python_any_modified == 'true' }}
+
+    steps:
+      - name: ⬇️ Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Install dvc
+        run: pip install 'dvc[gs]==3.50.1'
+
+      - name: Pull test data
+        run: dvc pull
+
+      - name: 📥 Install ui dependencies
+        uses: ./.github/share-actions/ui-node-pnpm-install
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.9"
+          cache: "pip"
+          cache-dependency-path: setup.py
+
+      - name: Install package
+        run: pip install -e .[dev]
+
+      - name: Install Playwright Browsers
+        working-directory: ui/html-visual-testing
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Convert jupyter notebooks to html files
+        run: ./.github/scripts/jupyter-to-html.sh
+
+      - name: Run server
+        working-directory: ui/html-visual-testing
+        run: npx serve -p 3001 dist &
+
+      - name: Wait UI to be ready to test
+        working-directory: ui/html-visual-testing
+        run: pnpm wait-on tcp:127.0.0.1:3001 -t 1m
+
+      - name: Run Service Playwright tests
+        working-directory: ui/html-visual-testing
+        run: pnpm test
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: html-visual-testing-playwright-report
+          path: ui/html-visual-testing/playwright-report/
           retention-days: 30
