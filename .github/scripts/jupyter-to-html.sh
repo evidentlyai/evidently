@@ -6,9 +6,9 @@ becho() {
 }
 
 ipynb_pattent="examples/*/metrics.ipynb"
-ui_e2e_folder="ui/e2e-tests-for-metrics"
+html_testing_folder="ui/html-visual-testing"
 
-rm -rf $ui_e2e_folder/dist example_scripts
+rm -rf $html_testing_folder/dist example_scripts
 
 becho convert notebooks to python #
 
@@ -23,7 +23,7 @@ do
   echo "prepare: $file"
 
   filename=$(basename $file)
-  file_dist="$ui_e2e_folder/dist/$filename"
+  file_dist="$html_testing_folder/dist/$filename"
 
   mkdir -p $file_dist
 
@@ -34,7 +34,7 @@ done
 
 becho generate html #
 
-for folder in $ui_e2e_folder/dist/*
+for folder in $html_testing_folder/dist/*
 do
   (
     cd $folder
@@ -49,11 +49,11 @@ becho wait running python scripts #
 wait
 
 becho write test config #
-for folder in $ui_e2e_folder/dist/*
+for folder in $html_testing_folder/dist/*
 do
   key=$(basename $folder)
   files=$(ls $folder | jq -R . | jq -s .)
   echo "{\"$key\": $files}"
-done | jq -s 'add' > $ui_e2e_folder/config.json
+done | jq -s 'add' > $html_testing_folder/config.json
 
 becho done #

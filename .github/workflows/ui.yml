@@ -182,8 +182,8 @@ jobs:
           path: ui/service_v2/playwright-report/
           retention-days: 30
 
-  e2e-metrics-test:
-    name: UI e2e metrics tests
+  html-visual-testing:
+    name: html visual testing
     runs-on: ubuntu-22.04
     needs: changed_files
     if: ${{ github.event.pull_request.draft == false && needs.changed_files.outputs.evidently_python_any_modified == 'true' }}
@@ -208,27 +208,27 @@ jobs:
         run: pip install -e .[dev]
 
       - name: Install Playwright Browsers
-        working-directory: ui/e2e-tests-for-metrics
+        working-directory: ui/html-visual-testing
         run: pnpm exec playwright install --with-deps chromium
 
-      - name: Export examples
-        run: ./.github/scripts/prepare-e2e-metrics-data.sh
+      - name: Convert jupyter notebooks to html files
+        run: ./.github/scripts/jupyter-to-html.sh
 
       - name: Run server
-        working-directory: ui/e2e-tests-for-metrics
+        working-directory: ui/html-visual-testing
         run: npx serve -p 3001 dist &
 
       - name: Wait UI to be ready to test
-        working-directory: ui/e2e-tests-for-metrics
+        working-directory: ui/html-visual-testing
         run: pnpm wait-on tcp:127.0.0.1:3001 -t 1m
 
       - name: Run Service Playwright tests
-        working-directory: ui/e2e-tests-for-metrics
+        working-directory: ui/html-visual-testing
         run: pnpm test
 
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: metrics-e2e-playwright-report
-          path: ui/e2e-tests-for-metrics/playwright-report/
+          path: ui/html-visual-testing/playwright-report/
           retention-days: 30
