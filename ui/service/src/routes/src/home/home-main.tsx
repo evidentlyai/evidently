@@ -1,7 +1,7 @@
 import { responseParser } from 'evidently-ui-lib/api/client-heplers'
-import { NavigationProgress } from 'evidently-ui-lib/components/NavigationProgress'
 import { ServiceHeader } from 'evidently-ui-lib/components/ServiceHeader'
 import { BreadCrumbs } from 'evidently-ui-lib/router-utils/components/breadcrumbs'
+import { NavigationProgressWithFetchers } from 'evidently-ui-lib/router-utils/components/navigation-progress'
 import { useCrumbsFromHandle, useCurrentRouteParams } from 'evidently-ui-lib/router-utils/hooks'
 import type { CrumbDefinition } from 'evidently-ui-lib/router-utils/router-builder'
 import { Box } from 'evidently-ui-lib/shared-dependencies/mui-material'
@@ -30,7 +30,7 @@ export const Component = () => {
 
   return (
     <>
-      <NavigationProgress />
+      <NavigationProgressWithFetchers />
       <ScrollRestoration />
       <ServiceHeader version={loaderData.version} HomeLink={HomeLink} />
       <Box p={3}>
