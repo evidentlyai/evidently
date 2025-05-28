@@ -27,15 +27,7 @@ export const NavigationProgress = () => {
 
   const isNavigation = navigation.state !== 'idle'
 
-  if (!isNavigation) {
-    return null
-  }
-
-  return (
-    <Box width={1} sx={{ position: 'fixed', top: 0, left: 0, zIndex: 1000 }}>
-      <LinearProgress sx={{ height: '3px' }} />
-    </Box>
-  )
+  return <CustomProgress isProgress={isNavigation} />
 }
 
 export const FetchersProgress = () => {
@@ -52,5 +44,24 @@ export const FetchersProgress = () => {
     <>
       <CircularProgress color='warning' size={15} />
     </>
+  )
+}
+
+const CustomProgress = ({ isProgress }: { isProgress?: boolean }) => {
+  return (
+    <Box width={1} sx={{ position: 'fixed', top: 0, left: 0, zIndex: 1000 }}>
+      <Box
+        height={2}
+        sx={[
+          {
+            background: 'linear-gradient(90deg, #ed0500 0%, #FF1BE1 70%)',
+            transitionProperty: 'width',
+            transitionTimingFunction: 'cubic-bezier(0.22, 0.61, 0.36, 1);'
+          },
+          { width: 0 },
+          Boolean(isProgress) && { transitionDuration: '10s', width: 0.8 }
+        ]}
+      />
+    </Box>
   )
 }
