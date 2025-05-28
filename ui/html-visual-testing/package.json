@@ -1,0 +1,14 @@
+{
+  "name": "html-visual-testing",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "test": "playwright test"
+  },
+  "dependencies": {
+  },
+  "devDependencies": {
+    "wait-on": "^7.1.0",
+    "@playwright/test": "^1.43.0"
+  }
+}

@@ -529,7 +529,9 @@ def get_default_render_ref(title: str, result: MetricResult, ref_result: MetricR
                 title=title,
                 size=WidgetSize.FULL,
                 column_names=["Label", "Current value", "Reference value"],
-                data=[(k, f"{v:0.3f}", f"{ref_result.values[k].value}") for k, v in result.values.items()],
+                data=sorted(
+                    [(k, f"{v:0.3f}", f"{ref_result.values[k].value}") for k, v in result.values.items()],
+                ),
             )
         ]
     if isinstance(result, ByLabelCountValue):
@@ -539,7 +541,9 @@ def get_default_render_ref(title: str, result: MetricResult, ref_result: MetricR
                 title=title,
                 size=WidgetSize.FULL,
                 column_names=["Label", "Current value", "Reference value"],
-                data=[(k, f"{v:0.3f}", f"{ref_result.counts[k].value}") for k, v in result.counts.items()],
+                data=sorted(
+                    [(k, f"{v:0.3f}", f"{ref_result.counts[k].value}") for k, v in result.counts.items()],
+                ),
             )
         ]
     if isinstance(result, CountValue):
@@ -599,7 +603,9 @@ def get_default_render(title: str, result: TResult) -> List[BaseWidgetInfo]:
             table_data(
                 title=title,
                 column_names=["Label", "Value"],
-                data=[(k, f"{v.value:0.3f}") for k, v in result.values.items()],
+                data=sorted(
+                    [(k, f"{v.value:0.3f}") for k, v in result.values.items()],
+                ),
             )
         ]
     if isinstance(result, ByLabelCountValue):
@@ -607,7 +613,9 @@ def get_default_render(title: str, result: TResult) -> List[BaseWidgetInfo]:
             table_data(
                 title=title,
                 column_names=["Label", "Value"],
-                data=[(k, f"{v.value:0.3f}") for k, v in result.counts.items()],
+                data=sorted(
+                    [(k, f"{v.value:0.3f}") for k, v in result.counts.items()],
+                ),
             )
         ]
     if isinstance(result, CountValue):

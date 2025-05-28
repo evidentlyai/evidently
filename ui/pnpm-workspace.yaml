@@ -4,3 +4,4 @@ packages:
   - 'service'
   - 'service_v2'
   - 'standalone'
+  - 'html-visual-testing'
