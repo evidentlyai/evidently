@@ -1,8 +1,10 @@
 import abc
+import contextlib
 import copy
 import dataclasses
 from abc import abstractmethod
 from enum import Enum
+from typing import TYPE_CHECKING
 from typing import Any
 from typing import ClassVar
 from typing import Dict
@@ -29,6 +31,9 @@ from evidently.legacy.utils.data_preprocessing import create_data_definition
 from evidently.legacy.utils.types import Numeric
 from evidently.pydantic_utils import AutoAliasMixin
 from evidently.pydantic_utils import EvidentlyBaseModel
+
+if TYPE_CHECKING:
+    from evidently.llm.prompts import PromptRenderContext
 
 
 class ColumnRole(Enum):
@@ -581,6 +586,7 @@ PossibleDatasetTypes = Union["Dataset", pd.DataFrame]
 
 class Dataset:
     _data_definition: DataDefinition
+    _prompt_render_context_value: "PromptRenderContext"
 
     @classmethod
     def from_pandas(
@@ -590,7 +596,10 @@ class Dataset:
         descriptors: Optional[List[Descriptor]] = None,
         options: AnyOptions = None,
     ) -> "Dataset":
+        from evidently.llm.prompts.reference import PromptRenderContext
+
         dataset = PandasDataset(data, data_definition)
+        dataset._prompt_render_context_value = PromptRenderContext(Options.from_any_options(options))
         if descriptors is not None:
             dataset.add_descriptors(descriptors, options)
         return dataset
@@ -630,6 +639,13 @@ class Dataset:
     def add_descriptors(self, descriptors: List[Descriptor], options: AnyOptions = None):
         for descriptor in descriptors:
             self.add_descriptor(descriptor, options)
+
+    @contextlib.contextmanager
+    def _prompt_render_context(self):
+        from evidently.llm.prompts.reference import set_prompt_render_context
+
+        with set_prompt_render_context(self._prompt_render_context_value) as ctx:
+            yield ctx
 
 
 INTEGER_CARDINALITY_LIMIT = 10
@@ -803,8 +819,9 @@ class PandasDataset(Dataset):
             self._data_definition.categorical_descriptors.append(key)
 
     def add_descriptor(self, descriptor: Descriptor, options: AnyOptions = None):
-        descriptor.validate_input(self._data_definition)
-        new_columns = descriptor.generate_data(self, Options.from_any_options(options))
+        with self._prompt_render_context():
+            descriptor.validate_input(self._data_definition)
+            new_columns = descriptor.generate_data(self, Options.from_any_options(options))
         if isinstance(new_columns, DatasetColumn):
             new_columns = {descriptor.alias: new_columns}
         for col, value in new_columns.items():
