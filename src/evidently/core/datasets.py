@@ -25,6 +25,7 @@ from evidently.legacy.features.generated_features import GeneratedFeatures
 from evidently.legacy.options.base import AnyOptions
 from evidently.legacy.options.base import Options
 from evidently.legacy.pipeline.column_mapping import ColumnMapping
+from evidently.legacy.suite.base_suite import MetadataValueType
 from evidently.legacy.utils.data_preprocessing import create_data_definition
 from evidently.legacy.utils.types import Numeric
 from evidently.pydantic_utils import AutoAliasMixin
@@ -581,6 +582,8 @@ PossibleDatasetTypes = Union["Dataset", pd.DataFrame]
 
 class Dataset:
     _data_definition: DataDefinition
+    _metadata: Dict[str, MetadataValueType]
+    _tags: List[str]
 
     @classmethod
     def from_pandas(
@@ -589,8 +592,10 @@ class Dataset:
         data_definition: Optional[DataDefinition] = None,
         descriptors: Optional[List[Descriptor]] = None,
         options: AnyOptions = None,
+        metadata: Dict[str, MetadataValueType] = None,
+        tags: List[str] = None,
     ) -> "Dataset":
-        dataset = PandasDataset(data, data_definition)
+        dataset = PandasDataset(data, data_definition, metadata=metadata, tags=tags)
         if descriptors is not None:
             dataset.add_descriptors(descriptors, options)
         return dataset
@@ -622,6 +627,14 @@ class Dataset:
     @property
     def data_definition(self) -> DataDefinition:
         return self._data_definition
+
+    @property
+    def metadata(self) -> Dict[str, MetadataValueType]:
+        return self._metadata
+
+    @property
+    def tags(self) -> List[str]:
+        return self._tags
 
     @abstractmethod
     def add_descriptor(self, descriptor: Descriptor, options: AnyOptions = None):
@@ -671,11 +684,15 @@ class PandasDataset(Dataset):
     _data: pd.DataFrame
     _data_definition: DataDefinition
     _dataset_stats: DatasetStats
+    _metadata: Dict[str, MetadataValueType]
+    _tags: List[str]
 
     def __init__(
         self,
         data: pd.DataFrame,
         data_definition: Optional[DataDefinition] = None,
+        metadata: Dict[str, MetadataValueType] = None,
+        tags: List[str] = None,
     ):
         self._data = data.copy()
         if (
@@ -741,6 +758,8 @@ class PandasDataset(Dataset):
         for column in data.columns:
             column_stats[column] = self._collect_stats(self._data_definition.get_column_type(column), data[column])
         self._dataset_stats = DatasetStats(rows, columns, column_stats)
+        self._metadata = metadata or {}
+        self._tags = tags or []
 
     def as_dataframe(self) -> pd.DataFrame:
         return self._data
