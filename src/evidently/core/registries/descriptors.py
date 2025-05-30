@@ -12,3 +12,5 @@ register_type_alias(Descriptor, "evidently.descriptors._text_length.TextLength",
 register_type_alias(Descriptor, "evidently.core.datasets.ColumnTest", "evidently:descriptor_v2:ColumnTest")
 register_type_alias(Descriptor, "evidently.core.datasets.SingleInputDescriptor", "evidently:descriptor_v2:SingleInputDescriptor")
 register_type_alias(Descriptor, "evidently.core.datasets.TestSummary", "evidently:descriptor_v2:TestSummary")
+
+register_type_alias(Descriptor, "evidently.descriptors.llm_judges.GenericLLMDescriptor", "evidently:descriptor_v2:GenericLLMDescriptor")
