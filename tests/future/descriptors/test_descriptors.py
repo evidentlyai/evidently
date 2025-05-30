@@ -20,6 +20,12 @@ from evidently.descriptors import ContextRelevance
 from evidently.descriptors import CustomColumnDescriptor
 from evidently.descriptors import CustomDescriptor
 from evidently.descriptors import TextLength
+from evidently.descriptors.llm_judges import GenericLLMDescriptor
+from evidently.legacy.options.base import Options
+from evidently.legacy.utils.llm.base import LLMMessage
+from evidently.legacy.utils.llm.wrapper import LLMResult
+from evidently.legacy.utils.llm.wrapper import LLMWrapper
+from evidently.legacy.utils.llm.wrapper import llm_provider
 from evidently.tests import eq
 from tests.conftest import load_all_subtypes
 
@@ -27,6 +33,15 @@ from .test_feature_descriptors import MockGeneratedFeature
 
 int_data = pd.Series([1, 2, 3], name="int")
 str_data = pd.Series(["a", "b", "c"], name="str")
+
+
+@llm_provider("mock_d", None)
+class MockLLMWrapper(LLMWrapper):
+    def __init__(self, model: str, options: Options):
+        self.model = model
+
+    async def complete(self, messages: List[LLMMessage]) -> LLMResult[str]:
+        return LLMResult("\n".join(m.content for m in messages), 0, 0)
 
 
 def custom_descr(dataset: Dataset) -> DatasetColumn:
@@ -68,6 +83,17 @@ all_descriptors: List[Tuple[Descriptor, Union[pd.Series, pd.DataFrame], Dict[str
         ContextRelevance(alias="res", input="i", contexts="c"),
         pd.DataFrame({"i": ["input"], "c": ["context"]}),
         {"res": pd.Series([1])},
+    ),
+    (
+        GenericLLMDescriptor(
+            alias="res",
+            provider="mock_d",
+            model="",
+            input_columns={"aaa": "data"},
+            prompt=[{"role": "system", "content": "a"}, {"role": "user", "content": "{data}"}],
+        ),
+        pd.DataFrame({"aaa": ["x", "y"]}),
+        {"res": pd.Series(["a\nx", "a\ny"])},
     ),
 ]
 

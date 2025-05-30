@@ -2,6 +2,7 @@ import json
 import uuid
 from datetime import datetime
 from typing import TYPE_CHECKING
+from typing import Any
 from typing import List
 from typing import Literal
 from typing import Optional
@@ -10,14 +11,17 @@ from typing import Union
 from evidently._pydantic_compat import BaseModel
 from evidently._pydantic_compat import Field
 from evidently._pydantic_compat import PrivateAttr
+from evidently._pydantic_compat import parse_obj_as
 from evidently.errors import EvidentlyError
+from evidently.llm.prompts.content import PromptContent
+from evidently.llm.prompts.content import PromptContentType
+from evidently.llm.prompts.content import TextPromptContent
 from evidently.ui.service.type_aliases import ZERO_UUID
 from evidently.ui.service.type_aliases import ProjectID
 from evidently.ui.service.type_aliases import UserID
 
 if TYPE_CHECKING:
     from evidently.ui.workspace import CloudWorkspace
-
 
 PromptID = uuid.UUID
 PromptVersionID = uuid.UUID
@@ -47,7 +51,36 @@ class PromptVersion(BaseModel):
     prompt_id: PromptID = ZERO_UUID
     version: int
     metadata: PromptVersionMetadata = PromptVersionMetadata()
-    content: str
+    content: PromptContent
+    content_type: PromptContentType
+
+    def __init__(
+        self,
+        content: Union[str, PromptContent],
+        version: int,
+        id: PromptVersionID = ZERO_UUID,
+        prompt_id: PromptID = ZERO_UUID,
+        metadata: Optional[PromptVersionMetadata] = None,
+        content_type: Optional[PromptContentType] = None,
+        **data: Any,
+    ):
+        content = TextPromptContent(text=content) if isinstance(content, str) else content
+        if not isinstance(content, PromptContent):
+            content = parse_obj_as(PromptContent, content)
+        if content_type is None:
+            content_type = content.get_type()
+        elif content_type != content.get_type():
+            raise ValueError(f"Wrong content type for content {content.__class__.__name__}")
+
+        super().__init__(
+            content=content,
+            version=version,
+            id=id,
+            prompt_id=prompt_id,
+            metadata=metadata or PromptVersionMetadata(),
+            content_type=content_type,
+            **data,
+        )
 
 
 VersionOrLatest = Union[int, Literal["latest"]]

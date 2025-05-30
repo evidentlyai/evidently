@@ -39,6 +39,7 @@ from evidently.legacy.ui.components.base import Component as ComponentLegacy
 from evidently.legacy.ui.dashboards.base import DashboardPanel
 from evidently.legacy.utils.llm.prompts import PromptBlock
 from evidently.legacy.utils.llm.prompts import PromptTemplate
+from evidently.llm.prompts.content import PromptContent
 from evidently.pydantic_utils import TYPE_ALIASES
 from evidently.pydantic_utils import EvidentlyBaseModel
 from evidently.pydantic_utils import PolymorphicModel
@@ -92,6 +93,7 @@ REGISTRY_MAPPING: Dict[Type[PolymorphicModel], str] = {
     BoundTest: registries.bound_tests.__name__,
     Descriptor: registries.descriptors.__name__,
     ColumnCondition: registries.column_conditions.__name__,
+    PromptContent: registries.prompts.__name__,
 }
 
 
@@ -164,6 +166,7 @@ def test_all_aliases_correct():
         Descriptor: Descriptor.__alias_type__,
         MetricContainer: MetricContainer.__alias_type__,
         ColumnCondition: ColumnCondition.__alias_type__,
+        PromptContent: PromptContent.__alias_type__,
     }
     skip = [Component, ComponentLegacy]
     skip_literal = [EvidentlyBaseModel, WithTestAndMetricDependencies, BasePreset]
