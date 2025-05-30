@@ -1,6 +1,7 @@
 import asyncio
 import dataclasses
 import datetime
+import json
 from abc import ABC
 from abc import abstractmethod
 from asyncio import Lock
@@ -430,6 +431,15 @@ class AnthropicWrapper(LiteLLMWrapper):
 
 class VertexAIOptions(LLMOptions):
     __provider_name__: ClassVar = "vertex_ai"
+
+    def get_additional_kwargs(self) -> Dict[str, Any]:
+        if self.api_key is None or len(self.api_key.get_secret_value()) > 10000:  # check for using non-strict json
+            return {}
+        try:
+            vertex_credentials = json.loads(self.api_key.get_secret_value())
+        except json.decoder.JSONDecodeError:
+            return {}
+        return {"vertex_credentials": vertex_credentials}
 
 
 GeminiOptions = VertexAIOptions  # back comp
