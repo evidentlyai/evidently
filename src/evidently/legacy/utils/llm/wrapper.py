@@ -429,6 +429,15 @@ class AnthropicWrapper(LiteLLMWrapper):
     __llm_options_type__: ClassVar = AnthropicOptions
 
 
+class GeminiOptions(LLMOptions):
+    __provider_name__: ClassVar = "gemini"
+
+
+@llm_provider("gemini", None)
+class GeminiWrapper(LiteLLMWrapper):
+    __llm_options_type__: ClassVar = GeminiOptions
+
+
 class VertexAIOptions(LLMOptions):
     __provider_name__: ClassVar = "vertex_ai"
 
@@ -442,11 +451,7 @@ class VertexAIOptions(LLMOptions):
         return {"vertex_credentials": vertex_credentials}
 
 
-GeminiOptions = VertexAIOptions  # back comp
-
-
 @llm_provider("vertex_ai", None)
-@llm_provider("gemini", None)
 class VertexAIWrapper(LiteLLMWrapper):
     __llm_options_type__: ClassVar = VertexAIOptions
 
