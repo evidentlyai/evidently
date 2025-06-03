@@ -392,8 +392,10 @@ class LiteLLMWrapper(LLMWrapper):
         self.options: LLMOptions = options.get(self.__llm_options_type__)
 
     @property
-    def provider(self) -> str:
-        return self.options.__provider_name__
+    def full_model_name(self) -> str:
+        if "/" in self.model or not hasattr(self.options, "__provider_name__"):
+            return self.model
+        return f"{self.options.__provider_name__}/{self.model}"
 
     async def complete(self, messages: List[LLMMessage]) -> LLMResult[str]:
         from litellm import acompletion
@@ -401,7 +403,7 @@ class LiteLLMWrapper(LLMWrapper):
         from litellm.types.utils import Usage
 
         response: ModelResponse = await acompletion(
-            model=f"{self.provider}/{self.model}",
+            model=self.full_model_name,
             messages=[dataclasses.asdict(m) for m in messages],
             api_key=self.options.get_api_key(),
             api_base=self.options.api_url,
