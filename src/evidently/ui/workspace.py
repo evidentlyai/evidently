@@ -1,5 +1,6 @@
 import abc
 import io
+import json
 import os
 import uuid
 from abc import ABC
@@ -727,6 +728,8 @@ class CloudWorkspace(RemoteWorkspace):
                 "description": description,
                 "file": file,
                 "data_definition_str": data_definition,
+                "metadata_str": json.dumps(dataset.metadata),
+                "tags_str": json.dumps(dataset.tags),
             },
             query_params=qp,
             form_data=True,
