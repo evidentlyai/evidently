@@ -223,4 +223,3 @@ For more examples, refer to a complete <a href="https://docs.evidentlyai.com">Do
 
 # :white_check_mark: Discord Community
 If you want to chat and connect, join our [Discord community](https://discord.gg/xZjKRaNp8b)!
-# evidently-ci-example
