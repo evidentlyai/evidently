@@ -1,6 +1,9 @@
 import abc
 import copy
 import dataclasses
+import io
+import json
+import tarfile
 from abc import abstractmethod
 from enum import Enum
 from typing import Any
@@ -30,6 +33,8 @@ from evidently.legacy.utils.data_preprocessing import create_data_definition
 from evidently.legacy.utils.types import Numeric
 from evidently.pydantic_utils import AutoAliasMixin
 from evidently.pydantic_utils import EvidentlyBaseModel
+
+EVIDENTLY_DATASET_EXT = "evidently_dataset"
 
 
 class ColumnRole(Enum):
@@ -396,6 +401,8 @@ class ColumnTest(SingleInputDescriptor):
         self, column: str, condition: Union[ColumnCondition, GenericTest], alias: Optional[str] = None, **data: Any
     ) -> None:
         self.column = column
+        if isinstance(condition, dict):
+            condition = parse_obj_as(ColumnCondition, condition)
         descriptor_condition: ColumnCondition = (
             condition if isinstance(condition, ColumnCondition) else condition.for_descriptor().condition
         )
@@ -644,6 +651,28 @@ class Dataset:
         for descriptor in descriptors:
             self.add_descriptor(descriptor, options)
 
+    @abstractmethod
+    def save(self, uri: str):
+        raise NotImplementedError
+
+    @classmethod
+    @abstractmethod
+    def _can_load(cls, uri: str) -> bool:
+        raise NotImplementedError
+
+    @classmethod
+    @abstractmethod
+    def _load(cls, uri: str) -> "Dataset":
+        raise NotImplementedError
+
+    @classmethod
+    def load(cls, uri: str) -> "Dataset":
+        for subclass in cls.__subclasses__():
+            print(subclass.__name__)
+            if subclass._can_load(uri):
+                return subclass._load(uri)
+        raise Exception(f"Dataset {uri} could not be loaded")
+
 
 INTEGER_CARDINALITY_LIMIT = 10
 
@@ -680,7 +709,73 @@ def infer_column_type(column_data: pd.Series) -> ColumnType:
     return ColumnType.Unknown
 
 
+MARKER_CONTENT = """{"version": "1.0"}"""
+MARKER_FILENAME = ".evidently_dataset"
+DATA_FILENAME = "data.parquet"
+META_FILENAME = "dataset.json"
+
+
+def _write_evidently_dataset(dataset: Dataset, uri: str):
+    with tarfile.open(uri, "w") as tar:  # todo: use fsspec location
+        # Add marker file
+        marker_data = MARKER_CONTENT.encode("utf-8")
+        marker_info = tarfile.TarInfo(MARKER_FILENAME)
+        marker_info.size = len(marker_data)
+        tar.addfile(marker_info, io.BytesIO(marker_data))
+
+        # Add dataframe as parquet
+        buffer = io.BytesIO()
+        dataset.as_dataframe().to_parquet(buffer, index=False)
+        buffer.seek(0)
+        data_info = tarfile.TarInfo(DATA_FILENAME)
+        data_info.size = len(buffer.getbuffer())
+        tar.addfile(data_info, buffer)
+
+        # Add metadata as JSON
+        metadata = {
+            "tags": dataset.tags,
+            "metadata": dataset.metadata,
+            "data_definition": dataset.data_definition.dict(),
+        }
+        meta_bytes = json.dumps(metadata, indent=2).encode("utf-8")
+        meta_info = tarfile.TarInfo(META_FILENAME)
+        meta_info.size = len(meta_bytes)
+        tar.addfile(meta_info, io.BytesIO(meta_bytes))
+
+
+def _read_evidently_dataset(uri: str) -> Dataset:
+    with tarfile.open(uri, "r") as tar:
+        names = tar.getnames()
+
+        # Check marker
+        if MARKER_FILENAME not in names:
+            raise ValueError("Not a valid Evidently dataset: missing marker")
+        marker_file = tar.extractfile(MARKER_FILENAME)
+        if marker_file.read().decode("utf-8") != MARKER_CONTENT:
+            raise ValueError("Invalid Evidently dataset marker content")
+
+        # Load dataframe
+        if DATA_FILENAME not in names:
+            raise ValueError("Missing data file in Evidently dataset")
+        data_file = tar.extractfile(DATA_FILENAME)
+        df = pd.read_parquet(data_file)
+
+        # Load metadata
+        if META_FILENAME not in names:
+            raise ValueError("Missing metadata file in Evidently dataset")
+        meta_file = tar.extractfile(META_FILENAME)
+        metadata = json.load(meta_file)
+
+    return Dataset.from_pandas(
+        df,
+        data_definition=DataDefinition.parse_obj(metadata["data_definition"]),
+        metadata=metadata["metadata"],
+        tags=metadata["tags"],
+    )
+
+
 class PandasDataset(Dataset):
+    SUPPORTED_FORMATS = {"csv": pd.read_csv, "parquet": pd.read_parquet, EVIDENTLY_DATASET_EXT: _read_evidently_dataset}
     _data: pd.DataFrame
     _data_definition: DataDefinition
     _dataset_stats: DatasetStats
@@ -850,6 +945,26 @@ class PandasDataset(Dataset):
             numerical_stats=numerical_stats,
             categorical_stats=categorical_stats,
         )
+
+    def save(self, uri: str):
+        if not uri.endswith(f".{EVIDENTLY_DATASET_EXT}"):
+            uri += f".{EVIDENTLY_DATASET_EXT}"
+        _write_evidently_dataset(self, uri)
+
+    @classmethod
+    def _can_load(cls, uri: str) -> bool:
+        split = uri.split(".")[-1]
+        return split in cls.SUPPORTED_FORMATS
+
+    @classmethod
+    def _load(cls, uri: str) -> "Dataset":
+        ext = uri.split(".")[-1]
+        if ext not in cls.SUPPORTED_FORMATS:
+            raise ValueError(f"Unsupported format: {ext}")
+        data = cls.SUPPORTED_FORMATS[ext](uri)  # todo: load from fsspec stream instead
+        if isinstance(data, Dataset):
+            return data
+        return Dataset.from_pandas(data)
 
 
 def _collect_numerical_stats(data: pd.Series):
