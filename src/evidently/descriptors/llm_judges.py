@@ -43,7 +43,7 @@ class GenericLLMDescriptor(Descriptor):
         tests: Optional[List[AnyDescriptorTest]] = None,
         **data: Any,
     ):
-        self.prompt = prompt if isinstance(prompt, PromptContent) else MessagesPromptContent(messages=prompt)
+        self.prompt = MessagesPromptContent(messages=prompt) if isinstance(prompt, list) else prompt
         self.input_columns = input_columns
         self.model = model
         self.provider = provider
