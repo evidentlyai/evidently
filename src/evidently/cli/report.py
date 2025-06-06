@@ -1,4 +1,5 @@
 import json
+import os
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -6,6 +7,7 @@ from typing import Type
 from typing import TypeVar
 from typing import Union
 
+import typer
 from typer import Argument
 from typer import Option
 
@@ -19,7 +21,9 @@ from evidently.core.datasets import Descriptor
 from evidently.core.report import Snapshot
 from evidently.legacy.options.base import Option as EvidentlyOption
 from evidently.legacy.suite.base_suite import MetadataValueType
+from evidently.legacy.tests.base_test import TestStatus
 from evidently.legacy.utils import NumpyEncoder
+from evidently.metrics.column_testing import ColumnTests
 from evidently.ui.service.type_aliases import DatasetID
 from evidently.ui.service.type_aliases import ProjectID
 from evidently.ui.workspace import CloudWorkspace
@@ -61,7 +65,7 @@ class _URI:
             return RemoteWorkspace(f"{proto}://{addr.split('/')[0]}")
         if self.is_cloud:
             _, addr = self.uri.split("://", maxsplit=1)
-            if len(addr.split("/")) > 2:
+            if len(addr.split("/")) > 1:
                 base_url = "https://" + addr.split("/")[0]
             else:
                 base_url = None
@@ -134,17 +138,44 @@ def run_report(
     output_uri.upload_snapshot(snapshot)
 
 
+def _run_summary_report(dataset: Dataset) -> bool:
+    report = Report(metrics=[ColumnTests()])
+    summary = report.run(dataset)
+    any_failed = False
+    for metric_id in summary.context._metrics:
+        mr = summary.context.get_metric_result(metric_id)
+        for name, val in mr.itervalues():
+            print(f"{mr.display_name}.{name}: {val}")
+        for tr in mr.tests:
+            print(f"{tr.name}: {tr.status}")
+            if tr.status not in (TestStatus.SUCCESS, TestStatus.WARNING, TestStatus.SKIPPED):
+                any_failed = True
+    return any_failed
+
+
 @app.command("descriptors")
 def run_descriptors(
     descriptors_config: str = Argument(..., help="Descriptors configuration path"),
     input_path: str = Argument(..., help="Input URI", metavar="input"),
     output: str = Argument(..., help="Output URI"),
     name: Optional[str] = Option(None, help="Name of dataset"),
+    test_summary: bool = Option(False, help="Run tests summary"),
 ):
     """Run evidently descriptors"""
+    typer.echo(f"Loading config from {os.path.abspath(descriptors_config)}")
     conf = DescriptorsConfig.load(descriptors_config)
+    typer.echo(f"Loading dataset from {input_path}")
     dataset = _URI(input_path).load_dataset()
+    typer.echo(f"Running {len(conf.descriptors)} descriptors")
 
     dataset.add_descriptors(conf.descriptors, conf.options)
 
+    typer.echo(f"Uploading dataset to {output}")
     _URI(output).upload_dataset(dataset, name)
+    if test_summary:
+        typer.echo("Running tests summary")
+        any_failed = _run_summary_report(dataset)
+        if any_failed:
+            typer.echo("Some tests failed")
+            raise typer.Exit(code=1)
+    return 0
