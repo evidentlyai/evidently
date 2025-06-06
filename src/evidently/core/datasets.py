@@ -668,7 +668,6 @@ class Dataset:
     @classmethod
     def load(cls, uri: str) -> "Dataset":
         for subclass in cls.__subclasses__():
-            print(subclass.__name__)
             if subclass._can_load(uri):
                 return subclass._load(uri)
         raise Exception(f"Dataset {uri} could not be loaded")
