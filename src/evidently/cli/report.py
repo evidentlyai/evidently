@@ -170,7 +170,7 @@ def run_descriptors(
 
     dataset.add_descriptors(conf.descriptors, conf.options)
 
-    typer.echo(f"Uploading dataset to {output}")
+    typer.echo(f"Saving dataset to {output}")
     _URI(output).upload_dataset(dataset, name)
     if test_summary:
         typer.echo("Running tests summary")
