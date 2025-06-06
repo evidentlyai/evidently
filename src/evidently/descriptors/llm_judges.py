@@ -10,6 +10,7 @@ import pandas as pd
 from evidently import ColumnType
 from evidently import Dataset
 from evidently._pydantic_compat import PrivateAttr
+from evidently.core.datasets import AnyDescriptorTest
 from evidently.core.datasets import DatasetColumn
 from evidently.core.datasets import Descriptor
 from evidently.legacy.base_metric import DisplayName
@@ -19,6 +20,8 @@ from evidently.legacy.utils.llm.wrapper import LLMRequest
 from evidently.legacy.utils.llm.wrapper import LLMWrapper
 from evidently.legacy.utils.llm.wrapper import get_llm_wrapper
 from evidently.llm.models import LLMMessage
+from evidently.llm.prompts.content import MessagesPromptContent
+from evidently.llm.prompts.content import PromptContent
 from evidently.llm.templates import *  # noqa: F403
 
 
@@ -26,9 +29,25 @@ class GenericLLMDescriptor(Descriptor):
     input_columns: Dict[str, str]
     provider: str
     model: str
-    prompt: List[LLMMessage]
+    prompt: PromptContent
 
     _llm_wrapper: Optional[LLMWrapper] = PrivateAttr(None)
+
+    def __init__(
+        self,
+        provider: str,
+        model: str,
+        input_columns: Dict[str, str],
+        prompt: Union[List[LLMMessage], PromptContent],
+        alias: str,
+        tests: Optional[List[AnyDescriptorTest]] = None,
+        **data: Any,
+    ):
+        self.prompt = MessagesPromptContent(messages=prompt) if isinstance(prompt, list) else prompt
+        self.input_columns = input_columns
+        self.model = model
+        self.provider = provider
+        super().__init__(alias, tests, **data)
 
     def get_llm_wrapper(self, options: Options) -> LLMWrapper:
         if self._llm_wrapper is None:
@@ -36,7 +55,7 @@ class GenericLLMDescriptor(Descriptor):
         return self._llm_wrapper
 
     def _fmt_messages(self, values: Dict[str, Any]) -> List[LegacyLLMMessage]:
-        return [LegacyLLMMessage(m.role, m.content.format(**values)) for m in self.prompt]
+        return [LegacyLLMMessage(m.role, m.content.format(**values)) for m in self.prompt.as_messages()]
 
     def iterate_messages(self, dataset: Dataset) -> Iterator[LLMRequest[str]]:
         for _, column_values in (
