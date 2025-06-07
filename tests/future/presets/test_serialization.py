@@ -8,6 +8,7 @@ from evidently._pydantic_compat import parse_obj_as
 from evidently.core.container import MetricContainer
 from evidently.generators import ColumnMetricGenerator
 from evidently.metrics import MinValue
+from evidently.metrics.column_testing import ColumnTests
 from evidently.metrics.group_by import GroupBy
 from evidently.presets import ClassificationDummyQuality
 from evidently.presets import ClassificationPreset
@@ -38,6 +39,7 @@ all_presets: List[MetricContainer] = [
     ClassificationQualityByLabel(),
     RegressionPreset(),
     GroupBy(metric=MinValue(column="a"), column_name="b"),
+    ColumnTests(),
 ]
 
 

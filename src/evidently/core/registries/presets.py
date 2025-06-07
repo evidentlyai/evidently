@@ -18,3 +18,4 @@ register_type_alias(MetricContainer, "evidently.presets.drift.DataDriftPreset", 
 register_type_alias(MetricContainer, "evidently.presets.regression.RegressionDummyQuality", "evidently:metric_container:RegressionDummyQuality")
 register_type_alias(MetricContainer, "evidently.presets.regression.RegressionPreset", "evidently:metric_container:RegressionPreset")
 register_type_alias(MetricContainer, "evidently.presets.regression.RegressionQuality", "evidently:metric_container:RegressionQuality")
+register_type_alias(MetricContainer, "evidently.metrics.column_testing.ColumnTests", "evidently:metric_container:ColumnTests")
