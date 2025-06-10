@@ -1,5 +1,6 @@
 import json
 import os
+from collections import Counter
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -22,7 +23,7 @@ from evidently.core.report import Snapshot
 from evidently.legacy.options.base import Option as EvidentlyOption
 from evidently.legacy.suite.base_suite import MetadataValueType
 from evidently.legacy.tests.base_test import TestStatus
-from evidently.metrics.column_testing import RowTestSummary
+from evidently.metrics.row_test_summary import RowTestSummary
 
 T = TypeVar("T")
 
@@ -39,9 +40,9 @@ class _Config(BaseModel):
 
 
 class ReportConfig(_Config):
-    descriptors: List[Descriptor]
+    descriptors: List[Descriptor] = []
     options: List[EvidentlyOption] = []
-    metrics: List[MetricOrContainer]
+    metrics: List[MetricOrContainer] = []
     metadata: Dict[str, MetadataValueType] = {}
     tags: List[str] = []
     include_tests: bool = False
@@ -75,8 +76,8 @@ def run_report(
 
     if not has_report:
         if save_dataset:
-            typer.echo(f"Saving dataset to {output}")
-            _URI(output).upload_dataset(input_data, name)
+            link = _URI(output).upload_dataset(input_data, name)
+            typer.echo(f"Saving dataset to {link}")
         if test_summary:
             typer.echo("Running tests summary")
             any_failed = _run_summary_report(input_data)
@@ -99,9 +100,11 @@ def run_report(
         reference,
     )
     if save_report:
-        _URI(output).upload_snapshot(snapshot, include_datasets=save_dataset)
+        link = _URI(output).upload_snapshot(snapshot, include_datasets=save_dataset)
+        typer.echo(f"Saving snapshot to {link}")
     elif save_dataset:
-        _URI(output).upload_dataset(input_data, name)
+        link = _URI(output).upload_dataset(input_data, name)
+        typer.echo(f"Saving dataset to {link}")
     if test_summary:
         typer.echo("Running tests summary")
         any_failed = _print_summary_report(snapshot)
@@ -118,8 +121,22 @@ def _run_summary_report(dataset: Dataset) -> bool:
 
 def _print_summary_report(summary: Snapshot) -> bool:
     any_failed = False
+    colormap = {
+        TestStatus.WARNING: typer.colors.YELLOW,
+        TestStatus.SUCCESS: typer.colors.GREEN,
+        TestStatus.ERROR: typer.colors.RED,
+        TestStatus.SKIPPED: typer.colors.WHITE,
+        TestStatus.FAIL: typer.colors.RED,
+    }
+    total_tests = len(summary.tests_results)
+    status_counter = Counter(tr.status for tr in summary.tests_results)
+    for status, count in status_counter.items():
+        typer.secho(f"{status.value} [{count}/{total_tests}]", fg=colormap[status])
+    typer.echo("-" * 20)
     for tr in summary.tests_results:
-        print(f"{tr.name}: {tr.status}")
+        typer.secho(tr.status.value, fg=colormap[tr.status], nl=False, bold=True)
+        typer.echo(f": {tr.description}")
         if tr.status not in (TestStatus.SUCCESS, TestStatus.WARNING, TestStatus.SKIPPED):
             any_failed = True
+    typer.echo("-" * 20)
     return any_failed

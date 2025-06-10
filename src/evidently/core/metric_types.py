@@ -27,6 +27,7 @@ import typing_inspect
 
 from evidently._pydantic_compat import BaseModel
 from evidently._pydantic_compat import Field
+from evidently._pydantic_compat import parse_obj_as
 from evidently._pydantic_compat import validator
 from evidently.core.base_types import Label
 from evidently.legacy.model.dashboard import DashboardInfo
@@ -886,6 +887,8 @@ def convert_test(test: Union[MetricTest, GenericTest]) -> MetricTest:
         return test.for_metric()
     if isinstance(test, MetricTest):
         return test
+    if isinstance(test, dict):
+        return parse_obj_as(MetricTest, test)
     raise ValueError(f"test {test} is not a subclass of MetricTest")
 
 

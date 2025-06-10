@@ -56,19 +56,21 @@ class _URI:
         if self.is_local:
             with open(self.uri, "w") as f:
                 f.write(json.dumps(snapshot.to_snapshot_model().dict(), indent=2, ensure_ascii=False, cls=NumpyEncoder))
-            return
+            return self.uri
         if self.is_remote or self.is_cloud:
-            self.ws.add_run(self.uri.split("/")[-1], snapshot, include_datasets)
-            return
+            project_id = self.uri.split("/")[-1]
+            ref = self.ws.add_run(project_id, snapshot, include_datasets)
+            return ref.url
         raise ValueError(f"{self.uri} is not a valid URI")
 
-    def upload_dataset(self, dataset: Dataset, name: Optional[str]):
+    def upload_dataset(self, dataset: Dataset, name: Optional[str]) -> str:
         if self.is_local:
             dataset.save(self.uri)
-            return
+            return self.uri
         if self.is_cloud:
-            self.ws.add_dataset(ProjectID(self.uri.split("/")[-1]), dataset, name or "", None)
-            return
+            project_id = ProjectID(self.uri.split("/")[-1])
+            dataset_id = self.ws.add_dataset(project_id, dataset, name or "", None)
+            return f"{self.ws.base_url}/v2/projects/{project_id}/datasets/{dataset_id}"
         if self.is_remote:
             raise ValueError("Remote workspace does not support dataset uploading")
         raise ValueError(f"{self.uri} is not a valid URI")
