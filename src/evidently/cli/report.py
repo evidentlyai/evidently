@@ -1,11 +1,8 @@
-import json
 import os
 from collections import Counter
 from typing import Dict
 from typing import List
 from typing import Optional
-from typing import Type
-from typing import TypeVar
 
 import typer
 from typer import Argument
@@ -13,10 +10,10 @@ from typer import Option
 
 from evidently import Dataset
 from evidently import Report
-from evidently._pydantic_compat import BaseModel
-from evidently._pydantic_compat import parse_obj_as
 from evidently.cli.main import app
 from evidently.cli.utils import _URI
+from evidently.cli.utils import _Config
+from evidently.cli.utils import load_config
 from evidently.core.container import MetricOrContainer
 from evidently.core.datasets import Descriptor
 from evidently.core.report import Snapshot
@@ -24,19 +21,6 @@ from evidently.legacy.options.base import Option as EvidentlyOption
 from evidently.legacy.suite.base_suite import MetadataValueType
 from evidently.legacy.tests.base_test import TestStatus
 from evidently.metrics.row_test_summary import RowTestSummary
-
-T = TypeVar("T")
-
-
-class _Config(BaseModel):
-    @classmethod
-    def load(cls: Type[T], path: str) -> "T":
-        with open(path) as f:
-            return parse_obj_as(cls, json.load(f))
-
-    def save(self, path: str) -> None:
-        with open(path, "w") as f:
-            json.dump(self.dict(), f, indent=2, ensure_ascii=False)
 
 
 class ReportConfig(_Config):
@@ -64,7 +48,7 @@ def run_report(
 ):
     """Run evidently report"""
     typer.echo(f"Loading config from {os.path.abspath(config_path)}")
-    config = ReportConfig.load(config_path)
+    config = load_config(ReportConfig, config_path)
     typer.echo(f"Loading dataset from {input_path}")
     input_data = _URI(input_path).load_dataset()
 
