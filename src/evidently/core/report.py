@@ -447,10 +447,12 @@ class Snapshot:
                 self._metrics[metric].to_dict() if self._metrics.get(metric) is not None else {}
                 for metric in self._top_level_metrics
             ],
-            "tests": [
-                test_result.dict() for metric in self._top_level_metrics for test_result in self._metrics[metric].tests
-            ],
+            "tests": [test_result.dict() for test_result in self.tests_results],
         }
+
+    @property
+    def tests_results(self):
+        return [test_result for metric in self._top_level_metrics for test_result in self._metrics[metric].tests]
 
 
 class Report:
