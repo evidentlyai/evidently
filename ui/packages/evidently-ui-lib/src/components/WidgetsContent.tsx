@@ -1,5 +1,4 @@
-import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
-import { Box, Chip, Grid, IconButton, Stack, Tab, Tabs, Tooltip } from '@mui/material'
+import { Box, Grid, Stack, Tab, Tabs } from '@mui/material'
 import React from 'react'
 import { useState } from 'react'
 import type { WidgetInfo } from '~/api'
@@ -59,21 +58,7 @@ const SnapshotWidgetsV2: React.FC<{ widgets: WidgetInfo[] }> = ({ widgets }) => 
 
   return (
     <Box>
-      <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
-        <Stack direction={'row'} alignItems={'center'} gap={0.5}>
-          <Chip label={'New version ✨'} variant='outlined' color='primary' />
-
-          <Tooltip
-            arrow
-            placement='top'
-            title='This report contains both metrics and tests. You can switch between them'
-          >
-            <IconButton size='small'>
-              <InfoOutlinedIcon fontSize='inherit' />
-            </IconButton>
-          </Tooltip>
-        </Stack>
-
+      <Stack direction={'row'} alignItems={'center'} justifyContent={'flex-end'}>
         <Tabs
           value={v2Tab}
           onChange={(_, v2Tab) => setV2Tab(v2Tab as VARIANTS)}
