@@ -41,7 +41,7 @@ def run_report(
     input_path: str = Argument(..., help="Input dataset URI", metavar="input"),
     output: str = Argument(..., help="Output URI"),
     reference_path: Optional[str] = Option(default=None, help="reference dataset"),
-    name: Optional[str] = Option(None, help="Name of dataset"),
+    dataset_name: str = Option("CLI run", help="Name of dataset"),
     test_summary: bool = Option(False, help="Run tests summary"),
     save_dataset: bool = Option(True, help="Save output dataset"),
     save_report: bool = Option(True, help="Save output report"),
@@ -60,7 +60,7 @@ def run_report(
 
     if not has_report:
         if save_dataset:
-            link = _URI(output).upload_dataset(input_data, name)
+            link = _URI(output).upload_dataset(input_data, dataset_name)
             typer.echo(f"Saving dataset to {link}")
         if test_summary:
             typer.echo("Running tests summary")
@@ -87,7 +87,7 @@ def run_report(
         link = _URI(output).upload_snapshot(snapshot, include_datasets=save_dataset)
         typer.echo(f"Saving snapshot to {link}")
     elif save_dataset:
-        link = _URI(output).upload_dataset(input_data, name)
+        link = _URI(output).upload_dataset(input_data, dataset_name)
         typer.echo(f"Saving dataset to {link}")
     if test_summary:
         typer.echo("Running tests summary")
