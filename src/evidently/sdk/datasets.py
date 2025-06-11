@@ -80,7 +80,7 @@ class RemoteDatasetsManager:
 
     def add(
         self,
-        project_id: ProjectID,
+        project_id: STR_UUID,
         dataset: Dataset,
         name: str,
         description: Optional[str] = None,
@@ -90,9 +90,9 @@ class RemoteDatasetsManager:
         file = NamedBytesIO(b"", "data.parquet")
         dataset.as_dataframe().to_parquet(file)
         file.seek(0)
-        qp = {"project_id": project_id}
+        qp = {"project_id": str(project_id)}
         if link is not None:
-            qp["snapshot_id"] = link.snapshot_id
+            qp["snapshot_id"] = str(link.snapshot_id)
             qp["dataset_type"] = link.dataset_type
             qp["dataset_subtype"] = link.dataset_subtype
         response: Response = self._ws._request(
