@@ -15,5 +15,6 @@ class RowTestSummary(MetricContainer):
     def generate_metrics(self, context: "Context") -> Sequence[MetricOrContainer]:
         test_columns = self.columns or context.data_definition.test_descriptors or []
         return [
-            MeanValue(column=tc, tests=[gte(self.min_success_rate, alias="Passed for all rows")]) for tc in test_columns
+            MeanValue(column=tc, tests=[gte(self.min_success_rate, alias=f"Share of passed '{tc}' row tests")])
+            for tc in test_columns
         ]
