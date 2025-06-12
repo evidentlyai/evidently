@@ -750,19 +750,23 @@ def _read_evidently_dataset(uri: str) -> Dataset:
         if MARKER_FILENAME not in names:
             raise ValueError("Not a valid Evidently dataset: missing marker")
         marker_file = tar.extractfile(MARKER_FILENAME)
-        if marker_file.read().decode("utf-8") != MARKER_CONTENT:
+        if marker_file is None or marker_file.read().decode("utf-8") != MARKER_CONTENT:
             raise ValueError("Invalid Evidently dataset marker content")
 
         # Load dataframe
         if DATA_FILENAME not in names:
             raise ValueError("Missing data file in Evidently dataset")
         data_file = tar.extractfile(DATA_FILENAME)
+        if data_file is None:
+            raise ValueError("Missing data file in Evidently dataset")
         df = pd.read_parquet(data_file)
 
         # Load metadata
         if META_FILENAME not in names:
             raise ValueError("Missing metadata file in Evidently dataset")
         meta_file = tar.extractfile(META_FILENAME)
+        if meta_file is None:
+            raise ValueError("Missing metadata file in Evidently dataset")
         metadata = json.load(meta_file)
 
     return Dataset.from_pandas(
@@ -960,7 +964,8 @@ class PandasDataset(Dataset):
         ext = uri.split(".")[-1]
         if ext not in cls.SUPPORTED_FORMATS:
             raise ValueError(f"Unsupported format: {ext}")
-        data = cls.SUPPORTED_FORMATS[ext](uri)  # todo: load from fsspec stream instead
+        # todo: load from fsspec stream instead
+        data = cls.SUPPORTED_FORMATS[ext](uri)  # type: ignore[operator]
         if isinstance(data, Dataset):
             return data
         return Dataset.from_pandas(data)

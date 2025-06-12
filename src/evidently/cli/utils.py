@@ -57,6 +57,7 @@ class _URI:
         if self.is_remote:
             raise ValueError("Remote workspace does not support dataset loading")
         if self.is_cloud:
+            assert isinstance(self.ws, CloudWorkspace)
             return self.ws.load_dataset(DatasetID(self.uri.split("/")[-1]))
         raise ValueError(f"{self.uri} is not a valid dataset URI")
 
