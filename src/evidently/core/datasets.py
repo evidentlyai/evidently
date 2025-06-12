@@ -402,7 +402,7 @@ class ColumnTest(SingleInputDescriptor):
     ) -> None:
         self.column = column
         if isinstance(condition, dict):
-            condition = parse_obj_as(ColumnCondition, condition)
+            condition = parse_obj_as(ColumnCondition, condition)  # type: ignore[type-abstract]
         descriptor_condition: ColumnCondition = (
             condition if isinstance(condition, ColumnCondition) else condition.for_descriptor().condition
         )
