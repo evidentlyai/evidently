@@ -136,7 +136,7 @@ class MinValueCalculation(StatisticsCalculation[MinValue]):
         return column.data.min()
 
     def display_name(self) -> str:
-        return f"Minimal value of {self.column}"
+        return f"Minimal value of '{self.column}'"
 
 
 class MeanValue(StatisticsMetric):
@@ -148,7 +148,7 @@ class MeanValueCalculation(StatisticsCalculation[MeanValue]):
         return column.data.mean()
 
     def display_name(self) -> str:
-        return f"Mean value of {self.column}"
+        return f"Mean value of '{self.column}'"
 
 
 class MaxValue(StatisticsMetric):
@@ -160,7 +160,7 @@ class MaxValueCalculation(StatisticsCalculation[MaxValue]):
         return column.data.max()
 
     def display_name(self) -> str:
-        return f"Maximum value of {self.column}"
+        return f"Maximum value of '{self.column}'"
 
 
 class StdValue(StatisticsMetric):
@@ -172,7 +172,7 @@ class StdValueCalculation(StatisticsCalculation[StdValue]):
         return column.data.std()
 
     def display_name(self) -> str:
-        return f"Std value of {self.column}"
+        return f"Std value of '{self.column}'"
 
 
 class MedianValue(StatisticsMetric):
@@ -184,7 +184,7 @@ class MedianValueCalculation(StatisticsCalculation[MedianValue]):
         return column.data.median()
 
     def display_name(self) -> str:
-        return f"Median value of {self.column}"
+        return f"Median value of '{self.column}'"
 
 
 class QuantileValue(StatisticsMetric):
@@ -196,7 +196,7 @@ class QuantileValueCalculation(StatisticsCalculation[QuantileValue]):
         return column.data.quantile(self.metric.quantile)
 
     def display_name(self) -> str:
-        return f"Quantile {self.metric.quantile} of {self.column}"
+        return f"Quantile {self.metric.quantile} of '{self.column}'"
 
 
 class CategoryCount(ColumnMetric, CountMetric):

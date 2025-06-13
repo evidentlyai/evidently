@@ -130,7 +130,7 @@ def gte(
     threshold: ThresholdType, *, is_critical: bool = True, column: Optional[str] = None, alias: Optional[str] = None
 ) -> AnyTest:
     return FactoryGenericTest(
-        lambda: GreaterOrEqualMetricTest(threshold=threshold, is_critical=is_critical),
+        lambda: GreaterOrEqualMetricTest(threshold=threshold, is_critical=is_critical, alias=alias),
         lambda: DescriptorTest(condition=GreaterEqualColumnCondition(threshold=threshold), column=column, alias=alias),
     )
 
