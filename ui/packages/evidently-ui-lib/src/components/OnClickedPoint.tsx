@@ -31,7 +31,12 @@ export const HintOnHoverToPlot = () => {
         }}
       >
         <Paper
-          sx={{ p: 1, borderRadius: 2, border: '1px solid', borderColor: (t) => t.palette.divider }}
+          sx={{
+            p: 1,
+            borderRadius: 2,
+            border: '1px solid',
+            borderColor: 'divider'
+          }}
         >
           <Box display={'flex'} justifyContent={'space-between'} alignItems={'center'} gap={2}>
             <Box>

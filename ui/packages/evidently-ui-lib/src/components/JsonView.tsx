@@ -13,8 +13,10 @@ export const JsonViewThemed: React.FC<
   const mode = useThemeMode()
 
   const {
-    palette: {
-      primary: { main }
+    vars: {
+      palette: {
+        primary: { main }
+      }
     }
   } = useTheme()
 

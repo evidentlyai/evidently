@@ -1,3 +1,7 @@
+import { zodResolver } from '@hookform/resolvers/zod'
+import { Add as AddIcon } from '@mui/icons-material'
+import DeleteIcon from '@mui/icons-material/Delete'
+import EditIcon from '@mui/icons-material/Edit'
 import {
   Box,
   Button,
@@ -11,15 +15,8 @@ import {
 } from '@mui/material'
 import type React from 'react'
 import { useEffect } from 'react'
-import { Form } from 'react-router-dom'
-
-import { Add as AddIcon } from '@mui/icons-material'
-
-import { zodResolver } from '@hookform/resolvers/zod'
-import DeleteIcon from '@mui/icons-material/Delete'
-import EditIcon from '@mui/icons-material/Edit'
-import { useTheme } from '@mui/material/styles'
 import { useForm } from 'react-hook-form'
+import { Form } from 'react-router-dom'
 import { z } from 'zod'
 import type { ProjectModel } from '~/api/types'
 import type { StrictID } from '~/api/types/utils'
@@ -49,8 +46,6 @@ export const EditProjectInfoForm = ({
     defaultValues: defaultValues
   })
 
-  const { palette } = useTheme()
-
   // focus on the firs input
   useEffect(() => setFocus('name'), [setFocus])
 
@@ -63,10 +58,8 @@ export const EditProjectInfoForm = ({
           error={Boolean(errors.name)}
           helperText={errors.name?.message}
           placeholder='Name'
-          InputProps={{
-            style: { color: palette.primary.main, fontSize: '20px', fontWeight: '500' }
-          }}
           disabled={disabled}
+          slotProps={{ input: { sx: { fontSize: '1.25rem', fontWeight: '500' } } }}
           variant='standard'
         />
         {/* description */}
@@ -146,7 +139,7 @@ export const ProjectCard: React.FC<ProjectProps> = ({
         m: 1,
         p: 2,
         border: '1px solid',
-        borderColor: (theme) => theme.palette.divider,
+        borderColor: 'divider',
         position: 'relative',
         '&:hover .action-buttons': {
           opacity: 1
