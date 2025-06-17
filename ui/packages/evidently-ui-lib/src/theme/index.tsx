@@ -5,6 +5,12 @@ const { transitions } = createTheme()
 
 const mainRed = '#ed0500'
 
+declare module '@mui/material/styles' {
+  interface CssThemeVariables {
+    enabled: true
+  }
+}
+
 export const theme = createTheme({
   cssVariables: { colorSchemeSelector: 'class' },
   colorSchemes: {
@@ -83,7 +89,7 @@ export const theme = createTheme({
     },
     MuiLinearProgress: { defaultProps: { color: 'secondary' } },
     MuiPaper: {
-      defaultProps: { sx: { border: '1px solid', borderColor: (t) => t.palette.divider } },
+      defaultProps: { sx: { border: '1px solid', borderColor: 'divider' } },
       styleOverrides: { root: { boxShadow: 'unset' } }
     }
   },

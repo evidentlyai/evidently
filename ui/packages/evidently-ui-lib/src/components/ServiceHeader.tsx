@@ -20,7 +20,7 @@ export function ServiceHeader({
           borderRight: 'none',
           borderTop: 'none',
           borderBottom: '1px solid',
-          borderColor: (t) => t.palette.divider
+          borderColor: 'divider'
         }}
         color={'transparent'}
       >

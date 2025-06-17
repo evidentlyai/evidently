@@ -84,38 +84,34 @@ export const PlotDashboardPanel = ({
   const selectedSnapshotId = highlightInfo && data.sources[highlightInfo.index].snapshot_id
 
   return (
-    <>
-      <PanelCardGeneral title={title} description={description} height={height}>
-        <>
-          <DataContext.Provider value={{ data }}>
-            <MuiXChartPlotTemplate
-              series={series}
-              xAxis={xAxis}
-              SurfaceComponents={
+    <PanelCardGeneral title={title} description={description} height={height}>
+      <DataContext.Provider value={{ data }}>
+        <MuiXChartPlotTemplate
+          series={series}
+          xAxis={xAxis}
+          SurfaceComponents={
+            <>
+              <BarLineSurfaceComponents />
+
+              {OnClickComponent && (
                 <>
-                  <BarLineSurfaceComponents />
-
-                  {OnClickComponent && (
-                    <>
-                      <HighlightSelectionCustom onSelect={(index) => setHighlightInfo({ index })} />
-                      {highlightInfo && <Highlight {...highlightInfo} />}
-                    </>
-                  )}
+                  <HighlightSelectionCustom onSelect={(index) => setHighlightInfo({ index })} />
+                  {highlightInfo && <Highlight {...highlightInfo} />}
                 </>
-              }
-            />
+              )}
+            </>
+          }
+        />
 
-            {OnClickComponent && selectedSnapshotId && (
-              <Box position={'relative'}>
-                <Stack position={'absolute'} top={-20} right={-15}>
-                  <OnClickComponent snapshotId={selectedSnapshotId} />
-                </Stack>
-              </Box>
-            )}
-          </DataContext.Provider>
-        </>
-      </PanelCardGeneral>
-    </>
+        {OnClickComponent && selectedSnapshotId && (
+          <Box position={'relative'}>
+            <Stack position={'absolute'} top={-20} right={-15}>
+              <OnClickComponent snapshotId={selectedSnapshotId} />
+            </Stack>
+          </Box>
+        )}
+      </DataContext.Provider>
+    </PanelCardGeneral>
   )
 }
 
@@ -146,7 +142,7 @@ const CustomAxesTooltipContent = () => {
 
       <Card
         sx={{
-          background: (t) => t.palette.background.paper,
+          backgroundColor: 'background.paper',
           borderTop: 'unset',
           p: 1,
           // hack to respect parent width
@@ -228,7 +224,7 @@ const Highlight = ({ index }: { index: number }) => {
       y={top}
       width={gapWidth}
       height={height}
-      fill={theme.palette.text.primary}
+      fill={theme.vars.palette.text.primary}
       shapeRendering={'crispEdges'}
       pointerEvents={'none'}
       opacity={0.1}

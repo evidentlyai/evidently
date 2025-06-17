@@ -20,6 +20,6 @@
     "pnpm": ">=9"
   },
   "dependencies": {
-    "@biomejs/biome": "1.8.3"
+    "@biomejs/biome": "1.9.4"
   }
 }

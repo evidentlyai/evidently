@@ -110,7 +110,7 @@ const GoToSnapshotByPoint = ({ event }: { event: PlotMouseEventType }) => {
           bottom: 0,
           right: 0,
           p: 1,
-          background: (t) => t.palette.background.default,
+          backgroundColor: 'background.default',
           borderRadius: '10px'
         }}
       >
