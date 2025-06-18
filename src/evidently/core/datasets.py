@@ -396,6 +396,8 @@ class ColumnTest(SingleInputDescriptor):
         self, column: str, condition: Union[ColumnCondition, GenericTest], alias: Optional[str] = None, **data: Any
     ) -> None:
         self.column = column
+        if isinstance(condition, dict):
+            condition = parse_obj_as(ColumnCondition, condition)  # type: ignore[type-abstract]
         descriptor_condition: ColumnCondition = (
             condition if isinstance(condition, ColumnCondition) else condition.for_descriptor().condition
         )

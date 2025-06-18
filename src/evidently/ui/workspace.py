@@ -43,6 +43,7 @@ from evidently.legacy.ui.workspace.cloud import NamedBytesIO
 from evidently.legacy.ui.workspace.cloud import read_multipart_response
 from evidently.legacy.ui.workspace.remote import RemoteBase
 from evidently.legacy.ui.workspace.remote import T
+from evidently.sdk.configs import RemoteConfigManager
 from evidently.sdk.models import DashboardModel
 from evidently.sdk.models import DashboardPanelPlot
 from evidently.sdk.models import DashboardTabModel
@@ -576,6 +577,7 @@ class CloudWorkspace(RemoteWorkspace):
         self._logged_in: bool = False
         super().__init__(base_url=url if url is not None else self.URL)
         self.prompts = RemotePromptManager(self)
+        self.configs = RemoteConfigManager(self)
 
     def _get_jwt_token(self):
         return super()._request("/api/users/login", "GET", headers={TOKEN_HEADER_NAME: self.token}).text
