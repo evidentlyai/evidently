@@ -3,6 +3,7 @@ import copy
 import dataclasses
 import io
 import json
+import os
 import tarfile
 from abc import abstractmethod
 from enum import Enum
@@ -957,13 +958,17 @@ class PandasDataset(Dataset):
     @classmethod
     def _can_load(cls, uri: str) -> bool:
         split = uri.split(".")[-1]
-        return split in cls.SUPPORTED_FORMATS
+        return split in cls.SUPPORTED_FORMATS or os.path.exists(f"{uri}.{EVIDENTLY_DATASET_EXT}")
 
     @classmethod
     def _load(cls, uri: str) -> "Dataset":
         ext = uri.split(".")[-1]
         if ext not in cls.SUPPORTED_FORMATS:
-            raise ValueError(f"Unsupported format: {ext}")
+            if os.path.exists(f"{uri}.{EVIDENTLY_DATASET_EXT}"):
+                ext = EVIDENTLY_DATASET_EXT
+                uri = f"{uri}.{ext}"
+            else:
+                raise ValueError(f"Unsupported format: {ext}")
         # todo: load from fsspec stream instead
         data = cls.SUPPORTED_FORMATS[ext](uri)  # type: ignore[operator]
         if isinstance(data, Dataset):
