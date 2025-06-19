@@ -27,6 +27,7 @@ import typing_inspect
 
 from evidently._pydantic_compat import BaseModel
 from evidently._pydantic_compat import Field
+from evidently._pydantic_compat import parse_obj_as
 from evidently._pydantic_compat import validator
 from evidently.core.base_types import Label
 from evidently.legacy.model.dashboard import DashboardInfo
@@ -397,7 +398,7 @@ def convert_types(val):
         return int(val)
     if isinstance(val, str):
         return val
-    if val is None:
+    if val is None or np.isnan(val):
         return val
     raise ValueError(f"type {type(val)} not supported as Label")
 
@@ -718,6 +719,7 @@ class MetricTest(AutoAliasMixin, EvidentlyBaseModel):
 
     __alias_type__: ClassVar[str] = "test_v2"
     is_critical: bool = True
+    alias: Optional[str] = None
 
     @abstractmethod
     def to_test(self) -> MetricTestProto:
@@ -728,7 +730,7 @@ class MetricTest(AutoAliasMixin, EvidentlyBaseModel):
         status = result.status
         if result.status == TestStatus.FAIL and not self.is_critical:
             status = TestStatus.WARNING
-        description = f"{value.display_name}: {result.description}"
+        description = f"{self.alias or value.display_name}: {result.description}"
         return MetricTestResult(
             id=result.id,
             name=result.name,
@@ -886,6 +888,8 @@ def convert_test(test: Union[MetricTest, GenericTest]) -> MetricTest:
         return test.for_metric()
     if isinstance(test, MetricTest):
         return test
+    if isinstance(test, dict):
+        return parse_obj_as(MetricTest, test)
     raise ValueError(f"test {test} is not a subclass of MetricTest")
 
 

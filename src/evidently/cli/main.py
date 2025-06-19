@@ -1,8 +1,6 @@
 from typer import Typer
 
-app = Typer(
-    context_settings={"help_option_names": ["-h", "--help"]},
-)
+app = Typer(context_settings={"help_option_names": ["-h", "--help"]})
 
 
 @app.callback(no_args_is_help=True, invoke_without_command=True)

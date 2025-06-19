@@ -134,7 +134,7 @@ const BigTableWidgetContent: React.FunctionComponent<BigTableWidgetProps> = (pro
     <React.Fragment>
       <MaterialTable<BigTableDataRow>
         columns={
-          props.showInfoColumn ?? false
+          (props.showInfoColumn ?? false)
             ? [
                 ...GenerateColumns(columns),
                 {
