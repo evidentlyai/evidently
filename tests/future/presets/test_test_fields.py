@@ -68,6 +68,7 @@ from evidently.metrics import RowCount
 from evidently.metrics import StdValue
 from evidently.metrics import UniqueValueCount
 from evidently.metrics.group_by import GroupBy
+from evidently.metrics.row_test_summary import RowTestSummary
 from evidently.presets import ClassificationDummyQuality
 from evidently.presets import ClassificationPreset
 from evidently.presets import ClassificationQuality
@@ -205,6 +206,7 @@ preset_types: Dict[Type[MetricContainer], Dict[str, Tuple[MetricTypeOrMetricChec
         "r2score_tests": (R2Score, "tests"),
         "abs_max_error_tests": (AbsMaxError, "tests"),
     },
+    RowTestSummary: {},
 }
 
 

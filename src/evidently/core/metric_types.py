@@ -719,6 +719,7 @@ class MetricTest(AutoAliasMixin, EvidentlyBaseModel):
 
     __alias_type__: ClassVar[str] = "test_v2"
     is_critical: bool = True
+    alias: Optional[str] = None
 
     @abstractmethod
     def to_test(self) -> MetricTestProto:
@@ -729,7 +730,7 @@ class MetricTest(AutoAliasMixin, EvidentlyBaseModel):
         status = result.status
         if result.status == TestStatus.FAIL and not self.is_critical:
             status = TestStatus.WARNING
-        description = f"{value.display_name}: {result.description}"
+        description = f"{self.alias or value.display_name}: {result.description}"
         return MetricTestResult(
             id=result.id,
             name=result.name,
