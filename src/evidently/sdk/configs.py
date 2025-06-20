@@ -147,6 +147,7 @@ class ConfigVersion(BaseModel):
 
 
 VersionOrLatest = Union[int, Literal["latest"]]
+T = TypeVar("T")
 
 
 class RemoteGenericConfig(GenericConfig):
@@ -257,3 +258,21 @@ class RemoteConfigManager:
                 raise e
             version = 1
         return self.create_version(config_id, version, content)
+
+    def _add_typed_version(self, project_id: ProjectID, name: str, value: Any) -> ConfigVersion:
+        config = self.get_or_create_config(project_id, name)
+        return self.bump_config_version(config.id, value)
+
+    def _get_typed_version(self, project_id: ProjectID, name: str, version: VersionOrLatest, type_: Type[T]) -> T:
+        config = self.get_config(project_id, name)
+        version = self.get_version(config.id, version)
+        value = version.content.get_value()
+        if not isinstance(value, type_):
+            raise ValueError(f"Config with name '{name}' is not a {type_.__class__.__name__}")
+        return value
+
+    def add_descriptor(self, project_id: ProjectID, name: str, descriptor: Descriptor):
+        return self._add_typed_version(project_id, name, descriptor)
+
+    def get_descriptor(self, project_id: ProjectID, name: str, version: VersionOrLatest = "latest") -> Descriptor:
+        return self._get_typed_version(project_id, name, version, Descriptor)
