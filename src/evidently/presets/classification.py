@@ -230,7 +230,7 @@ class ClassificationDummyQuality(MetricContainer):
     ):
         self.probas_threshold = probas_threshold
         self.k = k
-        super().__init__(include_tests=True)
+        super().__init__(include_tests=include_tests)
 
     def generate_metrics(self, context: "Context") -> Sequence[MetricOrContainer]:
         return [
