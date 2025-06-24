@@ -417,6 +417,7 @@ class Snapshot:
     def to_snapshot_model(self):
         snapshot = SnapshotModel(
             report=ReportModel(items=[]),
+            name=self._name,
             timestamp=self._timestamp,
             metadata=self._metadata,
             tags=self._tags,
