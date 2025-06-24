@@ -52,7 +52,7 @@ const metadataToOneString: (metadata: MetadataModel) => string = (metadata: Meta
     })
     .join(' ')
 
-const SnapshotNameAndID = (params: { name?: string; id: string }) => {
+const SnapshotNameAndID = (params: { name?: string | null; id: string }) => {
   return (
     <>
       {params.name ? (
