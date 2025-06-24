@@ -69,6 +69,7 @@ class SnapshotLink(BaseModel):
 
 class SnapshotMetadataModel(BaseModel):
     id: SnapshotID
+    name: Optional[str]
     metadata: Dict[str, str]
     tags: List[str]
     timestamp: datetime

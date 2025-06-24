@@ -294,14 +294,17 @@ class Snapshot:
     _timestamp: datetime
     _tags: List[str]
     _metadata: Dict[str, MetadataValueType]
+    _name: Optional[str]
 
     def __init__(
         self,
         report: "Report",
+        name: Optional[str],
         timestamp: datetime,
         metadata: Dict[str, MetadataValueType],
         tags: List[str],
     ):
+        self._name = name
         self._report = report
         self._context = Context(report)
         self._snapshot_item = []
@@ -414,6 +417,7 @@ class Snapshot:
     def to_snapshot_model(self):
         snapshot = SnapshotModel(
             report=ReportModel(items=[]),
+            name=self._name,
             timestamp=self._timestamp,
             metadata=self._metadata,
             tags=self._tags,
@@ -440,7 +444,13 @@ class Snapshot:
 
     @staticmethod
     def load_model(model: SnapshotModel) -> "Snapshot":
-        snapshot = Snapshot(report=Report([]), timestamp=model.timestamp, metadata=model.metadata, tags=model.tags)
+        snapshot = Snapshot(
+            report=Report([]),
+            name=model.name,
+            timestamp=model.timestamp,
+            metadata=model.metadata,
+            tags=model.tags,
+        )
         snapshot._metrics = model.metric_results
         snapshot._top_level_metrics = model.top_level_metrics
         snapshot._widgets = model.widgets
@@ -502,6 +512,7 @@ class Report:
         timestamp: Optional[datetime] = None,
         metadata: Dict[str, MetadataValueType] = None,
         tags: List[str] = None,
+        name: Optional[str] = None,
     ) -> Snapshot:
         current_dataset = Dataset.from_any(current_data)
         reference_dataset = Dataset.from_any(reference_data) if reference_data is not None else None
@@ -512,7 +523,7 @@ class Report:
         _tags = self.tags.copy()
         if tags is not None:
             _tags.extend(tags)
-        snapshot = Snapshot(self, _timestamp, _metadata, _tags)
+        snapshot = Snapshot(self, name, _timestamp, _metadata, _tags)
         snapshot.run(current_dataset, reference_dataset)
         return snapshot
 

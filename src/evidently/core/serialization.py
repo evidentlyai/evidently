@@ -1,6 +1,7 @@
 from datetime import datetime
 from typing import Dict
 from typing import List
+from typing import Optional
 from typing import Union
 
 from evidently._pydantic_compat import BaseModel
@@ -25,6 +26,7 @@ class ReportModel(BaseModel):
 
 class SnapshotModel(BaseModel):
     report: ReportModel
+    name: Optional[str]
     timestamp: datetime
     metadata: Dict[str, MetadataValueType]
     tags: List[str]
