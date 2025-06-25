@@ -35,6 +35,7 @@ ConfigVersionID = uuid.UUID
 
 class ConfigContentType(str, Enum):
     Descriptor = "descriptor"
+    RunDescriptorsConfig = "run-descriptors-config"
 
 
 TConfigValue = TypeVar("TConfigValue")
