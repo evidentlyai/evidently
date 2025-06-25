@@ -470,6 +470,12 @@ class Snapshot:
     def tests_results(self):
         return [test_result for metric in self._top_level_metrics for test_result in self._metrics[metric].tests]
 
+    def get_name(self) -> Optional[str]:
+        return self._name
+
+    def set_name(self, name: str):
+        self._name = name
+
 
 Run = Snapshot
 
