@@ -9,7 +9,11 @@ class EqualsColumnCondition(ColumnCondition):
     expected: Any
 
     def check(self, value: Any) -> bool:
-        return self.expected == value
+        try:
+            expected = type(value)(self.expected)
+            return expected == value
+        except ValueError:
+            return False
 
     def get_default_alias(self, column: str) -> str:
         return f"{column}_test_equals_{self.expected}"
@@ -19,7 +23,11 @@ class NotEqualsColumnCondition(ColumnCondition):
     expected: Any
 
     def check(self, value: Any) -> bool:
-        return self.expected != value
+        try:
+            expected = type(value)(self.expected)
+            return expected != value
+        except ValueError:
+            return True
 
     def get_default_alias(self, column: str) -> str:
         return f"{column}_test_not_equals_{self.expected}"
@@ -65,11 +73,21 @@ class GreaterEqualColumnCondition(ColumnCondition):
         return f"{column}_test_greater_or_equal_{self.threshold}"
 
 
+def _typed_values(cls, values):
+    res = set()
+    for value in values:
+        try:
+            res.add(cls(value))
+        except ValueError:
+            pass
+    return res
+
+
 class IsInColumnCondition(ColumnCondition):
     values: Set[Any]
 
     def check(self, value: Any) -> bool:
-        return value in self.values
+        return value in self.values or value in _typed_values(type(value), self.values)
 
     def get_default_alias(self, column: str) -> str:
         return f"{column}_test_in_{self.values}"
@@ -79,7 +97,7 @@ class IsNotInColumnCondition(ColumnCondition):
     values: Set[Any]
 
     def check(self, value: Any) -> bool:
-        return value not in self.values
+        return value not in self.values and value not in _typed_values(type(value), self.values)
 
     def get_default_alias(self, column: str) -> str:
         return f"{column}_test_not_in_{self.values}"
