@@ -225,6 +225,7 @@ class JsonFileProjectMetadataStorage(ProjectMetadataStorage):
         return [
             SnapshotMetadataModel(
                 id=snapshot_id,
+                name=snapshot.name,
                 metadata=snapshot.metadata,
                 tags=snapshot.tags,
                 timestamp=snapshot.timestamp,
