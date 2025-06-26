@@ -322,7 +322,7 @@ class Descriptor(AutoAliasMixin, EvidentlyBaseModel, abc.ABC):
 
     def __init__(self, alias: str, tests: Optional[List[AnyDescriptorTest]] = None, **data: Any) -> None:
         self.alias = alias
-        self.tests = [t if isinstance(t, DescriptorTest) else t.for_descriptor() for t in (tests or [])]
+        self.tests = [t.for_descriptor() if isinstance(t, GenericTest) else t for t in (tests or [])]
         super().__init__(**data)
 
     @abc.abstractmethod
@@ -370,9 +370,7 @@ class DescriptorTest(BaseModel):
         alias: Optional[str] = None,
         **data: Any,
     ) -> None:
-        c: ColumnCondition = (
-            condition if isinstance(condition, ColumnCondition) else condition.for_descriptor().condition
-        )
+        c: ColumnCondition = condition.for_descriptor().condition if isinstance(condition, GenericTest) else condition
         super().__init__(alias=alias, column=column, condition=c, **data)
 
     def to_descriptor(self, descriptor: Optional[Descriptor] = None) -> "Descriptor":
