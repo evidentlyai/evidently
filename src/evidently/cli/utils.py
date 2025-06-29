@@ -96,7 +96,7 @@ class _Config(BaseModel):
 
     def save(self, path: str) -> None:
         with open(path, "w") as f:
-            json.dump(self.dict(), f, indent=2, ensure_ascii=False)
+            f.write(self.json(indent=2, ensure_ascii=False))
 
 
 def _load_config_from_python(config_type: Type[T], path_or_module: str) -> T:
