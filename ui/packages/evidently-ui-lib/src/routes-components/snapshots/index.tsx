@@ -354,9 +354,7 @@ export const SnapshotsListTemplate = ({
                         <Tooltip title='delete snapshot' placement='top'>
                           <IconButton
                             onClick={() => {
-                              if (confirm('Are you sure?') === true) {
-                                onDeleteSnapshot({ snapshotId: snapshot.id })
-                              }
+                              onDeleteSnapshot({ snapshotId: snapshot.id })
                             }}
                             color='primary'
                             disabled={disabled}
