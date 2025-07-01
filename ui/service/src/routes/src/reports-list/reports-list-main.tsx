@@ -76,9 +76,11 @@ export const Component = () => {
         type='reports'
         LinkToSnapshot={LinkToSnapshot}
         downloadLink={'/api/projects/{project_id}/{snapshot_id}/download'}
-        onDeleteSnapshot={({ snapshotId }) =>
-          deleteSnapshotFetcher.submit({ data: { snapshotId }, paramsToReplace: { projectId } })
-        }
+        onDeleteSnapshot={({ snapshotId }) => {
+          if (confirm('Are you sure?') === true) {
+            deleteSnapshotFetcher.submit({ data: { snapshotId }, paramsToReplace: { projectId } })
+          }
+        }}
         onReloadSnapshots={() =>
           reloadSnapshotsFetcher.submit({ data: {}, paramsToReplace: { projectId } })
         }
