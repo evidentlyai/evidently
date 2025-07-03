@@ -1,24 +1,28 @@
 import ContentCopyIcon from '@mui/icons-material/ContentCopy'
-import { IconButton } from '@mui/material'
+import { IconButton, Tooltip } from '@mui/material'
 import { Box } from '@mui/material'
 
 export const TextWithCopyIcon = ({
   showText,
-  copyText
+  copyText,
+  tooltip
 }: {
   showText: string
   copyText: string
+  tooltip?: string
 }) => {
   return (
     <Box>
       {showText}
-      <IconButton
-        size='small'
-        style={{ marginLeft: 10 }}
-        onClick={() => navigator.clipboard.writeText(copyText)}
-      >
-        <ContentCopyIcon fontSize='small' />
-      </IconButton>
+      <Tooltip title={tooltip ?? 'Copy'} placement={'top'}>
+        <IconButton
+          size='small'
+          style={{ marginLeft: 10 }}
+          onClick={() => navigator.clipboard.writeText(copyText)}
+        >
+          <ContentCopyIcon fontSize='small' />
+        </IconButton>
+      </Tooltip>
     </Box>
   )
 }

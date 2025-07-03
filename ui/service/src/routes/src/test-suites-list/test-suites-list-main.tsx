@@ -74,12 +74,14 @@ export const Component = () => {
         snapshots={reports}
         type='test suites'
         LinkToSnapshot={LinkToSnapshot}
-        onDeleteSnapshot={({ snapshotId }) =>
-          deleteSnapshotFetcher.submit({
-            data: { snapshotId },
-            paramsToReplace: { projectId }
-          })
-        }
+        onDeleteSnapshot={({ snapshotId }) => {
+          if (confirm('Are you sure?') === true) {
+            deleteSnapshotFetcher.submit({
+              data: { snapshotId },
+              paramsToReplace: { projectId }
+            })
+          }
+        }}
         onReloadSnapshots={() =>
           reloadSnapshotsFetcher.submit({ data: {}, paramsToReplace: { projectId } })
         }

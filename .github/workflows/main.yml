@@ -139,6 +139,8 @@ jobs:
             python: "3.12"
           - os: windows-2022  # until sklearn+tar is resolved
             python: "3.10"
+          - os: macos-14      # until sklearn+tar is resolved
+            python: "3.10"
       fail-fast: false
     steps:
       - uses: actions/checkout@v4

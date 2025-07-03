@@ -305,14 +305,33 @@ class WorkspaceBase(ABC):
     def _get_snapshot_url(self, project_id: STR_UUID, snapshot_id: STR_UUID) -> str:
         raise NotImplementedError
 
-    def add_run(self, project_id: STR_UUID, run: Snapshot, include_data: bool = False) -> SnapshotRef:
+    def add_run(
+        self,
+        project_id: STR_UUID,
+        run: Snapshot,
+        include_data: bool = False,
+        name: Optional[str] = None,
+    ) -> SnapshotRef:
+        """
+        Args:
+            project_id: project ID
+            run: Run object for upload
+            include_data: if set to True - input data will be uploaded to server (if supported)
+            name: new name for run
+        Returns:
+            snapshot reference object with ID of uploaded snapshot
+        """
+        if name is not None:
+            run.set_name(name)
         snapshot_id = self._add_run(project_id, run)
+        current_dataset_name = run.get_name() or f"run-current-{snapshot_id}"
+        reference_dataset_name = f"{run.get_name()}: reference" or f"run-reference-{snapshot_id}"
         if include_data:
             current, reference = run.context._input_data
             self.add_dataset(
                 project_id,
                 current,
-                f"run-current-{snapshot_id}",
+                current_dataset_name,
                 None,
                 link=SnapshotLink(snapshot_id=snapshot_id, dataset_type="output", dataset_subtype="current"),
             )
@@ -320,7 +339,7 @@ class WorkspaceBase(ABC):
                 self.add_dataset(
                     project_id,
                     reference,
-                    f"run-reference-{snapshot_id}",
+                    reference_dataset_name,
                     None,
                     link=SnapshotLink(snapshot_id=snapshot_id, dataset_type="output", dataset_subtype="reference"),
                 )

@@ -44,6 +44,7 @@ class MetricModel(BaseModel):
 
 class ReportModel(BaseModel):
     id: SnapshotID
+    name: Optional[str]
     timestamp: datetime.datetime
     metadata: Dict[str, MetadataValueType]
     tags: List[str]
@@ -53,6 +54,7 @@ class ReportModel(BaseModel):
     def from_report(cls, report: Report):
         return cls(
             id=report.id,
+            name=report.name,
             timestamp=report.timestamp,
             metadata=report.metadata,
             tags=report.tags,
@@ -62,6 +64,7 @@ class ReportModel(BaseModel):
     def from_snapshot(cls, snapshot: SnapshotMetadata):
         return cls(
             id=snapshot.id,
+            name=snapshot.name,
             timestamp=snapshot.timestamp,
             metadata=snapshot.metadata,
             tags=snapshot.tags,
@@ -71,6 +74,7 @@ class ReportModel(BaseModel):
 
 class TestSuiteModel(BaseModel):
     id: SnapshotID
+    name: Optional[str]
     timestamp: datetime.datetime
     metadata: Dict[str, MetadataValueType]
     tags: List[str]
@@ -80,6 +84,7 @@ class TestSuiteModel(BaseModel):
     def from_report(cls, report: TestSuite):
         return cls(
             id=report.id,
+            name=report.name,
             timestamp=report.timestamp,
             metadata=report.metadata,
             tags=report.tags,
@@ -89,6 +94,7 @@ class TestSuiteModel(BaseModel):
     def from_snapshot(cls, snapshot: SnapshotMetadata):
         return cls(
             id=snapshot.id,
+            name=snapshot.name,
             timestamp=snapshot.timestamp,
             metadata=snapshot.metadata,
             tags=snapshot.tags,

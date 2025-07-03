@@ -29,7 +29,7 @@ def mock_project():
 @pytest.fixture
 def mock_snapshot():
     report = Report(metrics=[])
-    snapshot = Snapshot(report, datetime.datetime.now(), metadata={}, tags=[])
+    snapshot = Snapshot(report, "mock", datetime.datetime.now(), metadata={}, tags=[])
     snapshot._widgets = []
     return snapshot
 

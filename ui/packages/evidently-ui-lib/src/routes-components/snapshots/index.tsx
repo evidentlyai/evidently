@@ -8,6 +8,7 @@ import {
   FormControlLabel,
   Grid,
   IconButton,
+  Stack,
   Switch,
   Table,
   TableBody,
@@ -50,6 +51,23 @@ const metadataToOneString: (metadata: MetadataModel) => string = (metadata: Meta
       return value
     })
     .join(' ')
+
+const SnapshotNameAndID = (params: { name?: string | null; id: string }) => {
+  return (
+    <>
+      {params.name ? (
+        <Stack>
+          <Typography>{params.name}</Typography>
+          <Typography component={'div'} fontSize={'xx-small'}>
+            <TextWithCopyIcon showText={params.id} copyText={params.id} tooltip={'Copy ID'} />
+          </Typography>
+        </Stack>
+      ) : (
+        <TextWithCopyIcon showText={params.id} copyText={params.id} tooltip={'Copy ID'} />
+      )}
+    </>
+  )
+}
 
 export const SnapshotsListTemplate = ({
   query,
@@ -280,7 +298,7 @@ export const SnapshotsListTemplate = ({
                 </TableCell>
               )}
               <TableCell>
-                <TextWithCopyIcon showText={snapshot.id} copyText={snapshot.id} />
+                <SnapshotNameAndID id={snapshot.id} name={snapshot.name} />
               </TableCell>
               <TableCell>
                 <Box maxWidth={250}>
@@ -336,9 +354,7 @@ export const SnapshotsListTemplate = ({
                         <Tooltip title='delete snapshot' placement='top'>
                           <IconButton
                             onClick={() => {
-                              if (confirm('Are you sure?') === true) {
-                                onDeleteSnapshot({ snapshotId: snapshot.id })
-                              }
+                              onDeleteSnapshot({ snapshotId: snapshot.id })
                             }}
                             color='primary'
                             disabled={disabled}
