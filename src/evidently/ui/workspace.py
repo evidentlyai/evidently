@@ -36,6 +36,7 @@ from evidently.legacy.ui.workspace.cloud import ACCESS_TOKEN_COOKIE
 from evidently.legacy.ui.workspace.cloud import TOKEN_HEADER_NAME
 from evidently.legacy.ui.workspace.remote import RemoteBase
 from evidently.legacy.ui.workspace.remote import T
+from evidently.sdk.configs import RemoteConfigManager
 from evidently.sdk.datasets import DatasetList
 from evidently.sdk.datasets import RemoteDatasetsManager
 from evidently.sdk.models import DashboardModel
@@ -591,6 +592,7 @@ class CloudWorkspace(RemoteWorkspace):
         super().__init__(base_url=url if url is not None else self.URL)
         self.prompts = RemotePromptManager(self)
         self.datasets = RemoteDatasetsManager(self)
+        self.configs = RemoteConfigManager(self)
 
     def _get_jwt_token(self):
         return super()._request("/api/users/login", "GET", headers={TOKEN_HEADER_NAME: self.token}).text

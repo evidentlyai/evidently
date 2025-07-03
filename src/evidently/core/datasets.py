@@ -389,6 +389,37 @@ class SingleInputDescriptor(Descriptor, abc.ABC):
         return [self.column]
 
 
+class DescriptorTest(BaseModel):
+    condition: ColumnCondition
+    column: Optional[str] = None
+    alias: Optional[str] = None
+
+    def __init__(
+        self,
+        condition: Union[ColumnCondition, GenericTest],
+        column: Optional[str] = None,
+        alias: Optional[str] = None,
+        **data: Any,
+    ) -> None:
+        c: ColumnCondition = condition.for_descriptor().condition if isinstance(condition, GenericTest) else condition
+        super().__init__(alias=alias, column=column, condition=c, **data)
+
+    def to_descriptor(self, descriptor: Optional[Descriptor] = None) -> "Descriptor":
+        if self.column is None:
+            if descriptor is None:
+                raise ValueError("Parent descriptor is required for test without column")
+            descriptor_columns = descriptor.list_output_columns()
+            if len(descriptor_columns) == 1:
+                column = descriptor_columns[0]
+            else:
+                raise ValueError(
+                    f"Column is required for test with multiple columns in parent descriptor: [{', '.join(descriptor_columns)}]"
+                )
+        else:
+            column = self.column
+        return ColumnTest(column, self.condition, self.alias or self.condition.get_default_alias(column))
+
+
 Descriptor.update_forward_refs()
 
 
