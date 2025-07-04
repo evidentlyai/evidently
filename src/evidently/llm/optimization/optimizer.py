@@ -1,6 +1,7 @@
+import datetime
 import os
 from abc import ABC
-from enum import Enum
+from abc import abstractmethod
 from typing import Any
 from typing import ClassVar
 from typing import Dict
@@ -13,8 +14,11 @@ from typing import Type
 from typing import TypeVar
 
 import pandas as pd
+import uuid6
 
 from evidently._pydantic_compat import BaseModel
+from evidently._pydantic_compat import Field
+from evidently.legacy.core import new_id
 from evidently.legacy.options.base import Options
 from evidently.legacy.utils.llm.wrapper import LLMWrapper
 from evidently.legacy.utils.llm.wrapper import get_llm_wrapper
@@ -22,7 +26,9 @@ from evidently.pydantic_utils import AutoAliasMixin
 from evidently.pydantic_utils import EvidentlyBaseModel
 
 
-class Inputs(str, Enum):
+class Inputs:
+    BasePrompt = "base_prompt"
+    EarlyStop = "early_stop"
     LLMClassification = "llm_classification"
     Options = "options"
     Scorer = "scorer"
@@ -43,8 +49,18 @@ class OptimizerConfig(AutoAliasMixin, EvidentlyBaseModel):
     model: str = "gpt-4o-mini"
 
 
-class OptimizerLog(AutoAliasMixin, EvidentlyBaseModel):
+LogID = uuid6.UUID
+
+
+class OptimizerLog(AutoAliasMixin, EvidentlyBaseModel, ABC):
     __alias_type__: ClassVar = "optimizer_log"
+
+    id: LogID = Field(default_factory=new_id)
+    timestamp: datetime.datetime = Field(default_factory=datetime.datetime.now)
+
+    @abstractmethod
+    def message(self) -> str:
+        raise NotImplementedError()
 
 
 class Mistakes(NamedTuple):
@@ -94,7 +110,14 @@ class OptimizerContext(BaseModel):
         return self.inputs[Inputs.Options]
 
     def add_log(self, log: OptimizerLog):
+        print(log.message())
         self.logs.append(log)
+
+    def get_log(self, log_id: LogID) -> OptimizerLog:
+        for log in self.logs:
+            if log.id == log_id:
+                return log
+        raise ValueError(f"Log with id {log_id} not found")
 
 
 TOptimizerConfig = TypeVar("TOptimizerConfig", bound=OptimizerConfig)
@@ -115,8 +138,10 @@ class BaseOptimizer(ABC, Generic[TOptimizerConfig]):
     def set_input(self, name: str, value: Any):
         self.context.inputs[name] = value
 
-    def get_input(self, name: str, cls: Optional[Type[T]] = None) -> Optional[T]:
+    def get_input(self, name: str, cls: Optional[Type[T]] = None, missing_error_message: Optional[str] = None) -> T:
         value = self.context.inputs.get(name, None)
-        if value is None or not isinstance(value, cls):
-            return None
+        if value is None and missing_error_message is not None:
+            raise ValueError(missing_error_message)
+        if cls is not None and not isinstance(value, cls):
+            raise ValueError(f"Expected {cls.__name__}, got {type(value).__name__}")
         return value

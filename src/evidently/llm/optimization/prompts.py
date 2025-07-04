@@ -1,14 +1,19 @@
 import re
 from abc import ABC
 from abc import abstractmethod
+from typing import Any
+from typing import Callable
 from typing import ClassVar
 from typing import Dict
+from typing import List
 from typing import Optional
 from typing import Union
 
 import pandas as pd
 
 from evidently import Dataset
+from evidently._pydantic_compat import BaseModel
+from evidently._pydantic_compat import PrivateAttr
 from evidently.core.datasets import LLMClassification
 from evidently.legacy.features.llm_judge import BinaryClassificationPromptTemplate
 from evidently.legacy.features.llm_judge import LLMJudge
@@ -18,11 +23,13 @@ from evidently.legacy.utils.llm.base import LLMMessage
 from evidently.legacy.utils.sync import async_to_sync
 from evidently.llm.optimization.optimizer import BaseOptimizer
 from evidently.llm.optimization.optimizer import Inputs
+from evidently.llm.optimization.optimizer import LogID
 from evidently.llm.optimization.optimizer import OptimizerConfig
 from evidently.llm.optimization.optimizer import OptimizerContext
 from evidently.llm.optimization.optimizer import OptimizerLog
 from evidently.pydantic_utils import AutoAliasMixin
 from evidently.pydantic_utils import EvidentlyBaseModel
+from evidently.utils.arg_type_registry import BaseArgTypeRegistry
 
 
 class PromptOptimizationLog(OptimizerLog):
@@ -31,9 +38,13 @@ class PromptOptimizationLog(OptimizerLog):
     new_prompt: str
     input_tokens: int
     output_tokens: str
+    stop: bool
+
+    def message(self) -> str:
+        return f"Prompt '{self.input_prompt[:40]}' optimized to '{self.new_prompt[:40]}'"
 
 
-class PromptOptimizerStrategy(AutoAliasMixin, EvidentlyBaseModel, ABC):
+class PromptOptimizerStrategy(BaseArgTypeRegistry, AutoAliasMixin, EvidentlyBaseModel, ABC):
     __alias_type__: ClassVar = "prompt_optimizer_strategy"
 
     @abstractmethod
@@ -47,7 +58,26 @@ class PromptOptimizerConfig(OptimizerConfig):
 
 class PromptEvaluationLog(OptimizerLog):
     prompt: str
-    data: Dict[Inputs, Optional[pd.Series]]
+    data: Dict[str, Optional[pd.Series]]
+
+    def __init__(
+        self,
+        prompt: str,
+        prediction: Optional[pd.Series] = None,
+        prediction_reasoning: Optional[pd.Series] = None,
+        prediction_scores: Optional[pd.Series] = None,
+        data: Optional[Dict[str, Optional[pd.Series]]] = None,
+        **kwargs: Any,
+    ) -> None:
+        data = data or {}
+        data[Inputs.Pred] = prediction
+        data[Inputs.PredReasoning] = prediction_reasoning
+        data[Inputs.PredScores] = prediction_scores
+        super().__init__(prompt=prompt, data=data, **kwargs)
+
+    def message(self) -> str:
+        lens = " ".join(f"{k}({len(v)})" for k, v in self.data.items() if v is not None)
+        return f"Evaluated prompt '{self.prompt[:40]}...', got {lens}"
 
 
 class PromptEvaluator(AutoAliasMixin, EvidentlyBaseModel, ABC):
@@ -58,7 +88,7 @@ class PromptEvaluator(AutoAliasMixin, EvidentlyBaseModel, ABC):
         raise NotImplementedError()
 
     @abstractmethod
-    def get_base_prompt(self) -> str:
+    def get_base_prompt(self) -> Optional[str]:
         raise NotImplementedError()
 
 
@@ -96,7 +126,33 @@ class BinaryLLMJudgePromptEvaluator(PromptEvaluator):
         return self.template.criteria
 
 
-AnyPromptEvaluator = Union[PromptEvaluator, LLMJudge]
+CustomEvaluatorCallable = Callable[[str], PromptEvaluationLog]
+
+
+class CallablePromptEvaluator(PromptEvaluator):
+    func: str
+    _func: Optional[CustomEvaluatorCallable] = PrivateAttr(None)
+
+    def __init__(
+        self,
+        func: Union[str, CustomEvaluatorCallable],
+    ):
+        if callable(func):
+            self._func = func
+            func = f"{func.__module__}.{func.__name__}"
+        else:
+            self._func = None
+        self.func = func
+        super().__init__()
+
+    def evaluate(self, prompt: str, dataset: Dataset, options: Options) -> PromptEvaluationLog:
+        return self._func(prompt)
+
+    def get_base_prompt(self) -> Optional[str]:
+        return None
+
+
+AnyPromptEvaluator = Union[PromptEvaluator, LLMJudge, CustomEvaluatorCallable]
 
 
 def get_prompt_evaluator(value: AnyPromptEvaluator) -> PromptEvaluator:
@@ -104,14 +160,21 @@ def get_prompt_evaluator(value: AnyPromptEvaluator) -> PromptEvaluator:
         return value
     if isinstance(value, LLMJudge) and isinstance(value.template, BinaryClassificationPromptTemplate):
         return BinaryLLMJudgePromptEvaluator(judge=value)
+    if callable(value):
+        # todo: check signature
+        return CallablePromptEvaluator(value)
     raise NotImplementedError(f"Not implemented for {value.__class__.__name__}")
 
 
 class PromptScoringLog(OptimizerLog):
+    evaluation_log_id: LogID
     scores: Dict[str, float]
 
+    def message(self) -> str:
+        return "Prompt scored: " + ", ".join(f"{k}: {v}" for k, v in self.scores.items())
 
-class OptimizationScorer(AutoAliasMixin, EvidentlyBaseModel, ABC):
+
+class OptimizationScorer(BaseArgTypeRegistry, AutoAliasMixin, EvidentlyBaseModel, ABC):
     __alias_type__: ClassVar = "optimizer_scorer"
 
     @abstractmethod
@@ -119,7 +182,12 @@ class OptimizationScorer(AutoAliasMixin, EvidentlyBaseModel, ABC):
         raise NotImplementedError()
 
 
+StrOptimizationScorer = Union[str, OptimizationScorer]
+
+
 class AccuracyScorer(OptimizationScorer):
+    __registry_alias__: ClassVar = "accuracy"
+
     def score(self, context: OptimizerContext, evaluation: PromptEvaluationLog) -> Optional[float]:
         if Inputs.Target not in context.inputs or Inputs.Pred not in evaluation.data:
             # todo: error?
@@ -129,15 +197,38 @@ class AccuracyScorer(OptimizationScorer):
         return (result == target).mean()
 
 
+class EarlyStopConfig(BaseModel):
+    bigger_score_better: bool = True
+    max_iterations: int = 5
+    min_score_gain: float = 0.01
+    main_score_name: Optional[str] = None
+
+    @property
+    def _score_sign(self):
+        return 1 if self.bigger_score_better else -1
+
+    def should_stop(self, logs: List[OptimizerLog]) -> Optional[float]:
+        if sum(1 for _ in logs if isinstance(_, PromptOptimizationLog)) > self.max_iterations:
+            return True
+        scores = list(log for log in logs if isinstance(log, PromptScoringLog))
+        if len(scores) > 1:
+            prev_score, last_score = scores[-2:]
+            score_name = self.main_score_name or next(iter(prev_score.scores))
+            if (last_score.scores[score_name] - prev_score.scores[score_name]) * self._score_sign < self.min_score_gain:
+                return True
+        return False
+
+
 class PromptOptimizer(BaseOptimizer[PromptOptimizerConfig]):
-    def __init__(self, name: str, strategy: PromptOptimizerStrategy, checkpoint_path: Optional[str] = None):
+    def __init__(self, name: str, strategy: Union[str, PromptOptimizerStrategy], checkpoint_path: Optional[str] = None):
+        strategy = PromptOptimizerStrategy.registry_lookup(strategy)
         super().__init__(name, PromptOptimizerConfig(strategy=strategy), checkpoint_path=checkpoint_path)
 
     def run_sync(
         self,
         dataset: Dataset,
         evaluator: AnyPromptEvaluator,
-        scorer: Optional[OptimizationScorer],
+        scorer: Optional[StrOptimizationScorer],
         options: AnyOptions = None,
     ) -> Optional[PromptOptimizationLog]:
         return async_to_sync(self.run(dataset, evaluator, scorer, options))
@@ -146,8 +237,9 @@ class PromptOptimizer(BaseOptimizer[PromptOptimizerConfig]):
         self,
         dataset: Dataset,
         evaluator: AnyPromptEvaluator,
-        scorer: Optional[OptimizationScorer],
+        scorer: Optional[StrOptimizationScorer],
         options: AnyOptions = None,
+        early_stop: Optional[EarlyStopConfig] = None,
     ) -> Optional[PromptOptimizationLog]:
         self.set_input_dataset(dataset)
         evaluator = get_prompt_evaluator(evaluator)
@@ -155,26 +247,36 @@ class PromptOptimizer(BaseOptimizer[PromptOptimizerConfig]):
         self.set_input(Inputs.Options, Options.from_any_options(options))
         if scorer is None:
             scorer = AccuracyScorer()
-        self.set_input(Inputs.Scorer, scorer)
+        self.set_input(Inputs.Scorer, OptimizationScorer.registry_lookup(scorer))
+        self.set_input(Inputs.EarlyStop, early_stop or EarlyStopConfig())
 
         await self.resume()
 
     async def resume(self):
         evaluator = self.get_input(Inputs.Evaluator, PromptEvaluator)
         scorer = self.get_input(Inputs.Scorer, OptimizationScorer)
-        prompt = evaluator.get_base_prompt()
 
+        prompt = evaluator.get_base_prompt()
+        if prompt is None:
+            prompt = self.get_input(
+                Inputs.BasePrompt, str, f"'{Inputs.BasePrompt}' input is required for {evaluator.__class__.__name__}"
+            )
+        early_stop = self.get_input(Inputs.EarlyStop, EarlyStopConfig)
+
+        stop = False
         self._eval_score(prompt, evaluator, scorer)
-        opt_log = await self.config.strategy.run(prompt, self.context)
-        self.context.add_log(opt_log)
-        prompt = opt_log.new_prompt
-        self._eval_score(prompt, evaluator, scorer)
+        while not stop:
+            opt_log = await self.config.strategy.run(prompt, self.context)
+            self.context.add_log(opt_log)
+            prompt = opt_log.new_prompt
+            self._eval_score(prompt, evaluator, scorer)
+            stop = opt_log.stop or early_stop.should_stop(self.context.logs)
 
     def _eval_score(self, prompt: str, evaluator: PromptEvaluator, scorer: OptimizationScorer):
         eval_log = evaluator.evaluate(prompt, self.dataset, self.context.options)
         self.context.add_log(eval_log)
         score = scorer.score(self.context, eval_log)
-        score_log = PromptScoringLog(scores={scorer.__class__.__name__: score})
+        score_log = PromptScoringLog(evaluation_log_id=eval_log.id, scores={scorer.__class__.__name__: score})
         self.context.add_log(score_log)
 
     @property
@@ -216,6 +318,8 @@ def get_tag(value, tag_name):
 
 
 class SimplePromptOptimizer(PromptOptimizerStrategy):
+    __registry_alias__: ClassVar = "simple"
+
     optimizer_prompt: str = (
         "I'm using llm to classify texts. Here is my prompt <prompt>{prompt}</prompt>. "
         "Please make it better so I can have better classification quality. "
@@ -233,10 +337,13 @@ class SimplePromptOptimizer(PromptOptimizerStrategy):
             new_prompt=new_prompt,
             input_tokens=response.input_tokens,
             output_tokens=response.output_tokens,
+            stop=True,
         )
 
 
 class FeedbackStrategy(PromptOptimizerStrategy):
+    __registry_alias__: ClassVar = "feedback"
+
     add_feedback_prompt = (
         "I ran LLM judge for some inputs and it made some mistakes. "
         "Here is my original prompt <prompt>{prompt}</prompt>. "
@@ -266,6 +373,13 @@ class FeedbackStrategy(PromptOptimizerStrategy):
                 mistakes.values, mistakes.target, mistakes.preds, mistakes.reasoning, mistakes.preds_reasoning
             )
         )
-        return await SimplePromptOptimizer(
-            optimizer_prompt=self.add_feedback_prompt.format(prompt="{prompt}", rows=rows)
-        ).run(prompt, state)
+        optimizer_prompt = self.add_feedback_prompt.format(prompt="{prompt}", rows=rows)
+        log = await SimplePromptOptimizer(optimizer_prompt=optimizer_prompt).run(prompt, state)
+        return PromptOptimizationLog(
+            input_prompt=prompt,
+            optimizer_prompt=optimizer_prompt,
+            new_prompt=log.new_prompt,
+            input_tokens=log.input_tokens,
+            output_tokens=log.output_tokens,
+            stop=False,
+        )
