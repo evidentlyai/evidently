@@ -18,6 +18,7 @@ from evidently._pydantic_compat import PrivateAttr
 from evidently.core.datasets import LLMClassification
 from evidently.legacy.features.llm_judge import BinaryClassificationPromptTemplate
 from evidently.legacy.features.llm_judge import LLMJudge
+from evidently.legacy.features.llm_judge import MulticlassClassificationPromptTemplate
 from evidently.legacy.options.base import AnyOptions
 from evidently.legacy.options.base import Options
 from evidently.legacy.utils.llm.base import LLMMessage
@@ -71,9 +72,9 @@ class PromptEvaluationLog(OptimizerLog):
         **kwargs: Any,
     ) -> None:
         data = data or {}
-        data[Inputs.Pred] = prediction
-        data[Inputs.PredReasoning] = prediction_reasoning
-        data[Inputs.PredScores] = prediction_scores
+        data.setdefault(Inputs.Pred, prediction)
+        data.setdefault(Inputs.PredScores, prediction_scores)
+        data.setdefault(Inputs.PredReasoning, prediction_reasoning)
         super().__init__(prompt=prompt, data=data, **kwargs)
 
     def message(self) -> str:
@@ -115,7 +116,11 @@ class PromptEvaluator(AutoAliasMixin, EvidentlyBaseModel, ABC):
         raise NotImplementedError()
 
 
-class BinaryLLMJudgePromptEvaluator(PromptEvaluator):
+AnyJudgeTemplateTuple = (BinaryClassificationPromptTemplate, MulticlassClassificationPromptTemplate)
+AnyJudgeTemplate = Union[AnyJudgeTemplateTuple]
+
+
+class LLMJudgePromptEvaluator(PromptEvaluator):
     judge: LLMJudge
 
     def _evaluate(self, prompt: str, dataset: Dataset, options: Options) -> PromptEvaluationLog:
@@ -140,9 +145,9 @@ class BinaryLLMJudgePromptEvaluator(PromptEvaluator):
         )
 
     @property
-    def template(self) -> BinaryClassificationPromptTemplate:
+    def template(self) -> AnyJudgeTemplate:
         t = self.judge.template
-        assert isinstance(t, BinaryClassificationPromptTemplate)
+        assert isinstance(t, AnyJudgeTemplateTuple)
         return t
 
     def get_base_prompt(self) -> str:
@@ -184,8 +189,8 @@ AnyPromptEvaluator = Union[PromptEvaluator, LLMJudge, CustomEvaluatorCallable]
 def get_prompt_evaluator(value: AnyPromptEvaluator) -> PromptEvaluator:
     if isinstance(value, PromptEvaluator):
         return value
-    if isinstance(value, LLMJudge) and isinstance(value.template, BinaryClassificationPromptTemplate):
-        return BinaryLLMJudgePromptEvaluator(judge=value)
+    if isinstance(value, LLMJudge) and isinstance(value.template, AnyJudgeTemplateTuple):
+        return LLMJudgePromptEvaluator(judge=value)
     if callable(value):
         # todo: check signature
         return CallablePromptEvaluator(value)
@@ -396,8 +401,8 @@ def iter_mistakes(context: OptimizerContext) -> Iterator[_Row]:
     preds = last_eval.get_data(Inputs.Pred)
     df = pd.DataFrame({Inputs.Pred: preds})
     df[Inputs.Target] = target
-    df[Inputs.Values] = context.get_input(Inputs.Values) or ""
-    df[Inputs.Reasoning] = context.get_input(Inputs.Reasoning) or ""
+    df[Inputs.Values] = context.get_input(Inputs.Values)
+    df[Inputs.Reasoning] = context.get_input(Inputs.Reasoning)
     df[Inputs.PredReasoning] = (
         last_eval.get_data(Inputs.PredReasoning) if Inputs.PredReasoning in last_eval.data else ""
     )
