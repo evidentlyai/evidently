@@ -50,6 +50,7 @@ class OptimizerConfig(AutoAliasMixin, EvidentlyBaseModel):
 
 
 LogID = uuid6.UUID
+T = TypeVar("T")
 
 
 class OptimizerLog(AutoAliasMixin, EvidentlyBaseModel, ABC):
@@ -71,10 +72,14 @@ class Mistakes(NamedTuple):
     preds_reasoning: Optional[pd.Series]
 
 
+TLog = TypeVar("TLog", bound=OptimizerLog)
+
+
 class OptimizerContext(BaseModel):
     config: OptimizerConfig
     inputs: Dict[str, Any]
-    logs: List[OptimizerLog]
+    logs: Dict[LogID, OptimizerLog]
+    locked: bool = False
 
     @classmethod
     def load(cls: Type[Self], path: str) -> Self:
@@ -88,40 +93,44 @@ class OptimizerContext(BaseModel):
         return get_llm_wrapper(self.config.provider, self.config.model, self.inputs[Inputs.Options])
 
     @property
-    def mistakes(self) -> Mistakes:
-        from evidently.llm.optimization.prompts import PromptEvaluationLog
-
-        last_eval = next((p for p in reversed(self.logs) if isinstance(p, PromptEvaluationLog)), None)
-        if last_eval is None:
-            raise ValueError("Prompt was not evaluated")
-        target = self.inputs[Inputs.Target]
-        preds = last_eval.data[Inputs.Pred]
-        mask = preds == target
-        return Mistakes(
-            values=self.inputs[Inputs.Values][mask],
-            target=target[mask],
-            reasoning=self.inputs[Inputs.Reasoning][mask],
-            preds=preds[mask],
-            preds_reasoning=last_eval.data[Inputs.PredReasoning][mask],
-        )
-
-    @property
     def options(self) -> Options:
         return self.inputs[Inputs.Options]
 
     def add_log(self, log: OptimizerLog):
         print(log.message())
-        self.logs.append(log)
+        self.logs[log.id] = log
 
     def get_log(self, log_id: LogID) -> OptimizerLog:
-        for log in self.logs:
-            if log.id == log_id:
+        if log_id not in self.logs:
+            raise ValueError(f"Log with id {log_id} not found")
+        return self.logs[log_id]
+
+    def get_logs(self, log_type: Type[TLog]) -> List[TLog]:
+        return [log for log in self.logs.values() if isinstance(log, log_type)]
+
+    def get_last_log(self, log_type: Type[TLog]) -> Optional[TLog]:
+        for log in reversed(self.logs.values()):
+            if isinstance(log, log_type):
                 return log
-        raise ValueError(f"Log with id {log_id} not found")
+        return None
+
+    def set_input(self, name: str, value: Any):
+        if self.locked:
+            raise ValueError("OptimizerContext is locked")
+        self.inputs[name] = value
+
+    def get_input(self, name: str, cls: Optional[Type[T]] = None, missing_error_message: Optional[str] = None) -> T:
+        if not self.locked:
+            raise ValueError("OptimizerContext is not locked")
+        value = self.inputs.get(name, None)
+        if value is None and missing_error_message is not None:
+            raise ValueError(missing_error_message)
+        if cls is not None and not isinstance(value, cls):
+            raise ValueError(f"Expected {cls.__name__}, got {type(value).__name__}")
+        return value
 
 
 TOptimizerConfig = TypeVar("TOptimizerConfig", bound=OptimizerConfig)
-T = TypeVar("T")
 
 
 class BaseOptimizer(ABC, Generic[TOptimizerConfig]):
@@ -133,15 +142,13 @@ class BaseOptimizer(ABC, Generic[TOptimizerConfig]):
             if self.context.config != config:
                 raise ValueError(f"Optimizer config changed, cannot load from checkpoint at {self.checkpoint_path}")
         else:
-            self.context = OptimizerContext(config=config, inputs={}, logs=[])
+            self.context = OptimizerContext(config=config, inputs={}, logs={})
+
+    def _lock(self):
+        self.context.locked = True
 
     def set_input(self, name: str, value: Any):
-        self.context.inputs[name] = value
+        self.context.set_input(name, value)
 
     def get_input(self, name: str, cls: Optional[Type[T]] = None, missing_error_message: Optional[str] = None) -> T:
-        value = self.context.inputs.get(name, None)
-        if value is None and missing_error_message is not None:
-            raise ValueError(missing_error_message)
-        if cls is not None and not isinstance(value, cls):
-            raise ValueError(f"Expected {cls.__name__}, got {type(value).__name__}")
-        return value
+        return self.context.get_input(name, cls, missing_error_message)
