@@ -1,4 +1,5 @@
 import re
+import warnings
 from abc import ABC
 from abc import abstractmethod
 from typing import Any
@@ -12,9 +13,11 @@ from typing import Union
 
 import pandas as pd
 
+from evidently import DataDefinition
 from evidently import Dataset
 from evidently._pydantic_compat import BaseModel
 from evidently._pydantic_compat import PrivateAttr
+from evidently.core.datasets import FeatureDescriptor
 from evidently.core.datasets import LLMClassification
 from evidently.legacy.features.llm_judge import BinaryClassificationPromptTemplate
 from evidently.legacy.features.llm_judge import LLMJudge
@@ -24,6 +27,7 @@ from evidently.legacy.options.base import Options
 from evidently.legacy.utils.llm.base import LLMMessage
 from evidently.legacy.utils.sync import async_to_sync
 from evidently.llm.optimization.optimizer import BaseOptimizer
+from evidently.llm.optimization.optimizer import InitContextMixin
 from evidently.llm.optimization.optimizer import Inputs
 from evidently.llm.optimization.optimizer import LogID
 from evidently.llm.optimization.optimizer import OptimizerConfig
@@ -84,8 +88,11 @@ class PromptEvaluationLog(OptimizerLog):
     def get_data(self, name: str) -> pd.Series:
         val = self.data.get(name, None)
         if val is None:
-            raise ValueError(f"Evaluation data does not contain {name}")
+            raise KeyError(f"Evaluation data does not contain {name}")
         return val
+
+    def has_data(self, name: str) -> bool:
+        return self.data.get(name, None) is not None
 
 
 def get_classification_dataset(context: OptimizerContext) -> Dataset:
@@ -100,7 +107,7 @@ def get_classification_dataset(context: OptimizerContext) -> Dataset:
     )
 
 
-class PromptEvaluator(AutoAliasMixin, EvidentlyBaseModel, ABC):
+class PromptEvaluator(AutoAliasMixin, EvidentlyBaseModel, InitContextMixin, ABC):
     __alias_type__: ClassVar = "prompt_evaluator"
 
     def evaluate(self, prompt: str, context: OptimizerContext) -> PromptEvaluationLog:
@@ -114,6 +121,19 @@ class PromptEvaluator(AutoAliasMixin, EvidentlyBaseModel, ABC):
     @abstractmethod
     def get_base_prompt(self) -> Optional[str]:
         raise NotImplementedError()
+
+    @abstractmethod
+    def get_task(self) -> str:
+        raise NotImplementedError()
+
+    def get_optimizer_instructions(self) -> Optional[str]:
+        return None
+
+    def init(self, context: OptimizerContext):
+        context.set_input(Inputs.Task, self.get_task())
+        instructions = self.get_optimizer_instructions()
+        if instructions is not None:
+            context.set_input(Inputs.OptimizerPromptInstructions, instructions)
 
 
 AnyJudgeTemplateTuple = (BinaryClassificationPromptTemplate, MulticlassClassificationPromptTemplate)
@@ -153,6 +173,12 @@ class LLMJudgePromptEvaluator(PromptEvaluator):
     def get_base_prompt(self) -> str:
         return self.template.criteria
 
+    def get_task(self) -> str:
+        return "classify texts"
+
+    def get_optimizer_instructions(self) -> Optional[str]:
+        return "Do not add new classes."
+
 
 CustomEvaluatorCallable = Callable[[str], PromptEvaluationLog]
 
@@ -160,6 +186,7 @@ CustomEvaluatorCallable = Callable[[str], PromptEvaluationLog]
 class CallablePromptEvaluator(PromptEvaluator):
     func: str
     _func: Optional[CustomEvaluatorCallable] = PrivateAttr(None)
+    task: Optional[str] = None
 
     def __init__(
         self,
@@ -181,6 +208,14 @@ class CallablePromptEvaluator(PromptEvaluator):
 
     def get_base_prompt(self) -> Optional[str]:
         return None
+
+    def get_task(self) -> str:
+        if self.task is not None:
+            return self.task
+        doc = self._func.__doc__
+        if doc is None:
+            warnings.warn(f"Please add docstring to {self.func} describing task you are trying to optimize.")
+        return doc
 
 
 AnyPromptEvaluator = Union[PromptEvaluator, LLMJudge, CustomEvaluatorCallable]
@@ -212,7 +247,7 @@ class OptimizationScorer(BaseArgTypeRegistry, AutoAliasMixin, EvidentlyBaseModel
         return self.__class__.__name__
 
     @abstractmethod
-    def _score(self, predictions: pd.Series, target: pd.Series) -> Optional[float]:
+    def _score(self, predictions: pd.Series, target: pd.Series, options: Options) -> Optional[float]:
         raise NotImplementedError()
 
     def score(self, context: OptimizerContext, evaluation: PromptEvaluationLog) -> Optional[float]:
@@ -220,16 +255,65 @@ class OptimizationScorer(BaseArgTypeRegistry, AutoAliasMixin, EvidentlyBaseModel
         predictions = evaluation.get_data(Inputs.Pred)
         if not isinstance(target, pd.Series):
             target = pd.Series([target for _ in range(len(predictions))])
-        return self._score(predictions, target)
+        return self._score(predictions, target, context.options)
 
 
-StrOptimizationScorer = Union[str, OptimizationScorer]
+StrOptimizationScorer = Union[str, OptimizationScorer, Any]
+
+
+def get_scorer(scorer: StrOptimizationScorer) -> OptimizationScorer:
+    if isinstance(scorer, str):
+        return OptimizationScorer.registry_lookup(scorer)
+    if isinstance(scorer, OptimizationScorer):
+        return scorer
+    if isinstance(scorer, LLMJudge) and isinstance(scorer.template, BinaryClassificationPromptTemplate):
+        return BinaryJudgeScorer(judge=scorer)
+    if isinstance(scorer, FeatureDescriptor) and isinstance(scorer.feature, LLMJudge):
+        return BinaryJudgeScorer(judge=scorer.feature)
+    raise NotImplementedError(f"Not implemented for {scorer.__class__.__name__}")
+
+
+class BinaryJudgeScorer(OptimizationScorer):
+    judge: LLMJudge
+    scorer: Optional[OptimizationScorer] = None
+
+    def score(self, context: OptimizerContext, evaluation: PromptEvaluationLog) -> Optional[float]:
+        predictions = evaluation.get_data(Inputs.Pred)
+
+        judge = self.judge
+        template = judge.template
+        if not isinstance(template, BinaryClassificationPromptTemplate):
+            raise ValueError("Judge scorer only supports binary classification")
+        judge.update(template=template.update(include_category=True, include_reasoning=True, include_score=False))
+        input_columns = judge.get_input_columns()
+        if len(input_columns) > 1:
+            raise NotImplementedError("Judge scorer only supports one input column")
+        input_column = next(iter(input_columns))
+        generated = judge.generate_features_renamed(
+            pd.DataFrame({input_column: predictions}),
+            data_definition=DataDefinition(text_columns=input_column),
+            options=context.options,
+        )
+        cols = judge.list_columns()
+        category = generated[[c.name for c in cols if "category" in c.name][0]] if template.include_category else None
+        reasoning = (
+            generated[[c.name for c in cols if "reasoning" in c.name][0]] if template.include_reasoning else None
+        )
+        assert category is not None
+        scorer = self.scorer or AccuracyScorer()
+        target = pd.Series([template.target_category] * len(predictions))
+        evaluation.data[Inputs.Target] = target
+        evaluation.data[Inputs.PredReasoning] = reasoning
+        return scorer._score(category, target=target, options=context.options)
+
+    def _score(self, predictions: pd.Series, target: pd.Series, options: Options) -> Optional[float]:
+        raise NotImplementedError()
 
 
 class AccuracyScorer(OptimizationScorer):
     __registry_alias__: ClassVar = "accuracy"
 
-    def _score(self, predictions: pd.Series, target: pd.Series) -> Optional[float]:
+    def _score(self, predictions: pd.Series, target: pd.Series, options: Options) -> Optional[float]:
         return (predictions == target).mean()
 
 
@@ -284,7 +368,7 @@ class PromptOptimizer(BaseOptimizer[PromptOptimizerConfig]):
         self.set_input(Inputs.Options, Options.from_any_options(options))
         if scorer is None:
             scorer = AccuracyScorer()
-        self.set_input(Inputs.Scorer, OptimizationScorer.registry_lookup(scorer))
+        self.set_input(Inputs.Scorer, get_scorer(scorer))
         self.set_input(Inputs.EarlyStop, early_stop or EarlyStopConfig())
 
         self._lock()
@@ -364,19 +448,23 @@ class SimplePromptOptimizer(PromptOptimizerStrategy):
     __registry_alias__: ClassVar = "simple"
 
     optimizer_prompt: str = (
-        "I'm using llm to classify texts. Here is my prompt <prompt>{prompt}</prompt>. "
-        "Please make it better so I can have better classification quality. "
-        "Do not add new classes. "
+        "I'm using llm to do {task}. Here is my prompt <prompt>{prompt}</prompt>. "
+        "Please make it better so I can have better results. "
+        "{instructions} "
+        # "Do not add new classes. "
         "Return new version inside <new_prompt> tag"
     )
     return_tag: str = "new_prompt"
 
-    async def run(self, prompt: str, state: OptimizerContext) -> PromptOptimizationLog:
-        response = await state.llm_wrapper.complete([LLMMessage.user(self.optimizer_prompt.format(prompt=prompt))])
+    async def run(self, prompt: str, context: OptimizerContext) -> PromptOptimizationLog:
+        task = context.get_input(Inputs.Task) or "task"
+        instructions = context.get_input(Inputs.OptimizerPromptInstructions) or ""
+        optimizer_prompt = self.optimizer_prompt.format(prompt=prompt, task=task, instructions=instructions)
+        response = await context.llm_wrapper.complete([LLMMessage.user(optimizer_prompt)])
         new_prompt = get_tag(response.result, self.return_tag)
         return PromptOptimizationLog(
             input_prompt=prompt,
-            optimizer_prompt=self.optimizer_prompt,
+            optimizer_prompt=optimizer_prompt,
             new_prompt=new_prompt,
             input_tokens=response.input_tokens,
             output_tokens=response.output_tokens,
@@ -396,7 +484,10 @@ def iter_mistakes(context: OptimizerContext) -> Iterator[_Row]:
     last_eval = context.get_last_log(PromptEvaluationLog)
     if last_eval is None:
         raise ValueError("Prompt was not evaluated")
-    target = context.get_input(Inputs.Target, missing_error_message="Need target input to filter failed rows")
+    try:
+        target = last_eval.get_data(Inputs.Target)
+    except KeyError:
+        target = context.get_input(Inputs.Target, missing_error_message="Need target input to filter failed rows")
 
     preds = last_eval.get_data(Inputs.Pred)
     df = pd.DataFrame({Inputs.Pred: preds})
@@ -404,9 +495,9 @@ def iter_mistakes(context: OptimizerContext) -> Iterator[_Row]:
     df[Inputs.Values] = context.get_input(Inputs.Values)
     df[Inputs.Reasoning] = context.get_input(Inputs.Reasoning)
     df[Inputs.PredReasoning] = (
-        last_eval.get_data(Inputs.PredReasoning) if Inputs.PredReasoning in last_eval.data else ""
+        last_eval.get_data(Inputs.PredReasoning) if last_eval.has_data(Inputs.PredReasoning) else ""
     )
-    for _, row in df[preds == target].iterrows():
+    for _, row in df[preds != target].iterrows():
         yield _Row(
             row[Inputs.Values],
             row[Inputs.Target],
@@ -420,11 +511,12 @@ class FeedbackStrategy(PromptOptimizerStrategy):
     __registry_alias__: ClassVar = "feedback"
 
     add_feedback_prompt = (
-        "I ran LLM judge for some inputs and it made some mistakes. "
+        "I ran LLM for some inputs to do {task} and it made some mistakes. "
         "Here is my original prompt <prompt>{prompt}</prompt>. "
         "And here are rows where LLM made mistakes: <rows>{rows}</rows>. "
-        "Please update my prompt to improve LLM judge quality. "
+        "Please update my prompt to improve LLM quality. "
         "Generalize examples to not overfit on them. "
+        "{instructions} "
         "Return new prompt inside <new_prompt> tag"
     )
     row_template = """<input>{input}</input>
@@ -445,7 +537,9 @@ class FeedbackStrategy(PromptOptimizerStrategy):
             )
             for row in iter_mistakes(context)
         )
-        optimizer_prompt = self.add_feedback_prompt.format(prompt="{prompt}", rows=rows)
+        optimizer_prompt = self.add_feedback_prompt.format(
+            prompt="{prompt}", task="{task}", instructions="{instructions}", rows=rows
+        )
         log = await SimplePromptOptimizer(optimizer_prompt=optimizer_prompt).run(prompt, context)
         return PromptOptimizationLog(
             input_prompt=prompt,

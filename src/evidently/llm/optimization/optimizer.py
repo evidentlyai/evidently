@@ -1,5 +1,4 @@
 import datetime
-import os
 from abc import ABC
 from abc import abstractmethod
 from typing import Any
@@ -7,13 +6,10 @@ from typing import ClassVar
 from typing import Dict
 from typing import Generic
 from typing import List
-from typing import NamedTuple
 from typing import Optional
-from typing import Self
 from typing import Type
 from typing import TypeVar
 
-import pandas as pd
 import uuid6
 
 from evidently._pydantic_compat import BaseModel
@@ -40,6 +36,8 @@ class Inputs:
     Pred = "preds"
     PredReasoning = "preds_reasoning"
     PredScores = "preds_scores"
+    Task = "task"
+    OptimizerPromptInstructions = "optimizer_prompt_instructions"
 
 
 class OptimizerConfig(AutoAliasMixin, EvidentlyBaseModel):
@@ -64,14 +62,6 @@ class OptimizerLog(AutoAliasMixin, EvidentlyBaseModel, ABC):
         raise NotImplementedError()
 
 
-class Mistakes(NamedTuple):
-    values: pd.Series
-    target: pd.Series
-    reasoning: Optional[pd.Series]
-    preds: pd.Series
-    preds_reasoning: Optional[pd.Series]
-
-
 TLog = TypeVar("TLog", bound=OptimizerLog)
 
 
@@ -81,12 +71,12 @@ class OptimizerContext(BaseModel):
     logs: Dict[LogID, OptimizerLog]
     locked: bool = False
 
-    @classmethod
-    def load(cls: Type[Self], path: str) -> Self:
-        raise NotImplementedError()
-
-    def save(self, path: str):
-        raise NotImplementedError()
+    # @classmethod
+    # def load(cls: Type[Self], path: str) -> Self:
+    #     raise NotImplementedError()
+    #
+    # def save(self, path: str):
+    #     raise NotImplementedError()
 
     @property
     def llm_wrapper(self) -> LLMWrapper:
@@ -118,6 +108,8 @@ class OptimizerContext(BaseModel):
         if self.locked:
             raise ValueError("OptimizerContext is locked")
         self.inputs[name] = value
+        if isinstance(value, InitContextMixin):
+            value.init(self)
 
     def get_input(self, name: str, cls: Optional[Type[T]] = None, missing_error_message: Optional[str] = None) -> T:
         if not self.locked:
@@ -130,6 +122,12 @@ class OptimizerContext(BaseModel):
         return value
 
 
+class InitContextMixin(ABC):
+    @abstractmethod
+    def init(self, context: OptimizerContext):
+        raise NotImplementedError()
+
+
 TOptimizerConfig = TypeVar("TOptimizerConfig", bound=OptimizerConfig)
 
 
@@ -137,12 +135,13 @@ class BaseOptimizer(ABC, Generic[TOptimizerConfig]):
     def __init__(self, name: str, config: TOptimizerConfig, checkpoint_path: Optional[str] = None):
         self.name = name
         self.checkpoint_path = checkpoint_path or f".optimizer_checkpoint_{name}"
-        if os.path.exists(self.checkpoint_path):
-            self.context = OptimizerContext.load(self.checkpoint_path)
-            if self.context.config != config:
-                raise ValueError(f"Optimizer config changed, cannot load from checkpoint at {self.checkpoint_path}")
-        else:
-            self.context = OptimizerContext(config=config, inputs={}, logs={})
+        # if os.path.exists(self.checkpoint_path):
+        #     self.context = OptimizerContext.load(self.checkpoint_path)
+        #     if self.context.config != config:
+        #         raise ValueError(f"Optimizer config changed, cannot load from checkpoint at {self.checkpoint_path}")
+        # else:
+        #     self.context = OptimizerContext(config=config, inputs={}, logs={})
+        self.context = OptimizerContext(config=config, inputs={}, logs={})
 
     def _lock(self):
         self.context.locked = True
