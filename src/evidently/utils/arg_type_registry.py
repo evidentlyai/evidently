@@ -2,11 +2,13 @@ from collections import defaultdict
 from typing import ClassVar
 from typing import Dict
 from typing import Optional
-from typing import Self
 from typing import Type
+from typing import TypeVar
 from typing import Union
 
 _registry: Dict[Type, Dict[str, Type]] = defaultdict(dict)
+
+T = TypeVar("T", bound="BaseArgTypeRegistry")
 
 
 class BaseArgTypeRegistry:
@@ -33,7 +35,7 @@ class BaseArgTypeRegistry:
         super().__init_subclass__()
 
     @classmethod
-    def registry_lookup(cls: Type[Self], name_or_instance: Union[str, Self]) -> Self:
+    def registry_lookup(cls: Type[T], name_or_instance: Union[str, T]) -> T:
         if isinstance(name_or_instance, cls):
             return name_or_instance
         base = cls._get_base_type()

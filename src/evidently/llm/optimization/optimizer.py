@@ -1,4 +1,5 @@
 import datetime
+import uuid
 from abc import ABC
 from abc import abstractmethod
 from typing import Any
@@ -9,8 +10,6 @@ from typing import List
 from typing import Optional
 from typing import Type
 from typing import TypeVar
-
-import uuid6
 
 from evidently._pydantic_compat import BaseModel
 from evidently._pydantic_compat import Field
@@ -47,7 +46,7 @@ class OptimizerConfig(AutoAliasMixin, EvidentlyBaseModel):
     model: str = "gpt-4o-mini"
 
 
-LogID = uuid6.UUID
+LogID = uuid.UUID
 T = TypeVar("T")
 
 

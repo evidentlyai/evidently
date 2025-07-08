@@ -13,7 +13,7 @@ from typing import Union
 
 import pandas as pd
 
-from evidently import DataDefinition
+from evidently import ColumnType
 from evidently import Dataset
 from evidently._pydantic_compat import BaseModel
 from evidently._pydantic_compat import PrivateAttr
@@ -24,6 +24,8 @@ from evidently.legacy.features.llm_judge import LLMJudge
 from evidently.legacy.features.llm_judge import MulticlassClassificationPromptTemplate
 from evidently.legacy.options.base import AnyOptions
 from evidently.legacy.options.base import Options
+from evidently.legacy.utils.data_preprocessing import ColumnDefinition
+from evidently.legacy.utils.data_preprocessing import DataDefinition
 from evidently.legacy.utils.llm.base import LLMMessage
 from evidently.legacy.utils.sync import async_to_sync
 from evidently.llm.optimization.optimizer import BaseOptimizer
@@ -137,7 +139,7 @@ class PromptEvaluator(AutoAliasMixin, EvidentlyBaseModel, InitContextMixin, ABC)
 
 
 AnyJudgeTemplateTuple = (BinaryClassificationPromptTemplate, MulticlassClassificationPromptTemplate)
-AnyJudgeTemplate = Union[AnyJudgeTemplateTuple]
+AnyJudgeTemplate = Union[*AnyJudgeTemplateTuple]
 
 
 class LLMJudgePromptEvaluator(PromptEvaluator):
@@ -146,8 +148,26 @@ class LLMJudgePromptEvaluator(PromptEvaluator):
     def _evaluate(self, prompt: str, dataset: Dataset, options: Options) -> PromptEvaluationLog:
         template = self.template
         judge = self.judge.update(template=template.update(criteria=prompt))
+        dd = dataset.data_definition
         generated = judge.generate_features_renamed(
-            dataset.as_dataframe(), data_definition=dataset.data_definition, options=options
+            dataset.as_dataframe(),
+            data_definition=DataDefinition(
+                columns={
+                    col: ColumnDefinition(col, dd.get_column_type(col)) for col in dd.get_columns(list(ColumnType))
+                },
+                target=None,
+                prediction_columns=None,
+                id_column=None,
+                datetime_column=None,
+                embeddings=None,
+                user_id=None,
+                item_id=None,
+                task=None,
+                classification_labels=None,
+                reference_present=False,
+                recommendations_type=None,
+            ),
+            options=options,
         )
         cols = judge.list_columns()
         category = generated[[c.name for c in cols if "category" in c.name][0]] if template.include_category else None
@@ -291,7 +311,20 @@ class BinaryJudgeScorer(OptimizationScorer):
         input_column = next(iter(input_columns))
         generated = judge.generate_features_renamed(
             pd.DataFrame({input_column: predictions}),
-            data_definition=DataDefinition(text_columns=input_column),
+            data_definition=DataDefinition(
+                columns={input_column: ColumnDefinition(input_column, ColumnType.Text)},
+                target=None,
+                prediction_columns=None,
+                id_column=None,
+                datetime_column=None,
+                embeddings=None,
+                user_id=None,
+                item_id=None,
+                task=None,
+                classification_labels=None,
+                reference_present=False,
+                recommendations_type=None,
+            ),
             options=context.options,
         )
         cols = judge.list_columns()
