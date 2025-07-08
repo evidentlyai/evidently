@@ -21,7 +21,7 @@ from evidently.pydantic_utils import AutoAliasMixin
 from evidently.pydantic_utils import EvidentlyBaseModel
 
 
-class Inputs:
+class Params:
     BasePrompt = "base_prompt"
     EarlyStop = "early_stop"
     LLMClassification = "llm_classification"
@@ -66,7 +66,7 @@ TLog = TypeVar("TLog", bound=OptimizerLog)
 
 class OptimizerContext(BaseModel):
     config: OptimizerConfig
-    inputs: Dict[str, Any]
+    params: Dict[str, Any]
     logs: Dict[LogID, OptimizerLog]
     locked: bool = False
 
@@ -79,11 +79,11 @@ class OptimizerContext(BaseModel):
 
     @property
     def llm_wrapper(self) -> LLMWrapper:
-        return get_llm_wrapper(self.config.provider, self.config.model, self.inputs[Inputs.Options])
+        return get_llm_wrapper(self.config.provider, self.config.model, self.params[Params.Options])
 
     @property
     def options(self) -> Options:
-        return self.inputs[Inputs.Options]
+        return self.params[Params.Options]
 
     def add_log(self, log: OptimizerLog):
         print(log.message())
@@ -103,17 +103,17 @@ class OptimizerContext(BaseModel):
                 return log
         return None
 
-    def set_input(self, name: str, value: Any):
+    def set_param(self, name: str, value: Any):
         if self.locked:
             raise ValueError("OptimizerContext is locked")
-        self.inputs[name] = value
+        self.params[name] = value
         if isinstance(value, InitContextMixin):
             value.init(self)
 
-    def get_input(self, name: str, cls: Optional[Type[T]] = None, missing_error_message: Optional[str] = None) -> T:
+    def get_param(self, name: str, cls: Optional[Type[T]] = None, missing_error_message: Optional[str] = None) -> T:
         if not self.locked:
             raise ValueError("OptimizerContext is not locked")
-        value = self.inputs.get(name, None)
+        value = self.params.get(name, None)
         if value is None and missing_error_message is not None:
             raise ValueError(missing_error_message)
         if cls is not None and not isinstance(value, cls):
@@ -140,13 +140,13 @@ class BaseOptimizer(ABC, Generic[TOptimizerConfig]):
         #         raise ValueError(f"Optimizer config changed, cannot load from checkpoint at {self.checkpoint_path}")
         # else:
         #     self.context = OptimizerContext(config=config, inputs={}, logs={})
-        self.context = OptimizerContext(config=config, inputs={}, logs={})
+        self.context = OptimizerContext(config=config, params={}, logs={})
 
     def _lock(self):
         self.context.locked = True
 
-    def set_input(self, name: str, value: Any):
-        self.context.set_input(name, value)
+    def set_param(self, name: str, value: Any):
+        self.context.set_param(name, value)
 
-    def get_input(self, name: str, cls: Optional[Type[T]] = None, missing_error_message: Optional[str] = None) -> T:
-        return self.context.get_input(name, cls, missing_error_message)
+    def get_param(self, name: str, cls: Optional[Type[T]] = None, missing_error_message: Optional[str] = None) -> T:
+        return self.context.get_param(name, cls, missing_error_message)

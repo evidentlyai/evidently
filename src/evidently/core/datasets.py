@@ -165,7 +165,7 @@ class RAG:
 
 @dataclasses.dataclass
 class LLMClassification:
-    values: str
+    input: str
     target: str
     predictions: Optional[str] = None
     reasoning: Optional[str] = None

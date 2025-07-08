@@ -30,11 +30,11 @@ from evidently.legacy.utils.llm.base import LLMMessage
 from evidently.legacy.utils.sync import async_to_sync
 from evidently.llm.optimization.optimizer import BaseOptimizer
 from evidently.llm.optimization.optimizer import InitContextMixin
-from evidently.llm.optimization.optimizer import Inputs
 from evidently.llm.optimization.optimizer import LogID
 from evidently.llm.optimization.optimizer import OptimizerConfig
 from evidently.llm.optimization.optimizer import OptimizerContext
 from evidently.llm.optimization.optimizer import OptimizerLog
+from evidently.llm.optimization.optimizer import Params
 from evidently.pydantic_utils import AutoAliasMixin
 from evidently.pydantic_utils import EvidentlyBaseModel
 from evidently.utils.arg_type_registry import BaseArgTypeRegistry
@@ -78,9 +78,9 @@ class PromptEvaluationLog(OptimizerLog):
         **kwargs: Any,
     ) -> None:
         data = data or {}
-        data.setdefault(Inputs.Pred, prediction)
-        data.setdefault(Inputs.PredScores, prediction_scores)
-        data.setdefault(Inputs.PredReasoning, prediction_reasoning)
+        data.setdefault(Params.Pred, prediction)
+        data.setdefault(Params.PredScores, prediction_scores)
+        data.setdefault(Params.PredReasoning, prediction_reasoning)
         super().__init__(prompt=prompt, data=data, **kwargs)
 
     def message(self) -> str:
@@ -98,12 +98,12 @@ class PromptEvaluationLog(OptimizerLog):
 
 
 def get_classification_dataset(context: OptimizerContext) -> Dataset:
-    clf = context.get_input(Inputs.LLMClassification, LLMClassification, "Missing LLMClassification input")
+    clf = context.get_param(Params.LLMClassification, LLMClassification, "Missing LLMClassification param")
     return Dataset.from_pandas(
         pd.DataFrame(
             {
-                clf.values: list(context.get_input(Inputs.Values, pd.Series)),
-                clf.target: list(context.get_input(Inputs.Target, pd.Series)),
+                clf.input: list(context.get_param(Params.Values, pd.Series)),
+                clf.target: list(context.get_param(Params.Target, pd.Series)),
             }
         )
     )
@@ -132,10 +132,10 @@ class PromptEvaluator(AutoAliasMixin, EvidentlyBaseModel, InitContextMixin, ABC)
         return None
 
     def init(self, context: OptimizerContext):
-        context.set_input(Inputs.Task, self.get_task())
+        context.set_param(Params.Task, self.get_task())
         instructions = self.get_optimizer_instructions()
         if instructions is not None:
-            context.set_input(Inputs.OptimizerPromptInstructions, instructions)
+            context.set_param(Params.OptimizerPromptInstructions, instructions)
 
 
 AnyJudgeTemplate = Union[BinaryClassificationPromptTemplate, MulticlassClassificationPromptTemplate]
@@ -177,9 +177,9 @@ class LLMJudgePromptEvaluator(PromptEvaluator):
         return PromptEvaluationLog(
             prompt=prompt,
             data={
-                Inputs.Pred: category,
-                Inputs.PredReasoning: reasoning,
-                Inputs.PredScores: score,
+                Params.Pred: category,
+                Params.PredReasoning: reasoning,
+                Params.PredScores: score,
             },
         )
 
@@ -272,8 +272,8 @@ class OptimizationScorer(BaseArgTypeRegistry, AutoAliasMixin, EvidentlyBaseModel
         raise NotImplementedError()
 
     def score(self, context: OptimizerContext, evaluation: PromptEvaluationLog) -> Optional[float]:
-        target = context.get_input(Inputs.Target, missing_error_message=f"{self.get_name()} requires target input")
-        predictions = evaluation.get_data(Inputs.Pred)
+        target = context.get_param(Params.Target, missing_error_message=f"{self.get_name()} requires target input")
+        predictions = evaluation.get_data(Params.Pred)
         if not isinstance(target, pd.Series):
             target = pd.Series([target for _ in range(len(predictions))])
         return self._score(predictions, target, context.options)
@@ -289,7 +289,11 @@ def get_scorer(scorer: StrOptimizationScorer) -> OptimizationScorer:
         return scorer
     if isinstance(scorer, LLMJudge) and isinstance(scorer.template, BinaryClassificationPromptTemplate):
         return BinaryJudgeScorer(judge=scorer)
-    if isinstance(scorer, FeatureDescriptor) and isinstance(scorer.feature, LLMJudge):
+    if (
+        isinstance(scorer, FeatureDescriptor)
+        and isinstance(scorer.feature, LLMJudge)
+        and isinstance(scorer.feature.template, BinaryClassificationPromptTemplate)
+    ):
         return BinaryJudgeScorer(judge=scorer.feature)
     raise NotImplementedError(f"Not implemented for {scorer.__class__.__name__}")
 
@@ -299,7 +303,7 @@ class BinaryJudgeScorer(OptimizationScorer):
     scorer: Optional[OptimizationScorer] = None
 
     def score(self, context: OptimizerContext, evaluation: PromptEvaluationLog) -> Optional[float]:
-        predictions = evaluation.get_data(Inputs.Pred)
+        predictions = evaluation.get_data(Params.Pred)
 
         judge = self.judge
         template = judge.template
@@ -336,8 +340,8 @@ class BinaryJudgeScorer(OptimizationScorer):
         assert category is not None
         scorer = self.scorer or AccuracyScorer()
         target = pd.Series([template.target_category] * len(predictions))
-        evaluation.data[Inputs.Target] = target
-        evaluation.data[Inputs.PredReasoning] = reasoning
+        evaluation.data[Params.Target] = target
+        evaluation.data[Params.PredReasoning] = reasoning
         return scorer._score(category, target=target, options=context.options)
 
     def _score(self, predictions: pd.Series, target: pd.Series, options: Options) -> Optional[float]:
@@ -365,7 +369,7 @@ class EarlyStopConfig(BaseModel):
         if len(context.get_logs(PromptOptimizationLog)) > self.max_iterations:
             return True
         scores = context.get_logs(PromptScoringLog)
-        score_name = context.get_input(Inputs.Scorer, OptimizationScorer).get_name()
+        score_name = context.get_param(Params.Scorer, OptimizationScorer).get_name()
         if len(scores) > 0:
             last_score = scores[-1]
             if last_score.scores[score_name] == self.target_score:
@@ -398,12 +402,12 @@ class PromptOptimizer(BaseOptimizer[PromptOptimizerConfig]):
         early_stop: Optional[EarlyStopConfig] = None,
     ) -> Optional[PromptOptimizationLog]:
         evaluator = get_prompt_evaluator(evaluator)
-        self.set_input(Inputs.Evaluator, evaluator)
-        self.set_input(Inputs.Options, Options.from_any_options(options))
+        self.set_param(Params.Evaluator, evaluator)
+        self.set_param(Params.Options, Options.from_any_options(options))
         if scorer is None:
             scorer = AccuracyScorer()
-        self.set_input(Inputs.Scorer, get_scorer(scorer))
-        self.set_input(Inputs.EarlyStop, early_stop or EarlyStopConfig())
+        self.set_param(Params.Scorer, get_scorer(scorer))
+        self.set_param(Params.EarlyStop, early_stop or EarlyStopConfig())
 
         self._lock()
 
@@ -413,18 +417,18 @@ class PromptOptimizer(BaseOptimizer[PromptOptimizerConfig]):
         log = self.context.get_last_log(PromptOptimizationLog)
         if log is not None:
             return log.new_prompt
-        evaluator = self.get_input(Inputs.Evaluator, PromptEvaluator)
+        evaluator = self.get_param(Params.Evaluator, PromptEvaluator)
         prompt = evaluator.get_base_prompt()
         if prompt is not None:
             return prompt
-        return self.get_input(
-            Inputs.BasePrompt, str, f"'{Inputs.BasePrompt}' input is required for {evaluator.__class__.__name__}"
+        return self.get_param(
+            Params.BasePrompt, str, f"'{Params.BasePrompt}' input is required for {evaluator.__class__.__name__}"
         )
 
     async def resume(self):
-        evaluator = self.get_input(Inputs.Evaluator, PromptEvaluator)
-        scorer = self.get_input(Inputs.Scorer, OptimizationScorer)
-        early_stop = self.get_input(Inputs.EarlyStop, EarlyStopConfig)
+        evaluator = self.get_param(Params.Evaluator, PromptEvaluator)
+        scorer = self.get_param(Params.Scorer, OptimizationScorer)
+        early_stop = self.get_param(Params.EarlyStop, EarlyStopConfig)
         prompt = self._get_prompt()
 
         stop = False
@@ -451,20 +455,20 @@ class PromptOptimizer(BaseOptimizer[PromptOptimizerConfig]):
         dd = dataset.data_definition
         clf = dd.llm
         assert isinstance(clf, LLMClassification)
-        self.set_input(Inputs.Values, dataset.column(clf.values).data)
-        self.set_input(Inputs.Target, dataset.column(clf.target).data)
-        self.set_input(Inputs.LLMClassification, clf)
+        self.set_param(Params.Values, dataset.column(clf.input).data)
+        self.set_param(Params.Target, dataset.column(clf.target).data)
+        self.set_param(Params.LLMClassification, clf)
         if clf.reasoning is not None:
-            self.set_input(Inputs.Reasoning, dataset.column(clf.reasoning).data)
+            self.set_param(Params.Reasoning, dataset.column(clf.reasoning).data)
         if clf.predictions is not None:
-            self.set_input(Inputs.Pred, dataset.column(clf.predictions).data)
+            self.set_param(Params.Pred, dataset.column(clf.predictions).data)
         if clf.prediction_reasoning is not None:
-            self.set_input(Inputs.PredReasoning, dataset.column(clf.prediction_reasoning).data)
+            self.set_param(Params.PredReasoning, dataset.column(clf.prediction_reasoning).data)
 
     def best_prompt(self):
-        score_name = self.get_input(Inputs.Scorer, OptimizationScorer).get_name()
+        score_name = self.get_param(Params.Scorer, OptimizationScorer).get_name()
         scores = self.context.get_logs(PromptScoringLog)
-        early_stop = self.get_input(Inputs.EarlyStop, EarlyStopConfig)
+        early_stop = self.get_param(Params.EarlyStop, EarlyStopConfig)
         best_score = max(scores, key=lambda s: s.scores[score_name] * early_stop.score_sign)
         evaluation_log = self.context.get_log(best_score.evaluation_log_id)
         assert isinstance(evaluation_log, PromptEvaluationLog)
@@ -491,8 +495,8 @@ class SimplePromptOptimizer(PromptOptimizerStrategy):
     return_tag: str = "new_prompt"
 
     async def run(self, prompt: str, context: OptimizerContext) -> PromptOptimizationLog:
-        task = context.get_input(Inputs.Task) or "task"
-        instructions = context.get_input(Inputs.OptimizerPromptInstructions) or ""
+        task = context.get_param(Params.Task) or "task"
+        instructions = context.get_param(Params.OptimizerPromptInstructions) or ""
         optimizer_prompt = self.optimizer_prompt.format(prompt=prompt, task=task, instructions=instructions)
         response = await context.llm_wrapper.complete([LLMMessage.user(optimizer_prompt)])
         new_prompt = get_tag(response.result, self.return_tag)
@@ -519,25 +523,27 @@ def iter_mistakes(context: OptimizerContext) -> Iterator[_Row]:
     if last_eval is None:
         raise ValueError("Prompt was not evaluated")
     try:
-        target = last_eval.get_data(Inputs.Target)
+        target = last_eval.get_data(Params.Target)
     except KeyError:
-        target = context.get_input(Inputs.Target, missing_error_message="Need target input to filter failed rows")
+        target = context.get_param(
+            Params.Target, missing_error_message=f"Need '{Params.Target}' param to filter failed rows"
+        )
 
-    preds = last_eval.get_data(Inputs.Pred)
-    df = pd.DataFrame({Inputs.Pred: preds})
-    df[Inputs.Target] = target
-    df[Inputs.Values] = context.get_input(Inputs.Values)
-    df[Inputs.Reasoning] = context.get_input(Inputs.Reasoning)
-    df[Inputs.PredReasoning] = (
-        last_eval.get_data(Inputs.PredReasoning) if last_eval.has_data(Inputs.PredReasoning) else ""
+    preds = last_eval.get_data(Params.Pred)
+    df = pd.DataFrame({Params.Pred: preds})
+    df[Params.Target] = target
+    df[Params.Values] = context.get_param(Params.Values)
+    df[Params.Reasoning] = context.get_param(Params.Reasoning)
+    df[Params.PredReasoning] = (
+        last_eval.get_data(Params.PredReasoning) if last_eval.has_data(Params.PredReasoning) else ""
     )
     for _, row in df[preds != target].iterrows():
         yield _Row(
-            row[Inputs.Values],
-            row[Inputs.Target],
-            row[Inputs.Reasoning],
-            row[Inputs.Pred],
-            row[Inputs.PredReasoning],
+            row[Params.Values],
+            row[Params.Target],
+            row[Params.Reasoning],
+            row[Params.Pred],
+            row[Params.PredReasoning],
         )
 
 
@@ -546,28 +552,29 @@ class FeedbackStrategy(PromptOptimizerStrategy):
 
     add_feedback_prompt = (
         "I ran LLM for some inputs to do {task} and it made some mistakes. "
-        "Here is my original prompt <prompt>{prompt}</prompt>. "
-        "And here are rows where LLM made mistakes: <rows>{rows}</rows>. "
+        "Here is my original prompt <prompt>\n{prompt}\n</prompt>\n"
+        "And here are rows where LLM made mistakes:\n"
+        "<rows>\n{rows}\n</rows>. "
         "Please update my prompt to improve LLM quality. "
         "Generalize examples to not overfit on them. "
         "{instructions} "
         "Return new prompt inside <new_prompt> tag"
     )
     row_template = """<input>{input}</input>
-    <true_label>{true_label}</true_label>
-    <llm_judge_label>{llm_judge_label}</llm_judge_label>
-    <human_reasoning>{human_reasoning}</human_reasoning>
-    <llm_judge_reasoning>{llm_judge_reasoning}</llm_judge_reasoning>
-    """
+<target>{target}</target>
+<llm_response>{llm_response}</llm_response>
+<human_reasoning>{human_reasoning}</human_reasoning>
+<llm_reasoning>{llm_reasoning}</llm_reasoning>
+"""
 
     async def run(self, prompt: str, context: OptimizerContext) -> PromptOptimizationLog:
         rows = "\n".join(
             self.row_template.format(
                 input=row.value,
-                true_label=row.target,
-                llm_judge_label=row.prediction,
+                target=row.target,
+                llm_response=row.prediction,
                 human_reasoning=row.reasoning,
-                llm_judge_reasoning=row.prediction_reasoning,
+                llm_reasoning=row.prediction_reasoning,
             )
             for row in iter_mistakes(context)
         )
