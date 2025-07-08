@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING
 from typing import Any
 from typing import ClassVar
 from typing import Dict
+from typing import Generic
 from typing import List
 from typing import Literal
 from typing import Optional
@@ -41,7 +42,7 @@ class ConfigContentType(str, Enum):
 TConfigValue = TypeVar("TConfigValue")
 
 
-class ConfigContent(AutoAliasMixin, EvidentlyBaseModel):
+class ConfigContent(AutoAliasMixin, EvidentlyBaseModel, Generic[TConfigValue]):
     __alias_type__: ClassVar = "config_content"
     __value_class__: ClassVar[Type[TConfigValue]]
     __value_type__: ClassVar[ConfigContentType]
@@ -70,7 +71,7 @@ class ConfigContent(AutoAliasMixin, EvidentlyBaseModel):
 _CONTENT_TYPE_MAPPING: Dict[Type, Type[ConfigContent]] = {}
 
 
-class DescriptorContent(ConfigContent):
+class DescriptorContent(ConfigContent[Descriptor]):
     __value_class__: ClassVar = Descriptor
     __value_type__: ClassVar = ConfigContentType.Descriptor
 
@@ -266,8 +267,8 @@ class RemoteConfigManager:
 
     def _get_typed_version(self, project_id: ProjectID, name: str, version: VersionOrLatest, type_: Type[T]) -> T:
         config = self.get_config(project_id, name)
-        version = self.get_version(config.id, version)
-        value = version.content.get_value()
+        config_version = self.get_version(config.id, version)
+        value = config_version.content.get_value()
         if not isinstance(value, type_):
             raise ValueError(f"Config with name '{name}' is not a {type_.__class__.__name__}")
         return value
