@@ -1,5 +1,4 @@
 import datetime
-import logging
 import uuid
 from abc import ABC
 from abc import abstractmethod
@@ -31,7 +30,7 @@ class Params:
     LLMClassification = "llm_classification"
     Options = "options"
     Scorer = "scorer"
-    Evaluator = "evaluator"
+    Executor = "executor"
     InputValues = "input_values"
     Target = "target"
     Reasoning = "reasoning"
@@ -103,7 +102,7 @@ class OptimizerContext(BaseModel):
 
     def add_log(self, log: OptimizerLog):
         """Add a log entry to the context and log its message."""
-        logging.info(log.message())
+        print(log.message())
         self.logs[log.id] = log
 
     def get_log(self, log_id: LogID) -> OptimizerLog:

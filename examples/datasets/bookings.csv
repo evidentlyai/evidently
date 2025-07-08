@@ -1,0 +1,201 @@
+query,label
+"booked a trip for 4 ppl, want to add a 5th now",Booking
+"hello team, please confirm if my hotel reservation for bali on june 5-10 is active",Booking
+"i can’t see the payment options, dropdown just doesn’t work on safari",Technical
+"I heard airlines sometimes overbook, what’s your policy if I get bumped?",Policy
+wanna reschedule my train ride to next week,Booking
+"booked using my friend’s card, now i need a receipt in my name",Payment
+"hello, flight from ny to la needs update",Booking
+Hello I booked hotel under my partner's name but i need to change it to mine,Booking
+"I missed my flight because of your app, and I need immediate help from someone in charge.",Escalation
+"Hello, just checking when the refund will show on my statement",Payment
+was promised refund 7 days ago still nothing,Payment
+pls confirm if i need to show ID for domestic train travel booked thru ur site,Policy
+"I’m at the airport right now and there’s an issue with my booking, your system shows the flight as canceled but the airline says it’s valid. I need help urgently before boarding closes.",Escalation
+"Hi support, is there an option to pay extra for early check-in at the hotel I booked?",Booking
+Can I board if my passport expires in less than 6 months? Knowlegde base says different things.,Policy
+what's the easiest way to upgrade the hotel i just booked?,Booking
+do u guys have any covid test requirements still in place for international flights?,Policy
+can i please speak to a real person this bot isn’t helping,Escalation
+payment button not working using chrome browser,Payment
+need to book for 2 adults 1 kid italy vacation,Booking
+trying to book for 5 ppl group deal?,Booking
+need hotel from 15-20 aug barcelona,Booking
+"Good day, could someone assist me with a group booking for a corporate retreat?",Booking
+hey there can you tell me if my booking is confirmed?,Booking
+can i split the payment across 2 cards?,Payment
+"I was supposed to fly out this morning, but your app kept crashing during check-in and now I’ve missed my flight. I need to speak with someone immediately to understand what can be done.",Escalation
+"tried reinstalling the app twice but still can’t log in, says “account not found”",Technical
+hi is there a fee if i change my destination before travel starts?,Policy
+"I booked wrong airport, how do i change that?",Booking
+"Please not another automated reply, human human human",Escalation
+"I followed all your steps to cancel my hotel booking within the free cancellation window, but I still got charged. Your chatbot has been looping me for 20 minutes.",Escalation
+Hello! Could you help me figure out if I can switch my return flight to a later one.,Booking
+This is my 4th message no one answered yet what’s going on,Escalation
+hey there can you tell me if my booking is confirmed?,Booking
+"trip to japan next month need tickets, but can't find in search",Booking
+"I’m a student, do you offer any flexible travel policies or discounts for changes?",Policy
+why is there a service fee now? didn’t see it before,Payment
+"I selected the “flexible booking” option during checkout, does that mean I can change my flight date without penalty, or are there still fees involved?",Policy
+"hi, tried multiple times to reset my password, no email coming through",Technical
+Can u check if my payment was successful? didn’t get receipt,Payment
+"Hi, please assist with modifying my itinerary. I need to extend my return by two days.",Booking
+looking to book smth cheap to vegas,Booking
+forgot to choose window seat can i fix it,Booking
+Is there a known issue with the email verification step? it’s not accepting my code,Technical
+"Every time I attempt to complete payment using my credit card, the site returns an error that says “token invalid.” I’ve tried multiple cards and even switched browsers. What can I do to get around this?",Technical
+I’m using a VPN and the site won’t load for bookings,Technical
+do i need a visa if i’m flying to canada for just 3 days?,Policy
+do u guys accept paypal?,Payment
+"Hi, I’ve been trying to finalize my hotel booking for the past hour, but every time I reach the payment page, the site reloads and erases all my entered information. ",Technical
+"Hello team, I accidentally booked the wrong departure date. Could you please help me change it?",Booking
+"Hi, I’m traveling with medical equipment and I’d like to understand your airline’s policy for carrying a CPAP machine on board. Do I need to register it in advance?",Policy
+"Hello, I’m planning a multi-country trip in Europe and I’m not sure which countries require a visa for my passport. Could you provide guidance on entry requirements, especially for Germany and Italy?",Policy
+flight is in 3 hrs and i still can't check in HELP,Escalation
+can someone check my booking ref 89xui2 it’s not working,Booking
+I have a layover in Turkey - do I need a transit visa for a 2-hour connection?,Policy
+"hi, what’s the baggage allowance for domestic flights?",Policy
+"This is not acceptable, I was told my refund would be processed within 5 days and it’s been over two weeks. No one replies to my follow-ups. Escalate this to a manager, please.",Escalation
+"i wanna bring ski gear with me on flightt, does that count as extra baggage or special item?",Policy
+"The chatbot keeps giving me the same canned responses, but my problem is not being addressed. ",Escalation
+forgot to choose window seat can i fix it,Booking
+"just letting you know your mobile site doesn’t work well, can’t enter dates properly",Technical
+"I selected flexible dates when I booked, but now I’m being told there’s a fee to change. This wasn’t made clear at all. I’d like this reviewed by a manager.",Escalation
+why is there a foreign transaction fee? i paid in local currency,Payment
+"hi there, need to adjust my booking. added a baby now need bassinet seat",Booking
+"I see that the hotel I booked is “non-refundable,” but I have a legitimate emergency. Is there any flexibility in your cancellation policy for urgent situations?",Policy
+what’s the earliest i can check into the hotel if my flight lands at 6am?,Policy
+my booking isn’t showing up in the app anymore,Booking
+hey your system cancelled my booking for no reason i need help NOW,Escalation
+pls cancel transaction i didnt mean to book,Payment
+"Hello, I was charged in USD instead of EUR. Please advise.",Payment
+"I’m really frustrated now, i need human support asap",Escalation
+i booked a trip but not sure if it went thru,Booking
+"I booked a flight for next month but my passport expires in four months. I’ve heard some countries require six months of validity, can you confirm the policy for travel to the UK?",Policy
+how do i cancel my reservation?,Booking
+need to book for 2 adults 1 kid italy vacation,Booking
+"im a US green card holder traveling to Canada. I don’t need a visa but I’ve been asked for an eTA before, do I still need that for a short visit?",Policy
+how do i cancel my reservation?,Booking
+can you tell me the cancellation policy for hotel bookings?,Policy
+"Dear support, please provide a detailed invoice for expense reporting",Payment
+I wanna add a passenger to my booking,Booking
+"I can’t upload my ID for check-in, every time I try, the upload gets stuck at 99% and then fails. I’ve tried switching networks and reducing the file size but it still won’t work. What should I do?",Technical
+"Paid for the hotel but site crashed, did it go through?",Payment
+"hello, your website isn’t showing my saved bookings anymore",Technical
+can you hold a booking for me until i confirm with my family?,Booking
+"i’m pregnant, are there any restrictions for flying in the third trimester?",Policy
+"i need an invoice for my booking, how do i get it",Payment
+hello i’ve been going in circles can someone actually solve this,Escalation
+I already booked but now i want to add travel insurance,Booking
+"hey payment screen froze after i entered details, how do i know if it went through",Payment
+i’m stuck on the loading screen when searching for flights,Technical
+"’m planning to check in a bicycle as luggage, can you provide the policy for sports equipment on international flights? Also, is there an extra fee?",Policy
+pls assist with booking confirmation didnt get email,Booking
+need help with billing address details,Payment
+help me cancel my flight asap,Booking
+trying to book for 5 ppl group deal?,Booking
+pls assist with booking confirmation didnt get email,Booking
+"I received a cancellation email for my booking that I never requested. The trip is in two days, is it still happening? I need to get it back.",Escalation
+pls escalate this to a supervisor i’m done with the bot,Escalation
+hii i made a mistake with the dates can we fix this plzzz,Booking
+Hello! My itinerary disappeared from the app. Can you help me find it?,Booking
+change of plans need new flight options,Booking
+i need to talk to someone this is urgent,Escalation
+"can’t log into my account, it says wrong password but i’m sure it’s right",Technical
+lost all booking details can u resend?,Booking
+"Hi, I applied a promo code but the discount didn't show. Can this be corrected?",Payment
+accidentally booked twice what do i do,Booking
+"Hi there, could you please issue a payment receipt for accounting purposes?",Payment
+help me cancel my flight asap,Booking
+help! wrong date on my booking 😓,Booking
+"hi team, could you assist with a refund status check for ref# 88JK9X",Payment
+do u charge in local currency or usd? my bank added a weird fee,Payment
+"Dear support, I’d like to understand your policy on rebooking flights after missed connections.",Policy
+Payment failed but money went from my accoun,Payment
+do u guys do car rentals too?,Booking
+i wanna add a passenger to my booking,Booking
+my itinerary disappeared from the app,Booking
+I used points to book a hotel and now want to change the dates. will I lose my points if I cancel?,Policy
+"I tried resetting my password multiple times, and while I do get the reset link, it keeps saying “link expired” even if I click it immediately. ",Technical
+need to extend my stay by 1 day same hotel pls,Booking
+can u help me book a hotel in paris?,Booking
+This issue has not been resolved and I’m running out of time. Can you transfer me to support?,Escalation
+"page keeps saying ""session expired"" even when i refresh it",Technical
+"i’m traveling with my child, what’s the policy on car seats or boosters for transfers?",Policy
+Is there a way to split my booking for different rooms?,Booking
+"hello, i made a booking, now i need to change the return date. can you help?",Booking
+Can u move my flight to monday night?,Booking
+"Hi, I need to change the card I used for payment. Is that possible after booking?",Payment
+need invoice with company name on it for tax,Payment
+Hello! Could you help me figure out if I can switch my return flight to a later one.,Booking
+"if i cancel due to illness, do i still get charged the cancellation fee?",Policy
+"hi i cancelled my trip last week but no refund yet, whe will it arrive?",Payment
+Nobody replied to my refund request for a week already,Escalation
+"Hello, could you explain the luggage size restrictions for carry-ons and personal items?",Policy
+Booked under wrong name fix it?,Booking
+"I clicked confirm booking but nothing happened, how do i know it is confirmed?",Booking
+i'm trying to upload my ID for check-in but it keeps failing,Technical
+"I urgently need to speak with someone about my booking, hotel not responding, checkin today.",Escalation
+I’m traveling with my elderly mother and our hotel was canceled last minute without any notice. We’re stranded right now and need urgent help finding new accommodation.,Escalation
+just booked something but not sure if it actually went through. can you check?,Booking
+"hello, i got a booking confirmation number but it won’t load in the app",Technical
+"Hello, I was promised a refund 10 business days ago but haven't received it yet. Can you look into this?",Payment
+"hey, can i bring my cat on board or does it go in cargo?",Policy
+hey i got charged twice what do i do,Payment
+trip to japan next month need tickets,Booking
+"hello, is there a penalty if i miss my train and take the next one?",Policy
+accidentally booked twice what do i do,Booking
+"I’ve tried logging into my account from both my phone and desktop, but I keep getting a “user not recognized” error even though I’ve used the same email address as always. ",Technical
+does travel insurance cover political unrest or flight cancellations due to protests?,Policy
+"Just letting you know I’m getting constant “Something went wrong” pop-ups when trying to check in on the app. I’ve followed all the steps, cleared cache, restarted, and nothing is working. Please advise.",Technical
+"Dear support, I would like to understand the breakdown of charges on my booking.",Payment
+"urgent: missed flight due to your app issue, need assistance immediately",Escalation
+booked under wrong name fix it?,Booking
+can you help me move my trip to next weekend instead?,Booking
+booked a hotel for tomorrow but i want to stay 2 more nights,Booking
+"tried to pay 3 times, not going through",Payment
+change of plans need new flight options,Booking
+can you move my flight to monday night,Booking
+"hello, if i miss my first flight in a multi-leg journey, is the whole trip canceled?",Policy
+"Hi there, I booked a flight for my family, but your app only shows the traveler name for one person. When I go to “manage booking,” it doesn’t load the rest of the passengers. Can you help fix this?",Technical
+hi i need to change my flight,Booking
+"I think i messed up the booking time, it's showing midnight instead of noon",Booking
+"hi, my booking disappeared from my profile after I logged out and back in",Technical
+"Hello, my child is 11 years old and flying alone for the first time. Could you explain your unaccompanied minor policy in detail, including any extra fees?",Policy
+Do you handle booking for international trains?,Booking
+"Good morning, I’m following up on a refund request for a canceled reservation.",Payment
+Hello! How do i change departure airport without canceling whole thing?,Booking
+"Hi, I’m looking to modify my reservation – booked it under wrong passport name.",Booking
+i booked a trip but not sure if it went thru,Booking
+"every time I try to select a seat, it resets and says “server error”",Technical
+hello just confirming the hotel has airport pickup included?,Booking
+i got logged out while booking and now i lost all my trip details,Technical
+looking to book smth cheap to vegas,Booking
+what’s the rule for canceling a booking within 24 hrs of purchase? do i get full refund?,Policy
+My flight is in less than 2 hours and I still haven’t received a confirmation email or check-in instructions. I’ve tried everything suggested by your bot but nothing worked. Please escalate this urgently.,Escalation
+hi i need to change my flight,Booking
+why did i get charged today? i didn’t make a new booking or anything,Payment
+how to check booking ref 123xyz ,Booking
+help! I see wrong date on my booking but I am sure I did it right,Booking
+wanna reschedule my train ride to next week,Booking
+I’m traveling with kids and we just got to our hotel only to find the reservation was never confirmed. We’re stranded and your automated support is no help at all. I need to speak to someone immediately.,Escalation
+"hello, flight from ny to la needs update",Booking
+do u allow name changes on flight tickets or do i need to cancel?,Policy
+"Hello, I’ve been trying to resolve this for days and still no answer.",Escalation
+I booked this morning but didn’t get any email yet. is it confirmed?,Booking
+lost all booking details can u resend?,Booking
+double payment issue on my amex card,Payment
+need hotel from 15-20 aug barcelona,Booking
+app shows an error every time i select my travel dates,Technical
+hey is there any rule on how soon before the flight i have to check in?,Policy
+I’ve explained this multiple times already. Can you please get someone from the team to look into it?,Escalation
+Can u help me book a hotel in paris?,Booking
+i need a VAT invoice for my flight to berlin please include my company name,Payment
+do u do car rentals too?,Booking
+"hi, i’m not vaccinated for covid, can i still board my flight to germany?",Policy
+i used wrong card can i change it?,Payment
+can i check in online if i'm not a citizen of the country i'm traveling to?,Policy
+what’s your policy on refunds for weather-related cancellations?,Policy
+I used a discount code during checkout but the full amount was still charged. I’d like to know if the promo was applied or if I can get a partial refund for the discount.,Payment
+Hello! the refund still hasn’t arrived from last month,Payment
+Can you have someone from your support team call me back? ,Escalation
