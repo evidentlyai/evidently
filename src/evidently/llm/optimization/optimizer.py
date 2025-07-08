@@ -1,4 +1,5 @@
 import datetime
+import logging
 import uuid
 from abc import ABC
 from abc import abstractmethod
@@ -17,18 +18,21 @@ from evidently.legacy.core import new_id
 from evidently.legacy.options.base import Options
 from evidently.legacy.utils.llm.wrapper import LLMWrapper
 from evidently.legacy.utils.llm.wrapper import get_llm_wrapper
+from evidently.llm.optimization.errors import OptimizationConfigurationError
 from evidently.pydantic_utils import AutoAliasMixin
 from evidently.pydantic_utils import EvidentlyBaseModel
 
 
 class Params:
+    """Parameter keys used throughout the optimizer context and configuration."""
+
     BasePrompt = "base_prompt"
     EarlyStop = "early_stop"
     LLMClassification = "llm_classification"
     Options = "options"
     Scorer = "scorer"
     Evaluator = "evaluator"
-    Values = "values"
+    InputValues = "input_values"
     Target = "target"
     Reasoning = "reasoning"
     Scores = "scores"
@@ -40,7 +44,12 @@ class Params:
 
 
 class OptimizerConfig(AutoAliasMixin, EvidentlyBaseModel):
+    """Configuration for the optimizer, including provider and model."""
+
     __alias_type__: ClassVar = "optimizer_config"
+
+    class Config:
+        is_base_type = True
 
     provider: str = "openai"
     model: str = "gpt-4o-mini"
@@ -51,7 +60,12 @@ T = TypeVar("T")
 
 
 class OptimizerLog(AutoAliasMixin, EvidentlyBaseModel, ABC):
+    """Base class for all optimizer logs."""
+
     __alias_type__: ClassVar = "optimizer_log"
+
+    class Config:
+        is_base_type = True
 
     id: LogID = Field(default_factory=new_id)
     timestamp: datetime.datetime = Field(default_factory=datetime.datetime.now)
@@ -65,6 +79,8 @@ TLog = TypeVar("TLog", bound=OptimizerLog)
 
 
 class OptimizerContext(BaseModel):
+    """Holds the state, parameters, and logs for an optimization run."""
+
     config: OptimizerConfig
     params: Dict[str, Any]
     logs: Dict[LogID, OptimizerLog]
@@ -86,42 +102,50 @@ class OptimizerContext(BaseModel):
         return self.params[Params.Options]
 
     def add_log(self, log: OptimizerLog):
-        print(log.message())
+        """Add a log entry to the context and log its message."""
+        logging.info(log.message())
         self.logs[log.id] = log
 
     def get_log(self, log_id: LogID) -> OptimizerLog:
+        """Retrieve a log entry by its ID."""
         if log_id not in self.logs:
-            raise ValueError(f"Log with id {log_id} not found")
+            raise KeyError(f"Log with id {log_id} not found")
         return self.logs[log_id]
 
     def get_logs(self, log_type: Type[TLog]) -> List[TLog]:
+        """Get all logs of a specific type."""
         return [log for log in self.logs.values() if isinstance(log, log_type)]
 
     def get_last_log(self, log_type: Type[TLog]) -> Optional[TLog]:
+        """Get the most recent log of a specific type, or None if not found."""
         for log in reversed(self.logs.values()):
             if isinstance(log, log_type):
                 return log
         return None
 
     def set_param(self, name: str, value: Any):
+        """Set a parameter in the context. Raises if context is locked."""
         if self.locked:
-            raise ValueError("OptimizerContext is locked")
+            raise OptimizationConfigurationError("OptimizerContext is locked")
         self.params[name] = value
         if isinstance(value, InitContextMixin):
             value.init(self)
 
     def get_param(self, name: str, cls: Optional[Type[T]] = None, missing_error_message: Optional[str] = None) -> T:
+        """Get a parameter, optionally checking type and raising with a custom message if missing."""
         if not self.locked:
-            raise ValueError("OptimizerContext is not locked")
+            raise OptimizationConfigurationError("Attempted to get param from unlocked OptimizerContext")
         value = self.params.get(name, None)
         if value is None and missing_error_message is not None:
-            raise ValueError(missing_error_message)
+            raise OptimizationConfigurationError(missing_error_message)
         if cls is not None and not isinstance(value, cls):
-            raise ValueError(f"Expected {cls.__name__}, got {type(value).__name__}")
+            raise OptimizationConfigurationError(f"Expected {cls.__name__}, got {type(value).__name__}")
         return value
 
 
 class InitContextMixin(ABC):
+    """Mixin for objects that need to alter OptimizerContext on init."""
+
     @abstractmethod
     def init(self, context: OptimizerContext):
         raise NotImplementedError()
@@ -131,6 +155,8 @@ TOptimizerConfig = TypeVar("TOptimizerConfig", bound=OptimizerConfig)
 
 
 class BaseOptimizer(ABC, Generic[TOptimizerConfig]):
+    """Base class for all optimizers, handling context and parameter management."""
+
     def __init__(self, name: str, config: TOptimizerConfig, checkpoint_path: Optional[str] = None):
         self.name = name
         self.checkpoint_path = checkpoint_path or f".optimizer_checkpoint_{name}"
@@ -143,10 +169,13 @@ class BaseOptimizer(ABC, Generic[TOptimizerConfig]):
         self.context = OptimizerContext(config=config, params={}, logs={})
 
     def _lock(self):
+        """Lock the context to prevent further parameter changes."""
         self.context.locked = True
 
     def set_param(self, name: str, value: Any):
+        """Set a parameter in the optimizer context."""
         self.context.set_param(name, value)
 
     def get_param(self, name: str, cls: Optional[Type[T]] = None, missing_error_message: Optional[str] = None) -> T:
+        """Get a parameter from the optimizer context."""
         return self.context.get_param(name, cls, missing_error_message)
