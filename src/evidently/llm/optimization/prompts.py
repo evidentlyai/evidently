@@ -260,7 +260,7 @@ class CallablePromptExecutor(PromptExecutor):
         doc = self._func.__doc__
         if doc is None:
             warnings.warn(f"Please add docstring to {self.func} describing task you are trying to optimize.")
-        return doc
+        return doc or ""
 
 
 AnyPromptExecutor = Union[PromptExecutor, LLMJudge, CustomExecutorCallable]
@@ -314,7 +314,7 @@ class OptimizationScorer(BaseArgTypeRegistry, AutoAliasMixin, EvidentlyBaseModel
         raise NotImplementedError()
 
     async def score(self, context: OptimizerContext, execution_log: PromptExecutionLog) -> Optional[float]:
-        target = context.get_param(Params.Target, missing_error_message=f"{self.get_name()} requires target input")
+        target: Any = context.get_param(Params.Target, missing_error_message=f"{self.get_name()} requires target input")
         predictions = execution_log.get_data(Params.Pred)
         if not isinstance(target, pd.Series):
             target = pd.Series([target for _ in range(len(predictions))])
@@ -446,8 +446,8 @@ class PromptOptimizer(BaseOptimizer[PromptOptimizerConfig]):
         executor: AnyPromptExecutor,
         scorer: Optional[AnyOptimizationScorer],
         options: AnyOptions = None,
-    ) -> Optional[PromptOptimizationLog]:
-        return async_to_sync(self.arun(executor, scorer, options))
+    ):
+        async_to_sync(self.arun(executor, scorer, options))
 
     async def arun(
         self,
@@ -455,7 +455,7 @@ class PromptOptimizer(BaseOptimizer[PromptOptimizerConfig]):
         scorer: Optional[AnyOptimizationScorer],
         options: AnyOptions = None,
         early_stop: Optional[EarlyStopConfig] = None,
-    ) -> Optional[PromptOptimizationLog]:
+    ):
         """Run the optimizer"""
         executor = get_prompt_executor(executor)
         self.set_param(Params.Executor, executor)
@@ -509,7 +509,12 @@ class PromptOptimizer(BaseOptimizer[PromptOptimizerConfig]):
 
     @property
     def config(self) -> PromptOptimizerConfig:
-        return self.context.config
+        config = self.context.config
+        if not isinstance(config, PromptOptimizerConfig):
+            raise OptimizationConfigurationError(
+                f"Wrong config type {config.__class__.__name__}, expected {PromptOptimizerConfig.__name__}"
+            )
+        return config
 
     def set_input_dataset(self, dataset: Dataset):
         dd = dataset.data_definition
@@ -558,8 +563,8 @@ class SimplePromptOptimizer(PromptOptimizerStrategy):
     return_tag: str = "new_prompt"
 
     async def run(self, prompt: str, context: OptimizerContext) -> PromptOptimizationLog:
-        task = context.get_param(Params.Task) or "task"
-        instructions = context.get_param(Params.OptimizerPromptInstructions) or ""
+        task: str = context.get_param(Params.Task) or "task"
+        instructions: str = context.get_param(Params.OptimizerPromptInstructions) or ""
         optimizer_prompt = self.optimizer_prompt.format(prompt=prompt, task=task, instructions=instructions)
         response = await context.llm_wrapper.complete([LLMMessage.user(optimizer_prompt)])
         new_prompt = get_tag(response.result, self.return_tag)

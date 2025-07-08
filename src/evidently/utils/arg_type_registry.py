@@ -36,11 +36,13 @@ class BaseArgTypeRegistry:
 
     @classmethod
     def registry_lookup(cls: Type[T], name_or_instance: Union[str, T]) -> T:
+        if isinstance(name_or_instance, str):
+            base = cls._get_base_type()
+            try:
+                type_ = _registry[base][name_or_instance]
+                return type_()
+            except KeyError:
+                raise KeyError(f"{name_or_instance} not registered")
         if isinstance(name_or_instance, cls):
             return name_or_instance
-        base = cls._get_base_type()
-        try:
-            type_ = _registry[base][name_or_instance]
-            return type_()
-        except KeyError:
-            raise KeyError(f"{name_or_instance} not registered")
+        raise NotImplementedError(f"{name_or_instance} not registered")
