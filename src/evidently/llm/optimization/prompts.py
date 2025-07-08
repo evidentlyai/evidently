@@ -138,8 +138,7 @@ class PromptEvaluator(AutoAliasMixin, EvidentlyBaseModel, InitContextMixin, ABC)
             context.set_input(Inputs.OptimizerPromptInstructions, instructions)
 
 
-AnyJudgeTemplateTuple = (BinaryClassificationPromptTemplate, MulticlassClassificationPromptTemplate)
-AnyJudgeTemplate = Union[*(AnyJudgeTemplateTuple)]
+AnyJudgeTemplate = Union[BinaryClassificationPromptTemplate, MulticlassClassificationPromptTemplate]
 
 
 class LLMJudgePromptEvaluator(PromptEvaluator):
@@ -187,7 +186,7 @@ class LLMJudgePromptEvaluator(PromptEvaluator):
     @property
     def template(self) -> AnyJudgeTemplate:
         t = self.judge.template
-        assert isinstance(t, AnyJudgeTemplateTuple)
+        assert isinstance(t, (BinaryClassificationPromptTemplate, MulticlassClassificationPromptTemplate))
         return t
 
     def get_base_prompt(self) -> str:
@@ -244,7 +243,9 @@ AnyPromptEvaluator = Union[PromptEvaluator, LLMJudge, CustomEvaluatorCallable]
 def get_prompt_evaluator(value: AnyPromptEvaluator) -> PromptEvaluator:
     if isinstance(value, PromptEvaluator):
         return value
-    if isinstance(value, LLMJudge) and isinstance(value.template, AnyJudgeTemplateTuple):
+    if isinstance(value, LLMJudge) and isinstance(
+        value.template, (BinaryClassificationPromptTemplate, MulticlassClassificationPromptTemplate)
+    ):
         return LLMJudgePromptEvaluator(judge=value)
     if callable(value):
         # todo: check signature
