@@ -4,6 +4,7 @@ from evidently.core.compare import compare
 from evidently.core.datasets import BinaryClassification
 from evidently.core.datasets import DataDefinition
 from evidently.core.datasets import Dataset
+from evidently.core.datasets import LLMClassification
 from evidently.core.datasets import MulticlassClassification
 from evidently.core.datasets import Recsys
 from evidently.core.datasets import Regression
@@ -29,6 +30,7 @@ __all__ = [
     "MulticlassClassification",
     "Regression",
     "Recsys",
+    "LLMClassification",
     "compare",
     "ColumnType",  # legacy support
 ]
