@@ -139,7 +139,7 @@ class PromptEvaluator(AutoAliasMixin, EvidentlyBaseModel, InitContextMixin, ABC)
 
 
 AnyJudgeTemplateTuple = (BinaryClassificationPromptTemplate, MulticlassClassificationPromptTemplate)
-AnyJudgeTemplate = Union[*AnyJudgeTemplateTuple]
+AnyJudgeTemplate = Union[*(AnyJudgeTemplateTuple)]
 
 
 class LLMJudgePromptEvaluator(PromptEvaluator):
