@@ -128,7 +128,7 @@ class ConfigVersion(BaseModel):
     ):
         if not isinstance(content, ConfigContent):
             try:
-                content = parse_obj_as(ConfigContent, content)
+                content = parse_obj_as(ConfigContent, content)  # type: ignore[type-abstract]
             except ValueError:
                 content = _parse_any_to_content(content)
 
@@ -277,4 +277,4 @@ class RemoteConfigManager:
         return self._add_typed_version(project_id, name, descriptor)
 
     def get_descriptor(self, project_id: ProjectID, name: str, version: VersionOrLatest = "latest") -> Descriptor:
-        return self._get_typed_version(project_id, name, version, Descriptor)
+        return self._get_typed_version(project_id, name, version, Descriptor)  # type: ignore[type-abstract]
