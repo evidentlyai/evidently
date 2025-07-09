@@ -80,6 +80,8 @@ class BlobMetadata(BaseModel):
 
 
 class EntityType(Enum):
+    Config = "config"
+    ConfigVersion = "config_version"
     Prompt = "prompt"
     PromptVersion = "prompt_version"
     Dataset = "dataset"

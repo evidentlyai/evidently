@@ -399,9 +399,6 @@ class SingleInputDescriptor(Descriptor, abc.ABC):
         return [self.column]
 
 
-Descriptor.update_forward_refs()
-
-
 class ColumnTest(SingleInputDescriptor):
     column: str
     condition: ColumnCondition

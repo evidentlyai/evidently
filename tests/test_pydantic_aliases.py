@@ -51,6 +51,7 @@ from evidently.pydantic_utils import PolymorphicModel
 from evidently.pydantic_utils import WithTestAndMetricDependencies
 from evidently.pydantic_utils import get_base_class
 from evidently.pydantic_utils import is_not_abstract
+from evidently.sdk.configs import ConfigContent
 from evidently.ui.service.components.base import Component
 
 T = TypeVar("T")
@@ -99,6 +100,7 @@ REGISTRY_MAPPING: Dict[Type[PolymorphicModel], str] = {
     Descriptor: registries.descriptors.__name__,
     ColumnCondition: registries.column_conditions.__name__,
     PromptContent: registries.prompts.__name__,
+    ConfigContent: registries.configs.__name__,
     OptimizerConfig: registries.optimizers.__name__,
     OptimizerLog: registries.optimizers.__name__,
     OptimizationScorer: registries.optimizers.__name__,
@@ -177,6 +179,7 @@ def test_all_aliases_correct():
         MetricContainer: MetricContainer.__alias_type__,
         ColumnCondition: ColumnCondition.__alias_type__,
         PromptContent: PromptContent.__alias_type__,
+        ConfigContent: ConfigContent.__alias_type__,
         OptimizerConfig: OptimizerConfig.__alias_type__,
         OptimizerLog: OptimizerLog.__alias_type__,
         OptimizationScorer: OptimizationScorer.__alias_type__,
