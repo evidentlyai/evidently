@@ -89,8 +89,6 @@ REGISTRY_MAPPING: Dict[Type[PolymorphicModel], str] = {
     MetricPreset: "evidently.legacy.metric_preset._registry",
     FeatureDescriptor: "evidently.legacy.descriptors._registry",
     GeneratedFeatures: "evidently.legacy.features._registry",
-    PromptBlock: "evidently.legacy.utils.llm._registry",
-    PromptTemplate: "evidently.legacy.utils.llm._registry",
     # new api
     MetricTest: registries.metric_tests.__name__,
     MetricV2: registries.metrics.__name__,
@@ -106,6 +104,9 @@ REGISTRY_MAPPING: Dict[Type[PolymorphicModel], str] = {
     OptimizationScorer: registries.optimizers.__name__,
     PromptExecutor: registries.optimizers.__name__,
     PromptOptimizerStrategy: registries.optimizers.__name__,
+    PromptBlock: registries.prompts.__name__,
+    PromptTemplate: registries.prompts.__name__,
+    BaseLLMPromptTemplate: registries.prompts.__name__,
 }
 
 
