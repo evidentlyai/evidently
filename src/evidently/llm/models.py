@@ -1,10 +1,10 @@
 from typing import Any
 from typing import Dict
 
-from evidently._pydantic_compat import BaseModel
+from evidently.pydantic_utils import FrozenBaseModel
 
 
-class LLMMessage(BaseModel):
+class LLMMessage(FrozenBaseModel):
     role: str
     content: str
 
