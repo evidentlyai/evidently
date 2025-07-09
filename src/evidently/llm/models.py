@@ -1,3 +1,6 @@
+from typing import Any
+from typing import Dict
+
 from evidently._pydantic_compat import BaseModel
 
 
@@ -12,3 +15,6 @@ class LLMMessage(BaseModel):
     @classmethod
     def system(cls, message: str):
         return LLMMessage(role="system", content=message)
+
+
+LLMResponse = Dict[str, Any]

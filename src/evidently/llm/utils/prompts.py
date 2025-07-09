@@ -20,9 +20,10 @@ from typing import Union
 
 import typing_inspect
 
-from evidently.legacy.utils.llm.base import LLMMessage
-from evidently.legacy.utils.llm.errors import LLMResponseParseError
-from evidently.legacy.utils.llm.wrapper import LLMRequest
+from evidently.llm.models import LLMMessage
+from evidently.llm.utils.errors import LLMResponseParseError
+from evidently.llm.utils.wrapper import LLMRequest
+from evidently.pydantic_utils import AutoAliasMixin
 from evidently.pydantic_utils import EvidentlyBaseModel
 
 TResult = TypeVar("TResult")
@@ -227,7 +228,9 @@ def _get_genric_arg(cls: Type):
 placeholders_re = re.compile(r"\{([a-zA-Z0-9_]+)}")
 
 
-class PromptTemplate(EvidentlyBaseModel):
+class PromptTemplate(AutoAliasMixin, EvidentlyBaseModel):
+    __alias_type__: ClassVar = "prompt_template"
+
     class Config:
         is_base_type = True
 
@@ -281,9 +284,6 @@ AnyBlock = Union[str, PromptBlock, Callable]
 
 
 class BlockPromptTemplate(PromptTemplate):
-    class Config:
-        type_alias = "evidently:prompt_template:BlockPromptTemplate"
-
     blocks: ClassVar[List[AnyBlock]]
 
     def get_blocks(self) -> Sequence[PromptBlock]:
@@ -296,4 +296,4 @@ class BlockPromptTemplate(PromptTemplate):
             return PromptBlock.simple(block)
         # if callable(block):  todo
         #     return PromptBlock.func(block)
-        raise NotImplementedError(f"Cannot create promt block from {block}")
+        raise NotImplementedError(f"Cannot create prompt block from {block}")

@@ -1,1 +1,1 @@
-from evidently.legacy.utils.llm.wrapper import *  # noqa: F403
+from evidently.llm.utils.wrapper import *  # noqa: F403

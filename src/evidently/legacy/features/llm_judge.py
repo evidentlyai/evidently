@@ -26,7 +26,6 @@ from evidently.legacy.utils.llm.wrapper import LLMRequest
 from evidently.legacy.utils.llm.wrapper import LLMWrapper
 from evidently.legacy.utils.llm.wrapper import get_llm_wrapper
 from evidently.pydantic_utils import EnumValueMixin
-from evidently.pydantic_utils import autoregister
 
 
 class BaseLLMPromptTemplate(PromptTemplate):
@@ -59,11 +58,7 @@ class Uncertainty(str, Enum):
     NON_TARGET = "non_target"
 
 
-@autoregister
 class BinaryClassificationPromptTemplate(BaseLLMPromptTemplate, EnumValueMixin):
-    class Config:
-        type_alias = "evidently:prompt_template:BinaryClassificationPromptTemplate"
-
     criteria: str = ""
     instructions_template: str = (
         "Use the following categories for classification:\n{__categories__}\n{__scoring__}\nThink step by step."
@@ -217,11 +212,7 @@ class LLMJudge(GeneratedFeatures):
         return self.template.get_type(subcolumn)
 
 
-@autoregister
 class MulticlassClassificationPromptTemplate(BaseLLMPromptTemplate, EnumValueMixin):
-    class Config:
-        type_alias = "evidently:prompt_template:MulticlassClassificationPromptTemplate"
-
     criteria: str = ""
     instructions_template: str = (
         "Use the following categories for classification:\n{__categories__}\n{__scoring__}\nThink step by step."
