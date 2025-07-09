@@ -404,7 +404,7 @@ class LiteLLMWrapper(LLMWrapper):
 
         response: ModelResponse = await acompletion(
             model=self.full_model_name,
-            messages=[dataclasses.asdict(m) for m in messages],
+            messages=[m.dict() for m in messages],
             api_key=self.options.get_api_key(),
             api_base=self.options.api_url,
             **self.options.get_additional_kwargs(),
