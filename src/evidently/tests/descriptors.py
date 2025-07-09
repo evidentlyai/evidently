@@ -12,7 +12,7 @@ class EqualsColumnCondition(ColumnCondition):
         try:
             expected = type(value)(self.expected)
             return expected == value
-        except ValueError:
+        except (ValueError, TypeError):
             return False
 
     def get_default_alias(self, column: str) -> str:
@@ -26,7 +26,7 @@ class NotEqualsColumnCondition(ColumnCondition):
         try:
             expected = type(value)(self.expected)
             return expected != value
-        except ValueError:
+        except (ValueError, TypeError):
             return True
 
     def get_default_alias(self, column: str) -> str:
