@@ -39,6 +39,11 @@ from evidently.legacy.ui.components.base import Component as ComponentLegacy
 from evidently.legacy.ui.dashboards.base import DashboardPanel
 from evidently.legacy.utils.llm.prompts import PromptBlock
 from evidently.legacy.utils.llm.prompts import PromptTemplate
+from evidently.llm.optimization.optimizer import OptimizerConfig
+from evidently.llm.optimization.optimizer import OptimizerLog
+from evidently.llm.optimization.prompts import OptimizationScorer
+from evidently.llm.optimization.prompts import PromptExecutor
+from evidently.llm.optimization.prompts import PromptOptimizerStrategy
 from evidently.llm.prompts.content import PromptContent
 from evidently.pydantic_utils import TYPE_ALIASES
 from evidently.pydantic_utils import EvidentlyBaseModel
@@ -96,6 +101,11 @@ REGISTRY_MAPPING: Dict[Type[PolymorphicModel], str] = {
     ColumnCondition: registries.column_conditions.__name__,
     PromptContent: registries.prompts.__name__,
     ConfigContent: registries.configs.__name__,
+    OptimizerConfig: registries.optimizers.__name__,
+    OptimizerLog: registries.optimizers.__name__,
+    OptimizationScorer: registries.optimizers.__name__,
+    PromptExecutor: registries.optimizers.__name__,
+    PromptOptimizerStrategy: registries.optimizers.__name__,
 }
 
 
@@ -170,6 +180,11 @@ def test_all_aliases_correct():
         ColumnCondition: ColumnCondition.__alias_type__,
         PromptContent: PromptContent.__alias_type__,
         ConfigContent: ConfigContent.__alias_type__,
+        OptimizerConfig: OptimizerConfig.__alias_type__,
+        OptimizerLog: OptimizerLog.__alias_type__,
+        OptimizationScorer: OptimizationScorer.__alias_type__,
+        PromptExecutor: PromptExecutor.__alias_type__,
+        PromptOptimizerStrategy: PromptOptimizerStrategy.__alias_type__,
     }
     skip = [Component, ComponentLegacy]
     skip_literal = [EvidentlyBaseModel, WithTestAndMetricDependencies, BasePreset]
