@@ -1,3 +1,4 @@
+import ast
 import inspect
 import json
 import re
@@ -297,3 +298,142 @@ class BlockPromptTemplate(PromptTemplate):
         # if callable(block):  todo
         #     return PromptBlock.func(block)
         raise NotImplementedError(f"Cannot create prompt block from {block}")
+
+
+def prompt_contract(f: Callable):
+    from evidently.legacy.utils.llm.prompts import llm_call
+
+    res = llm_call(f)
+    res.__llm_call__ = True
+    res.__original__ = f
+    return res
+
+
+def _parse_function_call(call_string):
+    try:
+        node = ast.parse(call_string, mode="eval").body
+    except SyntaxError:
+        raise ValueError("Invalid function call syntax")
+
+    if not isinstance(node, ast.Call):
+        raise ValueError("The string is not a valid function call")
+
+    if isinstance(node.func, ast.Name):
+        func_name = node.func.id
+    else:
+        raise ValueError("Unsupported function call format")
+
+    args = [arg.id for arg in node.args]
+    kwargs = {kw.arg: ast.literal_eval(kw.value) for kw in node.keywords}
+
+    return func_name, args, kwargs
+
+
+PromptCommandCallable = Callable[[...], PromptBlock]
+_prompt_command_registry: Dict[str, PromptCommandCallable] = {
+    "output_json": PromptBlock.json_output,
+    "output_string_list": PromptBlock.string_list_output,
+    "output_string": PromptBlock.string_output,
+}
+
+
+def prompt_command(f: Union[str, PromptCommandCallable]):
+    name = f if isinstance(f, str) else f.__name__
+
+    def dec(func: PromptCommandCallable):
+        _prompt_command_registry[name] = func
+        return func
+
+    return dec(f) if callable(f) else dec
+
+
+def _parse_cmd_to_block(cmd: str):
+    func_name, args, kwargs = _parse_function_call(cmd)
+    if func_name not in _prompt_command_registry:
+        raise ValueError(
+            f"Unknown function call `{func_name}`. Available functions: {list(_prompt_command_registry.keys())}"
+        )
+    return _prompt_command_registry[func_name](*args, **kwargs)
+
+
+@prompt_command("input")
+def prompt_block_input(
+    placeholder_name: str = "input", anchors: bool = False, start: str = "__start__", end: str = "__end__"
+):
+    res = PromptBlock.input(placeholder_name)
+    if anchors:
+        res = res.anchored(start, end)
+    return res
+
+
+_self_placeholder_re = re.compile(r"{self\.([a-zA-Z_][a-zA-Z0-9_]*)}")
+
+
+def replace_self_placeholders(prompt: str, self_obj: Any):
+    def repl(match):
+        attr_name = match.group(1)
+        value = getattr(self_obj, attr_name, match.group(0))  # keep placeholder if attr missing
+        if isinstance(value, PromptBlock):
+            return value.render()
+        return str(value)
+
+    return _self_placeholder_re.sub(repl, prompt)
+
+
+class StrPromptTemplate(PromptTemplate):
+    prompt_template: Optional[str] = None
+    _contract: ClassVar[Callable]
+
+    def __init_subclass__(cls):
+        super().__init_subclass__()
+        contract = None
+        for value in cls.__dict__.values():
+            if callable(value) and getattr(value, "__llm_call__", None):
+                contract = value
+        if contract is not None:
+            cls._contract = contract
+
+    def _get_prompt_template(self):
+        pt = self.prompt_template or self._contract.__doc__
+        if pt is None:
+            raise ValueError("Prompt template is not provided and contract function __doc__ is empty")
+        return pt
+
+    def get_blocks(self) -> Sequence[PromptBlock]:
+        prompt_template = self._get_prompt_template()
+        res = []
+        for part in re.split(r"({%\s.*?\s%})", prompt_template):
+            if not part.startswith("{%"):
+                part = replace_self_placeholders(part, self)
+                res.append(PromptBlock.simple(part))
+                continue
+            cmd = part.strip("{}% ")
+            res.append(_parse_cmd_to_block(cmd))
+
+        return res
+
+    def _validate_prompt_template(self):
+        # todo: deduplicate with @llm_call.inner
+        template = self.get_template()
+        placeholders = self.list_placeholders(template)
+        sig = inspect.getfullargspec(self._contract.__original__)
+        arg_names = set(sig.args).difference(["self"])
+        if set(placeholders) != arg_names:
+            raise ValueError(
+                f"Wrong prompt template: {self.__class__._contract} signature has {arg_names} args, "
+                f"but prompt has {placeholders} placeholders"
+            )
+        response_type = sig.annotations.get("return", str)
+
+        output_format = self.get_output_format()
+        prompt_response_type = _get_genric_arg(output_format.__class__)
+        if prompt_response_type != response_type:
+            raise TypeError(
+                f"Response type ({response_type}) does not correspond to prompt output type {prompt_response_type}"
+            )
+
+    @classmethod
+    def compile(cls, prompt_template: str, **kwargs):
+        res = cls(prompt_template=prompt_template, **kwargs)
+        res._validate_prompt_template()
+        return res

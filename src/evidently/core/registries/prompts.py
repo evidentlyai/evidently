@@ -18,3 +18,5 @@ register_type_alias(PromptTemplate, "evidently.llm.utils.prompts.BlockPromptTemp
 register_type_alias(PromptTemplate, "evidently.llm.utils.prompts.WithSystemPrompt", "evidently:prompt_template:WithSystemPrompt")
 register_type_alias(BaseLLMPromptTemplate, "evidently.llm.templates.BinaryClassificationPromptTemplate", "evidently:prompt_template:BinaryClassificationPromptTemplate")
 register_type_alias(BaseLLMPromptTemplate, "evidently.llm.templates.MulticlassClassificationPromptTemplate", "evidently:prompt_template:MulticlassClassificationPromptTemplate")
+
+register_type_alias(PromptTemplate, "evidently.llm.utils.prompts.StrPromptTemplate", "evidently:prompt_template:StrPromptTemplate")
