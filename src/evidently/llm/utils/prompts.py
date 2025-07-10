@@ -304,8 +304,8 @@ def prompt_contract(f: Callable):
     from evidently.legacy.utils.llm.prompts import llm_call
 
     res = llm_call(f)
-    res.__llm_call__ = True
-    res.__original__ = f
+    res.__llm_call__ = True  # type: ignore[attr-defined]
+    res.__original__ = f  # type: ignore[attr-defined]
     return res
 
 
@@ -329,7 +329,7 @@ def _parse_function_call(call_string):
     return func_name, args, kwargs
 
 
-PromptCommandCallable = Callable[[...], PromptBlock]
+PromptCommandCallable = Callable[..., PromptBlock]
 _prompt_command_registry: Dict[str, PromptCommandCallable] = {
     "output_json": PromptBlock.json_output,
     "output_string_list": PromptBlock.string_list_output,

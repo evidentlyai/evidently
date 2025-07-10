@@ -14,12 +14,27 @@ from evidently.llm.rag.index import DataCollection
 from evidently.llm.rag.index import DataCollectionProvider
 from evidently.llm.rag.splitter import Chunk
 from evidently.llm.rag.splitter import ChunkSet
+from evidently.llm.utils.prompts import SimpleBlock
 from evidently.llm.utils.prompts import StrPromptTemplate
+from evidently.llm.utils.prompts import prompt_command
 from evidently.llm.utils.prompts import prompt_contract
 
 Question = str
 Answer = str
 GeneratedQuestion = Tuple[Question, Answer, Chunk]
+
+
+@prompt_command("datagen_instruction")
+def datagen_instruction_block(number):
+    instruction = f"""Instructions:
+•	Make sure the sentence are not exactly repeats of each other.
+•	Remain faithful to the above context.
+•	Make sure you do not start sentence with hyphen sign.
+•	Make sure you do not end sentence with a newline.
+•	Avoid providing any preamble.
+•	Avoid providing any closing statement.
+•	Ensure the number of generated texts is exactly {{{number}}}"""
+    return SimpleBlock(value=instruction)
 
 
 class QuestionsFromContextPromptTemplate(WithSystemPrompt, StrPromptTemplate):
@@ -30,7 +45,7 @@ class QuestionsFromContextPromptTemplate(WithSystemPrompt, StrPromptTemplate):
         """Generate {number} conceptual questions based on the provided context and
         can be answered from the information in the provided context.
 
-         {% datagen_instruction(number) %}
+        {% datagen_instruction(number) %}
 
         Here is a context
         {% input(context,anchors=True) %}

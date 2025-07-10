@@ -95,7 +95,7 @@ def _get_embedding_model():
     try:
         from sentence_transformers import SentenceTransformer
     except ImportError as e:
-        raise ImportError("Run `pip install evidently[datagen]` to use datagen") from e
+        raise ImportError("Run `pip install evidently[llm]` to use datagen") from e
     _embedding_model = SentenceTransformer("all-MiniLM-L6-v2")
     return _embedding_model
 
@@ -119,7 +119,7 @@ class DataCollection:
         try:
             import faiss
         except ImportError as e:
-            raise ImportError("Run `pip install evidently[datagen]` to use datagen") from e
+            raise ImportError("Run `pip install evidently[llm]` to use datagen") from e
         if self.index is None:
             # fixme: huggingface/tokenizers warns about clean_up_tokenization_spaces
 

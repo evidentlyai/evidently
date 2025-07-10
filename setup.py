@@ -110,6 +110,8 @@ setup_args = dict(
             "sentence-transformers>=2.7.0",
             "sqlvalidator>=0.0.20",
             "litellm>=1.60.4",
+            "llama-index>=0.10",
+            "faiss-cpu>=1.9.0",
         ],
         "spark": ["pyspark>=3.4.0,<4"],
         "fsspec": [
