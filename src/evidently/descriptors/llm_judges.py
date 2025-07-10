@@ -55,7 +55,7 @@ class GenericLLMDescriptor(Descriptor):
         return self._llm_wrapper
 
     def _fmt_messages(self, values: Dict[str, Any]) -> List[LegacyLLMMessage]:
-        return [LegacyLLMMessage(m.role, m.content.format(**values)) for m in self.prompt.as_messages()]
+        return [LegacyLLMMessage(role=m.role, content=m.content.format(**values)) for m in self.prompt.as_messages()]
 
     def iterate_messages(self, dataset: Dataset) -> Iterator[LLMRequest[str]]:
         for _, column_values in (
