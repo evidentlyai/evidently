@@ -20,3 +20,7 @@ register_type_alias(BaseLLMPromptTemplate, "evidently.llm.templates.BinaryClassi
 register_type_alias(BaseLLMPromptTemplate, "evidently.llm.templates.MulticlassClassificationPromptTemplate", "evidently:prompt_template:MulticlassClassificationPromptTemplate")
 
 register_type_alias(PromptTemplate, "evidently.llm.utils.prompts.StrPromptTemplate", "evidently:prompt_template:StrPromptTemplate")
+
+register_type_alias(PromptTemplate, "evidently.llm.datagen.questions.BaselineAnswerPromptTemplate", "evidently:prompt_template:BaselineAnswerPromptTemplate")
+register_type_alias(PromptTemplate, "evidently.llm.datagen.questions.QuestionsFromContextPromptTemplate", "evidently:prompt_template:QuestionsFromContextPromptTemplate")
+register_type_alias(PromptTemplate, "evidently.llm.datagen.questions.QuestionsFromSeedPromptTemplate", "evidently:prompt_template:QuestionsFromSeedPromptTemplate")

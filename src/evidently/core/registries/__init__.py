@@ -8,6 +8,7 @@ from . import metrics
 from . import optimizers
 from . import presets
 from . import prompts
+from . import rag
 
 __all__ = [
     "descriptors",
@@ -20,4 +21,5 @@ __all__ = [
     "prompts",
     "configs",
     "optimizers",
+    "rag",
 ]
