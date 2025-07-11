@@ -18,3 +18,12 @@ register_type_alias(PromptTemplate, "evidently.llm.utils.prompts.BlockPromptTemp
 register_type_alias(PromptTemplate, "evidently.llm.utils.prompts.WithSystemPrompt", "evidently:prompt_template:WithSystemPrompt")
 register_type_alias(BaseLLMPromptTemplate, "evidently.llm.templates.BinaryClassificationPromptTemplate", "evidently:prompt_template:BinaryClassificationPromptTemplate")
 register_type_alias(BaseLLMPromptTemplate, "evidently.llm.templates.MulticlassClassificationPromptTemplate", "evidently:prompt_template:MulticlassClassificationPromptTemplate")
+
+register_type_alias(PromptTemplate, "evidently.llm.utils.prompts.StrPromptTemplate", "evidently:prompt_template:StrPromptTemplate")
+
+register_type_alias(PromptTemplate, "evidently.llm.datagen.questions.BaselineAnswerPromptTemplate", "evidently:prompt_template:BaselineAnswerPromptTemplate")
+register_type_alias(PromptTemplate, "evidently.llm.datagen.questions.QuestionsFromContextPromptTemplate", "evidently:prompt_template:QuestionsFromContextPromptTemplate")
+register_type_alias(PromptTemplate, "evidently.llm.datagen.questions.QuestionsFromSeedPromptTemplate", "evidently:prompt_template:QuestionsFromSeedPromptTemplate")
+
+register_type_alias(PromptBlock, "evidently.llm.utils.prompts.CompositePromptBlock", "evidently:prompt_block:CompositePromptBlock")
+register_type_alias(PromptBlock, "evidently.llm.utils.prompts.OutputFormatBlock", "evidently:prompt_block:OutputFormatBlock")
