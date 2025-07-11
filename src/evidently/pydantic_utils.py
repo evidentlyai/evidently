@@ -27,6 +27,7 @@ from typing import Union
 from typing import get_args
 
 import numpy as np
+import yaml
 from typing_inspect import is_union_type
 
 from evidently._pydantic_compat import SHAPE_DICT
@@ -35,6 +36,7 @@ from evidently._pydantic_compat import BaseModel
 from evidently._pydantic_compat import Field
 from evidently._pydantic_compat import ModelMetaclass
 from evidently._pydantic_compat import import_string
+from evidently._pydantic_compat import parse_obj_as
 
 if TYPE_CHECKING:
     from evidently._pydantic_compat import DictStrAny
@@ -319,6 +321,14 @@ def get_value_fingerprint(value: Any) -> FingerprintPart:
 EBM = TypeVar("EBM", bound="EvidentlyBaseModel")
 
 
+def _is_yaml_fmt(path: str, fmt: Literal["yaml", "json", None]) -> bool:
+    if fmt == "yaml":
+        return True
+    if fmt == "json":
+        return False
+    return path.endswith(".yml") or path.endswith(".yaml")
+
+
 class EvidentlyBaseModel(FrozenBaseModel, PolymorphicModel):
     class Config:
         type_alias = "evidently:base:EvidentlyBaseModel"
@@ -346,6 +356,22 @@ class EvidentlyBaseModel(FrozenBaseModel, PolymorphicModel):
         data = self.dict()
         data.update(kwargs)
         return self.__class__(**data)
+
+    @classmethod
+    def load(cls: Type[EBM], path: str, fmt: Literal["json", "yaml", None] = None) -> EBM:
+        with open(path, "r") as f:
+            if _is_yaml_fmt(path, fmt):
+                data = yaml.safe_load(f)
+            else:
+                data = json.load(f)
+            return parse_obj_as(cls, data)
+
+    def dump(self, path: str, fmt: Literal["json", "yaml", None] = None):
+        with open(path, "w") as f:
+            if _is_yaml_fmt(path, fmt):
+                yaml.safe_dump(json.loads(self.json()), f)
+            else:
+                f.write(self.json(indent=2, ensure_ascii=False))
 
 
 @autoregister

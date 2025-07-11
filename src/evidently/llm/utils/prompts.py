@@ -30,7 +30,9 @@ from evidently.pydantic_utils import EvidentlyBaseModel
 TResult = TypeVar("TResult")
 
 
-class PromptBlock(EvidentlyBaseModel):
+class PromptBlock(AutoAliasMixin, EvidentlyBaseModel):
+    __alias_type__: ClassVar[str] = "prompt_block"
+
     class Config:
         is_base_type = True
 
@@ -72,9 +74,6 @@ class PromptBlock(EvidentlyBaseModel):
 
 
 class Anchor(PromptBlock):
-    class Config:
-        type_alias = "evidently:prompt_block:Anchor"
-
     start: str
     block: PromptBlock
     end: str
@@ -84,13 +83,25 @@ class Anchor(PromptBlock):
 
 
 class SimpleBlock(PromptBlock):
-    class Config:
-        type_alias = "evidently:prompt_block:SimpleBlock"
-
     value: str
 
     def _render(self) -> str:
         return self.value
+
+
+class CompositePromptBlock(PromptBlock):
+    def _render(self) -> str:
+        return "\n".join(b.render() for b in self.get_sub_blocks())
+
+    def get_sub_blocks(self) -> List[PromptBlock]:
+        res = []
+        for field in self.__fields__.values():
+            ft = field.type_
+            if isinstance(ft, type) and issubclass(ft, PromptBlock):
+                fv = getattr(self, field.name)
+                if isinstance(fv, PromptBlock):
+                    res.append(fv)
+        return res
 
 
 class OutputFormatBlock(PromptBlock, ABC, Generic[TResult]):
@@ -100,9 +111,6 @@ class OutputFormatBlock(PromptBlock, ABC, Generic[TResult]):
 
 
 class NoopOutputFormat(OutputFormatBlock[str]):
-    class Config:
-        type_alias = "evidently:prompt_block:NoopOutputFormat"
-
     def _render(self) -> str:
         return ""
 
@@ -130,9 +138,6 @@ def find_largest_json(text):
 
 
 class JsonOutputFormatBlock(OutputFormatBlock[Dict[str, Any]]):
-    class Config:
-        type_alias = "evidently:prompt_block:JsonOutputFormatBlock"
-
     fields: Dict[str, Union[Tuple[str, str], str]]
     search_for_substring: bool = True
 
@@ -162,9 +167,6 @@ class JsonOutputFormatBlock(OutputFormatBlock[Dict[str, Any]]):
 
 
 class StringListFormatBlock(OutputFormatBlock[List[str]]):
-    class Config:
-        type_alias = "evidently:prompt_block:StringListFormatBlock"
-
     of_what: str
 
     def _render(self) -> str:
@@ -176,9 +178,6 @@ This should be only a list of string {self.of_what}, each one on a new line with
 
 
 class StringFormatBlock(OutputFormatBlock[str]):
-    class Config:
-        type_alias = "evidently:prompt_block:StringFormatBlock"
-
     what: str
 
     def _render(self) -> str:
@@ -309,7 +308,7 @@ def prompt_contract(f: Callable):
     return res
 
 
-def _parse_function_call(call_string):
+def _parse_function_call(call_string) -> Tuple[str, List, Dict, bool]:
     try:
         node = ast.parse(call_string, mode="eval").body
     except SyntaxError:
@@ -319,14 +318,18 @@ def _parse_function_call(call_string):
         raise ValueError("The string is not a valid function call")
 
     if isinstance(node.func, ast.Name):
+        is_method = False
         func_name = node.func.id
+    elif isinstance(node.func, ast.Attribute):
+        is_method = True
+        func_name = node.func.attr
     else:
         raise ValueError("Unsupported function call format")
 
     args = [arg.id for arg in node.args]
     kwargs = {kw.arg: ast.literal_eval(kw.value) for kw in node.keywords}
 
-    return func_name, args, kwargs
+    return func_name, args, kwargs, is_method
 
 
 PromptCommandCallable = Callable[..., PromptBlock]
@@ -345,15 +348,6 @@ def prompt_command(f: Union[str, PromptCommandCallable]):
         return func
 
     return dec(f) if callable(f) else dec
-
-
-def _parse_cmd_to_block(cmd: str):
-    func_name, args, kwargs = _parse_function_call(cmd)
-    if func_name not in _prompt_command_registry:
-        raise ValueError(
-            f"Unknown function call `{func_name}`. Available functions: {list(_prompt_command_registry.keys())}"
-        )
-    return _prompt_command_registry[func_name](*args, **kwargs)
 
 
 @prompt_command("input")
@@ -401,6 +395,9 @@ class StrPromptTemplate(PromptTemplate):
 
     def get_blocks(self) -> Sequence[PromptBlock]:
         prompt_template = self._get_prompt_template()
+        return self._template_to_blocks(prompt_template)
+
+    def _template_to_blocks(self, prompt_template: str) -> List[PromptBlock]:
         res = []
         for part in re.split(r"({%\s.*?\s%})", prompt_template):
             if not part.startswith("{%"):
@@ -408,9 +405,38 @@ class StrPromptTemplate(PromptTemplate):
                 res.append(PromptBlock.simple(part))
                 continue
             cmd = part.strip("{}% ")
-            res.append(_parse_cmd_to_block(cmd))
+            res.extend(
+                b if isinstance(b, PromptBlock) else PromptBlock.simple(b) for b in self._parse_cmd_to_blocks(cmd)
+            )
 
         return res
+
+    def _find_parent_contract(self) -> Tuple[Type["StrPromptTemplate"], Callable]:
+        if self._contract is None:
+            raise ValueError("super() only available in @prompt_contract methods")
+        for parent in self.__class__.mro():
+            if parent is self.__class__:
+                continue
+            if not isinstance(parent, type) or not issubclass(parent, StrPromptTemplate):
+                continue
+            if not hasattr(parent, "_contract"):
+                continue
+            return parent, parent._contract
+        raise ValueError("No parent contract found")
+
+    def _parse_cmd_to_blocks(self, cmd: str) -> List[Union[PromptBlock, str]]:
+        func_name, args, kwargs, is_method = _parse_function_call(cmd)
+        if is_method:
+            func = getattr(self, func_name)
+            return [func(*args, **kwargs)]
+        if func_name == "super":
+            parent, contract = self._find_parent_contract()
+            return parent._template_to_blocks(self, contract.__doc__)
+        if func_name not in _prompt_command_registry:
+            raise ValueError(
+                f"Unknown function call `{func_name}`. Available functions: {list(_prompt_command_registry.keys())}"
+            )
+        return [_prompt_command_registry[func_name](*args, **kwargs)]
 
     def _validate_prompt_template(self):
         # todo: deduplicate with @llm_call.inner

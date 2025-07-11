@@ -24,3 +24,6 @@ register_type_alias(PromptTemplate, "evidently.llm.utils.prompts.StrPromptTempla
 register_type_alias(PromptTemplate, "evidently.llm.datagen.questions.BaselineAnswerPromptTemplate", "evidently:prompt_template:BaselineAnswerPromptTemplate")
 register_type_alias(PromptTemplate, "evidently.llm.datagen.questions.QuestionsFromContextPromptTemplate", "evidently:prompt_template:QuestionsFromContextPromptTemplate")
 register_type_alias(PromptTemplate, "evidently.llm.datagen.questions.QuestionsFromSeedPromptTemplate", "evidently:prompt_template:QuestionsFromSeedPromptTemplate")
+
+register_type_alias(PromptBlock, "evidently.llm.utils.prompts.CompositePromptBlock", "evidently:prompt_block:CompositePromptBlock")
+register_type_alias(PromptBlock, "evidently.llm.utils.prompts.OutputFormatBlock", "evidently:prompt_block:OutputFormatBlock")
