@@ -136,6 +136,11 @@ class MAE(MeanStdMetric):
     error_distr: bool = True
     error_normality: bool = False
 
+    def __init__(self, **kwargs):
+        if "tests" in kwargs:
+            raise ValueError("'tests' is not a valid argument for MAE. Did you mean 'mean_tests=' or 'std_tests='?")
+        super().__init__(**kwargs)
+
     def _default_tests_with_reference(self, context: Context) -> List[BoundTest]:
         return [eq(Reference(relative=0.1)).bind_mean_std(self.get_fingerprint(), True)]
 
