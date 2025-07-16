@@ -109,7 +109,7 @@ setup_args = dict(
             "transformers[torch]>=4.39.3",
             "sentence-transformers>=2.7.0",
             "sqlvalidator>=0.0.20",
-            "litellm>=1.60.4",
+            "litellm>=1.74.3",
         ],
         "spark": ["pyspark>=3.4.0,<4"],
         "fsspec": [

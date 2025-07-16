@@ -487,39 +487,57 @@ class OllamaWrapper(LiteLLMWrapper):
     __llm_options_type__: ClassVar = OllamaOptions
 
 
+excludes = [
+    "openai",  # supported natively
+    "openai_like",
+    "custom_openai",
+    "text-completion-openai",
+    "anthropic_text",
+    "huggingface",  # llama models do not work, disable until tested
+    "vertex_ai_beta",
+    "azure_text",
+    "sagemaker_chat",
+    "ollama_chat",
+    "text-completion-codestral",
+    "watsonx_text",
+    "custom",
+    "aiohttp_openai",
+]
 litellm_providers = [
-    # 'openai', # supported natively
-    # 'openai_like',
+    "openai",
+    "openai_like",
     "jina_ai",
     "xai",
-    # 'custom_openai',
-    # 'text-completion-openai',
+    "custom_openai",
+    "text-completion-openai",
     "cohere",
     "cohere_chat",
     "clarifai",
     "anthropic",
-    # 'anthropic_text',
+    "anthropic_text",
+    "bytez",
     "replicate",
-    # "huggingface",  # llama models do not work, disable until tested
+    "huggingface",
     "together_ai",
     "openrouter",
+    "datarobot",
     "vertex_ai",
-    # 'vertex_ai_beta',
+    "vertex_ai_beta",
     "gemini",
     "ai21",
     "baseten",
     "azure",
-    # 'azure_text',
+    "azure_text",
     "azure_ai",
     "sagemaker",
-    # 'sagemaker_chat',
+    "sagemaker_chat",
     "bedrock",
     "vllm",
     "nlp_cloud",
     "petals",
     "oobabooga",
     "ollama",
-    # 'ollama_chat',
+    "ollama_chat",
     "deepinfra",
     "perplexity",
     "mistral",
@@ -529,7 +547,8 @@ litellm_providers = [
     "ai21_chat",
     "volcengine",
     "codestral",
-    # 'text-completion-codestral',
+    "text-completion-codestral",
+    "dashscope",
     "deepseek",
     "sambanova",
     "maritalk",
@@ -538,25 +557,36 @@ litellm_providers = [
     "xinference",
     "fireworks_ai",
     "friendliai",
+    "featherless_ai",
     "watsonx",
-    # 'watsonx_text',
+    "watsonx_text",
     "triton",
     "predibase",
     "databricks",
     "empower",
     "github",
-    # 'custom',
+    "custom",
     "litellm_proxy",
     "hosted_vllm",
+    "llamafile",
     "lm_studio",
     "galadriel",
+    "nebius",
     "infinity",
     "deepgram",
-    # 'aiohttp_openai',
+    "elevenlabs",
+    "novita",
+    "aiohttp_openai",
     "langfuse",
     "humanloop",
     "topaz",
+    "assemblyai",
+    "github_copilot",
+    "snowflake",
+    "meta_llama",
+    "nscale",
 ]
+litellm_providers = [p for p in litellm_providers if p not in excludes]
 
 
 def _create_litellm_wrapper(provider: str):
@@ -595,3 +625,15 @@ for provider in litellm_providers:
     if key in _wrappers:
         continue
     locals().update(**_create_litellm_wrapper(provider))
+
+
+def main():
+    from pprint import pformat
+
+    import litellm
+
+    print(pformat([p.value for p in litellm.provider_list]).replace("'", '"'))
+
+
+if __name__ == "__main__":
+    main()
