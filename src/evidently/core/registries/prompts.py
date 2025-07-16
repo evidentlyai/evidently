@@ -2,8 +2,8 @@
 # fmt: off
 from evidently.llm.prompts.content import PromptContent
 from evidently.llm.templates import BaseLLMPromptTemplate
-from evidently.llm.utils.prompts import PromptBlock
-from evidently.llm.utils.prompts import PromptTemplate
+from evidently.llm.utils.blocks import PromptBlock
+from evidently.llm.utils.templates import PromptTemplate
 from evidently.pydantic_utils import register_type_alias
 
 register_type_alias(PromptBlock, "evidently.llm.utils.prompts.Anchor", "evidently:prompt_block:Anchor")

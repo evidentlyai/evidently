@@ -58,9 +58,6 @@ class DataCollectionProvider(AutoAliasMixin, EvidentlyBaseModel, ABC):
 
 
 class ChunksDataCollectionProvider(DataCollectionProvider):
-    class Config:
-        type_alias = "evidently:data_collection_provider:ChunksDataCollectionProvider"
-
     chunks: List[Chunk]
 
     def get_data_collection(self):

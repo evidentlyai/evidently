@@ -14,22 +14,19 @@ import pandas as pd
 from evidently._pydantic_compat import Field
 from evidently.core.datasets import ColumnType
 from evidently.llm.models import LLMMessage
-from evidently.llm.utils.prompts import PromptBlock
-from evidently.llm.utils.prompts import PromptTemplate
+from evidently.llm.utils.blocks import PromptBlock
+from evidently.llm.utils.templates import BlockPromptTemplate
 from evidently.llm.utils.wrapper import LLMRequest
 from evidently.pydantic_utils import EnumValueMixin
 
 
-class BaseLLMPromptTemplate(PromptTemplate):
+class BaseLLMPromptTemplate(BlockPromptTemplate):
     class Config:
         is_base_type = True
 
     def iterate_messages(self, data: pd.DataFrame, input_columns: Dict[str, str]) -> Iterator[LLMRequest[dict]]:
-        template = self.get_template()
         for _, column_values in data[list(input_columns)].rename(columns=input_columns).iterrows():
-            yield LLMRequest(
-                messages=self.get_messages(column_values, template), response_parser=self.parse, response_type=dict
-            )
+            yield LLMRequest(messages=self.get_messages(column_values), response_parser=self.parse, response_type=dict)
 
     @abstractmethod
     def list_output_columns(self) -> List[str]:
@@ -128,7 +125,7 @@ class BinaryClassificationPromptTemplate(BaseLLMPromptTemplate, EnumValueMixin):
             PromptBlock.json_output(**fields),
         ]
 
-    def get_messages(self, values, template: Optional[str] = None) -> List[LLMMessage]:
+    def get_messages(self, values) -> List[LLMMessage]:
         return [*self.pre_messages, *super().get_messages(values)]
 
     def list_output_columns(self) -> List[str]:
@@ -251,5 +248,5 @@ class MulticlassClassificationPromptTemplate(BaseLLMPromptTemplate, EnumValueMix
             raise ValueError(f"Unknown uncertainty value: {self.uncertainty}")
         return self.uncertainty
 
-    def get_messages(self, values, template: Optional[str] = None) -> List[LLMMessage]:
-        return [*self.pre_messages, *super().get_messages(values, template)]
+    def get_messages(self, values) -> List[LLMMessage]:
+        return [*self.pre_messages, *super().get_messages(values)]

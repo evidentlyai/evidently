@@ -1,22 +1,26 @@
 from abc import ABC
 from abc import abstractmethod
+from typing import ClassVar
 from typing import Optional
 from typing import Tuple
 
 import pandas as pd
 from typing_extensions import TypeAlias
 
-from evidently._pydantic_compat import BaseModel
 from evidently._pydantic_compat import PrivateAttr
 from evidently.legacy.options.base import Options
 from evidently.legacy.utils.sync import async_to_sync
 from evidently.llm.utils.wrapper import LLMWrapper
 from evidently.llm.utils.wrapper import get_llm_wrapper
+from evidently.pydantic_utils import AutoAliasMixin
+from evidently.pydantic_utils import EvidentlyBaseModel
 
 DatasetGeneratorResult: TypeAlias = Tuple[str, pd.DataFrame]
 
 
-class BaseDatasetGenerator(BaseModel, ABC):
+class BaseDatasetGenerator(AutoAliasMixin, EvidentlyBaseModel, ABC):
+    __alias_type__: ClassVar = "dataset_generator"
+
     class Config:
         is_base_type = True
 
