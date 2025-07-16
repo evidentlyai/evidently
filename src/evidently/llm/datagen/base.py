@@ -23,6 +23,7 @@ class BaseDatasetGenerator(AutoAliasMixin, EvidentlyBaseModel, ABC):
 
     class Config:
         is_base_type = True
+        extra = "forbid"
 
     options: Options
 

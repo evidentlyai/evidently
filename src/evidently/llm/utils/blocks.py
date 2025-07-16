@@ -22,6 +22,7 @@ class PromptBlock(AutoAliasMixin, EvidentlyBaseModel):
 
     class Config:
         is_base_type = True
+        extra = "forbid"
 
     def _get_class_doc(self):
         doc = inspect.getdoc(self.__class__)

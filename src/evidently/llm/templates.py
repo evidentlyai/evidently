@@ -26,7 +26,9 @@ class BaseLLMPromptTemplate(BlockPromptTemplate):
 
     def iterate_messages(self, data: pd.DataFrame, input_columns: Dict[str, str]) -> Iterator[LLMRequest[dict]]:
         for _, column_values in data[list(input_columns)].rename(columns=input_columns).iterrows():
-            yield LLMRequest(messages=self.get_messages(column_values), response_parser=self.parse, response_type=dict)
+            yield LLMRequest(
+                messages=self.get_messages(column_values), response_parser=self.get_parser(), response_type=dict
+            )
 
     @abstractmethod
     def list_output_columns(self) -> List[str]:

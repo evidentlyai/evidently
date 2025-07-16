@@ -1,3 +1,4 @@
+import contextlib
 import inspect
 from abc import ABC
 from abc import abstractmethod
@@ -57,7 +58,7 @@ def llm_call(f: Callable) -> Callable[..., LLMRequest]:
 
         return LLMRequest(
             messages=self.get_messages(kwargs),
-            response_parser=self.parse,
+            response_parser=self.get_parser(),
             response_type=response_type,
         )
 
@@ -101,12 +102,16 @@ class PromptTemplate(AutoAliasMixin, EvidentlyBaseModel):
     def get_output_format(self) -> OutputFormatBlock:
         return self.prepared_template.output_format
 
-    def parse(self, response: str, keys: Optional[List[str]] = None) -> Dict[str, Any]:
+    def get_parser(self):
         output = self.get_output_format()
-        parsed = output.parse_response(response)
-        if keys is not None and set(keys) != set(parsed.keys()):
-            raise LLMResponseParseError(f"Keys {keys} are required but got {list(parsed.keys())}", response)
-        return parsed
+
+        def parse(response: str, keys: Optional[List[str]] = None) -> Dict[str, Any]:
+            parsed = output.parse_response(response)
+            if keys is not None and set(keys) != set(parsed.keys()):
+                raise LLMResponseParseError(f"Keys {keys} are required but got {list(parsed.keys())}", response)
+            return parsed
+
+        return parse
 
     def get_messages(self, values) -> List[LLMMessage]:
         return [LLMMessage.user(self.render(values))]
@@ -183,22 +188,35 @@ class StrPromptTemplate(PromptTemplate):
     def list_context_variables(self) -> Dict[str, Type]:
         return {name: get_args(ann)[-1] for name, ann in self.__class__.__annotations__.items() if is_classvar(ann)}
 
-    def set_context_variable(self, name: str, value: Any):
-        context_vars = self.get_context_variables()
+    def _set_context_variable(self, name: str, value: Any):
+        context_vars = self._get_context_variables()
         context_vars[name] = value
         self._context_vars = context_vars
 
-    def set_context_variables(self, variables: Dict[str, Any]):
+    def _set_context_variables(self, variables: Dict[str, Any]):
         self._context_vars = variables
 
-    def get_context_variables(self) -> Dict[str, Any]:
+    def _get_context_variables(self) -> Dict[str, Any]:
         if not hasattr(self, "_context_vars"):
             return {}
         return self._context_vars
 
+    def _delete_context_variables(self):
+        delattr(self, "_context_vars")
+
+    @contextlib.contextmanager
+    def with_context(self, **variables: Any):
+        old_vars = self._get_context_variables()
+        try:
+            self._set_context_variables(variables)
+            yield
+        finally:
+            self._set_context_variables(old_vars)
+            self.clear_prepared_template()
+
     def _validate_context_variables(self):
         expected_vars = self.list_context_variables()
-        variables = self.get_context_variables()
+        variables = self._get_context_variables()
         errors = []
         for name, type_ in expected_vars.items():
             if name not in variables:
@@ -210,7 +228,11 @@ class StrPromptTemplate(PromptTemplate):
             raise ValueError("\n".join(errors))
         return variables
 
-    def prepare(self) -> PreparedTemplate:
+    def prepare(self, **variables: Any) -> PreparedTemplate:
+        if len(variables) > 0:
+            with self.with_context(**variables):
+                variables = self._validate_context_variables()
+                return self._prepare(self._get_prompt_template(), variables, self)
         variables = self._validate_context_variables()
         return self._prepare(self._get_prompt_template(), variables, self)
 
@@ -262,7 +284,8 @@ class StrPromptTemplate(PromptTemplate):
         raise ValueError("No parent contract found")
 
     @classmethod
-    def compile(cls, prompt_template: str, **kwargs):
+    def compile(cls, prompt_template: str, context_vars: Dict[str, Any], **kwargs):
         res = cls(prompt_template=prompt_template, **kwargs)
-        res._validate_prompt_template()
+        with res.with_context(**context_vars):
+            res._validate_prompt_template()
         return res

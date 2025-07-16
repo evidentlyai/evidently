@@ -171,8 +171,6 @@ class RagDatasetGenerator(BaseLLMDatasetGenerator):
         else:
             self.outputs = outputs or RagOutputsPromptTemplate()
         super().__init__(**data)
-        self.inputs.set_context_variable("config", self.config)
-        self.outputs.set_context_variable("config", self.config)
 
     async def agenerate(self) -> DatasetGeneratorResult:
         documents = self.data_collection.get_data_collection()
@@ -195,16 +193,21 @@ class RagDatasetGenerator(BaseLLMDatasetGenerator):
         return chunk_set_count, chunks_in_set_count, questions_per_chunkset
 
     async def agenerate_inputs(self, chunk_sets: Sequence[List[Chunk]], questions_per_chunkset: int) -> List[Question]:
-        questions = await self.wrapper.run_batch(
-            self.inputs.generate(context="\n\n".join(chunks), number=questions_per_chunkset) for chunks in chunk_sets
-        )
+        with self.inputs.with_context(config=self.config):
+            requests = [
+                self.inputs.generate(context="\n\n".join(chunks), number=questions_per_chunkset)
+                for chunks in chunk_sets
+            ]
+        questions = await self.wrapper.run_batch(requests)
         return [q for qs in questions for q in qs][: self.config.count]
 
     async def agenerate_outputs(self, inputs: List[Question], relevant_chunks: List[List[Chunk]]) -> List[str]:
-        return await self.wrapper.run_batch(
-            self.outputs.generate(input_value=question, context="\n".join(chunks))
-            for question, chunks in zip(inputs, relevant_chunks)
-        )
+        with self.outputs.with_context(config=self.config):
+            requests = [
+                self.outputs.generate(input_value=question, context="\n".join(chunks))
+                for question, chunks in zip(inputs, relevant_chunks)
+            ]
+        return await self.wrapper.run_batch(requests)
 
 
 class SeedConfig(PromptBlock):
@@ -253,7 +256,7 @@ class InputSeedDatasetGenerator(BaseLLMDatasetGenerator):
         if config is None:
             if seed is None:
                 raise ValueError("Either seed or config must be specified")
-            config = RagConfig(count=10, seed=seed)
+            config = SeedConfig(count=10, seed=seed)
         self.config = config
         self.dataset_name = dataset_name
         self.provider = provider
@@ -264,13 +267,11 @@ class InputSeedDatasetGenerator(BaseLLMDatasetGenerator):
         else:
             self.inputs = inputs or InputSeedPromptTemplate()
         super().__init__(**data)
-        self.inputs.set_context_variable("config", self.config)
 
     async def agenerate(self) -> DatasetGeneratorResult:
         max_attempt_count = 3
         attempt_count = 0
         inputs_set: Set[str] = set()
-        self.inputs.set_context_variable("config", self.config)
         num_questions = self.config.count
         seed_question = self.config.seed
         while len(inputs_set) < num_questions and attempt_count < max_attempt_count:
@@ -278,12 +279,12 @@ class InputSeedDatasetGenerator(BaseLLMDatasetGenerator):
             num_questions = (num_questions - len(inputs_set)) * attempt_count
             if len(inputs_set) > 0:
                 seed_question = random.choice(list(inputs_set))
-            response = await self.wrapper.run(
-                self.inputs.generate(
+            with self.inputs.with_context(config=self.config):
+                requests = self.inputs.generate(
                     input_seed=seed_question,
                     context_description=self.config.service.description,
                 )
-            )
+            response = await self.wrapper.run(requests)
             inputs_set = inputs_set | set(response)
 
         df = pd.DataFrame({"inputs": list(inputs_set)[:num_questions]})
