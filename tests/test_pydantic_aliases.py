@@ -39,6 +39,7 @@ from evidently.legacy.ui.components.base import Component as ComponentLegacy
 from evidently.legacy.ui.dashboards.base import DashboardPanel
 from evidently.legacy.utils.llm.prompts import PromptBlock
 from evidently.legacy.utils.llm.prompts import PromptTemplate
+from evidently.llm.datagen.base import BaseDatasetGenerator
 from evidently.llm.optimization.optimizer import OptimizerConfig
 from evidently.llm.optimization.optimizer import OptimizerLog
 from evidently.llm.optimization.prompts import OptimizationScorer
@@ -111,6 +112,7 @@ REGISTRY_MAPPING: Dict[Type[PolymorphicModel], str] = {
     BaseLLMPromptTemplate: registries.prompts.__name__,
     DataCollectionProvider: registries.rag.__name__,
     Splitter: registries.rag.__name__,
+    BaseDatasetGenerator: registries.rag.__name__,
 }
 
 
@@ -192,6 +194,7 @@ def test_all_aliases_correct():
         PromptOptimizerStrategy: PromptOptimizerStrategy.__alias_type__,
         DataCollectionProvider: DataCollectionProvider.__alias_type__,
         Splitter: Splitter.__alias_type__,
+        BaseDatasetGenerator: BaseDatasetGenerator.__alias_type__,
     }
     skip = [Component, ComponentLegacy]
     skip_literal = [EvidentlyBaseModel, WithTestAndMetricDependencies, BasePreset]
