@@ -494,7 +494,6 @@ class OllamaWrapper(LiteLLMWrapper):
 
 class NebiusOptions(LLMOptions):
     __provider_name__: ClassVar = "nebius"
-    api_url: str
 
 
 @llm_provider("nebius", None)
