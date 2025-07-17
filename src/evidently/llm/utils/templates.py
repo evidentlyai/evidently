@@ -232,7 +232,10 @@ class StrPromptTemplate(PromptTemplate):
         expected_vars = self.list_context_variables()
         variables = self._get_context_variables()
         errors = []
+        template = self._get_prompt_template()
         for name, type_ in expected_vars.items():
+            if f"{{{name}}}" not in template:
+                continue
             if name not in variables:
                 errors.append(f"'{name}' context variable is not provided")
                 continue
@@ -298,8 +301,8 @@ class StrPromptTemplate(PromptTemplate):
         raise ValueError("No parent contract found")
 
     @classmethod
-    def compile(cls, prompt_template: str, context_vars: Dict[str, Any], **kwargs):
+    def compile(cls, prompt_template: str, context_vars: Optional[Dict[str, Any]] = None, **kwargs):
         res = cls(prompt_template=prompt_template, **kwargs)
-        with res.with_context(**context_vars):
+        with res.with_context(**(context_vars or {})):
             res._validate_prompt_template()
         return res

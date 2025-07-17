@@ -1,6 +1,8 @@
 import random
+from typing import Any
 from typing import List
 from typing import Optional
+from typing import Union
 
 from evidently.llm.utils.blocks import PromptBlock
 
@@ -39,6 +41,11 @@ class ServiceSpec(PromptBlock):
     kind: str
     purpose: str = ""
 
+    def __init__(self, kind: str, purpose: str = "", **data: Any):
+        self.kind = kind
+        self.purpose = purpose
+        super().__init__(**data)
+
 
 class GenerationSpec(PromptBlock):
     """
@@ -49,6 +56,18 @@ class GenerationSpec(PromptBlock):
     kind: str = "questions"
     complexity: str = "medium"
     examples: Optional[Examples] = None
+
+    def __init__(
+        self, kind: str, complexity: str = "medium", examples: Union[Examples, List[str], str, None] = None, **data: Any
+    ):
+        self.kind = kind
+        self.complexity = complexity
+        if isinstance(examples, str):
+            examples = [examples]
+        if isinstance(examples, list):
+            examples = Examples(examples=examples)
+        self.examples = examples
+        super().__init__(**data)
 
     @property
     def has_examples(self) -> bool:
