@@ -107,12 +107,12 @@ REGISTRY_MAPPING: Dict[Type[PolymorphicModel], str] = {
     OptimizationScorer: registries.optimizers.__name__,
     PromptExecutor: registries.optimizers.__name__,
     PromptOptimizerStrategy: registries.optimizers.__name__,
-    PromptBlock: registries.prompts.__name__,
-    PromptTemplate: registries.prompts.__name__,
+    PromptBlock: registries.prompt_blocks.__name__,
+    PromptTemplate: registries.prompt_templates.__name__,
     BaseLLMPromptTemplate: registries.prompts.__name__,
     DataCollectionProvider: registries.rag.__name__,
     Splitter: registries.rag.__name__,
-    BaseDatasetGenerator: registries.rag.__name__,
+    BaseDatasetGenerator: registries.datagen.__name__,
 }
 
 

@@ -13,6 +13,7 @@ from typing import TypeVar
 from typing import Union
 
 from evidently.llm.utils.errors import LLMResponseParseError
+from evidently.llm.utils.parsing import get_tags
 from evidently.pydantic_utils import AutoAliasMixin
 from evidently.pydantic_utils import EvidentlyBaseModel
 
@@ -38,7 +39,7 @@ class PromptBlock(AutoAliasMixin, EvidentlyBaseModel):
                 val = getattr(self, field)
                 if isinstance(val, PromptBlock):
                     val = val.render()
-                result = result.replace(placeholder, val)
+                result = result.replace(placeholder, val if val is not None else "")
         return result
 
     def __str__(self):
@@ -57,7 +58,9 @@ class PromptBlock(AutoAliasMixin, EvidentlyBaseModel):
         return JsonOutputFormatBlock(fields=fields)
 
     @classmethod
-    def string_list_output(cls, of_what: str):
+    def string_list_output(cls, of_what: str, tagged: bool = False):
+        if tagged:
+            return TagStringListFormatBlock(of_what=of_what)
         return StringListFormatBlock(of_what=of_what)
 
     @classmethod
@@ -180,6 +183,16 @@ class StringListFormatBlock(OutputFormatBlock[List[str]]):
 
     def parse_response(self, response: str) -> List[str]:
         return [line.strip() for line in response.split("\n") if line.strip()]
+
+
+class TagStringListFormatBlock(OutputFormatBlock[List[str]]):
+    """Return a list of {of_what}.
+    This should be only a list of string {of_what}, each one inside <{of_what}></{of_what}> tag"""
+
+    of_what: str
+
+    def parse_response(self, response: str) -> List[str]:
+        return get_tags(response, self.of_what)
 
 
 class StringFormatBlock(OutputFormatBlock[str]):

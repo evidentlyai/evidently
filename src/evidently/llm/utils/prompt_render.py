@@ -3,6 +3,7 @@ import re
 from typing import Any
 from typing import Callable
 from typing import Dict
+from typing import Iterable
 from typing import List
 from typing import Optional
 from typing import Set
@@ -78,18 +79,30 @@ def prompt_command(f: Union[str, PromptCommandCallable]):
     return dec(f) if callable(f) else dec
 
 
-_self_placeholder_re = re.compile(r"{self\.([a-zA-Z_][a-zA-Z0-9_]*)}")
+def get_placeholder_var_values(variables: Dict[str, Any], placeholders: Iterable[str]) -> Dict[str, str]:
+    res = {}
 
+    def _get_value(o, path: List[str]):
+        if len(path) == 0:
+            return o
+        key, *path = path
+        return _get_value(getattr(o, key), path)
 
-def replace_self_placeholders(prompt: str, self_obj: Any):
-    def repl(match):
-        attr_name = match.group(1)
-        value = getattr(self_obj, attr_name, match.group(0))  # keep placeholder if attr missing
-        if isinstance(value, PromptBlock):
-            return value.render()
-        return str(value)
+    def _render(o) -> str:
+        if isinstance(o, list):
+            return "\n".join(_render(o) for o in o)
+        if isinstance(o, PromptBlock):
+            return o.render()
+        return str(o)
 
-    return _self_placeholder_re.sub(repl, prompt)
+    for ph in placeholders:
+        var_name, *var_path = ph.split(".")
+        if var_name not in variables:
+            continue
+        var_value = _get_value(variables[var_name], var_path)
+        res[ph] = _render(var_value)
+
+    return res
 
 
 class TemplateRenderer:
@@ -137,11 +150,7 @@ class TemplateRenderer:
                 if isinstance(b, OutputFormatBlock):
                     prepared.output_format = b
         prepared = prepared.render_partial(command_values)
-        var_values = {}
-        for ph in prepared.placeholders:
-            ph_var, *_ = ph.split(".")
-            if ph_var in self.vars:
-                var_values[ph] = f"{{{ph}}}".format(**self.vars)
+        var_values = get_placeholder_var_values(self.vars, prepared.placeholders)
         return prepared.render_partial(var_values)
 
     def _parse_command_to_blocks(self, cmd: str) -> List[PromptBlock]:
@@ -178,7 +187,7 @@ class TemplateRenderer:
 
         return func_name, args, kwargs, is_method
 
-    def _parse_function_call_arg(self, arg_node: ast.Expr) -> str:
+    def _parse_function_call_arg(self, arg_node: ast.expr) -> str:
         def rec(node: ast.AST) -> List[str]:
             if isinstance(node, ast.Attribute):
                 return rec(node.value) + [node.attr]

@@ -2,7 +2,6 @@ from abc import ABC
 from abc import abstractmethod
 from typing import ClassVar
 from typing import Optional
-from typing import Tuple
 
 import pandas as pd
 from typing_extensions import TypeAlias
@@ -10,12 +9,14 @@ from typing_extensions import TypeAlias
 from evidently._pydantic_compat import PrivateAttr
 from evidently.legacy.options.base import Options
 from evidently.legacy.utils.sync import async_to_sync
+from evidently.llm.utils.blocks import SimpleBlock
+from evidently.llm.utils.prompt_render import prompt_command
 from evidently.llm.utils.wrapper import LLMWrapper
 from evidently.llm.utils.wrapper import get_llm_wrapper
 from evidently.pydantic_utils import AutoAliasMixin
 from evidently.pydantic_utils import EvidentlyBaseModel
 
-DatasetGeneratorResult: TypeAlias = Tuple[str, pd.DataFrame]
+DatasetGeneratorResult: TypeAlias = pd.DataFrame
 
 
 class BaseDatasetGenerator(AutoAliasMixin, EvidentlyBaseModel, ABC):
@@ -48,3 +49,16 @@ class BaseLLMDatasetGenerator(BaseDatasetGenerator, ABC):
     @property
     def wrapper(self):
         return self.get_llm_wrapper(self.options)
+
+
+@prompt_command("datagen_instruction")
+def datagen_instruction_block(number):
+    instruction = f"""Instructions:
+•	Make sure the sentence are not exactly repeats of each other.
+•	Remain faithful to the above context.
+•	Make sure you do not start sentence with hyphen sign.
+•	Make sure you do not end sentence with a newline.
+•	Avoid providing any preamble.
+•	Avoid providing any closing statement.
+•	Ensure the number of generated texts is exactly {number}"""
+    return SimpleBlock(value=instruction)

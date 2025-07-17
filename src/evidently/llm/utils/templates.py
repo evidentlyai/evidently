@@ -1,5 +1,6 @@
 import contextlib
 import inspect
+import textwrap
 from abc import ABC
 from abc import abstractmethod
 from functools import wraps
@@ -94,7 +95,10 @@ class PromptTemplate(AutoAliasMixin, EvidentlyBaseModel):
         return self._prepared_template
 
     def clear_prepared_template(self):
-        delattr(self, "_prepared_template")
+        try:
+            delattr(self, "_prepared_template")
+        except AttributeError:
+            pass
 
     def list_placeholders(self):
         return self.prepared_template.placeholders
@@ -165,6 +169,16 @@ def prompt_block_input(placeholder_name: str = "input", tag: bool = False, ancho
     return res
 
 
+def smart_isinstance(value, type_) -> bool:
+    if isinstance(type_, type):
+        return isinstance(value, type_)
+    generic_type = typing_inspect.get_origin(type_)
+    subtype = typing_inspect.get_args(type_)[0]
+    if generic_type is list:
+        return isinstance(value, list) and all(isinstance(v, subtype) for v in value)
+    raise NotImplementedError(f"Not implemented for {type_}")
+
+
 class StrPromptTemplate(PromptTemplate):
     prompt_template: Optional[str] = None
     _contract: ClassVar[Callable]
@@ -183,7 +197,7 @@ class StrPromptTemplate(PromptTemplate):
         pt = self.prompt_template or self._contract.__doc__
         if pt is None:
             raise ValueError("Prompt template is not provided and contract function __doc__ is empty")
-        return pt
+        return textwrap.dedent(pt)
 
     def list_context_variables(self) -> Dict[str, Type]:
         return {name: get_args(ann)[-1] for name, ann in self.__class__.__annotations__.items() if is_classvar(ann)}
@@ -222,7 +236,7 @@ class StrPromptTemplate(PromptTemplate):
             if name not in variables:
                 errors.append(f"'{name}' context variable is not provided")
                 continue
-            if not isinstance(variables[name], type_):
+            if not smart_isinstance(variables[name], type_):
                 errors.append(f"Variable '{name}' context variable is not of type '{type_}'")
         if errors:
             raise ValueError("\n".join(errors))
@@ -246,7 +260,7 @@ class StrPromptTemplate(PromptTemplate):
 
     def _get_super_block(self) -> PromptBlock:
         parent, contract = self._find_parent_contract()
-        return PromptBlock.simple(self._prepare(contract.__doc__, self.get_context_variables(), self).template)
+        return PromptBlock.simple(self._prepare(contract.__doc__, self._get_context_variables(), self).template)
 
     def get_output_format(self) -> OutputFormatBlock:
         return self.prepared_template.output_format
