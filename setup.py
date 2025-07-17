@@ -109,7 +109,7 @@ setup_args = dict(
             "transformers[torch]>=4.39.3",
             "sentence-transformers>=2.7.0",
             "sqlvalidator>=0.0.20",
-            "litellm>=1.60.4",
+            "litellm>=1.74.3",
             "llama-index>=0.10",
             "faiss-cpu>=1.8.0",
         ],

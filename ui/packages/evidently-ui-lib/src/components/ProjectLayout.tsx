@@ -7,8 +7,8 @@ const ProjectInfoLayout = ({ project }: { project: StrictID<ProjectModel> }) => 
   return (
     <Grid container spacing={2} direction='row' justifyContent='flex-start' alignItems='flex-end'>
       <Grid size={{ xs: 12 }}>
-        <Typography sx={{ color: '#aaa' }} variant='body2'>
-          {`project id: ${project.id}`}
+        <Typography color='text.secondary' variant='body2'>
+          project id: {project.id}
           <IconButton
             size='small'
             style={{ marginLeft: 10 }}

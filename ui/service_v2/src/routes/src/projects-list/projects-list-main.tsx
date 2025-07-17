@@ -3,7 +3,6 @@ import type { ProjectModel } from 'evidently-ui-lib/api/types'
 import type { StrictID } from 'evidently-ui-lib/api/types/utils'
 import { ensureIDInArray } from 'evidently-ui-lib/api/utils'
 import { useCurrentRouteParams } from 'evidently-ui-lib/router-utils/hooks'
-import type { CrumbDefinition } from 'evidently-ui-lib/router-utils/router-builder'
 import type { ActionArgs } from 'evidently-ui-lib/router-utils/types'
 import { Box, Grid, Typography } from 'evidently-ui-lib/shared-dependencies/mui-material'
 import { clientAPI } from '~/api'
@@ -16,9 +15,6 @@ import { AddNewProjectWrapper, ProjectCardWrapper } from './components'
 
 export const currentRoutePath = '/?index'
 export type CurrentRoute = GetRouteByPath<typeof currentRoutePath>
-
-const crumb: CrumbDefinition = { title: 'Projects' }
-export const handle = { crumb }
 
 export const loadData = () =>
   clientAPI.GET('/api/projects').then(responseParser()).then(ensureIDInArray)
