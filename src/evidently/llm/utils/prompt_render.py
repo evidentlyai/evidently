@@ -42,13 +42,13 @@ class PreparedTemplate:
     def output_format(self) -> OutputFormatBlock:
         return self._output_format or NoopOutputFormat()
 
-    @property
-    def has_output_format(self) -> bool:
-        return self._output_format is not None
-
     @output_format.setter
     def output_format(self, output_format: OutputFormatBlock):
         self._output_format = output_format
+
+    @property
+    def has_output_format(self) -> bool:
+        return self._output_format is not None
 
     def render(self, values: Dict[str, Any]) -> str:
         return self.template.format(**{p: values[p] for p in self.placeholders})
