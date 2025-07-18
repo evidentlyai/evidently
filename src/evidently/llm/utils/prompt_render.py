@@ -42,6 +42,10 @@ class PreparedTemplate:
     def output_format(self) -> OutputFormatBlock:
         return self._output_format or NoopOutputFormat()
 
+    @property
+    def has_output_format(self) -> bool:
+        return self._output_format is not None
+
     @output_format.setter
     def output_format(self, output_format: OutputFormatBlock):
         self._output_format = output_format
@@ -60,7 +64,7 @@ class PreparedTemplate:
         return f"PreparedTemplate[{ph}]\n```\n{self.template}\n```"
 
 
-PromptCommandCallable = Callable[..., PromptBlock]
+PromptCommandCallable = Callable[..., Union[PromptBlock, List[PromptBlock]]]
 
 _prompt_command_registry: Dict[str, PromptCommandCallable] = {
     "output_json": PromptBlock.json_output,
@@ -150,6 +154,7 @@ class TemplateRenderer:
                 if isinstance(b, OutputFormatBlock):
                     prepared.output_format = b
         prepared = prepared.render_partial(command_values)
+
         var_values = get_placeholder_var_values(self.vars, prepared.placeholders)
         return prepared.render_partial(var_values)
 
@@ -157,12 +162,18 @@ class TemplateRenderer:
         func_name, args, kwargs, is_method = self._parse_function_call(cmd)
         if is_method:
             func = getattr(self.holder, func_name)
-            return [func(*args, **kwargs)]
+            result = func(*args, **kwargs)
+            if not isinstance(result, list):
+                result = [result]
+            return result
         if func_name not in self.commands:
             raise ValueError(
                 f"Unknown function call `{func_name}`. Available functions: {list(_prompt_command_registry.keys())}"
             )
-        return [self.commands[func_name](*args, **kwargs)]
+        result = self.commands[func_name](*args, **kwargs)
+        if not isinstance(result, list):
+            result = [result]
+        return result
 
     def _parse_function_call(self, call_string) -> Tuple[str, List[str], Dict, bool]:
         try:

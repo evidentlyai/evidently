@@ -11,6 +11,7 @@ from typing import Optional
 
 import numpy as np
 
+from evidently._pydantic_compat import PrivateAttr
 from evidently.llm.rag.splitter import AnySplitter
 from evidently.llm.rag.splitter import Chunk
 from evidently.llm.rag.splitter import Splitter
@@ -35,9 +36,16 @@ class DataCollectionProvider(AutoAliasMixin, EvidentlyBaseModel, ABC):
     chunk_size: int = DEFAULT_CHUNK_SIZE
     chunk_overlap: int = DEFAULT_CHUNK_OVERLAP
     splitter: AnySplitter = "llama_index"
+    _data_collection_cache: "DataCollection" = PrivateAttr()
+
+    def get_data_collection(self, use_cache: bool = True) -> "DataCollection":
+        if use_cache and hasattr(self, "_data_collection_cache"):
+            return self._data_collection_cache
+        self._data_collection_cache = self._get_data_collection()
+        return self._data_collection_cache
 
     @abstractmethod
-    def get_data_collection(self) -> "DataCollection":
+    def _get_data_collection(self) -> "DataCollection":
         raise NotImplementedError
 
     @classmethod
@@ -60,7 +68,7 @@ class DataCollectionProvider(AutoAliasMixin, EvidentlyBaseModel, ABC):
 class ChunksDataCollectionProvider(DataCollectionProvider):
     chunks: List[Chunk]
 
-    def get_data_collection(self):
+    def _get_data_collection(self):
         dc = DataCollection(name="chunks", chunks=self.chunks)
         dc.init_collection()
         return dc
@@ -71,10 +79,19 @@ class FileDataCollectionProvider(DataCollectionProvider):
         type_alias = "evidently:data_collection_provider:FileDataCollectionProvider"
 
     path: str
+    recursive: bool = False
+    pattern: str = "*"
 
-    def get_data_collection(self):
+    def _get_data_collection(self):
         file_path = Path(self.path)
-        paths = [self.path] if file_path.is_file() else glob.glob(os.path.join(self.path, "*"))
+        if file_path.is_file():
+            paths = [self.path]
+        elif not self.recursive:
+            paths = [p for p in glob.glob(os.path.join(self.path, self.pattern)) if os.path.isfile(p)]
+        else:
+            paths = [
+                p for p in glob.glob(os.path.join(self.path, "**", self.pattern), recursive=True) if os.path.isfile(p)
+            ]
 
         splitter = Splitter.from_any(self.splitter, self.chunk_size, self.chunk_overlap)
         chunks = list(splitter.split([read_text(p) for p in paths]))

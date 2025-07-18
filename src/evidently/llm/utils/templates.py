@@ -1,5 +1,6 @@
 import contextlib
 import inspect
+import itertools
 import textwrap
 from abc import ABC
 from abc import abstractmethod
@@ -261,12 +262,17 @@ class StrPromptTemplate(PromptTemplate):
         renderer.add_command("super", self._get_super_block)
         return renderer.prepare()
 
-    def _get_super_block(self) -> PromptBlock:
+    def _get_super_block(self) -> List[PromptBlock]:
         parent, contract = self._find_parent_contract()
         doc = contract.__doc__
         if doc is None:
             raise ValueError("'super()' can't find parent prompt_contract")
-        return PromptBlock.simple(self._prepare(doc, self._get_context_variables(), self).template)
+        prepare = self._prepare(doc, self._get_context_variables(), self)
+        if prepare.has_output_format:
+            of = prepare.output_format
+            parts = prepare.template.split(of.render())
+            return list(itertools.chain.from_iterable(([of, PromptBlock.simple(part)] for part in parts)))[1:]
+        return [PromptBlock.simple(prepare.template)]
 
     def get_output_format(self) -> OutputFormatBlock:
         return self.prepared_template.output_format
@@ -291,10 +297,8 @@ class StrPromptTemplate(PromptTemplate):
             )
 
     def _find_parent_contract(self) -> Tuple[Type["StrPromptTemplate"], Callable]:
-        if self._contract is None:
-            raise ValueError("super() only available in @prompt_contract methods")
         for parent in self.__class__.mro():
-            if parent is self.__class__:
+            if parent is self.__class__ and self.prompt_template is None:
                 continue
             if not isinstance(parent, type) or not issubclass(parent, StrPromptTemplate):
                 continue
@@ -309,3 +313,32 @@ class StrPromptTemplate(PromptTemplate):
         with res.with_context(**(context_vars or {})):
             res._validate_prompt_template()
         return res
+
+
+def main():
+    class MyTemplate(StrPromptTemplate):
+        @prompt_contract
+        def lol(self, a: str):
+            """a: {a}
+            {% output_string_list(qqq, tagged=True) %}
+            """
+
+    other_template = MyTemplate(prompt_template="lol\n{% super() %}")
+    print(other_template.prepared_template)
+
+    print(f"__{other_template.prepared_template.output_format.__class__.__name__}__")
+    print(f"__{MyTemplate().prepared_template.output_format.__class__.__name__}__")
+
+    class MyTemplate2(MyTemplate):
+        @prompt_contract
+        def lol(self, a: str):
+            """kek
+            {% super() %}
+            """
+
+    print(MyTemplate2().prepared_template)
+    print(f"__{MyTemplate2().prepared_template.output_format.__class__.__name__}__")
+
+
+if __name__ == "__main__":
+    main()

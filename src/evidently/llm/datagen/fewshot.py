@@ -1,4 +1,3 @@
-import random
 from typing import Any
 from typing import ClassVar
 from typing import List
@@ -27,13 +26,10 @@ class FewShotPromptTemplate(StrPromptTemplate):
     additional_prompt_blocks: ClassVar[List[PromptBlock]]
 
     @prompt_contract
-    def generate(self, count: int, input_seed: str) -> List[str]:
+    def generate(self, count: int) -> List[str]:
         """
         {sample_spec}
         {additional_prompt_blocks}
-
-        The input:
-        {% input(input_seed,tag=True) %}
 
         {% datagen_instruction('{count}') %}
 
@@ -79,7 +75,7 @@ class FewShotDatasetGenerator(BaseLLMDatasetGenerator):
 
         additional: List[PromptBlock] = additional_prompt_blocks or []
         if user is not None:
-            additional.append(user if isinstance(user, UserProfile) else UserProfile(user=user))
+            additional.append(user if isinstance(user, UserProfile) else UserProfile(role=user))
         if service is not None:
             additional.append(
                 service if isinstance(service, ServiceSpec) else ServiceSpec(kind="RAG", description=service)
@@ -103,19 +99,13 @@ class FewShotDatasetGenerator(BaseLLMDatasetGenerator):
         inputs_set: Set[str] = set()
         num_questions = self.count
         assert self.sample_spec.examples is not None  # guaranteed by __init__
-        seed_question = self.sample_spec.examples.choice()
         while len(inputs_set) < num_questions and attempt_count < max_attempt_count:
             attempt_count += 1
             num_questions = (num_questions - len(inputs_set)) * attempt_count
-            if len(inputs_set) > 0:
-                seed_question = random.choice(list(inputs_set))
             with self.template.with_context(
                 sample_spec=self.sample_spec, additional_prompt_blocks=self.additional_prompt_blocks
             ):
-                requests = self.template.generate(
-                    count=self.count,
-                    input_seed=seed_question,
-                )
+                requests = self.template.generate(count=self.count)
             response = await self.wrapper.run(requests)
             inputs_set = inputs_set | set(response)
 

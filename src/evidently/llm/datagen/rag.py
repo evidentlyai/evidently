@@ -122,7 +122,7 @@ class RagQueryDatasetGenerator(BaseRagDatasetGenerator):
         self.chunks_per_query = chunks_per_query
         additional: List[PromptBlock] = additional_prompt_blocks or []
         if user is not None:
-            additional.append(user if isinstance(user, UserProfile) else UserProfile(user=user))
+            additional.append(user if isinstance(user, UserProfile) else UserProfile(role=user))
         if service is not None:
             additional.append(
                 service if isinstance(service, ServiceSpec) else ServiceSpec(kind="RAG", description=service)
@@ -208,7 +208,7 @@ class RagResponseDatasetGenerator(BaseRagDatasetGenerator):
         self.include_context = include_context
         additional: List[PromptBlock] = additional_prompt_blocks or []
         if user is not None:
-            additional.append(user if isinstance(user, UserProfile) else UserProfile(user=user))
+            additional.append(user if isinstance(user, UserProfile) else UserProfile(role=user))
         if service is not None:
             additional.append(
                 service if isinstance(service, ServiceSpec) else ServiceSpec(kind="RAG", description=service)
@@ -287,8 +287,8 @@ class RagDatasetGenerator(BaseRagDatasetGenerator):
         user: Union[str, UserProfile, None] = None,
         service: Union[str, ServiceSpec, None] = None,
         additional_prompt_blocks: Optional[List[PromptBlock]] = None,
-        inputs_template: Union[str, RagQueryPromptTemplate, None] = None,
-        outputs_template: Union[str, RagResponsePromptTemplate, None] = None,
+        query_template: Union[str, RagQueryPromptTemplate, None] = None,
+        response_template: Union[str, RagResponsePromptTemplate, None] = None,
         **data: Any,
     ):
         self.data_collection = data_collection
@@ -296,11 +296,9 @@ class RagDatasetGenerator(BaseRagDatasetGenerator):
         self.count = count
         additional: List[PromptBlock] = additional_prompt_blocks or []
         if user is not None:
-            additional.append(user if isinstance(user, UserProfile) else UserProfile(user=user))
+            additional.append(user if isinstance(user, UserProfile) else UserProfile(role=user))
         if service is not None:
-            additional.append(
-                service if isinstance(service, ServiceSpec) else ServiceSpec(kind="RAG", description=service)
-            )
+            additional.append(service if isinstance(service, ServiceSpec) else ServiceSpec(kind="RAG", purpose=service))
         self.additional_prompt_blocks = additional
 
         if query_spec is not None:
@@ -316,14 +314,14 @@ class RagDatasetGenerator(BaseRagDatasetGenerator):
         self.provider = provider
         self.options = Options.from_any_options(options)
         self.model = model
-        if isinstance(inputs_template, str):
-            self.query_template = RagQueryPromptTemplate(prompt_template=inputs_template)
+        if isinstance(query_template, str):
+            self.query_template = RagQueryPromptTemplate(prompt_template=query_template)
         else:
-            self.query_template = inputs_template or RagQueryPromptTemplate()
-        if isinstance(outputs_template, str):
-            self.response_template = RagResponsePromptTemplate(prompt_template=outputs_template)
+            self.query_template = query_template or RagQueryPromptTemplate()
+        if isinstance(response_template, str):
+            self.response_template = RagResponsePromptTemplate(prompt_template=response_template)
         else:
-            self.response_template = outputs_template or RagResponsePromptTemplate()
+            self.response_template = response_template or RagResponsePromptTemplate()
         super().__init__(**data)
 
     async def agenerate(self) -> DatasetGeneratorResult:
@@ -356,6 +354,7 @@ class RagDatasetGenerator(BaseRagDatasetGenerator):
             query_spec=self.query_spec,
             response_spec=self.response_spec,
             response_template=self.response_template,
+            additional_prompt_blocks=self.additional_prompt_blocks,
             queries=queries,
             options=self.options,
             provider=self.provider,

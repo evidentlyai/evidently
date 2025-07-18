@@ -369,7 +369,7 @@ class EvidentlyBaseModel(FrozenBaseModel, PolymorphicModel):
     def dump(self, path: str, fmt: Literal["json", "yaml", None] = None):
         with open(path, "w") as f:
             if _is_yaml_fmt(path, fmt):
-                yaml.safe_dump(json.loads(self.json(exclude_defaults=True)), f)
+                yaml.safe_dump(json.loads(self.json()), f)
             else:
                 f.write(self.json(indent=2, ensure_ascii=False))
 
