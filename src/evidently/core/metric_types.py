@@ -1184,6 +1184,17 @@ class MeanStdMetricTests(BaseModel):
         super().__init__(mean=convert_tests(mean), std=convert_tests(std))
 
 
+MeanStdMetricsPossibleTests = Union[MeanStdMetricTests, GenericSingleValueMetricTests, None]
+
+
+def convert_to_mean_tests(tests: MeanStdMetricsPossibleTests) -> Optional[MeanStdMetricTests]:
+    if tests is None:
+        return None
+    if isinstance(tests, MeanStdMetricTests):
+        return tests
+    return MeanStdMetricTests(mean=tests)
+
+
 class MeanStdMetric(Metric):
     mean_tests: SingleValueMetricTests = None
     std_tests: SingleValueMetricTests = None
