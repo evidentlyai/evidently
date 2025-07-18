@@ -3,6 +3,7 @@ import enum
 import inspect
 import typing
 import uuid
+import warnings
 from abc import ABC
 from abc import abstractmethod
 from copy import copy
@@ -373,7 +374,9 @@ class ByLabelCountValue(MetricResult):
 
 
 try:
-    np_bool = np.bool  # type: ignore[attr-defined]
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", FutureWarning)
+        np_bool = np.bool  # type: ignore[attr-defined]
 except:  # noqa: E722
     np_bool = bool  # type: ignore[assignment]
 

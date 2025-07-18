@@ -1,4 +1,3 @@
-import re
 import warnings
 from abc import ABC
 from abc import abstractmethod
@@ -38,6 +37,7 @@ from evidently.llm.optimization.optimizer import OptimizerConfig
 from evidently.llm.optimization.optimizer import OptimizerContext
 from evidently.llm.optimization.optimizer import OptimizerLog
 from evidently.llm.optimization.optimizer import Params
+from evidently.llm.utils.parsing import get_tag
 from evidently.pydantic_utils import AutoAliasMixin
 from evidently.pydantic_utils import EvidentlyBaseModel
 from evidently.utils.arg_type_registry import BaseArgTypeRegistry
@@ -539,14 +539,6 @@ class PromptOptimizer(BaseOptimizer[PromptOptimizerConfig]):
         execution_log = self.context.get_log(best_score.execution_log_id)
         assert isinstance(execution_log, PromptExecutionLog)
         return execution_log.prompt
-
-
-def get_tag(value, tag_name):
-    """Extract the content of a tag from a string value."""
-    match = re.search(rf"<{tag_name}>(.*?)</{tag_name}>", value, re.DOTALL)
-    if match:
-        return match.group(1).strip()
-    return None
 
 
 class SimplePromptOptimizer(PromptOptimizerStrategy):

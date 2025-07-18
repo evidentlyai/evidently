@@ -84,9 +84,9 @@ def test_parse_response(
     for response, expected_result in results.items():
         if isinstance(expected_result, LLMResponseParseError):
             with pytest.raises(expected_result.__class__):
-                template.parse(response)
+                template.get_parser()(response)
         else:
-            assert template.parse(response) == expected_result
+            assert template.get_parser()(response) == expected_result
 
 
 @llm_provider("mock", None)
