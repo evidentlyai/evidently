@@ -6,12 +6,13 @@ from typing import Tuple
 from evidently._pydantic_compat import PrivateAttr
 from evidently.core.container import MetricContainer
 from evidently.core.container import MetricOrContainer
-from evidently.core.metric_types import GenericSingleValueMetricTests, convert_to_mean_tests
+from evidently.core.metric_types import GenericSingleValueMetricTests
 from evidently.core.metric_types import MeanStdMetricsPossibleTests
 from evidently.core.metric_types import MeanStdMetricTests
 from evidently.core.metric_types import MetricId
 from evidently.core.metric_types import SingleValueMetricTests
 from evidently.core.metric_types import convert_tests
+from evidently.core.metric_types import convert_to_mean_tests
 from evidently.core.report import Context
 from evidently.legacy.metrics import RegressionDummyMetric
 from evidently.legacy.metrics import RegressionErrorDistribution
