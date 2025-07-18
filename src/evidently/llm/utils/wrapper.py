@@ -392,18 +392,23 @@ class LiteLLMWrapper(LLMWrapper):
         self.options: LLMOptions = options.get(self.__llm_options_type__)
 
     @property
-    def full_model_name(self) -> str:
-        if "/" in self.model or not hasattr(self.options, "__provider_name__"):
-            return self.model
-        return f"{self.options.__provider_name__}/{self.model}"
+    def provider_and_model(self) -> Tuple[Optional[str], str]:
+        if not hasattr(self.options, "__provider_name__"):
+            return None, self.model
+        provider_name = self.options.__provider_name__
+        if self.model.startswith(provider_name + "/"):
+            return provider_name, self.model[len(provider_name) + 1 :]
+        return provider_name, self.model
 
     async def complete(self, messages: List[LLMMessage]) -> LLMResult[str]:
         from litellm import acompletion
         from litellm.types.utils import ModelResponse
         from litellm.types.utils import Usage
 
+        provider_name, model = self.provider_and_model
         response: ModelResponse = await acompletion(
-            model=self.full_model_name,
+            model=model,
+            custom_llm_provider=provider_name,
             messages=[m.dict() for m in messages],
             api_key=self.options.get_api_key(),
             api_base=self.options.api_url,
@@ -485,6 +490,15 @@ class OllamaOptions(LLMOptions):
 @llm_provider("ollama", None)
 class OllamaWrapper(LiteLLMWrapper):
     __llm_options_type__: ClassVar = OllamaOptions
+
+
+class NebiusOptions(LLMOptions):
+    __provider_name__: ClassVar = "nebius"
+
+
+@llm_provider("nebius", None)
+class NebiusWrapper(LiteLLMWrapper):
+    __llm_options_type__: ClassVar = NebiusOptions
 
 
 excludes = [
