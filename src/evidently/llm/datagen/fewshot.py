@@ -71,20 +71,20 @@ class FewShotDatasetGenerator(BaseLLMDatasetGenerator):
             sample_spec = GenerationSpec(
                 kind=kind or "texts",
                 complexity=complexity or "medium",
-                examples=Examples(examples=examples or [example]),
+                examples=Examples(examples=examples or [example or ""]),
             )
         if not sample_spec.has_examples:
             raise ValueError("At least one example must be provided")
         self.sample_spec = sample_spec
 
-        additional_prompt_blocks: List[PromptBlock] = additional_prompt_blocks or []
+        additional: List[PromptBlock] = additional_prompt_blocks or []
         if user is not None:
-            additional_prompt_blocks.append(user if isinstance(user, UserProfile) else UserProfile(user=user))
+            additional.append(user if isinstance(user, UserProfile) else UserProfile(user=user))
         if service is not None:
-            additional_prompt_blocks.append(
+            additional.append(
                 service if isinstance(service, ServiceSpec) else ServiceSpec(kind="RAG", description=service)
             )
-        self.additional_prompt_blocks = additional_prompt_blocks
+        self.additional_prompt_blocks = additional
 
         self.count = count
         self.provider = provider
@@ -102,6 +102,7 @@ class FewShotDatasetGenerator(BaseLLMDatasetGenerator):
         attempt_count = 0
         inputs_set: Set[str] = set()
         num_questions = self.count
+        assert self.sample_spec.examples is not None  # guaranteed by __init__
         seed_question = self.sample_spec.examples.choice()
         while len(inputs_set) < num_questions and attempt_count < max_attempt_count:
             attempt_count += 1

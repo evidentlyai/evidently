@@ -263,7 +263,10 @@ class StrPromptTemplate(PromptTemplate):
 
     def _get_super_block(self) -> PromptBlock:
         parent, contract = self._find_parent_contract()
-        return PromptBlock.simple(self._prepare(contract.__doc__, self._get_context_variables(), self).template)
+        doc = contract.__doc__
+        if doc is None:
+            raise ValueError("'super()' can't find parent prompt_contract")
+        return PromptBlock.simple(self._prepare(doc, self._get_context_variables(), self).template)
 
     def get_output_format(self) -> OutputFormatBlock:
         return self.prepared_template.output_format

@@ -120,14 +120,14 @@ class RagQueryDatasetGenerator(BaseRagDatasetGenerator):
         self.data_collection = data_collection
         self.count = count
         self.chunks_per_query = chunks_per_query
-        additional_prompt_blocks: List[PromptBlock] = additional_prompt_blocks or []
+        additional: List[PromptBlock] = additional_prompt_blocks or []
         if user is not None:
-            additional_prompt_blocks.append(user if isinstance(user, UserProfile) else UserProfile(user=user))
+            additional.append(user if isinstance(user, UserProfile) else UserProfile(user=user))
         if service is not None:
-            additional_prompt_blocks.append(
+            additional.append(
                 service if isinstance(service, ServiceSpec) else ServiceSpec(kind="RAG", description=service)
             )
-        self.additional_prompt_blocks = additional_prompt_blocks
+        self.additional_prompt_blocks = additional
 
         if query_spec is not None:
             self.query_spec = query_spec
@@ -197,7 +197,7 @@ class RagResponseDatasetGenerator(BaseRagDatasetGenerator):
         include_context: bool = False,
         complexity: Optional[str] = None,
         query_spec: GenerationSpec = GenerationSpec(kind="question"),
-        response_spec: GenerationSpec = GenerationSpec(kind="response"),
+        response_spec: GenerationSpec = GenerationSpec(kind="answer"),
         user: Union[str, UserProfile, None] = None,
         service: Union[str, ServiceSpec, None] = None,
         additional_prompt_blocks: Optional[List[PromptBlock]] = None,
@@ -206,14 +206,14 @@ class RagResponseDatasetGenerator(BaseRagDatasetGenerator):
     ):
         self.data_collection = data_collection
         self.include_context = include_context
-        additional_prompt_blocks: List[PromptBlock] = additional_prompt_blocks or []
+        additional: List[PromptBlock] = additional_prompt_blocks or []
         if user is not None:
-            additional_prompt_blocks.append(user if isinstance(user, UserProfile) else UserProfile(user=user))
+            additional.append(user if isinstance(user, UserProfile) else UserProfile(user=user))
         if service is not None:
-            additional_prompt_blocks.append(
+            additional.append(
                 service if isinstance(service, ServiceSpec) else ServiceSpec(kind="RAG", description=service)
             )
-        self.additional_prompt_blocks = additional_prompt_blocks
+        self.additional_prompt_blocks = additional
 
         if query_spec is not None:
             self.query_spec = query_spec
@@ -294,14 +294,14 @@ class RagDatasetGenerator(BaseRagDatasetGenerator):
         self.data_collection = data_collection
         self.include_context = include_context
         self.count = count
-        additional_prompt_blocks: List[PromptBlock] = additional_prompt_blocks or []
+        additional: List[PromptBlock] = additional_prompt_blocks or []
         if user is not None:
-            additional_prompt_blocks.append(user if isinstance(user, UserProfile) else UserProfile(user=user))
+            additional.append(user if isinstance(user, UserProfile) else UserProfile(user=user))
         if service is not None:
-            additional_prompt_blocks.append(
+            additional.append(
                 service if isinstance(service, ServiceSpec) else ServiceSpec(kind="RAG", description=service)
             )
-        self.additional_prompt_blocks = additional_prompt_blocks
+        self.additional_prompt_blocks = additional
 
         if query_spec is not None:
             self.query_spec = query_spec

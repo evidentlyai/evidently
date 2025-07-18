@@ -8,7 +8,7 @@ from evidently.llm.utils.blocks import PromptBlock
 
 
 class UserProfile(PromptBlock):
-    intent: str = None
+    intent: Optional[str] = None
     role: Optional[str] = None
     tone: str = "neutral"
 
