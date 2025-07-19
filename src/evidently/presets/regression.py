@@ -7,10 +7,12 @@ from evidently._pydantic_compat import PrivateAttr
 from evidently.core.container import MetricContainer
 from evidently.core.container import MetricOrContainer
 from evidently.core.metric_types import GenericSingleValueMetricTests
+from evidently.core.metric_types import MeanStdMetricsPossibleTests
 from evidently.core.metric_types import MeanStdMetricTests
 from evidently.core.metric_types import MetricId
 from evidently.core.metric_types import SingleValueMetricTests
 from evidently.core.metric_types import convert_tests
+from evidently.core.metric_types import convert_to_mean_tests
 from evidently.core.report import Context
 from evidently.legacy.metrics import RegressionDummyMetric
 from evidently.legacy.metrics import RegressionErrorDistribution
@@ -47,10 +49,10 @@ class RegressionQuality(MetricContainer):
         pred_actual_plot: bool = False,
         error_plot: bool = False,
         error_distr: bool = False,
-        mean_error_tests: Optional[MeanStdMetricTests] = None,
-        mape_tests: Optional[MeanStdMetricTests] = None,
+        mean_error_tests: MeanStdMetricsPossibleTests = None,
+        mape_tests: MeanStdMetricsPossibleTests = None,
         rmse_tests: GenericSingleValueMetricTests = None,
-        mae_tests: Optional[MeanStdMetricTests] = None,
+        mae_tests: MeanStdMetricsPossibleTests = None,
         r2score_tests: GenericSingleValueMetricTests = None,
         abs_max_error_tests: GenericSingleValueMetricTests = None,
         include_tests: bool = True,
@@ -58,10 +60,10 @@ class RegressionQuality(MetricContainer):
         self.pred_actual_plot = pred_actual_plot
         self.error_plot = error_plot
         self.error_distr = error_distr
-        self.mean_error_tests = mean_error_tests or MeanStdMetricTests()
-        self.mape_tests = mape_tests or MeanStdMetricTests()
+        self.mean_error_tests = convert_to_mean_tests(mean_error_tests) or MeanStdMetricTests()
+        self.mape_tests = convert_to_mean_tests(mape_tests) or MeanStdMetricTests()
         self.rmse_tests = convert_tests(rmse_tests)
-        self.mae_tests = mae_tests or MeanStdMetricTests()
+        self.mae_tests = convert_to_mean_tests(mae_tests) or MeanStdMetricTests()
         self.r2score_tests = convert_tests(r2score_tests)
         self.abs_max_error_tests = convert_tests(abs_max_error_tests)
         super().__init__(include_tests=include_tests)
@@ -159,19 +161,19 @@ class RegressionPreset(MetricContainer):
 
     def __init__(
         self,
-        mean_error_tests: Optional[MeanStdMetricTests] = None,
-        mape_tests: Optional[MeanStdMetricTests] = None,
+        mean_error_tests: MeanStdMetricsPossibleTests = None,
+        mape_tests: MeanStdMetricsPossibleTests = None,
         rmse_tests: GenericSingleValueMetricTests = None,
-        mae_tests: Optional[MeanStdMetricTests] = None,
+        mae_tests: MeanStdMetricsPossibleTests = None,
         r2score_tests: GenericSingleValueMetricTests = None,
         abs_max_error_tests: GenericSingleValueMetricTests = None,
         include_tests: bool = True,
     ):
         self._quality = None
-        self.mean_error_tests = mean_error_tests or MeanStdMetricTests()
-        self.mape_tests = mape_tests or MeanStdMetricTests()
+        self.mean_error_tests = convert_to_mean_tests(mean_error_tests) or MeanStdMetricTests()
+        self.mape_tests = convert_to_mean_tests(mape_tests) or MeanStdMetricTests()
         self.rmse_tests = convert_tests(rmse_tests)
-        self.mae_tests = mae_tests or MeanStdMetricTests()
+        self.mae_tests = convert_to_mean_tests(mae_tests) or MeanStdMetricTests()
         self.r2score_tests = convert_tests(r2score_tests)
         self.abs_max_error_tests = convert_tests(abs_max_error_tests)
         super().__init__(include_tests=include_tests)
