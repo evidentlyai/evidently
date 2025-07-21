@@ -1192,7 +1192,11 @@ def convert_to_mean_tests(tests: MeanStdMetricsPossibleTests) -> Optional[MeanSt
         return None
     if isinstance(tests, MeanStdMetricTests):
         return tests
-    return MeanStdMetricTests(mean=tests)
+    if isinstance(tests, list):
+        return MeanStdMetricTests(mean=tests)
+    if isinstance(tests, dict):
+        return parse_obj_as(MeanStdMetricTests, tests)
+    raise ValueError(tests)
 
 
 class MeanStdMetric(Metric):
