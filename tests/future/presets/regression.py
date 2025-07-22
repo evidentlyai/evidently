@@ -15,6 +15,7 @@ from evidently.tests import lt
     [
         (RegressionQuality(), 0),
         (RegressionQuality(mean_error_tests=MeanStdMetricTests(mean=[lt(0.1)])), 1),
+        (RegressionQuality(mean_error_tests=[lt(0.1)]), 1),
         (RegressionQuality(mean_error_tests=MeanStdMetricTests(std=[lt(0.1)])), 1),
         (RegressionQuality(mae_tests=MeanStdMetricTests(mean=[lt(0.1)])), 1),
         (RegressionQuality(mae_tests=MeanStdMetricTests(std=[lt(0.1)])), 1),
