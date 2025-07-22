@@ -225,6 +225,33 @@ def counter(*, counters: List[CounterData], title: str = "", size: WidgetSize = 
     )
 
 
+def pie_chart(
+    *,
+    title: str,
+    data: Union[Dict[str, float], Tuple[List[str], List[float]]],
+    size: WidgetSize = WidgetSize.FULL,
+    colors: Union[Dict[str, str], List[str], None] = None,
+) -> BaseWidgetInfo:
+    if isinstance(data, dict):
+        labels = list(data.keys())
+        values = list(data.values())
+    else:
+        labels, values = data
+    if isinstance(colors, dict):
+        colors = [colors[lab] for lab in labels]
+    fig = go.Figure(
+        data=[
+            go.Pie(
+                labels=labels,
+                values=values,
+                hole=0.4,
+                marker={"colors": colors, "line": dict(color="#000000", width=1)},
+            )
+        ]
+    )
+    return plotly_figure(title=title, figure=fig, size=size)
+
+
 def header_text(*, label: str, title: str = "", size: WidgetSize = WidgetSize.FULL):
     """
     generate widget with some text as header
