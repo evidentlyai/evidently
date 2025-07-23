@@ -33,6 +33,11 @@ class ComparisonTest(MetricTest):
         def func(context: Context, metric: MetricCalculationBase, value: SingleValue):
             threshold = self.get_threshold(context, value.get_metric_value_location())
             title_threshold = f"{threshold:0.3f}"
+            if isinstance(self.threshold, Reference):
+                if isinstance(threshold, ApproxValue):
+                    title_threshold += f"Reference {threshold:0.3f} ± {threshold.tolerance:0.3f}"
+                else:
+                    title_threshold = f"Reference {threshold:0.3f}"
             return MetricTestResult(
                 id=self.__short_name__,
                 name=f"{value.display_name}: {self.__full_name__} {title_threshold}",
@@ -130,7 +135,7 @@ class NotEqualMetricTest(EqualMetricTestBase):
                 id="not_eq",
                 name=f"{metric.display_name()}: Not equal {title_expected}",
                 description=f"Actual value {value.value}"
-                f" {f', but expected not {expected}' if is_equal else f' expected {expected:0.3f}'}",
+                f" {f', but expected not {expected:0.3f}' if is_equal else f' not equal to {expected:0.3f}'}",
                 status=TestStatus.SUCCESS if not is_equal else TestStatus.FAIL,
                 metric_config=metric.to_metric_config(),
                 test_config=self.dict(),
