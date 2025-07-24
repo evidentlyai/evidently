@@ -130,6 +130,12 @@ class MeanErrorCalculation(LegacyRegressionMeanStdMetric[MeanError]):
     def display_name(self) -> str:
         return "Mean Error"
 
+    def mean_display_name(self) -> str:
+        return "Mean Error"
+
+    def std_display_name(self) -> str:
+        return "Std Error"
+
 
 class MAE(MeanStdMetric):
     error_plot: bool = False
@@ -163,6 +169,12 @@ class MAECalculation(LegacyRegressionMeanStdMetric[MAE]):
 
     def display_name(self) -> str:
         return "Mean Absolute Error"
+
+    def mean_display_name(self) -> str:
+        return "Mean Absolute Error"
+
+    def std_display_name(self) -> str:
+        return "Std Absolute Error"
 
 
 class RMSE(SingleValueMetric):
@@ -216,6 +228,12 @@ class MAPECalculation(LegacyRegressionMeanStdMetric[MAPE]):
 
     def display_name(self) -> str:
         return "Mean Absolute Percentage Error"
+
+    def mean_display_name(self) -> str:
+        return "Mean Absolute Percentage Error"
+
+    def std_display_name(self) -> str:
+        return "Std Absolute Percentage Error"
 
 
 class R2Score(SingleValueMetric):
