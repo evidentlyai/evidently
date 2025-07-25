@@ -16,7 +16,7 @@ class EqualsColumnCondition(ColumnCondition):
             return False
 
     def get_default_alias(self, column: str) -> str:
-        return f"{column}_test_equals_{self.expected}"
+        return f"{column}: equals {self.expected}"
 
 
 class NotEqualsColumnCondition(ColumnCondition):
@@ -30,7 +30,7 @@ class NotEqualsColumnCondition(ColumnCondition):
             return True
 
     def get_default_alias(self, column: str) -> str:
-        return f"{column}_test_not_equals_{self.expected}"
+        return f"{column} not equals {self.expected}"
 
 
 class LessColumnCondition(ColumnCondition):
@@ -40,7 +40,7 @@ class LessColumnCondition(ColumnCondition):
         return value < self.threshold
 
     def get_default_alias(self, column: str) -> str:
-        return f"{column}_test_less_{self.threshold}"
+        return f"{column}: less than {self.threshold}"
 
 
 class LessEqualColumnCondition(ColumnCondition):
@@ -50,7 +50,7 @@ class LessEqualColumnCondition(ColumnCondition):
         return value <= self.threshold
 
     def get_default_alias(self, column: str) -> str:
-        return f"{column}_test_less_or_equal_{self.threshold}"
+        return f"{column}: less or equal to {self.threshold}"
 
 
 class GreaterColumnCondition(ColumnCondition):
@@ -60,7 +60,7 @@ class GreaterColumnCondition(ColumnCondition):
         return value > self.threshold
 
     def get_default_alias(self, column: str) -> str:
-        return f"{column}_test_greater_{self.threshold}"
+        return f"{column} greater than {self.threshold}"
 
 
 class GreaterEqualColumnCondition(ColumnCondition):
@@ -70,7 +70,7 @@ class GreaterEqualColumnCondition(ColumnCondition):
         return value >= self.threshold
 
     def get_default_alias(self, column: str) -> str:
-        return f"{column}_test_greater_or_equal_{self.threshold}"
+        return f"{column}: greater or equal to {self.threshold}"
 
 
 def _typed_values(cls, values):
@@ -90,7 +90,7 @@ class IsInColumnCondition(ColumnCondition):
         return value in self.values or value in _typed_values(type(value), self.values)
 
     def get_default_alias(self, column: str) -> str:
-        return f"{column}_test_in_{self.values}"
+        return f"{column} in list {self.values}"
 
 
 class IsNotInColumnCondition(ColumnCondition):
@@ -100,4 +100,4 @@ class IsNotInColumnCondition(ColumnCondition):
         return value not in self.values and value not in _typed_values(type(value), self.values)
 
     def get_default_alias(self, column: str) -> str:
-        return f"{column}_test_not_in_{self.values}"
+        return f"{column} not in list {self.values}"

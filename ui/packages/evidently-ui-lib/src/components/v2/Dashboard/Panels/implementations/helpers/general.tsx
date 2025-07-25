@@ -7,7 +7,8 @@ export const PanelCardGeneral = ({
   height,
   children,
   sxCardContent,
-  textCenterAlign
+  textCenterAlign,
+  borderNone = false
 }: {
   title?: string
   description?: string
@@ -15,9 +16,10 @@ export const PanelCardGeneral = ({
   children?: React.ReactNode
   sxCardContent?: SxProps
   textCenterAlign?: boolean
+  borderNone?: boolean
 }) => {
   return (
-    <Card elevation={0}>
+    <Card elevation={0} sx={[borderNone && { border: 'none' }]}>
       <CardContent
         sx={[{ px: 0 }, ...(Array.isArray(sxCardContent) ? sxCardContent : [sxCardContent])]}
       >
