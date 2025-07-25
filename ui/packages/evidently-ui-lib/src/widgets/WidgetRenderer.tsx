@@ -20,6 +20,7 @@ import BigTableWidgetContent from './BigTableWidget/BigTableWidgetContent'
 import CounterWidgetContent from './CounterWidgetContent'
 import NotImplementedWidgetContent from './NotImplementedWidgetContent'
 import ProgressWidgetContent from './ProgressWidgetContent'
+import { RenderPlotlyPIE } from './RenderPlotlyPIE'
 import RichDataWidget from './RichDataWidget'
 import TabbedGraphWidgetContent from './TabbedGraphWidgetContent'
 import TabbedWidgetContent from './TabbedWidgetContent'
@@ -53,9 +54,16 @@ export function WidgetRenderer({ info }: { info: WidgetInfo }) {
   } else if (info.type === 'percent') {
     content = <ProgressWidgetContent {...(info.params as PercentWidgetParams)} />
   } else if (info.type === 'big_graph') {
-    content = (
-      <BigGraphWidgetContent {...(info.params as AdditionalGraphInfo)} widgetSize={info.size} />
-    )
+    if (
+      (info.params as AdditionalGraphInfo)?.data?.length === 1 &&
+      (info.params as AdditionalGraphInfo)?.data?.every(({ type }) => type === 'pie')
+    ) {
+      content = <RenderPlotlyPIE {...(info.params as AdditionalGraphInfo)} widgetSize={info.size} />
+    } else {
+      content = (
+        <BigGraphWidgetContent {...(info.params as AdditionalGraphInfo)} widgetSize={info.size} />
+      )
+    }
   } else if (info.type === 'tabbed_graph') {
     content = (
       <TabbedGraphWidgetContent
