@@ -35,6 +35,7 @@ from .column_statistics import OutListValueCount
 from .column_statistics import OutRangeValueCount
 from .column_statistics import QuantileValue
 from .column_statistics import StdValue
+from .column_statistics import SumValue
 from .column_statistics import UniqueValueCount
 from .column_statistics import ValueDrift
 from .dataset_statistics import AlmostConstantColumnsCount
@@ -83,6 +84,7 @@ __all__ = [
     "OutRangeValueCount",
     "QuantileValue",
     "StdValue",
+    "SumValue",
     "UniqueValueCount",
     # dataset statistics metrics
     "ColumnCount",
