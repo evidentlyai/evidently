@@ -1,4 +1,3 @@
-prefect
 tqdm
 requests
 joblib
@@ -11,3 +10,4 @@ numpy
 scikit-learn
 jupyter
 matplotlib
+openai
