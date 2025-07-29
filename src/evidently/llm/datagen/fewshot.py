@@ -69,8 +69,7 @@ class FewShotDatasetGenerator(BaseLLMDatasetGenerator):
                 complexity=complexity or "medium",
                 examples=Examples(examples=examples or [example or ""]),
             )
-        if not sample_spec.has_examples:
-            raise ValueError("At least one example must be provided")
+
         self.sample_spec = sample_spec
 
         additional: List[PromptBlock] = additional_prompt_blocks or []
@@ -92,6 +91,8 @@ class FewShotDatasetGenerator(BaseLLMDatasetGenerator):
             self.template = template or FewShotPromptTemplate()
 
         super().__init__(**data)
+        if not self.sample_spec.has_examples:
+            raise ValueError("At least one example must be provided")
 
     async def agenerate(self) -> DatasetGeneratorResult:
         max_attempt_count = 3
