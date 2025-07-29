@@ -470,6 +470,10 @@ class Snapshot:
     def tests_results(self):
         return [test_result for metric in self._top_level_metrics for test_result in self._metrics[metric].tests]
 
+    @property
+    def metric_results(self):
+        return self._metrics
+
     def get_name(self) -> Optional[str]:
         return self._name
 
