@@ -68,18 +68,18 @@ If you want to work on UI go to the [UI](ui/README.md) README
 To use the cloned version in the virtual environment as a package, you need to install the package in the editable mode.
 See official pip documentation for examples and explanations: https://pip.pypa.io/en/stable/cli/pip_install/#examples
 
-#### MacOS / Linux
+#### Linux
 
 ```sh
 cd /path/to/evidently_repo
-pip install -e ".[dev]"
+pip install -e ".[dev,llm,spark]"
 ```
 
-#### Windows
+#### Windows/MacOS
 
 ```sh
 cd C:\path\to\evidently_repo
-pip install -e .[dev]
+pip install -e .[dev,llm,spark]
 ```
 
 ## 5. Run formatters, linters, unit tests
