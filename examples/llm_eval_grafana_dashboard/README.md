@@ -15,6 +15,7 @@ Note: all actions expected to be executed in repo folder.
 - Run `baseline_model_nyc_taxi_data.ipynb` for downloading datasets, training model and creating reference dataset 
 
 ## Monitoring Example
+![Chatbot Dashboard](images/llm_eval_dashboard.pngs)
 
 ### Starting services
 
@@ -31,7 +32,15 @@ It will start following services:
 
 ### Sending data
 
-To calculate evidently metrics with prefect and send them to database, execute:
+To calculate Evidently metrics and send them to the database:
+
+1. If you **don’t have** the `OPENAI_API_KEY` set as an environment variable:
+   - Open `evidently_metrics_calculation.py`
+   - Manually set your API key in the OpenAI client configuration
+   - Save the file
+
+2. Then run the script:
+
 ```bash
 python evidently_metrics_calculation.py
 ```

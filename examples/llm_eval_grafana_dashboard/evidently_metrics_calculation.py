@@ -13,7 +13,6 @@ import joblib
 from evidently import Dataset, DataDefinition, Report
 from evidently.presets import TextEvals
 from evidently.descriptors import DeclineLLMEval, NegativityLLMEval, SentenceCount, Sentiment 
-#from evidently.metrics import ValueDrift, DriftedColumnsCount, MissingValueCount
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s]: %(message)s")
 
@@ -38,11 +37,11 @@ create table llm_metrics(
 """
 
 client = openai.OpenAI(
-    api_key="YOUR_KEY_HERE",
+    #api_key="YOUR_KEY_HERE",
 )
 
 questions = [
-	"What is the chemical symbol for gold?",
+    "What is the chemical symbol for gold?",
     "What is the capital of Japan?",
     "Tell me a joke.",
     "When does water boil?",
