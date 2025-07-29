@@ -15,7 +15,7 @@ Note: all actions expected to be executed in repo folder.
 - Run `baseline_model_nyc_taxi_data.ipynb` for downloading datasets, training model and creating reference dataset 
 
 ## Monitoring Example
-![Chatbot Dashboard](images/llm_eval_dashboard.pngs)
+![Chatbot Dashboard](images/llm_eval_dashboard.png)
 
 ### Starting services
 
