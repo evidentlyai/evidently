@@ -428,7 +428,7 @@ def WordNoMatch(
 def WordsPresence(
     column_name: str,
     words_list: List[str],
-    mode: str = "any",
+    mode: str = "includes_any",
     lemmatize: bool = True,
     alias: Optional[str] = None,
     tests: Optional[List[Union["DescriptorTest", "GenericTest"]]] = None,

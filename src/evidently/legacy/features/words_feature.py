@@ -59,7 +59,7 @@ class WordsPresence(ApplyColumnGeneratedFeature):
         self,
         column_name: str,
         words_list: List[str],
-        mode: str = "any",
+        mode: str = "includes_any",
         lemmatize: bool = True,
         display_name: Optional[str] = None,
     ):
@@ -96,6 +96,8 @@ class IncludesWords(WordsPresence):
         lemmatize: bool = True,
         display_name: Optional[str] = None,
     ):
+        if mode.startswith("includes_"):
+            mode = mode[len("includes_") :]
         super().__init__(column_name, words_list, "includes_" + mode, lemmatize, display_name)
 
     def _feature_column_name(self):
@@ -120,6 +122,8 @@ class ExcludesWords(WordsPresence):
         lemmatize: bool = True,
         display_name: Optional[str] = None,
     ):
+        if mode.startswith("excludes_"):
+            mode = mode[len("excludes_") :]
         super().__init__(column_name, words_list, "excludes_" + mode, lemmatize, display_name)
 
     def _feature_column_name(self):
