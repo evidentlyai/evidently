@@ -199,6 +199,18 @@ class QuantileValueCalculation(StatisticsCalculation[QuantileValue]):
         return f"Quantile {self.metric.quantile} of '{self.column}'"
 
 
+class SumValue(StatisticsMetric):
+    pass
+
+
+class SumValueCalculation(StatisticsCalculation[SumValue]):
+    def calculate_value(self, column: DatasetColumn) -> Union[float, int]:
+        return column.data.sum()
+
+    def display_name(self) -> str:
+        return f"Sum of '{self.column}'"
+
+
 class CategoryCount(ColumnMetric, CountMetric):
     class Config:
         smart_union = True
