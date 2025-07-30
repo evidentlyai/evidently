@@ -6,7 +6,6 @@ from typing import overload
 
 from evidently.core.datasets import DescriptorTest
 from evidently.core.metric_types import MetricTest
-from evidently.core.tests import FactoryGenericTest
 from evidently.core.tests import GenericTest
 from evidently.tests.categorical_tests import InValueType
 from evidently.tests.categorical_tests import IsInMetricTest
@@ -29,6 +28,8 @@ from evidently.tests.numerical_tests import ThresholdType
 
 AnyTest = Union[GenericTest, MetricTest, DescriptorTest]
 
+GenericTest.update_forward_refs(MetricTest=MetricTest, DescriptorTest=DescriptorTest)
+
 
 @overload
 def eq(expected: Any) -> GenericTest: ...
@@ -45,9 +46,10 @@ def eq(expected: Any, *, column: Optional[str] = None, alias: Optional[str] = No
 def eq(
     expected: ThresholdType, *, is_critical: bool = True, column: Optional[str] = None, alias: Optional[str] = None
 ) -> AnyTest:
-    return FactoryGenericTest(
-        lambda: EqualMetricTest(expected=expected, is_critical=is_critical),
-        lambda: DescriptorTest(condition=EqualsColumnCondition(expected=expected), column=column, alias=alias),
+    return GenericTest(
+        test_name="eq",
+        metric=EqualMetricTest(expected=expected, is_critical=is_critical),
+        descriptor=DescriptorTest(condition=EqualsColumnCondition(expected=expected), column=column, alias=alias),
     )
 
 
@@ -66,9 +68,10 @@ def not_eq(expected: Any, *, column: Optional[str] = None, alias: Optional[str] 
 def not_eq(
     expected: ThresholdType, *, is_critical: bool = True, column: Optional[str] = None, alias: Optional[str] = None
 ) -> AnyTest:
-    return FactoryGenericTest(
-        lambda: NotEqualMetricTest(expected=expected, is_critical=is_critical),
-        lambda: DescriptorTest(condition=NotEqualsColumnCondition(expected=expected), column=column, alias=alias),
+    return GenericTest(
+        test_name="not_eq",
+        metric=NotEqualMetricTest(expected=expected, is_critical=is_critical),
+        descriptor=DescriptorTest(condition=NotEqualsColumnCondition(expected=expected), column=column, alias=alias),
     )
 
 
@@ -87,9 +90,10 @@ def lt(threshold: ThresholdType, *, column: Optional[str] = None, alias: Optiona
 def lt(
     threshold: ThresholdType, *, is_critical: bool = True, column: Optional[str] = None, alias: Optional[str] = None
 ) -> AnyTest:
-    return FactoryGenericTest(
-        lambda: LessThanMetricTest(threshold=threshold, is_critical=is_critical),
-        lambda: DescriptorTest(condition=LessColumnCondition(threshold=threshold), column=column, alias=alias),
+    return GenericTest(
+        test_name="lt",
+        metric=LessThanMetricTest(threshold=threshold, is_critical=is_critical),
+        descriptor=DescriptorTest(condition=LessColumnCondition(threshold=threshold), column=column, alias=alias),
     )
 
 
@@ -108,9 +112,10 @@ def gt(threshold: ThresholdType, *, column: Optional[str] = None, alias: Optiona
 def gt(
     threshold: ThresholdType, *, is_critical: bool = True, column: Optional[str] = None, alias: Optional[str] = None
 ) -> AnyTest:
-    return FactoryGenericTest(
-        lambda: GreaterThanMetricTest(threshold=threshold, is_critical=is_critical),
-        lambda: DescriptorTest(condition=GreaterColumnCondition(threshold=threshold), column=column, alias=alias),
+    return GenericTest(
+        test_name="gt",
+        metric=GreaterThanMetricTest(threshold=threshold, is_critical=is_critical),
+        descriptor=DescriptorTest(condition=GreaterColumnCondition(threshold=threshold), column=column, alias=alias),
     )
 
 
@@ -129,9 +134,12 @@ def gte(threshold: ThresholdType, *, column: Optional[str] = None, alias: Option
 def gte(
     threshold: ThresholdType, *, is_critical: bool = True, column: Optional[str] = None, alias: Optional[str] = None
 ) -> AnyTest:
-    return FactoryGenericTest(
-        lambda: GreaterOrEqualMetricTest(threshold=threshold, is_critical=is_critical, alias=alias),
-        lambda: DescriptorTest(condition=GreaterEqualColumnCondition(threshold=threshold), column=column, alias=alias),
+    return GenericTest(
+        test_name="gte",
+        metric=GreaterOrEqualMetricTest(threshold=threshold, is_critical=is_critical, alias=alias),
+        descriptor=DescriptorTest(
+            condition=GreaterEqualColumnCondition(threshold=threshold), column=column, alias=alias
+        ),
     )
 
 
@@ -150,9 +158,10 @@ def lte(threshold: ThresholdType, *, column: Optional[str] = None, alias: Option
 def lte(
     threshold: ThresholdType, *, is_critical: bool = True, column: Optional[str] = None, alias: Optional[str] = None
 ) -> AnyTest:
-    return FactoryGenericTest(
-        lambda: LessOrEqualMetricTest(threshold=threshold, is_critical=is_critical),
-        lambda: DescriptorTest(condition=LessEqualColumnCondition(threshold=threshold), column=column, alias=alias),
+    return GenericTest(
+        test_name="lte",
+        metric=LessOrEqualMetricTest(threshold=threshold, is_critical=is_critical),
+        descriptor=DescriptorTest(condition=LessEqualColumnCondition(threshold=threshold), column=column, alias=alias),
     )
 
 
@@ -177,9 +186,10 @@ def is_in(
     column: Optional[str] = None,
     alias: Optional[str] = None,
 ) -> AnyTest:
-    return FactoryGenericTest(
-        lambda: IsInMetricTest(values=values, is_critical=is_critical),
-        lambda: DescriptorTest(condition=IsInColumnCondition(values=set(values)), column=column, alias=alias),
+    return GenericTest(
+        test_name="is_in",
+        metric=IsInMetricTest(values=values, is_critical=is_critical),
+        descriptor=DescriptorTest(condition=IsInColumnCondition(values=set(values)), column=column, alias=alias),
     )
 
 
@@ -204,7 +214,8 @@ def not_in(
     column: Optional[str] = None,
     alias: Optional[str] = None,
 ) -> AnyTest:
-    return FactoryGenericTest(
-        lambda: NotInMetricTest(values=values, is_critical=is_critical),
-        lambda: DescriptorTest(condition=IsNotInColumnCondition(values=set(values)), column=column, alias=alias),
+    return GenericTest(
+        test_name="not_in",
+        metric=NotInMetricTest(values=values, is_critical=is_critical),
+        descriptor=DescriptorTest(condition=IsNotInColumnCondition(values=set(values)), column=column, alias=alias),
     )

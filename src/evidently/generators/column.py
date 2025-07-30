@@ -39,6 +39,7 @@ class ColumnMetricGenerator(MetricContainer):
         metric_kwargs: Optional[Dict[str, Any]] = None,
         metric_type_alias: Optional[str] = None,
         include_tests: bool = True,
+        **kwargs,
     ):
         if isinstance(metric_type, type):
             assert issubclass(metric_type, ColumnMetric) or issubclass(
@@ -60,8 +61,10 @@ class ColumnMetricGenerator(MetricContainer):
         self._metric_type = _metric_type
         self.columns = columns
         self.column_types = column_types
-        self.metric_kwargs = metric_kwargs or {}
-        super().__init__(include_tests=True)
+        if metric_kwargs and kwargs:
+            raise ValueError("only one of metric_kwargs or **kwargs may be specified")
+        self.metric_kwargs = metric_kwargs or kwargs or {}
+        super().__init__(include_tests=include_tests)
 
     def _instantiate_metric(self, column: str) -> MetricOrContainer:
         return self._metric_type(column=column, **self.metric_kwargs)

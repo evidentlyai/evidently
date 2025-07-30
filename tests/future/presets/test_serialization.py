@@ -21,6 +21,7 @@ from evidently.presets import RegressionDummyQuality
 from evidently.presets import RegressionPreset
 from evidently.presets import RegressionQuality
 from evidently.presets import TextEvals
+from evidently.tests import gt
 from tests.conftest import load_all_subtypes
 
 load_all_subtypes(MetricContainer)
@@ -31,7 +32,8 @@ all_presets: List[MetricContainer] = [
     DatasetStats(),
     DataSummaryPreset(),
     RegressionDummyQuality(),
-    ColumnMetricGenerator(metric_type=MinValue),
+    ColumnMetricGenerator(metric_type=MinValue, metric_kwargs={"tests": [gt(0)]}),
+    ColumnMetricGenerator(metric_type=MinValue, tests=[gt(0)]),
     ClassificationDummyQuality(),
     RegressionQuality(),
     DataDriftPreset(),

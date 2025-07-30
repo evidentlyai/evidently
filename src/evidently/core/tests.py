@@ -1,7 +1,7 @@
-from abc import abstractmethod
 from typing import TYPE_CHECKING
-from typing import Callable
+from typing import Optional
 
+from evidently._pydantic_compat import BaseModel
 from evidently.core.base_types import Label
 from evidently.pydantic_utils import Fingerprint
 
@@ -12,14 +12,20 @@ if TYPE_CHECKING:
     from .metric_types import MetricTest
 
 
-class GenericTest:
-    @abstractmethod
-    def for_metric(self) -> "MetricTest":
-        raise NotImplementedError
+class GenericTest(BaseModel):
+    test_name: str
+    metric: Optional["MetricTest"]
+    descriptor: Optional["DescriptorTest"]
 
-    @abstractmethod
+    def for_metric(self) -> "MetricTest":
+        if self.metric is None:
+            raise ValueError(f"Test '{self.test_name}' does not have an implementation for metrics")
+        return self.metric
+
     def for_descriptor(self) -> "DescriptorTest":
-        raise NotImplementedError
+        if self.descriptor is None:
+            raise ValueError(f"Test '{self.test_name}' does not have an implementation for descriptors")
+        return self.descriptor
 
     def bind_single(self, fingerprint: Fingerprint) -> "BoundTest":
         return self.for_metric().bind_single(fingerprint)
@@ -35,15 +41,3 @@ class GenericTest:
 
     def bind_mean_std(self, fingerprint: Fingerprint, is_mean: bool = True):
         return self.for_metric().bind_mean_std(fingerprint, is_mean)
-
-
-class FactoryGenericTest(GenericTest):
-    def __init__(self, metric: Callable[[], "MetricTest"], descriptor: Callable[[], "DescriptorTest"]):
-        self.metric = metric
-        self.descriptor = descriptor
-
-    def for_metric(self) -> "MetricTest":
-        return self.metric()
-
-    def for_descriptor(self) -> "DescriptorTest":
-        return self.descriptor()
