@@ -205,7 +205,7 @@ class AuthManager(ABC):
         entity_id: EntityID,
         permission: Permission,
     ):
-        if not self.check_entity_permission(user_id, entity_type, entity_id, permission):
+        if not await self.check_entity_permission(user_id, entity_type, entity_id, permission):
             raise NotEnoughPermissions()
 
     @abstractmethod
