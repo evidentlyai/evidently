@@ -96,7 +96,7 @@ class WorkspaceBase(abc.ABC):
         snapshot = snapshot_v2_to_v1(run)
         if include_data:
             run_from = "ws"
-            input_data = _default_input_data_generator(run.context)
+            input_data = _default_input_data_generator(run.context, "default")
             reference, current = input_data.get_datasets()
             column_mapping = input_data.column_mapping
             self._upload_snapshot_datasets(project_id, snapshot, current, reference, column_mapping, run_from)

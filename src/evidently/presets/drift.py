@@ -136,6 +136,7 @@ class DataDriftPreset(MetricContainer):
                 per_column_stattest_threshold=self.per_column_threshold,
             ),
             _default_input_data_generator,
+            "default",  # TODO: parametrize task name
         )[1]
         table = context.get_legacy_metric(
             DataDriftTable(
@@ -152,6 +153,7 @@ class DataDriftPreset(MetricContainer):
                 per_column_stattest_threshold=self.per_column_threshold,
             ),
             _default_input_data_generator,
+            "default",  # TODO: parametrize task name
         )[1]
         return dataset_drift + table
 

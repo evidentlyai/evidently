@@ -35,8 +35,12 @@ class LegacyMetricCalculation(
     def legacy_metric(self) -> TLegacyMetric:
         raise NotImplementedError()
 
+    @abc.abstractmethod
+    def task_name(self) -> str:
+        raise NotImplementedError()
+
     def calculate(self, context: "Context", current_data: Dataset, reference_data: Optional[Dataset]) -> TMetricResult:
-        result, render = context.get_legacy_metric(self.legacy_metric(), self._gen_input_data)
+        result, render = context.get_legacy_metric(self.legacy_metric(), self._gen_input_data, self.task_name())
         metric_result = self.calculate_value(context, result, render)
         if isinstance(metric_result, tuple):
             current, reference = metric_result
@@ -62,6 +66,6 @@ class LegacyMetricCalculation(
     ) -> TMetricResult:
         raise NotImplementedError()
 
-    def _gen_input_data(self, context: "Context") -> InputData:
-        default_input_data = _default_input_data_generator(context)
+    def _gen_input_data(self, context: "Context", task_name: str) -> InputData:
+        default_input_data = _default_input_data_generator(context, task_name)
         return default_input_data
