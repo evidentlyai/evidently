@@ -51,11 +51,13 @@ from evidently.tests import lt
 
 
 class ClassificationQualityByLabel(ByLabelMetric):
+    classification_name: str = "default"
     probas_threshold: Optional[float] = None
     k: Optional[int] = None
 
 
 class ClassificationQualityBase(SingleValueMetric):
+    classification_name: str = "default"
     probas_threshold: Optional[float] = None
     k: Optional[int] = None
 
@@ -76,8 +78,8 @@ TByLabelMetric = TypeVar("TByLabelMetric", bound=ClassificationQualityByLabel)
 TSingleValueMetric = TypeVar("TSingleValueMetric", bound=ClassificationQualityBase)
 
 
-def _gen_classification_input_data(context: "Context") -> InputData:
-    default_input_data = _default_input_data_generator(context)
+def _gen_classification_input_data(context: "Context", task_name: str) -> InputData:
+    default_input_data = _default_input_data_generator(context, task_name)
     return default_input_data
 
 
@@ -266,7 +268,7 @@ class LegacyClassificationQuality(
         result = []
         for field, metric in ADDITIONAL_WIDGET_MAPPING.items():
             if hasattr(self.metric, field) and getattr(self.metric, field):
-                _, widgets = context.get_legacy_metric(metric, self._gen_input_data)
+                _, widgets = context.get_legacy_metric(metric, self._gen_input_data, self.task_name())
                 result += widgets
         return result
 
@@ -280,6 +282,9 @@ class F1Score(ClassificationQuality):
 
 
 class F1ScoreCalculation(LegacyClassificationQuality[F1Score]):
+    def task_name(self) -> str:
+        return self.metric.classification_name
+
     def calculate_value(
         self,
         context: "Context",
@@ -302,6 +307,9 @@ class Accuracy(ClassificationQuality):
 
 
 class AccuracyCalculation(LegacyClassificationQuality[Accuracy]):
+    def task_name(self) -> str:
+        return self.metric.classification_name
+
     def calculate_value(
         self,
         context: "Context",
@@ -328,6 +336,9 @@ class Precision(ClassificationQuality):
 
 
 class PrecisionCalculation(LegacyClassificationQuality[Precision]):
+    def task_name(self) -> str:
+        return self.metric.classification_name
+
     def calculate_value(
         self,
         context: "Context",
@@ -354,6 +365,9 @@ class Recall(ClassificationQuality):
 
 
 class RecallCalculation(LegacyClassificationQuality[Recall]):
+    def task_name(self) -> str:
+        return self.metric.classification_name
+
     def calculate_value(
         self,
         context: "Context",
@@ -378,6 +392,9 @@ class TPR(ClassificationQuality):
 
 
 class TPRCalculation(LegacyClassificationQuality[TPR]):
+    def task_name(self) -> str:
+        return self.metric.classification_name
+
     def calculate_value(
         self,
         context: "Context",
@@ -406,6 +423,9 @@ class TNR(ClassificationQuality):
 
 
 class TNRCalculation(LegacyClassificationQuality[TNR]):
+    def task_name(self) -> str:
+        return self.metric.classification_name
+
     def calculate_value(
         self,
         context: "Context",
@@ -434,6 +454,9 @@ class FPR(ClassificationQuality):
 
 
 class FPRCalculation(LegacyClassificationQuality[FPR]):
+    def task_name(self) -> str:
+        return self.metric.classification_name
+
     def calculate_value(
         self,
         context: "Context",
@@ -462,6 +485,9 @@ class FNR(ClassificationQuality):
 
 
 class FNRCalculation(LegacyClassificationQuality[FNR]):
+    def task_name(self) -> str:
+        return self.metric.classification_name
+
     def calculate_value(
         self,
         context: "Context",
@@ -491,6 +517,9 @@ class RocAuc(ClassificationQuality):
 
 
 class RocAucCalculation(LegacyClassificationQuality[RocAuc]):
+    def task_name(self) -> str:
+        return self.metric.classification_name
+
     def calculate_value(
         self,
         context: "Context",
@@ -519,6 +548,9 @@ class LogLoss(ClassificationQuality):
 
 
 class LogLossCalculation(LegacyClassificationQuality[LogLoss]):
+    def task_name(self) -> str:
+        return self.metric.classification_name
+
     def calculate_value(
         self,
         context: "Context",
@@ -585,6 +617,9 @@ class DummyPrecision(DummyClassificationQuality):
 
 
 class DummyPrecisionCalculation(LegacyClassificationDummy[DummyPrecision]):
+    def task_name(self) -> str:
+        return self.metric.classification_name
+
     __legacy_field_name__ = "precision"
 
     def display_name(self) -> str:
@@ -609,6 +644,9 @@ class DummyF1Score(DummyClassificationQuality):
 class DummyF1ScoreCalculation(LegacyClassificationDummy[DummyF1Score]):
     __legacy_field_name__ = "f1"
 
+    def task_name(self) -> str:
+        return self.metric.classification_name
+
     def display_name(self) -> str:
         return "Dummy F1 score metric"
 
@@ -619,6 +657,9 @@ class DummyAccuracy(DummyClassificationQuality):
 
 class DummyAccuracyCalculation(LegacyClassificationDummy[DummyAccuracy]):
     __legacy_field_name__ = "accuracy"
+
+    def task_name(self) -> str:
+        return self.metric.classification_name
 
     def display_name(self) -> str:
         return "Dummy accuracy metric"
@@ -631,6 +672,9 @@ class DummyTPR(DummyClassificationQuality):
 class DummyTPRCalculation(LegacyClassificationDummy[DummyTPR]):
     __legacy_field_name__ = "tpr"
 
+    def task_name(self) -> str:
+        return self.metric.classification_name
+
     def display_name(self) -> str:
         return "Dummy TPR metric"
 
@@ -641,6 +685,9 @@ class DummyTNR(DummyClassificationQuality):
 
 class DummyTNRCalculation(LegacyClassificationDummy[DummyTNR]):
     __legacy_field_name__ = "tnr"
+
+    def task_name(self) -> str:
+        return self.metric.classification_name
 
     def display_name(self) -> str:
         return "Dummy TNR metric"
@@ -653,6 +700,9 @@ class DummyFPR(DummyClassificationQuality):
 class DummyFPRCalculation(LegacyClassificationDummy[DummyFPR]):
     __legacy_field_name__ = "fpr"
 
+    def task_name(self) -> str:
+        return self.metric.classification_name
+
     def display_name(self) -> str:
         return "Dummy FPR metric"
 
@@ -663,6 +713,9 @@ class DummyFNR(DummyClassificationQuality):
 
 class DummyFNRCalculation(LegacyClassificationDummy[DummyFNR]):
     __legacy_field_name__ = "fnr"
+
+    def task_name(self) -> str:
+        return self.metric.classification_name
 
     def display_name(self) -> str:
         return "Dummy FNR metric"
@@ -675,6 +728,9 @@ class DummyLogLoss(DummyClassificationQuality):
 class DummyLogLossCalculation(LegacyClassificationDummy[DummyLogLoss]):
     __legacy_field_name__ = "log_loss"
 
+    def task_name(self) -> str:
+        return self.metric.classification_name
+
     def display_name(self) -> str:
         return "Dummy LogLoss metric"
 
@@ -685,6 +741,9 @@ class DummyRocAuc(DummyClassificationQuality):
 
 class DummyRocAucCalculation(LegacyClassificationDummy[DummyRocAuc]):
     __legacy_field_name__ = "roc_auc"
+
+    def task_name(self) -> str:
+        return self.metric.classification_name
 
     def display_name(self) -> str:
         return "Dummy RocAuc metric"

@@ -44,6 +44,7 @@ from evidently.metrics.classification import _gen_classification_input_data
 
 
 class ClassificationQuality(MetricContainer):
+    classification_name: str = "default"
     probas_threshold: Optional[float] = None
     conf_matrix: bool = False
     pr_curve: bool = False
@@ -61,6 +62,7 @@ class ClassificationQuality(MetricContainer):
 
     def __init__(
         self,
+        classification_name: str = "default",
         probas_threshold: Optional[float] = None,
         conf_matrix: bool = False,
         pr_curve: bool = False,
@@ -77,6 +79,7 @@ class ClassificationQuality(MetricContainer):
         fnr_tests: GenericSingleValueMetricTests = None,
         include_tests: bool = True,
     ):
+        self.classification_name = classification_name
         self.accuracy_tests = convert_tests(accuracy_tests)
         self.precision_tests = convert_tests(precision_tests)
         self.recall_tests = convert_tests(recall_tests)
@@ -94,32 +97,72 @@ class ClassificationQuality(MetricContainer):
         super().__init__(include_tests=include_tests)
 
     def generate_metrics(self, context: "Context") -> Sequence[MetricOrContainer]:
-        classification = context.data_definition.get_classification("default")
+        classification = context.data_definition.get_classification(self.classification_name)
         if classification is None:
-            raise ValueError("Cannot use ClassificationQuality without a classification data")
+            raise ValueError("Classification with name '{}' not found".format(self.classification_name))
 
         metrics: List[Metric]
 
         metrics = [
-            Accuracy(probas_threshold=self.probas_threshold, tests=self._get_tests(self.accuracy_tests)),
-            Precision(probas_threshold=self.probas_threshold, tests=self._get_tests(self.precision_tests)),
-            Recall(probas_threshold=self.probas_threshold, tests=self._get_tests(self.recall_tests)),
-            F1Score(probas_threshold=self.probas_threshold, tests=self._get_tests(self.f1score_tests)),
+            Accuracy(
+                probas_threshold=self.probas_threshold,
+                classification_name=self.classification_name,
+                tests=self._get_tests(self.accuracy_tests),
+            ),
+            Precision(
+                probas_threshold=self.probas_threshold,
+                classification_name=self.classification_name,
+                tests=self._get_tests(self.precision_tests),
+            ),
+            Recall(
+                probas_threshold=self.probas_threshold,
+                classification_name=self.classification_name,
+                tests=self._get_tests(self.recall_tests),
+            ),
+            F1Score(
+                probas_threshold=self.probas_threshold,
+                classification_name=self.classification_name,
+                tests=self._get_tests(self.f1score_tests),
+            ),
         ]
         if classification.prediction_probas is not None:
             metrics.extend(
                 [
-                    RocAuc(probas_threshold=self.probas_threshold, tests=self._get_tests(self.rocauc_tests)),
-                    LogLoss(probas_threshold=self.probas_threshold, tests=self._get_tests(self.logloss_tests)),
+                    RocAuc(
+                        probas_threshold=self.probas_threshold,
+                        classification_name=self.classification_name,
+                        tests=self._get_tests(self.rocauc_tests),
+                    ),
+                    LogLoss(
+                        probas_threshold=self.probas_threshold,
+                        classification_name=self.classification_name,
+                        tests=self._get_tests(self.logloss_tests),
+                    ),
                 ]
             )
         if isinstance(classification, BinaryClassification):
             metrics.extend(
                 [
-                    TPR(probas_threshold=self.probas_threshold, tests=self._get_tests(self.tpr_tests)),
-                    TNR(probas_threshold=self.probas_threshold, tests=self._get_tests(self.tnr_tests)),
-                    FPR(probas_threshold=self.probas_threshold, tests=self._get_tests(self.fpr_tests)),
-                    FNR(probas_threshold=self.probas_threshold, tests=self._get_tests(self.fnr_tests)),
+                    TPR(
+                        probas_threshold=self.probas_threshold,
+                        classification_name=self.classification_name,
+                        tests=self._get_tests(self.tpr_tests),
+                    ),
+                    TNR(
+                        probas_threshold=self.probas_threshold,
+                        classification_name=self.classification_name,
+                        tests=self._get_tests(self.tnr_tests),
+                    ),
+                    FPR(
+                        probas_threshold=self.probas_threshold,
+                        classification_name=self.classification_name,
+                        tests=self._get_tests(self.fpr_tests),
+                    ),
+                    FNR(
+                        probas_threshold=self.probas_threshold,
+                        classification_name=self.classification_name,
+                        tests=self._get_tests(self.fnr_tests),
+                    ),
                 ]
             )
         return metrics
@@ -132,13 +175,15 @@ class ClassificationQuality(MetricContainer):
         _, render = context.get_legacy_metric(
             ClassificationQualityMetric(probas_threshold=self.probas_threshold),
             _gen_classification_input_data,
+            self.classification_name,
         )
         if self.conf_matrix:
             render += context.get_legacy_metric(
                 ClassificationConfusionMatrix(probas_threshold=self.probas_threshold),
                 _gen_classification_input_data,
+                self.classification_name,
             )[1]
-        classification = context.data_definition.get_classification("default")
+        classification = context.data_definition.get_classification(self.classification_name)
         if classification is None:
             raise ValueError("Cannot use ClassificationQuality without a classification data")
         if self.pr_curve and classification.prediction_probas is not None:

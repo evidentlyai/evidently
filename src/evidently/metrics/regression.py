@@ -2,6 +2,7 @@ import abc
 from typing import Dict
 from typing import Generic
 from typing import List
+from typing import TypeVar
 
 from evidently.core.metric_types import BoundTest
 from evidently.core.metric_types import MeanStdCalculation
@@ -10,8 +11,6 @@ from evidently.core.metric_types import MeanStdValue
 from evidently.core.metric_types import SingleValue
 from evidently.core.metric_types import SingleValueCalculation
 from evidently.core.metric_types import SingleValueMetric
-from evidently.core.metric_types import TMeanStdMetric
-from evidently.core.metric_types import TSingleValueMetric
 from evidently.core.report import Context
 from evidently.core.report import _default_input_data_generator
 from evidently.legacy.base_metric import InputData
@@ -42,11 +41,11 @@ ADDITIONAL_WIDGET_MAPPING: Dict[str, Metric] = {
 }
 
 
-def _gen_regression_input_data(context: "Context") -> InputData:
-    default_data = _default_input_data_generator(context)
-    regression = context.data_definition.get_regression("default")
+def _gen_regression_input_data(context: "Context", task_name: str) -> InputData:
+    default_data = _default_input_data_generator(context, task_name)
+    regression = context.data_definition.get_regression(task_name)
     if regression is None:
-        raise ValueError("No default regression in data definition")
+        raise ValueError(f"No regression '{task_name}' in data definition")
     default_data.column_mapping.target = regression.target
     default_data.column_mapping.prediction = regression.prediction
 
@@ -59,12 +58,29 @@ def _gen_regression_input_data(context: "Context") -> InputData:
     return default_data
 
 
+class SingleValueRegressionMetric(SingleValueMetric):
+    regression_name: str = "default"
+
+
+class MeanStdRegressionMetric(MeanStdMetric):
+    regression_name: str = "default"
+
+
+TSingleValueRegressionMetric = TypeVar("TSingleValueRegressionMetric", bound=SingleValueRegressionMetric)
+TMeanStdRegressionMetric = TypeVar("TMeanStdRegressionMetric", bound=MeanStdRegressionMetric)
+
+
 class LegacyRegressionMeanStdMetric(
-    MeanStdCalculation[TMeanStdMetric],
-    LegacyMetricCalculation[MeanStdValue, TMeanStdMetric, RegressionQualityMetricResults, RegressionQualityMetric],
-    Generic[TMeanStdMetric],
+    MeanStdCalculation[TMeanStdRegressionMetric],
+    LegacyMetricCalculation[
+        MeanStdValue, TMeanStdRegressionMetric, RegressionQualityMetricResults, RegressionQualityMetric
+    ],
+    Generic[TMeanStdRegressionMetric],
     abc.ABC,
 ):
+    def task_name(self) -> str:
+        return self.metric.regression_name
+
     def legacy_metric(self) -> RegressionQualityMetric:
         return RegressionQualityMetric()
 
@@ -72,20 +88,25 @@ class LegacyRegressionMeanStdMetric(
         result = []
         for field, metric in ADDITIONAL_WIDGET_MAPPING.items():
             if hasattr(self.metric, field) and getattr(self.metric, field):
-                _, widgets = context.get_legacy_metric(metric, _gen_regression_input_data)
+                _, widgets = context.get_legacy_metric(metric, _gen_regression_input_data, self.task_name())
                 result += widgets
         return result
 
-    def _gen_input_data(self, context: "Context") -> InputData:
-        return _gen_regression_input_data(context)
+    def _gen_input_data(self, context: "Context", task_name: str) -> InputData:
+        return _gen_regression_input_data(context, task_name)
 
 
 class LegacyRegressionSingleValueMetric(
-    SingleValueCalculation[TSingleValueMetric],
-    LegacyMetricCalculation[SingleValue, TSingleValueMetric, RegressionQualityMetricResults, RegressionQualityMetric],
-    Generic[TSingleValueMetric],
+    SingleValueCalculation[TSingleValueRegressionMetric],
+    LegacyMetricCalculation[
+        SingleValue, TSingleValueRegressionMetric, RegressionQualityMetricResults, RegressionQualityMetric
+    ],
+    Generic[TSingleValueRegressionMetric],
     abc.ABC,
 ):
+    def task_name(self) -> str:
+        return self.metric.regression_name
+
     def legacy_metric(self) -> RegressionQualityMetric:
         return RegressionQualityMetric()
 
@@ -93,15 +114,15 @@ class LegacyRegressionSingleValueMetric(
         result = []
         for field, metric in ADDITIONAL_WIDGET_MAPPING.items():
             if hasattr(self.metric, field) and getattr(self.metric, field):
-                _, widgets = context.get_legacy_metric(metric, _gen_regression_input_data)
+                _, widgets = context.get_legacy_metric(metric, _gen_regression_input_data, self.task_name())
                 result += widgets
         return result
 
-    def _gen_input_data(self, context: "Context") -> InputData:
-        return _gen_regression_input_data(context)
+    def _gen_input_data(self, context: "Context", task_name: str) -> InputData:
+        return _gen_regression_input_data(context, task_name)
 
 
-class MeanError(MeanStdMetric):
+class MeanError(MeanStdRegressionMetric):
     error_plot: bool = True
     error_distr: bool = False
     error_normality: bool = False
@@ -142,7 +163,7 @@ class MeanErrorCalculation(LegacyRegressionMeanStdMetric[MeanError]):
         return "Std Error"
 
 
-class MAE(MeanStdMetric):
+class MAE(MeanStdRegressionMetric):
     error_plot: bool = False
     error_distr: bool = True
     error_normality: bool = False
@@ -161,6 +182,9 @@ class MAE(MeanStdMetric):
 
 
 class MAECalculation(LegacyRegressionMeanStdMetric[MAE]):
+    def task_name(self) -> str:
+        return self.metric.regression_name
+
     def calculate_value(
         self, context: Context, legacy_result: RegressionQualityMetricResults, render: List[BaseWidgetInfo]
     ):
@@ -187,7 +211,7 @@ class MAECalculation(LegacyRegressionMeanStdMetric[MAE]):
         return "Std Absolute Error"
 
 
-class RMSE(SingleValueMetric):
+class RMSE(SingleValueRegressionMetric):
     error_plot: bool = False
     error_distr: bool = True
     error_normality: bool = False
@@ -213,7 +237,7 @@ class RMSECalculation(LegacyRegressionSingleValueMetric[RMSE]):
         return "RMSE"
 
 
-class MAPE(MeanStdMetric):
+class MAPE(MeanStdRegressionMetric):
     perc_error_plot: bool = True
     error_distr: bool = False
 
@@ -251,7 +275,7 @@ class MAPECalculation(LegacyRegressionMeanStdMetric[MAPE]):
         return "Std Absolute Percentage Error"
 
 
-class R2Score(SingleValueMetric):
+class R2Score(SingleValueRegressionMetric):
     error_distr: bool = False
     error_normality: bool = False
 
@@ -275,7 +299,7 @@ class R2ScoreCalculation(LegacyRegressionSingleValueMetric[R2Score]):
         return "R2 Score"
 
 
-class AbsMaxError(SingleValueMetric):
+class AbsMaxError(SingleValueRegressionMetric):
     error_distr: bool = False
     error_normality: bool = False
 
@@ -297,32 +321,42 @@ class AbsMaxErrorCalculation(LegacyRegressionSingleValueMetric[AbsMaxError]):
 
 
 class LegacyRegressionDummyMeanStdMetric(
-    MeanStdCalculation[TMeanStdMetric],
-    LegacyMetricCalculation[MeanStdValue, TMeanStdMetric, RegressionDummyMetricResults, RegressionDummyMetric],
-    Generic[TMeanStdMetric],
+    MeanStdCalculation[TMeanStdRegressionMetric],
+    LegacyMetricCalculation[
+        MeanStdValue, TMeanStdRegressionMetric, RegressionDummyMetricResults, RegressionDummyMetric
+    ],
+    Generic[TMeanStdRegressionMetric],
     abc.ABC,
 ):
+    def task_name(self) -> str:
+        return self.metric.regression_name
+
     def legacy_metric(self) -> RegressionDummyMetric:
         return RegressionDummyMetric()
 
-    def _gen_input_data(self, context: "Context") -> InputData:
-        return _gen_regression_input_data(context)
+    def _gen_input_data(self, context: "Context", task_name: str) -> InputData:
+        return _gen_regression_input_data(context, task_name)
 
 
 class LegacyRegressionDummyValueMetric(
-    SingleValueCalculation[TSingleValueMetric],
-    LegacyMetricCalculation[SingleValue, TSingleValueMetric, RegressionDummyMetricResults, RegressionDummyMetric],
-    Generic[TSingleValueMetric],
+    SingleValueCalculation[TSingleValueRegressionMetric],
+    LegacyMetricCalculation[
+        SingleValue, TSingleValueRegressionMetric, RegressionDummyMetricResults, RegressionDummyMetric
+    ],
+    Generic[TSingleValueRegressionMetric],
     abc.ABC,
 ):
+    def task_name(self) -> str:
+        return self.metric.regression_name
+
     def legacy_metric(self) -> RegressionDummyMetric:
         return RegressionDummyMetric()
 
-    def _gen_input_data(self, context: "Context") -> InputData:
-        return _gen_regression_input_data(context)
+    def _gen_input_data(self, context: "Context", task_name: str) -> InputData:
+        return _gen_regression_input_data(context, task_name)
 
 
-class DummyMAE(SingleValueMetric):
+class DummyMAE(SingleValueRegressionMetric):
     pass
 
 
@@ -341,7 +375,7 @@ class DummyMAECalculation(LegacyRegressionDummyValueMetric[DummyMAE]):
         return "Dummy Mean Absolute Error"
 
 
-class DummyMAPE(SingleValueMetric):
+class DummyMAPE(SingleValueRegressionMetric):
     pass
 
 
@@ -360,7 +394,7 @@ class DummyMAPECalculation(LegacyRegressionDummyValueMetric[DummyMAPE]):
         return "Dummy Mean Absolute Percentage Error"
 
 
-class DummyRMSE(SingleValueMetric):
+class DummyRMSE(SingleValueRegressionMetric):
     pass
 
 
