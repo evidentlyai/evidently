@@ -190,11 +190,13 @@ class ClassificationQuality(MetricContainer):
             render += context.get_legacy_metric(
                 ClassificationPRCurve(probas_threshold=self.probas_threshold),
                 _gen_classification_input_data,
+                self.classification_name,
             )[1]
         if self.pr_table and classification.prediction_probas is not None:
             render += context.get_legacy_metric(
                 ClassificationPRTable(probas_threshold=self.probas_threshold),
                 _gen_classification_input_data,
+                self.classification_name,
             )[1]
         for metric in self.list_metrics(context):
             link_metric(render, metric)

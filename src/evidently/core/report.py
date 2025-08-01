@@ -152,7 +152,7 @@ class Context:
         self,
         metric: LegacyMetric[T],
         input_data_generator: Optional[Callable[["Context", str], InputData]],
-        task_name: str,
+        task_name: Optional[str],
     ) -> Tuple[T, List[BaseWidgetInfo]]:
         if input_data_generator is None:
             input_data_generator = _default_input_data_generator
@@ -212,7 +212,7 @@ class Context:
         return self._labels
 
 
-def _default_input_data_generator(context: "Context", task_name: str) -> InputData:
+def _default_input_data_generator(context: "Context", task_name: Optional[str]) -> InputData:
     classification = context.data_definition.get_classification(task_name)
     ranking = context.data_definition.get_ranking(task_name)
     reference = context._input_data[1].as_dataframe() if context._input_data[1] is not None else None

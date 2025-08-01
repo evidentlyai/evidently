@@ -130,24 +130,27 @@ class RegressionDummyQuality(MetricContainer):
     mae_tests: SingleValueMetricTests = None
     mape_tests: SingleValueMetricTests = None
     rmse_tests: SingleValueMetricTests = None
+    regression_name: str = "default"
 
     def __init__(
         self,
         mae_tests: GenericSingleValueMetricTests = None,
         mape_tests: GenericSingleValueMetricTests = None,
         rmse_tests: GenericSingleValueMetricTests = None,
+        regression_name: str = "default",
         include_tests: bool = True,
     ):
         self.mae_tests = convert_tests(mae_tests)
         self.mape_tests = convert_tests(mape_tests)
         self.rmse_tests = convert_tests(rmse_tests)
+        self.regression_name = regression_name
         super().__init__(include_tests=include_tests)
 
     def generate_metrics(self, context: Context) -> Sequence[MetricOrContainer]:
         return [
-            DummyMAE(tests=self._get_tests(self.mae_tests)),
-            DummyMAPE(tests=self._get_tests(self.mape_tests)),
-            DummyRMSE(tests=self._get_tests(self.rmse_tests)),
+            DummyMAE(regression_name=self.regression_name, tests=self._get_tests(self.mae_tests)),
+            DummyMAPE(regression_name=self.regression_name, tests=self._get_tests(self.mape_tests)),
+            DummyRMSE(regression_name=self.regression_name, tests=self._get_tests(self.rmse_tests)),
         ]
 
     def render(
@@ -158,6 +161,7 @@ class RegressionDummyQuality(MetricContainer):
         widgets = context.get_legacy_metric(
             RegressionDummyMetric(),
             _gen_regression_input_data,
+            self.regression_name,
         )[1]
 
         for metric in self.list_metrics(context):
