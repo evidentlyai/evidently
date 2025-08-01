@@ -86,11 +86,11 @@ class RegressionQuality(MetricContainer):
             RMSE(regression_name=self.regression_name, tests=self._get_tests(self.rmse_tests)),
             MAE(
                 regression_name=self.regression_name,
-                tmean_tests=self._get_tests(self.mae_tests.mean),
+                mean_tests=self._get_tests(self.mae_tests.mean),
                 std_tests=self._get_tests(self.mae_tests.std),
             ),
-            R2Score(regression_name=self.regression_name, ttests=self._get_tests(self.r2score_tests)),
-            AbsMaxError(regression_name=self.regression_name, ttests=self._get_tests(self.abs_max_error_tests)),
+            R2Score(regression_name=self.regression_name, tests=self._get_tests(self.r2score_tests)),
+            AbsMaxError(regression_name=self.regression_name, tests=self._get_tests(self.abs_max_error_tests)),
         ]
 
     def render(
@@ -174,6 +174,7 @@ class RegressionPreset(MetricContainer):
     abs_max_error_tests: SingleValueMetricTests = None
 
     _quality: Optional[RegressionQuality] = PrivateAttr(None)
+    regression_name: str = "default"
 
     def __init__(
         self,
@@ -183,6 +184,7 @@ class RegressionPreset(MetricContainer):
         mae_tests: MeanStdMetricsPossibleTests = None,
         r2score_tests: GenericSingleValueMetricTests = None,
         abs_max_error_tests: GenericSingleValueMetricTests = None,
+        regression_name: str = "default",
         include_tests: bool = True,
     ):
         self._quality = None
@@ -192,6 +194,7 @@ class RegressionPreset(MetricContainer):
         self.mae_tests = convert_to_mean_tests(mae_tests) or MeanStdMetricTests()
         self.r2score_tests = convert_tests(r2score_tests)
         self.abs_max_error_tests = convert_tests(abs_max_error_tests)
+        self.regression_name = regression_name
         super().__init__(include_tests=include_tests)
 
     def generate_metrics(self, context: Context) -> Sequence[MetricOrContainer]:
@@ -206,6 +209,7 @@ class RegressionPreset(MetricContainer):
             self.r2score_tests,
             self.abs_max_error_tests,
             include_tests=self.include_tests,
+            regression_name=self.regression_name,
         )
         return (
             self._quality.metrics(context)
