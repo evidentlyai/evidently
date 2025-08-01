@@ -100,7 +100,6 @@ class LocalState(WorkspaceLocalState):
         self.project_manager = project_manager
         self.projects: Dict[ProjectID, Project] = {}
         self.snapshots: Dict[ProjectID, Dict[SnapshotID, SnapshotModel]] = {}
-        self.snapshot_data: Dict[ProjectID, Dict[SnapshotID, Snapshot]] = {}
 
     @classmethod
     def load(cls, path: str, project_manager: Optional[ProjectManager]):
@@ -115,7 +114,6 @@ class LocalState(WorkspaceLocalState):
         projects = [load_project(self.location, p) for p in self.location.listdir("") if self.location.isdir(p)]
         self.projects = {p.id: p.bind(self.project_manager, NO_USER.id) for p in projects if p is not None}
         self.snapshots = {p: {} for p in self.projects}
-        self.snapshot_data = {p: {} for p in self.projects}
 
         for project_id in self.projects:
             self.reload_snapshots(project_id, force=force, skip_errors=False)
@@ -124,7 +122,6 @@ class LocalState(WorkspaceLocalState):
         path = posixpath.join(str(project_id), SNAPSHOTS)
         if force:
             self.snapshots[project_id] = {}
-            self.snapshot_data[project_id] = {}
 
         project = self.projects[project_id]
         self.location.invalidate_cache(path)
@@ -146,7 +143,6 @@ class LocalState(WorkspaceLocalState):
             with self.location.open(snapshot_path) as f:
                 model = parse_obj_as(SnapshotModel, json.load(f))
             self.snapshots[project.id][snapshot_id] = model
-            # self.snapshot_data[project.id][snapshot_id] = suite
         except ValidationError as e:
             if not skip_errors:
                 raise ValueError(f"{snapshot_id} is malformed") from e
@@ -207,7 +203,6 @@ class JsonFileProjectMetadataStorage(ProjectMetadataStorage):
     async def delete_snapshot(self, project_id: ProjectID, snapshot_id: SnapshotID):
         if project_id in self.state.projects and snapshot_id in self.state.snapshots[project_id]:
             del self.state.snapshots[project_id][snapshot_id]
-            del self.state.snapshot_data[project_id][snapshot_id]
         path = posixpath.join(str(project_id), SNAPSHOTS, f"{snapshot_id}.json")
         if self.state.location.exists(path):
             self.state.location.rmtree(path)
