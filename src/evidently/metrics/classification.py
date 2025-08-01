@@ -136,7 +136,7 @@ class LegacyClassificationQualityByClass(
         result = []
         for field, metric in ADDITIONAL_WIDGET_MAPPING.items():
             if hasattr(self.metric, field) and getattr(self.metric, field):
-                _, widgets = context.get_legacy_metric(metric, self._gen_input_data)
+                _, widgets = context.get_legacy_metric(metric, self._gen_input_data, self.task_name())
                 result += widgets
         return result
 
