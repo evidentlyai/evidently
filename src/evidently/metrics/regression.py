@@ -42,8 +42,10 @@ ADDITIONAL_WIDGET_MAPPING: Dict[str, Metric] = {
 }
 
 
-def _gen_regression_input_data(context: "Context", task_name: str) -> InputData:
+def _gen_regression_input_data(context: "Context", task_name: Optional[str]) -> InputData:
     default_data = _default_input_data_generator(context, task_name)
+    if task_name is None:
+        return default_data
     regression = context.data_definition.get_regression(task_name)
     if regression is None:
         raise ValueError(f"No regression '{task_name}' in data definition")
