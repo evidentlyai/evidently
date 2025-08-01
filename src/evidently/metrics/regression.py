@@ -2,6 +2,7 @@ import abc
 from typing import Dict
 from typing import Generic
 from typing import List
+from typing import Optional
 from typing import TypeVar
 
 from evidently.core.metric_types import BoundTest
@@ -92,7 +93,7 @@ class LegacyRegressionMeanStdMetric(
                 result += widgets
         return result
 
-    def _gen_input_data(self, context: "Context", task_name: str) -> InputData:
+    def _gen_input_data(self, context: "Context", task_name: Optional[str]) -> InputData:
         return _gen_regression_input_data(context, task_name)
 
 
@@ -118,7 +119,7 @@ class LegacyRegressionSingleValueMetric(
                 result += widgets
         return result
 
-    def _gen_input_data(self, context: "Context", task_name: str) -> InputData:
+    def _gen_input_data(self, context: "Context", task_name: Optional[str]) -> InputData:
         return _gen_regression_input_data(context, task_name)
 
 
@@ -334,7 +335,7 @@ class LegacyRegressionDummyMeanStdMetric(
     def legacy_metric(self) -> RegressionDummyMetric:
         return RegressionDummyMetric()
 
-    def _gen_input_data(self, context: "Context", task_name: str) -> InputData:
+    def _gen_input_data(self, context: "Context", task_name: Optional[str]) -> InputData:
         return _gen_regression_input_data(context, task_name)
 
 
@@ -352,7 +353,7 @@ class LegacyRegressionDummyValueMetric(
     def legacy_metric(self) -> RegressionDummyMetric:
         return RegressionDummyMetric()
 
-    def _gen_input_data(self, context: "Context", task_name: str) -> InputData:
+    def _gen_input_data(self, context: "Context", task_name: Optional[str]) -> InputData:
         return _gen_regression_input_data(context, task_name)
 
 

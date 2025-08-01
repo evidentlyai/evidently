@@ -94,7 +94,7 @@ class LegacyTopKCalculation(
             return current
         return current, self.result(legacy_result.reference[legacy_result.k - 1])
 
-    def _gen_input_data(self, context: "Context", task_name: str) -> InputData:
+    def _gen_input_data(self, context: "Context", task_name: Optional[str]) -> InputData:
         return _gen_ranking_input_data(context, task_name)
 
 
@@ -212,7 +212,7 @@ class ScoreDistributionCalculation(
     def display_name(self) -> str:
         return "Score distribution"
 
-    def _gen_input_data(self, context: "Context", task_name: str) -> InputData:
+    def _gen_input_data(self, context: "Context", task_name: Optional[str]) -> InputData:
         return _gen_ranking_input_data(context, task_name)
 
 

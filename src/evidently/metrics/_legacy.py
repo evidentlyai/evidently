@@ -65,6 +65,6 @@ class LegacyMetricCalculation(
     ) -> TMetricResult:
         raise NotImplementedError()
 
-    def _gen_input_data(self, context: "Context", task_name: str) -> InputData:
+    def _gen_input_data(self, context: "Context", task_name: Optional[str]) -> InputData:
         default_input_data = _default_input_data_generator(context, task_name)
         return default_input_data
