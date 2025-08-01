@@ -85,3 +85,6 @@ register_type_alias(Metric, "evidently.metrics.regression.RMSE", "evidently:metr
 register_type_alias(Metric, "evidently.ui.backport.TestsConfig", "evidently:metric_v2:TestsConfig")
 
 register_type_alias(Metric, "evidently.metrics.column_statistics.SumValue", "evidently:metric_v2:SumValue")
+
+register_type_alias(Metric, "evidently.metrics.regression.MeanStdRegressionMetric", "evidently:metric_v2:MeanStdRegressionMetric")
+register_type_alias(Metric, "evidently.metrics.regression.SingleValueRegressionMetric", "evidently:metric_v2:SingleValueRegressionMetric")

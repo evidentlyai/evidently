@@ -351,6 +351,7 @@ class DatasetStats(MetricContainer):
     constant_columns_count_tests: SingleValueMetricTests = None
     dataset_missing_value_count_tests: SingleValueMetricTests = None
     dataset_missing_value_share_tests: SingleValueMetricTests = None
+    classification_name: str = "default"
 
     def __init__(
         self,
@@ -366,6 +367,7 @@ class DatasetStats(MetricContainer):
         dataset_missing_value_count_tests: GenericSingleValueMetricTests = None,
         dataset_missing_value_share_tests: GenericSingleValueMetricTests = None,
         include_tests: bool = True,
+        classification_name: str = "default",
     ):
         self.duplicated_row_count_tests = convert_tests(duplicated_row_count_tests)
         self.duplicated_column_count_tests = convert_tests(duplicated_column_count_tests)
@@ -378,6 +380,7 @@ class DatasetStats(MetricContainer):
         self.dataset_missing_value_share_tests = convert_tests(dataset_missing_value_share_tests)
         self.column_count_tests = convert_tests(column_count_tests)
         self.row_count_tests = convert_tests(row_count_tests)
+        self.classification_name = classification_name
         super().__init__(include_tests=include_tests)
 
     def generate_metrics(self, context: Context) -> Sequence[MetricOrContainer]:
@@ -407,7 +410,7 @@ class DatasetStats(MetricContainer):
         child_widgets: Optional[List[Tuple[Optional[MetricId], List[BaseWidgetInfo]]]] = None,
     ) -> List[BaseWidgetInfo]:
         legacy_metric = DatasetSummaryMetric()
-        _, render = context.get_legacy_metric(legacy_metric, _default_input_data_generator)
+        _, render = context.get_legacy_metric(legacy_metric, _default_input_data_generator, self.classification_name)
         for metric in self.list_metrics(context):
             link_metric(render, metric)
         return render
