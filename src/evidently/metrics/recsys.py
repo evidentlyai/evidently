@@ -48,8 +48,10 @@ class TopKBase(SingleValueMetric):
 TTopKBase = TypeVar("TTopKBase", bound=TopKBase)
 
 
-def _gen_ranking_input_data(context: "Context", task_name: str) -> InputData:
+def _gen_ranking_input_data(context: "Context", task_name: Optional[str]) -> InputData:
     default_data = _default_input_data_generator(context, None)
+    if task_name is None:
+        return default_data
     ranking = context.data_definition.get_ranking(task_name)
     if ranking is not None:
         default_data.column_mapping.user_id = ranking.user_id

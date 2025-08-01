@@ -78,7 +78,7 @@ TByLabelMetric = TypeVar("TByLabelMetric", bound=ClassificationQualityByLabel)
 TSingleValueMetric = TypeVar("TSingleValueMetric", bound=ClassificationQualityBase)
 
 
-def _gen_classification_input_data(context: "Context", task_name: str) -> InputData:
+def _gen_classification_input_data(context: "Context", task_name: Optional[str]) -> InputData:
     default_input_data = _default_input_data_generator(context, task_name)
     return default_input_data
 
