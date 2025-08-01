@@ -149,8 +149,10 @@ class Regression:
 class Recsys:
     name: str = "default"
     user_id: str = "user_id"
+    item_id: str = "item_id"
     target: str = "target"
     prediction: str = "prediction"
+    recommendations_type: str = "score"
 
 
 @dataclasses.dataclass
@@ -267,7 +269,7 @@ class DataDefinition(BaseModel):
             raise ValueError("More than one classification with id {}".format(classification_id))
         return item_list[0]
 
-    def get_ranking(self, ranking_id: str):
+    def get_ranking(self, ranking_id: str) -> Optional[Recsys]:
         item_list = list(filter(lambda x: x.name == ranking_id, self.ranking or []))
         if len(item_list) == 0:
             return None
