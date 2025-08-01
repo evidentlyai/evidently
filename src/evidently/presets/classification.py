@@ -208,6 +208,7 @@ class ClassificationQualityByLabel(MetricContainer):
     precision_tests: ByLabelMetricTests = None
     recall_tests: ByLabelMetricTests = None
     rocauc_tests: ByLabelMetricTests = None
+    classification_name: str = "default"
 
     def __init__(
         self,
@@ -217,6 +218,7 @@ class ClassificationQualityByLabel(MetricContainer):
         precision_tests: GenericByLabelMetricTests = None,
         recall_tests: GenericByLabelMetricTests = None,
         rocauc_tests: GenericByLabelMetricTests = None,
+        classification_name: str = "default",
         include_tests: bool = True,
     ):
         self.probas_threshold = probas_threshold
@@ -225,6 +227,7 @@ class ClassificationQualityByLabel(MetricContainer):
         self.precision_tests = convert_tests(precision_tests)
         self.recall_tests = convert_tests(recall_tests)
         self.rocauc_tests = convert_tests(rocauc_tests)
+        self.classification_name = classification_name
         super().__init__(include_tests=include_tests)
 
     def generate_metrics(self, context: "Context") -> Sequence[MetricOrContainer]:
@@ -255,6 +258,7 @@ class ClassificationQualityByLabel(MetricContainer):
         render = context.get_legacy_metric(
             ClassificationQualityByClass(self.probas_threshold, self.k),
             _gen_classification_input_data,
+            self.classification_name,
         )[1]
         widget = render
         widget[0].params["counters"][0]["label"] = "Classification Quality by Label"
@@ -266,15 +270,18 @@ class ClassificationQualityByLabel(MetricContainer):
 class ClassificationDummyQuality(MetricContainer):
     probas_threshold: Optional[float] = None
     k: Optional[int] = None
+    classification_name: str = "default"
 
     def __init__(
         self,
         probas_threshold: Optional[float] = None,
         k: Optional[int] = None,
         include_tests: bool = True,
+        classification_name: str = "default",
     ):
         self.probas_threshold = probas_threshold
         self.k = k
+        self.classification_name = classification_name
         super().__init__(include_tests=include_tests)
 
     def generate_metrics(self, context: "Context") -> Sequence[MetricOrContainer]:
@@ -292,6 +299,7 @@ class ClassificationDummyQuality(MetricContainer):
         _, widgets = context.get_legacy_metric(
             ClassificationDummyMetric(self.probas_threshold, self.k),
             _gen_classification_input_data,
+            self.classification_name,
         )
         for metric in self.list_metrics(context):
             link_metric(widgets, metric)

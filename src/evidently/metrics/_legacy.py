@@ -35,9 +35,8 @@ class LegacyMetricCalculation(
     def legacy_metric(self) -> TLegacyMetric:
         raise NotImplementedError()
 
-    @abc.abstractmethod
-    def task_name(self) -> str:
-        raise NotImplementedError()
+    def task_name(self) -> Optional[str]:
+        return None
 
     def calculate(self, context: "Context", current_data: Dataset, reference_data: Optional[Dataset]) -> TMetricResult:
         result, render = context.get_legacy_metric(self.legacy_metric(), self._gen_input_data, self.task_name())

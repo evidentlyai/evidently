@@ -96,6 +96,9 @@ class LegacyClassificationQualityByClass(
 ):
     _legacy_metric = None
 
+    def task_name(self) -> str:
+        return self.metric.classification_name
+
     def legacy_metric(self) -> _ClassificationQualityByClass:
         if self._legacy_metric is None:
             self._legacy_metric = _ClassificationQualityByClass(self.metric.probas_threshold, self.metric.k)
@@ -583,6 +586,9 @@ class LegacyClassificationDummy(
 ):
     _legacy_metric = None
     __legacy_field_name__: ClassVar[str]
+
+    def task_name(self) -> str:
+        return self.metric.classification_name
 
     def legacy_metric(self) -> ClassificationDummyMetric:
         if self._legacy_metric is None:
