@@ -8,7 +8,8 @@ This example demonstrates how to run an **Evidently UI service** and connect to 
 
 - `run_service.sh` — Script to start the Evidently UI service in Docker.
 - `remote_demo_project.py` — Python script that uploads a demo bike rentals monitoring project to the running Evidently service.
-- `workspace_tutorial.ipynb` — Jupyter notebook with Evidently UI API tutorial
+- `workspace_tutorial.ipynb` — Jupyter notebook with Evidently UI API tutorial.
+- `docker_s3_tutorial.ipynb` — A complete tutorial on how to use the Evidently UI official docker image with S3 and GCS.
 - `README.md` — (this file) instructions on how to set up and run the example.
 
 ---
