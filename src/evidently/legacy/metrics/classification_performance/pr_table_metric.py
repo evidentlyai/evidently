@@ -62,7 +62,7 @@ class ClassificationPRTable(Metric[ClassificationPRTableResults]):
         target_name = dataset_columns.utility_columns.target
         prediction_name = dataset_columns.utility_columns.prediction
         if target_name is None or prediction_name is None:
-            raise ValueError("The columns 'target' and 'prediction' columns should be present")
+            raise ValueError("The columns 'target' and 'prediction' should be present")
         curr_prediction = get_prediction_data(data.current_data, dataset_columns, data.column_mapping.pos_label)
         curr_pr_table = self.calculate_metrics(data.current_data[target_name], curr_prediction)
         ref_pr_table = None
