@@ -119,6 +119,12 @@ setup_args = dict(
             "gcsfs>=2024.9.0",
             # dependencies from fsspec[full]
         ],
+        "s3": [
+            "s3fs>=2024.9.0",
+        ],
+        "gcs": [
+            "gcsfs>=2024.9.0",
+        ],
     },
     entry_points={"console_scripts": ["evidently=evidently.cli:app"]},
 )
