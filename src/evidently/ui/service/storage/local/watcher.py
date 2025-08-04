@@ -1,5 +1,6 @@
 import os.path
 import re
+from json import JSONDecodeError
 from pathlib import Path
 
 import uuid6
@@ -111,7 +112,10 @@ class WorkspaceDirHandler(FileSystemEventHandler):
         if (event.event_type in (EVENT_TYPE_MODIFIED, EVENT_TYPE_CREATED, EVENT_TYPE_MOVED)) and os.path.exists(
             event.src_path
         ):
-            self.state.reload_snapshot(project, sid)
+            try:
+                self.state.reload_snapshot(project, sid)
+            except JSONDecodeError:  # ignore bc probably write is not complete
+                pass
         if (
             event.event_type == EVENT_TYPE_DELETED
             or event.event_type == EVENT_TYPE_MOVED
