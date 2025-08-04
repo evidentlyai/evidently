@@ -164,7 +164,7 @@ class Context:
                 object.__setattr__(obj, "get_result", lambda: result)
             else:
                 raise ValueError(f"unexpected type {type(obj)}")
-        fp = metric.get_fingerprint() + ":task:" + task_name
+        fp = metric.get_fingerprint() + ":task:" + (task_name or "")
         if fp not in self._legacy_metrics:
             result = metric.calculate(input_data)
             renderer = find_metric_renderer(type(metric), DEFAULT_RENDERERS)
