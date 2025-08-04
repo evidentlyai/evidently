@@ -52,7 +52,7 @@ class ClassificationQualityMetric(ThresholdClassificationMetric[ClassificationQu
         target_name = dataset_columns.utility_columns.target
         prediction_name = dataset_columns.utility_columns.prediction
         if target_name is None or prediction_name is None:
-            raise ValueError("The columns 'target' and 'prediction' columns should be present")
+            raise ValueError("The columns 'target' and 'prediction' should be present")
         target, prediction = self.get_target_prediction_data(data.current_data, data.column_mapping)
         current = calculate_metrics(
             data.column_mapping,

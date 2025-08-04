@@ -72,7 +72,7 @@ class RegressionTopErrorMetric(UsesRawDataMixin, Metric[RegressionTopErrorMetric
         curr_df = data.current_data.copy()
         ref_df = data.reference_data
         if target_name is None or prediction_name is None:
-            raise ValueError("The columns 'target' and 'prediction' columns should be present")
+            raise ValueError("The columns 'target' and 'prediction' should be present")
         if not isinstance(prediction_name, str):
             raise ValueError("Expect one column for prediction. List of columns was provided.")
         curr_df = self._make_df_for_plot(curr_df, target_name, prediction_name, None)
@@ -321,4 +321,4 @@ class RegressionTopErrorMetricRenderer(MetricRenderer):
         return res
 
     def _format_value(self, result, counter_type):
-        return f"{round(result[counter_type]['mean_error'], 2)}" f" ({round(result[counter_type]['std_error'], 2)})"
+        return f"{round(result[counter_type]['mean_error'], 2)} ({round(result[counter_type]['std_error'], 2)})"
