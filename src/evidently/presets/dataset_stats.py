@@ -46,6 +46,7 @@ from evidently.metrics.dataset_statistics import DatasetMissingValueCount
 from evidently.metrics.dataset_statistics import DuplicatedColumnsCount
 from evidently.metrics.dataset_statistics import EmptyColumnsCount
 from evidently.metrics.dataset_statistics import EmptyRowsCount
+from evidently.metrics.row_test_summary import RowTestSummary
 
 
 class ValueStats(ColumnMetricContainer):
@@ -466,10 +467,11 @@ class TextEvals(MetricContainer):
                 include_tests=self.include_tests,
             )
             for column in cols
+            if column not in context.data_definition.test_descriptors
         ]
 
     def generate_metrics(self, context: Context) -> Sequence[MetricOrContainer]:
-        metrics: List[MetricOrContainer] = [RowCount(tests=self._get_tests(self.row_count_tests))]
+        metrics: List[MetricOrContainer] = [RowTestSummary(), RowCount(tests=self._get_tests(self.row_count_tests))]
         value_stats = self.get_value_stats(context)
         metrics.extend(list(chain(*[vs.metrics(context)[1:] for vs in value_stats])))
         return metrics

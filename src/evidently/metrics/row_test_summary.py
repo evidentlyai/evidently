@@ -45,9 +45,9 @@ class RowTestSummary(MetricContainer):
         assert isinstance(result, SingleValue)
         success_count = int(result.value * row_count)
         if result.value == 1:
-            return pie_chart(title=title, data=(["PASSED"], [success_count]), colors=["GREEN"], size=size)
+            return pie_chart(title=title, data=(["PASSED"], [row_count]), colors=["GREEN"], size=size)
         if result.value == 0:
-            return pie_chart(title=title, data=(["FAILED"], [0]), colors=["RED"], size=size)
+            return pie_chart(title=title, data=(["FAILED"], [row_count]), colors=["RED"], size=size)
         return pie_chart(
             title=title,
             data=(["PASSED", "FAILED"], [success_count, row_count - success_count]),
