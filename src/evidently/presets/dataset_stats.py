@@ -59,7 +59,6 @@ class ValueStats(ColumnMetricContainer):
     q50_tests: SingleValueMetricTests = None
     q75_tests: SingleValueMetricTests = None
     unique_values_count_tests: ByLabelMetricTests = None
-    unique_values_share_tests: ByLabelMetricTests = None
     replace_nan: Label = None
 
     @validator(
@@ -90,7 +89,6 @@ class ValueStats(ColumnMetricContainer):
         q50_tests: GenericSingleValueMetricTests = None,
         q75_tests: GenericSingleValueMetricTests = None,
         unique_values_count_tests: GenericByLabelMetricTests = None,
-        unique_values_share_tests: GenericByLabelMetricTests = None,
         include_tests: bool = True,
         replace_nan: Label = None,
     ):
@@ -104,7 +102,6 @@ class ValueStats(ColumnMetricContainer):
         self.q50_tests = convert_tests(q50_tests)
         self.q75_tests = convert_tests(q75_tests)
         self.unique_values_count_tests = convert_tests(unique_values_count_tests)
-        self.unique_values_share_tests = convert_tests(unique_values_share_tests)
         self.replace_nan = replace_nan
         super().__init__(column=column, include_tests=include_tests)
 
@@ -112,7 +109,6 @@ class ValueStats(ColumnMetricContainer):
         return UniqueValueCount(
             column=self.column,
             tests=self._get_tests(self.unique_values_count_tests),
-            share_tests=self._get_tests(self.unique_values_share_tests),
             replace_nan=self.replace_nan,
         )
 
@@ -431,7 +427,6 @@ class ValueStatsTests:
     q50_tests: SingleValueMetricTests = None
     q75_tests: SingleValueMetricTests = None
     unique_values_count_tests: ByLabelMetricTests = None
-    unique_values_share_tests: ByLabelMetricTests = None
 
     def convert(self) -> "ValueStatsTests":
         return ValueStatsTests(**{k: convert_tests(v) for k, v in dataclasses.asdict(self).items()})
