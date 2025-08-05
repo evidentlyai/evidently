@@ -484,7 +484,7 @@ class TextEvals(MetricContainer):
         child_widgets: Optional[List[Tuple[Optional[MetricId], List[BaseWidgetInfo]]]] = None,
     ) -> List[BaseWidgetInfo]:
         value_stats = self.get_value_stats(context)
-        return list(chain(*[vs.render(context) for vs in value_stats]))
+        return list(chain(*([RowTestSummary().render(context)] + [vs.render(context) for vs in value_stats])))
 
 
 class DataSummaryPreset(MetricContainer):
