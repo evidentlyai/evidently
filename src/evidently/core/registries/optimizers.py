@@ -17,3 +17,6 @@ register_type_alias(PromptExecutor, "evidently.llm.optimization.prompts.Callable
 register_type_alias(PromptExecutor, "evidently.llm.optimization.prompts.LLMJudgePromptExecutor", "evidently:prompt_executor:LLMJudgePromptExecutor")
 register_type_alias(PromptOptimizerStrategy, "evidently.llm.optimization.prompts.FeedbackStrategy", "evidently:prompt_optimizer_strategy:FeedbackStrategy")
 register_type_alias(PromptOptimizerStrategy, "evidently.llm.optimization.prompts.SimplePromptOptimizer", "evidently:prompt_optimizer_strategy:SimplePromptOptimizer")
+
+register_type_alias(OptimizationScorer, "evidently.llm.optimization.prompts.NoopOptimizationScorer", "evidently:optimizer_scorer:NoopOptimizationScorer")
+register_type_alias(PromptExecutor, "evidently.llm.optimization.prompts.NoopPromptExecutor", "evidently:prompt_executor:NoopPromptExecutor")
