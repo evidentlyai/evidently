@@ -2,6 +2,7 @@ from typing import Any
 from typing import List
 from typing import Optional
 from typing import Union
+from typing import get_args
 from typing import overload
 
 from evidently.core.datasets import DescriptorTest
@@ -44,13 +45,20 @@ def eq(expected: Any, *, column: Optional[str] = None, alias: Optional[str] = No
 
 
 def eq(
-    expected: ThresholdType, *, is_critical: bool = True, column: Optional[str] = None, alias: Optional[str] = None
+    expected: Any, *, is_critical: bool = True, column: Optional[str] = None, alias: Optional[str] = None
 ) -> AnyTest:
-    return GenericTest(
-        test_name="eq",
-        metric=EqualMetricTest(expected=expected, is_critical=is_critical),
-        descriptor=DescriptorTest(condition=EqualsColumnCondition(expected=expected), column=column, alias=alias),
-    )
+    if isinstance(expected, get_args(ThresholdType)):
+        return GenericTest(
+            test_name="eq",
+            metric=EqualMetricTest(expected=expected, is_critical=is_critical),
+            descriptor=DescriptorTest(condition=EqualsColumnCondition(expected=expected), column=column, alias=alias),
+        )
+    else:
+        return GenericTest(
+            test_name="eq",
+            metric=None,
+            descriptor=DescriptorTest(condition=EqualsColumnCondition(expected=expected), column=column, alias=alias),
+        )
 
 
 @overload
@@ -68,9 +76,19 @@ def not_eq(expected: Any, *, column: Optional[str] = None, alias: Optional[str] 
 def not_eq(
     expected: ThresholdType, *, is_critical: bool = True, column: Optional[str] = None, alias: Optional[str] = None
 ) -> AnyTest:
+    if isinstance(expected, get_args(ThresholdType)):
+        return GenericTest(
+            test_name="not_eq",
+            metric=NotEqualMetricTest(expected=expected, is_critical=is_critical),
+            descriptor=DescriptorTest(
+                condition=NotEqualsColumnCondition(expected=expected),
+                column=column,
+                alias=alias,
+            ),
+        )
     return GenericTest(
         test_name="not_eq",
-        metric=NotEqualMetricTest(expected=expected, is_critical=is_critical),
+        metric=None,
         descriptor=DescriptorTest(condition=NotEqualsColumnCondition(expected=expected), column=column, alias=alias),
     )
 

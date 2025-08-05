@@ -20,7 +20,7 @@ from evidently.core.metric_types import ColumnMetric
 from evidently.core.metric_types import Metric
 from evidently.core.metric_types import MetricTest
 from evidently.core.metric_types import MetricTestResult
-from evidently.legacy.tests.base_test import TestStatus
+from evidently.core.metric_types import TestStatus
 from evidently.metrics import FBetaTopK
 from evidently.metrics import PrecisionTopK
 from evidently.metrics import RecallTopK
@@ -53,6 +53,7 @@ from evidently.tests.numerical_tests import LessThanMetricTest
 from evidently.tests.numerical_tests import NotEqualMetricTest
 from tests.conftest import load_all_subtypes
 
+from ..tests.test_generic_tests_creation import StubMetric
 from .all_metrics_tests import all_metrics_test
 
 COPY_TO_CLIPBOARD = True
@@ -134,8 +135,7 @@ METRIC_ARGS: Dict[Type[Metric], str] = {
 }
 
 SKIP_TEST_TYPES = {ValueDriftTest}
-# SKIP_METRIC_TYPES = {TestsConfig, CountMetric, MeanStdMetric, SingleValueMetric,
-#     ByLabelMetric, ByLabelCountMetric, ColumnMetric, TopKBase}
+SKIP_METRIC_TYPES = {StubMetric}
 
 
 def test_all_metric_tested():
@@ -154,7 +154,7 @@ def test_all_metric_tested():
     It re-writes only failing tests so you can adjust conditions manually.
     If you added new test condition you need to add logic for it in fix(line) function.
     """
-    all_metric_types = set(s for s in Metric.__subtypes__() if not isabstract(s))  # - SKIP_METRIC_TYPES
+    all_metric_types = set(s for s in Metric.__subtypes__() if not isabstract(s)) - SKIP_METRIC_TYPES
     all_metric_types = {mt for mt in all_metric_types if hasattr(mt, "__calculation_type__")}
     all_test_types = set(t for t in MetricTest.__subtypes__() if not isabstract(t)) - SKIP_TEST_TYPES
 
