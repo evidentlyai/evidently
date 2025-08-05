@@ -4,13 +4,13 @@ from typing import Type
 
 import pytest
 
-from build.lib.evidently.core.datasets import Dataset
-from build.lib.evidently.core.metric_types import TMetricResult
+from evidently.core.datasets import Dataset
 from evidently.core.metric_types import BoundTest
 from evidently.core.metric_types import Metric
 from evidently.core.metric_types import SingleValueCalculation
 from evidently.core.metric_types import SingleValueMetric
 from evidently.core.metric_types import TestStatus
+from evidently.core.metric_types import TMetricResult
 from evidently.core.report import Context
 from evidently.core.report import Report
 from evidently.core.tests import GenericTest
