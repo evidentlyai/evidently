@@ -107,7 +107,9 @@ class ValueStats(ColumnMetricContainer):
 
     def _categorical_unique_value_count_metric(self) -> UniqueValueCount:
         return UniqueValueCount(
-            column=self.column, tests=self._get_tests(self.unique_values_count_tests), replace_nan=self.replace_nan
+            column=self.column,
+            tests=self._get_tests(self.unique_values_count_tests),
+            replace_nan=self.replace_nan,
         )
 
     def generate_metrics(self, context: Context) -> Sequence[MetricOrContainer]:
