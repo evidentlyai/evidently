@@ -1,3 +1,5 @@
+from evidently.core.tests import Reference
+
 from .aliases import eq
 from .aliases import gt
 from .aliases import gte
@@ -6,7 +8,6 @@ from .aliases import lt
 from .aliases import lte
 from .aliases import not_eq
 from .aliases import not_in
-from .reference import Reference
 
 __all__ = [
     "eq",
