@@ -467,7 +467,7 @@ class TextEvals(MetricContainer):
                 include_tests=self.include_tests,
             )
             for column in cols
-            if column not in context.data_definition.test_descriptors
+            if column not in (context.data_definition.test_descriptors or [])
         ]
 
     def generate_metrics(self, context: Context) -> Sequence[MetricOrContainer]:
