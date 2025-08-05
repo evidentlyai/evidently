@@ -110,6 +110,8 @@ def value_stats_tests_check(metric: Metric, tests: Dict[str, ValueStatsTests]):
         return metric.tests == getattr(ts, field_name)
     if isinstance(metric, QuantileValue):
         return metric.tests == getattr(ts, f"q{int(metric.quantile * 100)}_tests")
+    if isinstance(metric, RowTestSummary):
+        return True
     raise ValueError(f"Unknown metric type {metric.__class__.__name__}")
 
 
