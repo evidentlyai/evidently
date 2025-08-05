@@ -59,6 +59,7 @@ class ValueStats(ColumnMetricContainer):
     q50_tests: SingleValueMetricTests = None
     q75_tests: SingleValueMetricTests = None
     unique_values_count_tests: ByLabelMetricTests = None
+    unique_values_share_tests: ByLabelMetricTests = None
     replace_nan: Label = None
 
     @validator(
