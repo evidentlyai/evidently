@@ -12,11 +12,10 @@ from evidently.core.metric_types import SingleValueTest
 from evidently.core.metric_types import TestStatus
 from evidently.core.metric_types import Value
 from evidently.core.report import Context
-from evidently.legacy.utils.types import ApproxValue
-from evidently.tests.reference import Reference
-
-ThresholdType = Union[float, int, ApproxValue, Reference]
-ThresholdValue = Union[float, int, ApproxValue]
+from evidently.core.tests import ApproxValue
+from evidently.core.tests import Reference
+from evidently.core.tests import ThresholdType
+from evidently.core.tests import ThresholdValue
 
 
 class ComparisonTest(MetricTest):

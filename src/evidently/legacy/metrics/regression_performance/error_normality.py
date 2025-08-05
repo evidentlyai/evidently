@@ -56,7 +56,7 @@ class RegressionErrorNormality(UsesRawDataMixin, Metric[RegressionErrorNormality
         curr_df = data.current_data
         ref_df = data.reference_data
         if target_name is None or prediction_name is None:
-            raise ValueError("The columns 'target' and 'prediction' columns should be present")
+            raise ValueError("The columns 'target' and 'prediction' should be present")
         if not isinstance(prediction_name, str):
             raise ValueError("Expect one column for prediction. List of columns was provided.")
         agg_data = True

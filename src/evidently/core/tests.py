@@ -1,8 +1,12 @@
 from typing import TYPE_CHECKING
+from typing import Any
 from typing import Optional
+from typing import Union
+from typing import get_args
 
 from evidently._pydantic_compat import BaseModel
 from evidently.core.base_types import Label
+from evidently.legacy.utils.types import ApproxValue
 from evidently.pydantic_utils import Fingerprint
 
 if TYPE_CHECKING:
@@ -10,6 +14,23 @@ if TYPE_CHECKING:
     from .metric_types import BoundTest
     from .metric_types import ByLabelCountSlot
     from .metric_types import MetricTest
+
+
+class Reference(BaseModel):
+    relative: Optional[float] = None
+    absolute: Optional[float] = None
+
+    def __hash__(self) -> int:
+        return hash(self.relative) + hash(self.absolute)
+
+
+ThresholdType = Union[float, int, ApproxValue, Reference]
+ThresholdValue = Union[float, int, ApproxValue]
+
+
+def threshold_typecheck_guard(value: Any):
+    if isinstance(value, get_args(ThresholdType)):
+        raise ValueError("Invalid type for threshold value: {}, but expected {}".format(type(value), ThresholdType))
 
 
 class GenericTest(BaseModel):

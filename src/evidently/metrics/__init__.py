@@ -66,9 +66,11 @@ from .regression import DummyMAPE
 from .regression import DummyRMSE
 from .regression import MeanError
 from .regression import R2Score
+from .row_test_summary import RowTestSummary
 
 __all__ = [
     "GroupBy",
+    "RowTestSummary",
     # column statistics metrics
     "CategoryCount",
     "ValueDrift",

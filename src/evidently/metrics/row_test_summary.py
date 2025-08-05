@@ -23,7 +23,7 @@ class RowTestSummary(MetricContainer):
 
     def generate_metrics(self, context: "Context") -> Sequence[MetricOrContainer]:
         test_columns = self.get_test_columns(context)
-        return [self.get_test_column_metric(tc) for tc in test_columns] + [self.get_row_count_metric()]
+        return [self.get_test_column_metric(tc, context) for tc in test_columns] + [self.get_row_count_metric()]
 
     def get_row_count_metric(self):
         return RowCount()
@@ -31,23 +31,24 @@ class RowTestSummary(MetricContainer):
     def get_test_columns(self, context):
         return self.columns or context.data_definition.test_descriptors or []
 
-    def get_test_column_metric(self, test_column: str) -> Metric:
-        return MeanValue(
-            column=test_column, tests=[gte(self.min_success_rate, alias=f"Share of passed '{test_column}' row tests")]
-        )
+    def get_test_column_metric(self, test_column: str, context) -> Metric:
+        tests = None
+        if context.configuration.include_tests:
+            tests = [gte(self.min_success_rate, alias=f"Share of passed '{test_column}' row tests")]
+        return MeanValue(column=test_column, tests=tests)
 
     def _render_test_column_widget(
         self, context: "Context", test_column: str, row_count: int, size: WidgetSize
     ) -> BaseWidgetInfo:
         title = f"Row test '{test_column}'"
-        metric = self.get_test_column_metric(test_column)
+        metric = self.get_test_column_metric(test_column, context)
         result = context.get_metric_result(metric)
         assert isinstance(result, SingleValue)
         success_count = int(result.value * row_count)
         if result.value == 1:
-            return pie_chart(title=title, data=(["PASSED"], [success_count]), colors=["GREEN"], size=size)
+            return pie_chart(title=title, data=(["PASSED"], [row_count]), colors=["GREEN"], size=size)
         if result.value == 0:
-            return pie_chart(title=title, data=(["FAILED"], [0]), colors=["RED"], size=size)
+            return pie_chart(title=title, data=(["FAILED"], [row_count]), colors=["RED"], size=size)
         return pie_chart(
             title=title,
             data=(["PASSED", "FAILED"], [success_count, row_count - success_count]),

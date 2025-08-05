@@ -324,6 +324,8 @@ class ByLabelCountValue(MetricResult):
 
     counts: Dict[Label, SingleValue]
     shares: Dict[Label, SingleValue]
+    count_display_name_template: str = "Missing label {label} count"
+    share_display_name_template: str = "Missing label {label} share"
 
     def labels(self) -> List[Label]:
         return list(self.counts.keys())
@@ -339,7 +341,9 @@ class ByLabelCountValue(MetricResult):
     def _missing_label_value(self, label: Label, is_count: bool) -> SingleValue:
         val = SingleValue(
             value=0,
-            display_name=f"Missing label {label} {'count' if is_count else 'share'}",
+            display_name=self.count_display_name_template.format(label=label)
+            if is_count
+            else self.share_display_name_template.format(label=label),
         )
         val.metric_value_location = by_label_count_value_location(self._metric_config, label, is_count=is_count)
         return val
@@ -1086,12 +1090,14 @@ class ByLabelCountCalculation(
             shares={
                 k: SingleValue(
                     value=v,
-                    display_name=self.count_label_display_name(k),
+                    display_name=self.share_label_display_name(k),
                     metric_value_location=by_label_count_value_location(self.to_metric_config(), k, False),
                 )
                 for k, v in shares.items()
             },
             display_name=self.display_name(),
+            count_display_name_template=self.count_label_display_name("{label}"),
+            share_display_name_template=self.share_label_display_name("{label}"),
             metric_value_location=single_value_location(self.to_metric_config()),
         )
 

@@ -48,7 +48,7 @@ class ClassificationRocCurve(Metric[ClassificationRocCurveResults]):
         target_name = dataset_columns.utility_columns.target
         prediction_name = dataset_columns.utility_columns.prediction
         if target_name is None or prediction_name is None:
-            raise ValueError("The columns 'target' and 'prediction' columns should be present")
+            raise ValueError("The columns 'target' and 'prediction' should be present")
         curr_predictions = get_prediction_data(data.current_data, dataset_columns, data.column_mapping.pos_label)
         if curr_predictions.prediction_probas is None:
             raise ValueError("Roc Curve can be calculated only on binary probabilistic predictions")

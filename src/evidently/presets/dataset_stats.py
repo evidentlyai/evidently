@@ -46,6 +46,7 @@ from evidently.metrics.dataset_statistics import DatasetMissingValueCount
 from evidently.metrics.dataset_statistics import DuplicatedColumnsCount
 from evidently.metrics.dataset_statistics import EmptyColumnsCount
 from evidently.metrics.dataset_statistics import EmptyRowsCount
+from evidently.metrics.row_test_summary import RowTestSummary
 
 
 class ValueStats(ColumnMetricContainer):
@@ -107,7 +108,9 @@ class ValueStats(ColumnMetricContainer):
 
     def _categorical_unique_value_count_metric(self) -> UniqueValueCount:
         return UniqueValueCount(
-            column=self.column, tests=self._get_tests(self.unique_values_count_tests), replace_nan=self.replace_nan
+            column=self.column,
+            tests=self._get_tests(self.unique_values_count_tests),
+            replace_nan=self.replace_nan,
         )
 
     def generate_metrics(self, context: Context) -> Sequence[MetricOrContainer]:
@@ -466,10 +469,11 @@ class TextEvals(MetricContainer):
                 include_tests=self.include_tests,
             )
             for column in cols
+            if column not in (context.data_definition.test_descriptors or [])
         ]
 
     def generate_metrics(self, context: Context) -> Sequence[MetricOrContainer]:
-        metrics: List[MetricOrContainer] = [RowCount(tests=self._get_tests(self.row_count_tests))]
+        metrics: List[MetricOrContainer] = [RowTestSummary(), RowCount(tests=self._get_tests(self.row_count_tests))]
         value_stats = self.get_value_stats(context)
         metrics.extend(list(chain(*[vs.metrics(context)[1:] for vs in value_stats])))
         return metrics
@@ -480,7 +484,7 @@ class TextEvals(MetricContainer):
         child_widgets: Optional[List[Tuple[Optional[MetricId], List[BaseWidgetInfo]]]] = None,
     ) -> List[BaseWidgetInfo]:
         value_stats = self.get_value_stats(context)
-        return list(chain(*[vs.render(context) for vs in value_stats]))
+        return list(chain(*([RowTestSummary().render(context)] + [vs.render(context) for vs in value_stats])))
 
 
 class DataSummaryPreset(MetricContainer):

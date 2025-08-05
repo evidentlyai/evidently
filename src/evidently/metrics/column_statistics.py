@@ -681,10 +681,10 @@ class UniqueValueCountCalculation(ByLabelCountCalculation[UniqueValueCount]):
         return f"Unique Value Count: {self.metric.column}"
 
     def count_label_display_name(self, label: Label) -> str:
-        return f"{self.display_name()} for label {label}"
+        return f"Unique Value Count: {self.metric.column} for label {label}"
 
     def share_label_display_name(self, label: Label) -> str:
-        return f"{self.display_name()} for label {label}"
+        return f"Unique Value Share: {self.metric.column} for label {label}"
 
     def _all_unique_values(self, current: Dataset, reference: Optional[Dataset]) -> set:
         values = set(current.as_dataframe()[self.metric.column].unique())
