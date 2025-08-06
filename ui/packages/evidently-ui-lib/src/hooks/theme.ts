@@ -1,4 +1,5 @@
-import { useColorScheme, useMediaQuery } from '@mui/material'
+import { useColorScheme } from '@mui/material'
+import useMediaQuery from '@mui/material/useMediaQuery'
 import { useMemo } from 'react'
 
 export const useThemeMode = () => {
@@ -14,14 +15,7 @@ export const useNivoTheme = () => {
   const theme = useMemo(
     () =>
       mode === 'dark'
-        ? {
-            tooltip: {
-              container: {
-                background: '#000',
-                color: '#fff'
-              }
-            }
-          }
+        ? { tooltip: { container: { background: '#000', color: '#fff' } } }
         : undefined,
     [mode]
   )
