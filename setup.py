@@ -3,53 +3,29 @@
 
 # Copyright (c) Jupyter Development Team.
 # Distributed under the terms of the Modified BSD License.
-import os
-from os.path import join as pjoin
 from pathlib import Path
 
 from setuptools import setup
 
-from setupbase import HERE
-from setupbase import combine_commands
-from setupbase import create_cmdclass
-from setupbase import ensure_targets
-from setupbase import install_npm
-
-nb_path = pjoin(HERE, "src", "evidently", "nbextension", "static")
-
-# Representative files that should exist after a successful build
-jstargets = [
-    pjoin(nb_path, "index.js"),
+ui_build_assets = [
+    "nbextension/static/*.*js*",
+    "nbextension/static/*.*woff2*",
+    "legacy/ui/assets/*",
+    "legacy/ui/assets/static/css/*",
+    "legacy/ui/assets/static/js/*",
+    "legacy/ui/assets/static/img/*",
+    "ui/service/assets/*",
+    "ui/service/assets/static/css/*",
+    "ui/service/assets/static/js/*",
+    "ui/service/assets/static/img/*",
 ]
 
-package_data_spec = {
-    "evidently": [
-        "nbextension/static/*.*js*",
-        "nbextension/static/*.*woff2*",
-        "legacy/ui/assets/*",
-        "legacy/ui/assets/static/css/*",
-        "legacy/ui/assets/static/js/*",
-        "legacy/ui/assets/static/img/*",
-        "ui/service/assets/*",
-        "ui/service/assets/static/css/*",
-        "ui/service/assets/static/js/*",
-        "ui/service/assets/static/img/*",
-    ]
+package_data = {
+    "evidently": ui_build_assets,
 }
 
-data_files_spec = [
-    ("share/jupyter/nbextensions/evidently", nb_path, "*.js*"),
-    ("share/jupyter/nbextensions/evidently", nb_path, "*.woff2"),
-    ("etc/jupyter/nbconfig/notebook.d", HERE, "evidently.json"),
-]
-
-cmdclass = create_cmdclass("jsdeps", package_data_spec=package_data_spec, data_files_spec=data_files_spec)
-cmdclass["jsdeps"] = combine_commands(
-    install_npm(os.path.join(HERE, "ui"), build_cmd="build"),
-    ensure_targets(jstargets),
-)
 setup_args = dict(
-    cmdclass=cmdclass,
+    package_data=package_data,
     author_email="emeli.dral@gmail.com",
     long_description=(Path(__file__).parent / "README.md").read_text("utf8"),
     long_description_content_type="text/markdown",
