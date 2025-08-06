@@ -23,7 +23,7 @@
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",
     "vite": "npm:rolldown-vite@7.0.8",
-    "@vitejs/plugin-react-swc": "^3.7.0",
+    "@vitejs/plugin-react-oxc": "^0.2.3",
     "vite-tsconfig-paths": "^5.1.4",
     "typescript": "^5.7.2"
   }
