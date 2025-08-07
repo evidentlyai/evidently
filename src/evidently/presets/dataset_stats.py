@@ -410,7 +410,7 @@ class DatasetStats(MetricContainer):
         child_widgets: Optional[List[Tuple[Optional[MetricId], List[BaseWidgetInfo]]]] = None,
     ) -> List[BaseWidgetInfo]:
         legacy_metric = DatasetSummaryMetric()
-        _, render = context.get_legacy_metric(legacy_metric, _default_input_data_generator)
+        _, render = context.get_legacy_metric(legacy_metric, _default_input_data_generator, None)
         for metric in self.list_metrics(context):
             link_metric(render, metric)
         return render
