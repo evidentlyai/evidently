@@ -234,8 +234,19 @@ class RegressionPreset(MetricContainer):
         return (
             self._quality.render(context)
             + context.get_metric_result(
-                MAPE(mean_tests=self.mape_tests.mean, std_tests=self.mape_tests.std),
+                MAPE(
+                    regression_name=self.regression_name,
+                    mean_tests=self.mape_tests.mean,
+                    std_tests=self.mape_tests.std,
+                ),
             ).get_widgets()
-            + context.get_metric_result(AbsMaxError(tests=self.abs_max_error_tests)).get_widgets()
-            + context.get_metric_result(R2Score(tests=self.r2score_tests)).get_widgets()
+            + context.get_metric_result(
+                AbsMaxError(
+                    regression_name=self.regression_name,
+                    tests=self.abs_max_error_tests,
+                )
+            ).get_widgets()
+            + context.get_metric_result(
+                R2Score(regression_name=self.regression_name, tests=self.r2score_tests)
+            ).get_widgets()
         )

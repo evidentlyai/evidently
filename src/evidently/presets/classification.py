@@ -233,21 +233,37 @@ class ClassificationQualityByLabel(MetricContainer):
         super().__init__(include_tests=include_tests)
 
     def generate_metrics(self, context: "Context") -> Sequence[MetricOrContainer]:
-        classification = context.data_definition.get_classification("default")
+        classification = context.data_definition.get_classification(self.classification_name)
         if classification is None:
             raise ValueError("Cannot use ClassificationPreset without a classification configration")
         return [
-            F1ByLabel(probas_threshold=self.probas_threshold, k=self.k, tests=self._get_tests(self.f1score_tests)),
-            PrecisionByLabel(
-                probas_threshold=self.probas_threshold, k=self.k, tests=self._get_tests(self.precision_tests)
+            F1ByLabel(
+                classification_name=self.classification_name,
+                probas_threshold=self.probas_threshold,
+                k=self.k,
+                tests=self._get_tests(self.f1score_tests),
             ),
-            RecallByLabel(probas_threshold=self.probas_threshold, k=self.k, tests=self._get_tests(self.recall_tests)),
+            PrecisionByLabel(
+                classification_name=self.classification_name,
+                probas_threshold=self.probas_threshold,
+                k=self.k,
+                tests=self._get_tests(self.precision_tests),
+            ),
+            RecallByLabel(
+                classification_name=self.classification_name,
+                probas_threshold=self.probas_threshold,
+                k=self.k,
+                tests=self._get_tests(self.recall_tests),
+            ),
         ] + (
             []
             if classification.prediction_probas is None
             else [
                 RocAucByLabel(
-                    probas_threshold=self.probas_threshold, k=self.k, tests=self._get_tests(self.rocauc_tests)
+                    classification_name=self.classification_name,
+                    probas_threshold=self.probas_threshold,
+                    k=self.k,
+                    tests=self._get_tests(self.rocauc_tests),
                 ),
             ]
         )
@@ -324,6 +340,7 @@ class ClassificationPreset(MetricContainer):
     precision_by_label_tests: ByLabelMetricTests = None
     recall_by_label_tests: ByLabelMetricTests = None
     rocauc_by_label_tests: ByLabelMetricTests = None
+    classification_name: str = "default"
 
     _quality: ClassificationQuality = PrivateAttr()
     _quality_by_label: ClassificationQualityByLabel = PrivateAttr()
@@ -347,6 +364,7 @@ class ClassificationPreset(MetricContainer):
         recall_by_label_tests: GenericByLabelMetricTests = None,
         rocauc_by_label_tests: GenericByLabelMetricTests = None,
         include_tests: bool = True,
+        classification_name: str = "default",
     ):
         super().__init__(
             include_tests=include_tests,
@@ -365,6 +383,7 @@ class ClassificationPreset(MetricContainer):
             precision_by_label_tests=convert_tests(precision_by_label_tests),
             recall_by_label_tests=convert_tests(recall_by_label_tests),
             rocauc_by_label_tests=convert_tests(rocauc_by_label_tests),
+            classification_name=classification_name,
         )
         self._quality = ClassificationQuality(
             probas_threshold=probas_threshold,
@@ -382,6 +401,7 @@ class ClassificationPreset(MetricContainer):
             fpr_tests=fpr_tests,
             fnr_tests=fnr_tests,
             include_tests=include_tests,
+            classification_name=classification_name,
         )
         self._quality_by_label = ClassificationQualityByLabel(
             probas_threshold=probas_threshold,
@@ -390,15 +410,12 @@ class ClassificationPreset(MetricContainer):
             recall_tests=recall_by_label_tests,
             rocauc_tests=rocauc_by_label_tests,
             include_tests=include_tests,
+            classification_name=classification_name,
         )
         self._roc_auc = None
-        # self._roc_auc: Optional[RocAuc] = RocAuc(
-        #     probas_threshold=probas_threshold,
-        #     tests=self._get_tests(rocauc_tests),
-        # )
 
     def generate_metrics(self, context: "Context") -> Sequence[MetricOrContainer]:
-        classification = context.data_definition.get_classification("default")
+        classification = context.data_definition.get_classification(self.classification_name)
         if classification is None:
             raise ValueError("Cannot use ClassificationPreset without a classification configration")
         quality_metrics = self._quality.metrics(context)
