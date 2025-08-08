@@ -1,6 +1,7 @@
 # ruff: noqa: E501
 # fmt: off
 from evidently.core.datasets import Descriptor
+from evidently.core.datasets import SpecialColumnInfo
 from evidently.pydantic_utils import register_type_alias
 
 register_type_alias(Descriptor, "evidently.core.datasets.FeatureDescriptor", "evidently:descriptor_v2:FeatureDescriptor")
@@ -14,3 +15,5 @@ register_type_alias(Descriptor, "evidently.core.datasets.SingleInputDescriptor",
 register_type_alias(Descriptor, "evidently.core.datasets.TestSummary", "evidently:descriptor_v2:TestSummary")
 
 register_type_alias(Descriptor, "evidently.descriptors.llm_judges.GenericLLMDescriptor", "evidently:descriptor_v2:GenericLLMDescriptor")
+
+register_type_alias(SpecialColumnInfo, "evidently.core.datasets.TestSummaryInfo", "evidently:special_column_info:TestSummaryInfo")
