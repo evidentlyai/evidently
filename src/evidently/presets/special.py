@@ -111,6 +111,7 @@ class TestSummaryInfoPreset(MetricContainer):
         if self.column_info.has_rate:
             rate_results = context.get_metric_result(self._rate_metric)
             assert isinstance(rate_results, SingleValue)
+            assert rate_results.widget is not None
             distr_widget = rate_results.widget[0]
             widgets.append(
                 BaseWidgetInfo(
@@ -123,6 +124,7 @@ class TestSummaryInfoPreset(MetricContainer):
         if self.column_info.has_score:
             score_results = context.get_metric_result(self._score_metric)
             assert isinstance(score_results, SingleValue)
+            assert score_results.widget is not None
             distr_widget = score_results.widget[0]
             widgets.append(
                 BaseWidgetInfo(

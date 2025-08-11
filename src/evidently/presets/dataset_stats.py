@@ -489,7 +489,10 @@ class TextEvals(MetricContainer):
         result = list(chain(*([RowTestSummary().render(context)] + [vs.render(context) for vs in value_stats])))
         for column_info in context.data_definition.special_columns:
             for metric in column_info.get_metrics():
-                result.extend(metric.render(context))
+                if isinstance(metric, MetricContainer):
+                    result.extend(metric.render(context))
+                else:
+                    result.extend(context.get_metric_result(metric).widget or [])
         return result
 
 
