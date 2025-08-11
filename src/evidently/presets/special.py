@@ -9,6 +9,7 @@ from evidently.core.container import MetricContainer
 from evidently.core.container import MetricOrContainer
 from evidently.core.datasets import TestSummaryInfo
 from evidently.core.metric_types import ByLabelCountValue
+from evidently.core.metric_types import Metric
 from evidently.core.metric_types import MetricId
 from evidently.core.metric_types import SingleValue
 from evidently.core.report import Context
@@ -43,23 +44,23 @@ class TestSummaryInfoPreset(MetricContainer):
         return result
 
     @property
-    def _all_metric(self) -> MetricOrContainer:
+    def _all_metric(self) -> Metric:
         return UniqueValueCount(column=self.column_info.all_column)
 
     @property
-    def _any_metric(self) -> MetricOrContainer:
+    def _any_metric(self) -> Metric:
         return UniqueValueCount(column=self.column_info.any_column)
 
     @property
-    def _count_metric(self) -> MetricOrContainer:
+    def _count_metric(self) -> Metric:
         return UniqueValueCount(column=self.column_info.count_column)
 
     @property
-    def _rate_metric(self) -> MetricOrContainer:
+    def _rate_metric(self) -> Metric:
         return MeanValue(column=self.column_info.rate_column)
 
     @property
-    def _score_metric(self) -> MetricOrContainer:
+    def _score_metric(self) -> Metric:
         return MeanValue(column=self.column_info.score_column)
 
     def render(

@@ -6,6 +6,7 @@ import pytest
 
 from evidently._pydantic_compat import parse_obj_as
 from evidently.core.container import MetricContainer
+from evidently.core.datasets import TestSummaryInfo
 from evidently.generators import ColumnMetricGenerator
 from evidently.metrics import MinValue
 from evidently.metrics.group_by import GroupBy
@@ -21,6 +22,7 @@ from evidently.presets import RegressionDummyQuality
 from evidently.presets import RegressionPreset
 from evidently.presets import RegressionQuality
 from evidently.presets import TextEvals
+from evidently.presets.special import TestSummaryInfoPreset
 from evidently.tests import gt
 from tests.conftest import load_all_subtypes
 
@@ -42,6 +44,7 @@ all_presets: List[MetricContainer] = [
     RegressionPreset(),
     GroupBy(metric=MinValue(column="a"), column_name="b"),
     RowTestSummary(),
+    TestSummaryInfoPreset(column_info=TestSummaryInfo()),
 ]
 
 

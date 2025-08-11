@@ -27,6 +27,7 @@ from evidently.legacy.options import ColorOptions
 
 
 class WidgetSize(int, Enum):
+    SMALL = 0
     HALF = 1
     FULL = 2
 
