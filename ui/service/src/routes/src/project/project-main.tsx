@@ -7,6 +7,7 @@ import type { GetParams, loadDataArgs } from 'evidently-ui-lib/router-utils/type
 import { Tabs } from 'evidently-ui-lib/shared-dependencies/mui-material'
 import { Outlet } from 'evidently-ui-lib/shared-dependencies/react-router-dom'
 import { clientAPI } from '~/api'
+import { ProjectContext } from '~/contexts/project'
 import { RouterLink } from '~/routes/components'
 import { useMatchRouter } from '~/routes/hooks'
 import type { GetRouteByPath } from '~/routes/types'
@@ -43,49 +44,38 @@ export const Component = () => {
   } = useCurrentRouteParams<CurrentRoute>()
 
   const isReports = useMatchRouter({ path: '/projects/:projectId/reports' })
-  const isTestSuites = useMatchRouter({ path: '/projects/:projectId/test-suites' })
 
   const { projectId } = params
 
-  const selectedTab = isReports ? TABS.reports : isTestSuites ? TABS['test-suites'] : TABS.index
+  const selectedTab = isReports ? TABS.reports : TABS.index
 
   return (
-    <ProjectLayoutTemplate project={project}>
-      <>
-        <Tabs value={selectedTab} aria-label='simple tabs example' indicatorColor={'primary'}>
-          <RouterLink
-            type='tab'
-            value={TABS.index}
-            label={'Dashboard'}
-            to='/projects/:projectId/?index'
-            paramsToReplace={{ projectId }}
-          />
+    <ProjectContext.Provider value={{ project }}>
+      <ProjectLayoutTemplate project={project}>
+        <>
+          <Tabs value={selectedTab} aria-label='simple tabs example' indicatorColor={'primary'}>
+            <RouterLink
+              type='tab'
+              value={TABS.index}
+              label={'Dashboard'}
+              to='/projects/:projectId/?index'
+              paramsToReplace={{ projectId }}
+            />
 
-          <RouterLink
-            type='tab'
-            value={TABS.reports}
-            label={'Reports'}
-            to='/projects/:projectId/reports'
-            paramsToReplace={{ projectId }}
-          />
+            <RouterLink
+              type='tab'
+              value={TABS.reports}
+              label={'Reports'}
+              to='/projects/:projectId/reports'
+              paramsToReplace={{ projectId }}
+            />
+          </Tabs>
 
-          <RouterLink
-            type='tab'
-            value={TABS['test-suites']}
-            label={'Test suites'}
-            to='/projects/:projectId/test-suites'
-            paramsToReplace={{ projectId }}
-          />
-        </Tabs>
-
-        <Outlet />
-      </>
-    </ProjectLayoutTemplate>
+          <Outlet />
+        </>
+      </ProjectLayoutTemplate>
+    </ProjectContext.Provider>
   )
 }
 
-const TABS = {
-  reports: 'reports',
-  'test-suites': 'test-suites',
-  index: 'index'
-}
+const TABS = { reports: 'reports', index: 'index' }

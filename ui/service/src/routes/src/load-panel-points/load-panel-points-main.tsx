@@ -1,7 +1,7 @@
 import { clientAPI } from 'api'
 import { JSONParseExtended } from 'evidently-ui-lib/api/JsonParser'
 import { responseParser } from 'evidently-ui-lib/api/client-heplers'
-import type { BatchMetricDataModel } from 'evidently-ui-lib/api/types/v2'
+import type { BatchMetricDataModel } from 'evidently-ui-lib/api/types'
 import type { GetParams, loadDataArgs } from 'evidently-ui-lib/router-utils/types'
 
 ///////////////////

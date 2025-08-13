@@ -1,5 +1,5 @@
 import { ChartsTooltip, PiePlot, pieArcLabelClasses } from '@mui/x-charts'
-import type { SeriesModel } from 'evidently-ui-lib/api/types/v2'
+import type { SeriesModel } from 'evidently-ui-lib/api/types'
 import type { MakePanel } from '~/components/v2/Dashboard/Panels/types'
 import { PanelCardGeneral } from './helpers/general'
 import { MuiXChartPlotTemplate, type SeriesType } from './helpers/mui'

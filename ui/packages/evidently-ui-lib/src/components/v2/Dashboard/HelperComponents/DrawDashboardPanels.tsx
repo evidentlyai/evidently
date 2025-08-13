@@ -1,4 +1,4 @@
-import type { DashboardPanelPlotModel } from 'evidently-ui-lib/api/types/v2'
+import type { DashboardPanelPlotModel } from 'evidently-ui-lib/api/types'
 import { Grid, Typography } from 'evidently-ui-lib/shared-dependencies/mui-material'
 import {
   castRawPanelDataToDashboardPanelProps,

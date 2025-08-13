@@ -1,14 +1,14 @@
 import pytest
 from litestar.testing import TestClient
 
-from evidently.legacy.ui.app import create_app
-from evidently.legacy.ui.demo_projects import DEMO_PROJECTS
-from evidently.legacy.ui.local_service import LocalConfig
+from evidently.ui.service.app import create_app
+from evidently.ui.service.demo_projects import DEMO_PROJECTS
+from evidently.ui.service.local_service import LocalConfig
 from tests.conftest import slow
 
 
 @pytest.fixture
-def test_client_with_demo(tmp_path):
+def test_client(tmp_path):
     dp = DEMO_PROJECTS["bikes"]
     dp.create(str(tmp_path))
     config = LocalConfig()

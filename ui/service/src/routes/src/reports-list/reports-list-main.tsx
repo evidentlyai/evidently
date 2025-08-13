@@ -1,14 +1,17 @@
+import type { ActionArgs, GetParams, loadDataArgs } from 'evidently-ui-lib/router-utils/types'
+
+import type { GetRouteByPath } from '~/routes/types'
+
+import { clientAPI } from '~/api'
+
 import { responseParser } from 'evidently-ui-lib/api/client-heplers'
 import {
   useCurrentRouteParams,
   useIsAnyLoaderOrActionRunning
 } from 'evidently-ui-lib/router-utils/hooks'
-import type { ActionArgs, GetParams, loadDataArgs } from 'evidently-ui-lib/router-utils/types'
 import { SnapshotsListTemplate } from 'evidently-ui-lib/routes-components/snapshots'
-import { clientAPI } from '~/api'
 import { RouterLink } from '~/routes/components'
 import { useSubmitFetcher } from '~/routes/hooks'
-import type { GetRouteByPath } from '~/routes/types'
 
 ///////////////////
 //    ROUTE
@@ -24,7 +27,7 @@ export const loadData = ({ params }: loadDataArgs) => {
   const { projectId } = params as Params
 
   return clientAPI
-    .GET('/api/projects/{project_id}/reports', { params: { path: { project_id: projectId } } })
+    .GET('/api/projects/{project_id}/snapshots', { params: { path: { project_id: projectId } } })
     .then(responseParser())
 }
 
@@ -73,12 +76,14 @@ export const Component = () => {
         disabled={disabled}
         projectId={params.projectId}
         snapshots={reports}
-        type='reports'
         LinkToSnapshot={LinkToSnapshot}
         downloadLink={'/api/projects/{project_id}/{snapshot_id}/download'}
         onDeleteSnapshot={({ snapshotId }) => {
           if (confirm('Are you sure?') === true) {
-            deleteSnapshotFetcher.submit({ data: { snapshotId }, paramsToReplace: { projectId } })
+            deleteSnapshotFetcher.submit({
+              data: { snapshotId },
+              paramsToReplace: { projectId }
+            })
           }
         }}
         onReloadSnapshots={() =>
