@@ -5,7 +5,6 @@
     "ignore": [
       "ui/packages/evidently-ui-lib/src/**/JsonParser.ts",
       "ui/packages/evidently-ui-lib/src/**/endpoints.d.ts",
-      "ui/packages/evidently-ui-lib/src/**/endpoints_v2.d.ts",
       "ui/packages/evidently-ui-lib/.tsc-dts/**"
     ],
     "include": ["ui/*/src/**", "ui/*/tests/**", "ui/packages/*/src/**"]

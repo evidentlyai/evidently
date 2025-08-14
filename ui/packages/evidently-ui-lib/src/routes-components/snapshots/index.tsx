@@ -25,7 +25,7 @@ import { useLocalStorage } from '@uidotdev/usehooks'
 
 import { Delete as DeleteIcon } from '@mui/icons-material'
 import { Autocomplete } from '@mui/material'
-import type { DownloadSnapshotURL, MetadataModel, ReportModel, TestSuiteModel } from '~/api/types'
+import type { DownloadSnapshotURL, MetadataModel, ReportModel } from '~/api/types'
 import { DownloadButton } from '~/components/DownloadButton'
 import { HidedTags } from '~/components/HidedTags'
 import { JsonViewThemed } from '~/components/JsonView'
@@ -71,7 +71,6 @@ const SnapshotNameAndID = (params: { name?: string | null; id: string }) => {
 
 export const SnapshotsListTemplate = ({
   query,
-  type,
   slots,
   snapshots,
   disabled,
@@ -86,8 +85,7 @@ export const SnapshotsListTemplate = ({
   query: Partial<Record<string, string>>
   projectId: string
   disabled?: boolean
-  snapshots: ReportModel[] | TestSuiteModel[]
-  type: 'reports' | 'test suites'
+  snapshots: ReportModel[]
   LinkToSnapshot: (props: { snapshotId: string; projectId: string }) => JSX.Element
   ActionsWrapper?: ({
     children,
@@ -201,7 +199,7 @@ export const SnapshotsListTemplate = ({
                 color='primary'
                 disabled={disabled}
               >
-                refresh {type}
+                refresh reports
               </Button>
             </Box>
             {snapshotSelection && (
@@ -230,7 +228,7 @@ export const SnapshotsListTemplate = ({
       <>
         {FilterComponent}
         <Typography my={3} variant='h4' align='center'>
-          You don't have any {type} yet.
+          You don't have any reports yet.
         </Typography>
       </>
     )
@@ -243,13 +241,7 @@ export const SnapshotsListTemplate = ({
         <TableHead>
           <TableRow>
             {snapshotSelection && <TableCell />}
-            <TableCell>
-              {type === 'reports'
-                ? 'Report ID'
-                : type === 'test suites'
-                  ? 'Test Suite ID'
-                  : 'indefined'}
-            </TableCell>
+            <TableCell>Report ID</TableCell>
             <TableCell>Tags</TableCell>
             <TableCell>Metadata</TableCell>
             <TableCell>

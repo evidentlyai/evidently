@@ -3,15 +3,21 @@ import type { Expect } from 'evidently-ui-lib/api/types/utils'
 import type {
   ExpectEqActuall,
   GetMatches,
-  GetRouteStructure
+  GetRouteStructure,
+  MatchWithLoader
 } from 'evidently-ui-lib/router-utils/types'
 
-import type { routes } from '~/routes/src'
+import type { routes } from 'routes/src'
 
 export type Routes = GetMatches<typeof routes>
 
 export type Paths = Routes['path']
 
-export type GetRouteByPath<K extends Routes['path']> = Extract<Routes, { path: K }>
+type RoutesWithLoader = Extract<Routes, MatchWithLoader>
+
+export type GetRouteByPath<K extends RoutesWithLoader['path']> = Extract<
+  RoutesWithLoader,
+  { path: K }
+>
 
 export type __TESTS_ROUTE_STRUCTURE = Expect<ExpectEqActuall<GetRouteStructure<typeof routes>>>

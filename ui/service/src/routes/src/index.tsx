@@ -7,37 +7,35 @@ import { DashboardLazy } from './dashboard/import'
 
 import { Route } from 'evidently-ui-lib/router-utils/router-builder'
 import { Home } from './home/import'
+import { LoadPanelPointsAPIV2 } from './load-panel-points/import'
 import { Project } from './project/import'
+import { ProjectsCrumbPrefixRoute } from './projects-crumb-prefix/import'
 import { ProjectsLayout } from './projects-layout/import'
 import { ProjectsList } from './projects-list/import'
 import { ReportsLayout } from './reports-layout/import'
 import { ReportsList } from './reports-list/import'
-import { TestSuitesLayout } from './test-suites-layout/import'
-import { TestSuitesList } from './test-suites-list/import'
 
 export const routes = [
   Route(Home, {
     children: [
-      Route(ProjectsList, { index: true } as const),
-      Route(ProjectsLayout, {
-        path: 'projects',
+      Route(ProjectsCrumbPrefixRoute, {
         children: [
-          Route(Project, {
-            path: ':projectId',
+          Route(ProjectsList, { index: true } as const),
+          Route(ProjectsLayout, {
+            path: 'projects',
             children: [
-              Route(DashboardLazy, { index: true } as const),
-              Route(ReportsLayout, {
-                path: 'reports',
+              Route(Project, {
+                path: ':projectId',
                 children: [
-                  Route(ReportsList, { index: true } as const),
-                  Route(SnapshotIdLazy, { path: ':snapshotId' } as const)
-                ]
-              } as const),
-              Route(TestSuitesLayout, {
-                path: 'test-suites',
-                children: [
-                  Route(TestSuitesList, { index: true } as const),
-                  Route(SnapshotIdLazy, { path: ':snapshotId' } as const)
+                  Route(DashboardLazy, { index: true } as const),
+                  Route(LoadPanelPointsAPIV2, { path: 'load-panel-points' } as const),
+                  Route(ReportsLayout, {
+                    path: 'reports',
+                    children: [
+                      Route(ReportsList, { index: true } as const),
+                      Route(SnapshotIdLazy, { path: ':snapshotId' } as const)
+                    ]
+                  } as const)
                 ]
               } as const)
             ]

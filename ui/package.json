@@ -5,14 +5,12 @@
     "type-check": "pnpm --workspace-concurrency 1 -r type-check",
     "code-check": "pnpm -r code-check",
     "build": "pnpm -r build",
-    "clean-assets-service": "rm -rf ../src/evidently/legacy/ui/assets/*",
-    "copy-assets-service": "cp -r ./service/dist/* ../src/evidently/legacy/ui/assets",
-    "clean-assets-service-v2": "rm -rf ../src/evidently/ui/service/assets/*",
-    "copy-assets-service-v2": "cp -r ./service_v2/dist/* ../src/evidently/ui/service/assets",
+    "clean-assets-service": "rm -rf ../src/evidently/ui/service/assets/*",
     "clean-assets-standalone": "rm -rf ../src/evidently/nbextension/static/index.js",
+    "copy-assets-service": "cp -r ./service/dist/* ../src/evidently/ui/service/assets",
     "copy-assets-standalone": "cp ./standalone/dist/index.js ../src/evidently/nbextension/static",
-    "clean-assets-all": "pnpm clean-assets-service && pnpm clean-assets-service-v2 && pnpm clean-assets-standalone",
-    "copy-assets-all": "pnpm copy-assets-service && pnpm copy-assets-service-v2 && pnpm copy-assets-standalone",
+    "clean-assets-all": "pnpm clean-assets-service && pnpm clean-assets-standalone",
+    "copy-assets-all": "pnpm copy-assets-service && pnpm copy-assets-standalone",
     "full-build": "pnpm build && pnpm clean-assets-all && pnpm copy-assets-all"
   },
   "engines": {

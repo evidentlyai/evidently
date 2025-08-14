@@ -1,4 +1,4 @@
-import type { DashboardPanelPlotModel } from '~/api/types/v2'
+import type { DashboardPanelPlotModel } from '~/api/types'
 import { assertNever } from '~/utils'
 import type { DashboardPanelProps } from './Panels/DashboardPanel'
 

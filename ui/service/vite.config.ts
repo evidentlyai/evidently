@@ -15,7 +15,9 @@ export default defineConfig({
     rollupOptions: {
       output: {
         assetFileNames: (assetInfo) => {
-          let [extType] = assetInfo.name.split('.').reverse()
+          const fileName = assetInfo.names?.[0] || 'unknown'
+          let [extType] = fileName.split('.').reverse()
+
           if (/png|jpe?g|svg|gif|tiff|bmp|ico/i.test(extType)) {
             // don't hash images
             return `static/img/[name][extname]`

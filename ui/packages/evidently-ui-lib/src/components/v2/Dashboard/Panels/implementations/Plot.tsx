@@ -14,7 +14,7 @@ import {
 } from '@mui/x-charts'
 import { BarPlot } from '@mui/x-charts'
 import dayjs from 'dayjs'
-import type { SeriesModel } from 'evidently-ui-lib/api/types/v2'
+import type { SeriesModel } from 'evidently-ui-lib/api/types'
 import { Box } from 'evidently-ui-lib/shared-dependencies/mui-material'
 import { assertNever } from 'evidently-ui-lib/utils/index'
 import { clamp } from 'evidently-ui-lib/utils/index'

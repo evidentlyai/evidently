@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import type { DashboardPanelPlotModel, SeriesModel } from '~/api/types/v2'
+import type { DashboardPanelPlotModel, SeriesModel } from '~/api/types'
 import { DashboardPanel } from '~/components/v2/Dashboard/Panels/DashboardPanel'
 import { DashboardPanelSkeleton } from '~/components/v2/Dashboard/Panels/Skeleton'
 import { castRawPanelDataToDashboardPanelProps, getSeriesListTypeHash } from '../utils'

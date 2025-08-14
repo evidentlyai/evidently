@@ -5,6 +5,7 @@ from typing import Dict
 from typing import List
 from typing import Optional
 from typing import Sequence
+from typing import Union
 
 from litestar import Response
 from litestar import Router
@@ -23,10 +24,12 @@ from evidently._pydantic_compat import parse_obj_as
 from evidently.core.report import Snapshot
 from evidently.core.serialization import SnapshotModel
 from evidently.legacy.model.dashboard import DashboardInfo
+from evidently.legacy.model.widget import BaseWidgetInfo
 from evidently.legacy.report.report import METRIC_GENERATORS
 from evidently.legacy.report.report import METRIC_PRESETS
 from evidently.legacy.test_suite.test_suite import TEST_GENERATORS
 from evidently.legacy.test_suite.test_suite import TEST_PRESETS
+from evidently.legacy.ui.api.models import DashboardInfoModel
 from evidently.legacy.utils import NumpyEncoder
 from evidently.sdk.models import DashboardModel
 from evidently.sdk.models import SnapshotMetadataModel
@@ -402,6 +405,20 @@ async def get_snapshots_metrics_data_batch(
     return series
 
 
+# We need this endpoint to export
+# some additional models to open api schema
+@get("/models/additional")
+async def additional_models() -> (
+    List[
+        Union[
+            BaseWidgetInfo,
+            DashboardInfoModel,
+        ]
+    ]
+):
+    return []
+
+
 def create_projects_api(guard: Callable) -> Router:
     projects_router_v1 = Router(
         "/projects",
@@ -443,6 +460,7 @@ def create_projects_api(guard: Callable) -> Router:
                 "",
                 route_handlers=[
                     list_projects,
+                    additional_models,
                 ],
             ),
             # write

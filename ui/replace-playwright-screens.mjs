@@ -22,8 +22,8 @@ async function confirm(question)  {
 const PREFIX = 'data:application/zip;base64,'
 const PLW_PATH = 'playwright-report'
 
-// Get service path from command line arguments, default to 'service_v2'
-const servicePath = process.argv[2] || 'service_v2'
+// Get service path from command line arguments, default to 'service'
+const servicePath = process.argv[2] || 'service'
 
 async function main() {
   console.log(`Using service path: ${servicePath}`)
