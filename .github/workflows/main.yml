@@ -174,8 +174,9 @@ jobs:
       - name: Run Tests
         run: python -m pytest --durations=50
 
-  build:
+  python-build:
     # The type of runner that the job will run on
+    name: Python build
     runs-on: ubuntu-22.04
     needs: changed_files
     if: ${{ github.event.pull_request.draft == false && needs.changed_files.outputs.evidently_any_modified == 'true' }}
@@ -198,6 +199,24 @@ jobs:
         with:
           name: build-artifacts
           path: dist/
+
+  ui-build:
+    name: UI build
+    runs-on: ubuntu-22.04
+    needs: changed_files
+    if: ${{ github.event.pull_request.draft == false && needs.changed_files.outputs.ui_any_modified == 'true' }}
+
+    steps:
+      - name: ⬇️ Checkout repo
+        uses: actions/checkout@v4
+
+      - name: 📥 Install ui dependencies
+        uses: ./.github/share-actions/ui-node-pnpm-install
+
+      - name: 🔧 Build
+        working-directory: ui
+        run: pnpm build
+
 
   ui-code-check:
     name: UI code-check
@@ -222,47 +241,6 @@ jobs:
       - name: 🔬 Check code quality
         working-directory: ui
         run: pnpm code-check
-
-  ui-deps-analyze:
-    name: UI deps analyze
-    runs-on: ubuntu-22.04
-    needs: changed_files
-    if: ${{ github.event.pull_request.draft == false && needs.changed_files.outputs.ui_any_modified == 'true' }}
-
-    steps:
-      - name: ⬇️ Checkout repo
-        uses: actions/checkout@v4
-
-      - name: 📥 Install ui dependencies
-        uses: ./.github/share-actions/ui-node-pnpm-install
-
-      - name: 🔬 Analyze deps
-        working-directory: ui/service
-        run: npx vite-bundle-visualizer@1.0.0 -o vite-bundle-report/index.html
-
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: vite-bundle-visualizer
-          path: ui/service/vite-bundle-report
-          retention-days: 30
-
-  ui-build:
-    name: UI build
-    runs-on: ubuntu-22.04
-    needs: changed_files
-    if: ${{ github.event.pull_request.draft == false && needs.changed_files.outputs.ui_any_modified == 'true' }}
-
-    steps:
-      - name: ⬇️ Checkout repo
-        uses: actions/checkout@v4
-
-      - name: 📥 Install ui dependencies
-        uses: ./.github/share-actions/ui-node-pnpm-install
-
-      - name: 🔧 Build
-        working-directory: ui
-        run: pnpm build
 
   ui-test:
     name: UI service tests
