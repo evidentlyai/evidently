@@ -2,6 +2,7 @@ import json
 from inspect import isabstract
 from typing import Dict
 from typing import List
+from typing import Optional
 from typing import Tuple
 from typing import Union
 
@@ -40,7 +41,7 @@ class MockLLMWrapper(LLMWrapper):
     def __init__(self, model: str, options: Options):
         self.model = model
 
-    async def complete(self, messages: List[LLMMessage]) -> LLMResult[str]:
+    async def complete(self, messages: List[LLMMessage], seed: Optional[int] = None) -> LLMResult[str]:
         return LLMResult("\n".join(m.content for m in messages), 0, 0)
 
 

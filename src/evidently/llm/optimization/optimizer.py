@@ -1,7 +1,9 @@
 import datetime
+import random
 import uuid
 from abc import ABC
 from abc import abstractmethod
+from asyncio import Lock
 from typing import Any
 from typing import ClassVar
 from typing import Dict
@@ -13,6 +15,7 @@ from typing import TypeVar
 
 from evidently._pydantic_compat import BaseModel
 from evidently._pydantic_compat import Field
+from evidently._pydantic_compat import PrivateAttr
 from evidently.legacy.core import new_id
 from evidently.legacy.options.base import Options
 from evidently.legacy.utils.llm.wrapper import LLMWrapper
@@ -52,6 +55,8 @@ class OptimizerConfig(AutoAliasMixin, EvidentlyBaseModel):
 
     provider: str = "openai"
     model: str = "gpt-4o-mini"
+    verbose: bool = False
+    seed: Optional[int] = None
 
 
 LogID = uuid.UUID
@@ -62,6 +67,7 @@ class OptimizerLog(AutoAliasMixin, EvidentlyBaseModel, ABC):
     """Base class for all optimizer logs."""
 
     __alias_type__: ClassVar = "optimizer_log"
+    __is_step__: ClassVar[bool] = False
 
     class Config:
         is_base_type = True
@@ -73,36 +79,33 @@ class OptimizerLog(AutoAliasMixin, EvidentlyBaseModel, ABC):
     def message(self) -> str:
         raise NotImplementedError()
 
+    def full_message(self):
+        return self.message()
+
 
 TLog = TypeVar("TLog", bound=OptimizerLog)
+LogsDict = Dict[LogID, OptimizerLog]
+RunID = int
 
 
-class OptimizerContext(BaseModel):
-    """Holds the state, parameters, and logs for an optimization run."""
+class OptimizerRun(BaseModel):
+    run_id: RunID
+    logs: LogsDict = {}
+    seed: Optional[int]
+    _context: "OptimizerContext" = PrivateAttr()
 
-    config: OptimizerConfig
-    params: Dict[str, Any]
-    logs: Dict[LogID, OptimizerLog]
-    locked: bool = False
-
-    # @classmethod
-    # def load(cls: Type[Self], path: str) -> Self:
-    #     raise NotImplementedError()
-    #
-    # def save(self, path: str):
-    #     raise NotImplementedError()
+    def bind(self, context: "OptimizerContext") -> "OptimizerRun":
+        self._context = context
+        return self
 
     @property
-    def llm_wrapper(self) -> LLMWrapper:
-        return get_llm_wrapper(self.config.provider, self.config.model, self.params[Params.Options])
-
-    @property
-    def options(self) -> Options:
-        return self.params[Params.Options]
+    def context(self) -> "OptimizerContext":
+        return self._context
 
     def add_log(self, log: OptimizerLog):
         """Add a log entry to the context and log its message."""
-        print(log.message())
+        if self._context.config.verbose:
+            print(f"[{self.run_id}]", log.message())
         self.logs[log.id] = log
 
     def get_log(self, log_id: LogID) -> OptimizerLog:
@@ -121,6 +124,60 @@ class OptimizerContext(BaseModel):
             if isinstance(log, log_type):
                 return log
         return None
+
+    def print_stats(self):
+        print(f"Optimizer Run [{self.run_id}], seed [{self.seed}]")
+        log_list = list(self.logs.values())
+        first_log, last_log = log_list[0], log_list[-1]
+        print(f"Steps: {sum(1 for log in log_list if log.__is_step__)}")
+        print(f"Total time: {(last_log.timestamp - first_log.timestamp).total_seconds():.1f}s")
+        start_time = first_log.timestamp
+        for log in log_list:
+            elapsed = (log.timestamp - start_time).total_seconds()
+            start_time = log.timestamp
+            print(f"\t[{elapsed:.1f}s] {log.full_message()}")
+
+
+def get_seeded_nth_int(seed: int, n: int) -> int:
+    rng = random.Random(seed)
+    value = None
+    for _ in range(n):
+        value = rng.getrandbits(32)
+    return value
+
+
+_run_lock = Lock()
+
+
+class OptimizerContext(BaseModel):
+    """Holds the state, parameters, and logs for an optimization run."""
+
+    config: OptimizerConfig
+    params: Dict[str, Any]
+    runs: List[OptimizerRun]
+    locked: bool = False
+
+    # @classmethod
+    # def load(cls: Type[Self], path: str) -> Self:
+    #     raise NotImplementedError()
+    #
+    # def save(self, path: str):
+    #     raise NotImplementedError()
+
+    async def new_run(self) -> OptimizerRun:
+        async with _run_lock:
+            seed = None if self.config.seed is None else get_seeded_nth_int(self.config.seed, len(self.runs))
+            run = OptimizerRun(run_id=len(self.runs), seed=seed).bind(self)
+            self.runs.append(run)
+            return run
+
+    @property
+    def llm_wrapper(self) -> LLMWrapper:
+        return get_llm_wrapper(self.config.provider, self.config.model, self.params[Params.Options])
+
+    @property
+    def options(self) -> Options:
+        return self.params[Params.Options]
 
     def set_param(self, name: str, value: Any):
         """Set a parameter in the context. Raises if context is locked."""
@@ -165,7 +222,7 @@ class BaseOptimizer(ABC, Generic[TOptimizerConfig]):
         #         raise ValueError(f"Optimizer config changed, cannot load from checkpoint at {self.checkpoint_path}")
         # else:
         #     self.context = OptimizerContext(config=config, inputs={}, logs={})
-        self.context = OptimizerContext(config=config, params={}, logs={})
+        self.context = OptimizerContext(config=config, params={}, runs=[])
 
     def _lock(self):
         """Lock the context to prevent further parameter changes."""

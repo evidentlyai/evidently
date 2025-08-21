@@ -1,3 +1,4 @@
+import asyncio
 import logging
 import warnings
 from abc import ABC
@@ -38,6 +39,7 @@ from evidently.llm.optimization.optimizer import LogID
 from evidently.llm.optimization.optimizer import OptimizerConfig
 from evidently.llm.optimization.optimizer import OptimizerContext
 from evidently.llm.optimization.optimizer import OptimizerLog
+from evidently.llm.optimization.optimizer import OptimizerRun
 from evidently.llm.optimization.optimizer import Params
 from evidently.llm.optimization.scorers import AccuracyScorer
 from evidently.llm.optimization.scorers import OptimizationScorer
@@ -54,6 +56,8 @@ logger = logging.getLogger(__name__)
 class PromptOptimizationLog(OptimizerLog):
     """Log entry for a single prompt optimization step."""
 
+    __is_step__: ClassVar[bool] = True
+
     input_prompt: str
     optimizer_prompt: str
     new_prompt: str
@@ -62,7 +66,7 @@ class PromptOptimizationLog(OptimizerLog):
     stop: bool
 
     def message(self) -> str:
-        return f"Prompt '{self.input_prompt[:40]}...' optimized to '{self.new_prompt[:40]}...'"
+        return f"Prompt '{trunc(self.input_prompt)}' optimized to '{trunc(self.new_prompt)}'"
 
 
 class PromptOptimizerStrategy(BaseArgTypeRegistry, AutoAliasMixin, EvidentlyBaseModel, ABC):
@@ -78,7 +82,7 @@ class PromptOptimizerStrategy(BaseArgTypeRegistry, AutoAliasMixin, EvidentlyBase
         raise NotImplementedError()
 
     @abstractmethod
-    async def run(self, prompt: str, context: OptimizerContext) -> PromptOptimizationLog:
+    async def run(self, prompt: str, run: OptimizerRun) -> PromptOptimizationLog:
         """Run the optimization strategy for a given prompt and context."""
         raise NotImplementedError()
 
@@ -87,6 +91,12 @@ class PromptOptimizerConfig(OptimizerConfig):
     """Configuration for prompt optimizers, including the strategy."""
 
     strategy: PromptOptimizerStrategy
+
+
+def trunc(msg: str, max_len: int = 40):
+    if len(msg) > max_len:
+        return msg[:max_len] + "..."
+    return msg
 
 
 class PromptExecutionLog(OptimizerLog):
@@ -112,7 +122,10 @@ class PromptExecutionLog(OptimizerLog):
 
     def message(self) -> str:
         lens = " ".join(f"{k}({len(v)})" for k, v in self.data.items() if v is not None)
-        return f"Executed prompt '{self.prompt[:40]}...', got {lens}"
+        return f"Executed prompt '{trunc(self.prompt)}', got {lens}"
+
+    def full_message(self):
+        return f"Executed prompt '{self.prompt}'"
 
     def get_data(self, name: str) -> pd.Series:
         val = self.data.get(name, None)
@@ -145,11 +158,11 @@ class PromptExecutor(AutoAliasMixin, EvidentlyBaseModel, InitContextMixin, ABC):
         is_base_type = True
 
     @abstractmethod
-    def execute(self, prompt: str, context: OptimizerContext) -> PromptExecutionLog:
+    def execute(self, prompt: str, run: OptimizerRun) -> PromptExecutionLog:
         raise NotImplementedError()
 
     @abstractmethod
-    def get_base_prompt(self, context: OptimizerContext) -> Optional[str]:
+    def get_base_prompt(self) -> Optional[str]:
         raise NotImplementedError()
 
     @abstractmethod
@@ -165,7 +178,7 @@ class PromptExecutor(AutoAliasMixin, EvidentlyBaseModel, InitContextMixin, ABC):
         if instructions is not None:
             context.set_param(Params.OptimizerPromptInstructions, instructions)
 
-    async def start(self, context: OptimizerContext):
+    async def start(self, run: OptimizerRun):
         pass
 
     @abstractmethod
@@ -185,9 +198,9 @@ class LLMJudgePromptExecutor(PromptExecutor):
         judge = self.judge.update(template=self.template.update(criteria=prompt))
         return judge
 
-    def execute(self, prompt: str, context: OptimizerContext) -> PromptExecutionLog:
-        dataset = get_classification_dataset(context)
-        options = context.options
+    def execute(self, prompt: str, run: OptimizerRun) -> PromptExecutionLog:
+        dataset = get_classification_dataset(run.context)
+        options = run.context.options
         try:
             template = self.template
             judge = self._make_judge(prompt)
@@ -237,7 +250,7 @@ class LLMJudgePromptExecutor(PromptExecutor):
         assert isinstance(t, (BinaryClassificationPromptTemplate, MulticlassClassificationPromptTemplate))
         return t
 
-    def get_base_prompt(self, context: OptimizerContext) -> str:
+    def get_base_prompt(self) -> str:
         return self.template.criteria
 
     def get_task(self) -> str:
@@ -272,15 +285,15 @@ class CallablePromptExecutor(PromptExecutor):
         self.func = func
         super().__init__()
 
-    def execute(self, prompt: str, context: OptimizerContext) -> PromptExecutionLog:
+    def execute(self, prompt: str, run: OptimizerRun) -> PromptExecutionLog:
         if self._func is None:
             raise OptimizationConfigurationError(f"No function set for CallablePromptExecutor: {self.func}")
-        result = self._func(prompt, context)
+        result = self._func(prompt, run.context)
         if not isinstance(result, PromptExecutionLog):
             result = PromptExecutionLog(prompt=prompt, prediction=pd.Series(result))
         return result
 
-    def get_base_prompt(self, context: OptimizerContext) -> Optional[str]:
+    def get_base_prompt(self) -> Optional[str]:
         return None
 
     def get_task(self) -> str:
@@ -301,13 +314,13 @@ class CallablePromptExecutor(PromptExecutor):
 class NoopPromptExecutor(PromptExecutor):
     """Prompt executor that does nothing."""
 
-    def get_base_prompt(self, context: OptimizerContext) -> Optional[str]:
+    def get_base_prompt(self) -> Optional[str]:
         return None
 
     def get_task(self) -> str:
         return ""
 
-    def execute(self, prompt: str, context: OptimizerContext) -> PromptExecutionLog:
+    def execute(self, prompt: str, run: OptimizerRun) -> PromptExecutionLog:
         return PromptExecutionLog(prompt=prompt)
 
     def get_best_result(self, prompt: str, context: OptimizerContext):
@@ -325,13 +338,11 @@ class InitGenerationLog(OptimizerLog):
 class BlankLLMJudge(PromptExecutor):
     kind: str = ""
 
-    def execute(self, prompt: str, context: OptimizerContext) -> PromptExecutionLog:
-        return self.sub_executor.execute(prompt, context)
+    def execute(self, prompt: str, run: OptimizerRun) -> PromptExecutionLog:
+        return self.sub_executor.execute(prompt, run)
 
-    def get_base_prompt(self, context: OptimizerContext) -> Optional[str]:
-        # return ""
-        async_to_sync(self._ensure_sub_executor(context))
-        return self.sub_executor.get_base_prompt(context)
+    def get_base_prompt(self) -> Optional[str]:
+        return ""
 
     def get_task(self) -> str:
         return ""
@@ -347,15 +358,16 @@ class BlankLLMJudge(PromptExecutor):
             raise OptimizationRuntimeError("Sub executor is not set for BlankLLMJudge")
         return self._sub_executor
 
-    async def start(self, context: OptimizerContext):
-        await self._ensure_sub_executor(context)
+    async def start(self, run: OptimizerRun):
+        await self._ensure_sub_executor(run)
 
-    async def _ensure_sub_executor(self, context: OptimizerContext):
+    async def _ensure_sub_executor(self, run: OptimizerRun):
         if self._sub_executor is None:
-            judge = await self._build_judge(context)
+            judge = await self._build_judge(run)
             self._sub_executor = LLMJudgePromptExecutor(judge=judge)
 
-    async def _build_judge(self, context: OptimizerContext) -> LLMJudge:
+    async def _build_judge(self, run: OptimizerRun) -> LLMJudge:
+        context = run.context
         target = context.get_param(Params.Target, pd.Series)
         inputs = context.get_param(Params.InputValues, pd.Series)
         labels = target.unique()
@@ -365,7 +377,7 @@ class BlankLLMJudge(PromptExecutor):
             raise OptimizationConfigurationError(f"Cannot create judge, target column has {len(labels)} labels")
         if len(labels) == 2:
             target_category, non_target_category = list(labels)
-            criteria = await self._generate_binary_criteria(target_category, non_target_category, context)
+            criteria = await self._generate_binary_criteria(target_category, non_target_category, run)
             template = BinaryClassificationPromptTemplate(
                 criteria=criteria,
                 target_category=target_category,
@@ -374,14 +386,14 @@ class BlankLLMJudge(PromptExecutor):
                 include_category=True,
                 include_reasoning=context.get_param(Params.Reasoning) is not None,
                 include_score=False,
-                pre_messages=[LLMMessage.system(await self._generate_binary_system_message(criteria, context))],
+                pre_messages=[LLMMessage.system(await self._generate_binary_system_message(criteria, run))],
             )
         else:
             raise NotImplementedError("BlankLLMJudge do not support multiclass yet")
             # template = MulticlassClassificationPromptTemplate()
         return LLMJudge(model=model, provider=provider, template=template, input_column=inputs.name)
 
-    async def _generate_binary_criteria(self, target: str, non_target_category: str, context: OptimizerContext) -> str:
+    async def _generate_binary_criteria(self, target: str, non_target_category: str, run: OptimizerRun) -> str:
         tag = "criteria"
         binary_prompt = (
             f"I am creating binary LLM judge to classify texts. "
@@ -390,10 +402,12 @@ class BlankLLMJudge(PromptExecutor):
             f"Write a very short simple criteria for prompt for this judge. "
             f"Do not add any placeholders or specify response format in it. Return criteria inside <{tag}></{tag}> tag"
         )
-        result: LLMResult[str] = await context.llm_wrapper.complete(messages=[LLMMessage.user(binary_prompt)])
+        result: LLMResult[str] = await run.context.llm_wrapper.complete(
+            messages=[LLMMessage.user(binary_prompt)], seed=run.seed
+        )
         criteria = get_tag(result.result, tag)
         # criteria = f"Classify inputs between two categories: {target} and {non_target_category}"
-        context.add_log(
+        run.add_log(
             InitGenerationLog(
                 kind="criteria for binary judge",
                 value=criteria,
@@ -401,7 +415,7 @@ class BlankLLMJudge(PromptExecutor):
         )
         return criteria
 
-    async def _generate_binary_system_message(self, binary_prompt: str, context: OptimizerContext) -> str:
+    async def _generate_binary_system_message(self, binary_prompt: str, run: OptimizerRun) -> str:
         tag = "judge_system_message"
         system_prompt = (
             f"I am creating binary LLM judge to classify texts. "
@@ -410,9 +424,11 @@ class BlankLLMJudge(PromptExecutor):
             f"Make it short. "
             f"Return new system message inside <{tag}></{tag}> tag"
         )
-        result: LLMResult[str] = await context.llm_wrapper.complete(messages=[LLMMessage.user(system_prompt)])
+        result: LLMResult[str] = await run.context.llm_wrapper.complete(
+            messages=[LLMMessage.user(system_prompt)], seed=run.seed
+        )
         sysmessage = get_tag(result.result, tag)
-        context.add_log(
+        run.add_log(
             InitGenerationLog(
                 kind="system message for binary judge",
                 value=sysmessage,
@@ -556,11 +572,11 @@ class EarlyStopConfig(BaseModel):
     def score_sign(self):
         return 1 if self.bigger_score_better else -1
 
-    def should_stop(self, context: OptimizerContext) -> Optional[float]:
-        if len(context.get_logs(PromptOptimizationLog)) > self.max_iterations:
+    def should_stop(self, run: OptimizerRun) -> Optional[float]:
+        if len(run.get_logs(PromptOptimizationLog)) > self.max_iterations:
             return True
-        scores = context.get_logs(PromptScoringLog)
-        score_name = context.get_param(Params.Scorer, OptimizationScorer).get_name()
+        scores = run.get_logs(PromptScoringLog)
+        score_name = run.context.get_param(Params.Scorer, OptimizationScorer).get_name()
         if len(scores) > 0:
             last_score = scores[-1]
             if last_score.scores[score_name] == self.target_score:
@@ -572,12 +588,39 @@ class EarlyStopConfig(BaseModel):
         return False
 
 
+async def _evaluate_prompt(run: OptimizerRun, prompt: str, executor: PromptExecutor, scorer: OptimizationScorer):
+    eval_log = executor.execute(prompt, run)
+    run.add_log(eval_log)
+    score = await scorer.score(run.context, eval_log)
+    score_log = PromptScoringLog(execution_log_id=eval_log.id, scores={scorer.get_name(): score})
+    run.add_log(score_log)
+
+
+class PromptOptimizationResultLog(OptimizerLog):
+    score_log_id: LogID
+    best_score: float
+    step_count: int
+    execution_log_id: LogID
+    best_prompt: str
+
+    def message(self) -> str:
+        return f"Optimization run finished in {self.step_count} steps with best score {self.best_score}."
+
+
 class PromptOptimizer(BaseOptimizer[PromptOptimizerConfig]):
     """Main class for running prompt optimization using a given strategy."""
 
-    def __init__(self, name: str, strategy: Union[str, PromptOptimizerStrategy], checkpoint_path: Optional[str] = None):
+    def __init__(
+        self,
+        name: str,
+        strategy: Union[str, PromptOptimizerStrategy],
+        checkpoint_path: Optional[str] = None,
+        verbose: bool = False,
+    ):
         strategy = PromptOptimizerStrategy.registry_lookup(strategy)
-        super().__init__(name, PromptOptimizerConfig(strategy=strategy), checkpoint_path=checkpoint_path)
+        super().__init__(
+            name, PromptOptimizerConfig(strategy=strategy, verbose=verbose), checkpoint_path=checkpoint_path
+        )
 
     def run(
         self,
@@ -586,11 +629,18 @@ class PromptOptimizer(BaseOptimizer[PromptOptimizerConfig]):
         dataset: Optional[Dataset] = None,
         options: AnyOptions = None,
         early_stop: Optional[EarlyStopConfig] = None,
+        repetitions: int = 1,
         **params,
     ):
         async_to_sync(
             self.arun(
-                executor=executor, scorer=scorer, dataset=dataset, options=options, early_stop=early_stop, **params
+                executor=executor,
+                scorer=scorer,
+                dataset=dataset,
+                options=options,
+                early_stop=early_stop,
+                repetitions=repetitions,
+                **params,
             )
         )
 
@@ -601,6 +651,7 @@ class PromptOptimizer(BaseOptimizer[PromptOptimizerConfig]):
         dataset: Optional[Dataset] = None,
         options: AnyOptions = None,
         early_stop: Optional[EarlyStopConfig] = None,
+        repetitions: int = 1,
         **params,
     ):
         """Run the optimizer"""
@@ -616,48 +667,49 @@ class PromptOptimizer(BaseOptimizer[PromptOptimizerConfig]):
         for param, value in params.items():
             self.set_param(param, value)
         self._lock()
-        await executor.start(self.context)
-        await self.resume()
+        runs = []
+        for _ in range(repetitions):
+            runs.append(self._create_run(executor))
+        await asyncio.gather(*runs)
 
-    def _get_prompt(self) -> str:
+    async def _create_run(self, executor: PromptExecutor):
+        run = await self.context.new_run()
+        await executor.start(run)
+        await self.resume(run)
+        run.add_log(self._create_result_log(run))
+
+    def _get_prompt(self, run: OptimizerRun) -> str:
         """Get the current prompt for optimization, using logs or executor base prompt."""
-        log = self.context.get_last_log(PromptOptimizationLog)
+        log = run.get_last_log(PromptOptimizationLog)
         if log is not None:
             return log.new_prompt
         executor = self.get_param(Params.Executor, PromptExecutor)
-        prompt = executor.get_base_prompt(self.context)
+        prompt = executor.get_base_prompt()
         if prompt is not None:
             return prompt
         return self.get_param(
             Params.BasePrompt, str, f"'{Params.BasePrompt}' input is required for {executor.__class__.__name__}"
         )
 
-    async def resume(self):
+    async def resume(self, run: OptimizerRun):
         """Resume optimization from the current state."""
         executor = self.get_param(Params.Executor, PromptExecutor)
         scorer = self.get_param(Params.Scorer, OptimizationScorer)
         early_stop = self.get_param(Params.EarlyStop, EarlyStopConfig)
-        prompt = self._get_prompt()
+        prompt = self._get_prompt(run)
         stop = False
-        await self._evaluate_prompt(prompt, executor, scorer)
+        await _evaluate_prompt(run, prompt, executor, scorer)
         while not stop:
             try:
-                opt_log = await self.config.strategy.run(prompt, self.context)
-                self.context.add_log(opt_log)
+                opt_log = await self.config.strategy.run(prompt, run)
+                run.add_log(opt_log)
                 prompt = opt_log.new_prompt
-                await self._evaluate_prompt(prompt, executor, scorer)
-                stop = opt_log.stop or early_stop.should_stop(self.context)
+                await _evaluate_prompt(run, prompt, executor, scorer)
+                stop = opt_log.stop or early_stop.should_stop(run)
             except OptimizationError:
                 raise
             except Exception as e:
                 raise OptimizationRuntimeError(f"Error during optimization step: {e}")
-
-    async def _evaluate_prompt(self, prompt: str, executor: PromptExecutor, scorer: OptimizationScorer):
-        eval_log = executor.execute(prompt, self.context)
-        self.context.add_log(eval_log)
-        score = await scorer.score(self.context, eval_log)
-        score_log = PromptScoringLog(execution_log_id=eval_log.id, scores={scorer.get_name(): score})
-        self.context.add_log(score_log)
 
     @property
     def config(self) -> PromptOptimizerConfig:
@@ -684,20 +736,49 @@ class PromptOptimizer(BaseOptimizer[PromptOptimizerConfig]):
 
     def best_prompt(self):
         """Return the best prompt found during optimization based on the scoring metric."""
-        best_score = self.best_score()
-        execution_log = self.context.get_log(best_score.execution_log_id)
-        assert isinstance(execution_log, PromptExecutionLog)
-        return execution_log.prompt
+        return self.best_result().best_prompt
 
-    def best_score(self) -> PromptScoringLog:
+    def best_score(self):
+        return self.best_result().best_score
+
+    def _create_result_log(self, run: OptimizerRun) -> PromptOptimizationResultLog:
         score_name = self.get_param(Params.Scorer, OptimizationScorer).get_name()
-        scores = self.context.get_logs(PromptScoringLog)
+        scores = run.get_logs(PromptScoringLog)
         early_stop = self.get_param(Params.EarlyStop, EarlyStopConfig)
-        return max(reversed(scores), key=lambda s: s.scores[score_name] * early_stop.score_sign)
+        best_score: PromptScoringLog = max(reversed(scores), key=lambda s: s.scores[score_name] * early_stop.score_sign)
+        execution_log = run.get_log(best_score.execution_log_id)
+        assert isinstance(execution_log, PromptExecutionLog)
+        return PromptOptimizationResultLog(
+            score_log_id=best_score.id,
+            best_score=best_score.scores[score_name],
+            step_count=len(scores),
+            execution_log_id=best_score.execution_log_id,
+            best_prompt=execution_log.prompt,
+        )
 
-    def best_result(self):
+    def best_result(self) -> PromptOptimizationResultLog:
+        early_stop = self.get_param(Params.EarlyStop, EarlyStopConfig)
+        results = [r.get_last_log(PromptOptimizationResultLog) for r in self.context.runs]
+        return max(reversed(results), key=lambda s: s.best_score * early_stop.score_sign)
+
+    def best_executor(self):
         executor = self.get_param(Params.Executor, PromptExecutor)
         return executor.get_best_result(self.best_prompt(), self.context)
+
+    def print_stats(self):
+        print("Optimization statistics:")
+        print(f"Seed: {self.config.seed}")
+        print(f"Runs: {len(self.context.runs)}")
+        all_logs = [log for run in self.context.runs for log in run.logs.values()]
+        first_log = min(log.timestamp for log in all_logs)
+        last_log = max(log.timestamp for log in all_logs)
+        print(f"Total time: {(last_log - first_log).total_seconds():.2f}s")
+        print(f"Total steps: {sum(1 for log in all_logs if log.__is_step__)}")
+        best_result = self.best_result()
+        print(f"Best prompt (score {best_result.best_score}): {best_result.best_prompt}")
+        print("Detailed run statistics:")
+        for run in self.context.runs:
+            run.print_stats()
 
 
 class SimplePromptOptimizer(PromptOptimizerStrategy):
@@ -716,15 +797,18 @@ class SimplePromptOptimizer(PromptOptimizerStrategy):
     def get_default_scorer(self) -> "OptimizationScorer":
         return NoopOptimizationScorer()
 
-    async def run(self, prompt: str, context: OptimizerContext) -> PromptOptimizationLog:
+    async def run(self, prompt: str, run: OptimizerRun) -> PromptOptimizationLog:
+        context = run.context
         task: str = context.get_param(Params.Task) or "task"
         instructions: str = context.get_param(Params.OptimizerPromptInstructions) or ""
         optimizer_prompt = self.optimizer_prompt.format(prompt=prompt, task=task, instructions=instructions)
-        response = await context.llm_wrapper.complete([LLMMessage.user(optimizer_prompt)])
+        response = await context.llm_wrapper.complete([LLMMessage.user(optimizer_prompt)], seed=run.seed)
         new_prompt = get_tag(response.result, self.return_tag)
         if new_prompt is None:
             # retry once
-            response = await context.llm_wrapper.complete([LLMMessage.user(optimizer_prompt)])
+            response = await context.llm_wrapper.complete(
+                [LLMMessage.user(optimizer_prompt)], seed=run.seed + 1 if run.seed is not None else run.seed
+            )
             new_prompt = get_tag(response.result, self.return_tag)
         if new_prompt is None:
             raise OptimizationRuntimeError("Error parsing new prompt")
@@ -746,22 +830,22 @@ class _Row(NamedTuple):
     prediction_reasoning: Optional[Any]
 
 
-def iter_mistakes(context: OptimizerContext) -> Iterator[_Row]:
-    last_eval = context.get_last_log(PromptExecutionLog)
+def iter_mistakes(run: OptimizerRun) -> Iterator[_Row]:
+    last_eval = run.get_last_log(PromptExecutionLog)
     if last_eval is None:
         raise OptimizationRuntimeError("Prompt was not executed.")
     try:
         target = last_eval.get_data(Params.Target)
     except KeyError:
-        target = context.get_param(
+        target = run.context.get_param(
             Params.Target, missing_error_message=f"Need '{Params.Target}' param to filter failed rows"
         )
 
     preds = last_eval.get_data(Params.Pred)
     df = pd.DataFrame({Params.Pred: preds})
     df[Params.Target] = target
-    df[Params.InputValues] = context.get_param(Params.InputValues)
-    df[Params.Reasoning] = context.get_param(Params.Reasoning)
+    df[Params.InputValues] = run.context.get_param(Params.InputValues)
+    df[Params.Reasoning] = run.context.get_param(Params.Reasoning)
     df[Params.PredReasoning] = (
         last_eval.get_data(Params.PredReasoning) if last_eval.has_data(Params.PredReasoning) else ""
     )
@@ -800,7 +884,7 @@ class FeedbackStrategy(PromptOptimizerStrategy):
     def get_default_scorer(self) -> "OptimizationScorer":
         return AccuracyScorer()
 
-    async def run(self, prompt: str, context: OptimizerContext) -> PromptOptimizationLog:
+    async def run(self, prompt: str, run: OptimizerRun) -> PromptOptimizationLog:
         """Run the feedback optimization strategy for a given prompt and context."""
         rows = "\n".join(
             self.row_template.format(
@@ -810,12 +894,12 @@ class FeedbackStrategy(PromptOptimizerStrategy):
                 human_reasoning=row.reasoning,
                 llm_reasoning=row.prediction_reasoning,
             )
-            for row in iter_mistakes(context)
+            for row in iter_mistakes(run)
         )
         optimizer_prompt = self.add_feedback_prompt.format(
             prompt="{prompt}", task="{task}", instructions="{instructions}", rows=rows
         )
-        log = await SimplePromptOptimizer(optimizer_prompt=optimizer_prompt).run(prompt, context)
+        log = await SimplePromptOptimizer(optimizer_prompt=optimizer_prompt).run(prompt, run)
         return PromptOptimizationLog(
             input_prompt=prompt,
             optimizer_prompt=optimizer_prompt,

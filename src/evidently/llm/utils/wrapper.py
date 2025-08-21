@@ -181,7 +181,7 @@ class LLMWrapper(ABC):
     __used_options__: ClassVar[List[Type[Option]]] = []
 
     @abstractmethod
-    async def complete(self, messages: List[LLMMessage]) -> LLMResult[str]:
+    async def complete(self, messages: List[LLMMessage], seed: Optional[int] = None) -> LLMResult[str]:
         raise NotImplementedError
 
     async def _batch(
@@ -347,13 +347,15 @@ class OpenAIWrapper(LLMWrapper):
             )
         return self._clients[loop_id]
 
-    async def complete(self, messages: List[LLMMessage]) -> LLMResult[str]:
+    async def complete(self, messages: List[LLMMessage], seed: Optional[int] = None) -> LLMResult[str]:
         import openai
         from openai.types.chat.chat_completion import ChatCompletion
 
         messages = [{"role": msg.role, "content": msg.content} for msg in messages]
         try:
-            response: ChatCompletion = await self.client.chat.completions.create(model=self.model, messages=messages)  # type: ignore[arg-type]
+            response: ChatCompletion = await self.client.chat.completions.create(
+                model=self.model, messages=messages, seed=seed
+            )  # type: ignore[arg-type]
         except openai.RateLimitError as e:
             raise LLMRateLimitError(e.message) from e
         except openai.APIError as e:
@@ -400,7 +402,7 @@ class LiteLLMWrapper(LLMWrapper):
             return provider_name, self.model[len(provider_name) + 1 :]
         return provider_name, self.model
 
-    async def complete(self, messages: List[LLMMessage]) -> LLMResult[str]:
+    async def complete(self, messages: List[LLMMessage], seed: Optional[int] = None) -> LLMResult[str]:
         from litellm import acompletion
         from litellm.types.utils import ModelResponse
         from litellm.types.utils import Usage
@@ -412,6 +414,7 @@ class LiteLLMWrapper(LLMWrapper):
             messages=[m.dict() for m in messages],
             api_key=self.options.get_api_key(),
             api_base=self.options.api_url,
+            seed=seed,
             **self.options.get_additional_kwargs(),
         )
         content = response.choices[0].message.content
