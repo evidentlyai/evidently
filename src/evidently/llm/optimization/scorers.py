@@ -1,8 +1,8 @@
 from abc import ABC
 from abc import abstractmethod
 from typing import TYPE_CHECKING
-from typing import Any
 from typing import ClassVar
+from typing import Dict
 from typing import Optional
 
 import pandas as pd
@@ -18,6 +18,8 @@ from sklearn.metrics import recall_score
 from sklearn.metrics import roc_auc_score
 
 from evidently.legacy.options.base import Options
+from evidently.llm.optimization.optimizer import LLMDataset
+from evidently.llm.optimization.optimizer import LLMDatasetSplit
 from evidently.llm.optimization.optimizer import OptimizerContext
 from evidently.llm.optimization.optimizer import Params
 from evidently.pydantic_utils import AutoAliasMixin
@@ -43,12 +45,19 @@ class OptimizationScorer(BaseArgTypeRegistry, AutoAliasMixin, EvidentlyBaseModel
     async def _score(self, predictions: pd.Series, target: pd.Series, options: Options) -> Optional[float]:
         raise NotImplementedError()
 
-    async def score(self, context: OptimizerContext, execution_log: "PromptExecutionLog") -> Optional[float]:
-        target: Any = context.get_param(Params.Target, missing_error_message=f"{self.get_name()} requires target input")
-        predictions = execution_log.get_data(Params.Pred)
-        if not isinstance(target, pd.Series):
-            target = pd.Series([target for _ in range(len(predictions))])
-        return await self._score(predictions, target, context.options)
+    async def score(self, context: OptimizerContext, execution_log: "PromptExecutionLog") -> Optional[Dict[str, float]]:
+        dataset = context.get_param(Params.Dataset, LLMDataset)
+        result = {}
+        predictions = execution_log.result.ensure_predictions
+        for split in (LLMDatasetSplit.Train, LLMDatasetSplit.Test, LLMDatasetSplit.Val):
+            if split not in dataset.split_masks:
+                continue
+            result[split] = await self._score(
+                predictions[dataset.split_masks[split]], dataset[split].target, context.options
+            )
+        if len(result) == 0:
+            result[LLMDatasetSplit.Train] = await self._score(predictions, dataset.target, context.options)
+        return result
 
 
 class AccuracyScorer(OptimizationScorer):

@@ -8,10 +8,16 @@ from typing import Any
 from typing import ClassVar
 from typing import Dict
 from typing import Generic
+from typing import Iterable
 from typing import List
 from typing import Optional
+from typing import Tuple
 from typing import Type
 from typing import TypeVar
+
+import numpy as np
+import pandas as pd
+from sklearn.model_selection import train_test_split
 
 from evidently._pydantic_compat import BaseModel
 from evidently._pydantic_compat import Field
@@ -34,6 +40,19 @@ class Params:
     Options = "options"
     Scorer = "scorer"
     Executor = "executor"
+    Dataset = "dataset"
+    Task = "task"
+    OptimizerPromptInstructions = "optimizer_prompt_instructions"
+    DataSplitShares = "data_split_shares"
+
+
+class LLMDatasetSplit:
+    Train = "train"
+    Val = "val"
+    Test = "test"
+
+
+class LLMDatasetColumns:
     InputValues = "input_values"
     Target = "target"
     Reasoning = "reasoning"
@@ -41,8 +60,137 @@ class Params:
     Pred = "preds"
     PredReasoning = "preds_reasoning"
     PredScores = "preds_scores"
-    Task = "task"
-    OptimizerPromptInstructions = "optimizer_prompt_instructions"
+
+
+class LLMDatasetSplitView:
+    def __init__(self, dataset: "LLMDataset", split_name: str):
+        self.split_name = split_name
+        self.dataset = dataset
+
+    @property
+    def input_values(self) -> Optional[pd.Series]:
+        if self.split_name not in self.dataset.split_masks or self.dataset.input_values is None:
+            return self.dataset.input_values
+        return self.dataset.input_values[self.dataset.split_masks[self.split_name]]
+
+    @property
+    def target(self) -> Optional[pd.Series]:
+        if self.split_name not in self.dataset.split_masks or self.dataset.target is None:
+            return self.dataset.target
+        return self.dataset.target[self.dataset.split_masks[self.split_name]]
+
+    @property
+    def reasoning(self) -> Optional[pd.Series]:
+        if self.split_name not in self.dataset.split_masks or self.dataset.reasoning is None:
+            return self.dataset.reasoning
+        return self.dataset.reasoning[self.dataset.split_masks[self.split_name]]
+
+    @property
+    def predictions(self) -> Optional[pd.Series]:
+        if self.split_name not in self.dataset.split_masks or self.dataset.predictions is None:
+            return self.dataset.predictions
+        return self.dataset.predictions[self.dataset.split_masks[self.split_name]]
+
+    @property
+    def prediction_reasoning(self) -> Optional[pd.Series]:
+        if self.split_name not in self.dataset.split_masks or self.dataset.prediction_reasoning is None:
+            return self.dataset.prediction_reasoning
+        return self.dataset.prediction_reasoning[self.dataset.split_masks[self.split_name]]
+
+
+class LLMDataset(BaseModel):
+    input_values: Optional[pd.Series] = None
+    target: Optional[pd.Series] = None
+    reasoning: Optional[pd.Series] = None
+    predictions: Optional[pd.Series] = None
+    prediction_reasoning: Optional[pd.Series] = None
+
+    split_masks: Dict[str, Optional[pd.Series]] = Field(default_factory=dict)
+
+    def __getitem__(self, split_name: str) -> LLMDatasetSplitView:
+        return LLMDatasetSplitView(self, split_name)
+
+    def split(self, shares: Dict[str, Optional[float]], seed: Optional[int]) -> None:
+        n = len(self.input_values)
+        indices = np.arange(n)
+
+        # normalize shares (ignoring None)
+        specified = {k: v for k, v in shares.items() if v is not None}
+        total = sum(specified.values())
+        if specified and not np.isclose(total, 1.0):
+            raise ValueError("Specified shares must sum to 1.0")
+
+        stratify = self.target if self.target is not None else None
+
+        remaining_indices = indices
+        remaining_shares = dict(specified)
+
+        self.split_masks = {}
+
+        for i, (name, share) in enumerate(shares.items()):
+            if share is None:
+                # leave mask as None = all rows
+                self.split_masks[name] = None
+                continue
+
+            if i == len(specified) - 1:
+                split_indices = remaining_indices
+            else:
+                test_size = share / sum(remaining_shares.values())
+                _, split_indices = train_test_split(
+                    remaining_indices,
+                    test_size=test_size,
+                    stratify=stratify[remaining_indices] if stratify is not None else None,
+                    random_state=seed,
+                )
+                remaining_indices = np.setdiff1d(remaining_indices, split_indices)
+                remaining_shares.pop(name)
+
+            mask = pd.Series(False, index=np.arange(n))
+            mask[split_indices] = True
+            self.split_masks[name] = mask
+
+
+class LLMResultDataset(BaseModel):
+    predictions: Optional[pd.Series] = None
+    reasoning: Optional[pd.Series] = None
+    scores: Optional[pd.Series] = None
+
+    @property
+    def has_predictions(self) -> bool:
+        return self.predictions is not None
+
+    @property
+    def has_reasoning(self) -> bool:
+        return self.reasoning is not None
+
+    @property
+    def has_scores(self) -> bool:
+        return self.scores is not None
+
+    @property
+    def ensure_predictions(self) -> pd.Series:
+        if self.predictions is None:
+            raise KeyError("Dataset has no predictions")
+        return self.predictions
+
+    @property
+    def ensure_reasoning(self) -> pd.Series:
+        if self.reasoning is None:
+            raise KeyError("Dataset has no reasoning")
+        return self.reasoning
+
+    @property
+    def ensure_scores(self) -> pd.Series:
+        if self.scores is None:
+            raise KeyError("Dataset has no scores")
+        return self.scores
+
+    def items(self) -> Iterable[Tuple[str, pd.Series]]:
+        for field_name in self.__fields__:
+            value = getattr(self, field_name)
+            if isinstance(value, pd.Series):
+                yield field_name, value
 
 
 class OptimizerConfig(AutoAliasMixin, EvidentlyBaseModel):
@@ -81,6 +229,11 @@ class OptimizerLog(AutoAliasMixin, EvidentlyBaseModel, ABC):
 
     def full_message(self):
         return self.message()
+
+
+class LLMCallOptimizerLog(OptimizerLog, ABC):
+    input_tokens: int
+    output_tokens: int
 
 
 TLog = TypeVar("TLog", bound=OptimizerLog)
@@ -130,7 +283,9 @@ class OptimizerRun(BaseModel):
         log_list = list(self.logs.values())
         first_log, last_log = log_list[0], log_list[-1]
         print(f"Steps: {sum(1 for log in log_list if log.__is_step__)}")
-        print(f"Total time: {(last_log.timestamp - first_log.timestamp).total_seconds():.1f}s")
+        print(f"Time: {(last_log.timestamp - first_log.timestamp).total_seconds():.1f}s")
+        print("Input tokens:", sum(log.input_tokens for log in self.get_logs(LLMCallOptimizerLog)))
+        print("Output tokens:", sum(log.output_tokens for log in self.get_logs(LLMCallOptimizerLog)))
         start_time = first_log.timestamp
         for log in log_list:
             elapsed = (log.timestamp - start_time).total_seconds()
