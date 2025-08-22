@@ -340,7 +340,7 @@ class OptimizerContext(BaseModel):
             raise OptimizationConfigurationError("OptimizerContext is locked")
         self.params[name] = value
         if isinstance(value, InitContextMixin):
-            value.init(self)
+            value.on_param_set(self)
 
     def get_param(self, name: str, cls: Optional[Type[T]] = None, missing_error_message: Optional[str] = None) -> T:
         """Get a parameter, optionally checking type and raising with a custom message if missing."""
@@ -353,13 +353,21 @@ class OptimizerContext(BaseModel):
             raise OptimizationConfigurationError(f"Expected {cls.__name__}, got {type(value).__name__}")
         return value
 
+    def lock(self):
+        self.locked = True
+        for value in self.params.values():
+            if isinstance(value, InitContextMixin):
+                value.on_context_lock(self)
+
 
 class InitContextMixin(ABC):
     """Mixin for objects that need to alter OptimizerContext on init."""
 
-    @abstractmethod
-    def init(self, context: OptimizerContext):
-        raise NotImplementedError()
+    def on_param_set(self, context: OptimizerContext):
+        pass
+
+    def on_context_lock(self, context: OptimizerContext):
+        pass
 
 
 TOptimizerConfig = TypeVar("TOptimizerConfig", bound=OptimizerConfig)
@@ -381,7 +389,7 @@ class BaseOptimizer(ABC, Generic[TOptimizerConfig]):
 
     def _lock(self):
         """Lock the context to prevent further parameter changes."""
-        self.context.locked = True
+        self.context.lock()
 
     def set_param(self, name: str, value: Any):
         """Set a parameter in the optimizer context."""

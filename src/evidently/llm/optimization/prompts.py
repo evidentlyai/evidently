@@ -168,7 +168,7 @@ class PromptExecutor(AutoAliasMixin, EvidentlyBaseModel, InitContextMixin, ABC):
     def get_optimizer_instructions(self) -> Optional[str]:
         return None
 
-    def init(self, context: OptimizerContext):
+    def on_param_set(self, context: OptimizerContext):
         context.set_param(Params.Task, self.get_task())
         instructions = self.get_optimizer_instructions()
         if instructions is not None:
@@ -520,19 +520,29 @@ class NoopOptimizationScorer(OptimizationScorer):
         raise NotImplementedError()
 
 
-class BinaryJudgeScorer(OptimizationScorer):
+class BinaryJudgeScorer(OptimizationScorer, InitContextMixin):
     """Scorer that uses a binary LLMJudge for scoring."""
 
     judge: LLMJudge
     scorer: Optional[OptimizationScorer] = None
 
+    @property
+    def template(self) -> BinaryClassificationPromptTemplate:
+        template = self.judge.template
+        if not isinstance(template, BinaryClassificationPromptTemplate):
+            raise OptimizationConfigurationError("Judge scorer only supports binary classification")
+        return template
+
+    def on_context_lock(self, context: OptimizerContext):
+        dataset = context.get_param(Params.Dataset, LLMDataset)
+        if dataset.target is None:
+            dataset.target = pd.Series([self.template.target_category] * len(dataset.input_values))
+
     async def score(self, context: OptimizerContext, execution_log: PromptExecutionLog) -> Optional[Dict[str, float]]:
         try:
             predictions = execution_log.result.ensure_predictions
             judge = self.judge
-            template = judge.template
-            if not isinstance(template, BinaryClassificationPromptTemplate):
-                raise OptimizationConfigurationError("Judge scorer only supports binary classification")
+            template = self.template
             judge.update(template=template.update(include_category=True, include_reasoning=True, include_score=False))
             input_columns = judge.get_input_columns()
             if len(input_columns) > 1:
@@ -565,10 +575,11 @@ class BinaryJudgeScorer(OptimizationScorer):
             )
             assert category is not None
             scorer = self.scorer or AccuracyScorer()
-            target = pd.Series([template.target_category] * len(predictions))
-            # execution_log.data[Params.Target] = target
             execution_log.result.reasoning = reasoning
-            return await scorer._score(category, target=target, options=context.options)
+            fake_log = PromptExecutionLog(
+                execution_log.prompt, LLMResultDataset(predictions=category, reasoning=reasoning)
+            )
+            return await scorer.score(context, fake_log)
         except Exception as e:
             raise OptimizationRuntimeError(f"BinaryJudgeScorer failed: {e}") from e
 
@@ -877,14 +888,9 @@ def iter_mistakes(run: OptimizerRun) -> Iterator[_Row]:
         raise OptimizationRuntimeError("Prompt was not executed.")
     dataset = run.context.get_param(Params.Dataset, LLMDataset)
     train_mask = dataset.split_masks[LLMDatasetSplit.Train]
-    try:
-        # target = last_eval.get_data(Params.Target)
-
-        raise KeyError()  # todo?
-    except KeyError:
-        target = dataset[LLMDatasetSplit.Train].target
-        if target is None:
-            raise OptimizationRuntimeError("Need to provide target column to filter failed rows.")
+    target = dataset[LLMDatasetSplit.Train].target
+    if target is None:
+        raise OptimizationRuntimeError("Need to provide target column to filter failed rows.")
 
     preds = last_eval.result.ensure_predictions[train_mask]
     df = pd.DataFrame({LLMDatasetColumns.Pred: preds})
