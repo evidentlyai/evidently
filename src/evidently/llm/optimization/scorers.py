@@ -46,9 +46,19 @@ class OptimizationScorer(BaseArgTypeRegistry, AutoAliasMixin, EvidentlyBaseModel
         raise NotImplementedError()
 
     async def score(self, context: OptimizerContext, execution_log: "PromptExecutionLog") -> Optional[Dict[str, float]]:
-        dataset = context.get_param(Params.Dataset, LLMDataset)
+        predictions = execution_log.result.get_predictions()
+        if context.has_param(Params.Dataset):
+            dataset = context.get_param(Params.Dataset, LLMDataset)
+        else:
+            target_value = context.get_param(Params.TargetValue)
+            return {
+                LLMDatasetSplit.All: await self._score(
+                    predictions=predictions,
+                    target=pd.Series([target_value] * len(predictions)),
+                    options=context.options,
+                ),
+            }
         result = {}
-        predictions = execution_log.result.ensure_predictions
         for split in (LLMDatasetSplit.Train, LLMDatasetSplit.Test, LLMDatasetSplit.Val):
             if split not in dataset.split_masks:
                 continue
@@ -56,7 +66,7 @@ class OptimizationScorer(BaseArgTypeRegistry, AutoAliasMixin, EvidentlyBaseModel
                 predictions[dataset.split_masks[split]], dataset[split].target, context.options
             )
         if len(result) == 0:
-            result[LLMDatasetSplit.Train] = await self._score(predictions, dataset.target, context.options)
+            result[LLMDatasetSplit.All] = await self._score(predictions, dataset.target, context.options)
         return result
 
 

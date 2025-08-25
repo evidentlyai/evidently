@@ -41,6 +41,7 @@ class Params:
     Scorer = "scorer"
     Executor = "executor"
     Dataset = "dataset"
+    TargetValue = "target_value"
     Task = "task"
     OptimizerPromptInstructions = "optimizer_prompt_instructions"
     DataSplitShares = "data_split_shares"
@@ -50,6 +51,7 @@ class LLMDatasetSplit:
     Train = "train"
     Val = "val"
     Test = "test"
+    All = "all"
 
 
 class LLMDatasetColumns:
@@ -168,22 +170,25 @@ class LLMResultDataset(BaseModel):
     def has_scores(self) -> bool:
         return self.scores is not None
 
-    @property
-    def ensure_predictions(self) -> pd.Series:
+    def get_predictions(self, mask: Optional[pd.Series] = None) -> pd.Series:
         if self.predictions is None:
             raise KeyError("Dataset has no predictions")
+        if mask is not None:
+            return self.predictions[mask]
         return self.predictions
 
-    @property
-    def ensure_reasoning(self) -> pd.Series:
+    def get_reasoning(self, mask: Optional[pd.Series] = None) -> pd.Series:
         if self.reasoning is None:
             raise KeyError("Dataset has no reasoning")
+        if mask is not None:
+            return self.reasoning[mask]
         return self.reasoning
 
-    @property
-    def ensure_scores(self) -> pd.Series:
+    def get_scores(self, mask: Optional[pd.Series] = None) -> pd.Series:
         if self.scores is None:
             raise KeyError("Dataset has no scores")
+        if mask is not None:
+            return self.scores[mask]
         return self.scores
 
     def items(self) -> Iterable[Tuple[str, pd.Series]]:
@@ -245,6 +250,7 @@ class OptimizerRun(BaseModel):
     run_id: RunID
     logs: LogsDict = {}
     seed: Optional[int]
+    start_time: datetime.datetime = Field(default_factory=datetime.datetime.now)
     _context: "OptimizerContext" = PrivateAttr()
 
     def bind(self, context: "OptimizerContext") -> "OptimizerRun":
@@ -281,12 +287,12 @@ class OptimizerRun(BaseModel):
     def print_stats(self):
         print(f"Optimizer Run [{self.run_id}], seed [{self.seed}]")
         log_list = list(self.logs.values())
-        first_log, last_log = log_list[0], log_list[-1]
+        last_log = log_list[-1]
         print(f"Steps: {sum(1 for log in log_list if log.__is_step__)}")
-        print(f"Time: {(last_log.timestamp - first_log.timestamp).total_seconds():.1f}s")
+        print(f"Time: {(last_log.timestamp - self.start_time).total_seconds():.1f}s")
         print("Input tokens:", sum(log.input_tokens for log in self.get_logs(LLMCallOptimizerLog)))
         print("Output tokens:", sum(log.output_tokens for log in self.get_logs(LLMCallOptimizerLog)))
-        start_time = first_log.timestamp
+        start_time = self.start_time
         for log in log_list:
             elapsed = (log.timestamp - start_time).total_seconds()
             start_time = log.timestamp
@@ -359,6 +365,9 @@ class OptimizerContext(BaseModel):
             if isinstance(value, InitContextMixin):
                 value.on_context_lock(self)
 
+    def has_param(self, name: str):
+        return name in self.params
+
 
 class InitContextMixin(ABC):
     """Mixin for objects that need to alter OptimizerContext on init."""
@@ -398,3 +407,6 @@ class BaseOptimizer(ABC, Generic[TOptimizerConfig]):
     def get_param(self, name: str, cls: Optional[Type[T]] = None, missing_error_message: Optional[str] = None) -> T:
         """Get a parameter from the optimizer context."""
         return self.context.get_param(name, cls, missing_error_message)
+
+    def has_param(self, name: str) -> bool:
+        return self.context.has_param(name)

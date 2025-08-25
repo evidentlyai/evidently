@@ -486,6 +486,12 @@ class PromptScoringLog(OptimizerLog):
     execution_log_id: LogID
     scores: Dict[str, Dict[str, float]]
 
+    def get_score(self, score_name: str, split: str) -> float:
+        score = self.scores[score_name]
+        if split in score:
+            return score[split]
+        return score[LLMDatasetSplit.All]
+
     def message(self) -> str:
         return "Prompt scored: " + ", ".join(f"{k}: {v}" for k, v in self.scores.items())
 
@@ -533,14 +539,12 @@ class BinaryJudgeScorer(OptimizationScorer, InitContextMixin):
             raise OptimizationConfigurationError("Judge scorer only supports binary classification")
         return template
 
-    def on_context_lock(self, context: OptimizerContext):
-        dataset = context.get_param(Params.Dataset, LLMDataset)
-        if dataset.target is None:
-            dataset.target = pd.Series([self.template.target_category] * len(dataset.input_values))
+    def on_param_set(self, context: OptimizerContext):
+        context.set_param(Params.TargetValue, self.template.target_category)
 
     async def score(self, context: OptimizerContext, execution_log: PromptExecutionLog) -> Optional[Dict[str, float]]:
         try:
-            predictions = execution_log.result.ensure_predictions
+            predictions = execution_log.result.get_predictions()
             judge = self.judge
             template = self.template
             judge.update(template=template.update(include_category=True, include_reasoning=True, include_score=False))
@@ -600,19 +604,19 @@ class EarlyStopConfig(BaseModel):
         return 1 if self.bigger_score_better else -1
 
     def should_stop(self, run: OptimizerRun) -> Optional[float]:
-        split = LLMDatasetSplit.Val
         if len(run.get_logs(PromptOptimizationLog)) > self.max_iterations:
             return True
         scores_log = run.get_logs(PromptScoringLog)
         score_name = run.context.get_param(Params.Scorer, OptimizationScorer).get_name()
         if len(scores_log) > 0:
             last_score = scores_log[-1]
-            if last_score.scores[score_name] == self.target_score:
+            if last_score.get_score(score_name, LLMDatasetSplit.Val) == self.target_score:
                 return True
         if len(scores_log) > 1:
             prev_score, last_score = scores_log[-2:]
             if (
-                last_score.scores[score_name][split] - prev_score.scores[score_name][split]
+                last_score.get_score(score_name, LLMDatasetSplit.Val)
+                - prev_score.get_score(score_name, LLMDatasetSplit.Val)
             ) * self.score_sign < self.min_score_gain:
                 return True
         return False
@@ -786,7 +790,7 @@ class PromptOptimizer(BaseOptimizer[PromptOptimizerConfig]):
         scores = run.get_logs(PromptScoringLog)
         early_stop = self.get_param(Params.EarlyStop, EarlyStopConfig)
         best_score: PromptScoringLog = max(
-            reversed(scores), key=lambda s: s.scores[score_name][LLMDatasetSplit.Val] * early_stop.score_sign
+            reversed(scores), key=lambda s: s.get_score(score_name, LLMDatasetSplit.Val) * early_stop.score_sign
         )
         execution_log = run.get_log(best_score.execution_log_id)
         assert isinstance(execution_log, PromptExecutionLog)
@@ -801,7 +805,11 @@ class PromptOptimizer(BaseOptimizer[PromptOptimizerConfig]):
     def best_result(self) -> PromptOptimizationResultLog:
         early_stop = self.get_param(Params.EarlyStop, EarlyStopConfig)
         results = [r.get_last_log(PromptOptimizationResultLog) for r in self.context.runs]
-        return max(reversed(results), key=lambda s: s.best_scores[LLMDatasetSplit.Val] * early_stop.score_sign)
+        return max(
+            reversed(results),
+            key=lambda s: s.best_scores.get(LLMDatasetSplit.Val, s.best_scores.get(LLMDatasetSplit.All))
+            * early_stop.score_sign,
+        )
 
     def best_executor(self):
         executor = self.get_param(Params.Executor, PromptExecutor)
@@ -810,9 +818,15 @@ class PromptOptimizer(BaseOptimizer[PromptOptimizerConfig]):
     def print_stats(self):
         print("Optimization statistics:")
         print(f"Seed: {self.config.seed}")
+        if self.has_param(Params.Dataset):
+            dataset = self.get_param(Params.Dataset, LLMDataset)
+            sizes = ", ".join(f"{k}: {v.sum()}" for k, v in dataset.split_masks.items())
+            if not sizes:
+                sizes = len(dataset.input_values)
+            print(f"Dataset {sizes}")
         print(f"Runs: {len(self.context.runs)}")
         all_logs = [log for run in self.context.runs for log in run.logs.values()]
-        first_log = min(log.timestamp for log in all_logs)
+        first_log = min(run.start_time for run in self.context.runs)
         last_log = max(log.timestamp for log in all_logs)
         print(f"Total time: {(last_log - first_log).total_seconds():.2f}s")
         print(f"Total steps: {sum(1 for log in all_logs if log.__is_step__)}")
@@ -886,13 +900,24 @@ def iter_mistakes(run: OptimizerRun) -> Iterator[_Row]:
     last_eval = run.get_last_log(PromptExecutionLog)
     if last_eval is None:
         raise OptimizationRuntimeError("Prompt was not executed.")
-    dataset = run.context.get_param(Params.Dataset, LLMDataset)
-    train_mask = dataset.split_masks[LLMDatasetSplit.Train]
-    target = dataset[LLMDatasetSplit.Train].target
+
+    if run.context.has_param(Params.Dataset):
+        dataset = run.context.get_param(Params.Dataset, LLMDataset)
+        train_mask = dataset.split_masks.get(LLMDatasetSplit.Train)
+        preds = last_eval.result.get_predictions(train_mask)
+        target = dataset[LLMDatasetSplit.Train].target
+    else:
+        dataset = LLMDataset()
+        target_value = run.context.get_param(
+            Params.TargetValue,
+            missing_error_message="Target value is required when using feedback strategy with no dataset",
+        )
+        preds = last_eval.result.get_predictions()
+        target = pd.Series([target_value] * len(preds))
+        train_mask = pd.Series([True] * len(preds))
     if target is None:
         raise OptimizationRuntimeError("Need to provide target column to filter failed rows.")
 
-    preds = last_eval.result.ensure_predictions[train_mask]
     df = pd.DataFrame({LLMDatasetColumns.Pred: preds})
     df[LLMDatasetColumns.Target] = target
     df[LLMDatasetColumns.InputValues] = dataset[LLMDatasetSplit.Train].input_values
