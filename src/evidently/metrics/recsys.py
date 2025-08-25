@@ -13,6 +13,8 @@ from evidently.core.metric_types import SingleValueMetric
 from evidently.core.metric_types import TMetricResult
 from evidently.core.report import Context
 from evidently.core.report import Report
+from evidently.core.report import _default_input_data_generator
+from evidently.legacy.base_metric import InputData
 from evidently.legacy.metrics import FBetaTopKMetric
 from evidently.legacy.metrics import HitRateKMetric
 from evidently.legacy.metrics import MAPKMetric
@@ -25,6 +27,7 @@ from evidently.legacy.metrics.recsys.base_top_k import TopKMetricResult
 from evidently.legacy.metrics.recsys.scores_distribution import ScoreDistribution as ScoreDistributionLegacy
 from evidently.legacy.metrics.recsys.scores_distribution import ScoreDistributionResult
 from evidently.legacy.model.widget import BaseWidgetInfo
+from evidently.legacy.utils.data_preprocessing import create_data_definition
 from evidently.metrics._legacy import LegacyMetricCalculation
 from evidently.tests import Reference
 from evidently.tests import eq
@@ -34,6 +37,7 @@ class TopKBase(SingleValueMetric):
     k: int
     min_rel_score: Optional[int] = None
     no_feedback_users: bool = False
+    ranking_name: str = "default"
 
     def _default_tests_with_reference(self, context: Context) -> List[BoundTest]:
         return [
@@ -42,6 +46,25 @@ class TopKBase(SingleValueMetric):
 
 
 TTopKBase = TypeVar("TTopKBase", bound=TopKBase)
+
+
+def _gen_ranking_input_data(context: "Context", task_name: Optional[str]) -> InputData:
+    default_data = _default_input_data_generator(context, None)
+    if task_name is None:
+        return default_data
+    ranking = context.data_definition.get_ranking(task_name)
+    if ranking is not None:
+        default_data.column_mapping.user_id = ranking.user_id
+        default_data.column_mapping.item_id = ranking.item_id
+        default_data.column_mapping.recommendations_type = ranking.recommendations_type
+        default_data.column_mapping.target = ranking.target
+        default_data.column_mapping.prediction = ranking.prediction
+        default_data.data_definition = create_data_definition(
+            default_data.reference_data,
+            default_data.current_data,
+            default_data.column_mapping,
+        )
+    return default_data
 
 
 class LegacyTopKCalculation(
@@ -57,6 +80,9 @@ class LegacyTopKCalculation(
 ):
     __legacy_metric_type__: ClassVar[Type[TopKMetric]]
 
+    def task_name(self) -> Optional[str]:
+        return self.metric.ranking_name
+
     def legacy_metric(self):
         return self.__legacy_metric_type__(
             k=self.metric.k, min_rel_score=self.metric.min_rel_score, no_feedback_users=self.metric.no_feedback_users
@@ -69,6 +95,9 @@ class LegacyTopKCalculation(
         if legacy_result.reference is None:
             return current
         return current, self.result(legacy_result.reference[legacy_result.k - 1])
+
+    def _gen_input_data(self, context: "Context", task_name: Optional[str]) -> InputData:
+        return _gen_ranking_input_data(context, task_name)
 
 
 class NDCG(TopKBase):
@@ -156,6 +185,7 @@ class FBetaTopKCalculation(LegacyTopKCalculation[FBetaTopK]):
 
 class ScoreDistribution(SingleValueMetric):
     k: int
+    ranking_name: str = "default"
 
     def _default_tests_with_reference(self, context: Context) -> List[BoundTest]:
         return [
@@ -167,6 +197,9 @@ class ScoreDistributionCalculation(
     LegacyMetricCalculation[SingleValue, ScoreDistribution, ScoreDistributionResult, ScoreDistributionLegacy],
     SingleValueCalculation,
 ):
+    def task_name(self) -> Optional[str]:
+        return self.metric.ranking_name
+
     def legacy_metric(self) -> ScoreDistributionLegacy:
         return ScoreDistributionLegacy(k=self.metric.k)
 
@@ -180,6 +213,9 @@ class ScoreDistributionCalculation(
 
     def display_name(self) -> str:
         return "Score distribution"
+
+    def _gen_input_data(self, context: "Context", task_name: Optional[str]) -> InputData:
+        return _gen_ranking_input_data(context, task_name)
 
 
 def main():
