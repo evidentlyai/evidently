@@ -94,7 +94,7 @@ class MockLLMWrapper(LLMWrapper):
     def __init__(self, model: str, options: Options):
         self.model = model
 
-    async def complete(self, messages: List[LLMMessage]) -> LLMResult[str]:
+    async def complete(self, messages: List[LLMMessage], seed: Optional[int] = None) -> LLMResult[str]:
         text = messages[-1].content
         cat = re.findall("___text_starts_here___\n(.*)\n___text_ends_here___", text)[0][0]
         return LLMResult(json.dumps({"category": cat}), 0, 0)
