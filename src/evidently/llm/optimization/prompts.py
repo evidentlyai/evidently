@@ -814,10 +814,9 @@ class PromptOptimizer(BaseOptimizer[PromptOptimizerConfig]):
     def best_result(self) -> PromptOptimizationResultLog:
         early_stop = self.get_param(Params.EarlyStop, EarlyStopConfig)
         results = [r.get_last_log(PromptOptimizationResultLog) for r in self.context.runs]
-        results = [log for log in results if log is not None]
         result = max(
-            reversed(results),
-            key=lambda s: s.best_scores.get(LLMDatasetSplit.Val, s.best_scores.get(LLMDatasetSplit.All))
+            reversed([log for log in results if log is not None]),
+            key=lambda s: s.best_scores.get(LLMDatasetSplit.Val, s.best_scores.get(LLMDatasetSplit.All) or 0)
             * early_stop.score_sign,
         )
         if result is None:
