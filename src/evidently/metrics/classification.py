@@ -385,7 +385,10 @@ class TPRCalculation(LegacyClassificationQuality[TPR]):
         render: List[BaseWidgetInfo],
     ) -> Tuple[SingleValue, Optional[SingleValue]]:
         if legacy_result.current.tpr is None:
-            raise ValueError("Failed to calculate TPR value")
+            raise ValueError(
+                "Cannot compute TPR: current TPR value is missing. "
+                "Ensure prediction labels and probabilities are available. "
+            )
         return (
             self.result(legacy_result.current.tpr),
             None
@@ -413,7 +416,10 @@ class TNRCalculation(LegacyClassificationQuality[TNR]):
         render: List[BaseWidgetInfo],
     ) -> Tuple[SingleValue, Optional[SingleValue]]:
         if legacy_result.current.tnr is None:
-            raise ValueError("Failed to calculate TNR value")
+            raise ValueError(
+                "Cannot compute TNR: current TNR value is missing. "
+                "Ensure prediction labels and probabilities are available. "
+            )
         return (
             self.result(legacy_result.current.tnr),
             None
@@ -441,7 +447,10 @@ class FPRCalculation(LegacyClassificationQuality[FPR]):
         render: List[BaseWidgetInfo],
     ) -> Tuple[SingleValue, Optional[SingleValue]]:
         if legacy_result.current.fpr is None:
-            raise ValueError("Failed to calculate FPR value")
+            raise ValueError(
+                "Cannot compute FPR: current FPR value is missing. "
+                "Ensure prediction labels and probabilities are available. "
+            )
         return (
             self.result(legacy_result.current.fpr),
             None
@@ -469,7 +478,10 @@ class FNRCalculation(LegacyClassificationQuality[FNR]):
         render: List[BaseWidgetInfo],
     ) -> Tuple[SingleValue, Optional[SingleValue]]:
         if legacy_result.current.fnr is None:
-            raise ValueError("Failed to calculate FNR value")
+            raise ValueError(
+                "Cannot compute FNR: current FNR value is missing. "
+                "Ensure prediction labels and probabilities are available. "
+            )
         return (
             self.result(legacy_result.current.fnr),
             None
@@ -498,7 +510,10 @@ class RocAucCalculation(LegacyClassificationQuality[RocAuc]):
         render: List[BaseWidgetInfo],
     ) -> Tuple[SingleValue, Optional[SingleValue]]:
         if legacy_result.current.roc_auc is None:
-            raise ValueError("Failed to calculate RocAuc value")
+            raise ValueError(
+                "Cannot compute RocAuc: current RocAuc value is missing. "
+                "Ensure prediction labels and probabilities are available. "
+            )
         return (
             self.result(legacy_result.current.roc_auc),
             None
@@ -526,7 +541,10 @@ class LogLossCalculation(LegacyClassificationQuality[LogLoss]):
         render: List[BaseWidgetInfo],
     ) -> Tuple[SingleValue, Optional[SingleValue]]:
         if legacy_result.current.log_loss is None:
-            raise ValueError("Failed to calculate LogLoss value")
+            raise ValueError(
+                "Cannot compute LogLoss: current LogLoss value is missing. "
+                "Ensure prediction labels and probabilities are available. "
+            )
         return (
             self.result(legacy_result.current.log_loss),
             None
