@@ -1,10 +1,13 @@
 import inspect
 from functools import wraps
+from typing import List
+from typing import Union
 
 from evidently.guardrails.core import GuardrailBase
+from evidently.guardrails.core import validate_guards
 
 
-def guard(guard: GuardrailBase, input_arg: str = "input"):
+def guard(guard: Union[GuardrailBase, List[GuardrailBase]], input_arg: str = "input"):
     def decorator(func):
         sig = inspect.signature(func)
 
@@ -14,7 +17,10 @@ def guard(guard: GuardrailBase, input_arg: str = "input"):
             bound.apply_defaults()
             if input_arg not in bound.arguments:
                 raise Exception(f"{input_arg} is not a valid argument")
-            guard.validate(bound.arguments[input_arg])
+            if isinstance(guard, list):
+                validate_guards(bound.arguments[input_arg], guard)
+            else:
+                guard.validate(bound.arguments[input_arg])
             return func(*args, **kwargs)
 
         return wrapper

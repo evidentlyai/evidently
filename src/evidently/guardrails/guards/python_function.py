@@ -1,17 +1,7 @@
 from typing import Callable
-from typing import List
 
 from evidently.guardrails.core import GuardException
 from evidently.guardrails.core import GuardrailBase
-
-
-class WordsPresence(GuardrailBase):
-    def __init__(self, words: List[str], lemmatize: bool = False):
-        super().__init__()
-        self.words = words
-
-    def validate(self, data: str):
-        pass
 
 
 class PythonFunction(GuardrailBase):
