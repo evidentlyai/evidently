@@ -17,6 +17,6 @@ class PIICheck(GuardrailBase):
             response_parser=piillm_eval.template.get_parser(),
             response_type=dict,
         )
-        response = get_llm_wrapper(piillm_eval.provider, piillm_eval.model, Options()).run_sync(request)
+        response: dict = get_llm_wrapper(piillm_eval.provider, piillm_eval.model, Options()).run_sync(request)
         if response.get("category") != "OK":
             raise GuardException("PII Check failed: {}".format(response.get("reasoning")))
