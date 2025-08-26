@@ -12,11 +12,11 @@ class PIICheck(GuardrailBase):
 
     def validate(self, data: str):
         piillm_eval = PIILLMEval()
-        request = LLMRequest(
+        request: LLMRequest[dict] = LLMRequest(
             messages=piillm_eval.template.get_messages({"input": data}),
             response_parser=piillm_eval.template.get_parser(),
             response_type=dict,
         )
-        response: dict = get_llm_wrapper(piillm_eval.provider, piillm_eval.model, Options()).run_sync(request)
+        response = get_llm_wrapper(piillm_eval.provider, piillm_eval.model, Options()).run_sync(request)
         if response.get("category") != "OK":
             raise GuardException("PII Check failed: {}".format(response.get("reasoning")))
