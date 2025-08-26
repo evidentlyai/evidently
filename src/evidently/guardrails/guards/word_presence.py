@@ -49,5 +49,5 @@ class WordsPresence(GuardrailBase):
 
 
 class IncludesWords(WordsPresence):
-    def __init__(self, words: List[str], mode: str, lemmatize: bool = False):
-        super().__init__(words=words, presence_mode="includes", search_mode="all", lemmatize=lemmatize)
+    def __init__(self, words: List[str], mode: str = "all", lemmatize: bool = False):
+        super().__init__(words=words, presence_mode="includes", search_mode=mode, lemmatize=lemmatize)
