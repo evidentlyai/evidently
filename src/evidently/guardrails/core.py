@@ -21,7 +21,7 @@ class GuardsException(GuardException):
         self.failed_guards = failed_guards
 
     def __str__(self):
-        return f"Multiple guards validation failed: {", ".join(self.failed_guards.keys())}."
+        return f"Multiple guards validation failed: {', '.join(self.failed_guards.keys())}."
 
 
 class GuardrailBase:
