@@ -11,7 +11,6 @@ register_type_alias(OptimizerConfig, "evidently.llm.optimization.prompts.PromptO
 register_type_alias(OptimizerLog, "evidently.llm.optimization.prompts.PromptExecutionLog", "evidently:optimizer_log:PromptExecutionLog")
 register_type_alias(OptimizerLog, "evidently.llm.optimization.prompts.PromptOptimizationLog", "evidently:optimizer_log:PromptOptimizationLog")
 register_type_alias(OptimizerLog, "evidently.llm.optimization.prompts.PromptScoringLog", "evidently:optimizer_log:PromptScoringLog")
-register_type_alias(OptimizationScorer, "evidently.llm.optimization.prompts.AccuracyScorer", "evidently:optimizer_scorer:AccuracyScorer")
 register_type_alias(OptimizationScorer, "evidently.llm.optimization.prompts.BinaryJudgeScorer", "evidently:optimizer_scorer:BinaryJudgeScorer")
 register_type_alias(PromptExecutor, "evidently.llm.optimization.prompts.CallablePromptExecutor", "evidently:prompt_executor:CallablePromptExecutor")
 register_type_alias(PromptExecutor, "evidently.llm.optimization.prompts.LLMJudgePromptExecutor", "evidently:prompt_executor:LLMJudgePromptExecutor")
