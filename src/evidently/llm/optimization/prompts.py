@@ -135,11 +135,15 @@ class PromptExecutionLog(OptimizerLog):
 def get_classification_dataset(context: OptimizerContext) -> Dataset:
     clf = context.get_param(Params.LLMClassification, LLMClassification, "Missing LLMClassification param")
     dataset = context.get_param(Params.Dataset, LLMDataset, "Missing LLMDataset param")
+    values = dataset.input_values
+    target = dataset.target
+    if target is None:
+        raise OptimizationConfigurationError("Target is required for judge executor")
     return Dataset.from_pandas(
         pd.DataFrame(
             {
-                clf.input: list(dataset.input_values),
-                clf.target: list(dataset.target),
+                clf.input: list(values),
+                clf.target: list(target),
             }
         )
     )
@@ -381,6 +385,8 @@ class BlankLLMJudge(PromptExecutor):
         context = run.context
         dataset = context.get_param(Params.Dataset, LLMDataset)
         target = dataset.target
+        if target is None:
+            raise OptimizationConfigurationError("Target is required for BlankLLMJudge executor")
         inputs = dataset.input_values
         labels = target.unique()
         model = context.config.model
@@ -418,7 +424,8 @@ class BlankLLMJudge(PromptExecutor):
             messages=[LLMMessage.user(binary_prompt)], seed=run.seed
         )
         criteria = get_tag(result.result, tag)
-        # criteria = f"Classify inputs between two categories: {target} and {non_target_category}"
+        if criteria is None:
+            raise OptimizationRuntimeError("Could not generate binary criteria")
         run.add_log(
             InitGenerationLog(
                 kind="criteria for binary judge",
@@ -442,6 +449,8 @@ class BlankLLMJudge(PromptExecutor):
             messages=[LLMMessage.user(system_prompt)], seed=run.seed
         )
         sysmessage = get_tag(result.result, tag)
+        if sysmessage is None:
+            raise OptimizationRuntimeError("Could not generate system message")
         run.add_log(
             InitGenerationLog(
                 kind="system message for binary judge",
@@ -603,7 +612,7 @@ class EarlyStopConfig(BaseModel):
     def score_sign(self):
         return 1 if self.bigger_score_better else -1
 
-    def should_stop(self, run: OptimizerRun) -> Optional[float]:
+    def should_stop(self, run: OptimizerRun) -> bool:
         if len(run.get_logs(PromptOptimizationLog)) > self.max_iterations:
             return True
         scores_log = run.get_logs(PromptScoringLog)
@@ -903,12 +912,12 @@ def iter_mistakes(run: OptimizerRun) -> Iterator[_Row]:
 
     if run.context.has_param(Params.Dataset):
         dataset = run.context.get_param(Params.Dataset, LLMDataset)
-        train_mask = dataset.split_masks.get(LLMDatasetSplit.Train)
+        train_mask = dataset.get_mask(LLMDatasetSplit.Train)
         preds = last_eval.result.get_predictions(train_mask)
         target = dataset[LLMDatasetSplit.Train].target
     else:
-        dataset = LLMDataset()
-        target_value = run.context.get_param(
+        dataset = LLMDataset(input_values=pd.Series())
+        target_value: Any = run.context.get_param(
             Params.TargetValue,
             missing_error_message="Target value is required when using feedback strategy with no dataset",
         )

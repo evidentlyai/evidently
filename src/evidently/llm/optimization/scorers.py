@@ -1,6 +1,7 @@
 from abc import ABC
 from abc import abstractmethod
 from typing import TYPE_CHECKING
+from typing import Any
 from typing import ClassVar
 from typing import Dict
 from typing import Optional
@@ -26,6 +27,8 @@ from evidently.pydantic_utils import AutoAliasMixin
 from evidently.pydantic_utils import EvidentlyBaseModel
 from evidently.utils.arg_type_registry import BaseArgTypeRegistry
 
+from .errors import OptimizationConfigurationError
+
 if TYPE_CHECKING:
     from .prompts import PromptExecutionLog
 
@@ -50,23 +53,28 @@ class OptimizationScorer(BaseArgTypeRegistry, AutoAliasMixin, EvidentlyBaseModel
         if context.has_param(Params.Dataset):
             dataset = context.get_param(Params.Dataset, LLMDataset)
         else:
-            target_value = context.get_param(Params.TargetValue)
+            target_value: Any = context.get_param(Params.TargetValue)
             return {
                 LLMDatasetSplit.All: await self._score(
                     predictions=predictions,
                     target=pd.Series([target_value] * len(predictions)),
                     options=context.options,
-                ),
+                )
+                or 0,
             }
         result = {}
         for split in (LLMDatasetSplit.Train, LLMDatasetSplit.Test, LLMDatasetSplit.Val):
             if split not in dataset.split_masks:
                 continue
-            result[split] = await self._score(
-                predictions[dataset.split_masks[split]], dataset[split].target, context.options
-            )
+            target = dataset[split].target
+            if target is None:
+                raise OptimizationConfigurationError("Target is required for scoring")
+            result[split] = await self._score(predictions[dataset.split_masks[split]], target, context.options) or 0
         if len(result) == 0:
-            result[LLMDatasetSplit.All] = await self._score(predictions, dataset.target, context.options)
+            target = dataset.target
+            if target is None:
+                raise OptimizationConfigurationError("Target is required for scoring")
+            result[LLMDatasetSplit.All] = await self._score(predictions, target, context.options) or 0
         return result
 
 

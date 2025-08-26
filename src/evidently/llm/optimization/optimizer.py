@@ -71,46 +71,71 @@ class LLMDatasetSplitView:
 
     @property
     def input_values(self) -> Optional[pd.Series]:
-        if self.split_name not in self.dataset.split_masks or self.dataset.input_values is None:
+        if (
+            self.split_name == LLMDatasetSplit.All
+            or self.split_name not in self.dataset.split_masks
+            or self.dataset.input_values is None
+        ):
             return self.dataset.input_values
         return self.dataset.input_values[self.dataset.split_masks[self.split_name]]
 
     @property
     def target(self) -> Optional[pd.Series]:
-        if self.split_name not in self.dataset.split_masks or self.dataset.target is None:
+        if (
+            self.split_name == LLMDatasetSplit.All
+            or self.split_name not in self.dataset.split_masks
+            or self.dataset.target is None
+        ):
             return self.dataset.target
         return self.dataset.target[self.dataset.split_masks[self.split_name]]
 
     @property
     def reasoning(self) -> Optional[pd.Series]:
-        if self.split_name not in self.dataset.split_masks or self.dataset.reasoning is None:
+        if (
+            self.split_name == LLMDatasetSplit.All
+            or self.split_name not in self.dataset.split_masks
+            or self.dataset.reasoning is None
+        ):
             return self.dataset.reasoning
         return self.dataset.reasoning[self.dataset.split_masks[self.split_name]]
 
     @property
     def predictions(self) -> Optional[pd.Series]:
-        if self.split_name not in self.dataset.split_masks or self.dataset.predictions is None:
+        if (
+            self.split_name == LLMDatasetSplit.All
+            or self.split_name not in self.dataset.split_masks
+            or self.dataset.predictions is None
+        ):
             return self.dataset.predictions
         return self.dataset.predictions[self.dataset.split_masks[self.split_name]]
 
     @property
     def prediction_reasoning(self) -> Optional[pd.Series]:
-        if self.split_name not in self.dataset.split_masks or self.dataset.prediction_reasoning is None:
+        if (
+            self.split_name == LLMDatasetSplit.All
+            or self.split_name not in self.dataset.split_masks
+            or self.dataset.prediction_reasoning is None
+        ):
             return self.dataset.prediction_reasoning
         return self.dataset.prediction_reasoning[self.dataset.split_masks[self.split_name]]
 
 
 class LLMDataset(BaseModel):
-    input_values: Optional[pd.Series] = None
+    input_values: pd.Series
     target: Optional[pd.Series] = None
     reasoning: Optional[pd.Series] = None
     predictions: Optional[pd.Series] = None
     prediction_reasoning: Optional[pd.Series] = None
 
-    split_masks: Dict[str, Optional[pd.Series]] = Field(default_factory=dict)
+    split_masks: Dict[str, pd.Series] = Field(default_factory=dict)
 
     def __getitem__(self, split_name: str) -> LLMDatasetSplitView:
         return LLMDatasetSplitView(self, split_name)
+
+    def get_mask(self, split_name: str) -> pd.Series:
+        if split_name not in self.split_masks or split_name == LLMDatasetSplit.All:
+            return pd.Series(True, index=np.arange(len(self.input_values)))
+        return self.split_masks[split_name]
 
     def split(self, shares: Dict[str, Optional[float]], seed: Optional[int]) -> None:
         n = len(self.input_values)
@@ -122,7 +147,7 @@ class LLMDataset(BaseModel):
         if specified and not np.isclose(total, 1.0):
             raise ValueError("Specified shares must sum to 1.0")
 
-        stratify = self.target if self.target is not None else None
+        stratify = self.target is not None
 
         remaining_indices = indices
         remaining_shares = dict(specified)
@@ -131,8 +156,6 @@ class LLMDataset(BaseModel):
 
         for i, (name, share) in enumerate(shares.items()):
             if share is None:
-                # leave mask as None = all rows
-                self.split_masks[name] = None
                 continue
 
             if i == len(specified) - 1:
@@ -142,14 +165,14 @@ class LLMDataset(BaseModel):
                 _, split_indices = train_test_split(
                     remaining_indices,
                     test_size=test_size,
-                    stratify=stratify[remaining_indices] if stratify is not None else None,
+                    stratify=self.target[remaining_indices] if stratify else None,
                     random_state=seed,
                 )
                 remaining_indices = np.setdiff1d(remaining_indices, split_indices)
                 remaining_shares.pop(name)
 
             mask = pd.Series(False, index=np.arange(n))
-            mask[split_indices] = True
+            mask.iloc[split_indices] = True
             self.split_masks[name] = mask
 
 
@@ -304,7 +327,7 @@ def get_seeded_nth_int(seed: int, n: int) -> int:
     value = None
     for _ in range(n):
         value = rng.getrandbits(32)
-    return value
+    return value or seed
 
 
 _run_lock = Lock()
