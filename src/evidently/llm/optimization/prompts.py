@@ -814,11 +814,15 @@ class PromptOptimizer(BaseOptimizer[PromptOptimizerConfig]):
     def best_result(self) -> PromptOptimizationResultLog:
         early_stop = self.get_param(Params.EarlyStop, EarlyStopConfig)
         results = [r.get_last_log(PromptOptimizationResultLog) for r in self.context.runs]
-        return max(
+        results = [log for log in results if log is not None]
+        result = max(
             reversed(results),
             key=lambda s: s.best_scores.get(LLMDatasetSplit.Val, s.best_scores.get(LLMDatasetSplit.All))
             * early_stop.score_sign,
         )
+        if result is None:
+            raise ValueError("No best result found")
+        return result
 
     def best_executor(self):
         executor = self.get_param(Params.Executor, PromptExecutor)
@@ -932,7 +936,7 @@ def iter_mistakes(run: OptimizerRun) -> Iterator[_Row]:
     df[LLMDatasetColumns.InputValues] = dataset[LLMDatasetSplit.Train].input_values
     df[LLMDatasetColumns.Reasoning] = dataset[LLMDatasetSplit.Train].reasoning
     df[LLMDatasetColumns.PredReasoning] = (
-        last_eval.result.reasoning[train_mask] if last_eval.result.has_reasoning else ""
+        last_eval.result.reasoning[train_mask] if last_eval.result.reasoning is not None else ""
     )
     for _, row in df[preds != target].iterrows():
         yield _Row(

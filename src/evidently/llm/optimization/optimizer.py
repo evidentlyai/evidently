@@ -147,8 +147,6 @@ class LLMDataset(BaseModel):
         if specified and not np.isclose(total, 1.0):
             raise ValueError("Specified shares must sum to 1.0")
 
-        stratify = self.target is not None
-
         remaining_indices = indices
         remaining_shares = dict(specified)
 
@@ -165,7 +163,7 @@ class LLMDataset(BaseModel):
                 _, split_indices = train_test_split(
                     remaining_indices,
                     test_size=test_size,
-                    stratify=self.target[remaining_indices] if stratify else None,
+                    stratify=self.target[remaining_indices] if self.target is not None else None,  # type: ignore[index]
                     random_state=seed,
                 )
                 remaining_indices = np.setdiff1d(remaining_indices, split_indices)
