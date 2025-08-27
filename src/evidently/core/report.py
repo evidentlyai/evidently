@@ -151,19 +151,20 @@ class Context:
     def get_legacy_metric(
         self,
         metric: LegacyMetric[T],
-        input_data_generator: Optional[Callable[["Context"], InputData]],
+        input_data_generator: Optional[Callable[["Context", Optional[str]], InputData]],
+        task_name: Optional[str],
     ) -> Tuple[T, List[BaseWidgetInfo]]:
         if input_data_generator is None:
             input_data_generator = _default_input_data_generator
-        input_data = input_data_generator(self)
+        input_data = input_data_generator(self, task_name)
         dependencies = _discover_dependencies(metric)
         for _, obj in dependencies:
             if isinstance(obj, LegacyMetric):
-                (result, render) = self.get_legacy_metric(obj, input_data_generator)
+                (result, render) = self.get_legacy_metric(obj, input_data_generator, task_name)
                 object.__setattr__(obj, "get_result", lambda: result)
             else:
                 raise ValueError(f"unexpected type {type(obj)}")
-        fp = metric.get_fingerprint()
+        fp = metric.get_fingerprint() + ":task:" + (task_name or "")
         if fp not in self._legacy_metrics:
             result = metric.calculate(input_data)
             renderer = find_metric_renderer(type(metric), DEFAULT_RENDERERS)
@@ -211,9 +212,13 @@ class Context:
         return self._labels
 
 
-def _default_input_data_generator(context: "Context") -> InputData:
-    classification = context.data_definition.get_classification("default")
-    ranking = context.data_definition.get_ranking("default")
+def _default_input_data_generator(context: "Context", task_name: Optional[str]) -> InputData:
+    if task_name is None:
+        classification = None
+        ranking = None
+    else:
+        classification = context.data_definition.get_classification(task_name)
+        ranking = context.data_definition.get_ranking(task_name)
     reference = context._input_data[1].as_dataframe() if context._input_data[1] is not None else None
     current = context._input_data[0].as_dataframe()
     prediction: Optional[Union[str, List[str]]]
