@@ -7,6 +7,7 @@ import os
 import tarfile
 from abc import abstractmethod
 from enum import Enum
+from typing import TYPE_CHECKING
 from typing import Any
 from typing import ClassVar
 from typing import Dict
@@ -36,6 +37,9 @@ from evidently.pydantic_utils import AutoAliasMixin
 from evidently.pydantic_utils import EvidentlyBaseModel
 
 EVIDENTLY_DATASET_EXT = "evidently_dataset"
+
+if TYPE_CHECKING:
+    from evidently.core.container import MetricOrContainer
 
 
 class ColumnRole(Enum):
@@ -175,6 +179,19 @@ class LLMClassification:
     name: str = "llm_default"
 
 
+class SpecialColumnInfo(AutoAliasMixin, EvidentlyBaseModel):
+    __alias_type__: ClassVar = "special_column_info"
+
+    class Config:
+        is_base_type = True
+
+    def get_metrics(self) -> List["MetricOrContainer"]:
+        return []
+
+    def get_column_type(self, column_name: str) -> Optional[ColumnType]:
+        return None
+
+
 LLMDefinition = Union[Completion, RAG, LLMClassification]
 
 
@@ -200,6 +217,7 @@ class DataDefinition(BaseModel):
     categorical_descriptors: List[str] = []
     test_descriptors: Optional[List[str]] = None
     ranking: Optional[List[Recsys]] = None
+    special_columns: List[SpecialColumnInfo] = []
 
     def __init__(
         self,
@@ -259,6 +277,10 @@ class DataDefinition(BaseModel):
             return ColumnType.Date
         if column_name == self.id_column:
             return ColumnType.Id
+        for special_column in self.special_columns:
+            ct = special_column.get_column_type(column_name)
+            if ct is not None:
+                return ct
         return ColumnType.Unknown
 
     def get_classification(self, classification_id: str) -> Optional[Classification]:
@@ -393,6 +415,12 @@ class Descriptor(AutoAliasMixin, EvidentlyBaseModel, abc.ABC):
     def get_sub_descriptors(self) -> List["Descriptor"]:
         return [t.to_descriptor(self) for t in self.tests]
 
+    def get_special_columns_info(self, rename: Dict[str, str]) -> List[SpecialColumnInfo]:
+        return []
+
+    def add_to_descriptors_list(self) -> bool:
+        return True
+
 
 class SingleInputDescriptor(Descriptor, abc.ABC):
     column: str
@@ -425,6 +453,47 @@ class ColumnTest(SingleInputDescriptor):
         return DatasetColumn(ColumnType.Categorical, res)
 
 
+class TestSummaryInfo(SpecialColumnInfo):
+    all_column: Optional[str] = None
+    any_column: Optional[str] = None
+    count_column: Optional[str] = None
+    rate_column: Optional[str] = None
+    score_column: Optional[str] = None
+    score_weights: Optional[Dict[str, float]] = None
+
+    @property
+    def has_all(self):
+        return self.any_column is not None
+
+    @property
+    def has_any(self):
+        return self.any_column is not None
+
+    @property
+    def has_count(self):
+        return self.count_column is not None
+
+    @property
+    def has_rate(self):
+        return self.rate_column is not None
+
+    @property
+    def has_score(self):
+        return self.score_column is not None
+
+    def get_metrics(self) -> List["MetricOrContainer"]:
+        from evidently.presets.special import TestSummaryInfoPreset
+
+        return [TestSummaryInfoPreset(column_info=self)]
+
+    def get_column_type(self, column_name: str) -> Optional[ColumnType]:
+        if column_name in (self.all_column, self.any_column):
+            return ColumnType.Categorical
+        if column_name in (self.count_column, self.rate_column, self.score_column):
+            return ColumnType.Numerical
+        return None
+
+
 class TestSummary(Descriptor):
     success_all: bool = True
     success_any: bool = False
@@ -432,6 +501,7 @@ class TestSummary(Descriptor):
     success_rate: bool = False
     score: bool = False
     score_weights: Optional[Dict[str, float]] = None
+    normalize_scores: bool = True
 
     def __init__(
         self,
@@ -442,6 +512,7 @@ class TestSummary(Descriptor):
         score: bool = False,
         score_weights: Optional[Dict[str, float]] = None,
         alias: Optional[str] = None,
+        normalize_scores: bool = True,
         **data: Any,
     ):
         self.success_all = success_all
@@ -450,6 +521,7 @@ class TestSummary(Descriptor):
         self.success_rate = success_rate
         self.score = score
         self.score_weights = score_weights
+        self.normalize_scores = normalize_scores
         super().__init__(alias=alias or "summary", **data)
 
     def generate_data(
@@ -470,7 +542,7 @@ class TestSummary(Descriptor):
             summary_columns["success_any"] = (ColumnType.Categorical, test_results.any(axis=1))
         if self.score:
             weights = self.score_weights or {t: 1 for t in tests}
-            total_weight = sum(weights.values())
+            total_weight = sum(weights.values()) if self.normalize_scores else 1
             summary_columns["score"] = (  # type: ignore[assignment]
                 ColumnType.Numerical,
                 sum(test_results[col] * weight / total_weight for col, weight in weights.items()),
@@ -487,6 +559,33 @@ class TestSummary(Descriptor):
         if self.score and self.score_weights is not None:
             return list(self.score_weights.keys())
         return None
+
+    def get_special_columns_info(self, rename: Dict[str, str]) -> List[SpecialColumnInfo]:
+        alias = self.alias or "summary"
+        if len(rename) == 1:
+            return [
+                TestSummaryInfo(
+                    all_column=rename[alias] if self.success_all else None,
+                    any_column=rename[alias] if self.success_any else None,
+                    count_column=rename[alias] if self.success_count else None,
+                    rate_column=rename[alias] if self.success_rate else None,
+                    score_column=rename[alias] if self.score else None,
+                )
+            ]
+
+        return [
+            TestSummaryInfo(
+                all_column=rename[f"{alias}_success_all"] if self.success_all else None,
+                any_column=rename[f"{alias}_success_any"] if self.success_any else None,
+                count_column=rename[f"{alias}_success_count"] if self.success_count else None,
+                rate_column=rename[f"{alias}_success_rate"] if self.success_rate else None,
+                score_column=rename[f"{alias}_score"] if self.score else None,
+                score_weights=self.score_weights,
+            )
+        ]
+
+    def add_to_descriptors_list(self) -> bool:
+        return False
 
 
 class FeatureDescriptor(Descriptor):
@@ -918,13 +1017,13 @@ class PandasDataset(Dataset):
     def stats(self) -> DatasetStats:
         return self._dataset_stats
 
-    def add_column(self, key: str, data: DatasetColumn):
+    def add_column(self, key: str, data: DatasetColumn, add_to_descriptor_list: bool = True):
         self._dataset_stats.column_count += 1
         self._dataset_stats.column_stats[key] = self._collect_stats(data.type, data.data)
         self._data[key] = data.data
-        if data.type == ColumnType.Numerical:
+        if add_to_descriptor_list and data.type == ColumnType.Numerical:
             self._data_definition.numerical_descriptors.append(key)
-        if data.type == ColumnType.Categorical:
+        if add_to_descriptor_list and data.type == ColumnType.Categorical:
             self._data_definition.categorical_descriptors.append(key)
 
     def add_descriptor(self, descriptor: Descriptor, options: AnyOptions = None):
@@ -932,13 +1031,16 @@ class PandasDataset(Dataset):
         new_columns = descriptor.generate_data(self, Options.from_any_options(options))
         if isinstance(new_columns, DatasetColumn):
             new_columns = {descriptor.alias: new_columns}
+        rename = {}
         for col, value in new_columns.items():
             name = _determine_descriptor_column_name(col, self._data.columns.tolist())
-            self.add_column(name, value)
+            rename[col] = name
+            self.add_column(name, value, descriptor.add_to_descriptors_list())
             if isinstance(descriptor, ColumnTest):
                 if self._data_definition.test_descriptors is None:
                     self._data_definition.test_descriptors = []
                 self._data_definition.test_descriptors.append(name)
+        self.data_definition.special_columns.extend(descriptor.get_special_columns_info(rename))
         for sub in descriptor.get_sub_descriptors():
             self.add_descriptor(sub, options)
 

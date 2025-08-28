@@ -81,6 +81,7 @@ from evidently.presets import RegressionPreset
 from evidently.presets import RegressionQuality
 from evidently.presets import TextEvals
 from evidently.presets.dataset_stats import ValueStatsTests
+from evidently.presets.special import TestSummaryInfoPreset
 from evidently.tests import eq
 from tests.conftest import load_all_subtypes
 
@@ -209,6 +210,7 @@ preset_types: Dict[Type[MetricContainer], Dict[str, Tuple[MetricTypeOrMetricChec
         "abs_max_error_tests": (AbsMaxError, "tests"),
     },
     RowTestSummary: {},
+    TestSummaryInfoPreset: {},
 }
 
 
