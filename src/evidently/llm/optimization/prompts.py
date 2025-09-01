@@ -660,10 +660,13 @@ class PromptOptimizer(BaseOptimizer[PromptOptimizerConfig]):
         strategy: Union[str, PromptOptimizerStrategy],
         checkpoint_path: Optional[str] = None,
         verbose: bool = False,
+        **config_kwargs,
     ):
         strategy = PromptOptimizerStrategy.registry_lookup(strategy)
         super().__init__(
-            name, PromptOptimizerConfig(strategy=strategy, verbose=verbose), checkpoint_path=checkpoint_path
+            name,
+            PromptOptimizerConfig(strategy=strategy, verbose=verbose, **config_kwargs),
+            checkpoint_path=checkpoint_path,
         )
 
     def run(
