@@ -131,3 +131,16 @@ class JudgePromptContent(PromptContent):
 
     def get_type(self) -> PromptContentType:
         return PromptContentType.JUDGE
+
+
+class TemplatePromptContent(PromptContent):
+    template: BaseLLMPromptTemplate
+
+    def as_text(self) -> str:
+        raise ValueError("TemplatePromptContent cannot be used as_text")
+
+    def as_messages(self) -> List[LLMMessage]:
+        raise ValueError("TemplatePromptContent cannot be used as_messages")
+
+    def get_type(self) -> PromptContentType:
+        return PromptContentType.TEMPLATE

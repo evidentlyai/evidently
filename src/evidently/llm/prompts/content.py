@@ -12,6 +12,7 @@ class PromptContentType(str, Enum):
     TEXT = "text"
     MESSAGES = "messages"
     JUDGE = "judge"
+    TEMPLATE = "template"
 
 
 class PromptContent(AutoAliasMixin, EvidentlyBaseModel):
