@@ -1,5 +1,6 @@
 import json
 from inspect import isabstract
+from typing import ClassVar
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -22,11 +23,14 @@ from evidently.descriptors import CustomColumnDescriptor
 from evidently.descriptors import CustomDescriptor
 from evidently.descriptors import TextLength
 from evidently.descriptors.llm_judges import GenericLLMDescriptor
+from evidently.descriptors.llm_judges import LLMEval
 from evidently.legacy.options.base import Options
 from evidently.legacy.utils.llm.base import LLMMessage
 from evidently.legacy.utils.llm.wrapper import LLMResult
 from evidently.legacy.utils.llm.wrapper import LLMWrapper
 from evidently.legacy.utils.llm.wrapper import llm_provider
+from evidently.llm.templates import BaseLLMPromptTemplate
+from evidently.llm.utils.blocks import PromptBlock
 from evidently.tests import eq
 from tests.conftest import load_all_subtypes
 
@@ -51,6 +55,19 @@ def custom_descr(dataset: Dataset) -> DatasetColumn:
 
 def custom_col_descr(col: DatasetColumn) -> DatasetColumn:
     return DatasetColumn(ColumnType.Numerical, col.data)
+
+
+class MockTemplate(BaseLLMPromptTemplate):
+    blocks: ClassVar = [PromptBlock.simple("{data}")]
+
+    def list_output_columns(self) -> List[str]:
+        return ["res"]
+
+    def get_type(self, subcolumn: Optional[str]) -> ColumnType:
+        return ColumnType.Text
+
+    def get_main_output_column(self) -> str:
+        return "res"
 
 
 @pytest.fixture(autouse=True)
@@ -92,6 +109,17 @@ all_descriptors: List[Tuple[Descriptor, Union[pd.Series, pd.DataFrame], Dict[str
             model="",
             input_columns={"aaa": "data"},
             prompt=[{"role": "system", "content": "a"}, {"role": "user", "content": "{data}"}],
+        ),
+        pd.DataFrame({"aaa": ["x", "y"]}),
+        {"res": pd.Series(["a\nx", "a\ny"])},
+    ),
+    (
+        LLMEval(
+            alias="res",
+            provider="mock_d",
+            model="",
+            input_columns={"aaa": "data"},
+            template=MockTemplate(),
         ),
         pd.DataFrame({"aaa": ["x", "y"]}),
         {"res": pd.Series(["a\nx", "a\ny"])},

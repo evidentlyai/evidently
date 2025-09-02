@@ -15,6 +15,8 @@ from evidently.core.datasets import DatasetColumn
 from evidently.core.datasets import Descriptor
 from evidently.legacy.base_metric import DisplayName
 from evidently.legacy.options.base import Options
+from evidently.legacy.pipeline.column_mapping import ColumnMapping
+from evidently.legacy.utils.data_preprocessing import create_data_definition
 from evidently.legacy.utils.llm.wrapper import LLMMessage as LegacyLLMMessage
 from evidently.legacy.utils.llm.wrapper import LLMRequest
 from evidently.legacy.utils.llm.wrapper import LLMWrapper
@@ -22,7 +24,9 @@ from evidently.legacy.utils.llm.wrapper import get_llm_wrapper
 from evidently.llm.models import LLMMessage
 from evidently.llm.prompts.content import MessagesPromptContent
 from evidently.llm.prompts.content import PromptContent
+from evidently.llm.prompts.content import PromptContentType
 from evidently.llm.templates import *  # noqa: F403
+from evidently.llm.templates import BaseLLMPromptTemplate
 
 
 class GenericLLMDescriptor(Descriptor):
@@ -71,3 +75,59 @@ class GenericLLMDescriptor(Descriptor):
         result = self.get_llm_wrapper(options).run_batch_sync(requests=self.iterate_messages(dataset))
 
         return DatasetColumn(ColumnType.Text, pd.Series(result))
+
+
+class LLMEval(Descriptor):
+    provider: str
+    model: str
+    input_column: Optional[str] = None
+    input_columns: Optional[Dict[str, str]] = None
+    template: BaseLLMPromptTemplate
+
+    # _llm_wrapper: Optional[LLMWrapper] = PrivateAttr(None)
+    @property
+    def _judge(self):
+        from evidently.legacy.features.llm_judge import LLMJudge
+
+        return LLMJudge(
+            display_name=self.alias,
+            provider=self.provider,
+            model=self.model,
+            input_column=self.input_column,
+            input_columns=self.input_columns,
+            template=self.template,
+        )
+
+    def get_dataset_column(self, column_name: str, values: pd.Series) -> DatasetColumn:
+        column_type = self._judge.get_type(column_name)
+        if column_type == ColumnType.Numerical:
+            values = pd.to_numeric(values, errors="coerce")
+        dataset_column = DatasetColumn(type=column_type, data=values)
+        return dataset_column
+
+    def generate_data(
+        self, dataset: "Dataset", options: Options
+    ) -> Union[DatasetColumn, Dict[DisplayName, DatasetColumn]]:
+        judge = self._judge
+        feature = judge.generate_features_renamed(
+            dataset.as_dataframe(),
+            create_data_definition(None, dataset.as_dataframe(), ColumnMapping()),
+            options,
+        )
+        return {col.display_name: self.get_dataset_column(col.name, feature[col.name]) for col in judge.list_columns()}
+
+    def list_output_columns(self) -> List[str]:
+        return [c.display_name for c in self._judge.list_columns()]
+
+
+class JudgePromptContent(PromptContent):
+    judge: LLMEval
+
+    def as_text(self) -> str:
+        raise ValueError("JudgePromptContent cannot be used as_text")
+
+    def as_messages(self) -> List[LLMMessage]:
+        raise ValueError("JudgePromptContent cannot be used as_messages")
+
+    def get_type(self) -> PromptContentType:
+        return PromptContentType.JUDGE

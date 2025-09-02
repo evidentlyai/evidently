@@ -11,6 +11,7 @@ from evidently.pydantic_utils import EvidentlyBaseModel
 class PromptContentType(str, Enum):
     TEXT = "text"
     MESSAGES = "messages"
+    JUDGE = "judge"
 
 
 class PromptContent(AutoAliasMixin, EvidentlyBaseModel):
