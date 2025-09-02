@@ -21,6 +21,7 @@ from evidently.core.datasets import TestSummary
 from evidently.descriptors import ContextRelevance
 from evidently.descriptors import CustomColumnDescriptor
 from evidently.descriptors import CustomDescriptor
+from evidently.descriptors import LLMJudge
 from evidently.descriptors import TextLength
 from evidently.descriptors.llm_judges import GenericLLMDescriptor
 from evidently.descriptors.llm_judges import LLMEval
@@ -93,6 +94,11 @@ all_descriptors: List[Tuple[Descriptor, Union[pd.Series, pd.DataFrame], Dict[str
         str_data,
         {"a1702de9f83a993ea3cb4701ca9d17f7.str": pd.Series(["aa", "ba", "ca"])},
     ),
+    (
+        LLMJudge(provider="mock_d", model="", template=MockTemplate(), input_columns={"aaa": "data"}, alias="res"),
+        pd.DataFrame({"aaa": ["x", "y"]}),
+        {"res": pd.Series(["x", "y"])},
+    ),
     (TextLength(column_name="str", alias="res"), str_data, {"res": pd.Series([1, 1, 1])}),
     (CustomColumnDescriptor(column_name="int", func=custom_col_descr, alias="res"), int_data, {"res": int_data}),
     (CustomDescriptor(func=custom_descr, alias="res"), int_data, {"res": pd.Series([1, 1, 1])}),
@@ -122,7 +128,7 @@ all_descriptors: List[Tuple[Descriptor, Union[pd.Series, pd.DataFrame], Dict[str
             template=MockTemplate(),
         ),
         pd.DataFrame({"aaa": ["x", "y"]}),
-        {"res": pd.Series(["a\nx", "a\ny"])},
+        {"res": pd.Series(["x", "y"])},
     ),
 ]
 

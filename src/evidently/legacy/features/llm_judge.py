@@ -53,7 +53,8 @@ class LLMJudge(GeneratedFeatures):
         result = self.get_llm_wrapper(options).run_batch_sync(
             requests=self.template.iterate_messages(data, self.get_input_columns())
         )
-
+        if isinstance(result, list):
+            result = {self.display_name: result}
         return pd.DataFrame(result)
 
     def list_columns(self) -> List["ColumnName"]:
