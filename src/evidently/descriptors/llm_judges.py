@@ -24,7 +24,6 @@ from evidently.legacy.utils.llm.wrapper import get_llm_wrapper
 from evidently.llm.models import LLMMessage
 from evidently.llm.prompts.content import MessagesPromptContent
 from evidently.llm.prompts.content import PromptContent
-from evidently.llm.prompts.content import PromptContentType
 from evidently.llm.templates import *  # noqa: F403
 from evidently.llm.templates import BaseLLMPromptTemplate
 
@@ -118,29 +117,3 @@ class LLMEval(Descriptor):
 
     def list_output_columns(self) -> List[str]:
         return [c.display_name for c in self._judge.list_columns()]
-
-
-class JudgePromptContent(PromptContent):
-    judge: LLMEval
-
-    def as_text(self) -> str:
-        raise ValueError("JudgePromptContent cannot be used as_text")
-
-    def as_messages(self) -> List[LLMMessage]:
-        raise ValueError("JudgePromptContent cannot be used as_messages")
-
-    def get_type(self) -> PromptContentType:
-        return PromptContentType.JUDGE
-
-
-class TemplatePromptContent(PromptContent):
-    template: BaseLLMPromptTemplate
-
-    def as_text(self) -> str:
-        raise ValueError("TemplatePromptContent cannot be used as_text")
-
-    def as_messages(self) -> List[LLMMessage]:
-        raise ValueError("TemplatePromptContent cannot be used as_messages")
-
-    def get_type(self) -> PromptContentType:
-        return PromptContentType.TEMPLATE

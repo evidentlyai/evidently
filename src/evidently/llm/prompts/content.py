@@ -4,6 +4,7 @@ from typing import ClassVar
 from typing import List
 
 from evidently.llm.models import LLMMessage
+from evidently.llm.templates import BaseLLMPromptTemplate
 from evidently.pydantic_utils import AutoAliasMixin
 from evidently.pydantic_utils import EvidentlyBaseModel
 
@@ -54,3 +55,16 @@ class MessagesPromptContent(PromptContent):
 
     def get_type(self) -> PromptContentType:
         return PromptContentType.MESSAGES
+
+
+class TemplatePromptContent(PromptContent):
+    template: BaseLLMPromptTemplate
+
+    def as_text(self) -> str:
+        raise ValueError("TemplatePromptContent cannot be used as_text")
+
+    def as_messages(self) -> List[LLMMessage]:
+        raise ValueError("TemplatePromptContent cannot be used as_messages")
+
+    def get_type(self) -> PromptContentType:
+        return PromptContentType.TEMPLATE
