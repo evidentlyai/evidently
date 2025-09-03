@@ -235,6 +235,7 @@ class DataDefinition(BaseModel):
         test_descriptors: Optional[List[str]] = None,
         ranking: Optional[List[Recsys]] = None,
         service_columns: Optional[ServiceColumns] = None,
+        special_columns: Optional[List[SpecialColumnInfo]] = None,
     ):
         super().__init__()
         self.id_column = id_column
@@ -251,6 +252,7 @@ class DataDefinition(BaseModel):
         self.test_descriptors = test_descriptors
         self.ranking = ranking
         self.service_columns = service_columns
+        self.special_columns = special_columns if special_columns is not None else []
 
     def get_numerical_columns(self):
         return (self.numerical_columns or []) + (self.numerical_descriptors or [])

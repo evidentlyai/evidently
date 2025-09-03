@@ -1,9 +1,11 @@
 import datetime
+import json
 import random
 
 import pandas as pd
 import pytest
 
+from evidently._pydantic_compat import parse_obj_as
 from evidently.core.datasets import DEFAULT_TRACE_LINK_COLUMN
 from evidently.core.datasets import DataDefinition
 from evidently.core.datasets import Dataset
@@ -246,3 +248,15 @@ def test_data_definition_without_service(definition, numerical, categorical, dat
     assert set(datetime_cols) == set(dataset.data_definition.get_datetime_columns())
     assert set(text) == set(dataset.data_definition.get_text_columns())
     assert service_columns == dataset.data_definition.service_columns
+
+
+def test_data_definition_serialization():
+    data_definition = DataDefinition(text_columns=["text_2"])
+    parsed = parse_obj_as(DataDefinition, json.loads(data_definition.json()))
+    assert parsed == data_definition
+
+
+def test_data_definition_serialization_empty():
+    data_definition = DataDefinition()
+    parsed = parse_obj_as(DataDefinition, {})
+    assert parsed == data_definition
