@@ -3,6 +3,7 @@ from enum import Enum
 from typing import ClassVar
 from typing import List
 
+from evidently.legacy.core import new_id
 from evidently.llm.models import LLMMessage
 from evidently.llm.templates import BaseLLMPromptTemplate
 from evidently.pydantic_utils import AutoAliasMixin
@@ -64,9 +65,18 @@ class TemplatePromptContent(PromptContent):
         return "\n".join(f"{m.role}: {m.content}" for m in self.as_messages())
 
     def as_messages(self) -> List[LLMMessage]:
-        return self.template.get_messages(
-            values={ph: f"{{{ph}}}" for ph in self.template.prepared_template.placeholders}
-        )
+        template = self.template
+        placeholder_map = {ph: str(new_id()) for ph in template.prepared_template.placeholders}
+        result = []
+        # replace actual placeholders with random uuid
+        # this will also turn non-placeholders like {{ ... }} into placeholder
+        for message in template.get_messages(values=placeholder_map):
+            # turn fake placeholders back
+            content = message.content.replace("{", "{{").replace("}", "}}")
+            for ph, key in placeholder_map.items():
+                content = content.replace(str(key), f"{{{ph}}}")
+            result.append(LLMMessage(role=message.role, content=content))
+        return result
 
     def get_type(self) -> PromptContentType:
         return PromptContentType.TEMPLATE
