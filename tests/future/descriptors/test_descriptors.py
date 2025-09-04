@@ -30,6 +30,7 @@ from evidently.legacy.utils.llm.base import LLMMessage
 from evidently.legacy.utils.llm.wrapper import LLMResult
 from evidently.legacy.utils.llm.wrapper import LLMWrapper
 from evidently.legacy.utils.llm.wrapper import llm_provider
+from evidently.llm.prompts.content import TemplatePromptContent
 from evidently.llm.templates import BaseLLMPromptTemplate
 from evidently.llm.utils.blocks import PromptBlock
 from evidently.tests import eq
@@ -118,6 +119,17 @@ all_descriptors: List[Tuple[Descriptor, Union[pd.Series, pd.DataFrame], Dict[str
         ),
         pd.DataFrame({"aaa": ["x", "y"]}),
         {"res": pd.Series(["a\nx", "a\ny"])},
+    ),
+    (
+        GenericLLMDescriptor(
+            alias="res",
+            provider="mock_d",
+            model="",
+            input_columns={"aaa": "data"},
+            prompt=TemplatePromptContent(template=MockTemplate()),
+        ),
+        pd.DataFrame({"aaa": ["x", "y"]}),
+        {"res": pd.Series(["x", "y"])},
     ),
     (
         LLMEval(

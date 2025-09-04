@@ -61,10 +61,12 @@ class TemplatePromptContent(PromptContent):
     template: BaseLLMPromptTemplate
 
     def as_text(self) -> str:
-        raise ValueError("TemplatePromptContent cannot be used as_text")
+        return "\n".join(f"{m.role}: {m.content}" for m in self.as_messages())
 
     def as_messages(self) -> List[LLMMessage]:
-        raise ValueError("TemplatePromptContent cannot be used as_messages")
+        return self.template.get_messages(
+            values={ph: f"{{{ph}}}" for ph in self.template.prepared_template.placeholders}
+        )
 
     def get_type(self) -> PromptContentType:
         return PromptContentType.TEMPLATE
