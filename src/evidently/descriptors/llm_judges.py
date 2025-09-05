@@ -76,7 +76,7 @@ class GenericLLMDescriptor(Descriptor):
         result = self.get_llm_wrapper(options).run_batch_sync(requests=self.iterate_messages(dataset))
         if isinstance(result, list) and any(isinstance(o, dict) for o in result):
             df = pd.DataFrame(result)
-            return {col: DatasetColumn(ColumnType.Text, df[col]) for col in df.columns}
+            return {f"{self.alias} {col}": DatasetColumn(ColumnType.Text, df[col]) for col in df.columns}
         return DatasetColumn(ColumnType.Text, pd.Series(result))
 
 
