@@ -161,8 +161,8 @@ all_descriptors: List[Tuple[Descriptor, Union[pd.Series, pd.DataFrame], Dict[str
             }
         ),
         {
-            "res1": pd.Series([1, 2]),
-            "res2": pd.Series(["a", "b"]),
+            "res res1": pd.Series([1, 2]),
+            "res res2": pd.Series(["a", "b"]),
         },
     ),
     (
