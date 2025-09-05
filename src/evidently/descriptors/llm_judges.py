@@ -65,14 +65,18 @@ class GenericLLMDescriptor(Descriptor):
             dataset.as_dataframe()[list(self.input_columns)].rename(columns=self.input_columns).iterrows()
         ):
             yield LLMRequest(
-                messages=self._fmt_messages(column_values.to_dict()), response_parser=lambda x: x, response_type=str
+                messages=self._fmt_messages(column_values.to_dict()),
+                response_parser=self.prompt.get_parser(),
+                response_type=self.prompt.get_response_type(),
             )
 
     def generate_data(
         self, dataset: "Dataset", options: Options
     ) -> Union[DatasetColumn, Dict[DisplayName, DatasetColumn]]:
         result = self.get_llm_wrapper(options).run_batch_sync(requests=self.iterate_messages(dataset))
-
+        if isinstance(result, list) and any(isinstance(o, dict) for o in result):
+            df = pd.DataFrame(result)
+            return {col: DatasetColumn(ColumnType.Text, df[col]) for col in df.columns}
         return DatasetColumn(ColumnType.Text, pd.Series(result))
 
 

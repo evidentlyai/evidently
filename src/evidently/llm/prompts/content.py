@@ -34,6 +34,12 @@ class PromptContent(AutoAliasMixin, EvidentlyBaseModel):
     def get_type(self) -> PromptContentType:
         return PromptContentType.TEXT
 
+    def get_parser(self):
+        return lambda x: x
+
+    def get_response_type(self):
+        return str
+
 
 class TextPromptContent(PromptContent):
     text: str
@@ -80,3 +86,9 @@ class TemplatePromptContent(PromptContent):
 
     def get_type(self) -> PromptContentType:
         return PromptContentType.TEMPLATE
+
+    def get_parser(self):
+        return self.template.get_parser()
+
+    def get_response_type(self):
+        return dict

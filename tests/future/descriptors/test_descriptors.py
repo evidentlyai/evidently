@@ -72,6 +72,19 @@ class MockTemplate(BaseLLMPromptTemplate):
         return "res"
 
 
+class MockTemplateMulticolumn(BaseLLMPromptTemplate):
+    blocks: ClassVar = [PromptBlock.simple("{data}"), PromptBlock.json_output(**{"res1": "", "res2": ""})]
+
+    def list_output_columns(self) -> List[str]:
+        return ["res1", "res2"]
+
+    def get_type(self, subcolumn: Optional[str]) -> ColumnType:
+        return ColumnType.Text
+
+    def get_main_output_column(self) -> str:
+        return "res1"
+
+
 @pytest.fixture(autouse=True)
 def mock_semantic_scoring(mocker):
     from evidently.descriptors._context_relevance import MeanAggregation
@@ -130,6 +143,27 @@ all_descriptors: List[Tuple[Descriptor, Union[pd.Series, pd.DataFrame], Dict[str
         ),
         pd.DataFrame({"aaa": ["x", "y"]}),
         {"res": pd.Series(["x", "y"])},
+    ),
+    (
+        GenericLLMDescriptor(
+            alias="res",
+            provider="mock_d",
+            model="",
+            input_columns={"aaa": "data"},
+            prompt=TemplatePromptContent(template=MockTemplateMulticolumn()),
+        ),
+        pd.DataFrame(
+            {
+                "aaa": [
+                    json.dumps({"res1": 1, "res2": "a"}),
+                    json.dumps({"res1": 2, "res2": "b"}),
+                ]
+            }
+        ),
+        {
+            "res1": pd.Series([1, 2]),
+            "res2": pd.Series(["a", "b"]),
+        },
     ),
     (
         LLMEval(
