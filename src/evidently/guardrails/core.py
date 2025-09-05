@@ -6,11 +6,12 @@ from typing import List
 class GuardException(Exception):
     guard: str
 
-    def __init__(self, guard: str):
+    def __init__(self, guard: str, message: str = "") -> None:
         self.guard = guard
+        self.message = message
 
     def __str__(self):
-        return f"Guard {self.guard} validation failed."
+        return f"Guard {self.guard} validation failed: {self.message}"
 
 
 class GuardsException(GuardException):
@@ -27,6 +28,9 @@ class GuardsException(GuardException):
 class GuardrailBase:
     def __init__(self):
         pass
+
+    def name(self) -> str:
+        return self.__class__.__name__
 
     @abc.abstractmethod
     def validate(self, data: str):

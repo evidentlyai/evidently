@@ -9,7 +9,10 @@ class PythonFunction(GuardrailBase):
         super().__init__()
         self.function = function
 
+    def name(self) -> str:
+        return f"python_function_{self.function.__name__}"
+
     def validate(self, data: str):
         if self.function(data):
             return
-        raise GuardException(f"{self.function.__name__} validation failed")
+        raise GuardException(self.name())
