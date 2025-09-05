@@ -2,6 +2,7 @@ from typing import ClassVar
 from typing import Dict
 from typing import List
 from typing import Optional
+from typing import Union
 
 import pandas as pd
 
@@ -50,10 +51,11 @@ class LLMJudge(GeneratedFeatures):
         return {self.input_column: self.DEFAULT_INPUT_COLUMN}
 
     def generate_features(self, data: pd.DataFrame, data_definition: DataDefinition, options: Options) -> pd.DataFrame:
-        result = self.get_llm_wrapper(options).run_batch_sync(
+        result: Union[List, Dict] = self.get_llm_wrapper(options).run_batch_sync(
             requests=self.template.iterate_messages(data, self.get_input_columns())
         )
-
+        if isinstance(result, list) and not any(isinstance(o, dict) for o in result):
+            result = {self.display_name or self.template.get_main_output_column(): result}
         return pd.DataFrame(result)
 
     def list_columns(self) -> List["ColumnName"]:
