@@ -90,3 +90,5 @@ register_type_alias(Metric, "evidently.metrics.regression.MeanStdRegressionMetri
 register_type_alias(Metric, "evidently.metrics.regression.SingleValueRegressionMetric", "evidently:metric_v2:SingleValueRegressionMetric")
 
 register_type_alias(Metric, "evidently.metrics.data_quality.ColumnCorrelations", "evidently:metric_v2:ColumnCorrelations")
+
+register_type_alias(Metric, "evidently.metrics.data_quality.DatasetCorrelations", "evidently:metric_v2:DatasetCorrelations")
