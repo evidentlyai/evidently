@@ -67,7 +67,7 @@ setup_args = dict(
             "mypy==1.1.1",
             "pandas-stubs>=1.3.5",
             "pytest==7.4.4",
-            "tracely @ git+ssh://git@github.com/evidentlyai/tracely@feature/interceptors#egg=tracely",
+            "tracely==0.2.9",
             "types-PyYAML==6.0.1",
             "types-requests==2.26.0",
             "types-dataclasses==0.6",
