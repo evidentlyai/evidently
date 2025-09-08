@@ -24,6 +24,7 @@ from typing import TypeVar
 from typing import Union
 
 import numpy as np
+import pandas as pd
 import typing_inspect
 
 from evidently._pydantic_compat import BaseModel
@@ -460,6 +461,16 @@ class MeanStdValue(MetricResult):
         self.std.metric_value_location = mean_std_value_location(metric, False)
 
 
+class DataframeValue(MetricResult):
+    value: pd.DataFrame
+
+    def set_metric_location(self, metric: MetricConfig):
+        self.metric_value_location = dataframe_value_location(metric)
+
+    def to_simple_dict(self) -> object:
+        return self.value.to_dict()
+
+
 class DatasetType(enum.Enum):
     Current = "current"
     Reference = "reference"
@@ -471,6 +482,10 @@ def single_value_location(metric: MetricConfig) -> MetricValueLocation:
 
 def by_label_location(metric: MetricConfig, label: Label) -> MetricValueLocation:
     return MetricValueLocation(metric, {"label": label})
+
+
+def dataframe_value_location(metric: MetricConfig) -> MetricValueLocation:
+    return MetricValueLocation(metric, {})
 
 
 ByLabelCountSlot = Union[Literal["count"], Literal["share"]]
