@@ -6,9 +6,12 @@ from typing import Tuple
 from evidently.core.metric_types import BoundTest
 from evidently.core.metric_types import DataframeValue
 from evidently.core.metric_types import Metric
+from evidently.core.metric_types import TMetricResult
 from evidently.core.report import Context
 from evidently.legacy.metrics.data_quality.column_correlations_metric import ColumnCorrelationsMetric
 from evidently.legacy.metrics.data_quality.column_correlations_metric import ColumnCorrelationsMetricResult
+from evidently.legacy.metrics.data_quality.dataset_correlations_metric import DatasetCorrelationsMetric
+from evidently.legacy.metrics.data_quality.dataset_correlations_metric import DatasetCorrelationsMetricResult
 from evidently.legacy.model.widget import BaseWidgetInfo
 from evidently.metrics._legacy import LegacyMetricCalculation
 from evidently.metrics._legacy import TLegacyMetric
@@ -21,7 +24,7 @@ class ColumnCorrelations(Metric):
         return []
 
 
-class LegacyColumnCorrelationsQuality(
+class LegacyColumnCorrelationsCalculation(
     LegacyMetricCalculation[
         DataframeValue,
         ColumnCorrelations,
@@ -50,3 +53,37 @@ class LegacyColumnCorrelationsQuality(
 
     def legacy_metric(self) -> TLegacyMetric:
         return ColumnCorrelationsMetric(column_name=self.metric.column_name)
+
+
+class DatasetCorrelations(Metric):
+    def get_bound_tests(self, context: "Context") -> Sequence[BoundTest]:
+        return []
+
+
+class LegacyDatasetCorrelationsCalculation(
+    LegacyMetricCalculation[
+        DataframeValue,
+        DatasetCorrelations,
+        DatasetCorrelationsMetricResult,
+        DatasetCorrelationsMetric,
+    ],
+):
+    def legacy_metric(self) -> TLegacyMetric:
+        return DatasetCorrelationsMetric()
+
+    def calculate_value(
+        self, context: "Context", legacy_result: DatasetCorrelationsMetricResult, render: List[BaseWidgetInfo]
+    ) -> TMetricResult:
+        current_result = legacy_result.current
+        current_df = next(iter(current_result.correlation.values()))
+        current_value = DataframeValue(display_name=self.display_name(), value=current_df)
+        current_value.widget = render
+        reference_value = None
+        if legacy_result.reference is not None:
+            reference_df = next(iter(legacy_result.reference.correlation.values()))
+            reference_value = DataframeValue(display_name=self.display_name(), value=reference_df)
+            reference_value.widget = []
+        return current_value, reference_value
+
+    def display_name(self) -> str:
+        return """Calculate different correlations with target, predictions and features"""
