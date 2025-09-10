@@ -18,6 +18,7 @@ from evidently._pydantic_compat import parse_obj_as
 from evidently.core.metric_types import ByLabelCountValue
 from evidently.core.metric_types import ByLabelValue
 from evidently.core.metric_types import CountValue
+from evidently.core.metric_types import DataframeValue
 from evidently.core.metric_types import MeanStdValue
 from evidently.core.metric_types import SingleValue
 from evidently.core.serialization import SnapshotModel
@@ -295,6 +296,9 @@ class InMemoryDataStorage(DataStorage):
                 for value in result.counts.values():
                     self._add_value(project_id, snapshot_id, snapshot.timestamp, value)
                 for value in result.shares.values():
+                    self._add_value(project_id, snapshot_id, snapshot.timestamp, value)
+            elif isinstance(result, DataframeValue):
+                for value in result.iter_single_values():
                     self._add_value(project_id, snapshot_id, snapshot.timestamp, value)
             else:
                 raise ValueError(f"type {type(result)} isn't supported")
