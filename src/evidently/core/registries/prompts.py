@@ -5,3 +5,5 @@ from evidently.pydantic_utils import register_type_alias
 
 register_type_alias(PromptContent, "evidently.llm.prompts.content.MessagesPromptContent", "evidently:prompt_content:MessagesPromptContent")
 register_type_alias(PromptContent, "evidently.llm.prompts.content.TextPromptContent", "evidently:prompt_content:TextPromptContent")
+
+register_type_alias(PromptContent, "evidently.llm.prompts.content.TemplatePromptContent", "evidently:prompt_content:TemplatePromptContent")

@@ -1,5 +1,6 @@
 import json
 from inspect import isabstract
+from typing import ClassVar
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -20,13 +21,18 @@ from evidently.core.datasets import TestSummary
 from evidently.descriptors import ContextRelevance
 from evidently.descriptors import CustomColumnDescriptor
 from evidently.descriptors import CustomDescriptor
+from evidently.descriptors import LLMJudge
 from evidently.descriptors import TextLength
 from evidently.descriptors.llm_judges import GenericLLMDescriptor
+from evidently.descriptors.llm_judges import LLMEval
 from evidently.legacy.options.base import Options
 from evidently.legacy.utils.llm.base import LLMMessage
 from evidently.legacy.utils.llm.wrapper import LLMResult
 from evidently.legacy.utils.llm.wrapper import LLMWrapper
 from evidently.legacy.utils.llm.wrapper import llm_provider
+from evidently.llm.prompts.content import TemplatePromptContent
+from evidently.llm.templates import BaseLLMPromptTemplate
+from evidently.llm.utils.blocks import PromptBlock
 from evidently.tests import eq
 from tests.conftest import load_all_subtypes
 
@@ -53,6 +59,32 @@ def custom_col_descr(col: DatasetColumn) -> DatasetColumn:
     return DatasetColumn(ColumnType.Numerical, col.data)
 
 
+class MockTemplate(BaseLLMPromptTemplate):
+    blocks: ClassVar = [PromptBlock.simple("{data}")]
+
+    def list_output_columns(self) -> List[str]:
+        return ["res"]
+
+    def get_type(self, subcolumn: Optional[str]) -> ColumnType:
+        return ColumnType.Text
+
+    def get_main_output_column(self) -> str:
+        return "res"
+
+
+class MockTemplateMulticolumn(BaseLLMPromptTemplate):
+    blocks: ClassVar = [PromptBlock.simple("{data}"), PromptBlock.json_output(**{"res1": "", "res2": ""})]
+
+    def list_output_columns(self) -> List[str]:
+        return ["res1", "res2"]
+
+    def get_type(self, subcolumn: Optional[str]) -> ColumnType:
+        return ColumnType.Text
+
+    def get_main_output_column(self) -> str:
+        return "res1"
+
+
 @pytest.fixture(autouse=True)
 def mock_semantic_scoring(mocker):
     from evidently.descriptors._context_relevance import MeanAggregation
@@ -76,6 +108,11 @@ all_descriptors: List[Tuple[Descriptor, Union[pd.Series, pd.DataFrame], Dict[str
         str_data,
         {"a1702de9f83a993ea3cb4701ca9d17f7.str": pd.Series(["aa", "ba", "ca"])},
     ),
+    (
+        LLMJudge(provider="mock_d", model="", template=MockTemplate(), input_columns={"aaa": "data"}, alias="res"),
+        pd.DataFrame({"aaa": ["x", "y"]}),
+        {"res": pd.Series(["x", "y"])},
+    ),
     (TextLength(column_name="str", alias="res"), str_data, {"res": pd.Series([1, 1, 1])}),
     (CustomColumnDescriptor(column_name="int", func=custom_col_descr, alias="res"), int_data, {"res": int_data}),
     (CustomDescriptor(func=custom_descr, alias="res"), int_data, {"res": pd.Series([1, 1, 1])}),
@@ -95,6 +132,49 @@ all_descriptors: List[Tuple[Descriptor, Union[pd.Series, pd.DataFrame], Dict[str
         ),
         pd.DataFrame({"aaa": ["x", "y"]}),
         {"res": pd.Series(["a\nx", "a\ny"])},
+    ),
+    (
+        GenericLLMDescriptor(
+            alias="res",
+            provider="mock_d",
+            model="",
+            input_columns={"aaa": "data"},
+            prompt=TemplatePromptContent(template=MockTemplate()),
+        ),
+        pd.DataFrame({"aaa": ["x", "y"]}),
+        {"res": pd.Series(["x", "y"])},
+    ),
+    (
+        GenericLLMDescriptor(
+            alias="res",
+            provider="mock_d",
+            model="",
+            input_columns={"aaa": "data"},
+            prompt=TemplatePromptContent(template=MockTemplateMulticolumn()),
+        ),
+        pd.DataFrame(
+            {
+                "aaa": [
+                    json.dumps({"res1": 1, "res2": "a"}),
+                    json.dumps({"res1": 2, "res2": "b"}),
+                ]
+            }
+        ),
+        {
+            "res res1": pd.Series([1, 2]),
+            "res res2": pd.Series(["a", "b"]),
+        },
+    ),
+    (
+        LLMEval(
+            alias="res",
+            provider="mock_d",
+            model="",
+            input_columns={"aaa": "data"},
+            template=MockTemplate(),
+        ),
+        pd.DataFrame({"aaa": ["x", "y"]}),
+        {"res": pd.Series(["x", "y"])},
     ),
 ]
 
