@@ -474,6 +474,8 @@ class DataframeValue(MetricResult):
         df = self.value
         label_columns = df.select_dtypes(exclude=["number"]).columns.tolist()
         value_columns = df.select_dtypes(include=["number"]).columns.tolist()
+        metric = self.metric_value_location.metric
+        assert metric is not None
         for index, row in df.iterrows():
             data = row.to_dict()
             labels = {col: str(data[col]) for col in label_columns}
@@ -482,9 +484,7 @@ class DataframeValue(MetricResult):
                 yield SingleValue(
                     value=value,
                     display_name=column,
-                    metric_value_location=MetricValueLocation(
-                        self.metric_value_location.metric, {"column": column, **labels}
-                    ),
+                    metric_value_location=MetricValueLocation(metric, {"column": column, **labels}),
                 )
 
 
