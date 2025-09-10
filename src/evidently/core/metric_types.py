@@ -470,6 +470,23 @@ class DataframeValue(MetricResult):
     def to_simple_dict(self) -> object:
         return self.value.to_dict()
 
+    def iter_single_values(self) -> typing.Iterator[SingleValue]:
+        df = self.value
+        label_columns = df.select_dtypes(exclude=["number"]).columns.tolist()
+        value_columns = df.select_dtypes(include=["number"]).columns.tolist()
+        for index, row in df.iterrows():
+            data = row.to_dict()
+            labels = {col: str(data[col]) for col in label_columns}
+            for column in value_columns:
+                value = data[column]
+                yield SingleValue(
+                    value=value,
+                    display_name=column,
+                    metric_value_location=MetricValueLocation(
+                        self.metric_value_location.metric, {"column": column, **labels}
+                    ),
+                )
+
 
 class DatasetType(enum.Enum):
     Current = "current"
