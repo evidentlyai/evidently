@@ -22,7 +22,7 @@ from tests.conftest import smart_assert_equal
 
 @slow
 @pytest.mark.skipif(
-    sys.platform.startswith("win") or sys.platform == "darwin",
+    sys.platform.startswith("win"),
     reason="skip spark on Windows and MacOS",
 )
 @pytest.mark.parametrize(

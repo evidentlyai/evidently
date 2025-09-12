@@ -172,7 +172,7 @@ jobs:
       - name: Install package
         run: pip install -e .[dev,spark,fsspec,llm]
       - name: Run Tests
-        run: python -m pytest --durations=50
+        run: JAVA_HOME="${JAVA_HOME_11_X64:-$JAVA_HOME_11_arm64}" python -m pytest --durations=50
 
   python-build:
     # The type of runner that the job will run on
