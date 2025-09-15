@@ -1,7 +1,9 @@
 from abc import abstractmethod
 from enum import Enum
+from typing import Any
 from typing import ClassVar
 from typing import List
+from typing import Optional
 
 from evidently.legacy.core import new_id
 from evidently.llm.models import LLMMessage
@@ -19,6 +21,7 @@ class PromptContentType(str, Enum):
 
 class PromptContent(AutoAliasMixin, EvidentlyBaseModel):
     __alias_type__: ClassVar = "prompt_content"
+    __parse_priority__: ClassVar[float] = 0
 
     class Config:
         is_base_type = True
@@ -29,6 +32,19 @@ class PromptContent(AutoAliasMixin, EvidentlyBaseModel):
 
     @abstractmethod
     def as_messages(self) -> List[LLMMessage]:
+        raise NotImplementedError
+
+    @classmethod
+    def parse(cls, value: Any) -> "PromptContent":
+        for subcls in sorted(cls.__subclasses__(), key=lambda x: -x.__parse_priority__):
+            parsed = subcls.try_parse(value)
+            if parsed is not None:
+                return parsed
+        raise ValueError(f"Could not parse prompt content from type {value.__class__.__name__}")
+
+    @classmethod
+    @abstractmethod
+    def try_parse(cls, value: Any) -> Optional["PromptContent"]:
         raise NotImplementedError
 
     def get_type(self) -> PromptContentType:
@@ -50,6 +66,12 @@ class TextPromptContent(PromptContent):
     def as_messages(self) -> List[LLMMessage]:
         return [LLMMessage.user(self.text)]
 
+    @classmethod
+    def try_parse(cls, value: Any) -> Optional["PromptContent"]:
+        if isinstance(value, str):
+            return TextPromptContent(text=value)
+        return None
+
 
 class MessagesPromptContent(PromptContent):
     messages: List[LLMMessage]
@@ -62,6 +84,12 @@ class MessagesPromptContent(PromptContent):
 
     def get_type(self) -> PromptContentType:
         return PromptContentType.MESSAGES
+
+    @classmethod
+    def try_parse(cls, value: Any) -> Optional["PromptContent"]:
+        if isinstance(value, list) and all(isinstance(v, LLMMessage) for v in value):
+            return MessagesPromptContent(messages=value)
+        return None
 
 
 class TemplatePromptContent(PromptContent):
@@ -92,3 +120,9 @@ class TemplatePromptContent(PromptContent):
 
     def get_response_type(self):
         return dict
+
+    @classmethod
+    def try_parse(cls, value: Any) -> Optional["PromptContent"]:
+        if isinstance(value, BaseLLMPromptTemplate):
+            return TemplatePromptContent(template=value)
+        return None
