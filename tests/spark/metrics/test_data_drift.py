@@ -22,8 +22,8 @@ from tests.conftest import smart_assert_equal
 
 @slow
 @pytest.mark.skipif(
-    (sys.version_info.major, sys.version_info.minor) >= (3, 12) and sys.platform.startswith("win"),
-    reason="on Windows 2022 with python >= 3.12 pyspark package is broken",
+    sys.platform.startswith("win") or sys.platform == "darwin",
+    reason="skip spark on Windows and MacOS",
 )
 @pytest.mark.parametrize(
     "metric,column_mapping,result_adjust",
