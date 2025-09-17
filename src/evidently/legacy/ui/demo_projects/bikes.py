@@ -31,8 +31,8 @@ def create_data():
     if os.path.exists("Bike-Sharing-Dataset.zip"):
         with open("Bike-Sharing-Dataset.zip", "rb") as f:
             content = f.read()
-    elif os.path.exists("test_data/bike_sharing_dataset.zip"):
-        with open("test_data/bike_sharing_dataset.zip", "rb") as f:
+    elif os.path.exists("../../../../../test_data/bike_sharing_dataset.zip"):
+        with open("../../../../../test_data/bike_sharing_dataset.zip", "rb") as f:
             content = f.read()
     else:
         content = requests.get(
