@@ -35,10 +35,15 @@ def create_data():
         with open("../../../../../test_data/bike_sharing_dataset.zip", "rb") as f:
             content = f.read()
     else:
-        content = requests.get(
+        response = requests.get(
             "https://archive.ics.uci.edu/static/public/275/bike+sharing+dataset.zip",
             verify=False,
-        ).content
+        )
+        if response.status_code != 200:
+            raise ValueError(f"Could not download bike sharing dataset. {response.text}")
+        if response.status_code == 200 and response.headers["content-type"] != "application/zip":
+            raise ValueError(f"Invalid bike sharing dataset content type: {response.headers['content-type']}.")
+        content = response.content
     with zipfile.ZipFile(io.BytesIO(content)) as arc:
         raw_data = pd.read_csv(
             arc.open("hour.csv"),
