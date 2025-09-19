@@ -24,6 +24,7 @@ from typing import TypeVar
 from typing import Union
 
 import numpy as np
+import pandas as pd
 import typing_inspect
 
 from evidently._pydantic_compat import BaseModel
@@ -460,6 +461,33 @@ class MeanStdValue(MetricResult):
         self.std.metric_value_location = mean_std_value_location(metric, False)
 
 
+class DataframeValue(MetricResult):
+    value: pd.DataFrame
+
+    def set_metric_location(self, metric: MetricConfig):
+        self.metric_value_location = dataframe_value_location(metric)
+
+    def to_simple_dict(self) -> object:
+        return self.value.to_dict()
+
+    def iter_single_values(self) -> typing.Iterator[SingleValue]:
+        df = self.value
+        label_columns = df.select_dtypes(exclude=["number"]).columns.tolist()
+        value_columns = df.select_dtypes(include=["number"]).columns.tolist()
+        assert self.metric_value_location is not None
+        metric = self.metric_value_location.metric
+        for index, row in df.iterrows():
+            data = row.to_dict()
+            labels = {col: str(data[col]) for col in label_columns}
+            for column in value_columns:
+                value = data[column]
+                yield SingleValue(
+                    value=value,
+                    display_name=column,
+                    metric_value_location=MetricValueLocation(metric, {"column": column, **labels}),
+                )
+
+
 class DatasetType(enum.Enum):
     Current = "current"
     Reference = "reference"
@@ -471,6 +499,10 @@ def single_value_location(metric: MetricConfig) -> MetricValueLocation:
 
 def by_label_location(metric: MetricConfig, label: Label) -> MetricValueLocation:
     return MetricValueLocation(metric, {"label": label})
+
+
+def dataframe_value_location(metric: MetricConfig) -> MetricValueLocation:
+    return MetricValueLocation(metric, {})
 
 
 ByLabelCountSlot = Union[Literal["count"], Literal["share"]]
