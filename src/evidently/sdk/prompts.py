@@ -11,11 +11,11 @@ from typing import Union
 from evidently._pydantic_compat import BaseModel
 from evidently._pydantic_compat import Field
 from evidently._pydantic_compat import PrivateAttr
+from evidently._pydantic_compat import ValidationError
 from evidently._pydantic_compat import parse_obj_as
 from evidently.errors import EvidentlyError
 from evidently.llm.prompts.content import PromptContent
 from evidently.llm.prompts.content import PromptContentType
-from evidently.llm.prompts.content import TextPromptContent
 from evidently.ui.service.type_aliases import ZERO_UUID
 from evidently.ui.service.type_aliases import ProjectID
 from evidently.ui.service.type_aliases import UserID
@@ -56,7 +56,7 @@ class PromptVersion(BaseModel):
 
     def __init__(
         self,
-        content: Union[str, PromptContent],
+        content: Union[Any, PromptContent],
         version: int,
         id: PromptVersionID = ZERO_UUID,
         prompt_id: PromptID = ZERO_UUID,
@@ -64,9 +64,11 @@ class PromptVersion(BaseModel):
         content_type: Optional[PromptContentType] = None,
         **data: Any,
     ):
-        content = TextPromptContent(text=content) if isinstance(content, str) else content
         if not isinstance(content, PromptContent):
-            content = parse_obj_as(PromptContent, content)
+            try:
+                content = parse_obj_as(PromptContent, content)  # type: ignore[type-abstract]
+            except ValidationError:
+                content = PromptContent.parse(content)
         if content_type is None:
             content_type = content.get_type()
         elif content_type != content.get_type():
@@ -99,7 +101,7 @@ class RemotePrompt(Prompt):
     def get_version(self, version: VersionOrLatest = "latest") -> PromptVersion:
         return self._manager.get_version(self.id, version)
 
-    def bump_version(self, content: str):
+    def bump_version(self, content: Any):
         return self._manager.bump_prompt_version(self.id, content)
 
     def delete(self):
@@ -170,7 +172,7 @@ class RemotePromptManager:
             f"/api/prompts/prompt-versions/{prompt_version_id}", "GET", response_model=PromptVersion
         )
 
-    def create_version(self, prompt_id: PromptID, version: int, content: str) -> PromptVersion:
+    def create_version(self, prompt_id: PromptID, version: int, content: Any) -> PromptVersion:
         return self._ws._request(
             f"/api/prompts/{prompt_id}/versions",
             "POST",
@@ -181,7 +183,7 @@ class RemotePromptManager:
     def delete_version(self, prompt_version_id: PromptVersionID):
         self._ws._request(f"/api/prompts/prompt-versions/{prompt_version_id}", "DELETE")
 
-    def bump_prompt_version(self, prompt_id: PromptID, content: str) -> PromptVersion:
+    def bump_prompt_version(self, prompt_id: PromptID, content: Any) -> PromptVersion:
         # todo: single request?
         try:
             latest = self.get_version(prompt_id)
