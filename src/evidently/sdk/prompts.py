@@ -66,7 +66,7 @@ class PromptVersion(BaseModel):
     ):
         if not isinstance(content, PromptContent):
             try:
-                content = parse_obj_as(PromptContent, content)
+                content = parse_obj_as(PromptContent, content)  # type: ignore[type-abstract]
             except ValidationError:
                 content = PromptContent.parse(content)
         if content_type is None:
