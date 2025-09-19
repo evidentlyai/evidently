@@ -8,3 +8,5 @@ register_type_alias(MetricResult, "evidently.core.metric_types.ByLabelValue", "e
 register_type_alias(MetricResult, "evidently.core.metric_types.CountValue", "evidently:metric_result_v2:CountValue")
 register_type_alias(MetricResult, "evidently.core.metric_types.MeanStdValue", "evidently:metric_result_v2:MeanStdValue")
 register_type_alias(MetricResult, "evidently.core.metric_types.SingleValue", "evidently:metric_result_v2:SingleValue")
+
+register_type_alias(MetricResult, "evidently.core.metric_types.DataframeValue", "evidently:metric_result_v2:DataframeValue")
