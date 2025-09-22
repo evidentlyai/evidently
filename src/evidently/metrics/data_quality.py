@@ -99,7 +99,7 @@ class LegacyDatasetCorrelationsCalculation(
         self, context: "Context", legacy_result: DatasetCorrelationsMetricResult, render: List[BaseWidgetInfo]
     ) -> Tuple[DataframeValue, Optional[DataframeValue]]:
         current_result = legacy_result.current
-        kind = self.metric.kind if self.metric.kind != "auto" else next(iter(current_result.correlation.keys()))
+        kind: str = self.metric.kind if self.metric.kind != "auto" else next(iter(current_result.correlation.keys()))
         current_df = current_result.correlation[kind]
         current_value = DataframeValue(display_name=self.display_name(), value=current_df)
         current_value.widget = self._extract_render_tab(render, kind)
