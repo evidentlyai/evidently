@@ -1,17 +1,22 @@
 from typing import List
+from typing import Literal
 from typing import Optional
 from typing import Sequence
 from typing import Tuple
 
+from evidently.core.container import MetricContainer
+from evidently.core.container import MetricOrContainer
 from evidently.core.metric_types import BoundTest
 from evidently.core.metric_types import DataframeValue
 from evidently.core.metric_types import Metric
+from evidently.core.metric_types import MetricId
 from evidently.core.report import Context
 from evidently.legacy.metrics.data_quality.column_correlations_metric import ColumnCorrelationsMetric
 from evidently.legacy.metrics.data_quality.column_correlations_metric import ColumnCorrelationsMetricResult
 from evidently.legacy.metrics.data_quality.dataset_correlations_metric import DatasetCorrelationsMetric
 from evidently.legacy.metrics.data_quality.dataset_correlations_metric import DatasetCorrelationsMetricResult
 from evidently.legacy.model.widget import BaseWidgetInfo
+from evidently.legacy.renderers.html_widgets import header_text
 from evidently.metrics._legacy import LegacyMetricCalculation
 
 
@@ -53,7 +58,28 @@ class LegacyColumnCorrelationsCalculation(
         return ColumnCorrelationsMetric(column_name=self.metric.column_name)
 
 
-class DatasetCorrelations(Metric):
+class DatasetCorrelation(MetricContainer):
+    def generate_metrics(self, context: "Context") -> Sequence[MetricOrContainer]:
+        return [
+            Correlations(kind="pearson"),
+            Correlations(kind="spearman"),
+            Correlations(kind="kendall"),
+            Correlations(kind="cramer_v"),
+        ]
+
+    def render(
+        self,
+        context: "Context",
+        child_widgets: Optional[List[Tuple[Optional[MetricId], List[BaseWidgetInfo]]]] = None,
+    ) -> List[BaseWidgetInfo]:
+        legacy_metric = DatasetCorrelationsMetric()
+        _, legacy_widgets = context.get_legacy_metric(legacy_metric, None, None)
+        return legacy_widgets
+
+
+class Correlations(Metric):
+    kind: Literal["auto", "pearson", "spearman", "kendall", "cramer_v"] = "auto"
+
     def get_bound_tests(self, context: "Context") -> Sequence[BoundTest]:
         return []
 
@@ -61,7 +87,7 @@ class DatasetCorrelations(Metric):
 class LegacyDatasetCorrelationsCalculation(
     LegacyMetricCalculation[
         DataframeValue,
-        DatasetCorrelations,
+        Correlations,
         DatasetCorrelationsMetricResult,
         DatasetCorrelationsMetric,
     ],
@@ -73,15 +99,25 @@ class LegacyDatasetCorrelationsCalculation(
         self, context: "Context", legacy_result: DatasetCorrelationsMetricResult, render: List[BaseWidgetInfo]
     ) -> Tuple[DataframeValue, Optional[DataframeValue]]:
         current_result = legacy_result.current
-        current_df = next(iter(current_result.correlation.values()))
+        kind = self.metric.kind if self.metric.kind != "auto" else next(iter(current_result.correlation.keys()))
+        current_df = current_result.correlation[kind]
         current_value = DataframeValue(display_name=self.display_name(), value=current_df)
-        current_value.widget = render
+        current_value.widget = self._extract_render_tab(render, kind)
         reference_value = None
         if legacy_result.reference is not None:
-            reference_df = next(iter(legacy_result.reference.correlation.values()))
+            reference_df = legacy_result.reference.correlation[kind]
             reference_value = DataframeValue(display_name=self.display_name(), value=reference_df)
             reference_value.widget = []
         return current_value, reference_value
+
+    def _extract_render_tab(self, widgets: List[BaseWidgetInfo], kind: str) -> List[BaseWidgetInfo]:
+        tabs_widgets = [w for w in widgets if w.type == "tabs"]
+        if len(tabs_widgets) == 0:
+            return []
+        for tab in tabs_widgets[0].tabs:
+            if tab.title == kind:
+                return [header_text(label=f"Dataset Correlations ({kind})"), tab.widget]
+        return []
 
     def display_name(self) -> str:
         return """Calculate different correlations with target, predictions and features"""

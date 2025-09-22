@@ -39,7 +39,8 @@ from .column_statistics import SumValue
 from .column_statistics import UniqueValueCount
 from .column_statistics import ValueDrift
 from .data_quality import ColumnCorrelations
-from .data_quality import DatasetCorrelations
+from .data_quality import Correlations
+from .data_quality import DatasetCorrelation
 from .dataset_statistics import AlmostConstantColumnsCount
 from .dataset_statistics import AlmostDuplicatedColumnsCount
 from .dataset_statistics import ColumnCount
@@ -146,5 +147,6 @@ __all__ = [
     "DummyAccuracy",
     # Data Quality
     "ColumnCorrelations",
-    "DatasetCorrelations",
+    "Correlations",
+    "DatasetCorrelation",
 ]
