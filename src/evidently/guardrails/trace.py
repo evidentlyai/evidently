@@ -1,4 +1,5 @@
 import warnings
+from typing import Optional
 
 from evidently.guardrails import GuardException
 from evidently.guardrails.core import GuardsException
@@ -20,8 +21,7 @@ class GuardrailsInterceptor(tracely.Interceptor):
         guards = span.get_context_value("evidently.guardrails")
         if guards:
             for guard in guards.split("|"):
-                span.set_attribute("evidently.guardrail.name", guard)
-                span.set_attribute("evidently.guardrail.status", "passed")
+                self._set_span_for_guard(span, guard, guard, "passed", None)
 
     def on_exception(self, span: SpanObject, context: InterceptorContext, ex: Exception) -> bool:
         if not isinstance(ex, GuardException):
@@ -33,11 +33,15 @@ class GuardrailsInterceptor(tracely.Interceptor):
         if isinstance(ex, GuardsException):
             for guard in guards.split("|"):
                 if guard in ex.failed_guards:
-                    span.set_attribute(f"evidently.guardrail.{guard}.status", "failed")
-                    span.set_attribute(f"evidently.guardrail.{guard}.error", str(ex.failed_guards.get(guard)))
+                    self._set_span_for_guard(span, guard, guard, "failed", str(ex.failed_guards.get(guard)))
                 else:
-                    span.set_attribute(f"evidently.guardrail.{guard}.status", "passed")
+                    self._set_span_for_guard(span, guard, guard, "passed", None)
         else:
-            span.set_attribute(f"evidently.guardrail.{ex.guard}.name", "failed")
-            span.set_attribute(f"evidently.guardrail.{ex.guard}.error", str(ex))
+            self._set_span_for_guard(span, guards, guards, "failed", str(ex))
         return True
+
+    def _set_span_for_guard(self, span: SpanObject, guard_id: str, guard_name: str, status: str, error: Optional[str]):
+        span.set_attribute(f"evidently.guardrail.{guard_id}.name", guard_name)
+        span.set_attribute(f"evidently.guardrail.{guard_id}.status", status)
+        if error:
+            span.set_attribute(f"evidently.guardrail.{guard_id}.error", error)
