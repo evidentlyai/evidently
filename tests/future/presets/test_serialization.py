@@ -8,6 +8,8 @@ from evidently._pydantic_compat import parse_obj_as
 from evidently.core.container import MetricContainer
 from evidently.core.datasets import TestSummaryInfo
 from evidently.generators import ColumnMetricGenerator
+from evidently.metrics import ColumnCorrelations
+from evidently.metrics import DatasetCorrelations
 from evidently.metrics import MinValue
 from evidently.metrics.group_by import GroupBy
 from evidently.metrics.row_test_summary import RowTestSummary
@@ -45,6 +47,8 @@ all_presets: List[MetricContainer] = [
     GroupBy(metric=MinValue(column="a"), column_name="b"),
     RowTestSummary(),
     TestSummaryInfoPreset(column_info=TestSummaryInfo()),
+    DatasetCorrelations(),
+    ColumnCorrelations(column_name="a"),
 ]
 
 

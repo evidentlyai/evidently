@@ -38,8 +38,10 @@ from evidently.metrics import AbsMaxError
 from evidently.metrics import Accuracy
 from evidently.metrics import AlmostConstantColumnsCount
 from evidently.metrics import AlmostDuplicatedColumnsCount
+from evidently.metrics import ColumnCorrelations
 from evidently.metrics import ColumnCount
 from evidently.metrics import ConstantColumnsCount
+from evidently.metrics import DatasetCorrelations
 from evidently.metrics import DatasetMissingValueCount
 from evidently.metrics import DummyMAE
 from evidently.metrics import DummyMAPE
@@ -211,6 +213,8 @@ preset_types: Dict[Type[MetricContainer], Dict[str, Tuple[MetricTypeOrMetricChec
     },
     RowTestSummary: {},
     TestSummaryInfoPreset: {},
+    DatasetCorrelations: {},
+    ColumnCorrelations: {},
 }
 
 
