@@ -4,6 +4,7 @@ from typing import Optional
 from typing import Sequence
 from typing import Tuple
 
+from evidently import ColumnType
 from evidently.core.container import MetricContainer
 from evidently.core.container import MetricOrContainer
 from evidently.core.metric_types import BoundTest
@@ -20,8 +21,36 @@ from evidently.legacy.renderers.html_widgets import header_text
 from evidently.metrics._legacy import LegacyMetricCalculation
 
 
-class ColumnCorrelations(Metric):
+class ColumnCorrelations(MetricContainer):
     column_name: str
+
+    def generate_metrics(self, context: "Context") -> Sequence[MetricOrContainer]:
+        column_type = context.data_definition.get_column_type(self.column_name)
+        if column_type == ColumnType.Numerical:
+            return [
+                ColumnCorrelationMatrix(column_name=self.column_name, kind="pearson"),
+                ColumnCorrelationMatrix(column_name=self.column_name, kind="spearman"),
+                ColumnCorrelationMatrix(column_name=self.column_name, kind="kendall"),
+            ]
+        if column_type == ColumnType.Categorical:
+            return [
+                ColumnCorrelationMatrix(column_name=self.column_name, kind="cramer_v"),
+            ]
+        return []
+
+    def render(
+        self,
+        context: "Context",
+        child_widgets: Optional[List[Tuple[Optional[MetricId], List[BaseWidgetInfo]]]] = None,
+    ) -> List[BaseWidgetInfo]:
+        legacy_metric = ColumnCorrelationsMetric(column_name=self.column_name)
+        _, legacy_widgets = context.get_legacy_metric(legacy_metric, None, None)
+        return legacy_widgets
+
+
+class ColumnCorrelationMatrix(Metric):
+    column_name: str
+    kind: Literal["auto", "pearson", "spearman", "kendall", "cramer_v"] = "auto"
 
     def get_bound_tests(self, context: "Context") -> Sequence[BoundTest]:
         return []
@@ -30,7 +59,7 @@ class ColumnCorrelations(Metric):
 class LegacyColumnCorrelationsCalculation(
     LegacyMetricCalculation[
         DataframeValue,
-        ColumnCorrelations,
+        ColumnCorrelationMatrix,
         ColumnCorrelationsMetricResult,
         ColumnCorrelationsMetric,
     ],
@@ -42,13 +71,16 @@ class LegacyColumnCorrelationsCalculation(
         self, context: "Context", legacy_result: ColumnCorrelationsMetricResult, render: List[BaseWidgetInfo]
     ) -> Tuple[DataframeValue, Optional[DataframeValue]]:
         current_result = legacy_result.current
-        current_correlations = next(iter(current_result.values()))
+        kind: str = self.metric.kind if self.metric.kind != "auto" else next(iter(current_result.keys()))
+        current_correlations = current_result[kind]
         current_df = current_correlations.get_pandas()
         current_value = DataframeValue(display_name=self.display_name(), value=current_df)
-        current_value.widget = render
+        current_value.widget = _extract_render_tab(
+            render, kind, title=f"Correlations for column '{self.metric.column_name}'"
+        )
         reference_value = None
         if legacy_result.reference is not None:
-            reference_result = next(iter(legacy_result.reference.values()))
+            reference_result = legacy_result.reference[kind]
             reference_df = reference_result.get_pandas()
             reference_value = DataframeValue(display_name=self.display_name(), value=reference_df)
             reference_value.widget = []
@@ -58,13 +90,13 @@ class LegacyColumnCorrelationsCalculation(
         return ColumnCorrelationsMetric(column_name=self.metric.column_name)
 
 
-class DatasetCorrelation(MetricContainer):
+class DatasetCorrelations(MetricContainer):
     def generate_metrics(self, context: "Context") -> Sequence[MetricOrContainer]:
         return [
-            Correlations(kind="pearson"),
-            Correlations(kind="spearman"),
-            Correlations(kind="kendall"),
-            Correlations(kind="cramer_v"),
+            CorrelationMatrix(kind="pearson"),
+            CorrelationMatrix(kind="spearman"),
+            CorrelationMatrix(kind="kendall"),
+            CorrelationMatrix(kind="cramer_v"),
         ]
 
     def render(
@@ -77,17 +109,27 @@ class DatasetCorrelation(MetricContainer):
         return legacy_widgets
 
 
-class Correlations(Metric):
+class CorrelationMatrix(Metric):
     kind: Literal["auto", "pearson", "spearman", "kendall", "cramer_v"] = "auto"
 
     def get_bound_tests(self, context: "Context") -> Sequence[BoundTest]:
         return []
 
 
+def _extract_render_tab(widgets: List[BaseWidgetInfo], kind: str, title: str) -> List[BaseWidgetInfo]:
+    tabs_widgets = [w for w in widgets if w.type == "tabs"]
+    if len(tabs_widgets) == 0:
+        return []
+    for tab in tabs_widgets[0].tabs:
+        if tab.title == kind:
+            return [header_text(label=f"{title} ({kind})"), tab.widget]
+    return []
+
+
 class LegacyDatasetCorrelationsCalculation(
     LegacyMetricCalculation[
         DataframeValue,
-        Correlations,
+        CorrelationMatrix,
         DatasetCorrelationsMetricResult,
         DatasetCorrelationsMetric,
     ],
@@ -102,22 +144,13 @@ class LegacyDatasetCorrelationsCalculation(
         kind: str = self.metric.kind if self.metric.kind != "auto" else next(iter(current_result.correlation.keys()))
         current_df = current_result.correlation[kind]
         current_value = DataframeValue(display_name=self.display_name(), value=current_df)
-        current_value.widget = self._extract_render_tab(render, kind)
+        current_value.widget = _extract_render_tab(render, kind, title="Dataset Correlations")
         reference_value = None
         if legacy_result.reference is not None:
             reference_df = legacy_result.reference.correlation[kind]
             reference_value = DataframeValue(display_name=self.display_name(), value=reference_df)
             reference_value.widget = []
         return current_value, reference_value
-
-    def _extract_render_tab(self, widgets: List[BaseWidgetInfo], kind: str) -> List[BaseWidgetInfo]:
-        tabs_widgets = [w for w in widgets if w.type == "tabs"]
-        if len(tabs_widgets) == 0:
-            return []
-        for tab in tabs_widgets[0].tabs:
-            if tab.title == kind:
-                return [header_text(label=f"Dataset Correlations ({kind})"), tab.widget]
-        return []
 
     def display_name(self) -> str:
         return """Calculate different correlations with target, predictions and features"""

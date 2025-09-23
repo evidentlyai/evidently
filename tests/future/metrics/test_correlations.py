@@ -7,7 +7,7 @@ from evidently import Dataset
 from evidently import Report
 from evidently.core.metric_types import DataframeValue
 from evidently.metrics import ColumnCorrelations
-from evidently.metrics.data_quality import Correlations
+from evidently.metrics.data_quality import CorrelationMatrix
 
 
 def test_column_correlations():
@@ -40,7 +40,7 @@ def test_dataset_correlations():
         ),
     )
 
-    metric = Correlations()
+    metric = CorrelationMatrix()
     report = Report(metrics=[metric])
 
     run = report.run(ds)
