@@ -21,3 +21,6 @@ register_type_alias(MetricContainer, "evidently.presets.regression.RegressionQua
 register_type_alias(MetricContainer, "evidently.metrics.row_test_summary.RowTestSummary", "evidently:metric_container:RowTestSummary")
 
 register_type_alias(MetricContainer, "evidently.presets.special.TestSummaryInfoPreset", "evidently:metric_container:TestSummaryInfoPreset")
+
+register_type_alias(MetricContainer, "evidently.metrics.data_quality.ColumnCorrelations", "evidently:metric_container:ColumnCorrelations")
+register_type_alias(MetricContainer, "evidently.metrics.data_quality.DatasetCorrelations", "evidently:metric_container:DatasetCorrelations")

@@ -71,7 +71,7 @@ class LegacyColumnCorrelationsCalculation(
         self, context: "Context", legacy_result: ColumnCorrelationsMetricResult, render: List[BaseWidgetInfo]
     ) -> Tuple[DataframeValue, Optional[DataframeValue]]:
         current_result = legacy_result.current
-        kind: str = self.metric.kind if self.metric.kind != "auto" else next(iter(current_result.keys()))
+        kind: str = self.metric.kind if self.metric.kind != "auto" else next(iter(current_result.keys()))  # type: ignore[arg-type]
         current_correlations = current_result[kind]
         current_df = current_correlations.get_pandas()
         current_value = DataframeValue(display_name=self.display_name(), value=current_df)
@@ -141,7 +141,7 @@ class LegacyDatasetCorrelationsCalculation(
         self, context: "Context", legacy_result: DatasetCorrelationsMetricResult, render: List[BaseWidgetInfo]
     ) -> Tuple[DataframeValue, Optional[DataframeValue]]:
         current_result = legacy_result.current
-        kind: str = self.metric.kind if self.metric.kind != "auto" else next(iter(current_result.correlation.keys()))
+        kind: str = self.metric.kind if self.metric.kind != "auto" else next(iter(current_result.correlation.keys()))  # type: ignore[arg-type]
         current_df = current_result.correlation[kind]
         current_value = DataframeValue(display_name=self.display_name(), value=current_df)
         current_value.widget = _extract_render_tab(render, kind, title="Dataset Correlations")
