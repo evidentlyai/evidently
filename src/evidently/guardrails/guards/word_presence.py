@@ -20,6 +20,9 @@ class WordsPresence(GuardrailBase):
             raise ValueError(f"Invalid search mode: {search_mode}. Available modes: all, any")
         self.search_mode = search_mode
 
+    def name(self):
+        return f"{self.presence_mode} {self.search_mode} words"
+
     def validate(self, data: str):
         lem = None
         if self.lemmatize:
@@ -45,7 +48,7 @@ class WordsPresence(GuardrailBase):
         if self.presence_mode == "excludes":
             result = not result
         if not result:
-            raise GuardException(f"{self.presence_mode} {self.search_mode} words")
+            raise GuardException(self)
 
 
 class IncludesWords(WordsPresence):

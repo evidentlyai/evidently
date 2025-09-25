@@ -15,4 +15,4 @@ class PythonFunction(GuardrailBase):
     def validate(self, data: str):
         if self.function(data):
             return
-        raise GuardException(self.name())
+        raise GuardException(self)

@@ -20,8 +20,8 @@ class GuardrailsInterceptor(tracely.Interceptor):
     def after_call(self, span: SpanObject, context: InterceptorContext, return_value):
         guards = span.get_context_value("evidently.guardrails")
         if guards:
-            for guard in guards.split("|"):
-                self._set_span_for_guard(span, guard, guard, "passed", None)
+            for idx, guard in enumerate(guards):
+                self._set_span_for_guard(span, f"g_{idx}", guard.name(), "passed", None)
 
     def on_exception(self, span: SpanObject, context: InterceptorContext, ex: Exception) -> bool:
         if not isinstance(ex, GuardException):
@@ -31,13 +31,13 @@ class GuardrailsInterceptor(tracely.Interceptor):
             return False
 
         if isinstance(ex, GuardsException):
-            for guard in guards.split("|"):
+            for idx, guard in enumerate(guards):
                 if guard in ex.failed_guards:
-                    self._set_span_for_guard(span, guard, guard, "failed", str(ex.failed_guards.get(guard)))
+                    self._set_span_for_guard(span, f"g_{idx}", guard.name(), "failed", str(ex.failed_guards.get(guard)))
                 else:
-                    self._set_span_for_guard(span, guard, guard, "passed", None)
+                    self._set_span_for_guard(span, f"g_{idx}", guard.name(), "passed", None)
         else:
-            self._set_span_for_guard(span, guards, guards, "failed", str(ex))
+            self._set_span_for_guard(span, "guard", guards[0].name(), "failed", str(ex))
         return True
 
     def _set_span_for_guard(self, span: SpanObject, guard_id: str, guard_name: str, status: str, error: Optional[str]):
