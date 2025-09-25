@@ -23,6 +23,7 @@ from evidently.descriptors import CustomColumnDescriptor
 from evidently.descriptors import CustomDescriptor
 from evidently.descriptors import LLMJudge
 from evidently.descriptors import TextLength
+from evidently.descriptors import TextMatch
 from evidently.descriptors.llm_judges import GenericLLMDescriptor
 from evidently.descriptors.llm_judges import LLMEval
 from evidently.legacy.options.base import Options
@@ -176,6 +177,7 @@ all_descriptors: List[Tuple[Descriptor, Union[pd.Series, pd.DataFrame], Dict[str
         pd.DataFrame({"aaa": ["x", "y"]}),
         {"res": pd.Series(["x", "y"])},
     ),
+    (TextMatch(alias="res", column_name="str", match_items=["a"]), str_data, {"res": pd.Series([True, False, False])}),
 ]
 
 

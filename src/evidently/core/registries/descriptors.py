@@ -19,3 +19,5 @@ register_type_alias(Descriptor, "evidently.descriptors.llm_judges.GenericLLMDesc
 register_type_alias(SpecialColumnInfo, "evidently.core.datasets.TestSummaryInfo", "evidently:special_column_info:TestSummaryInfo")
 
 register_type_alias(Descriptor, "evidently.descriptors.llm_judges.LLMEval", "evidently:descriptor_v2:LLMEval")
+
+register_type_alias(Descriptor, "evidently.descriptors._text_match.TextMatch", "evidently:descriptor_v2:TextMatch")
