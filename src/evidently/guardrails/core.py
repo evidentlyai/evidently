@@ -36,8 +36,16 @@ class GuardException(Exception):
         return f"Guard {self.guard.name()} validation failed: {self.message}"
 
 
+class AggregationGuardrail(GuardrailBase):
+    def validate(self, data: str):
+        pass
+
+    def name(self) -> str:
+        return "Aggregation"
+
+
 class GuardsException(GuardException):
-    guard = "aggregation"
+    guard = AggregationGuardrail()
     failed_guards: Dict[GuardrailBase, GuardException]
 
     def __init__(self, failed_guards: Dict[GuardrailBase, GuardException]):
