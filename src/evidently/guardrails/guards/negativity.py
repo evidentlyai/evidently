@@ -2,21 +2,21 @@ from typing import Dict
 
 from evidently.guardrails import GuardException
 from evidently.guardrails.core import GuardrailBase
-from evidently.legacy.descriptors.llm_judges import PIILLMEval
+from evidently.legacy.descriptors.llm_judges import NegativityLLMEval
 from evidently.legacy.options.base import Options
 from evidently.llm.utils.wrapper import LLMRequest
 from evidently.llm.utils.wrapper import get_llm_wrapper
 
 
-class PIICheck(GuardrailBase):
+class NegativityCheck(GuardrailBase):
     def __init__(self):
         super().__init__()
 
-    def name(self):
-        return "PII Check"
+    def name(self) -> str:
+        return "Negativity Check"
 
     def validate(self, data: str):
-        piillm_eval = PIILLMEval()
+        piillm_eval = NegativityLLMEval()
         request: LLMRequest[dict] = LLMRequest(
             messages=piillm_eval.template.get_messages({"input": data}),
             response_parser=piillm_eval.template.get_parser(),

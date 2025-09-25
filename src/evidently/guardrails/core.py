@@ -3,28 +3,6 @@ from typing import Dict
 from typing import List
 
 
-class GuardException(Exception):
-    guard: str
-
-    def __init__(self, guard: str, message: str = "") -> None:
-        self.guard = guard
-        self.message = message
-
-    def __str__(self):
-        return f"Guard {self.guard} validation failed: {self.message}"
-
-
-class GuardsException(GuardException):
-    guard = "aggregation"
-    failed_guards: Dict[str, GuardException]
-
-    def __init__(self, failed_guards: Dict[str, GuardException]):
-        self.failed_guards = failed_guards
-
-    def __str__(self):
-        return f"Multiple guards validation failed: {', '.join(self.failed_guards.keys())}."
-
-
 class GuardrailBase:
     def __init__(self):
         pass
@@ -45,6 +23,28 @@ class GuardrailBase:
             GuardException: raised if validation fails
         """
         raise NotImplementedError()
+
+
+class GuardException(Exception):
+    guard: GuardrailBase
+
+    def __init__(self, guard: GuardrailBase, message: str = "") -> None:
+        self.guard = guard
+        self.message = message
+
+    def __str__(self):
+        return f"Guard {self.guard.name()} validation failed: {self.message}"
+
+
+class GuardsException(GuardException):
+    guard = "aggregation"
+    failed_guards: Dict[GuardrailBase, GuardException]
+
+    def __init__(self, failed_guards: Dict[GuardrailBase, GuardException]):
+        self.failed_guards = failed_guards
+
+    def __str__(self):
+        return f"Multiple guards validation failed: {', '.join([g.name() for g in self.failed_guards.keys()])}."
 
 
 def validate_guards(data: str, guards: List[GuardrailBase]):

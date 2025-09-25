@@ -26,12 +26,11 @@ def guard(guard: Union[GuardrailBase, List[GuardrailBase]], input_arg: str = "in
                 raise Exception(f"{input_arg} is not a valid argument")
             if isinstance(guard, list):
                 if tracely_installed and tracely.get_current_span():
-                    guard_names = "|".join([g.name() for g in guard])
-                    tracely.get_current_span().set_context_value("evidently.guardrails", guard_names)
+                    tracely.get_current_span().set_context_value("evidently.guardrails", guard)
                 validate_guards(bound.arguments[input_arg], guard)
             else:
                 if tracely_installed and tracely.get_current_span():
-                    tracely.get_current_span().set_context_value("evidently.guardrails", guard.name())
+                    tracely.get_current_span().set_context_value("evidently.guardrails", [guard])
                 guard.validate(bound.arguments[input_arg])
             return func(*args, **kwargs)
 
