@@ -210,6 +210,8 @@ class DataDefinition(BaseModel):
     categorical_columns: Optional[List[str]] = None
     text_columns: Optional[List[str]] = None
     datetime_columns: Optional[List[str]] = None
+    unknown_columns: Optional[List[str]] = None
+    list_columns: Optional[List[str]] = None
     classification: Optional[List[Classification]] = None
     regression: Optional[List[Regression]] = None
     llm: Optional[LLMDefinition] = None
@@ -232,6 +234,8 @@ class DataDefinition(BaseModel):
         llm: Optional[LLMDefinition] = None,
         numerical_descriptors: Optional[List[str]] = None,
         categorical_descriptors: Optional[List[str]] = None,
+        unknown_columns: Optional[List[str]] = None,
+        list_columns: Optional[List[str]] = None,
         test_descriptors: Optional[List[str]] = None,
         ranking: Optional[List[Recsys]] = None,
         service_columns: Optional[ServiceColumns] = None,
@@ -244,6 +248,8 @@ class DataDefinition(BaseModel):
         self.categorical_columns = categorical_columns
         self.text_columns = text_columns
         self.datetime_columns = datetime_columns
+        self.unknown_columns = unknown_columns
+        self.list_columns = list_columns
         self.classification = classification
         self.regression = regression
         self.llm = llm
@@ -266,6 +272,12 @@ class DataDefinition(BaseModel):
     def get_datetime_columns(self):
         return self.datetime_columns or []
 
+    def get_unknown_columns(self):
+        return self.unknown_columns or []
+
+    def get_list_columns(self):
+        return self.list_columns or []
+
     def get_column_type(self, column_name: str) -> ColumnType:
         if column_name in self.get_numerical_columns():
             return ColumnType.Numerical
@@ -275,6 +287,10 @@ class DataDefinition(BaseModel):
             return ColumnType.Text
         if column_name in self.get_datetime_columns():
             return ColumnType.Datetime
+        if column_name in self.get_unknown_columns():
+            return ColumnType.Unknown
+        if column_name in self.get_list_columns():
+            return ColumnType.List
         if column_name == self.timestamp:
             return ColumnType.Date
         if column_name == self.id_column:
@@ -310,6 +326,10 @@ class DataDefinition(BaseModel):
             yield from self.get_text_columns()
         if ColumnType.Datetime in types:
             yield from self.get_datetime_columns()
+        if ColumnType.Unknown in types:
+            yield from self.get_unknown_columns()
+        if ColumnType.List in types:
+            yield from self.get_list_columns()
 
     def get_regression(self, regression_id: str) -> Optional[Regression]:
         item_list = list(filter(lambda x: x.name == regression_id, self.regression or []))
@@ -405,7 +425,7 @@ class Descriptor(AutoAliasMixin, EvidentlyBaseModel, abc.ABC):
             for column in input_columns:
                 if column not in all_columns:
                     raise ValueError(
-                        f"Column {column} is not found in dataset. Available columns: [{', '.join(all_columns)}]"
+                        f"Column '{column}' is not found in dataset. Available columns: [{', '.join(all_columns)}]"
                     )
 
     def list_output_columns(self) -> List[str]:  # todo: also types?
@@ -908,6 +928,8 @@ class PandasDataset(Dataset):
             or data_definition.categorical_columns is None
             or data_definition.text_columns is None
             or data_definition.numerical_columns is None
+            or data_definition.unknown_columns is None
+            or data_definition.list_columns is None
         ):
             reserved_fields = []
             if data_definition is not None:
@@ -926,6 +948,10 @@ class PandasDataset(Dataset):
                     reserved_fields.extend(data_definition.datetime_columns)
                 if data_definition.text_columns is not None:
                     reserved_fields.extend(data_definition.text_columns)
+                if data_definition.unknown_columns is not None:
+                    reserved_fields.extend(data_definition.unknown_columns)
+                if data_definition.list_columns is not None:
+                    reserved_fields.extend(data_definition.list_columns)
                 if data_definition.numerical_descriptors is not None:
                     reserved_fields.extend(data_definition.numerical_descriptors)
                 if data_definition.categorical_descriptors is not None:
@@ -950,6 +976,10 @@ class PandasDataset(Dataset):
                     self._data_definition.categorical_columns = generated_data_definition.categorical_columns
                 if self._data_definition.text_columns is None:
                     self._data_definition.text_columns = generated_data_definition.text_columns
+                if self._data_definition.unknown_columns is None:
+                    self._data_definition.unknown_columns = generated_data_definition.unknown_columns
+                if self._data_definition.list_columns is None:
+                    self._data_definition.list_columns = generated_data_definition.list_columns
                 if self._data_definition.timestamp is None and generated_data_definition.timestamp is not None:
                     self._data_definition.timestamp = generated_data_definition.timestamp
                 if (
@@ -987,6 +1017,8 @@ class PandasDataset(Dataset):
         categorical = []
         text = []
         datetime = []
+        unknown = []
+        list_columns = []
         service = None
         for column in data.columns:
             if column in reserved_fields:
@@ -1006,12 +1038,18 @@ class PandasDataset(Dataset):
                 datetime.append(column)
             if column_type == ColumnType.Text:
                 text.append(column)
+            if column_type == ColumnType.Unknown:
+                unknown.append(column)
+            if column_type == ColumnType.List:
+                list_columns.append(column)
 
         return DataDefinition(
             timestamp=datetime[0] if len(datetime) == 1 else None,
             service_columns=service,
             numerical_columns=numerical,
             categorical_columns=categorical,
+            unknown_columns=unknown,
+            list_columns=list_columns,
             datetime_columns=datetime if len(datetime) != 1 else [],
             text_columns=text,
         )

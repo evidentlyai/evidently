@@ -8,7 +8,6 @@ from typing import Union
 import numpy as np
 import pandas as pd
 
-from evidently._pydantic_compat import PrivateAttr
 from evidently.core.datasets import AnyDescriptorTest
 from evidently.core.datasets import Dataset
 from evidently.core.datasets import DatasetColumn
@@ -37,7 +36,7 @@ class TextMatchOptions:
 class TextMatchProcessor:
     """Centralized processing logic for all text matching operations."""
 
-    _lem: Optional["WordNetLemmatizer"] = PrivateAttr(None)
+    _lem: Optional["WordNetLemmatizer"] = None
 
     def __init__(self, options: TextMatchOptions):
         self.options = options
@@ -78,16 +77,6 @@ class TextMatchProcessor:
         lemmatized_words = [self.lem.lemmatize(word.lower()) for word in words]
         return " ".join(lemmatized_words)
 
-    def contains_match(self, text: str, items: List[str]) -> bool:
-        """Check if text contains any/all of the specified items."""
-        processed_text = self.process_text(text)
-
-        if self.options.case_sensitive:
-            return any(item in processed_text for item in items)
-        else:
-            processed_text_lower = processed_text.lower()
-            return any(item.lower() in processed_text_lower for item in items)
-
     def all_match(self, text: str, items: List[str]) -> bool:
         """Check if text contains all of the specified items."""
         processed_text = self.process_text(text)
@@ -97,6 +86,16 @@ class TextMatchProcessor:
         else:
             processed_text_lower = processed_text.lower()
             return all(item.lower() in processed_text_lower for item in items)
+
+    def any_match(self, text: str, items: List[str]) -> bool:
+        """Check if text contains any of the specified items."""
+        processed_text = self.process_text(text)
+
+        if self.options.case_sensitive:
+            return any(item in processed_text for item in items)
+        else:
+            processed_text_lower = processed_text.lower()
+            return any(item.lower() in processed_text_lower for item in items)
 
     def regex_match(self, text: str, pattern: str) -> bool:
         """Check if text matches a regex pattern."""
@@ -204,14 +203,14 @@ class TextMatch(Descriptor):
         """Apply the core matching logic for a single text-item pair."""
         if self.match_type == "contains":
             if self.match_mode == "any":
-                return processor.contains_match(text, items)
+                return processor.any_match(text, items)
             # all
             return processor.all_match(text, items)
         if self.match_type == "not_contains":
             if self.match_mode == "any":
-                return not processor.contains_match(text, items)
+                return not processor.all_match(text, items)
             # all
-            return not processor.all_match(text, items)
+            return not processor.any_match(text, items)
         if self.match_type == "exact":
             return processor.exact_match(text, items)
         if self.match_type == "regex":
@@ -286,6 +285,8 @@ def DoesNotContain(
     tests: Optional[List[AnyDescriptorTest]] = None,
 ) -> TextMatch:
     """Convenience function matching legacy DoesNotContain feature."""
+    # legacy has inverted logic
+    mode = "all" if mode == "any" else "any"
     return TextMatch(
         column_name=column_name,
         match_items=items,
@@ -326,6 +327,8 @@ def ItemNoMatch(
     tests: Optional[List[AnyDescriptorTest]] = None,
 ) -> TextMatch:
     """Convenience function matching legacy ItemNoMatch feature."""
+    # legacy has inverted logic
+    mode = "all" if mode == "any" else "any"
     if len(columns) != 2:
         raise ValueError("ItemNoMatch requires exactly 2 columns")
     return TextMatch(
@@ -342,14 +345,14 @@ def ItemNoMatch(
 def WordsPresence(
     column_name: str,
     words_list: List[str],
-    mode: Literal["includes_any", "includes_all", "not_contains_any", "not_contains_all"] = "includes_any",
+    mode: Literal["includes_any", "includes_all", "excludes_any", "excludes_all"] = "includes_any",
     lemmatize: bool = True,
     alias: Optional[str] = None,
     tests: Optional[List[AnyDescriptorTest]] = None,
 ) -> TextMatch:
     """Convenience function matching legacy WordsPresence feature."""
-    match_type = "contains" if mode.startswith("includes") else "not_contains"
-    match_mode = "any" if mode.endswith("any") else "all"
+    match_type: Literal["contains", "not_contains"] = "contains" if mode.startswith("includes") else "not_contains"
+    match_mode: Literal["any", "all"] = "any" if mode.endswith("any") else "all"
 
     return TextMatch(
         column_name=column_name,
@@ -357,6 +360,7 @@ def WordsPresence(
         match_type=match_type,
         match_mode=match_mode,
         lemmatize=lemmatize,
+        case_sensitive=False,
         word_boundaries=True,  # WordsPresence uses word boundaries
         alias=alias,
         tests=tests,
@@ -379,6 +383,7 @@ def IncludesWords(
         match_mode=mode,
         lemmatize=lemmatize,
         word_boundaries=True,
+        case_sensitive=False,
         alias=alias,
         tests=tests,
     )
@@ -400,6 +405,7 @@ def ExcludesWords(
         match_mode=mode,
         lemmatize=lemmatize,
         word_boundaries=True,
+        case_sensitive=False,
         alias=alias,
         tests=tests,
     )
@@ -422,6 +428,7 @@ def WordMatch(
         match_mode=mode,
         lemmatize=lemmatize,
         word_boundaries=True,
+        case_sensitive=False,
         alias=alias,
         tests=tests,
     )
@@ -444,6 +451,7 @@ def WordNoMatch(
         match_mode=mode,
         lemmatize=lemmatize,
         word_boundaries=True,
+        case_sensitive=False,
         alias=alias,
         tests=tests,
     )
@@ -464,6 +472,7 @@ def TriggerWordsPresent(
         match_mode="any",
         lemmatize=lemmatize,
         word_boundaries=True,
+        case_sensitive=False,
         alias=alias,
         tests=tests,
     )
@@ -471,17 +480,16 @@ def TriggerWordsPresent(
 
 def RegExp(
     column_name: str,
-    pattern: str,
-    case_sensitive: bool = True,
+    reg_exp: str,
     alias: Optional[str] = None,
     tests: Optional[List[AnyDescriptorTest]] = None,
 ) -> TextMatch:
     """Convenience function matching legacy RegExp feature."""
     return TextMatch(
         column_name=column_name,
-        match_items=[pattern],
+        match_items=[reg_exp],
         match_type="regex",
-        case_sensitive=case_sensitive,
+        case_sensitive=True,
         alias=alias,
         tests=tests,
     )

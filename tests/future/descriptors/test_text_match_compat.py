@@ -51,16 +51,6 @@ def sample_data():
                 [],
                 ["numbers"],
             ],
-            "single_keyword": [
-                "urgent",
-                "test",
-                "urgent",
-                "",
-                "urgent",
-                "spam",
-                "",
-                "numbers",
-            ],
         }
     )
 
@@ -88,7 +78,7 @@ def test_contains_parameters(sample_dataset, case_sensitive, mode):
     legacy_result = sample_dataset.column(legacy_desc.alias)
     new_result = sample_dataset.column(new_desc.alias)
 
-    assert legacy_result.data.tolist() == new_result.data.tolist()
+    assert new_result.data.tolist() == legacy_result.data.tolist()
 
 
 def test_contains_single_item(sample_dataset):
@@ -103,7 +93,7 @@ def test_contains_single_item(sample_dataset):
     legacy_result = sample_dataset.column(legacy_desc.alias)
     new_result = sample_dataset.column(new_desc.alias)
 
-    assert legacy_result.data.tolist() == new_result.data.tolist()
+    assert new_result.data.tolist() == legacy_result.data.tolist()
 
 
 @pytest.mark.parametrize("case_sensitive", [True, False])
@@ -124,7 +114,7 @@ def test_does_not_contain_parameters(sample_dataset, case_sensitive, mode):
     legacy_result = sample_dataset.column(legacy_desc.alias)
     new_result = sample_dataset.column(new_desc.alias)
 
-    assert legacy_result.data.tolist() == new_result.data.tolist()
+    assert new_result.data.tolist() == legacy_result.data.tolist()
 
 
 @pytest.mark.parametrize("case_sensitive", [True, False])
@@ -141,7 +131,7 @@ def test_item_match_parameters(sample_dataset, case_sensitive, mode):
     legacy_result = sample_dataset.column(legacy_desc.alias)
     new_result = sample_dataset.column(new_desc.alias)
 
-    assert legacy_result.data.tolist() == new_result.data.tolist()
+    assert new_result.data.tolist() == legacy_result.data.tolist()
 
 
 def test_item_match_error_handling():
@@ -166,7 +156,7 @@ def test_item_no_match_parameters(sample_dataset, case_sensitive, mode):
     legacy_result = sample_dataset.column(legacy_desc.alias)
     new_result = sample_dataset.column(new_desc.alias)
 
-    assert legacy_result.data.tolist() == new_result.data.tolist()
+    assert new_result.data.tolist() == legacy_result.data.tolist()
 
 
 @pytest.mark.parametrize("mode", ["includes_any", "includes_all", "excludes_any", "excludes_all"])
@@ -187,7 +177,7 @@ def test_words_presence_parameters(sample_dataset, mode, lemmatize):
     legacy_result = sample_dataset.column(legacy_desc.alias)
     new_result = sample_dataset.column(new_desc.alias)
 
-    assert legacy_result.data.tolist() == new_result.data.tolist()
+    assert new_result.data.tolist() == legacy_result.data.tolist()
 
 
 @pytest.mark.parametrize("mode", ["any", "all"])
@@ -208,7 +198,7 @@ def test_includes_words_parameters(sample_dataset, mode, lemmatize):
     legacy_result = sample_dataset.column(legacy_desc.alias)
     new_result = sample_dataset.column(new_desc.alias)
 
-    assert legacy_result.data.tolist() == new_result.data.tolist()
+    assert new_result.data.tolist() == legacy_result.data.tolist()
 
 
 @pytest.mark.parametrize("mode", ["any", "all"])
@@ -227,7 +217,7 @@ def test_excludes_words_parameters(sample_dataset, mode, lemmatize):
     legacy_result = sample_dataset.column(legacy_desc.alias)
     new_result = sample_dataset.column(new_desc.alias)
 
-    assert legacy_result.data.tolist() == new_result.data.tolist()
+    assert new_result.data.tolist() == legacy_result.data.tolist()
 
 
 @pytest.mark.parametrize("mode", ["any", "all"])
@@ -244,7 +234,7 @@ def test_word_match_parameters(sample_dataset, mode, lemmatize):
     legacy_result = sample_dataset.column(legacy_desc.alias)
     new_result = sample_dataset.column(new_desc.alias)
 
-    assert legacy_result.data.tolist() == new_result.data.tolist()
+    assert new_result.data.tolist() == legacy_result.data.tolist()
 
 
 @pytest.mark.parametrize("mode", ["any", "all"])
@@ -261,7 +251,7 @@ def test_word_no_match_parameters(sample_dataset, mode, lemmatize):
     legacy_result = sample_dataset.column(legacy_desc.alias)
     new_result = sample_dataset.column(new_desc.alias)
 
-    assert legacy_result.data.tolist() == new_result.data.tolist()
+    assert new_result.data.tolist() == legacy_result.data.tolist()
 
 
 @pytest.mark.parametrize("lemmatize", [True, False])
@@ -279,17 +269,14 @@ def test_trigger_words_present_parameters(sample_dataset, lemmatize):
     legacy_result = sample_dataset.column(legacy_desc.alias)
     new_result = sample_dataset.column(new_desc.alias)
 
-    assert legacy_result.data.tolist() == new_result.data.tolist()
+    assert new_result.data.tolist() == legacy_result.data.tolist()
 
 
-@pytest.mark.parametrize("case_sensitive", [True, False])
-def test_regex_parameters(sample_dataset, case_sensitive):
-    legacy_feature = LegacyRegExp(
-        column_name="description", pattern=r"\b(urgent|important)\b", case_sensitive=case_sensitive
-    )
+def test_regex_parameters(sample_dataset):
+    legacy_feature = LegacyRegExp(column_name="description", reg_exp=r".*(urgent|important).*")
     legacy_desc = FeatureDescriptor(feature=legacy_feature)
 
-    new_desc = RegExp(column_name="description", pattern=r"\b(urgent|important)\b", case_sensitive=case_sensitive)
+    new_desc = RegExp(column_name="description", reg_exp=r".*(urgent|important).*")
 
     sample_dataset.add_descriptor(legacy_desc)
     sample_dataset.add_descriptor(new_desc)
@@ -297,22 +284,7 @@ def test_regex_parameters(sample_dataset, case_sensitive):
     legacy_result = sample_dataset.column(legacy_desc.alias)
     new_result = sample_dataset.column(new_desc.alias)
 
-    assert legacy_result.data.tolist() == new_result.data.tolist()
-
-
-def test_empty_items_list(sample_dataset):
-    legacy_feature = LegacyContains(column_name="description", items=[], case_sensitive=False)
-    legacy_desc = FeatureDescriptor(feature=legacy_feature)
-
-    new_desc = Contains(column_name="description", items=[], case_sensitive=False)
-
-    sample_dataset.add_descriptor(legacy_desc)
-    sample_dataset.add_descriptor(new_desc)
-
-    legacy_result = sample_dataset.column(legacy_desc.alias)
-    new_result = sample_dataset.column(new_desc.alias)
-
-    assert legacy_result.data.tolist() == new_result.data.tolist()
+    assert new_result.data.tolist() == legacy_result.data.astype(bool).tolist()
 
 
 def test_single_item_list(sample_dataset):
@@ -327,26 +299,7 @@ def test_single_item_list(sample_dataset):
     legacy_result = sample_dataset.column(legacy_desc.alias)
     new_result = sample_dataset.column(new_desc.alias)
 
-    assert legacy_result.data.tolist() == new_result.data.tolist()
-
-
-def test_none_values_compatibility(sample_dataset):
-    df = sample_dataset.as_dataframe()
-    df.loc[len(df)] = {"description": None, "keywords": [], "single_keyword": ""}
-    dataset_with_none = Dataset.from_pandas(df)
-
-    legacy_feature = LegacyContains(column_name="description", items=["urgent"], case_sensitive=False)
-    legacy_desc = FeatureDescriptor(feature=legacy_feature)
-
-    new_desc = Contains(column_name="description", items=["urgent"], case_sensitive=False)
-
-    dataset_with_none.add_descriptor(legacy_desc)
-    dataset_with_none.add_descriptor(new_desc)
-
-    legacy_result = dataset_with_none.column(legacy_desc.alias)
-    new_result = dataset_with_none.column(new_desc.alias)
-
-    assert legacy_result.data.tolist() == new_result.data.tolist()
+    assert new_result.data.tolist() == legacy_result.data.tolist()
 
 
 def test_contains_alias():

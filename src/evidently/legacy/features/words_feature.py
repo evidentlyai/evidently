@@ -49,6 +49,7 @@ class WordsPresence(ApplyColumnGeneratedFeature):
         type_alias = "evidently:feature:WordsPresence"
 
     __feature_type__: ClassVar = ColumnType.Categorical
+    display_name_template: ClassVar = "{column_name} words presence"
     column_name: str
     words_list: List[str]
     mode: str
