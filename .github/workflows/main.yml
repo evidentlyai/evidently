@@ -121,7 +121,9 @@ jobs:
 
       - name: 🔍 Get bikes dataset cached
         uses: ./.github/share-actions/get-bikes-dataset-cached
-
+      - name: Install pytorch for linux
+        if: runner.os == 'Linux' && runner.arch == 'X64'
+        run: pip install torch --index-url https://download.pytorch.org/whl/cpu
       - name: Update pip
         run: python -m pip install --upgrade pip
       - name: Install minimal dependencies
@@ -165,6 +167,9 @@ jobs:
           path: ~/scikit_learn_data
           key: cache-scipy-data
           enableCrossOsArchive: true
+      - name: Install pytorch for linux
+        if: runner.os == 'Linux' && runner.arch == 'X64'
+        run: pip install torch --index-url https://download.pytorch.org/whl/cpu
 
       - name: 🔍 Get bikes dataset cached
         uses: ./.github/share-actions/get-bikes-dataset-cached
@@ -188,6 +193,9 @@ jobs:
           architecture: "x64"
           cache: "pip"
           cache-dependency-path: setup.py
+      - name: Install pytorch for linux
+        if: runner.os == 'Linux' && runner.arch == 'X64'
+        run: pip install torch --index-url https://download.pytorch.org/whl/cpu
       - name: Install dependencies
         run: pip install -e .
       - name: Install wheel
