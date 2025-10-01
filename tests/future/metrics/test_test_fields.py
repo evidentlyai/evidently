@@ -33,8 +33,13 @@ from evidently.metrics.column_statistics import ValueDriftTest
 from evidently.metrics.recsys import MAP
 from evidently.metrics.recsys import MRR
 from evidently.metrics.recsys import NDCG
+from evidently.metrics.recsys import Diversity
 from evidently.metrics.recsys import HitRate
+from evidently.metrics.recsys import Novelty
+from evidently.metrics.recsys import Personalization
+from evidently.metrics.recsys import PopularityBiasMetric
 from evidently.metrics.recsys import ScoreDistribution
+from evidently.metrics.recsys import Serendipity
 from evidently.tests import eq
 from evidently.tests import gt
 from evidently.tests import gte
@@ -132,6 +137,11 @@ METRIC_ARGS: Dict[Type[Metric], str] = {
     OutListValueCount: "values=[1], ",
     InRangeValueCount: "left=0, right=2, ",
     OutRangeValueCount: "left=0, right=2, ",
+    Diversity: "k=1, item_features=[], ",
+    Serendipity: "k=1, item_features=[], ",
+    Novelty: "k=1, ",
+    Personalization: "k=1, ",
+    PopularityBiasMetric: "k=1, ",
 }
 
 SKIP_TEST_TYPES = {ValueDriftTest}
@@ -191,7 +201,10 @@ def test_all_metric_tested():
         metric_args = METRIC_ARGS.get(metric_type, "")
         if issubclass(metric_type, ColumnMetric):
             metric_args = f'column="a", {metric_args}'
-        return f"(simple_dataset, {metric_type.__name__}({metric_args}{test_field}={test_field_value_str}), TestStatus.{status.name})"
+        dataset_name = "simple_dataset"
+        if "recsys" in metric_type.__module__:
+            dataset_name = "recsys_dataset"
+        return f"({dataset_name}, {metric_type.__name__}({metric_args}{test_field}={test_field_value_str}), TestStatus.{status.name})"
 
     format_missing = ", ".join(map(_fmt, missing_tests))
     if len(missing_tests) > 0 and COPY_TO_CLIPBOARD:
