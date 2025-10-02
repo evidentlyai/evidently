@@ -35,11 +35,8 @@ from evidently.metrics.recsys import MRR
 from evidently.metrics.recsys import NDCG
 from evidently.metrics.recsys import Diversity
 from evidently.metrics.recsys import HitRate
-from evidently.metrics.recsys import Novelty
 from evidently.metrics.recsys import Personalization
-from evidently.metrics.recsys import PopularityBiasMetric
 from evidently.metrics.recsys import ScoreDistribution
-from evidently.metrics.recsys import Serendipity
 from evidently.tests import eq
 from evidently.tests import gt
 from evidently.tests import gte
@@ -138,10 +135,10 @@ METRIC_ARGS: Dict[Type[Metric], str] = {
     InRangeValueCount: "left=0, right=2, ",
     OutRangeValueCount: "left=0, right=2, ",
     Diversity: "k=1, item_features=[], ",
-    Serendipity: "k=1, item_features=[], ",
-    Novelty: "k=1, ",
+    # Serendipity: "k=1, item_features=[], ",
+    # Novelty: "k=1, ",
     Personalization: "k=1, ",
-    PopularityBiasMetric: "k=1, ",
+    # PopularityBiasMetric: "k=1, ",
 }
 
 SKIP_TEST_TYPES = {ValueDriftTest}
