@@ -12,13 +12,11 @@ from evidently.metrics.recsys import NDCG
 from evidently.metrics.recsys import Diversity
 from evidently.metrics.recsys import FBetaTopK
 from evidently.metrics.recsys import HitRate
-from evidently.metrics.recsys import ItemBias
 from evidently.metrics.recsys import Personalization
 from evidently.metrics.recsys import PrecisionTopK
 from evidently.metrics.recsys import RecallTopK
 from evidently.metrics.recsys import RecCasesTable
 from evidently.metrics.recsys import ScoreDistribution
-from evidently.metrics.recsys import UserBias
 
 
 class RecsysPreset(MetricContainer):
@@ -84,9 +82,6 @@ class RecsysPreset(MetricContainer):
         super().__init__(include_tests=include_tests)
 
     def generate_metrics(self, context: "Context") -> Sequence[MetricOrContainer]:
-        # Check if we have training data (reference data available)
-        is_train_data = context.has_reference
-
         metrics: List[Metric] = [
             # Core TopK metrics (return DataframeValue with rank and value columns)
             PrecisionTopK(
@@ -185,42 +180,42 @@ class RecsysPreset(MetricContainer):
             #     )
 
         # Add bias metrics that require training data
-        if is_train_data:
-            if self.item_bias_columns is not None:
-                for col in self.item_bias_columns:
-                    # Add both default and train distributions
-                    metrics.append(
-                        ItemBias(
-                            k=self.k,
-                            column_name=col,
-                            distribution="default",
-                            ranking_name=self.ranking_name,
-                        )
-                    )
-                    metrics.append(
-                        ItemBias(
-                            k=self.k,
-                            column_name=col,
-                            distribution="train",
-                            ranking_name=self.ranking_name,
-                        )
-                    )
-            if self.user_bias_columns is not None:
-                for col in self.user_bias_columns:
-                    # Add both default and train distributions
-                    metrics.append(
-                        UserBias(
-                            column_name=col,
-                            distribution="default",
-                            ranking_name=self.ranking_name,
-                        )
-                    )
-                    metrics.append(
-                        UserBias(
-                            column_name=col,
-                            distribution="train",
-                            ranking_name=self.ranking_name,
-                        )
-                    )
+        # if is_train_data:
+        #     if self.item_bias_columns is not None:
+        #         for col in self.item_bias_columns:
+        #             # Add both default and train distributions
+        #             metrics.append(
+        #                 ItemBias(
+        #                     k=self.k,
+        #                     column_name=col,
+        #                     distribution="default",
+        #                     ranking_name=self.ranking_name,
+        #                 )
+        #             )
+        #             metrics.append(
+        #                 ItemBias(
+        #                     k=self.k,
+        #                     column_name=col,
+        #                     distribution="train",
+        #                     ranking_name=self.ranking_name,
+        #                 )
+        #             )
+        #     if self.user_bias_columns is not None:
+        #         for col in self.user_bias_columns:
+        #             # Add both default and train distributions
+        #             metrics.append(
+        #                 UserBias(
+        #                     column_name=col,
+        #                     distribution="default",
+        #                     ranking_name=self.ranking_name,
+        #                 )
+        #             )
+        #             metrics.append(
+        #                 UserBias(
+        #                     column_name=col,
+        #                     distribution="train",
+        #                     ranking_name=self.ranking_name,
+        #                 )
+        #             )
 
         return metrics

@@ -2,11 +2,9 @@ from abc import ABC
 from typing import ClassVar
 from typing import Generic
 from typing import List
-from typing import Literal
 from typing import Optional
 from typing import Type
 from typing import TypeVar
-from typing import Union
 
 import pandas as pd
 
@@ -24,7 +22,6 @@ from evidently.legacy.base_metric import InputData
 from evidently.legacy.metrics import DiversityMetric as LegacyDiversityMetric
 from evidently.legacy.metrics import FBetaTopKMetric as LegacyFBetaTopKMetric
 from evidently.legacy.metrics import HitRateKMetric as LegacyHitRateKMetric
-from evidently.legacy.metrics import ItemBiasMetric as LegacyItemBiasMetric
 from evidently.legacy.metrics import MAPKMetric as LegacyMAPKMetric
 from evidently.legacy.metrics import MRRKMetric as LegacyMRRKMetric
 from evidently.legacy.metrics import NDCGKMetric as LegacyNDCGKMetric
@@ -32,16 +29,13 @@ from evidently.legacy.metrics import PersonalizationMetric as LegacyPersonalizat
 from evidently.legacy.metrics import PrecisionTopKMetric as LegacyPrecisionTopKMetric
 from evidently.legacy.metrics import RecallTopKMetric as LegacyRecallTopKMetric
 from evidently.legacy.metrics import RecCasesTable as LegacyRecCasesTable
-from evidently.legacy.metrics import UserBiasMetric as LegacyUserBiasMetric
 from evidently.legacy.metrics.recsys.base_top_k import TopKMetric
 from evidently.legacy.metrics.recsys.base_top_k import TopKMetricResult
 from evidently.legacy.metrics.recsys.diversity import DiversityMetricResult
-from evidently.legacy.metrics.recsys.item_bias import ItemBiasMetricResult
 from evidently.legacy.metrics.recsys.personalisation import PersonalizationMetricResult
 from evidently.legacy.metrics.recsys.rec_examples import RecCasesTableResults
 from evidently.legacy.metrics.recsys.scores_distribution import ScoreDistribution as ScoreDistributionLegacy
 from evidently.legacy.metrics.recsys.scores_distribution import ScoreDistributionResult
-from evidently.legacy.metrics.recsys.user_bias import UserBiasMetricResult
 from evidently.legacy.model.widget import BaseWidgetInfo
 from evidently.legacy.utils.data_preprocessing import create_data_definition
 from evidently.metrics._legacy import LegacyMetricCalculation
@@ -442,89 +436,89 @@ class DiversityCalculation(
 #         return _gen_ranking_input_data(context, task_name)
 
 
-class ItemBias(Metric):
-    k: int
-    column_name: str
-    distribution: Literal["default", "train"] = "default"
-    ranking_name: str = "default"
-
-    def get_bound_tests(self, context: "Context") -> List[BoundTest]:
-        return []
-
-
-class ItemBiasCalculation(
-    LegacyMetricCalculation[DataframeValue, ItemBias, ItemBiasMetricResult, LegacyItemBiasMetric],
-):
-    def task_name(self) -> Optional[str]:
-        return self.metric.ranking_name
-
-    def legacy_metric(self) -> LegacyItemBiasMetric:
-        return LegacyItemBiasMetric(k=self.metric.k, column_name=self.metric.column_name)
-
-    def calculate_value(
-        self, context: "Context", legacy_result: ItemBiasMetricResult, render: List[BaseWidgetInfo]
-    ) -> TMetricResult:
-        return _bias_result(self.metric, legacy_result, render, self.display_name())
-
-    def display_name(self) -> str:
-        return f"Item Bias ({self.metric.column_name}, {self.metric.distribution})"
-
-    def _gen_input_data(self, context: "Context", task_name: Optional[str]) -> InputData:
-        return _gen_ranking_input_data(context, task_name)
-
-
-class UserBias(Metric):
-    column_name: str
-    distribution: Literal["default", "train"] = "default"
-    ranking_name: str = "default"
-
-    def get_bound_tests(self, context: "Context") -> List[BoundTest]:
-        return []
+# class ItemBias(Metric):
+#     k: int
+#     column_name: str
+#     distribution: Literal["default", "train"] = "default"
+#     ranking_name: str = "default"
+#
+#     def get_bound_tests(self, context: "Context") -> List[BoundTest]:
+#         return []
+#
+#
+# class ItemBiasCalculation(
+#     LegacyMetricCalculation[DataframeValue, ItemBias, ItemBiasMetricResult, LegacyItemBiasMetric],
+# ):
+#     def task_name(self) -> Optional[str]:
+#         return self.metric.ranking_name
+#
+#     def legacy_metric(self) -> LegacyItemBiasMetric:
+#         return LegacyItemBiasMetric(k=self.metric.k, column_name=self.metric.column_name)
+#
+#     def calculate_value(
+#         self, context: "Context", legacy_result: ItemBiasMetricResult, render: List[BaseWidgetInfo]
+#     ) -> TMetricResult:
+#         return _bias_result(self.metric, legacy_result, render, self.display_name())
+#
+#     def display_name(self) -> str:
+#         return f"Item Bias ({self.metric.column_name}, {self.metric.distribution})"
+#
+#     def _gen_input_data(self, context: "Context", task_name: Optional[str]) -> InputData:
+#         return _gen_ranking_input_data(context, task_name)
 
 
-class UserBiasCalculation(
-    LegacyMetricCalculation[DataframeValue, UserBias, UserBiasMetricResult, LegacyUserBiasMetric],
-):
-    def task_name(self) -> Optional[str]:
-        return self.metric.ranking_name
-
-    def legacy_metric(self) -> LegacyUserBiasMetric:
-        return LegacyUserBiasMetric(column_name=self.metric.column_name)
-
-    def calculate_value(
-        self, context: "Context", legacy_result: UserBiasMetricResult, render: List[BaseWidgetInfo]
-    ) -> TMetricResult:
-        return _bias_result(self.metric, legacy_result, render, self.display_name())
-
-    def display_name(self) -> str:
-        return f"User Bias ({self.metric.column_name}, {self.metric.distribution})"
-
-    def _gen_input_data(self, context: "Context", task_name: Optional[str]) -> InputData:
-        return _gen_ranking_input_data(context, task_name)
-
-
-def _bias_result(
-    metric: Union[ItemBias, UserBias],
-    legacy_result: Union[ItemBiasMetricResult, UserBiasMetricResult],
-    render: List[BaseWidgetInfo],
-    display_name: str,
-) -> TMetricResult:
-    if metric.distribution == "train":
-        current_distr = legacy_result.current_train_distr
-        reference_distr = legacy_result.reference_train_distr
-    else:  # default
-        current_distr = legacy_result.current_distr
-        reference_distr = legacy_result.reference_distr
-    # Convert Distribution to DataFrame with x and y columns
-    current_df = pd.DataFrame({"x": current_distr.x, "y": current_distr.y})
-    current_value = DataframeValue(display_name=display_name, value=current_df)
-    current_value.widget = render
-    if reference_distr is None:
-        return current_value
-    reference_df = pd.DataFrame({"x": reference_distr.x, "y": reference_distr.y})
-    reference_value = DataframeValue(display_name=display_name, value=reference_df)
-    reference_value.widget = []
-    return current_value, reference_value
+# class UserBias(Metric):
+#     column_name: str
+#     distribution: Literal["default", "train"] = "default"
+#     ranking_name: str = "default"
+#
+#     def get_bound_tests(self, context: "Context") -> List[BoundTest]:
+#         return []
+#
+#
+# class UserBiasCalculation(
+#     LegacyMetricCalculation[DataframeValue, UserBias, UserBiasMetricResult, LegacyUserBiasMetric],
+# ):
+#     def task_name(self) -> Optional[str]:
+#         return self.metric.ranking_name
+#
+#     def legacy_metric(self) -> LegacyUserBiasMetric:
+#         return LegacyUserBiasMetric(column_name=self.metric.column_name)
+#
+#     def calculate_value(
+#         self, context: "Context", legacy_result: UserBiasMetricResult, render: List[BaseWidgetInfo]
+#     ) -> TMetricResult:
+#         return _bias_result(self.metric, legacy_result, render, self.display_name())
+#
+#     def display_name(self) -> str:
+#         return f"User Bias ({self.metric.column_name}, {self.metric.distribution})"
+#
+#     def _gen_input_data(self, context: "Context", task_name: Optional[str]) -> InputData:
+#         return _gen_ranking_input_data(context, task_name)
+#
+#
+# def _bias_result(
+#     metric: Union[ItemBias, UserBias],
+#     legacy_result: Union[ItemBiasMetricResult, UserBiasMetricResult],
+#     render: List[BaseWidgetInfo],
+#     display_name: str,
+# ) -> TMetricResult:
+#     if metric.distribution == "train":
+#         current_distr = legacy_result.current_train_distr
+#         reference_distr = legacy_result.reference_train_distr
+#     else:  # default
+#         current_distr = legacy_result.current_distr
+#         reference_distr = legacy_result.reference_distr
+#     # Convert Distribution to DataFrame with x and y columns
+#     current_df = pd.DataFrame({"x": current_distr.x, "y": current_distr.y})
+#     current_value = DataframeValue(display_name=display_name, value=current_df)
+#     current_value.widget = render
+#     if reference_distr is None:
+#         return current_value
+#     reference_df = pd.DataFrame({"x": reference_distr.x, "y": reference_distr.y})
+#     reference_value = DataframeValue(display_name=display_name, value=reference_df)
+#     reference_value.widget = []
+#     return current_value, reference_value
 
 
 class RecCasesTable(Metric):
