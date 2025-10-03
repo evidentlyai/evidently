@@ -522,7 +522,7 @@ class DiversityCalculation(
 
 
 class RecCasesTable(Metric):
-    user_ids: Optional[List[str]] = None
+    user_ids: Optional[List[int, str]] = None
     display_features: Optional[List[str]] = None
     ranking_name: str = "default"
 
