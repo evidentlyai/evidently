@@ -5,6 +5,7 @@ from typing import List
 from typing import Optional
 from typing import Type
 from typing import TypeVar
+from typing import Union
 
 import pandas as pd
 
@@ -522,7 +523,7 @@ class DiversityCalculation(
 
 
 class RecCasesTable(Metric):
-    user_ids: Optional[List[int, str]] = None
+    user_ids: Optional[List[Union[int, str]]] = None
     display_features: Optional[List[str]] = None
     ranking_name: str = "default"
 
