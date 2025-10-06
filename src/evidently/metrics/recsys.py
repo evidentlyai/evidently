@@ -235,6 +235,7 @@ class ScoreDistributionCalculation(
         self, context: "Context", legacy_result: ScoreDistributionResult, render: List[BaseWidgetInfo]
     ) -> TMetricResult:
         current = self.result(legacy_result.current_entropy)
+        current.widget = render
         if legacy_result.reference_entropy is None:
             return current
         return current, self.result(legacy_result.reference_entropy)
@@ -318,6 +319,7 @@ class PersonalizationCalculation(
         self, context: "Context", legacy_result: PersonalizationMetricResult, render: List[BaseWidgetInfo]
     ) -> TMetricResult:
         current = self.result(legacy_result.current_value)
+        current.widget = render
         if legacy_result.reference_value is None:
             return current
         return current, self.result(legacy_result.reference_value)
@@ -354,6 +356,7 @@ class DiversityCalculation(
         self, context: "Context", legacy_result: DiversityMetricResult, render: List[BaseWidgetInfo]
     ) -> TMetricResult:
         current = self.result(legacy_result.current_value)
+        current.widget = render
         if legacy_result.reference_value is None:
             return current
         return current, self.result(legacy_result.reference_value)
@@ -391,6 +394,7 @@ class DiversityCalculation(
 #         self, context: "Context", legacy_result: SerendipityMetricResult, render: List[BaseWidgetInfo]
 #     ) -> TMetricResult:
 #         current = self.result(legacy_result.current_value)
+#         current.widget = render
 #         if legacy_result.reference_value is None:
 #             return current
 #         return current, self.result(legacy_result.reference_value)
@@ -426,6 +430,7 @@ class DiversityCalculation(
 #         self, context: "Context", legacy_result: NoveltyMetricResult, render: List[BaseWidgetInfo]
 #     ) -> TMetricResult:
 #         current = self.result(legacy_result.current_value)
+#         current.widget = render
 #         if legacy_result.reference_value is None:
 #             return current
 #         return current, self.result(legacy_result.reference_value)
