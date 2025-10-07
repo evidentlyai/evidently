@@ -22,7 +22,7 @@ def safe_pd_column_expanding(df: pd.DataFrame):
         # Try the old way (works on older pandas)
         with warnings.catch_warnings():
             warnings.filterwarnings("ignore", message=".*axis=1.*", category=FutureWarning)
-            return df.expanding(axis=1)
+            return df.expanding(axis=1)  # type: ignore[arg-type]
     except TypeError:
         # pandas removed axis=1 -> use transpose trick
         return df.T.expanding()
