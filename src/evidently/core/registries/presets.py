@@ -24,3 +24,5 @@ register_type_alias(MetricContainer, "evidently.presets.special.TestSummaryInfoP
 
 register_type_alias(MetricContainer, "evidently.metrics.data_quality.ColumnCorrelations", "evidently:metric_container:ColumnCorrelations")
 register_type_alias(MetricContainer, "evidently.metrics.data_quality.DatasetCorrelations", "evidently:metric_container:DatasetCorrelations")
+
+register_type_alias(MetricContainer, "evidently.presets.recsys.RecsysPreset", "evidently:metric_container:RecsysPreset")

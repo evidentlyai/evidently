@@ -95,3 +95,7 @@ register_type_alias(Metric, "evidently.metrics.data_quality.DatasetCorrelations"
 
 register_type_alias(Metric, "evidently.metrics.data_quality.ColumnCorrelationMatrix", "evidently:metric_v2:ColumnCorrelationMatrix")
 register_type_alias(Metric, "evidently.metrics.data_quality.CorrelationMatrix", "evidently:metric_v2:CorrelationMatrix")
+
+register_type_alias(Metric, "evidently.metrics.recsys.Diversity", "evidently:metric_v2:Diversity")
+register_type_alias(Metric, "evidently.metrics.recsys.Personalization", "evidently:metric_v2:Personalization")
+register_type_alias(Metric, "evidently.metrics.recsys.RecCasesTable", "evidently:metric_v2:RecCasesTable")

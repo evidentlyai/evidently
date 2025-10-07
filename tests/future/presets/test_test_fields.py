@@ -78,6 +78,7 @@ from evidently.presets import ClassificationQualityByLabel
 from evidently.presets import DataDriftPreset
 from evidently.presets import DatasetStats
 from evidently.presets import DataSummaryPreset
+from evidently.presets import RecsysPreset
 from evidently.presets import RegressionDummyQuality
 from evidently.presets import RegressionPreset
 from evidently.presets import RegressionQuality
@@ -215,6 +216,7 @@ preset_types: Dict[Type[MetricContainer], Dict[str, Tuple[MetricTypeOrMetricChec
     TestSummaryInfoPreset: {},
     DatasetCorrelations: {},
     ColumnCorrelations: {},
+    RecsysPreset: {},
 }
 
 

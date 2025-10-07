@@ -20,6 +20,7 @@ from evidently.presets import ClassificationQualityByLabel
 from evidently.presets import DataDriftPreset
 from evidently.presets import DatasetStats
 from evidently.presets import DataSummaryPreset
+from evidently.presets import RecsysPreset
 from evidently.presets import RegressionDummyQuality
 from evidently.presets import RegressionPreset
 from evidently.presets import RegressionQuality
@@ -49,6 +50,7 @@ all_presets: List[MetricContainer] = [
     TestSummaryInfoPreset(column_info=TestSummaryInfo()),
     DatasetCorrelations(),
     ColumnCorrelations(column_name="a"),
+    RecsysPreset(k=1),
 ]
 
 

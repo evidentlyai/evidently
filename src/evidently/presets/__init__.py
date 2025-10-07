@@ -7,6 +7,7 @@ from .dataset_stats import DataSummaryPreset
 from .dataset_stats import TextEvals
 from .dataset_stats import ValueStats
 from .drift import DataDriftPreset
+from .recsys import RecsysPreset
 from .regression import RegressionDummyQuality
 from .regression import RegressionPreset
 from .regression import RegressionQuality
@@ -24,4 +25,5 @@ __all__ = [
     "RegressionQuality",
     "RegressionPreset",
     "DataDriftPreset",
+    "RecsysPreset",
 ]
