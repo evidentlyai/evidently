@@ -286,16 +286,19 @@ class PopularityBiasCalculation(
         # PopularityBiasResult has: current_apr, current_coverage, current_gini
         if self.metric.metric == "coverage":
             current = self.result(legacy_result.current_coverage)
+            current.widget = render
             if legacy_result.reference_coverage is None:
                 return current
             return current, self.result(legacy_result.reference_coverage)
         if self.metric.metric == "gini":
             current = self.result(legacy_result.current_gini)
+            current.widget = render
             if legacy_result.reference_gini is None:
                 return current
             return current, self.result(legacy_result.reference_gini)
         # default to apr
         current = self.result(legacy_result.current_apr)
+        current.widget = render
         if legacy_result.reference_apr is None:
             return current
         return current, self.result(legacy_result.reference_apr)
@@ -526,13 +529,38 @@ def _bias_result(
     else:  # default
         current_distr = legacy_result.current_distr
         reference_distr = legacy_result.reference_distr
-    # Convert Distribution to DataFrame with x and y columns
-    current_df = pd.DataFrame({"x": current_distr.x, "y": current_distr.y})
+
+    # Fix for legacy bug: x (bin edges) and y (counts) have different lengths
+    # We need to use bin centers instead of bin edges
+    if current_distr is not None:
+        if len(current_distr.x) == len(current_distr.y) + 1:
+            # x is bin edges, y is counts - convert to bin centers
+            bin_centers = (current_distr.x[:-1] + current_distr.x[1:]) / 2
+            current_df = pd.DataFrame({"x": bin_centers, "y": current_distr.y})
+        else:
+            # Already correct lengths
+            current_df = pd.DataFrame({"x": current_distr.x, "y": current_distr.y})
+    else:
+        current_df = pd.DataFrame({"x": [], "y": []})
+
     current_value = DataframeValue(display_name=display_name, value=current_df)
     current_value.widget = render
+
     if reference_distr is None:
         return current_value
-    reference_df = pd.DataFrame({"x": reference_distr.x, "y": reference_distr.y})
+
+    # Apply same fix to reference distribution
+    if reference_distr is not None:
+        if len(reference_distr.x) == len(reference_distr.y) + 1:
+            # x is bin edges, y is counts - convert to bin centers
+            ref_bin_centers = (reference_distr.x[:-1] + reference_distr.x[1:]) / 2
+            reference_df = pd.DataFrame({"x": ref_bin_centers, "y": reference_distr.y})
+        else:
+            # Already correct lengths
+            reference_df = pd.DataFrame({"x": reference_distr.x, "y": reference_distr.y})
+    else:
+        reference_df = pd.DataFrame({"x": [], "y": []})
+
     reference_value = DataframeValue(display_name=display_name, value=reference_df)
     reference_value.widget = []
     return current_value, reference_value
