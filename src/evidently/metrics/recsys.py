@@ -535,7 +535,7 @@ def _bias_result(
     if current_distr is not None:
         if len(current_distr.x) == len(current_distr.y) + 1:
             # x is bin edges, y is counts - convert to bin centers
-            bin_centers = (current_distr.x[:-1] + current_distr.x[1:]) / 2
+            bin_centers = (current_distr.x[:-1] + current_distr.x[1:]) / 2  #  type: ignore[operator]
             current_df = pd.DataFrame({"x": bin_centers, "y": current_distr.y})
         else:
             # Already correct lengths
@@ -553,7 +553,7 @@ def _bias_result(
     if reference_distr is not None:
         if len(reference_distr.x) == len(reference_distr.y) + 1:
             # x is bin edges, y is counts - convert to bin centers
-            ref_bin_centers = (reference_distr.x[:-1] + reference_distr.x[1:]) / 2
+            ref_bin_centers = (reference_distr.x[:-1] + reference_distr.x[1:]) / 2  #  type: ignore[operator]
             reference_df = pd.DataFrame({"x": ref_bin_centers, "y": reference_distr.y})
         else:
             # Already correct lengths
