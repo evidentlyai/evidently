@@ -12,7 +12,13 @@ def get_unique_not_nan_values_list_from_series(current_data: pd.Series, referenc
 
 
 def get_binned_data(
-    reference_data: pd.Series, current_data: pd.Series, feature_type: ColumnType, n: int, feel_zeroes: bool = True
+    reference_data: pd.Series,
+    current_data: pd.Series,
+    feature_type: ColumnType,
+    n: int,
+    feel_zeroes: bool = True,
+    fill_method: str = "auto",
+    dynamic_scale: bool = False,
 ):
     """Split variable into n buckets based on reference quantiles
     Args:
@@ -20,6 +26,9 @@ def get_binned_data(
         current_data: current data
         feature_type: feature type
         n: number of quantiles
+        feel_zeroes: whether to fill zero percentages
+        fill_method: method to calculate fill value ('auto', 'min', 'mean')
+        dynamic_scale: whether to use dynamic scaling for fill value
     Returns:
         reference_percents: % of records in each bucket for reference
         current_percents: % of records in each bucket for current
@@ -39,22 +48,28 @@ def get_binned_data(
         current_percents = np.array([current_feature_dict[key] / len(current_data) for key in keys])
 
     if feel_zeroes:
-        np.place(
-            reference_percents,
-            reference_percents == 0,
-            min(reference_percents[reference_percents != 0]) / 10**6
-            if min(reference_percents[reference_percents != 0]) <= 0.0001
-            else 0.0001,
-        )
-        np.place(
-            current_percents,
-            current_percents == 0,
-            min(current_percents[current_percents != 0]) / 10**6
-            if min(current_percents[current_percents != 0]) <= 0.0001
-            else 0.0001,
-        )
+        min_non_zero_ref = np.min(reference_percents[reference_percents != 0])
+        min_non_zero_cur = np.min(current_percents[current_percents != 0])
 
-    return reference_percents, current_percents
+        if fill_method == "auto":
+            fill_value = min(min_non_zero_ref, min_non_zero_cur) / 10
+            fill_value = min(fill_value, min(min_non_zero_ref, min_non_zero_cur) / 2)
+        elif fill_method == "min":
+            fill_value = min(min_non_zero_ref, min_non_zero_cur)
+        elif fill_method == "mean":
+            fill_value = (min_non_zero_ref + min_non_zero_cur) / 2
+        else:
+            raise ValueError("Invalid fill_method. Choose 'auto', 'min', or 'mean'.")
+
+        if dynamic_scale:
+            scale_factor = min(min_non_zero_ref, min_non_zero_cur) / max(min_non_zero_ref, min_non_zero_cur)
+            fill_value *= scale_factor
+
+        np.place(reference_percents, reference_percents == 0, fill_value)
+        np.place(current_percents, current_percents == 0, fill_value)
+
+        reference_percents = reference_percents / np.sum(reference_percents)
+        current_percents = current_percents / np.sum(current_percents)
 
 
 def permutation_test(reference_data, current_data, observed, test_statistic_func, iterations=100):
