@@ -48,7 +48,11 @@ export const Component = () => {
   return (
     <Box py={2}>
       <DashboardViewParamsContext.Provider value={{ OnClickedPointComponent }}>
-        <DrawDashboardPanels PanelComponent={PanelComponent} panels={data.panels} />
+        <DrawDashboardPanels
+          PanelComponent={PanelComponent}
+          panels={data.panels}
+          dashboard={data}
+        />
       </DashboardViewParamsContext.Provider>
     </Box>
   )
