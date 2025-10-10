@@ -8,3 +8,5 @@ register_type_alias(DataCollectionProvider, "evidently.llm.rag.index.ChunksDataC
 register_type_alias(DataCollectionProvider, "evidently.llm.rag.index.FileDataCollectionProvider", "evidently:data_collection_provider:FileDataCollectionProvider")
 register_type_alias(Splitter, "evidently.llm.rag.splitter.LlamaIndexSplitter", "evidently:splitter:LlamaIndexSplitter")
 register_type_alias(Splitter, "evidently.llm.rag.splitter.SimpleSplitter", "evidently:splitter:SimpleSplitter")
+
+register_type_alias(DataCollectionProvider, "evidently.llm.rag.iris_index.IrisDataCollectionProvider", "evidently:data_collection_provider:IrisDataCollectionProvider")
