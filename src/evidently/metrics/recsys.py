@@ -2,6 +2,7 @@ from abc import ABC
 from typing import ClassVar
 from typing import Generic
 from typing import List
+from typing import Literal
 from typing import Optional
 from typing import Type
 from typing import TypeVar
@@ -23,20 +24,30 @@ from evidently.legacy.base_metric import InputData
 from evidently.legacy.metrics import DiversityMetric as LegacyDiversityMetric
 from evidently.legacy.metrics import FBetaTopKMetric as LegacyFBetaTopKMetric
 from evidently.legacy.metrics import HitRateKMetric as LegacyHitRateKMetric
+from evidently.legacy.metrics import ItemBiasMetric as LegacyItemBiasMetric
 from evidently.legacy.metrics import MAPKMetric as LegacyMAPKMetric
 from evidently.legacy.metrics import MRRKMetric as LegacyMRRKMetric
 from evidently.legacy.metrics import NDCGKMetric as LegacyNDCGKMetric
+from evidently.legacy.metrics import NoveltyMetric as LegacyNoveltyMetric
 from evidently.legacy.metrics import PersonalizationMetric as LegacyPersonalizationMetric
+from evidently.legacy.metrics import PopularityBias as LegacyPopularityBias
 from evidently.legacy.metrics import PrecisionTopKMetric as LegacyPrecisionTopKMetric
 from evidently.legacy.metrics import RecallTopKMetric as LegacyRecallTopKMetric
 from evidently.legacy.metrics import RecCasesTable as LegacyRecCasesTable
+from evidently.legacy.metrics import SerendipityMetric as LegacySerendipityMetric
+from evidently.legacy.metrics import UserBiasMetric as LegacyUserBiasMetric
 from evidently.legacy.metrics.recsys.base_top_k import TopKMetric
 from evidently.legacy.metrics.recsys.base_top_k import TopKMetricResult
 from evidently.legacy.metrics.recsys.diversity import DiversityMetricResult
+from evidently.legacy.metrics.recsys.item_bias import ItemBiasMetricResult
+from evidently.legacy.metrics.recsys.novelty import NoveltyMetricResult
 from evidently.legacy.metrics.recsys.personalisation import PersonalizationMetricResult
+from evidently.legacy.metrics.recsys.popularity_bias import PopularityBiasResult
 from evidently.legacy.metrics.recsys.rec_examples import RecCasesTableResults
 from evidently.legacy.metrics.recsys.scores_distribution import ScoreDistribution as ScoreDistributionLegacy
 from evidently.legacy.metrics.recsys.scores_distribution import ScoreDistributionResult
+from evidently.legacy.metrics.recsys.serendipity import SerendipityMetricResult
+from evidently.legacy.metrics.recsys.user_bias import UserBiasMetricResult
 from evidently.legacy.model.widget import BaseWidgetInfo
 from evidently.legacy.utils.data_preprocessing import create_data_definition
 from evidently.metrics._legacy import LegacyMetricCalculation
@@ -247,52 +258,56 @@ class ScoreDistributionCalculation(
         return _gen_ranking_input_data(context, task_name)
 
 
-# class PopularityBiasMetric(SingleValueMetric):
-#     k: int
-#     normalize_arp: bool = False
-#     ranking_name: Literal["arp", "coverage", "gini"] = "arp"
-#
-#     def _default_tests_with_reference(self, context: Context) -> List[BoundTest]:
-#         return [
-#             eq(Reference(relative=0.1)).bind_single(self.get_fingerprint()),
-#         ]
-#
-#
-# class PopularityBiasCalculation(
-#     LegacyMetricCalculation[SingleValue, PopularityBiasMetric, PopularityBiasResult, LegacyPopularityBias],
-#     SingleValueCalculation,
-# ):
-#     def task_name(self) -> Optional[str]:
-#         return self.metric.ranking_name
-#
-#     def legacy_metric(self) -> LegacyPopularityBias:
-#         return LegacyPopularityBias(k=self.metric.k, normalize_arp=self.metric.normalize_arp)
-#
-#     def calculate_value(
-#         self, context: "Context", legacy_result: PopularityBiasResult, render: List[BaseWidgetInfo]
-#     ) -> TMetricResult:
-#         # PopularityBiasResult has: current_apr, current_coverage, current_gini
-#         if self.metric.ranking_name == "coverage":
-#             current = self.result(legacy_result.current_coverage)
-#             if legacy_result.reference_coverage is None:
-#                 return current
-#             return current, self.result(legacy_result.reference_coverage)
-#         if self.metric.ranking_name == "gini":
-#             current = self.result(legacy_result.current_gini)
-#             if legacy_result.reference_gini is None:
-#                 return current
-#             return current, self.result(legacy_result.reference_gini)
-#         # default to apr
-#         current = self.result(legacy_result.current_apr)
-#         if legacy_result.reference_apr is None:
-#             return current
-#         return current, self.result(legacy_result.reference_apr)
-#
-#     def display_name(self) -> str:
-#         return f"Popularity Bias ({self.metric.ranking_name})"
-#
-#     def _gen_input_data(self, context: "Context", task_name: Optional[str]) -> InputData:
-#         return _gen_ranking_input_data(context, task_name)
+class PopularityBiasMetric(SingleValueMetric):
+    k: int
+    normalize_arp: bool = False
+    ranking_name: str = "default"
+    metric: Literal["arp", "coverage", "gini"] = "arp"
+
+    def _default_tests_with_reference(self, context: Context) -> List[BoundTest]:
+        return [
+            eq(Reference(relative=0.1)).bind_single(self.get_fingerprint()),
+        ]
+
+
+class PopularityBiasCalculation(
+    LegacyMetricCalculation[SingleValue, PopularityBiasMetric, PopularityBiasResult, LegacyPopularityBias],
+    SingleValueCalculation,
+):
+    def task_name(self) -> Optional[str]:
+        return self.metric.ranking_name
+
+    def legacy_metric(self) -> LegacyPopularityBias:
+        return LegacyPopularityBias(k=self.metric.k, normalize_arp=self.metric.normalize_arp)
+
+    def calculate_value(
+        self, context: "Context", legacy_result: PopularityBiasResult, render: List[BaseWidgetInfo]
+    ) -> TMetricResult:
+        # PopularityBiasResult has: current_apr, current_coverage, current_gini
+        if self.metric.metric == "coverage":
+            current = self.result(legacy_result.current_coverage)
+            current.widget = render
+            if legacy_result.reference_coverage is None:
+                return current
+            return current, self.result(legacy_result.reference_coverage)
+        if self.metric.metric == "gini":
+            current = self.result(legacy_result.current_gini)
+            current.widget = render
+            if legacy_result.reference_gini is None:
+                return current
+            return current, self.result(legacy_result.reference_gini)
+        # default to apr
+        current = self.result(legacy_result.current_apr)
+        current.widget = render
+        if legacy_result.reference_apr is None:
+            return current
+        return current, self.result(legacy_result.reference_apr)
+
+    def display_name(self) -> str:
+        return f"Popularity Bias ({self.metric.metric})"
+
+    def _gen_input_data(self, context: "Context", task_name: Optional[str]) -> InputData:
+        return _gen_ranking_input_data(context, task_name)
 
 
 class Personalization(SingleValueMetric):
@@ -368,163 +383,187 @@ class DiversityCalculation(
         return _gen_ranking_input_data(context, task_name)
 
 
-#
-# class Serendipity(SingleValueMetric):
-#     k: int
-#     item_features: List[str]
-#     ranking_name: str = "default"
-#
-#     def _default_tests_with_reference(self, context: Context) -> List[BoundTest]:
-#         return [
-#             eq(Reference(relative=0.1)).bind_single(self.get_fingerprint()),
-#         ]
-#
-#
-# class SerendipityCalculation(
-#     LegacyMetricCalculation[SingleValue, Serendipity, SerendipityMetricResult, LegacySerendipityMetric],
-#     SingleValueCalculation,
-# ):
-#     def task_name(self) -> Optional[str]:
-#         return self.metric.ranking_name
-#
-#     def legacy_metric(self) -> LegacySerendipityMetric:
-#         return LegacySerendipityMetric(k=self.metric.k, item_features=self.metric.item_features)
-#
-#     def calculate_value(
-#         self, context: "Context", legacy_result: SerendipityMetricResult, render: List[BaseWidgetInfo]
-#     ) -> TMetricResult:
-#         current = self.result(legacy_result.current_value)
-#         current.widget = render
-#         if legacy_result.reference_value is None:
-#             return current
-#         return current, self.result(legacy_result.reference_value)
-#
-#     def display_name(self) -> str:
-#         return "Serendipity"
-#
-#     def _gen_input_data(self, context: "Context", task_name: Optional[str]) -> InputData:
-#         return _gen_ranking_input_data(context, task_name)
+class Serendipity(SingleValueMetric):
+    k: int
+    item_features: List[str]
+    ranking_name: str = "default"
 
-#
-# class Novelty(SingleValueMetric):
-#     k: int
-#     ranking_name: str = "default"
-#
-#     def _default_tests_with_reference(self, context: Context) -> List[BoundTest]:
-#         return [
-#             eq(Reference(relative=0.1)).bind_single(self.get_fingerprint()),
-#         ]
-#
-#
-# class NoveltyCalculation(
-#     LegacyMetricCalculation[SingleValue, Novelty, NoveltyMetricResult, LegacyNoveltyMetric],
-#     SingleValueCalculation,
-# ):
-#     def task_name(self) -> Optional[str]:
-#         return self.metric.ranking_name
-#
-#     def legacy_metric(self) -> LegacyNoveltyMetric:
-#         return LegacyNoveltyMetric(k=self.metric.k)
-#
-#     def calculate_value(
-#         self, context: "Context", legacy_result: NoveltyMetricResult, render: List[BaseWidgetInfo]
-#     ) -> TMetricResult:
-#         current = self.result(legacy_result.current_value)
-#         current.widget = render
-#         if legacy_result.reference_value is None:
-#             return current
-#         return current, self.result(legacy_result.reference_value)
-#
-#     def display_name(self) -> str:
-#         return "Novelty"
-#
-#     def _gen_input_data(self, context: "Context", task_name: Optional[str]) -> InputData:
-#         return _gen_ranking_input_data(context, task_name)
+    def _default_tests_with_reference(self, context: Context) -> List[BoundTest]:
+        return [
+            eq(Reference(relative=0.1)).bind_single(self.get_fingerprint()),
+        ]
 
 
-# class ItemBias(Metric):
-#     k: int
-#     column_name: str
-#     distribution: Literal["default", "train"] = "default"
-#     ranking_name: str = "default"
-#
-#     def get_bound_tests(self, context: "Context") -> List[BoundTest]:
-#         return []
-#
-#
-# class ItemBiasCalculation(
-#     LegacyMetricCalculation[DataframeValue, ItemBias, ItemBiasMetricResult, LegacyItemBiasMetric],
-# ):
-#     def task_name(self) -> Optional[str]:
-#         return self.metric.ranking_name
-#
-#     def legacy_metric(self) -> LegacyItemBiasMetric:
-#         return LegacyItemBiasMetric(k=self.metric.k, column_name=self.metric.column_name)
-#
-#     def calculate_value(
-#         self, context: "Context", legacy_result: ItemBiasMetricResult, render: List[BaseWidgetInfo]
-#     ) -> TMetricResult:
-#         return _bias_result(self.metric, legacy_result, render, self.display_name())
-#
-#     def display_name(self) -> str:
-#         return f"Item Bias ({self.metric.column_name}, {self.metric.distribution})"
-#
-#     def _gen_input_data(self, context: "Context", task_name: Optional[str]) -> InputData:
-#         return _gen_ranking_input_data(context, task_name)
+class SerendipityCalculation(
+    LegacyMetricCalculation[SingleValue, Serendipity, SerendipityMetricResult, LegacySerendipityMetric],
+    SingleValueCalculation,
+):
+    def task_name(self) -> Optional[str]:
+        return self.metric.ranking_name
+
+    def legacy_metric(self) -> LegacySerendipityMetric:
+        return LegacySerendipityMetric(k=self.metric.k, item_features=self.metric.item_features)
+
+    def calculate_value(
+        self, context: "Context", legacy_result: SerendipityMetricResult, render: List[BaseWidgetInfo]
+    ) -> TMetricResult:
+        current = self.result(legacy_result.current_value)
+        current.widget = render
+        if legacy_result.reference_value is None:
+            return current
+        return current, self.result(legacy_result.reference_value)
+
+    def display_name(self) -> str:
+        return "Serendipity"
+
+    def _gen_input_data(self, context: "Context", task_name: Optional[str]) -> InputData:
+        return _gen_ranking_input_data(context, task_name)
 
 
-# class UserBias(Metric):
-#     column_name: str
-#     distribution: Literal["default", "train"] = "default"
-#     ranking_name: str = "default"
-#
-#     def get_bound_tests(self, context: "Context") -> List[BoundTest]:
-#         return []
-#
-#
-# class UserBiasCalculation(
-#     LegacyMetricCalculation[DataframeValue, UserBias, UserBiasMetricResult, LegacyUserBiasMetric],
-# ):
-#     def task_name(self) -> Optional[str]:
-#         return self.metric.ranking_name
-#
-#     def legacy_metric(self) -> LegacyUserBiasMetric:
-#         return LegacyUserBiasMetric(column_name=self.metric.column_name)
-#
-#     def calculate_value(
-#         self, context: "Context", legacy_result: UserBiasMetricResult, render: List[BaseWidgetInfo]
-#     ) -> TMetricResult:
-#         return _bias_result(self.metric, legacy_result, render, self.display_name())
-#
-#     def display_name(self) -> str:
-#         return f"User Bias ({self.metric.column_name}, {self.metric.distribution})"
-#
-#     def _gen_input_data(self, context: "Context", task_name: Optional[str]) -> InputData:
-#         return _gen_ranking_input_data(context, task_name)
-#
-#
-# def _bias_result(
-#     metric: Union[ItemBias, UserBias],
-#     legacy_result: Union[ItemBiasMetricResult, UserBiasMetricResult],
-#     render: List[BaseWidgetInfo],
-#     display_name: str,
-# ) -> TMetricResult:
-#     if metric.distribution == "train":
-#         current_distr = legacy_result.current_train_distr
-#         reference_distr = legacy_result.reference_train_distr
-#     else:  # default
-#         current_distr = legacy_result.current_distr
-#         reference_distr = legacy_result.reference_distr
-#     # Convert Distribution to DataFrame with x and y columns
-#     current_df = pd.DataFrame({"x": current_distr.x, "y": current_distr.y})
-#     current_value = DataframeValue(display_name=display_name, value=current_df)
-#     current_value.widget = render
-#     if reference_distr is None:
-#         return current_value
-#     reference_df = pd.DataFrame({"x": reference_distr.x, "y": reference_distr.y})
-#     reference_value = DataframeValue(display_name=display_name, value=reference_df)
-#     reference_value.widget = []
-#     return current_value, reference_value
+class Novelty(SingleValueMetric):
+    k: int
+    ranking_name: str = "default"
+
+    def _default_tests_with_reference(self, context: Context) -> List[BoundTest]:
+        return [
+            eq(Reference(relative=0.1)).bind_single(self.get_fingerprint()),
+        ]
+
+
+class NoveltyCalculation(
+    LegacyMetricCalculation[SingleValue, Novelty, NoveltyMetricResult, LegacyNoveltyMetric],
+    SingleValueCalculation,
+):
+    def task_name(self) -> Optional[str]:
+        return self.metric.ranking_name
+
+    def legacy_metric(self) -> LegacyNoveltyMetric:
+        return LegacyNoveltyMetric(k=self.metric.k)
+
+    def calculate_value(
+        self, context: "Context", legacy_result: NoveltyMetricResult, render: List[BaseWidgetInfo]
+    ) -> TMetricResult:
+        current = self.result(legacy_result.current_value)
+        current.widget = render
+        if legacy_result.reference_value is None:
+            return current
+        return current, self.result(legacy_result.reference_value)
+
+    def display_name(self) -> str:
+        return "Novelty"
+
+    def _gen_input_data(self, context: "Context", task_name: Optional[str]) -> InputData:
+        return _gen_ranking_input_data(context, task_name)
+
+
+class ItemBias(Metric):
+    k: int
+    column_name: str
+    distribution: Literal["default", "train"] = "default"
+    ranking_name: str = "default"
+
+    def get_bound_tests(self, context: "Context") -> List[BoundTest]:
+        return []
+
+
+class ItemBiasCalculation(
+    LegacyMetricCalculation[DataframeValue, ItemBias, ItemBiasMetricResult, LegacyItemBiasMetric],
+):
+    def task_name(self) -> Optional[str]:
+        return self.metric.ranking_name
+
+    def legacy_metric(self) -> LegacyItemBiasMetric:
+        return LegacyItemBiasMetric(k=self.metric.k, column_name=self.metric.column_name)
+
+    def calculate_value(
+        self, context: "Context", legacy_result: ItemBiasMetricResult, render: List[BaseWidgetInfo]
+    ) -> TMetricResult:
+        return _bias_result(self.metric, legacy_result, render, self.display_name())
+
+    def display_name(self) -> str:
+        return f"Item Bias ({self.metric.column_name}, {self.metric.distribution})"
+
+    def _gen_input_data(self, context: "Context", task_name: Optional[str]) -> InputData:
+        return _gen_ranking_input_data(context, task_name)
+
+
+class UserBias(Metric):
+    column_name: str
+    distribution: Literal["default", "train"] = "default"
+    ranking_name: str = "default"
+
+    def get_bound_tests(self, context: "Context") -> List[BoundTest]:
+        return []
+
+
+class UserBiasCalculation(
+    LegacyMetricCalculation[DataframeValue, UserBias, UserBiasMetricResult, LegacyUserBiasMetric],
+):
+    def task_name(self) -> Optional[str]:
+        return self.metric.ranking_name
+
+    def legacy_metric(self) -> LegacyUserBiasMetric:
+        return LegacyUserBiasMetric(column_name=self.metric.column_name)
+
+    def calculate_value(
+        self, context: "Context", legacy_result: UserBiasMetricResult, render: List[BaseWidgetInfo]
+    ) -> TMetricResult:
+        return _bias_result(self.metric, legacy_result, render, self.display_name())
+
+    def display_name(self) -> str:
+        return f"User Bias ({self.metric.column_name}, {self.metric.distribution})"
+
+    def _gen_input_data(self, context: "Context", task_name: Optional[str]) -> InputData:
+        return _gen_ranking_input_data(context, task_name)
+
+
+def _bias_result(
+    metric: Union[ItemBias, UserBias],
+    legacy_result: Union[ItemBiasMetricResult, UserBiasMetricResult],
+    render: List[BaseWidgetInfo],
+    display_name: str,
+) -> TMetricResult:
+    if metric.distribution == "train":
+        current_distr = legacy_result.current_train_distr
+        reference_distr = legacy_result.reference_train_distr
+    else:  # default
+        current_distr = legacy_result.current_distr
+        reference_distr = legacy_result.reference_distr
+
+    # Fix for legacy bug: x (bin edges) and y (counts) have different lengths
+    # We need to use bin centers instead of bin edges
+    if current_distr is not None:
+        if len(current_distr.x) == len(current_distr.y) + 1:
+            # x is bin edges, y is counts - convert to bin centers
+            bin_centers = (current_distr.x[:-1] + current_distr.x[1:]) / 2  #  type: ignore[operator]
+            current_df = pd.DataFrame({"x": bin_centers, "y": current_distr.y})
+        else:
+            # Already correct lengths
+            current_df = pd.DataFrame({"x": current_distr.x, "y": current_distr.y})
+    else:
+        current_df = pd.DataFrame({"x": [], "y": []})
+
+    current_value = DataframeValue(display_name=display_name, value=current_df)
+    current_value.widget = render
+
+    if reference_distr is None:
+        return current_value
+
+    # Apply same fix to reference distribution
+    if reference_distr is not None:
+        if len(reference_distr.x) == len(reference_distr.y) + 1:
+            # x is bin edges, y is counts - convert to bin centers
+            ref_bin_centers = (reference_distr.x[:-1] + reference_distr.x[1:]) / 2  #  type: ignore[operator]
+            reference_df = pd.DataFrame({"x": ref_bin_centers, "y": reference_distr.y})
+        else:
+            # Already correct lengths
+            reference_df = pd.DataFrame({"x": reference_distr.x, "y": reference_distr.y})
+    else:
+        reference_df = pd.DataFrame({"x": [], "y": []})
+
+    reference_value = DataframeValue(display_name=display_name, value=reference_df)
+    reference_value.widget = []
+    return current_value, reference_value
 
 
 class RecCasesTable(Metric):

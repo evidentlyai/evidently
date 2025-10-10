@@ -167,7 +167,7 @@ def test_all_metric_tested():
 
     metrics_tests_set = {
         (metric.__class__, test_field, test_type, status)
-        for (_, metric, status) in all_metrics_test
+        for (_, metric, status, _) in all_metrics_test
         for test_field in _get_tested_test_fields(metric)
         for test_type in _get_tested_test_types(metric, test_field)
     }
@@ -221,7 +221,7 @@ def _is_test_field(field: ModelField) -> bool:
 
 
 def _make_id(tp):
-    _, metric, results = tp
+    _, metric, results, _ = tp
     if isinstance(results, TestStatus):
         results = [results]
     tested_fields = _get_tested_test_fields(metric)
@@ -310,10 +310,14 @@ if FILTER_METRICS:
     all_metrics_test = [t for t in all_metrics_test if t[1].__class__ in FILTER_METRICS]
 
 
-@pytest.mark.parametrize("dataset,metric,expected_results", all_metrics_test, ids=list(map(_make_id, all_metrics_test)))
-def test_all_test_fields(dataset: Dataset, metric: Metric, expected_results: Union[TestStatus, List[TestStatus]]):
+@pytest.mark.parametrize(
+    "dataset,metric,expected_results,additional_data", all_metrics_test, ids=list(map(_make_id, all_metrics_test))
+)
+def test_all_test_fields(
+    dataset: Dataset, metric: Metric, expected_results: Union[TestStatus, List[TestStatus]], additional_data
+):
     report = Report([metric])
-    run = report.run(dataset, dataset)
+    run = report.run(dataset, dataset, additional_data=additional_data)
     test_results = run._context._metrics[metric.get_fingerprint()].tests
     statuses = [t.status for t in test_results]
     if isinstance(expected_results, TestStatus):

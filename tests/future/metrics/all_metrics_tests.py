@@ -1,5 +1,6 @@
 # ruff: noqa: E501
 # fmt: off
+from typing import Dict
 from typing import List
 from typing import Tuple
 from typing import Union
@@ -74,8 +75,11 @@ from evidently.metrics.column_statistics import StdValue
 from evidently.metrics.column_statistics import UniqueValueCount
 from evidently.metrics.column_statistics import ValueDrift
 from evidently.metrics.recsys import Diversity
+from evidently.metrics.recsys import Novelty
 from evidently.metrics.recsys import Personalization
+from evidently.metrics.recsys import PopularityBiasMetric
 from evidently.metrics.recsys import ScoreDistribution
+from evidently.metrics.recsys import Serendipity
 from evidently.tests import eq
 from evidently.tests import gt
 from evidently.tests import gte
@@ -98,7 +102,17 @@ classification_proba_dataset = Dataset.from_pandas(
 )
 recsys_df = pd.DataFrame({"user_id": [0, 1, 2], "item_id": [1, 1, 1], "target": [1, 0, 1], "prediction": [1, 0, 0], "i1": [1,2,3]})
 recsys_dataset = Dataset.from_pandas(recsys_df, data_definition=DataDefinition(classification=[BinaryClassification()], ranking=[Recsys(user_id="user_id", item_id="item_id", target="target", prediction="prediction")]))
-all_metrics_test: List[Tuple[Dataset, Metric, Union[TestStatus, List[TestStatus]]]] = [
+interactions_df = pd.DataFrame({"user_id": [0, 1, 2], "item_id": [1, 1, 1], "i1": [1,2,3]})
+interactions_dataset = Dataset.from_pandas(interactions_df, DataDefinition(classification=[BinaryClassification()], ranking=[
+    Recsys(user_id="user_id", item_id="item_id", target="target", prediction="prediction")]))
+recsys_additional_data = {
+    "current_train_data": interactions_dataset,
+"reference_train_data": interactions_dataset
+}
+
+SimpleCase = Tuple[Dataset, Metric, Union[TestStatus, List[TestStatus]]]
+AdditionalDataCase = Tuple[Dataset, Metric, Union[TestStatus, List[TestStatus]], Dict[str, Dataset]]
+all_metrics_test: List[Union[SimpleCase, AdditionalDataCase]] = [
     (regression_dataset, AbsMaxError(tests=[eq(0)]), TestStatus.FAIL),
     (regression_dataset, AbsMaxError(tests=[eq(1)]), TestStatus.SUCCESS),
     (regression_dataset, AbsMaxError(tests=[gte(10)]), TestStatus.FAIL),
@@ -1267,22 +1281,22 @@ all_metrics_test: List[Tuple[Dataset, Metric, Union[TestStatus, List[TestStatus]
     (recsys_dataset, Diversity(k=1, item_features=["i1"], tests=[not_eq(555)]), TestStatus.SUCCESS),
     (recsys_dataset, Diversity(k=1, item_features=["i1"], tests=[not_in([0])]), TestStatus.FAIL),
     (recsys_dataset, Diversity(k=1, item_features=["i1"], tests=[not_in([555])]), TestStatus.SUCCESS),
-    # (recsys_dataset, Novelty(k=1, tests=[eq(0)]), TestStatus.FAIL),
-    # (recsys_dataset, Novelty(k=1, tests=[eq(0)]), TestStatus.SUCCESS),
-    # (recsys_dataset, Novelty(k=1, tests=[gte(0)]), TestStatus.FAIL),
-    # (recsys_dataset, Novelty(k=1, tests=[gte(0)]), TestStatus.SUCCESS),
-    # (recsys_dataset, Novelty(k=1, tests=[gt(0)]), TestStatus.FAIL),
-    # (recsys_dataset, Novelty(k=1, tests=[gt(0)]), TestStatus.SUCCESS),
-    # (recsys_dataset, Novelty(k=1, tests=[is_in([0])]), TestStatus.FAIL),
-    # (recsys_dataset, Novelty(k=1, tests=[is_in([0])]), TestStatus.SUCCESS),
-    # (recsys_dataset, Novelty(k=1, tests=[lte(0)]), TestStatus.FAIL),
-    # (recsys_dataset, Novelty(k=1, tests=[lte(0)]), TestStatus.SUCCESS),
-    # (recsys_dataset, Novelty(k=1, tests=[lt(0)]), TestStatus.FAIL),
-    # (recsys_dataset, Novelty(k=1, tests=[lt(0)]), TestStatus.SUCCESS),
-    # (recsys_dataset, Novelty(k=1, tests=[not_eq(0)]), TestStatus.FAIL),
-    # (recsys_dataset, Novelty(k=1, tests=[not_eq(0)]), TestStatus.SUCCESS),
-    # (recsys_dataset, Novelty(k=1, tests=[not_in([0])]), TestStatus.FAIL),
-    # (recsys_dataset, Novelty(k=1, tests=[not_in([0])]), TestStatus.SUCCESS),
+    (recsys_dataset, Novelty(k=1, tests=[eq(555)]), TestStatus.FAIL, recsys_additional_data),
+    (recsys_dataset, Novelty(k=1, tests=[eq(0)]), TestStatus.SUCCESS, recsys_additional_data),
+    (recsys_dataset, Novelty(k=1, tests=[gte(555)]), TestStatus.FAIL, recsys_additional_data),
+    (recsys_dataset, Novelty(k=1, tests=[gte(0)]), TestStatus.SUCCESS, recsys_additional_data),
+    (recsys_dataset, Novelty(k=1, tests=[gt(0)]), TestStatus.FAIL, recsys_additional_data),
+    (recsys_dataset, Novelty(k=1, tests=[gt(-555)]), TestStatus.SUCCESS, recsys_additional_data),
+    (recsys_dataset, Novelty(k=1, tests=[is_in([555])]), TestStatus.FAIL, recsys_additional_data),
+    (recsys_dataset, Novelty(k=1, tests=[is_in([0])]), TestStatus.SUCCESS, recsys_additional_data),
+    (recsys_dataset, Novelty(k=1, tests=[lte(-555)]), TestStatus.FAIL, recsys_additional_data),
+    (recsys_dataset, Novelty(k=1, tests=[lte(0)]), TestStatus.SUCCESS, recsys_additional_data),
+    (recsys_dataset, Novelty(k=1, tests=[lt(0)]), TestStatus.FAIL, recsys_additional_data),
+    (recsys_dataset, Novelty(k=1, tests=[lt(555)]), TestStatus.SUCCESS, recsys_additional_data),
+    (recsys_dataset, Novelty(k=1, tests=[not_eq(0)]), TestStatus.FAIL, recsys_additional_data),
+    (recsys_dataset, Novelty(k=1, tests=[not_eq(555)]), TestStatus.SUCCESS, recsys_additional_data),
+    (recsys_dataset, Novelty(k=1, tests=[not_in([0])]), TestStatus.FAIL, recsys_additional_data),
+    (recsys_dataset, Novelty(k=1, tests=[not_in([555])]), TestStatus.SUCCESS, recsys_additional_data),
     (recsys_dataset, Personalization(k=1, tests=[eq(555)]), TestStatus.FAIL),
     (recsys_dataset, Personalization(k=1, tests=[eq(0)]), TestStatus.SUCCESS),
     (recsys_dataset, Personalization(k=1, tests=[gte(555)]), TestStatus.FAIL),
@@ -1299,36 +1313,45 @@ all_metrics_test: List[Tuple[Dataset, Metric, Union[TestStatus, List[TestStatus]
     (recsys_dataset, Personalization(k=1, tests=[not_eq(555)]), TestStatus.SUCCESS),
     (recsys_dataset, Personalization(k=1, tests=[not_in([0])]), TestStatus.FAIL),
     (recsys_dataset, Personalization(k=1, tests=[not_in([555])]), TestStatus.SUCCESS),
-    # (recsys_dataset, PopularityBiasMetric(k=1, tests=[eq(0)]), TestStatus.FAIL),
-    # (recsys_dataset, PopularityBiasMetric(k=1, tests=[eq(0)]), TestStatus.SUCCESS),
-    # (recsys_dataset, PopularityBiasMetric(k=1, tests=[gte(0)]), TestStatus.FAIL),
-    # (recsys_dataset, PopularityBiasMetric(k=1, tests=[gte(0)]), TestStatus.SUCCESS),
-    # (recsys_dataset, PopularityBiasMetric(k=1, tests=[gt(0)]), TestStatus.FAIL),
-    # (recsys_dataset, PopularityBiasMetric(k=1, tests=[gt(0)]), TestStatus.SUCCESS),
-    # (recsys_dataset, PopularityBiasMetric(k=1, tests=[is_in([0])]), TestStatus.FAIL),
-    # (recsys_dataset, PopularityBiasMetric(k=1, tests=[is_in([0])]), TestStatus.SUCCESS),
-    # (recsys_dataset, PopularityBiasMetric(k=1, tests=[lte(0)]), TestStatus.FAIL),
-    # (recsys_dataset, PopularityBiasMetric(k=1, tests=[lte(0)]), TestStatus.SUCCESS),
-    # (recsys_dataset, PopularityBiasMetric(k=1, tests=[lt(0)]), TestStatus.FAIL),
-    # (recsys_dataset, PopularityBiasMetric(k=1, tests=[lt(0)]), TestStatus.SUCCESS),
-    # (recsys_dataset, PopularityBiasMetric(k=1, tests=[not_eq(0)]), TestStatus.FAIL),
-    # (recsys_dataset, PopularityBiasMetric(k=1, tests=[not_eq(0)]), TestStatus.SUCCESS),
-    # (recsys_dataset, PopularityBiasMetric(k=1, tests=[not_in([0])]), TestStatus.FAIL),
-    # (recsys_dataset, PopularityBiasMetric(k=1, tests=[not_in([0])]), TestStatus.SUCCESS),
-    # (recsys_dataset, Serendipity(k=1, item_features=["i1"], tests=[eq(0)]), TestStatus.FAIL),
-    # (recsys_dataset, Serendipity(k=1, item_features=["i1"], tests=[eq(0)]), TestStatus.SUCCESS),
-    # (recsys_dataset, Serendipity(k=1, item_features=["i1"], tests=[gte(0)]), TestStatus.FAIL),
-    # (recsys_dataset, Serendipity(k=1, item_features=["i1"], tests=[gte(0)]), TestStatus.SUCCESS),
-    # (recsys_dataset, Serendipity(k=1, item_features=["i1"], tests=[gt(0)]), TestStatus.FAIL),
-    # (recsys_dataset, Serendipity(k=1, item_features=["i1"], tests=[gt(0)]), TestStatus.SUCCESS),
-    # (recsys_dataset, Serendipity(k=1, item_features=["i1"], tests=[is_in([0])]), TestStatus.FAIL),
-    # (recsys_dataset, Serendipity(k=1, item_features=["i1"], tests=[is_in([0])]), TestStatus.SUCCESS),
-    # (recsys_dataset, Serendipity(k=1, item_features=["i1"], tests=[lte(0)]), TestStatus.FAIL),
-    # (recsys_dataset, Serendipity(k=1, item_features=["i1"], tests=[lte(0)]), TestStatus.SUCCESS),
-    # (recsys_dataset, Serendipity(k=1, item_features=["i1"], tests=[lt(0)]), TestStatus.FAIL),
-    # (recsys_dataset, Serendipity(k=1, item_features=["i1"], tests=[lt(0)]), TestStatus.SUCCESS),
-    # (recsys_dataset, Serendipity(k=1, item_features=["i1"], tests=[not_eq(0)]), TestStatus.FAIL),
-    # (recsys_dataset, Serendipity(k=1, item_features=["i1"], tests=[not_eq(0)]), TestStatus.SUCCESS),
-    # (recsys_dataset, Serendipity(k=1, item_features=["i1"], tests=[not_in([0])]), TestStatus.FAIL),
-    # (recsys_dataset, Serendipity(k=1, item_features=["i1"], tests=[not_in([0])]), TestStatus.SUCCESS),
+    (recsys_dataset, PopularityBiasMetric(k=1, tests=[eq(0)]), TestStatus.FAIL, recsys_additional_data),
+    (recsys_dataset, PopularityBiasMetric(k=1, tests=[eq(ApproxValue(3.000, absolute=0.01))]), TestStatus.SUCCESS, recsys_additional_data),
+    (recsys_dataset, PopularityBiasMetric(k=1, tests=[gte(555)]), TestStatus.FAIL, recsys_additional_data),
+    (recsys_dataset, PopularityBiasMetric(k=1, tests=[gte(0)]), TestStatus.SUCCESS, recsys_additional_data),
+    (recsys_dataset, PopularityBiasMetric(k=1, tests=[gt(555)]), TestStatus.FAIL, recsys_additional_data),
+    (recsys_dataset, PopularityBiasMetric(k=1, tests=[gt(0)]), TestStatus.SUCCESS, recsys_additional_data),
+    (recsys_dataset, PopularityBiasMetric(k=1, tests=[is_in([0])]), TestStatus.FAIL, recsys_additional_data),
+    (recsys_dataset, PopularityBiasMetric(k=1, tests=[is_in([3.0])]), TestStatus.SUCCESS, recsys_additional_data),
+    (recsys_dataset, PopularityBiasMetric(k=1, tests=[lte(0)]), TestStatus.FAIL, recsys_additional_data),
+    (recsys_dataset, PopularityBiasMetric(k=1, tests=[lte(555)]), TestStatus.SUCCESS, recsys_additional_data),
+    (recsys_dataset, PopularityBiasMetric(k=1, tests=[lt(0)]), TestStatus.FAIL, recsys_additional_data),
+    (recsys_dataset, PopularityBiasMetric(k=1, tests=[lt(555)]), TestStatus.SUCCESS, recsys_additional_data),
+    (recsys_dataset, PopularityBiasMetric(k=1, tests=[not_eq(3.0)]), TestStatus.FAIL, recsys_additional_data),
+    (recsys_dataset, PopularityBiasMetric(k=1, tests=[not_eq(0)]), TestStatus.SUCCESS, recsys_additional_data),
+    (recsys_dataset, PopularityBiasMetric(k=1, tests=[not_in([3.0])]), TestStatus.FAIL, recsys_additional_data),
+    (recsys_dataset, PopularityBiasMetric(k=1, tests=[not_in([0])]), TestStatus.SUCCESS, recsys_additional_data),
+    (recsys_dataset, Serendipity(k=1, item_features=["i1"], tests=[eq(555)]), TestStatus.FAIL, recsys_additional_data),
+    (recsys_dataset, Serendipity(k=1, item_features=["i1"], tests=[eq(0)]), TestStatus.SUCCESS, recsys_additional_data),
+    (recsys_dataset, Serendipity(k=1, item_features=["i1"], tests=[gte(555)]), TestStatus.FAIL, recsys_additional_data),
+    (recsys_dataset, Serendipity(k=1, item_features=["i1"], tests=[gte(0)]), TestStatus.SUCCESS, recsys_additional_data),
+    (recsys_dataset, Serendipity(k=1, item_features=["i1"], tests=[gt(0)]), TestStatus.FAIL, recsys_additional_data),
+    (recsys_dataset, Serendipity(k=1, item_features=["i1"], tests=[gt(-555)]), TestStatus.SUCCESS, recsys_additional_data),
+    (recsys_dataset, Serendipity(k=1, item_features=["i1"], tests=[is_in([555])]), TestStatus.FAIL, recsys_additional_data),
+    (recsys_dataset, Serendipity(k=1, item_features=["i1"], tests=[is_in([0])]), TestStatus.SUCCESS, recsys_additional_data),
+    (recsys_dataset, Serendipity(k=1, item_features=["i1"], tests=[lte(-555)]), TestStatus.FAIL, recsys_additional_data),
+    (recsys_dataset, Serendipity(k=1, item_features=["i1"], tests=[lte(0)]), TestStatus.SUCCESS, recsys_additional_data),
+    (recsys_dataset, Serendipity(k=1, item_features=["i1"], tests=[lt(0)]), TestStatus.FAIL, recsys_additional_data),
+    (recsys_dataset, Serendipity(k=1, item_features=["i1"], tests=[lt(555)]), TestStatus.SUCCESS, recsys_additional_data),
+    (recsys_dataset, Serendipity(k=1, item_features=["i1"], tests=[not_eq(0)]), TestStatus.FAIL, recsys_additional_data),
+    (recsys_dataset, Serendipity(k=1, item_features=["i1"], tests=[not_eq(555)]), TestStatus.SUCCESS, recsys_additional_data),
+    (recsys_dataset, Serendipity(k=1, item_features=["i1"], tests=[not_in([0])]), TestStatus.FAIL, recsys_additional_data),
+    (recsys_dataset, Serendipity(k=1, item_features=["i1"], tests=[not_in([555])]), TestStatus.SUCCESS, recsys_additional_data),
 ]
+
+# unify tuple shape
+unified = []
+for case in all_metrics_test:
+    if len(case) == 4:
+        unified.append(case)
+        continue
+    unified.append(case + (None,))
+all_metrics_test = unified

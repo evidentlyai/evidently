@@ -99,3 +99,9 @@ register_type_alias(Metric, "evidently.metrics.data_quality.CorrelationMatrix", 
 register_type_alias(Metric, "evidently.metrics.recsys.Diversity", "evidently:metric_v2:Diversity")
 register_type_alias(Metric, "evidently.metrics.recsys.Personalization", "evidently:metric_v2:Personalization")
 register_type_alias(Metric, "evidently.metrics.recsys.RecCasesTable", "evidently:metric_v2:RecCasesTable")
+
+register_type_alias(Metric, "evidently.metrics.recsys.ItemBias", "evidently:metric_v2:ItemBias")
+register_type_alias(Metric, "evidently.metrics.recsys.Novelty", "evidently:metric_v2:Novelty")
+register_type_alias(Metric, "evidently.metrics.recsys.PopularityBiasMetric", "evidently:metric_v2:PopularityBiasMetric")
+register_type_alias(Metric, "evidently.metrics.recsys.Serendipity", "evidently:metric_v2:Serendipity")
+register_type_alias(Metric, "evidently.metrics.recsys.UserBias", "evidently:metric_v2:UserBias")
