@@ -325,7 +325,7 @@ class WorkspaceBase(ABC):
             run.set_name(name)
         snapshot_id = self._add_run(project_id, run)
         current_dataset_name = run.get_name() or f"run-current-{snapshot_id}"
-        reference_dataset_name = f"{run.get_name()}: reference" or f"run-reference-{snapshot_id}"
+        reference_dataset_name = f"{run.get_name()}: reference" if run.get_name() else f"run-reference-{snapshot_id}"
         if include_data:
             current, reference = run.context._input_data
             self.add_dataset(
