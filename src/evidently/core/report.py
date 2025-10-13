@@ -88,6 +88,7 @@ class Context:
     _reference_metrics: Dict[MetricId, MetricResult]
     _metrics_graph: dict
     _input_data: Tuple[Dataset, Optional[Dataset]]
+    _additional_data: Dict[str, Dataset]
     _current_graph_level: dict
     _legacy_metrics: Dict[str, Tuple[object, List[BaseWidgetInfo]]]
     _metrics_container: Dict[Fingerprint, List[MetricOrContainer]]
@@ -103,9 +104,16 @@ class Context:
         self._legacy_metrics = {}
         self._metrics_container = {}
         self._labels = None
+        self._additional_data = {}
 
-    def init_dataset(self, current_data: Dataset, reference_data: Optional[Dataset]):
+    def init_dataset(
+        self,
+        current_data: Dataset,
+        reference_data: Optional[Dataset],
+        additional_data: Optional[Dict[str, Dataset]] = None,
+    ):
         self._input_data = (current_data, reference_data)
+        self._additional_data = additional_data or {}
 
     def column(self, column_name: str) -> ContextColumnData:
         return ContextColumnData(self._input_data[0].column(column_name))
@@ -184,6 +192,10 @@ class Context:
     def has_reference(self) -> bool:
         return self._input_data[1] is not None
 
+    @property
+    def additional_data(self) -> Dict[str, Dataset]:
+        return self._additional_data or {}
+
     def metrics_container(self, metric_container_fingerprint: Fingerprint) -> Optional[List[MetricOrContainer]]:
         return self._metrics_container.get(metric_container_fingerprint)
 
@@ -223,6 +235,7 @@ def _default_input_data_generator(context: "Context", task_name: Optional[str]) 
     current = context._input_data[0].as_dataframe()
     prediction: Optional[Union[str, List[str]]]
     user_id: Optional[str] = None
+    item_id: Optional[str] = None
     target: Optional[str] = None
     if classification is not None:
         if isinstance(classification.prediction_probas, list):
@@ -236,6 +249,7 @@ def _default_input_data_generator(context: "Context", task_name: Optional[str]) 
         prediction = None
     if ranking is not None:
         user_id = ranking.user_id
+        item_id = ranking.item_id
         prediction = ranking.prediction
         target = ranking.target
     mapping = ColumnMapping(
@@ -246,6 +260,7 @@ def _default_input_data_generator(context: "Context", task_name: Optional[str]) 
         pos_label=classification.pos_label if isinstance(classification, BinaryClassification) else None,
         target_names=classification.labels if classification is not None else None,
         user_id=user_id,
+        item_id=item_id,
         numerical_features=[x for x in context.data_definition.get_columns([ColumnType.Numerical])],
         categorical_features=[x for x in context.data_definition.get_columns([ColumnType.Categorical])],
         text_features=[x for x in context.data_definition.get_columns([ColumnType.Text])],
@@ -256,12 +271,17 @@ def _default_input_data_generator(context: "Context", task_name: Optional[str]) 
         current,
         mapping,
     )
+
+    additional_dataframes = {}
+    for key, dataset in context._additional_data.items():
+        additional_dataframes[key] = dataset.as_dataframe()
+
     input_data = InputData(
         reference,
         current,
         mapping,
         definition,
-        {},
+        additional_dataframes,
         None,
         None,
     )
@@ -349,8 +369,13 @@ class Snapshot:
                 snapshot_items.append(SnapshotItem(calc.id, widget))
         return snapshot_items, widgets
 
-    def run(self, current_data: Dataset, reference_data: Optional[Dataset]):
-        self.context.init_dataset(current_data, reference_data)
+    def run(
+        self,
+        current_data: Dataset,
+        reference_data: Optional[Dataset],
+        additional_data: Optional[Dict[str, Dataset]] = None,
+    ):
+        self.context.init_dataset(current_data, reference_data, additional_data)
         self._metrics = {}
         self._snapshot_item, self._widgets = self._run_items(self.report.items(), self._metrics)
         self._top_level_metrics = list(self.context._metrics_graph.keys())
@@ -524,6 +549,7 @@ class Report:
         self,
         current_data: PossibleDatasetTypes,
         reference_data: Optional[PossibleDatasetTypes] = None,
+        additional_data: Optional[Dict[str, PossibleDatasetTypes]] = None,
         timestamp: Optional[datetime] = None,
         metadata: Dict[str, MetadataValueType] = None,
         tags: List[str] = None,
@@ -531,6 +557,13 @@ class Report:
     ) -> Snapshot:
         current_dataset = Dataset.from_any(current_data)
         reference_dataset = Dataset.from_any(reference_data) if reference_data is not None else None
+
+        additional_datasets = None
+        if additional_data is not None:
+            additional_datasets = {}
+            for key, data in additional_data.items():
+                additional_datasets[key] = Dataset.from_any(data)
+
         _timestamp = timestamp or datetime.now()
         _metadata = self.metadata.copy()
         if metadata is not None:
@@ -539,7 +572,7 @@ class Report:
         if tags is not None:
             _tags.extend(tags)
         snapshot = Snapshot(self, name, _timestamp, _metadata, _tags)
-        snapshot.run(current_dataset, reference_dataset)
+        snapshot.run(current_dataset, reference_dataset, additional_datasets)
         return snapshot
 
     def items(self) -> Sequence[MetricOrContainer]:

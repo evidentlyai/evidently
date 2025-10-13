@@ -343,6 +343,18 @@ class WorkspaceBase(ABC):
                     None,
                     link=SnapshotLink(snapshot_id=snapshot_id, dataset_type="output", dataset_subtype="reference"),
                 )
+
+            base_name = run.get_name() or f"run-{snapshot_id}"
+            for key, dataset in run.context.additional_data.items():
+                dataset_name = f"{base_name}_{key}"
+                dataset_description = f"Additional dataset: {key}"
+                self.add_dataset(
+                    project_id=project_id,
+                    dataset=dataset,
+                    name=dataset_name,
+                    description=dataset_description,
+                    link=SnapshotLink(snapshot_id=snapshot_id, dataset_type="output", dataset_subtype="additional"),
+                )
         return SnapshotRef(id=snapshot_id, project_id=project_id, url=self._get_snapshot_url(project_id, snapshot_id))
 
     @abstractmethod
