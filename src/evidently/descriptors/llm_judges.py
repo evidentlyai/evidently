@@ -24,6 +24,7 @@ from evidently.legacy.utils.llm.wrapper import get_llm_wrapper
 from evidently.llm.models import LLMMessage
 from evidently.llm.prompts.content import MessagesPromptContent
 from evidently.llm.prompts.content import PromptContent
+from evidently.llm.prompts.content import TemplatePromptContent
 from evidently.llm.templates import *  # noqa: F403
 from evidently.llm.templates import BaseLLMPromptTemplate
 
@@ -76,7 +77,20 @@ class GenericLLMDescriptor(Descriptor):
         result = self.get_llm_wrapper(options).run_batch_sync(requests=self.iterate_messages(dataset))
         if isinstance(result, list) and any(isinstance(o, dict) for o in result):
             df = pd.DataFrame(result)
-            return {f"{self.alias} {col}": DatasetColumn(ColumnType.Text, df[col]) for col in df.columns}
+
+            if isinstance(self.prompt, TemplatePromptContent):
+                columns = [
+                    (col, self.prompt.template.get_type(col)) for col in self.prompt.template.list_output_columns()
+                ]
+            else:
+                columns = [(col, ColumnType.Text) for col in df.columns]
+
+            return {f"{self.alias} {col}": DatasetColumn(col_type, df[col]) for (col, col_type) in columns}
+        if isinstance(self.prompt, TemplatePromptContent):
+            return DatasetColumn(
+                self.prompt.template.get_type(self.prompt.template.get_main_output_column()),
+                pd.Series(result),
+            )
         return DatasetColumn(ColumnType.Text, pd.Series(result))
 
 
