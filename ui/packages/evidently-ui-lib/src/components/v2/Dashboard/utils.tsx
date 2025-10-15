@@ -2,28 +2,13 @@ import type { DashboardPanelPlotModel } from '~/api/types'
 import { assertNever } from '~/utils'
 import type { DashboardPanelProps } from './Panels/DashboardPanel'
 
-type Series = Partial<
-  // biome-ignore lint/complexity/noBannedTypes: fine
-  Record<'metric_labels' | 'metric' | 'metric_type', Object | null | undefined>
-> &
-  Partial<Record<'tags', string[] | null>>
+type PanelValue = DashboardPanelPlotModel['values'][number]
 
-export const getSeriesTypeHash = (s: Series) =>
-  `${s.metric ?? s.metric_type}:${JSON.stringify(s?.tags?.toSorted())}:${JSON.stringify(s.metric_labels)}`
+export const getPanelValuesTypeHash = (pavelValues: PanelValue[]) =>
+  pavelValues.map(getValueTypeHash).join('|')
 
-export const getSeriesListTypeHash = (seriesList: Series[]) =>
-  seriesList.map(getSeriesTypeHash).join('|')
-
-export const getSizeForGridItem = (size: 'half' | 'full') => {
-  if (size === 'full') {
-    return { xs: 12, sm: 12, md: 12, lg: 12 }
-  }
-  if (size === 'half') {
-    return { xs: 12, sm: 12, md: 6, lg: 6 }
-  }
-
-  assertNever(size)
-}
+const getValueTypeHash = (value: PanelValue) =>
+  `${value.metric}:${JSON.stringify(value?.tags?.toSorted())}:${JSON.stringify(value.metric_labels)}`
 
 export const castRawPanelDataToDashboardPanelProps = (
   panel: DashboardPanelPlotModel
@@ -83,4 +68,15 @@ export const castRawPanelDataToDashboardPanelProps = (
   }
 
   assertNever(type)
+}
+
+export const getSizeForGridItem = (size: 'half' | 'full') => {
+  if (size === 'full') {
+    return { xs: 12, sm: 12, md: 12, lg: 12 }
+  }
+  if (size === 'half') {
+    return { xs: 12, sm: 12, md: 6, lg: 6 }
+  }
+
+  assertNever(size)
 }
