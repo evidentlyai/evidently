@@ -714,7 +714,6 @@ class MetricCalculationBase(Generic[TResult]):
             parameter: The parameter name to override (must exist in metric config)
             resolved_value: The resolved value to store
         """
-        print("resolved", parameter, resolved_value)
         # Validate that the parameter exists in the metric config
         metric_model = self.to_metric()
         if not hasattr(metric_model, parameter):
