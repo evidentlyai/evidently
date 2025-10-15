@@ -325,7 +325,7 @@ class WorkspaceBase(ABC):
             run.set_name(name)
         snapshot_id = self._add_run(project_id, run)
         current_dataset_name = run.get_name() or f"run-current-{snapshot_id}"
-        reference_dataset_name = f"{run.get_name()}: reference" or f"run-reference-{snapshot_id}"
+        reference_dataset_name = f"{run.get_name()}: reference" if run.get_name() else f"run-reference-{snapshot_id}"
         if include_data:
             current, reference = run.context._input_data
             self.add_dataset(
@@ -342,6 +342,18 @@ class WorkspaceBase(ABC):
                     reference_dataset_name,
                     None,
                     link=SnapshotLink(snapshot_id=snapshot_id, dataset_type="output", dataset_subtype="reference"),
+                )
+
+            base_name = run.get_name() or f"run-{snapshot_id}"
+            for key, dataset in run.context.additional_data.items():
+                dataset_name = f"{base_name}_{key}"
+                dataset_description = f"Additional dataset: {key}"
+                self.add_dataset(
+                    project_id=project_id,
+                    dataset=dataset,
+                    name=dataset_name,
+                    description=dataset_description,
+                    link=SnapshotLink(snapshot_id=snapshot_id, dataset_type="output", dataset_subtype="additional"),
                 )
         return SnapshotRef(id=snapshot_id, project_id=project_id, url=self._get_snapshot_url(project_id, snapshot_id))
 

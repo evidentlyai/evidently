@@ -12,11 +12,16 @@ from evidently.metrics.recsys import NDCG
 from evidently.metrics.recsys import Diversity
 from evidently.metrics.recsys import FBetaTopK
 from evidently.metrics.recsys import HitRate
+from evidently.metrics.recsys import ItemBias
+from evidently.metrics.recsys import Novelty
 from evidently.metrics.recsys import Personalization
+from evidently.metrics.recsys import PopularityBiasMetric
 from evidently.metrics.recsys import PrecisionTopK
 from evidently.metrics.recsys import RecallTopK
 from evidently.metrics.recsys import RecCasesTable
 from evidently.metrics.recsys import ScoreDistribution
+from evidently.metrics.recsys import Serendipity
+from evidently.metrics.recsys import UserBias
 
 
 class RecsysPreset(MetricContainer):
@@ -82,6 +87,7 @@ class RecsysPreset(MetricContainer):
         super().__init__(include_tests=include_tests)
 
     def generate_metrics(self, context: "Context") -> Sequence[MetricOrContainer]:
+        is_train_data = "current_train_data" in context.additional_data
         metrics: List[Metric] = [
             # Core TopK metrics (return DataframeValue with rank and value columns)
             PrecisionTopK(
@@ -146,20 +152,20 @@ class RecsysPreset(MetricContainer):
         ]
 
         # Add metrics that require training data
-        # if is_train_data:
-        #     metrics.append(
-        #         PopularityBiasMetric(
-        #             k=self.k,
-        #             normalize_arp=self.normalize_arp,
-        #             ranking_name=self.ranking_name,
-        #         )
-        #     )
-        #     metrics.append(
-        #         Novelty(
-        #             k=self.k,
-        #             ranking_name=self.ranking_name,
-        #         )
-        #     )
+        if is_train_data:
+            metrics.append(
+                PopularityBiasMetric(
+                    k=self.k,
+                    normalize_arp=self.normalize_arp,
+                    ranking_name=self.ranking_name,
+                )
+            )
+            metrics.append(
+                Novelty(
+                    k=self.k,
+                    ranking_name=self.ranking_name,
+                )
+            )
 
         # Add metrics that require item features
         if self.item_features is not None:
@@ -170,52 +176,52 @@ class RecsysPreset(MetricContainer):
                     ranking_name=self.ranking_name,
                 )
             )
-            # if is_train_data:
-            #     metrics.append(
-            #         Serendipity(
-            #             k=self.k,
-            #             item_features=self.item_features,
-            #             ranking_name=self.ranking_name,
-            #         )
-            #     )
+            if is_train_data:
+                metrics.append(
+                    Serendipity(
+                        k=self.k,
+                        item_features=self.item_features,
+                        ranking_name=self.ranking_name,
+                    )
+                )
 
         # Add bias metrics that require training data
-        # if is_train_data:
-        #     if self.item_bias_columns is not None:
-        #         for col in self.item_bias_columns:
-        #             # Add both default and train distributions
-        #             metrics.append(
-        #                 ItemBias(
-        #                     k=self.k,
-        #                     column_name=col,
-        #                     distribution="default",
-        #                     ranking_name=self.ranking_name,
-        #                 )
-        #             )
-        #             metrics.append(
-        #                 ItemBias(
-        #                     k=self.k,
-        #                     column_name=col,
-        #                     distribution="train",
-        #                     ranking_name=self.ranking_name,
-        #                 )
-        #             )
-        #     if self.user_bias_columns is not None:
-        #         for col in self.user_bias_columns:
-        #             # Add both default and train distributions
-        #             metrics.append(
-        #                 UserBias(
-        #                     column_name=col,
-        #                     distribution="default",
-        #                     ranking_name=self.ranking_name,
-        #                 )
-        #             )
-        #             metrics.append(
-        #                 UserBias(
-        #                     column_name=col,
-        #                     distribution="train",
-        #                     ranking_name=self.ranking_name,
-        #                 )
-        #             )
+        if is_train_data:
+            if self.item_bias_columns is not None:
+                for col in self.item_bias_columns:
+                    # Add both default and train distributions
+                    metrics.append(
+                        ItemBias(
+                            k=self.k,
+                            column_name=col,
+                            distribution="default",
+                            ranking_name=self.ranking_name,
+                        )
+                    )
+                    metrics.append(
+                        ItemBias(
+                            k=self.k,
+                            column_name=col,
+                            distribution="train",
+                            ranking_name=self.ranking_name,
+                        )
+                    )
+            if self.user_bias_columns is not None:
+                for col in self.user_bias_columns:
+                    # Add both default and train distributions
+                    metrics.append(
+                        UserBias(
+                            column_name=col,
+                            distribution="default",
+                            ranking_name=self.ranking_name,
+                        )
+                    )
+                    metrics.append(
+                        UserBias(
+                            column_name=col,
+                            distribution="train",
+                            ranking_name=self.ranking_name,
+                        )
+                    )
 
         return metrics
