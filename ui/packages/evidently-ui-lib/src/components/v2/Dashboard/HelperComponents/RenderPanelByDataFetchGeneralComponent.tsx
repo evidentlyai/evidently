@@ -2,24 +2,23 @@ import { useEffect } from 'react'
 import type { DashboardPanelPlotModel, SeriesModel } from '~/api/types'
 import { DashboardPanel } from '~/components/v2/Dashboard/Panels/DashboardPanel'
 import { DashboardPanelSkeleton } from '~/components/v2/Dashboard/Panels/Skeleton'
-import { castRawPanelDataToDashboardPanelProps, getSeriesListTypeHash } from '../utils'
+import { castRawPanelDataToDashboardPanelProps } from '../utils'
 
 type RenderPanelByDataFetchGeneralComponentProps = {
   panel: DashboardPanelPlotModel
-  loadDataForPanel: () => void
+  loadDataPointsCallback: () => void
+  loadDataPointsHash: string
   data?: SeriesModel
 }
 
-export const RenderPanelByDataFetchGeneralComponent = ({
-  panel,
-  loadDataForPanel,
-  data
-}: RenderPanelByDataFetchGeneralComponentProps) => {
+export const RenderPanelByDataFetchGeneralComponent = (
+  props: RenderPanelByDataFetchGeneralComponentProps
+) => {
+  const { panel, loadDataPointsCallback, loadDataPointsHash, data } = props
+
   const dashboardPanelProps = castRawPanelDataToDashboardPanelProps(panel)
 
   const isNeedToFetchData = dashboardPanelProps.type !== 'text'
-
-  const seriesHashForTrackingChanges = getSeriesListTypeHash(panel.values)
 
   const height = 'height' in dashboardPanelProps ? dashboardPanelProps.height : 200
 
@@ -29,8 +28,8 @@ export const RenderPanelByDataFetchGeneralComponent = ({
       return
     }
 
-    loadDataForPanel()
-  }, [seriesHashForTrackingChanges, isNeedToFetchData])
+    loadDataPointsCallback()
+  }, [loadDataPointsHash, isNeedToFetchData])
 
   if (!isNeedToFetchData) {
     return <DashboardPanel {...dashboardPanelProps} />
