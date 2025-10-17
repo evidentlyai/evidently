@@ -452,6 +452,10 @@ class ValueDriftCalculation(SingleValueCalculation[ValueDrift]):
             agg_data=True,
         )
 
+        if self.metric.method is None:  # Only if it was auto-resolved
+            self.resolve_parameter("method", drift.stattest_name)
+        if self.metric.threshold is None:
+            self.resolve_parameter("threshold", drift.stattest_threshold)
         result = self.result(drift.drift_score)
         result.widget = self._render(drift, Options(), ColorOptions())
         if self.metric.tests is None and context.configuration.include_tests:
