@@ -156,8 +156,8 @@ class MetricResult(AutoAliasMixin, PolymorphicModel):
     def to_dict(self):
         return {
             "id": self.metric_value_location.metric.metric_id,
-            "metric_id": self.explicit_metric_id(),
-            "config": self.metric_value_location.metric.dict(),
+            "metric_name": self.explicit_metric_id(),
+            "config": self.metric_value_location.metric.params,
             "value": self.to_simple_dict(),
         }
 
@@ -760,7 +760,7 @@ class MetricCalculationBase(Generic[TResult]):
 
     def to_metric_config(self):
         """Override to include resolved parameters that override config values"""
-        metric_params = self.to_metric().dict()
+        metric_params = self.to_metric().dict(exclude_none=True)
         metric_params.update(self._resolved_parameters)
         base_config = MetricConfig(
             metric_id=self.to_metric().metric_id,
