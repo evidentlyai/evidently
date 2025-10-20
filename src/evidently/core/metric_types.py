@@ -156,7 +156,8 @@ class MetricResult(AutoAliasMixin, PolymorphicModel):
     def to_dict(self):
         return {
             "id": self.metric_value_location.metric.metric_id,
-            "metric_id": self.explicit_metric_id(),
+            "metric_name": self.explicit_metric_id(),
+            "config": self.metric_value_location.metric.params,
             "value": self.to_simple_dict(),
         }
 
@@ -702,6 +703,23 @@ class MetricCalculationBase(Generic[TResult]):
 
     def __init__(self, metric_id: MetricId) -> None:
         self._metric_id = metric_id
+        self._resolved_parameters: Dict[str, Any] = {}
+
+    def resolve_parameter(self, parameter: str, resolved_value: Any) -> None:
+        """
+        Set a parameter with its resolved value.
+        Only allows overriding parameters that exist in the original metric config.
+
+        Args:
+            parameter: The parameter name to override (must exist in metric config)
+            resolved_value: The resolved value to store
+        """
+        # Validate that the parameter exists in the metric config
+        metric_model = self.to_metric()
+        if not hasattr(metric_model, parameter):
+            raise ValueError(f"Parameter '{parameter}' does not exist in metric {metric_model.__class__.__name__}")
+
+        self._resolved_parameters[parameter] = resolved_value
 
     def call(self, context: "Context") -> Tuple[TResult, Optional[TResult]]:
         """
@@ -741,10 +759,15 @@ class MetricCalculationBase(Generic[TResult]):
         raise not_implemented(self)
 
     def to_metric_config(self):
-        return MetricConfig(
+        """Override to include resolved parameters that override config values"""
+        metric_params = self.to_metric().dict(exclude_none=True)
+        metric_params.update(self._resolved_parameters)
+        base_config = MetricConfig(
             metric_id=self.to_metric().metric_id,
-            params=self.to_metric().dict(),
+            params=metric_params,
         )
+
+        return base_config
 
     def group_by(self, group_by: Optional[str]) -> Union["MetricCalculationBase", List["MetricCalculationBase"]]:
         if group_by is None:
