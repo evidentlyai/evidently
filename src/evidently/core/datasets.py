@@ -55,6 +55,11 @@ class ColumnRole(Enum):
     Example = "example"
 
 
+class HumanFeedbackLabel(Enum):
+    Good = "good"
+    Bad = "bad"
+
+
 @dataclasses.dataclass
 class ColumnInfo:
     type: ColumnType
@@ -200,7 +205,8 @@ DEFAULT_TRACE_LINK_COLUMN = "_evidently_trace_link"
 
 class ServiceColumns(BaseModel):
     trace_link: Optional[str] = None
-
+    human_feedback_mark: Optional[HumanFeedbackLabel] = None
+    human_feedback_comment: Optional[str] = None
 
 class DataDefinition(BaseModel):
     id_column: Optional[str] = None
