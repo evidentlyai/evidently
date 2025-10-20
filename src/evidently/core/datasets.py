@@ -203,6 +203,7 @@ class ServiceColumns(BaseModel):
     human_feedback_label: Optional[str] = None
     human_feedback_comment: Optional[str] = None
 
+
 class DataDefinition(BaseModel):
     id_column: Optional[str] = None
     timestamp: Optional[str] = None
