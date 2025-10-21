@@ -1,5 +1,7 @@
 import abc
 from typing import ClassVar
+from typing import Dict
+from typing import Optional
 from typing import Union
 
 from evidently.core.metric_types import DatasetType
@@ -20,6 +22,7 @@ from evidently.core.tests import ThresholdValue
 
 class ComparisonTest(MetricTest):
     threshold: ThresholdType
+    label_filters: Optional[Dict[str, str]] = None
     __short_name__: ClassVar[str]
     __full_name__: ClassVar[str]
     __reference_relation__: ClassVar[str]
@@ -95,6 +98,7 @@ class LessThanMetricTest(ComparisonTest):
 
 class EqualMetricTestBase(MetricTest, abc.ABC):
     expected: ThresholdType
+    label_filters: Optional[Dict[str, str]] = None
 
     def is_equal(self, context: Context, value: SingleValue):
         expected: Union[float, int, ApproxValue]
