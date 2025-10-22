@@ -260,3 +260,12 @@ def test_data_definition_serialization_empty():
     data_definition = DataDefinition()
     parsed = parse_obj_as(DataDefinition, {})
     assert parsed == data_definition
+
+
+def test_data_definition_deserialization():
+    data = {"service_columns": {"trace_link": "123"}}
+
+    data_definition = DataDefinition(service_columns=ServiceColumns(trace_link="123"))
+    obj_as = parse_obj_as(DataDefinition, data)
+    assert isinstance(obj_as.service_columns, ServiceColumns)
+    assert data_definition == obj_as

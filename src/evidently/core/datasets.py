@@ -252,20 +252,16 @@ class DataDefinition(BaseModel):
             datetime_columns=datetime_columns,
             unknown_columns=unknown_columns,
             list_columns=list_columns,
-            # classification=classification,
-            # regression=regression,
-            # llm=llm,
+            classification=classification,
+            regression=regression,
+            llm=llm,
             numerical_descriptors=numerical_descriptors if numerical_descriptors is not None else [],
             categorical_descriptors=categorical_descriptors if categorical_descriptors is not None else [],
             test_descriptors=test_descriptors,
-            # ranking=ranking,
+            ranking=ranking,
             service_columns=service_columns,
             special_columns=special_columns if special_columns is not None else [],
         )
-        self.classification = classification
-        self.regression = regression
-        self.llm = llm
-        self.ranking = ranking
 
     def get_numerical_columns(self):
         return (self.numerical_columns or []) + (self.numerical_descriptors or [])
@@ -392,7 +388,7 @@ class DescriptorTest(BaseModel):
                 raise ValueError("Parent descriptor is required for test without column")
             descriptor_columns = descriptor.list_output_columns()
             if len(descriptor_columns) == 1:
-                column = descriptor_columns[0]
+                column = descriptor_columns[0][0]
             else:
                 raise ValueError(
                     f"Column is required for test with multiple columns in parent descriptor: [{', '.join(descriptor_columns)}]"
@@ -435,8 +431,9 @@ class Descriptor(AutoAliasMixin, EvidentlyBaseModel, abc.ABC):
                         f"Column '{column}' is not found in dataset. Available columns: [{', '.join(all_columns)}]"
                     )
 
-    def list_output_columns(self) -> List[str]:  # todo: also types?
-        return [self.alias]
+    @abstractmethod
+    def list_output_columns(self) -> List[Tuple[str, ColumnType]]:  # todo: also types?
+        raise NotImplementedError()
 
     def list_input_columns(self) -> Optional[List[str]]:  # todo: make not optional
         return None
@@ -648,8 +645,8 @@ class FeatureDescriptor(Descriptor):
             for col in self.feature.list_columns()
         }
 
-    def list_output_columns(self) -> List[str]:
-        return [c.display_name for c in self.feature.list_columns()]
+    def list_output_columns(self) -> List[Tuple[str, ColumnType]]:
+        return [(c.display_name, self.feature.get_type(c.name)) for c in self.feature.list_columns()]
 
 
 def _determine_descriptor_column_name(alias: str, columns: List[str]):
