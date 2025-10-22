@@ -243,24 +243,29 @@ class DataDefinition(BaseModel):
         service_columns: Optional[ServiceColumns] = None,
         special_columns: Optional[List[SpecialColumnInfo]] = None,
     ):
-        super().__init__()
-        self.id_column = id_column
-        self.timestamp = timestamp
-        self.numerical_columns = numerical_columns
-        self.categorical_columns = categorical_columns
-        self.text_columns = text_columns
-        self.datetime_columns = datetime_columns
-        self.unknown_columns = unknown_columns
-        self.list_columns = list_columns
+        super().__init__(
+            id_column=id_column,
+            timestamp=timestamp,
+            numerical_columns=numerical_columns,
+            categorical_columns=categorical_columns,
+            text_columns=text_columns,
+            datetime_columns=datetime_columns,
+            unknown_columns=unknown_columns,
+            list_columns=list_columns,
+            # classification=classification,
+            # regression=regression,
+            # llm=llm,
+            numerical_descriptors=numerical_descriptors if numerical_descriptors is not None else [],
+            categorical_descriptors=categorical_descriptors if categorical_descriptors is not None else [],
+            test_descriptors=test_descriptors,
+            # ranking=ranking,
+            service_columns=service_columns,
+            special_columns=special_columns if special_columns is not None else [],
+        )
         self.classification = classification
         self.regression = regression
         self.llm = llm
-        self.numerical_descriptors = numerical_descriptors if numerical_descriptors is not None else []
-        self.categorical_descriptors = categorical_descriptors if categorical_descriptors is not None else []
-        self.test_descriptors = test_descriptors
         self.ranking = ranking
-        self.service_columns = service_columns
-        self.special_columns = special_columns if special_columns is not None else []
 
     def get_numerical_columns(self):
         return (self.numerical_columns or []) + (self.numerical_descriptors or [])
