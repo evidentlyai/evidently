@@ -46,7 +46,7 @@ do
 done
 
 becho wait running python scripts #
-wait
+for p in $(jobs -p); do wait "$p" || exit 1; done
 
 becho write test config #
 for folder in $html_testing_folder/dist/*
