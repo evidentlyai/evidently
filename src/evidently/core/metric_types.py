@@ -790,6 +790,7 @@ class MetricTest(AutoAliasMixin, EvidentlyBaseModel):
     __alias_type__: ClassVar[str] = "test_v2"
     is_critical: bool = True
     alias: Optional[str] = None
+    label_filters: Optional[Dict[str, str]] = None
 
     @abstractmethod
     def to_test(self) -> MetricTestProto:
@@ -810,25 +811,34 @@ class MetricTest(AutoAliasMixin, EvidentlyBaseModel):
             test_config=result.test_config,
         )
 
+    def _validate_label_filters_not_supported(self, metric_type: str):
+        """Validate that label_filters is not used with non-DataFrame metrics."""
+        if self.label_filters is not None:
+            raise ValueError(f"label_filters not supported for {metric_type} metrics")
+
     def bind_single(self, fingerprint: Fingerprint) -> "BoundTest":
+        self._validate_label_filters_not_supported("SingleValue")
         return SingleValueBoundTest(test=self, metric_fingerprint=fingerprint)
 
     def bind_count(self, fingerprint: Fingerprint, is_count: bool) -> "BoundTest":
+        self._validate_label_filters_not_supported("Count")
         return CountBoundTest(test=self, metric_fingerprint=fingerprint, is_count=is_count)
 
     def bind_by_label(self, fingerprint: Fingerprint, label: Label):
+        self._validate_label_filters_not_supported("ByLabel")
         return ByLabelBoundTest(test=self, metric_fingerprint=fingerprint, label=label)
 
     def bind_by_label_count(self, fingerprint: Fingerprint, label: Label, slot: ByLabelCountSlot):
         return ByLabelCountBoundTest(test=self, metric_fingerprint=fingerprint, label=label, slot=slot)
 
     def bind_mean_std(self, fingerprint: Fingerprint, is_mean: bool = True):
+        self._validate_label_filters_not_supported("MeanStd")
         return MeanStdBoundTest(test=self, metric_fingerprint=fingerprint, is_mean=is_mean)
 
     def bind_dataframe(self, fingerprint: Fingerprint, column: str, label_filters: Optional[Dict[str, str]] = None):
-        return DataframeBoundTest(
-            test=self, metric_fingerprint=fingerprint, column=column, label_filters=label_filters or {}
-        )
+        # Use the test's label_filters if provided, otherwise use the parameter
+        filters = self.label_filters or label_filters or {}
+        return DataframeBoundTest(test=self, metric_fingerprint=fingerprint, column=column, label_filters=filters)
 
 
 class BoundTest(AutoAliasMixin, EvidentlyBaseModel, Generic[TResult], ABC):
@@ -1264,6 +1274,16 @@ class DataframeBoundTest(BoundTest[DataframeValue]):
         metric_result: DataframeValue,
     ) -> MetricTestResult:
         # Find matching SingleValue based on column and label filters
+        if self.column not in metric_result.value.columns:
+            return MetricTestResult(
+                id="",
+                name="Missing DataFrame column",
+                description=f'Missing column "{self.column}" in DataFrame metric result. Available columns: {metric_result.value.columns}',
+                metric_config=calculation.to_metric_config(),
+                test_config=self.dict(),
+                status=TestStatus.ERROR,
+                bound_test=self,
+            )
         matching_value = None
         for single_value in metric_result.iter_single_values():
             if single_value.display_name == self.column:
@@ -1357,13 +1377,8 @@ class DataframeMetric(Metric):
         bound_tests = []
         for column, tests in (self.tests or {}).items():
             for test in tests:
-                # Bind DataFrame test with column and any label filters from the test
-                label_filters = getattr(test, "label_filters", {})
-                bound_tests.append(
-                    DataframeBoundTest(
-                        test=test, metric_fingerprint=fingerprint, column=column, label_filters=label_filters
-                    )
-                )
+                # Bind DataFrame test with column - label_filters are now part of the test instance
+                bound_tests.append(test.bind_dataframe(fingerprint, column=column))
         return bound_tests
 
     @validator("tests", pre=True)

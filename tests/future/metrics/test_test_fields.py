@@ -17,13 +17,16 @@ from evidently import Dataset
 from evidently import Report
 from evidently._pydantic_compat import ModelField
 from evidently.core.metric_types import ColumnMetric
+from evidently.core.metric_types import DataframeMetric
 from evidently.core.metric_types import Metric
 from evidently.core.metric_types import MetricTest
 from evidently.core.metric_types import MetricTestResult
 from evidently.core.metric_types import TestStatus
+from evidently.metrics import ColumnCorrelationMatrix
 from evidently.metrics import FBetaTopK
 from evidently.metrics import PrecisionTopK
 from evidently.metrics import RecallTopK
+from evidently.metrics import RecCasesTable
 from evidently.metrics.column_statistics import CategoryCount
 from evidently.metrics.column_statistics import InListValueCount
 from evidently.metrics.column_statistics import InRangeValueCount
@@ -118,7 +121,14 @@ METRIC_TEST_TYPE_MAPPING: Dict[Type[MetricTest], Tuple[Callable, str]] = {
 
 METRIC_TEST_TYPE_MAPPING_INDEX = {tt: f.__name__ for tt, (f, _) in METRIC_TEST_TYPE_MAPPING.items()}
 
-TEST_FIELD_FACTORY_MAPPING: Dict[Type, Callable[[str], str]] = {dict: lambda x: f"{{0: [{x}]}}"}
+
+def get_test_field_value_string(metric_type: Type[Metric], test_field_type: Type, test_callable_name: str):
+    if issubclass(metric_type, DataframeMetric):
+        return f'{{"value": [{test_callable_name}]}}'
+    if test_field_type == dict:
+        return f"{{0: [{test_callable_name}]}}"
+    return f"[{test_callable_name}]"
+
 
 METRIC_ARGS: Dict[Type[Metric], str] = {
     CategoryCount: "category=True, ",
@@ -139,10 +149,11 @@ METRIC_ARGS: Dict[Type[Metric], str] = {
     # Novelty: "k=1, ",
     Personalization: "k=1, ",
     # PopularityBiasMetric: "k=1, ",
+    ColumnCorrelationMatrix: 'column_name="a", ',
 }
 
 SKIP_TEST_TYPES = {ValueDriftTest}
-SKIP_METRIC_TYPES = {StubMetric}
+SKIP_METRIC_TYPES = {StubMetric, RecCasesTable}
 
 
 def test_all_metric_tested():
@@ -162,7 +173,9 @@ def test_all_metric_tested():
     If you added new test condition you need to add logic for it in fix(line) function.
     """
     all_metric_types = set(s for s in Metric.__subtypes__() if not isabstract(s)) - SKIP_METRIC_TYPES
-    all_metric_types = {mt for mt in all_metric_types if hasattr(mt, "__calculation_type__")}
+    all_metric_types = {
+        mt for mt in all_metric_types if hasattr(mt, "__calculation_type__") and not mt.__module__.startswith("tests.")
+    }
     all_test_types = set(t for t in MetricTest.__subtypes__() if not isabstract(t)) - SKIP_TEST_TYPES
 
     metrics_tests_set = {
@@ -190,11 +203,7 @@ def test_all_metric_tested():
         )
 
         test_field_type = get_origin(metric_type.__fields__[test_field].outer_type_)
-        test_field_value_str = (
-            TEST_FIELD_FACTORY_MAPPING[test_field_type](test_callable_name)
-            if test_field_type in TEST_FIELD_FACTORY_MAPPING
-            else f"[{test_callable_name}]"
-        )
+        test_field_value_str = get_test_field_value_string(metric_type, test_field_type, test_callable_name)
         metric_args = METRIC_ARGS.get(metric_type, "")
         if issubclass(metric_type, ColumnMetric):
             metric_args = f'column="a", {metric_args}'

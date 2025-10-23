@@ -9,3 +9,5 @@ register_type_alias(BoundTest, "evidently.core.metric_types.CountBoundTest", "ev
 register_type_alias(BoundTest, "evidently.core.metric_types.MeanStdBoundTest", "evidently:bound_test:MeanStdBoundTest")
 register_type_alias(BoundTest, "evidently.core.metric_types.SingleValueBoundTest", "evidently:bound_test:SingleValueBoundTest")
 register_type_alias(BoundTest, "evidently.metrics.column_statistics.ValueDriftBoundTest", "evidently:bound_test:ValueDriftBoundTest")
+
+register_type_alias(BoundTest, "evidently.core.metric_types.DataframeBoundTest", "evidently:bound_test:DataframeBoundTest")

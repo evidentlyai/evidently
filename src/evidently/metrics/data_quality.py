@@ -7,9 +7,8 @@ from typing import Tuple
 from evidently import ColumnType
 from evidently.core.container import MetricContainer
 from evidently.core.container import MetricOrContainer
-from evidently.core.metric_types import BoundTest
+from evidently.core.metric_types import DataframeMetric
 from evidently.core.metric_types import DataframeValue
-from evidently.core.metric_types import Metric
 from evidently.core.metric_types import MetricId
 from evidently.core.report import Context
 from evidently.legacy.metrics.data_quality.column_correlations_metric import ColumnCorrelationsMetric
@@ -48,12 +47,9 @@ class ColumnCorrelations(MetricContainer):
         return legacy_widgets
 
 
-class ColumnCorrelationMatrix(Metric):
+class ColumnCorrelationMatrix(DataframeMetric):
     column_name: str
     kind: Literal["auto", "pearson", "spearman", "kendall", "cramer_v"] = "auto"
-
-    def get_bound_tests(self, context: "Context") -> Sequence[BoundTest]:
-        return []
 
 
 class LegacyColumnCorrelationsCalculation(
@@ -109,11 +105,8 @@ class DatasetCorrelations(MetricContainer):
         return legacy_widgets
 
 
-class CorrelationMatrix(Metric):
+class CorrelationMatrix(DataframeMetric):
     kind: Literal["auto", "pearson", "spearman", "kendall", "cramer_v"] = "auto"
-
-    def get_bound_tests(self, context: "Context") -> Sequence[BoundTest]:
-        return []
 
 
 def _extract_render_tab(widgets: List[BaseWidgetInfo], kind: str, title: str) -> List[BaseWidgetInfo]:
@@ -141,7 +134,11 @@ class LegacyDatasetCorrelationsCalculation(
         self, context: "Context", legacy_result: DatasetCorrelationsMetricResult, render: List[BaseWidgetInfo]
     ) -> Tuple[DataframeValue, Optional[DataframeValue]]:
         current_result = legacy_result.current
-        kind: str = self.metric.kind if self.metric.kind != "auto" else next(iter(current_result.correlation.keys()))  # type: ignore[arg-type]
+        kind: str = (
+            self.metric.kind
+            if self.metric.kind != "auto"
+            else next(k for k, v in current_result.correlation.items() if len(v) > 0)
+        )  # type: ignore[arg-type]
         current_df = current_result.correlation[kind]
         current_value = DataframeValue(display_name=self.display_name(), value=current_df)
         current_value.widget = _extract_render_tab(render, kind, title="Dataset Correlations")
