@@ -433,8 +433,8 @@ class Descriptor(AutoAliasMixin, EvidentlyBaseModel, abc.ABC):
                         f"Column '{column}' is not found in dataset. Available columns: [{', '.join(all_columns)}]",
                     )
 
-    def list_output_columns(self) -> List[Tuple[str, ColumnType]]:  # todo: also types?
-        return [(self.alias, ColumnType.Text)]
+    def list_output_columns(self) -> List[str]:  # todo: also types?
+        return [self.alias]
 
     def list_input_columns(self) -> Optional[List[str]]:  # todo: make not optional
         return None
