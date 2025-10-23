@@ -78,10 +78,6 @@ class BinaryClassification(BaseModel):
         pos_label: Optional[Label] = None,
         labels: Optional[Dict[Label, str]] = None,
     ):
-        if target is None or (prediction_labels is None and prediction_probas is None):
-            raise ValueError(
-                "Invalid BinaryClassification configuration:" " target and one of (labels or probas) should be set",
-            )
         if (
             target is None
             and prediction_labels is None
@@ -89,23 +85,21 @@ class BinaryClassification(BaseModel):
             and pos_label is None
             and labels is None
         ):
-            super().__init__(
-                name=name,
-                target="target",
-                prediction_probas="prediction",
-                prediction_labels=None,
-                labels=None,
-                pos_label=1,
+            target = "target"
+            prediction_probas = "prediction"
+            pos_label = 1
+        if target is None or (prediction_labels is None and prediction_probas is None):
+            raise ValueError(
+                "Invalid BinaryClassification configuration:" " target and one of (labels or probas) should be set",
             )
-        else:
-            super().__init__(
-                name=name,
-                target=target,
-                prediction_labels=prediction_labels,
-                prediction_probas=prediction_probas,
-                pos_label=pos_label if pos_label is not None else 1,
-                labels=labels,
-            )
+        super().__init__(
+            name=name,
+            target=target,
+            prediction_labels=prediction_labels,
+            prediction_probas=prediction_probas,
+            pos_label=pos_label if pos_label is not None else 1,
+            labels=labels,
+        )
 
 
 class MulticlassClassification(BaseModel):
