@@ -5,8 +5,10 @@ import random
 import pandas as pd
 import pytest
 
+from evidently import MulticlassClassification
 from evidently._pydantic_compat import parse_obj_as
 from evidently.core.datasets import DEFAULT_TRACE_LINK_COLUMN
+from evidently.core.datasets import BinaryClassification
 from evidently.core.datasets import DataDefinition
 from evidently.core.datasets import Dataset
 from evidently.core.datasets import ServiceColumns
@@ -269,3 +271,55 @@ def test_data_definition_deserialization():
     obj_as = parse_obj_as(DataDefinition, data)
     assert isinstance(obj_as.service_columns, ServiceColumns)
     assert data_definition == obj_as
+
+
+def test_data_definition_deserialization_2():
+    data = {
+        "classification": [
+            {
+                "name": "default",
+                "target": "target",
+                "prediction_probas": "prediction",
+                "pos_label": 1,
+            }
+        ]
+    }
+
+    data_definition = DataDefinition(
+        classification=[
+            BinaryClassification(
+                name="default",
+                target="target",
+                prediction_probas="prediction",
+                pos_label=1,
+            )
+        ]
+    )
+    obj_as = parse_obj_as(DataDefinition, data)
+    assert data_definition == obj_as
+    assert isinstance(obj_as.classification[0], BinaryClassification)
+
+
+def test_data_definition_deserialization_3():
+    data = {
+        "classification": [
+            {
+                "name": "default",
+                "target": "target",
+                "prediction_labels": "prediction",
+            }
+        ]
+    }
+
+    data_definition = DataDefinition(
+        classification=[
+            MulticlassClassification(
+                name="default",
+                target="target",
+                prediction_labels="prediction",
+            )
+        ]
+    )
+    obj_as = parse_obj_as(DataDefinition, data)
+    assert data_definition == obj_as
+    assert isinstance(obj_as.classification[0], MulticlassClassification)

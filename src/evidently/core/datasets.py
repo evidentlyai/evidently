@@ -55,14 +55,12 @@ class ColumnRole(Enum):
     Example = "example"
 
 
-@dataclasses.dataclass
-class ColumnInfo:
+class ColumnInfo(BaseModel):
     type: ColumnType
     role: ColumnRole = ColumnRole.Unset
 
 
-@dataclasses.dataclass
-class BinaryClassification:
+class BinaryClassification(BaseModel):
     name: str
     target: str
     prediction_labels: Optional[str]
@@ -77,10 +75,13 @@ class BinaryClassification:
         target: Optional[str] = None,
         prediction_labels: Optional[str] = None,
         prediction_probas: Optional[str] = None,
-        pos_label: Optional[str] = None,
+        pos_label: Optional[Label] = None,
         labels: Optional[Dict[Label, str]] = None,
     ):
-        self.name = name
+        if target is None or (prediction_labels is None and prediction_probas is None):
+            raise ValueError(
+                "Invalid BinaryClassification configuration:" " target and one of (labels or probas) should be set",
+            )
         if (
             target is None
             and prediction_labels is None
@@ -88,25 +89,26 @@ class BinaryClassification:
             and pos_label is None
             and labels is None
         ):
-            self.target = "target"
-            self.prediction_labels = None
-            self.prediction_probas = "prediction"
-            self.pos_label = 1
-            self.labels = None
-            return
-        if target is None or (prediction_labels is None and prediction_probas is None):
-            raise ValueError(
-                "Invalid BinaryClassification configuration:" " target and one of (labels or probas) should be set"
+            super().__init__(
+                name=name,
+                target="target",
+                prediction_probas="prediction",
+                prediction_labels=None,
+                labels=None,
+                pos_label=1,
             )
-        self.target = target
-        self.prediction_labels = prediction_labels
-        self.prediction_probas = prediction_probas
-        self.pos_label = pos_label if pos_label is not None else 1
-        self.labels = labels
+        else:
+            super().__init__(
+                name=name,
+                target=target,
+                prediction_labels=prediction_labels,
+                prediction_probas=prediction_probas,
+                pos_label=pos_label if pos_label is not None else 1,
+                labels=labels,
+            )
 
 
-@dataclasses.dataclass
-class MulticlassClassification:
+class MulticlassClassification(BaseModel):
     name: str = "default"
     target: str = "target"
     prediction_labels: Optional[str] = "prediction"
@@ -122,35 +124,37 @@ class MulticlassClassification:
         prediction_probas: Optional[List[str]] = None,
         labels: Optional[Dict[Label, str]] = None,
     ):
-        self.name = name
-        if target is None and prediction_labels is None and prediction_probas is None and labels is None:
-            self.target = "target"
-            self.prediction_labels = "prediction"
-            self.prediction_probas = None
-            self.labels = None
-            return
         if target is None or (prediction_labels is None and prediction_probas is None):
             raise ValueError(
-                "Invalid MulticlassClassification configuration:" " target and one of (labels or probas) should be set"
+                "Invalid MulticlassClassification configuration:" " target and one of (labels or probas) should be set",
             )
-        self.target = target
-        self.prediction_labels = prediction_labels
-        self.prediction_probas = prediction_probas
-        self.labels = labels
+        if target is None and prediction_labels is None and prediction_probas is None and labels is None:
+            super().__init__(
+                name=name,
+                target="target",
+                prediction_labels="prediction",
+                prediction_probas=None,
+                labels=None,
+            )
+        else:
+            super().__init__(
+                target=target,
+                prediction_labels=prediction_labels,
+                prediction_probas=prediction_probas,
+                labels=labels,
+            )
 
 
-Classification = Union[BinaryClassification, MulticlassClassification]
+Classification = Union[MulticlassClassification, BinaryClassification]
 
 
-@dataclasses.dataclass
-class Regression:
+class Regression(BaseModel):
     name: str = "default"
     target: str = "target"
     prediction: str = "prediction"
 
 
-@dataclasses.dataclass
-class Recsys:
+class Recsys(BaseModel):
     name: str = "default"
     user_id: str = "user_id"
     item_id: str = "item_id"
@@ -159,18 +163,15 @@ class Recsys:
     recommendations_type: str = "score"
 
 
-@dataclasses.dataclass
-class Completion:
+class Completion(BaseModel):
     pass
 
 
-@dataclasses.dataclass
-class RAG:
+class RAG(BaseModel):
     pass
 
 
-@dataclasses.dataclass
-class LLMClassification:
+class LLMClassification(BaseModel):
     input: str
     target: str
     predictions: Optional[str] = None
@@ -193,7 +194,6 @@ class SpecialColumnInfo(AutoAliasMixin, EvidentlyBaseModel):
 
 
 LLMDefinition = Union[Completion, RAG, LLMClassification]
-
 
 DEFAULT_TRACE_LINK_COLUMN = "_evidently_trace_link"
 
@@ -391,7 +391,7 @@ class DescriptorTest(BaseModel):
                 column = descriptor_columns[0][0]
             else:
                 raise ValueError(
-                    f"Column is required for test with multiple columns in parent descriptor: [{', '.join(descriptor_columns)}]"
+                    f"Column is required for test with multiple columns in parent descriptor: [{', '.join(descriptor_columns)}]",
                 )
         else:
             column = self.column
@@ -417,7 +417,9 @@ class Descriptor(AutoAliasMixin, EvidentlyBaseModel, abc.ABC):
 
     @abc.abstractmethod
     def generate_data(
-        self, dataset: "Dataset", options: Options
+        self,
+        dataset: "Dataset",
+        options: Options,
     ) -> Union[DatasetColumn, Dict[DisplayName, DatasetColumn]]:
         raise NotImplementedError()
 
@@ -428,12 +430,11 @@ class Descriptor(AutoAliasMixin, EvidentlyBaseModel, abc.ABC):
             for column in input_columns:
                 if column not in all_columns:
                     raise ValueError(
-                        f"Column '{column}' is not found in dataset. Available columns: [{', '.join(all_columns)}]"
+                        f"Column '{column}' is not found in dataset. Available columns: [{', '.join(all_columns)}]",
                     )
 
-    @abstractmethod
     def list_output_columns(self) -> List[Tuple[str, ColumnType]]:  # todo: also types?
-        raise NotImplementedError()
+        return [(self.alias, ColumnType.Text)]
 
     def list_input_columns(self) -> Optional[List[str]]:  # todo: make not optional
         return None
@@ -460,7 +461,11 @@ class ColumnTest(SingleInputDescriptor):
     condition: ColumnCondition
 
     def __init__(
-        self, column: str, condition: Union[ColumnCondition, GenericTest], alias: Optional[str] = None, **data: Any
+        self,
+        column: str,
+        condition: Union[ColumnCondition, GenericTest],
+        alias: Optional[str] = None,
+        **data: Any,
     ) -> None:
         self.column = column
         if isinstance(condition, dict):
@@ -472,7 +477,9 @@ class ColumnTest(SingleInputDescriptor):
         super().__init__(alias=alias or descriptor_condition.get_default_alias(column), **data)
 
     def generate_data(
-        self, dataset: "Dataset", options: Options
+        self,
+        dataset: "Dataset",
+        options: Options,
     ) -> Union[DatasetColumn, Dict[DisplayName, DatasetColumn]]:
         data = dataset.column(self.column)
         res = data.data.apply(self.condition.check)
@@ -551,7 +558,9 @@ class TestSummary(Descriptor):
         super().__init__(alias=alias or "summary", **data)
 
     def generate_data(
-        self, dataset: "Dataset", options: Options
+        self,
+        dataset: "Dataset",
+        options: Options,
     ) -> Union[DatasetColumn, Dict[DisplayName, DatasetColumn]]:
         tests = dataset.data_definition.test_descriptors or []
         if len(tests) == 0:
@@ -618,10 +627,20 @@ class FeatureDescriptor(Descriptor):
     feature: GeneratedFeatures
 
     def __init__(
-        self, feature: GeneratedFeatures, alias: Optional[str] = None, tests: Optional[List[AnyDescriptorTest]] = None
+        self,
+        feature: GeneratedFeatures,
+        alias: Optional[str] = None,
+        tests: Optional[List[AnyDescriptorTest]] = None,
     ):
         # this is needed because we try to access it before super call
-        feature = feature if isinstance(feature, GeneratedFeatures) else parse_obj_as(GeneratedFeatures, feature)  # type: ignore[type-abstract]
+        feature = (
+            feature
+            if isinstance(feature, GeneratedFeatures)
+            else parse_obj_as(
+                GeneratedFeatures,
+                feature,
+            )
+        )  # type: ignore[type-abstract]
         feature_columns = feature.list_columns()
         super().__init__(feature=feature, alias=alias or f"{feature_columns[0].display_name}", tests=tests)
 
@@ -633,7 +652,9 @@ class FeatureDescriptor(Descriptor):
         return dataset_column
 
     def generate_data(
-        self, dataset: "Dataset", options: Options
+        self,
+        dataset: "Dataset",
+        options: Options,
     ) -> Union[DatasetColumn, Dict[DisplayName, DatasetColumn]]:
         feature = self.feature.generate_features_renamed(
             dataset.as_dataframe(),
