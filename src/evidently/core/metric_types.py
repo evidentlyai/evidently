@@ -685,6 +685,14 @@ def get_default_render(title: str, result: TResult) -> List[BaseWidgetInfo]:
                 counters=[CounterData(label="", value=f"{result.std.value:.2f}")],
             ),
         ]
+    if isinstance(result, DataframeValue):
+        return [
+            table_data(
+                title=title,
+                column_names=list(result.value.columns),
+                data=result.value.values.tolist(),
+            )
+        ]
     raise NotImplementedError(f"No default render for {type(result)}")
 
 
@@ -782,6 +790,7 @@ class MetricTest(AutoAliasMixin, EvidentlyBaseModel):
     __alias_type__: ClassVar[str] = "test_v2"
     is_critical: bool = True
     alias: Optional[str] = None
+    label_filters: Optional[Dict[str, str]] = None
 
     @abstractmethod
     def to_test(self) -> MetricTestProto:
@@ -802,20 +811,34 @@ class MetricTest(AutoAliasMixin, EvidentlyBaseModel):
             test_config=result.test_config,
         )
 
+    def _validate_label_filters_not_supported(self, metric_type: str):
+        """Validate that label_filters is not used with non-DataFrame metrics."""
+        if self.label_filters is not None:
+            raise ValueError(f"label_filters not supported for {metric_type} metrics")
+
     def bind_single(self, fingerprint: Fingerprint) -> "BoundTest":
+        self._validate_label_filters_not_supported("SingleValue")
         return SingleValueBoundTest(test=self, metric_fingerprint=fingerprint)
 
     def bind_count(self, fingerprint: Fingerprint, is_count: bool) -> "BoundTest":
+        self._validate_label_filters_not_supported("Count")
         return CountBoundTest(test=self, metric_fingerprint=fingerprint, is_count=is_count)
 
     def bind_by_label(self, fingerprint: Fingerprint, label: Label):
+        self._validate_label_filters_not_supported("ByLabel")
         return ByLabelBoundTest(test=self, metric_fingerprint=fingerprint, label=label)
 
     def bind_by_label_count(self, fingerprint: Fingerprint, label: Label, slot: ByLabelCountSlot):
         return ByLabelCountBoundTest(test=self, metric_fingerprint=fingerprint, label=label, slot=slot)
 
     def bind_mean_std(self, fingerprint: Fingerprint, is_mean: bool = True):
+        self._validate_label_filters_not_supported("MeanStd")
         return MeanStdBoundTest(test=self, metric_fingerprint=fingerprint, is_mean=is_mean)
+
+    def bind_dataframe(self, fingerprint: Fingerprint, column: str, label_filters: Optional[Dict[str, str]] = None):
+        # Use the test's label_filters if provided, otherwise use the parameter
+        filters = self.label_filters or label_filters or {}
+        return DataframeBoundTest(test=self, metric_fingerprint=fingerprint, column=column, label_filters=filters)
 
 
 class BoundTest(AutoAliasMixin, EvidentlyBaseModel, Generic[TResult], ABC):
@@ -1240,6 +1263,66 @@ class MeanStdBoundTest(BoundTest[MeanStdValue]):
         return result
 
 
+class DataframeBoundTest(BoundTest[DataframeValue]):
+    column: str
+    label_filters: Dict[str, str]
+
+    def run_test(
+        self,
+        context: "Context",
+        calculation: MetricCalculationBase,
+        metric_result: DataframeValue,
+    ) -> MetricTestResult:
+        # Find matching SingleValue based on column and label filters
+        if self.column not in metric_result.value.columns:
+            return MetricTestResult(
+                id="",
+                name="Missing DataFrame column",
+                description=f'Missing column "{self.column}" in DataFrame metric result. Available columns: {metric_result.value.columns}',
+                metric_config=calculation.to_metric_config(),
+                test_config=self.dict(),
+                status=TestStatus.ERROR,
+                bound_test=self,
+            )
+        matching_value = None
+        for single_value in metric_result.iter_single_values():
+            if single_value.display_name == self.column:
+                if self._matches_label_filters(single_value):
+                    matching_value = single_value
+                    break
+
+        if matching_value is None:
+            return MetricTestResult(
+                id="",
+                name="Missing DataFrame value",
+                description=f"No matching value found for column '{self.column}' with filters {self.label_filters}",
+                metric_config=calculation.to_metric_config(),
+                test_config=self.dict(),
+                status=TestStatus.ERROR,
+                bound_test=self,
+            )
+
+        # Run the original test on the matching SingleValue
+        result = self.test.run(context, calculation, matching_value)
+        result.bound_test = self
+        return result
+
+    def _matches_label_filters(self, single_value: SingleValue) -> bool:
+        """Check if the SingleValue matches the label filters."""
+        if not self.label_filters:
+            return True
+
+        metric_location = single_value.metric_value_location
+        if not metric_location:
+            return False
+
+        params = metric_location.params()
+        for label_key, expected_value in self.label_filters.items():
+            if params.get(label_key) != expected_value:
+                return False
+        return True
+
+
 class MeanStdMetricTests(BaseModel):
     mean: SingleValueMetricTests = None
     std: SingleValueMetricTests = None
@@ -1284,7 +1367,31 @@ class MeanStdMetric(Metric):
         return convert_tests(v)
 
 
+class DataframeMetric(Metric):
+    tests: Optional[Dict[str, List[MetricTest]]] = None
+
+    def get_bound_tests(self, context: "Context") -> Sequence[BoundTest]:
+        if self.tests is None and context.configuration.include_tests:
+            return self._get_all_default_tests(context)
+        fingerprint = self.get_fingerprint()
+        bound_tests = []
+        for column, tests in (self.tests or {}).items():
+            for test in tests:
+                # Bind DataFrame test with column - label_filters are now part of the test instance
+                bound_tests.append(test.bind_dataframe(fingerprint, column=column))
+        return bound_tests
+
+    @validator("tests", pre=True)
+    def validate_tests(cls, v):
+        if v is None:
+            return None
+        if isinstance(v, dict):
+            return {column: convert_tests(tests) for column, tests in v.items()}
+        return v
+
+
 TMeanStdMetric = TypeVar("TMeanStdMetric", bound=MeanStdMetric)
+TDataframeMetric = TypeVar("TDataframeMetric", bound=DataframeMetric)
 
 
 class MeanStdCalculation(MetricCalculation[MeanStdValue, TMeanStdMetric], Generic[TMeanStdMetric], ABC):
@@ -1306,6 +1413,14 @@ class MeanStdCalculation(MetricCalculation[MeanStdValue, TMeanStdMetric], Generi
                 display_name=self.std_display_name(),
                 metric_value_location=mean_std_value_location(self.to_metric_config(), False),
             ),
+            display_name=self.display_name(),
+        )
+
+
+class DataframeCalculation(MetricCalculation[DataframeValue, TDataframeMetric], Generic[TDataframeMetric], ABC):
+    def result(self, dataframe: pd.DataFrame) -> DataframeValue:
+        return DataframeValue(
+            value=dataframe,
             display_name=self.display_name(),
         )
 

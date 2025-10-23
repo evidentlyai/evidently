@@ -1,4 +1,5 @@
 from typing import Any
+from typing import Dict
 from typing import List
 from typing import Optional
 from typing import Union
@@ -41,16 +42,27 @@ def eq(expected: ThresholdType, *, is_critical: bool = True) -> MetricTest: ...
 
 
 @overload
+def eq(
+    expected: ThresholdType, *, is_critical: bool = True, label_filters: Optional[Dict[str, str]] = None
+) -> MetricTest: ...
+
+
+@overload
 def eq(expected: Any, *, column: Optional[str] = None, alias: Optional[str] = None) -> DescriptorTest: ...
 
 
 def eq(
-    expected: Any, *, is_critical: bool = True, column: Optional[str] = None, alias: Optional[str] = None
+    expected: Any,
+    *,
+    is_critical: bool = True,
+    column: Optional[str] = None,
+    alias: Optional[str] = None,
+    label_filters: Optional[Dict[str, str]] = None,
 ) -> AnyTest:
     if isinstance(expected, get_args(ThresholdType)):
         return GenericTest(
             test_name="eq",
-            metric=EqualMetricTest(expected=expected, is_critical=is_critical),
+            metric=EqualMetricTest(expected=expected, is_critical=is_critical, label_filters=label_filters),
             descriptor=DescriptorTest(condition=EqualsColumnCondition(expected=expected), column=column, alias=alias),
         )
     else:
@@ -70,16 +82,27 @@ def not_eq(expected: ThresholdType, *, is_critical: bool = True) -> MetricTest: 
 
 
 @overload
+def not_eq(
+    expected: ThresholdType, *, is_critical: bool = True, label_filters: Optional[Dict[str, str]] = None
+) -> MetricTest: ...
+
+
+@overload
 def not_eq(expected: Any, *, column: Optional[str] = None, alias: Optional[str] = None) -> DescriptorTest: ...
 
 
 def not_eq(
-    expected: ThresholdType, *, is_critical: bool = True, column: Optional[str] = None, alias: Optional[str] = None
+    expected: ThresholdType,
+    *,
+    is_critical: bool = True,
+    column: Optional[str] = None,
+    alias: Optional[str] = None,
+    label_filters: Optional[Dict[str, str]] = None,
 ) -> AnyTest:
     if isinstance(expected, get_args(ThresholdType)):
         return GenericTest(
             test_name="not_eq",
-            metric=NotEqualMetricTest(expected=expected, is_critical=is_critical),
+            metric=NotEqualMetricTest(expected=expected, is_critical=is_critical, label_filters=label_filters),
             descriptor=DescriptorTest(
                 condition=NotEqualsColumnCondition(expected=expected),
                 column=column,
@@ -102,15 +125,26 @@ def lt(threshold: ThresholdType, *, is_critical: bool = True) -> MetricTest: ...
 
 
 @overload
+def lt(
+    threshold: ThresholdType, *, is_critical: bool = True, label_filters: Optional[Dict[str, str]] = None
+) -> MetricTest: ...
+
+
+@overload
 def lt(threshold: ThresholdType, *, column: Optional[str] = None, alias: Optional[str] = None) -> DescriptorTest: ...
 
 
 def lt(
-    threshold: ThresholdType, *, is_critical: bool = True, column: Optional[str] = None, alias: Optional[str] = None
+    threshold: ThresholdType,
+    *,
+    is_critical: bool = True,
+    column: Optional[str] = None,
+    alias: Optional[str] = None,
+    label_filters: Optional[Dict[str, str]] = None,
 ) -> AnyTest:
     return GenericTest(
         test_name="lt",
-        metric=LessThanMetricTest(threshold=threshold, is_critical=is_critical),
+        metric=LessThanMetricTest(threshold=threshold, is_critical=is_critical, label_filters=label_filters),
         descriptor=DescriptorTest(condition=LessColumnCondition(threshold=threshold), column=column, alias=alias),
     )
 
@@ -124,15 +158,26 @@ def gt(threshold: ThresholdType, *, is_critical: bool = True) -> MetricTest: ...
 
 
 @overload
+def gt(
+    threshold: ThresholdType, *, is_critical: bool = True, label_filters: Optional[Dict[str, str]] = None
+) -> MetricTest: ...
+
+
+@overload
 def gt(threshold: ThresholdType, *, column: Optional[str] = None, alias: Optional[str] = None) -> DescriptorTest: ...
 
 
 def gt(
-    threshold: ThresholdType, *, is_critical: bool = True, column: Optional[str] = None, alias: Optional[str] = None
+    threshold: ThresholdType,
+    *,
+    is_critical: bool = True,
+    column: Optional[str] = None,
+    alias: Optional[str] = None,
+    label_filters: Optional[Dict[str, str]] = None,
 ) -> AnyTest:
     return GenericTest(
         test_name="gt",
-        metric=GreaterThanMetricTest(threshold=threshold, is_critical=is_critical),
+        metric=GreaterThanMetricTest(threshold=threshold, is_critical=is_critical, label_filters=label_filters),
         descriptor=DescriptorTest(condition=GreaterColumnCondition(threshold=threshold), column=column, alias=alias),
     )
 
@@ -146,15 +191,28 @@ def gte(threshold: ThresholdType, *, is_critical: bool = True) -> MetricTest: ..
 
 
 @overload
+def gte(
+    threshold: ThresholdType, *, is_critical: bool = True, label_filters: Optional[Dict[str, str]] = None
+) -> MetricTest: ...
+
+
+@overload
 def gte(threshold: ThresholdType, *, column: Optional[str] = None, alias: Optional[str] = None) -> DescriptorTest: ...
 
 
 def gte(
-    threshold: ThresholdType, *, is_critical: bool = True, column: Optional[str] = None, alias: Optional[str] = None
+    threshold: ThresholdType,
+    *,
+    is_critical: bool = True,
+    column: Optional[str] = None,
+    alias: Optional[str] = None,
+    label_filters: Optional[Dict[str, str]] = None,
 ) -> AnyTest:
     return GenericTest(
         test_name="gte",
-        metric=GreaterOrEqualMetricTest(threshold=threshold, is_critical=is_critical, alias=alias),
+        metric=GreaterOrEqualMetricTest(
+            threshold=threshold, is_critical=is_critical, label_filters=label_filters, alias=alias
+        ),
         descriptor=DescriptorTest(
             condition=GreaterEqualColumnCondition(threshold=threshold), column=column, alias=alias
         ),
@@ -170,15 +228,26 @@ def lte(threshold: ThresholdType, *, is_critical: bool = True) -> MetricTest: ..
 
 
 @overload
+def lte(
+    threshold: ThresholdType, *, is_critical: bool = True, label_filters: Optional[Dict[str, str]] = None
+) -> MetricTest: ...
+
+
+@overload
 def lte(threshold: ThresholdType, *, column: Optional[str] = None, alias: Optional[str] = None) -> DescriptorTest: ...
 
 
 def lte(
-    threshold: ThresholdType, *, is_critical: bool = True, column: Optional[str] = None, alias: Optional[str] = None
+    threshold: ThresholdType,
+    *,
+    is_critical: bool = True,
+    column: Optional[str] = None,
+    alias: Optional[str] = None,
+    label_filters: Optional[Dict[str, str]] = None,
 ) -> AnyTest:
     return GenericTest(
         test_name="lte",
-        metric=LessOrEqualMetricTest(threshold=threshold, is_critical=is_critical),
+        metric=LessOrEqualMetricTest(threshold=threshold, is_critical=is_critical, label_filters=label_filters),
         descriptor=DescriptorTest(condition=LessEqualColumnCondition(threshold=threshold), column=column, alias=alias),
     )
 
@@ -193,6 +262,12 @@ def is_in(values: List[InValueType], *, is_critical: bool = True) -> MetricTest:
 
 @overload
 def is_in(
+    values: List[InValueType], *, is_critical: bool = True, label_filters: Optional[Dict[str, str]] = None
+) -> MetricTest: ...
+
+
+@overload
+def is_in(
     values: List[InValueType], *, column: Optional[str] = None, alias: Optional[str] = None
 ) -> DescriptorTest: ...
 
@@ -203,10 +278,11 @@ def is_in(
     is_critical: bool = True,
     column: Optional[str] = None,
     alias: Optional[str] = None,
+    label_filters: Optional[Dict[str, str]] = None,
 ) -> AnyTest:
     return GenericTest(
         test_name="is_in",
-        metric=IsInMetricTest(values=values, is_critical=is_critical),
+        metric=IsInMetricTest(values=values, is_critical=is_critical, label_filters=label_filters),
         descriptor=DescriptorTest(condition=IsInColumnCondition(values=set(values)), column=column, alias=alias),
     )
 
@@ -221,6 +297,12 @@ def not_in(values: List[InValueType], *, is_critical: bool = True) -> MetricTest
 
 @overload
 def not_in(
+    values: List[InValueType], *, is_critical: bool = True, label_filters: Optional[Dict[str, str]] = None
+) -> MetricTest: ...
+
+
+@overload
+def not_in(
     values: List[InValueType], *, column: Optional[str] = None, alias: Optional[str] = None
 ) -> DescriptorTest: ...
 
@@ -231,9 +313,10 @@ def not_in(
     is_critical: bool = True,
     column: Optional[str] = None,
     alias: Optional[str] = None,
+    label_filters: Optional[Dict[str, str]] = None,
 ) -> AnyTest:
     return GenericTest(
         test_name="not_in",
-        metric=NotInMetricTest(values=values, is_critical=is_critical),
+        metric=NotInMetricTest(values=values, is_critical=is_critical, label_filters=label_filters),
         descriptor=DescriptorTest(condition=IsNotInColumnCondition(values=set(values)), column=column, alias=alias),
     )

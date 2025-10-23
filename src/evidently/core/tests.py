@@ -1,5 +1,6 @@
 from typing import TYPE_CHECKING
 from typing import Any
+from typing import Dict
 from typing import Optional
 from typing import Union
 from typing import get_args
@@ -62,3 +63,6 @@ class GenericTest(BaseModel):
 
     def bind_mean_std(self, fingerprint: Fingerprint, is_mean: bool = True):
         return self.for_metric().bind_mean_std(fingerprint, is_mean)
+
+    def bind_dataframe(self, fingerprint: Fingerprint, column: str, label_filters: Optional[Dict[str, str]] = None):
+        return self.for_metric().bind_dataframe(fingerprint, column, label_filters)

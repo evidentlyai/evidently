@@ -11,6 +11,7 @@ from typing import Union
 import pandas as pd
 
 from evidently.core.metric_types import BoundTest
+from evidently.core.metric_types import DataframeMetric
 from evidently.core.metric_types import DataframeValue
 from evidently.core.metric_types import Metric
 from evidently.core.metric_types import SingleValue
@@ -74,14 +75,11 @@ def _gen_ranking_input_data(context: "Context", task_name: Optional[str]) -> Inp
     return default_data
 
 
-class TopKBase(Metric):
+class TopKBase(DataframeMetric):
     k: int
     min_rel_score: Optional[int] = None
     no_feedback_users: bool = False
     ranking_name: str = "default"
-
-    def get_bound_tests(self, context: "Context") -> List[BoundTest]:
-        return []
 
 
 TTopKBase = TypeVar("TTopKBase", bound=TopKBase)
@@ -566,13 +564,10 @@ def _bias_result(
     return current_value, reference_value
 
 
-class RecCasesTable(Metric):
+class RecCasesTable(DataframeMetric):
     user_ids: Optional[List[Union[int, str]]] = None
     display_features: Optional[List[str]] = None
     ranking_name: str = "default"
-
-    def get_bound_tests(self, context: "Context") -> List[BoundTest]:
-        return []
 
 
 class RecCasesTableCalculation(
