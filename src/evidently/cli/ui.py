@@ -7,6 +7,7 @@ from typer import Option
 from typer import echo
 
 from evidently.cli.main import app
+from evidently.ui.service.app import get_config
 from evidently.ui.service.demo_projects import DEMO_PROJECTS_NAMES
 
 
@@ -37,12 +38,12 @@ def ui(
     ),
     secret: Optional[str] = Option(None, help="Secret for writing operations"),
     litestar_request_max_body_size: Optional[int] = Option(None, help="Request body size limit"),
+    conf_path: Optional[str] = Option(None, help="Path to configuration file"),
 ):
     """Start Evidently UI service"""
     if os.environ.get("EXPERIMENTAL_DETERMINISTIC_UUID"):
         setup_deterministic_generation_uuid()
 
-    from evidently.ui.service.app import get_config
     from evidently.ui.service.app import run
     from evidently.ui.service.demo_projects import DEMO_PROJECTS
     from evidently.ui.workspace import Workspace
@@ -69,5 +70,6 @@ def ui(
         workspace=workspace,
         secret=secret,
         request_max_body_size=litestar_request_max_body_size,
+        conf_path=conf_path,
     )
     run(config)

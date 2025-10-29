@@ -30,6 +30,18 @@ class LocalStorageComponent(StorageComponent):
         return lambda: create_local_project_manager(self.path, autorefresh=self.autorefresh, auth=NoopAuthManager())
 
 
+class SQLStorageComponent(StorageComponent):
+    class Config:
+        type_alias = "sql"
+
+    url: str
+
+    def dependency_factory(self) -> Callable[..., ProjectManager]:
+        from evidently.ui.service.storage.sql import create_sql_project_manager
+
+        return lambda: create_sql_project_manager(self.url, auth=NoopAuthManager())
+
+
 class MetadataStorageComponent(FactoryComponent[ProjectMetadataStorage], ABC):
     class Config:
         is_base_type = True
@@ -69,3 +81,6 @@ register_type_alias(
 register_type_alias(
     DataStorageComponent, "evidently.ui.service.components.local_storage.InmemoryDataComponent", "inmemory"
 )
+register_type_alias(BlobStorageComponent, "evidently.ui.service.storage.sql.components.SQLBlobComponent", "sql")
+register_type_alias(MetadataStorageComponent, "evidently.ui.service.storage.sql.components.SQLMetadataComponent", "sql")
+register_type_alias(DataStorageComponent, "evidently.ui.service.storage.sql.components.SQLDataComponent", "sql")
