@@ -163,16 +163,15 @@ class PointSQLModel(Base):
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     project_id: Mapped[ProjectID] = mapped_column(ForeignKey("projects.id", ondelete="CASCADE"))
     snapshot_id: Mapped[SnapshotID] = mapped_column(ForeignKey("snapshots.id", ondelete="CASCADE"))
-
-    metric_fingerprint: Mapped[str] = mapped_column("metric_hash", index=True)
-    timestamp: Mapped[datetime.datetime]
-
-    field_path: Mapped[str] = mapped_column(index=True)
-    value: Mapped[str]
+    metric_type: Mapped[str]
+    params: Mapped[Dict[str, str]] = mapped_column(JSON)
+    value: Mapped[float]
 
 
 # Composite index for better query performance
-composite_index = Index("points_snapshot_id_field_path_idx", PointSQLModel.snapshot_id, PointSQLModel.field_path)
+points_project_snapshot_index = Index(
+    "points_project_snapshot_idx", PointSQLModel.project_id, PointSQLModel.snapshot_id
+)
 
 
 class BlobSQLModel(Base):
