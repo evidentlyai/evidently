@@ -7,6 +7,7 @@ from sqlalchemy import delete
 from sqlalchemy import select
 from sqlalchemy import update
 
+from evidently.core.serialization import SnapshotModel
 from evidently.legacy.ui.dashboards import DashboardConfig
 from evidently.sdk.models import SnapshotMetadataModel
 from evidently.ui.service.base import BlobMetadata
@@ -84,7 +85,7 @@ class SQLProjectMetadataStorage(BaseSQLStorage, ProjectMetadataStorage):
             stmt = stmt.order_by(ProjectSQLModel.created_at.desc())
             return [p.to_project() for p in session.scalars(stmt)]
 
-    async def add_snapshot(self, project_id: ProjectID, snapshot: SnapshotSQLModel) -> SnapshotID:
+    async def add_snapshot(self, project_id: ProjectID, snapshot: SnapshotModel) -> SnapshotID:
         """Add a new snapshot to a project."""
         with self.session as session:
             # Generate a new snapshot ID

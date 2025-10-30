@@ -84,3 +84,4 @@ register_type_alias(
 register_type_alias(BlobStorageComponent, "evidently.ui.service.storage.sql.components.SQLBlobComponent", "sql")
 register_type_alias(MetadataStorageComponent, "evidently.ui.service.storage.sql.components.SQLMetadataComponent", "sql")
 register_type_alias(DataStorageComponent, "evidently.ui.service.storage.sql.components.SQLDataComponent", "sql")
+register_type_alias(StorageComponent, "evidently.ui.service.components.storage.SQLStorageComponent", "sql")
