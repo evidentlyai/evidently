@@ -150,7 +150,7 @@ class MetricsSQLModel(Base):
     metric_json: Mapped[str]
 
     @property
-    def metric(self) -> Metric:  # type: ignore[type-abstract]
+    def metric(self) -> Metric:  # type: ignore[type-abstract,return-value]
         """Get metric object from JSON."""
         return parse_obj_as(Metric, json.loads(self.metric_json))
 
