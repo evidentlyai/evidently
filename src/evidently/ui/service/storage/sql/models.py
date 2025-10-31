@@ -150,9 +150,9 @@ class MetricsSQLModel(Base):
     metric_json: Mapped[str]
 
     @property
-    def metric(self) -> Metric:  # type: ignore[type-abstract,return-value]
+    def metric(self) -> Metric:
         """Get metric object from JSON."""
-        return parse_obj_as(Metric, json.loads(self.metric_json))
+        return parse_obj_as(Metric, json.loads(self.metric_json))  # type: ignore[type-abstract,return-value]
 
 
 class PointSQLModel(Base):
