@@ -15,6 +15,7 @@ from evidently.ui.service.base import Project
 from evidently.ui.service.base import ProjectMetadataStorage
 from evidently.ui.service.base import User
 from evidently.ui.service.errors import SnapshotNotFound
+from evidently.ui.service.type_aliases import OrgID
 from evidently.ui.service.type_aliases import ProjectID
 from evidently.ui.service.type_aliases import SnapshotID
 
@@ -28,7 +29,7 @@ from .utils import get_project
 class SQLProjectMetadataStorage(BaseSQLStorage, ProjectMetadataStorage):
     """SQL-based project metadata storage implementation."""
 
-    async def add_project(self, project: Project, user: User, org_id: Optional[str] = None) -> Project:
+    async def add_project(self, project: Project, user: User, org_id: Optional[OrgID] = None) -> Project:
         """Add a new project to storage."""
         with self.session as session:
             user_model = get_or_create_user(session, user.id)

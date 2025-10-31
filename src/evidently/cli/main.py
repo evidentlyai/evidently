@@ -2,8 +2,9 @@ import os
 
 from typer import Typer
 
-pretty_exceptions_enable = os.environ.get("PRETTY_EXCEPTIONS_DISABLED") is None
-app = Typer(context_settings={"help_option_names": ["-h", "--help"]}, pretty_exceptions_enable=pretty_exceptions_enable)
+app = Typer(context_settings={"help_option_names": ["-h", "--help"]})
+if os.environ.get("PRETTY_EXCEPTIONS_DISABLED") is not None:
+    app.pretty_exceptions_enable = False
 
 
 @app.callback(no_args_is_help=True, invoke_without_command=True)

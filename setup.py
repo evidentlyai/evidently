@@ -102,6 +102,9 @@ setup_args = dict(
         "gcs": [
             "gcsfs>=2024.9.0",
         ],
+        "sql": [
+            "sqlalchemy>=2.0.0",
+        ],
     },
     entry_points={"console_scripts": ["evidently=evidently.cli:app"]},
 )

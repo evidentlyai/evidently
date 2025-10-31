@@ -1,6 +1,11 @@
 from typing import Optional
 
-from sqlalchemy import create_engine
+try:
+    from sqlalchemy import create_engine
+except ImportError as e:
+    raise ImportError(
+        "SQLAlchemy is required for SQL storage support. " "Please install it with: pip install evidently[sql]"
+    ) from e
 
 from .base import BaseSQLStorage
 from .blob import SQLBlobStorage

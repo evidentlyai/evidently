@@ -85,17 +85,19 @@ def _collect_series(data, filters: Optional[List[SeriesFilter]]) -> SeriesRespon
             frozenset(snapshot_metadata.items()),
         )
 
-        filter_index: Optional[int]
+        filter_index: int
         if filters is None:
             filter_index = 0
         else:
-            filter_index = series_filters_map.get(key)
-            if filter_index is None:
-                filter_index = _find_filter_index(filters, metric_type, params, snapshot_tags, snapshot_metadata)
-                series_filters_map[key] = filter_index
-
-            if filter_index is None:
-                continue
+            stored_index = series_filters_map.get(key)
+            if stored_index is not None:
+                filter_index = stored_index
+            else:
+                found_index = _find_filter_index(filters, metric_type, params, snapshot_tags, snapshot_metadata)
+                if found_index is None:
+                    continue
+                filter_index = found_index
+                series_filters_map[key] = found_index
 
         try:
             value_float = float(value)
@@ -105,7 +107,7 @@ def _collect_series(data, filters: Optional[List[SeriesFilter]]) -> SeriesRespon
         if series_id not in series:
             series[series_id] = Series(
                 metric_type=metric_type,
-                filter_index=filter_index or 0,
+                filter_index=filter_index,
                 params=params,
                 values=([None] * index) + [value_float],
             )
@@ -140,7 +142,7 @@ class SQLDataStorage(BaseSQLStorage, DataStorage):
 
     def _extract_params(self, result: MetricResult) -> Dict[str, str]:
         """Extract params from metric result."""
-        params = {}
+        params: Dict[str, str] = {}
         if result.metric_value_location is None:
             return params
         for k, v in result.metric_value_location.param.items():
@@ -163,7 +165,7 @@ class SQLDataStorage(BaseSQLStorage, DataStorage):
         self, project_id: ProjectID, snapshot_id: SnapshotID, snapshot: SnapshotModel, metric_results
     ) -> Iterator[List[dict]]:
         """Extract metric result points for storage."""
-        points_chunk = []
+        points_chunk: List[dict] = []
 
         for metric_model, metric_result in metric_results:
             if isinstance(metric_result, SingleValue):
