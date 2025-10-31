@@ -36,6 +36,8 @@ def get_config(
     conf_path: Optional[str] = None,
     request_max_body_size: Optional[int] = None,
 ):
+    if conf_path is not None and not os.path.exists(conf_path):
+        raise FileNotFoundError(conf_path)
     settings.configure(settings_module=conf_path)
     config: LocalConfig = load_config(LocalConfig, settings)
     config.service.host = host
