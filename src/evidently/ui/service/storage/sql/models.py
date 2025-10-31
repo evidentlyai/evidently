@@ -95,6 +95,7 @@ class SnapshotSQLModel(Base):
     """Snapshot model for SQL storage."""
 
     __tablename__ = "snapshots"
+    __table_args__ = (Index("snapshots_project_id_idx", "project_id"),)
 
     id: Mapped[SnapshotID] = mapped_column(primary_key=True, default=new_id)
     project_id: Mapped[ProjectID] = mapped_column(ForeignKey("projects.id", ondelete="CASCADE"))
@@ -137,10 +138,6 @@ class SnapshotSQLModel(Base):
         )
 
 
-# Indexes for better query performance
-snapshots_project_id_index = Index("snapshots_project_id_idx", SnapshotSQLModel.project_id)
-
-
 class MetricsSQLModel(Base):
     """Metrics model for SQL storage."""
 
@@ -159,6 +156,7 @@ class PointSQLModel(Base):
     """Point model for storing metric data points."""
 
     __tablename__ = "points"
+    __table_args__ = (Index("points_project_snapshot_idx", "project_id", "snapshot_id"),)
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     project_id: Mapped[ProjectID] = mapped_column(ForeignKey("projects.id", ondelete="CASCADE"))
@@ -166,12 +164,6 @@ class PointSQLModel(Base):
     metric_type: Mapped[str]
     params: Mapped[Dict[str, str]] = mapped_column(JSON)
     value: Mapped[float]
-
-
-# Composite index for better query performance
-points_project_snapshot_index = Index(
-    "points_project_snapshot_idx", PointSQLModel.project_id, PointSQLModel.snapshot_id
-)
 
 
 class BlobSQLModel(Base):
