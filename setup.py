@@ -104,6 +104,7 @@ setup_args = dict(
         ],
         "sql": [
             "sqlalchemy>=2.0.0",
+            "psycopg2-binary>=2.9.0",
         ],
     },
     entry_points={"console_scripts": ["evidently=evidently.cli:app"]},

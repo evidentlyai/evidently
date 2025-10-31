@@ -1,5 +1,7 @@
 import contextlib
+import io
 import json
+from typing import IO
 from typing import Iterator
 
 from sqlalchemy import Engine
@@ -25,13 +27,13 @@ class SQLBlobStorage(BaseSQLStorage, BlobStorage):
         return f"{project_id}/{snapshot.id}.json"
 
     @contextlib.contextmanager
-    def open_blob(self, blob_id: BlobID) -> Iterator:
+    def open_blob(self, blob_id: BlobID) -> Iterator[IO]:
         """Open blob for reading."""
         with self.session as session:
             blob_model = session.query(BlobSQLModel).filter(BlobSQLModel.id == blob_id).first()
             if blob_model is None:
                 raise FileNotFoundError(f"Blob {blob_id} not found")
-            yield blob_model.data
+            yield io.StringIO(blob_model.data)
 
     async def put_blob(self, blob_id: BlobID, obj: str) -> BlobID:
         """Store blob data."""

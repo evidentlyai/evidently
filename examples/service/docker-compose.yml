@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: evidently-postgres
+    environment:
+      POSTGRES_DB: evidently
+      POSTGRES_USER: evidently_user
+      POSTGRES_PASSWORD: evidently_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U evidently_user -d evidently"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  evidently-service:
+    image: evidently/evidently-service:latest
+    container_name: evidently-service
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./postgres_config.yaml:/app/config.yaml:ro
+    command: ["--port", "8000", "--conf-path", "/app/config.yaml"]
+    environment:
+      EVIDENTLY_DEBUG: 1
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/version')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+volumes:
+  postgres_data:

@@ -2,7 +2,7 @@ FROM python:3.11-slim-bookworm
 ARG BUILD_DATE
 ARG VCS_REF
 ARG VERSION
-ARG INSTALL_EXTRAS=""
+ARG INSTALL_EXTRAS="[sql]"
 LABEL org.label-schema.build-date=$BUILD_DATE \
       org.label-schema.name="Evidently AI Service" \
       org.label-schema.url="https://github.com/evidentlyai/evidently" \
