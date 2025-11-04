@@ -1,6 +1,8 @@
+from typing import Annotated
 from typing import Dict
 
 from litestar.di import Provide
+from litestar.params import Dependency
 
 from evidently.ui.service.components.base import Component
 from evidently.ui.service.components.base import ComponentContext
@@ -17,6 +19,15 @@ class DashboardComponent(Component):
 
             async def factory():
                 return JsonFileDashboardManager(self.path)
+
+            return factory
+        elif self.storage_type == "sql":
+            from sqlalchemy import Engine
+
+            from evidently.ui.service.storage.sql.dashboard import SQLDashboardManager
+
+            def factory(engine: Annotated[Engine, Dependency()]):
+                return SQLDashboardManager(engine)
 
             return factory
         raise ValueError("Unknown storage type {}".format(self.storage_type))

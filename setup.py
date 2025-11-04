@@ -20,8 +20,14 @@ ui_build_assets = [
     "ui/service/assets/static/img/*",
 ]
 
+migration_assets = [
+    "ui/service/storage/sql/migrations/alembic.ini",
+    "ui/service/storage/sql/migrations/script.py.mako",
+    "ui/service/storage/sql/migrations/README.md",
+]
+
 package_data = {
-    "evidently": ui_build_assets,
+    "evidently": ui_build_assets + migration_assets,
 }
 
 setup_args = dict(
@@ -101,6 +107,11 @@ setup_args = dict(
         ],
         "gcs": [
             "gcsfs>=2024.9.0",
+        ],
+        "sql": [
+            "sqlalchemy>=2.0.0",
+            "psycopg2-binary>=2.9.0",
+            "alembic>=1.13.0",
         ],
     },
     entry_points={"console_scripts": ["evidently=evidently.cli:app"]},

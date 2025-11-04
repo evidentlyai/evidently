@@ -1,0 +1,9 @@
+# Evidently UI SQL Storage Configuration - PostgreSQL
+# For production use with PostgreSQL database
+
+# Storage component (use SQL backend)
+# For PostgreSQL, you can use either:
+# 1. Direct URL (recommended for Docker):
+storage:
+  type: sql
+  url: postgresql://evidently_user:evidently_password@postgres:5432/evidently

@@ -1,0 +1,7 @@
+# Evidently UI SQL Storage Configuration
+# This configuration uses SQLite for simple local SQL storage
+
+storage:
+  type: sql
+  url: sqlite:///evidently.db
+

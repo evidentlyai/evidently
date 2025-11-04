@@ -36,15 +36,16 @@ def get_config(
     conf_path: Optional[str] = None,
     request_max_body_size: Optional[int] = None,
 ):
+    if conf_path is not None and not os.path.exists(conf_path):
+        raise FileNotFoundError(conf_path)
     settings.configure(settings_module=conf_path)
     config: LocalConfig = load_config(LocalConfig, settings)
     config.service.host = host
     config.service.port = port
     if request_max_body_size is not None:
         config.litestar.request_max_body_size = request_max_body_size
-    if not isinstance(config.storage, LocalStorageComponent):
-        raise ValueError("Storage component is not a LocalStorageComponent")
-    config.storage.path = workspace
+    if isinstance(config.storage, LocalStorageComponent):
+        config.storage.path = workspace
 
     secret = secret or os.environ.get(EVIDENTLY_SECRET_ENV)
     if secret is not None:
