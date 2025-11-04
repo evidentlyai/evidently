@@ -34,10 +34,29 @@ def sqlite_engine():
 
     yield engine
 
-    # Cleanup
-    import os
+    # Cleanup: dispose engine to close all connections before deleting file
+    # On Windows, SQLite locks the file until all connections are closed
+    engine.dispose(close=True)
 
-    os.unlink(db_path)
+    import os
+    import sys
+    import time
+
+    # On Windows, add a small delay to ensure file handles are released
+    if sys.platform == "win32":
+        time.sleep(0.1)
+
+    # Retry deletion in case of permission errors (Windows-specific)
+    max_retries = 5
+    for attempt in range(max_retries):
+        try:
+            os.unlink(db_path)
+            break
+        except PermissionError:
+            if attempt < max_retries - 1:
+                time.sleep(0.1)
+            else:
+                raise
 
 
 @pytest.fixture
