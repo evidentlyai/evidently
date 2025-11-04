@@ -175,7 +175,7 @@ jobs:
         uses: ./.github/share-actions/get-bikes-dataset-cached
 
       - name: Install package
-        run: pip install -e .[dev,spark,fsspec,llm]
+        run: pip install -e .[dev,spark,fsspec,llm,sql]
       - name: Run Tests
         run: python -m pytest --durations=50
 

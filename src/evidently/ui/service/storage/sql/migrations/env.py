@@ -13,11 +13,12 @@ from evidently.ui.service.storage.sql.models import UserSQLModel  # noqa: F401
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
-config = context.config
+# Use getattr to safely access config - it may not be available during import
+config = getattr(context, "config", None)
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
-if config.config_file_name is not None:
+if config is not None and config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
 # add your model's MetaData object here
@@ -42,6 +43,8 @@ def run_migrations_offline() -> None:
     script output.
 
     """
+    # Get config from context (it should be available when Alembic runs this)
+    config = context.config
     url = config.get_main_option("sqlalchemy.url")
     if url is None:
         raise ValueError("sqlalchemy.url must be set in alembic.ini or provided via -x url=<database_url>")
@@ -64,6 +67,8 @@ def run_migrations_online() -> None:
     and associate a connection with the context.
 
     """
+    # Get config from context (it should be available when Alembic runs this)
+    config = context.config
     # Check if a connection/engine was provided via config attributes
     connectable = config.attributes.get("connection", None)
 
@@ -94,7 +99,10 @@ def run_migrations_online() -> None:
             context.run_migrations()
 
 
-if context.is_offline_mode():
-    run_migrations_offline()
-else:
-    run_migrations_online()
+# Only run migrations when Alembic executes this script
+# (not when the module is imported)
+if hasattr(context, "config"):
+    if context.is_offline_mode():
+        run_migrations_offline()
+    else:
+        run_migrations_online()
