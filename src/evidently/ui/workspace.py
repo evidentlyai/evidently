@@ -475,6 +475,7 @@ class RemoteWorkspace(RemoteBase, WorkspaceBase):  # todo: reuse cloud ws
         self.base_url = base_url
         self.secret = secret
         self.verify()
+        self.datasets = RemoteDatasetsManager(self, "/api/datasets")
 
     def _prepare_request(
         self,
@@ -573,7 +574,13 @@ class RemoteWorkspace(RemoteBase, WorkspaceBase):  # todo: reuse cloud ws
         description: Optional[str],
         link: Optional[SnapshotLink] = None,
     ) -> DatasetID:
-        raise NotImplementedError("Adding datasets is not supported yet")
+        return self.datasets.add(project_id=project_id, dataset=dataset, name=name, description=description, link=link)
+
+    def load_dataset(self, dataset_id: DatasetID) -> Dataset:
+        return self.datasets.load(dataset_id)
+
+    def list_datasets(self, project: STR_UUID, origins: Optional[List[str]] = None) -> DatasetList:
+        return self.datasets.list(project, origins=origins)
 
     def save_dashboard(self, project_id: ProjectID, dashboard: DashboardModel):
         self._request(f"/api/v2/dashboards/{project_id}", method="POST", body=dashboard.dict())
@@ -603,7 +610,7 @@ class CloudWorkspace(RemoteWorkspace):
         self._logged_in: bool = False
         super().__init__(base_url=url if url is not None else self.URL)
         self.prompts = RemotePromptManager(self)
-        self.datasets = RemoteDatasetsManager(self)
+        self.datasets = RemoteDatasetsManager(self, "/api/v2/datasets")
         self.configs = RemoteConfigManager(self)
 
     def _get_jwt_token(self):
@@ -731,22 +738,6 @@ class CloudWorkspace(RemoteWorkspace):
 
     def list_orgs(self) -> List[Org]:
         return [o.to_org() for o in self._request("/api/orgs", "GET", response_model=List[OrgModel])]
-
-    def add_dataset(
-        self,
-        project_id: STR_UUID,
-        dataset: Dataset,
-        name: str,
-        description: Optional[str],
-        link: Optional[SnapshotLink] = None,
-    ) -> DatasetID:
-        return self.datasets.add(project_id=project_id, dataset=dataset, name=name, description=description, link=link)
-
-    def load_dataset(self, dataset_id: DatasetID) -> Dataset:
-        return self.datasets.load(dataset_id)
-
-    def list_datasets(self, project: STR_UUID, origins: Optional[List[str]] = None) -> DatasetList:
-        return self.datasets.list(project, origins=origins)
 
     def _get_snapshot_url(self, project_id: STR_UUID, snapshot_id: STR_UUID) -> str:
         return urljoin(self.base_url, f"/v2/projects/{project_id}/explore/{snapshot_id}")

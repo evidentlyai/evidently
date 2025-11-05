@@ -22,7 +22,7 @@ from evidently.ui.service.type_aliases import DatasetID
 from evidently.ui.service.type_aliases import ProjectID
 
 if typing.TYPE_CHECKING:
-    from evidently.ui.workspace import CloudWorkspace
+    from evidently.ui.workspace import RemoteWorkspace
 
 
 class DatasetInfo(BaseModel):
@@ -34,6 +34,7 @@ class DatasetInfo(BaseModel):
     column_count: int
     description: str
     created_at: datetime
+    author_name: Optional[str] = None
     origin: str
     tags: List[str]
     metadata: Dict[str, MetadataValueType]
@@ -58,19 +59,20 @@ class DatasetList(BaseModel):
 
 
 class RemoteDatasetsManager:
-    def __init__(self, workspace: "CloudWorkspace"):
+    def __init__(self, workspace: "RemoteWorkspace", base_dataset_url: str):
         self._ws = workspace
+        self._base_path = base_dataset_url
 
     def list(self, project: STR_UUID, origins: Optional[List[str]] = None) -> DatasetList:
         return self._ws._request(
-            "/api/v2/datasets",
+            f"{self._base_path}",
             "GET",
             query_params={"project_id": project, "origin": ",".join(origins) if origins else None},
             response_model=DatasetList,
         )
 
     def load(self, dataset_id: DatasetID) -> Dataset:
-        response: Response = self._ws._request(f"/api/v2/datasets/{dataset_id}/download", "GET")
+        response: Response = self._ws._request(f"{self._base_path}/{dataset_id}/download", "GET")
 
         metadata, file_content = read_multipart_response(response)
 
@@ -96,7 +98,7 @@ class RemoteDatasetsManager:
             qp["dataset_type"] = link.dataset_type
             qp["dataset_subtype"] = link.dataset_subtype
         response: Response = self._ws._request(
-            "/api/v2/datasets/upload",
+            f"{self._base_path}/upload",
             "POST",
             body={
                 "name": name,

@@ -1,8 +1,6 @@
 import datetime
-import tempfile
 
 import pytest
-from sqlalchemy import create_engine
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
@@ -15,48 +13,9 @@ from evidently.core.serialization import SnapshotModel
 from evidently.legacy.core import new_id
 from evidently.ui.service.base import Project
 from evidently.ui.service.base import SeriesFilter
-from evidently.ui.service.base import User
 from evidently.ui.service.storage.sql.data import SQLDataStorage
 from evidently.ui.service.storage.sql.metadata import SQLProjectMetadataStorage
-from evidently.ui.service.storage.sql.models import Base
 from evidently.ui.service.storage.sql.models import PointSQLModel
-from evidently.ui.service.type_aliases import ZERO_UUID
-
-
-@pytest.fixture
-def sqlite_engine():
-    """Create a temporary SQLite database for testing."""
-    with tempfile.NamedTemporaryFile(suffix=".db", delete=False) as f:
-        db_path = f.name
-
-    engine = create_engine(f"sqlite:///{db_path}")
-    Base.metadata.create_all(engine)
-
-    yield engine
-
-    # Cleanup: dispose engine to close all connections before deleting file
-    # On Windows, SQLite locks the file until all connections are closed
-    engine.dispose(close=True)
-
-    import os
-    import sys
-    import time
-
-    # On Windows, add a small delay to ensure file handles are released
-    if sys.platform == "win32":
-        time.sleep(0.1)
-
-    # Retry deletion in case of permission errors (Windows-specific)
-    max_retries = 5
-    for attempt in range(max_retries):
-        try:
-            os.unlink(db_path)
-            break
-        except PermissionError:
-            if attempt < max_retries - 1:
-                time.sleep(0.1)
-            else:
-                raise
 
 
 @pytest.fixture
@@ -69,28 +28,6 @@ def data_storage(sqlite_engine):
 def metadata_storage(sqlite_engine):
     """Create SQL metadata storage instance."""
     return SQLProjectMetadataStorage(sqlite_engine)
-
-
-@pytest.fixture
-def test_user():
-    """Create a test user."""
-    return User(id=ZERO_UUID, name="Test User")
-
-
-@pytest.fixture
-def test_project():
-    """Create a test project."""
-    return Project(
-        id=ZERO_UUID,
-        name="Test Project",
-        description="A test project",
-    )
-
-
-@pytest.fixture
-def test_project_id():
-    """Create a test project ID."""
-    return new_id()
 
 
 @pytest.fixture
