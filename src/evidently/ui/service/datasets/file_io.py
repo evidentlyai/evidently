@@ -13,7 +13,8 @@ from pandas.errors import ParserError
 from evidently.core.datasets import DataDefinition
 from evidently.core.datasets import Dataset
 from evidently.legacy.ui.type_aliases import UserID
-from evidently.ui.service.storage.local.dataset import FSSpecDatasetFileStorage
+from evidently.ui.service.storage.local.dataset import DatasetFileStorage
+from evidently.ui.service.type_aliases import DatasetID
 from evidently.ui.service.type_aliases import ProjectID
 
 FileID = str
@@ -48,7 +49,7 @@ def calculate_data_definition(current_data: pd.DataFrame) -> DataDefinition:
 class FileIO:
     """Utility for reading and writing dataset files."""
 
-    def __init__(self, file_storage: FSSpecDatasetFileStorage):
+    def __init__(self, file_storage: DatasetFileStorage):
         self.file_storage = file_storage
 
     @staticmethod
@@ -66,6 +67,7 @@ class FileIO:
         self,
         user_id: UserID,
         project_id: ProjectID,
+        dataset_id: DatasetID,
         upload_file: UploadFile,
         allowed_extensions: Optional[Container[str]] = None,
     ) -> Tuple[FileID, str, bytes]:
@@ -75,17 +77,17 @@ class FileIO:
             raise HTTPException(status_code=400, detail="Extension not allowed")
         file_content: bytes = upload_file.file.read()
         return (
-            self.file_storage.put_dataset(user_id, project_id, upload_file.filename, file_content),
+            self.file_storage.put_dataset(user_id, project_id, dataset_id, upload_file.filename, file_content),
             file_extension,
             file_content,
         )
 
     def save_dataframe(
-        self, user_id: UserID, project_id: ProjectID, upload_file: UploadFile
+        self, user_id: UserID, project_id: ProjectID, dataset_id: DatasetID, upload_file: UploadFile
     ) -> Tuple[str, pd.DataFrame, int]:
         """Save uploaded file as dataframe."""
         file_id, file_extension, file_content = self.save_file(
-            user_id, project_id, upload_file, allowed_extensions=self.ALLOWED_FILE_READERS.keys()
+            user_id, project_id, dataset_id, upload_file, allowed_extensions=self.ALLOWED_FILE_READERS.keys()
         )
         try:
             reader = self.ALLOWED_FILE_READERS[file_extension]
@@ -95,16 +97,21 @@ class FileIO:
         return file_id, current_data, int(len(file_content))
 
     def save_dataframe_and_calculate_data_definition(
-        self, user_id: UserID, project_id: ProjectID, file: UploadFile, data_definition: Optional[DataDefinition] = None
+        self,
+        user_id: UserID,
+        project_id: ProjectID,
+        dataset_id: DatasetID,
+        file: UploadFile,
+        data_definition: Optional[DataDefinition] = None,
     ) -> FileData:
         """Save dataframe and calculate data definition."""
-        file_id, current_data, size_bytes = self.save_dataframe(user_id, project_id, file)
+        file_id, current_data, size_bytes = self.save_dataframe(user_id, project_id, dataset_id, file)
         result_dd = data_definition
         if data_definition is None:
             try:
                 result_dd = calculate_data_definition(current_data)
             except Exception as e:
-                self.file_storage.remove_dataset(project_id, file_id)
+                self.file_storage.remove_dataset(file_id)
                 raise e
 
         row_count, column_count = current_data.shape
@@ -127,7 +134,7 @@ class FileIO:
         _, file_extension = os.path.splitext(file_id)
         if file_extension not in self.ALLOWED_FILE_READERS.keys():
             raise HTTPException(status_code=400, detail="Extension not allowed")
-        file_content = self.file_storage.get_dataset(project_id, file_id)
+        file_content = self.file_storage.get_dataset(file_id)
         reader = self.ALLOWED_FILE_READERS[file_extension]
         df = reader(BytesIO(file_content))
         return df

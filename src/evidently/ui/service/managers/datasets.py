@@ -1,5 +1,4 @@
 import datetime
-import posixpath
 from math import ceil
 from typing import List
 from typing import Optional
@@ -29,7 +28,7 @@ from evidently.ui.service.datasets.models import ColumnDataType
 from evidently.ui.service.datasets.models import DatasetColumn
 from evidently.ui.service.datasets.models import DatasetPagination
 from evidently.ui.service.datasets.models import Metadata
-from evidently.ui.service.storage.local.dataset import FSSpecDatasetFileStorage
+from evidently.ui.service.storage.local.dataset import DatasetFileStorage
 from evidently.ui.service.type_aliases import DatasetID
 
 DEFAULT_INDEX_COLUMN = "_evidently_index"
@@ -43,7 +42,7 @@ class DatasetManager(BaseManager):
 
     project_manager: ProjectManager
     dataset_metadata: DatasetMetadataStorage
-    dataset_file_storage: FSSpecDatasetFileStorage
+    dataset_file_storage: DatasetFileStorage
 
     async def upload_dataset(
         self,
@@ -67,8 +66,9 @@ class DatasetManager(BaseManager):
         file_data = data if isinstance(data, UploadFile) else get_upload_file(data, name)
         io = FileIO(self.dataset_file_storage)
         dataset_id = new_id()
-        file_data.filename = posixpath.join(str(dataset_id), file_data.filename)
-        blob_data = io.save_dataframe_and_calculate_data_definition(user_id, project_id, file_data, data_definition)
+        blob_data = io.save_dataframe_and_calculate_data_definition(
+            user_id, project_id, dataset_id, file_data, data_definition
+        )
 
         dataset = DatasetMetadata(
             id=dataset_id,

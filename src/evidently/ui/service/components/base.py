@@ -5,9 +5,11 @@ from typing import ClassVar
 from typing import Dict
 from typing import Generic
 from typing import List
+from typing import Literal
 from typing import Optional
 from typing import Type
 from typing import TypeVar
+from typing import overload
 
 from litestar import Litestar
 from litestar import Router
@@ -53,7 +55,15 @@ class AppBuilder:
 
 
 class ComponentContext:
-    def get_component(self, type_: Type[T]) -> T:
+    @overload
+    def get_component(self, type_: Type[T], required: Literal[True] = True) -> T:
+        pass
+
+    @overload
+    def get_component(self, type_: Type[T], required: Literal[False] = False) -> Optional[T]:
+        pass
+
+    def get_component(self, type_: Type[T], required: bool = True) -> Optional[T]:
         raise NotImplementedError
 
 

@@ -16,7 +16,7 @@ from evidently.pydantic_utils import PolymorphicModel
 from evidently.ui.service.datasets.filters import FilterBy
 from evidently.ui.service.datasets.filters import filter_df
 from evidently.ui.service.errors import EvidentlyServiceError
-from evidently.ui.service.storage.local.dataset import FSSpecDatasetFileStorage
+from evidently.ui.service.storage.local.dataset import DatasetFileStorage
 from evidently.ui.service.type_aliases import DatasetID
 from evidently.ui.service.type_aliases import ProjectID
 from evidently.ui.service.type_aliases import UserID
@@ -97,7 +97,7 @@ class FileDataSource(SortedFilteredDataSource):
     filename: str
     is_tmp: bool = False
 
-    def read(self, storage: FSSpecDatasetFileStorage) -> pd.DataFrame:
+    def read(self, storage: DatasetFileStorage) -> pd.DataFrame:
         """Read the file from storage."""
         try:
             from evidently.ui.service.datasets.file_io import FileIO

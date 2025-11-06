@@ -2,6 +2,7 @@ import contextlib
 from typing import Dict
 from typing import Iterator
 from typing import List
+from typing import Optional
 from typing import Type
 from typing import TypeVar
 
@@ -34,11 +35,13 @@ class ConfigContext(ComponentContext):
         self.config = config
         self.components_mapping = components_mapping
 
-    def get_component(self, type_: Type[T]) -> T:
+    def get_component(self, type_: Type[T], required: bool = True) -> Optional[T]:
         for cls in self.components_mapping:
             if issubclass(cls, type_):
                 return self.components_mapping[cls]  # type: ignore[return-value]
-        raise ValueError(f"Component of type {type_.__name__} not found")
+        if required:
+            raise ValueError(f"Component of type {type_.__name__} not found")
+        return None
 
     @property
     def components(self) -> List[Component]:

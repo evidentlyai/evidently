@@ -1,11 +1,13 @@
 from typing import Optional
 
 try:
-    from sqlalchemy import create_engine
+    from sqlalchemy import Engine
 except ImportError as e:
     raise ImportError(
         "SQLAlchemy is required for SQL storage support. " "Please install it with: pip install evidently[sql]"
     ) from e
+
+import logging
 
 from .base import BaseSQLStorage
 from .blob import SQLBlobStorage
@@ -26,19 +28,20 @@ __all__ = [
     "SQLDataStorage",
     "SQLProjectMetadataStorage",
     "Base",
+    "create_sql_project_manager",
 ]
 
 from ...managers.auth import AuthManager
 from ...managers.projects import ProjectManager
 from ..common import NoopAuthManager
 
+logger = logging.getLogger(__name__)
 
-def create_sql_project_manager(url: str, auth: Optional[AuthManager] = None) -> ProjectManager:
-    engine = create_engine(url)
 
+def create_engine_and_migrate(engine: Engine) -> Engine:
     # Run migrations on startup (fallback to create_all if migrations not initialized)
     try:
-        migrate_database(url)
+        migrate_database(str(engine.url))
     except (FileNotFoundError, ImportError):
         # Migrations not available - use create_all
         Base.metadata.create_all(engine)
@@ -53,9 +56,6 @@ def create_sql_project_manager(url: str, auth: Optional[AuthManager] = None) -> 
 
             # If alembic_version table doesn't exist, migrations aren't initialized
             if "alembic_version" not in tables:
-                import logging
-
-                logger = logging.getLogger(__name__)
                 logger.debug(
                     "Migrations not initialized. Using create_all. "
                     "Initialize with: evidently migrate <url> --autogenerate -m 'initial'"
@@ -67,11 +67,14 @@ def create_sql_project_manager(url: str, auth: Optional[AuthManager] = None) -> 
         except Exception:
             # If we can't check (e.g., database doesn't exist yet), try create_all
             # This handles the case where we're creating a fresh database
-            import logging
 
-            logger = logging.getLogger(__name__)
             logger.debug(f"Could not run migrations: {e}. Falling back to create_all.")
             Base.metadata.create_all(engine)
+    return engine
+
+
+def create_sql_project_manager(engine: Engine, auth: Optional[AuthManager] = None) -> ProjectManager:
+    engine = create_engine_and_migrate(engine)
 
     project_manager = ProjectManager(
         project_metadata=(SQLProjectMetadataStorage(engine)),
