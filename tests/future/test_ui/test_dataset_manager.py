@@ -13,7 +13,6 @@ from evidently.ui.service.datasets.metadata import DatasetMetadataStorage
 from evidently.ui.service.datasets.metadata import DatasetOrigin
 from evidently.ui.service.managers.datasets import DatasetManager
 from evidently.ui.service.managers.projects import ProjectManager
-from evidently.ui.service.storage.local.dataset import FSSpecDatasetFileStorage
 from evidently.ui.service.type_aliases import ZERO_UUID
 from evidently.ui.service.type_aliases import DatasetID
 from evidently.ui.service.type_aliases import ProjectID

@@ -1,7 +1,6 @@
 import pytest
 
 from evidently.legacy.core import new_id
-from evidently.ui.service.storage.local.dataset import FSSpecDatasetFileStorage
 from evidently.ui.service.type_aliases import ZERO_UUID
 
 

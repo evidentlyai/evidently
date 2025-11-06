@@ -25,11 +25,11 @@ from evidently.ui.service.components.storage import StorageComponent
 from evidently.ui.service.datasets.metadata import DatasetMetadataStorage
 from evidently.ui.service.managers.projects import ProjectManager
 from evidently.ui.service.storage.common import NoopAuthManager
-from evidently.ui.service.storage.sql import create_sql_project_manager
 from evidently.ui.service.storage.sql.blob import SQLBlobStorage
 from evidently.ui.service.storage.sql.data import SQLDataStorage
 from evidently.ui.service.storage.sql.dataset import SQLDatasetMetadataStorage
 from evidently.ui.service.storage.sql.metadata import SQLProjectMetadataStorage
+from evidently.ui.service.storage.sql.utils import create_sql_project_manager
 
 
 class SQLMetadataComponent(MetadataStorageComponent):

@@ -1,7 +1,9 @@
 from . import bound_tests
 from . import column_conditions
+from . import components
 from . import configs
 from . import datagen
+from . import dataset_models
 from . import descriptors
 from . import metric_results
 from . import metric_tests
@@ -28,4 +30,6 @@ __all__ = [
     "datagen",
     "prompt_templates",
     "prompt_blocks",
+    "components",
+    "dataset_models",
 ]
