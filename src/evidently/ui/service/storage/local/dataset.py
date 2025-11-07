@@ -37,4 +37,4 @@ class DatasetFileStorage(BaseDependant):
 
     def remove_dataset(self, blob_id: BlobID) -> None:
         """Remove a dataset file."""
-        self.dataset_blob_storage.delete_blob(blob_id)
+        async_to_sync(self.dataset_blob_storage.delete_blob(blob_id))

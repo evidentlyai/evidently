@@ -7,6 +7,7 @@ from typing import Dict
 from typing import List
 from typing import Optional
 
+import pandas as pd
 from litestar import Router
 from litestar import delete
 from litestar import get
@@ -106,7 +107,6 @@ async def upload_dataset(
     project_id: ProjectID,
 ) -> UploadDatasetResponse:
     """Upload a dataset."""
-    import pandas as pd
 
     default_dd = (
         Dataset.from_pandas(pd.DataFrame()).data_definition if data.data_definition is None else data.data_definition

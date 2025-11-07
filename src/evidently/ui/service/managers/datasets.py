@@ -92,7 +92,7 @@ class DatasetManager(BaseManager):
         try:
             dataset_id = await self.dataset_metadata.add_dataset_metadata(user_id, project_id, dataset)
         except Exception as e:
-            self.dataset_file_storage.remove_dataset(project_id, blob_data.filename)
+            self.dataset_file_storage.remove_dataset(blob_data.filename)
             raise e
 
         return dataset

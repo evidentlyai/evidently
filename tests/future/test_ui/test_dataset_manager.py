@@ -1,6 +1,7 @@
 import datetime
 from io import BytesIO
 from unittest.mock import AsyncMock
+from unittest.mock import MagicMock
 
 import pandas as pd
 import pytest
@@ -13,6 +14,8 @@ from evidently.ui.service.datasets.metadata import DatasetMetadataStorage
 from evidently.ui.service.datasets.metadata import DatasetOrigin
 from evidently.ui.service.managers.datasets import DatasetManager
 from evidently.ui.service.managers.projects import ProjectManager
+from evidently.ui.service.storage.local.base import FSSpecBlobStorage
+from evidently.ui.service.storage.local.dataset import DatasetFileStorage
 from evidently.ui.service.type_aliases import ZERO_UUID
 from evidently.ui.service.type_aliases import DatasetID
 from evidently.ui.service.type_aliases import ProjectID
@@ -29,9 +32,15 @@ def tmp_path():
 
 
 @pytest.fixture
-def dataset_file_storage(tmp_path):
+def blob_storage(tmp_path):
+    """Create blob storage."""
+    return FSSpecBlobStorage(base_path=tmp_path)
+
+
+@pytest.fixture
+def dataset_file_storage(blob_storage):
     """Create dataset file storage."""
-    return FSSpecDatasetFileStorage(base_path=tmp_path)
+    return DatasetFileStorage(dataset_blob_storage=blob_storage)
 
 
 @pytest.fixture
@@ -148,7 +157,6 @@ def dataset_metadata_storage():
 def mock_project_manager():
     """Create a mock project manager."""
     from unittest.mock import AsyncMock
-    from unittest.mock import MagicMock
 
     pm = MagicMock(spec=ProjectManager)
     pm.get_project = AsyncMock(return_value=None)
