@@ -42,4 +42,4 @@ class DemoProject:
         for i in range(0, self.count):
             if self.create_snapshot is not None:
                 snapshot = self.create_snapshot(i, data)
-                ws.add_run(project.id, snapshot)
+                ws.add_run(project.id, snapshot, include_data=True)
