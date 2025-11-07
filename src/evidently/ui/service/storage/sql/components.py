@@ -110,9 +110,11 @@ class DatabaseComponent(Component, ABC):
         if self.url is None and self.config is None:
             raise ValueError("You must specify either url or config")
         if self.url is not None and self.config is not None:
-            raise ValueError("You cannot specify both url and config")
+            raise ValueError("You cannot specify both url or config")
         if self.url is not None:
             return create_engine(self.url, json_serializer=numpy_dumps)
+        if self.config is None:
+            raise ValueError("Config is required when url is not provided")
         return self.config.get_engine()
 
     def get_dependencies(self, ctx: ComponentContext) -> Dict[str, Provide]:

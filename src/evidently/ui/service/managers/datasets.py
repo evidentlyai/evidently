@@ -22,6 +22,7 @@ from evidently.ui.service.datasets.file_io import FileIO
 from evidently.ui.service.datasets.file_io import get_upload_file
 from evidently.ui.service.datasets.filters import FilterBy
 from evidently.ui.service.datasets.metadata import DatasetMetadata
+from evidently.ui.service.datasets.metadata import DatasetMetadataFull
 from evidently.ui.service.datasets.metadata import DatasetMetadataStorage
 from evidently.ui.service.datasets.metadata import DatasetOrigin
 from evidently.ui.service.datasets.models import ColumnDataType
@@ -109,6 +110,8 @@ class DatasetManager(BaseManager):
     ) -> None:
         """Update a dataset."""
         dataset = await self.dataset_metadata.get_dataset_metadata(dataset_id)
+        if dataset is None:
+            raise ValueError(f"Dataset {dataset_id} not found")
 
         if name is not None:
             dataset.name = name
@@ -121,7 +124,7 @@ class DatasetManager(BaseManager):
         if tags is not None:
             dataset.tags = tags
 
-        return await self.dataset_metadata.update_dataset_metadata(dataset_id=dataset_id, new_metadata=dataset)
+        await self.dataset_metadata.update_dataset_metadata(dataset_id=dataset_id, new_metadata=dataset)
 
     async def delete_dataset(self, user_id: UserID, dataset_id: DatasetID) -> None:
         """Delete a dataset."""
@@ -209,7 +212,7 @@ class DatasetManager(BaseManager):
         limit: Optional[int],
         origin: Optional[List[DatasetOrigin]],
         draft: Optional[bool],
-    ) -> List[DatasetMetadata]:
+    ) -> List[DatasetMetadataFull]:
         """List datasets in a project."""
         return await self.dataset_metadata.list_datasets_metadata(project_id, limit, origin, draft)
 

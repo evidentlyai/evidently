@@ -6,6 +6,7 @@ from typing import Callable
 from typing import Dict
 from typing import List
 from typing import Optional
+from typing import Type
 
 import pandas as pd
 from litestar import Router
@@ -185,13 +186,13 @@ async def download_dataset(
     df, _ = await dataset_manager.get_dataset(user_id, dataset_id)
 
     buf = BytesIO()
-    fileformat: str
+    file_format: str
     if "parquet" in format.split("+"):
         df.to_parquet(buf)
-        fileformat = "parquet"
+        file_format = "parquet"
     elif "csv" in format.split("+"):
         df.to_csv(buf, index=False)
-        fileformat = "csv"
+        file_format = "csv"
     else:
         raise HTTPException(status_code=400, detail="unsupported file format")
 
@@ -215,11 +216,10 @@ async def download_dataset(
             body=b"".join(generate()),
             media_type=f"multipart/mixed; boundary={boundary}",
         )
-    if "file" in format.split("+"):
-        return ASGIResponse(
-            body=buf.getvalue(),
-            headers=[("Content-Disposition", f"attachment; filename={dataset_id}.{fileformat}")],
-        )
+    return ASGIResponse(
+        body=buf.getvalue(),
+        headers=[("Content-Disposition", f"attachment; filename={dataset_id}.{file_format}")],
+    )
 
 
 class DatasetMetadataResponse(EvidentlyAPIModel):
@@ -337,10 +337,13 @@ async def materialize_from_source(
 # We need this endpoint to export
 # some additional models to open api schema
 # TODO: fix this endpoint
+_filter_model: Type = create_model(
+    "Filters", **{"by_string": (FilterByString, ...), "by_number": (FilterByNumber, ...)}
+)  # type: ignore[valid-type]
+
+
 @get("/models/additional")
-async def additional_models() -> (
-    List[create_model("Filters", **{"by_string": (FilterByString, ...), "by_number": (FilterByNumber, ...)})]
-):
+async def additional_models() -> List[_filter_model]:
     """Get additional schema for datasets."""
     return []
 

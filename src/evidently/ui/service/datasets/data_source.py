@@ -4,10 +4,10 @@ from typing import ClassVar
 from typing import List
 from typing import Optional
 from typing import Type
-from typing import TypeAlias
 
 import pandas as pd
 from litestar import Response
+from typing_extensions import TypeAlias
 
 from evidently._pydantic_compat import BaseModel
 from evidently.core.datasets import DataDefinition

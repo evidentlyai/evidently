@@ -2,9 +2,11 @@ import contextlib
 from typing import Dict
 from typing import Iterator
 from typing import List
+from typing import Literal
 from typing import Optional
 from typing import Type
 from typing import TypeVar
+from typing import overload
 
 import dynaconf
 from dynaconf import LazySettings
@@ -34,6 +36,12 @@ class ConfigContext(ComponentContext):
     def __init__(self, config: "Config", components_mapping: Dict[Type[Component], Component]):
         self.config = config
         self.components_mapping = components_mapping
+
+    @overload
+    def get_component(self, type_: Type[T], required: Literal[True] = True) -> T: ...
+
+    @overload
+    def get_component(self, type_: Type[T], required: Literal[False] = False) -> Optional[T]: ...
 
     def get_component(self, type_: Type[T], required: bool = True) -> Optional[T]:
         for cls in self.components_mapping:
