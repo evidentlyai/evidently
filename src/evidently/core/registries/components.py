@@ -3,6 +3,7 @@
 from evidently.pydantic_utils import register_type_alias
 from evidently.ui.service.components import DataStorageComponent
 from evidently.ui.service.components import MetadataStorageComponent
+from evidently.ui.service.components.snapshot_links import SnapshotDatasetLinksComponent
 from evidently.ui.service.components.storage import BlobStorageComponent
 from evidently.ui.service.components.storage import DatasetFileStorageComponent
 from evidently.ui.service.components.storage import DatasetMetadataComponent
@@ -21,3 +22,6 @@ register_type_alias(DatasetFileStorageComponent, "evidently.ui.service.component
 register_type_alias(DatasetFileStorageComponent, "evidently.ui.service.storage.sql.components.SQLDatasetFileStorageComponent", "sql")
 register_type_alias(DatasetMetadataComponent, "evidently.ui.service.components.local_storage.JsonDatasetMetadataComponent", "json_file")
 register_type_alias(DatasetMetadataComponent, "evidently.ui.service.storage.sql.components.SQLDatasetMetadataComponent", "sql")
+
+register_type_alias(SnapshotDatasetLinksComponent, "evidently.ui.service.components.local_storage.FileSnapshotDatasetLinksComponent", "file")
+register_type_alias(SnapshotDatasetLinksComponent, "evidently.ui.service.storage.sql.components.SQLSnapshotDatasetLinksComponent", "sql")

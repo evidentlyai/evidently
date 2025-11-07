@@ -59,6 +59,7 @@ from evidently.sdk.configs import ConfigContent
 from evidently.ui.service.components import DataStorageComponent
 from evidently.ui.service.components import MetadataStorageComponent
 from evidently.ui.service.components.base import Component
+from evidently.ui.service.components.snapshot_links import SnapshotDatasetLinksComponent
 from evidently.ui.service.components.storage import BlobStorageComponent
 from evidently.ui.service.components.storage import DatasetFileStorageComponent
 from evidently.ui.service.components.storage import DatasetMetadataComponent
@@ -132,6 +133,7 @@ REGISTRY_MAPPING: Dict[Type[PolymorphicModel], str] = {
     StorageComponent: registries.components.__name__,
     DatasetFileStorageComponent: registries.components.__name__,
     DatasetMetadataComponent: registries.components.__name__,
+    SnapshotDatasetLinksComponent: registries.components.__name__,
     DataSource: registries.dataset_models.__name__,
     FilterByNumber: registries.dataset_models.__name__,
     FilterByString: registries.dataset_models.__name__,

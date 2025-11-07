@@ -7,7 +7,7 @@ from evidently.legacy.core import new_id
 from evidently.ui.service.base import Project
 from evidently.ui.service.base import User
 from evidently.ui.service.storage.sql.metadata import SQLProjectMetadataStorage
-from evidently.ui.service.storage.sql.models import Base
+from evidently.ui.service.storage.sql.utils import migrate_database
 from evidently.ui.service.type_aliases import ZERO_UUID
 
 
@@ -18,7 +18,7 @@ def sqlite_engine():
         db_path = f.name
 
     engine = create_engine(f"sqlite:///{db_path}")
-    Base.metadata.create_all(engine)
+    migrate_database(f"sqlite:///{db_path}")
 
     yield engine
 
