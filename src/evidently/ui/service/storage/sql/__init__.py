@@ -11,6 +11,8 @@ from .base import BaseSQLStorage
 from .blob import SQLBlobStorage
 from .components import SQLBlobComponent
 from .components import SQLDataComponent
+from .components import SQLDatasetFileStorageComponent
+from .components import SQLDatasetMetadataComponent
 from .components import SQLMetadataComponent
 from .dashboard import SQLDashboardManager
 from .data import SQLDataStorage
@@ -22,6 +24,8 @@ __all__ = [
     "SQLBlobStorage",
     "SQLBlobComponent",
     "SQLDataComponent",
+    "SQLDatasetFileStorageComponent",
+    "SQLDatasetMetadataComponent",
     "SQLMetadataComponent",
     "SQLDashboardManager",
     "SQLDataStorage",

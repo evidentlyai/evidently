@@ -20,6 +20,7 @@ from evidently.ui.service.base import ProjectMetadataStorage
 from evidently.ui.service.components.base import Component
 from evidently.ui.service.components.base import ComponentContext
 from evidently.ui.service.components.storage import BlobStorageComponent
+from evidently.ui.service.components.storage import DatasetFileStorageComponent
 from evidently.ui.service.components.storage import DatasetMetadataComponent
 from evidently.ui.service.components.storage import DataStorageComponent
 from evidently.ui.service.components.storage import MetadataStorageComponent
@@ -156,3 +157,18 @@ class SQLDatasetMetadataComponent(DatasetMetadataComponent):
             return SQLDatasetMetadataStorage(engine=engine)
 
         return sql_dataset_metadata
+
+
+class SQLDatasetFileStorageComponent(DatasetFileStorageComponent):
+    """SQL-based dataset file storage component."""
+
+    __require__: ClassVar = [DatabaseComponent]
+
+    class Config:
+        type_alias = "sql"
+
+    def dependency_factory(self) -> Callable[..., BlobStorage]:
+        def sql_dataset_file_storage(engine: Engine) -> BlobStorage:
+            return SQLBlobStorage(engine=engine)
+
+        return sql_dataset_file_storage
