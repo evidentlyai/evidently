@@ -10,6 +10,7 @@ import type { CrumbDefinition } from 'evidently-ui-lib/router-utils/router-build
 import { Box, Stack } from 'evidently-ui-lib/shared-dependencies/mui-material'
 import { Outlet, ScrollRestoration } from 'evidently-ui-lib/shared-dependencies/react-router-dom'
 import { HomeLink } from '~/Components/Home/HomeLink'
+import { ProjectNavigationTabs } from '~/Components/Projects/ProjectNavigationTabs'
 import { clientAPI } from '~/api'
 import type { GetRouteByPath } from '~/routes/types'
 
@@ -40,6 +41,9 @@ export const Component = () => {
         <Stack direction={'row'} alignItems={'center'} gap={2}>
           <BreadCrumbs crumbs={crumbs} />
           <FetchersProgress />
+          <Stack direction={'row'} flex={1} justifyContent={'flex-end'}>
+            <ProjectNavigationTabs />
+          </Stack>
         </Stack>
         <Outlet />
       </Box>

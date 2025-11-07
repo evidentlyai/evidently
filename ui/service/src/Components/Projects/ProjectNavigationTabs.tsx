@@ -1,0 +1,49 @@
+import { GenericTabs } from 'evidently-ui-lib/components/Tabs/GenericTabs'
+import { Fade } from 'evidently-ui-lib/shared-dependencies/mui-material'
+import { useParams } from 'evidently-ui-lib/shared-dependencies/react-router-dom'
+import { useMatchRouter, useNavigate } from '~/routes/type-safe-route-helpers/hooks'
+import type { GetParamsByPath } from '~/routes/types'
+
+/** Only renders if we are on the project related page */
+export const ProjectNavigationTabs = () => {
+  const navigate = useNavigate()
+
+  const isOnReportsPages = useMatchRouter({ path: '/projects/:projectId/reports' })
+  const isOnDatasetsPages = useMatchRouter({ path: '/projects/:projectId/datasets' })
+  const isOnProjectPages = useMatchRouter({ path: '/projects/:projectId' })
+
+  const { projectId } = useParams() as Partial<GetParamsByPath<'/projects/:projectId'>>
+
+  const shouldRender = isOnProjectPages && projectId
+
+  if (!shouldRender) {
+    return null
+  }
+
+  const { activeTab } = {
+    activeTab: '?index' as const, // default tab
+    ...(isOnReportsPages && { activeTab: 'reports' as const }),
+    ...(isOnDatasetsPages && { activeTab: 'datasets' as const })
+  }
+
+  return (
+    <Fade in timeout={700}>
+      <div>
+        <GenericTabs
+          size='large'
+          activeTab={activeTab}
+          tabs={
+            [
+              { key: '?index', label: 'Dashboard' },
+              { key: 'reports', label: 'Reports' },
+              { key: 'datasets', label: 'Datasets' }
+            ] as const
+          }
+          onTabChange={(tab) => {
+            navigate({ to: `/projects/:projectId/${tab}`, paramsToReplace: { projectId } })
+          }}
+        />
+      </div>
+    </Fade>
+  )
+}

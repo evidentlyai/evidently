@@ -156,7 +156,7 @@ export const SnapshotsListTemplate = ({
 
   const FilterComponent = (
     <Box sx={{ padding: 2 }}>
-      <Grid container gap={2} alignItems={'flex-end'} justifyContent={'space-around'}>
+      <Grid container gap={2} alignItems={'flex-end'} justifyContent={'space-between'}>
         <Grid size={{ xs: 12, md: 4 }}>
           <Autocomplete
             multiple
