@@ -10,6 +10,7 @@ type SnapshotTemplateComponentProps = {
   dashboardContextState: DashboardContextState
   data: DashboardInfoModel
 }
+
 export const SnapshotTemplateComponent = (props: SnapshotTemplateComponentProps) => {
   const { data, dashboardContextState } = props
 
