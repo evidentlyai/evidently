@@ -1,18 +1,18 @@
 import { Box } from '@mui/material'
 import type { DashboardInfoModel } from '~/api/types'
-import { SnapshotWidgets } from '~/components/WidgetsContent'
+import { SnapshotWidgets } from '~/components/Widgets/WidgetsContent'
 import DashboardContext, {
   CreateDashboardContextState,
   type DashboardContextState
 } from '~/contexts/DashboardContext'
 
-export const SnapshotTemplateComponent = ({
-  data,
-  dashboardContextState
-}: {
+type SnapshotTemplateComponentProps = {
   dashboardContextState: DashboardContextState
   data: DashboardInfoModel
-}) => {
+}
+export const SnapshotTemplateComponent = (props: SnapshotTemplateComponentProps) => {
+  const { data, dashboardContextState } = props
+
   return (
     <>
       <DashboardContext.Provider value={CreateDashboardContextState(dashboardContextState)}>

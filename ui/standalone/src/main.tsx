@@ -6,7 +6,7 @@ import { Box, CssBaseline, ThemeProvider } from 'evidently-ui-lib/shared-depende
 import { theme } from 'evidently-ui-lib/theme/index'
 
 import type { DashboardInfoModel } from 'evidently-ui-lib/api/types'
-import { ThemeToggle } from 'evidently-ui-lib/components/ThemeToggle'
+import { ThemeToggle } from 'evidently-ui-lib/components/Theme/ThemeToggle'
 import { StandaloneSnapshotWidgets } from 'evidently-ui-lib/standalone/app'
 
 export function drawDashboard(

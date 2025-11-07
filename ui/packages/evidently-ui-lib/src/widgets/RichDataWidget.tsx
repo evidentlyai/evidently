@@ -17,7 +17,7 @@ import ExpandMoreSharpIcon from '@mui/icons-material/ExpandMoreSharp'
 
 import type { RichDataParams } from '~/api'
 
-import Plot, { darkPlotlyLayoutTemplate } from '~/components/Plot'
+import Plot, { darkPlotlyLayoutTemplate } from '~/components/Plots/Plot'
 import { useThemeMode } from '~/hooks/theme'
 import { BigTableDetails } from './BigTableWidget/BigTableDetails'
 

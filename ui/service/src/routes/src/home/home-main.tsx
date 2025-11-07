@@ -1,5 +1,5 @@
 import { responseParser } from 'evidently-ui-lib/api/client-heplers'
-import { ServiceHeader } from 'evidently-ui-lib/components/ServiceHeader'
+import { ServiceHeader } from 'evidently-ui-lib/components/Layout/ServiceHeader'
 import { BreadCrumbs } from 'evidently-ui-lib/router-utils/components/breadcrumbs'
 import {
   FetchersProgress,
@@ -9,9 +9,9 @@ import { useCrumbsFromHandle, useCurrentRouteParams } from 'evidently-ui-lib/rou
 import type { CrumbDefinition } from 'evidently-ui-lib/router-utils/router-builder'
 import { Box, Stack } from 'evidently-ui-lib/shared-dependencies/mui-material'
 import { Outlet, ScrollRestoration } from 'evidently-ui-lib/shared-dependencies/react-router-dom'
+import { HomeLink } from '~/Components/Home/HomeLink'
 import { clientAPI } from '~/api'
 import type { GetRouteByPath } from '~/routes/types'
-import { HomeLink } from './components'
 
 ///////////////////
 //    ROUTE

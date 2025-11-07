@@ -32,3 +32,20 @@ export type BatchMetricDataModel = Schemas['BatchMetricData']
 export type DashboardModel = Schemas['DashboardModel']
 export type DashboardPanelPlotModel = Schemas['DashboardModel']['panels'][number]
 export type DashboardTabModel = Schemas['DashboardModel']['tabs'][number]
+export type DatasetPaginationModel = Schemas['DatasetPagination']
+export type UpdatedCell = { column: string; row: number; updated_value?: string | number }
+
+// TODO: fix this type export
+// export type DatasetFilterType = Schemas['Filters']
+
+export type DatasetFilter =
+  | (Omit<Schemas['Filters']['by_string'], 'type'> & {
+      type: Exclude<Schemas['Filters']['by_string']['type'], 'filter_by_string'>
+    })
+  | (Omit<Schemas['Filters']['by_number'], 'type'> & {
+      type: Exclude<Schemas['Filters']['by_number']['type'], 'filter_by_number'>
+    })
+
+export type DatasetModel = Schemas['DatasetMetadataResponse']
+
+export type PatchDatasetRequestModel = Schemas['PatchDatasetRequest']

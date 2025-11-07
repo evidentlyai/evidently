@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react'
 import { isRouteErrorResponse, useActionData, useFetchers, useRouteError } from 'react-router-dom'
 import type { Fetcher } from 'react-router-dom'
 import type { ErrorData, ErrorResponse } from '~/api/types/utils'
-import { AlertThemed } from '~/components/AlertThemed'
+import { AlertThemed } from '~/components/Alert/AlertThemed'
 
 type ActionErrorData = ErrorData | undefined | null
 
