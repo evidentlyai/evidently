@@ -21,9 +21,12 @@ logger = logging.getLogger(__name__)
 def create_engine_and_migrate(engine: Engine) -> Engine:
     # Run migrations on startup (fallback to create_all if migrations not initialized)
     try:
+        logger.info("Running database migrations...")
         migrate_database(str(engine.url))
+        logger.info("Database migrations completed successfully")
     except (FileNotFoundError, ImportError):
         # Migrations not available - use create_all
+        logger.debug("Migrations not available, using create_all")
         Base.metadata.create_all(engine)
     except Exception as e:
         # Check if it's because migrations aren't initialized (no alembic_version table)
@@ -43,6 +46,7 @@ def create_engine_and_migrate(engine: Engine) -> Engine:
                 Base.metadata.create_all(engine)
             else:
                 # Migrations are initialized but there's an error - re-raise it
+                logger.error(f"Migration error: {e}", exc_info=True)
                 raise
         except Exception:
             # If we can't check (e.g., database doesn't exist yet), try create_all
@@ -56,10 +60,13 @@ def create_engine_and_migrate(engine: Engine) -> Engine:
 def create_sql_project_manager(engine: Engine, auth: Optional[AuthManager] = None) -> ProjectManager:
     engine = create_engine_and_migrate(engine)
 
+    blob_storage = SQLBlobStorage(engine)
+    metadata_storage = SQLProjectMetadataStorage(engine)
+    data_storage = SQLDataStorage(engine)
     project_manager = ProjectManager(
-        project_metadata=(SQLProjectMetadataStorage(engine)),
-        blob_storage=SQLBlobStorage(engine),
-        data_storage=(SQLDataStorage(engine)),
+        project_metadata=metadata_storage,
+        blob_storage=blob_storage,
+        data_storage=data_storage,
         auth_manager=auth or NoopAuthManager(),
         dashboard_manager=SQLDashboardManager(engine),
     )

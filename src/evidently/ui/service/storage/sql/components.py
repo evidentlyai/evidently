@@ -1,5 +1,6 @@
 from abc import ABC
 from typing import Any
+from typing import Awaitable
 from typing import Callable
 from typing import ClassVar
 from typing import Dict
@@ -19,6 +20,7 @@ from evidently.ui.service.base import ProjectMetadataStorage
 from evidently.ui.service.components.base import Component
 from evidently.ui.service.components.base import ComponentContext
 from evidently.ui.service.components.storage import BlobStorageComponent
+from evidently.ui.service.components.storage import DatasetMetadataComponent
 from evidently.ui.service.components.storage import DataStorageComponent
 from evidently.ui.service.components.storage import MetadataStorageComponent
 from evidently.ui.service.components.storage import StorageComponent
@@ -122,20 +124,35 @@ class SQLStorageComponent(StorageComponent):
     class Config:
         type_alias = "sql"
 
-    def project_manager_provider(self):
+    def project_manager_provider(self) -> Callable[..., Awaitable[ProjectManager]]:
         async def project_manager_factory(engine: Engine) -> ProjectManager:
             return create_sql_project_manager(engine, auth=NoopAuthManager())
 
         return project_manager_factory
 
-    def dataset_blob_storage_provider(self):
+    def dataset_blob_storage_provider(self) -> Callable[..., Awaitable[BlobStorage]]:
         async def dataset_blob_storage_factory(engine: Engine) -> SQLBlobStorage:
             return SQLBlobStorage(engine=engine)
 
         return dataset_blob_storage_factory
 
-    async def dataset_metadata_provider(self):
+    def dataset_metadata_provider(self) -> Callable[..., Awaitable[DatasetMetadataStorage]]:
         async def dataset_metadata_factory(engine: Engine) -> DatasetMetadataStorage:
             return SQLDatasetMetadataStorage(engine=engine)
 
         return dataset_metadata_factory
+
+
+class SQLDatasetMetadataComponent(DatasetMetadataComponent):
+    """SQL-based dataset metadata storage component."""
+
+    __require__: ClassVar = [DatabaseComponent]
+
+    class Config:
+        type_alias = "sql"
+
+    def dependency_factory(self) -> Callable[..., DatasetMetadataStorage]:
+        def sql_dataset_metadata(engine: Engine) -> DatasetMetadataStorage:
+            return SQLDatasetMetadataStorage(engine=engine)
+
+        return sql_dataset_metadata

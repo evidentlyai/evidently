@@ -6,4 +6,15 @@
 # 1. Direct URL (recommended for Docker):
 storage:
   type: sql
+
+database:
   url: postgresql://evidently_user:evidently_password@postgres:5432/evidently
+
+dataset_storage:
+  type: fsspec
+  path: workspace
+  # you can use persistent storages like s3/gcs like this
+  # path: s3://<bucket>/workspace
+  # or
+  # path: gcs://<bucket>/workspace
+  # list of supported FS: https://filesystem-spec.readthedocs.io/en/latest/api.html#built-in-implementations

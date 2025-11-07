@@ -24,7 +24,7 @@ def upgrade() -> None:
     op.create_table(
         "blobs",
         sa.Column("id", sa.String(), nullable=False),
-        sa.Column("data", sa.String(), nullable=False),
+        sa.Column("data", sa.LargeBinary(), nullable=False),
         sa.Column("size", sa.Integer(), nullable=False),
         sa.PrimaryKeyConstraint("id"),
     )

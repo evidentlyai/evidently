@@ -3,5 +3,7 @@
 
 storage:
   type: sql
+
+database:
   url: sqlite:///evidently.db
 

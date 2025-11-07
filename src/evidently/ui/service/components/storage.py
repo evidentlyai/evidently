@@ -1,5 +1,6 @@
 from abc import ABC
 from abc import abstractmethod
+from typing import Awaitable
 from typing import Callable
 from typing import ClassVar
 from typing import Dict
@@ -15,13 +16,18 @@ from evidently.ui.service.components.base import ComponentContext
 from evidently.ui.service.components.base import FactoryComponent
 from evidently.ui.service.datasets.metadata import DatasetMetadataStorage
 from evidently.ui.service.datasets.metadata import FileDatasetMetadataStorage
+from evidently.ui.service.managers.projects import ProjectManager
 from evidently.ui.service.storage.common import NoopAuthManager
 from evidently.ui.service.storage.local import FSSpecBlobStorage
 from evidently.ui.service.storage.local import create_local_project_manager
 
 
 class DatasetMetadataComponent(FactoryComponent[DatasetMetadataStorage], ABC):
+    class Config:
+        is_base_type = True
+
     __section__: ClassVar[str] = "dataset_metadata"
+    dependency_name: ClassVar[str] = "dataset_metadata"
     use_cache: ClassVar[bool] = True
 
     def dependency_factory(self) -> Callable[..., DatasetMetadataStorage]:
@@ -29,8 +35,13 @@ class DatasetMetadataComponent(FactoryComponent[DatasetMetadataStorage], ABC):
 
 
 class DatasetFileStorageComponent(FactoryComponent[BlobStorage], ABC):
+    class Config:
+        is_base_type = True
+
     __section__: ClassVar[str] = "dataset_storage"
+    dependency_name: ClassVar[str] = "dataset_blob_storage"
     use_cache: ClassVar[bool] = True
+    sync_to_thread: ClassVar[bool] = False
 
     def dependency_factory(self) -> Callable[..., BlobStorage]:
         raise NotImplementedError(self.__class__)
@@ -46,30 +57,24 @@ class StorageComponent(Component, ABC):
 
     def get_dependencies(self, ctx: ComponentContext) -> Dict[str, Provide]:
         deps = {
-            "project_manager": Provide(
-                self.project_manager_provider(), use_cache=self.use_cache, sync_to_thread=self.sync_to_thread
-            ),
+            "project_manager": Provide(self.project_manager_provider(), use_cache=self.use_cache),
         }
         # if no components configured, use default
         if ctx.get_component(DatasetMetadataComponent, required=False) is None:
-            deps["dataset_metadata"] = Provide(
-                self.dataset_metadata_provider(), use_cache=self.use_cache, sync_to_thread=self.sync_to_thread
-            )
+            deps["dataset_metadata"] = Provide(self.dataset_metadata_provider(), use_cache=self.use_cache)
         if ctx.get_component(DatasetFileStorageComponent, required=False) is None:
-            deps["dataset_blob_storage"] = Provide(
-                self.dataset_blob_storage_provider(), use_cache=self.use_cache, sync_to_thread=self.sync_to_thread
-            )
+            deps["dataset_blob_storage"] = Provide(self.dataset_blob_storage_provider(), use_cache=self.use_cache)
         # todo: same for project_manager dependencies
         return deps
 
     @abstractmethod
-    def project_manager_provider(self):
+    def project_manager_provider(self) -> Callable[..., Awaitable[ProjectManager]]:
         raise NotImplementedError(f"{self.__class__.__name__}")
 
-    def dataset_blob_storage_provider(self):
+    def dataset_blob_storage_provider(self) -> Callable[..., Awaitable[BlobStorage]]:
         raise NotImplementedError(f"{self.__class__.__name__} does not have default dataset_file_storage provider")
 
-    def dataset_metadata_provider(self):
+    def dataset_metadata_provider(self) -> Callable[..., Awaitable[DatasetMetadataStorage]]:
         raise NotImplementedError(f"{self.__class__.__name__} does not have default dataset_metadata provider")
 
 

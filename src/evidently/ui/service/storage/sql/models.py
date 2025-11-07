@@ -10,6 +10,7 @@ from typing import Optional
 from sqlalchemy import JSON
 from sqlalchemy import ForeignKey
 from sqlalchemy import Index
+from sqlalchemy import LargeBinary
 from sqlalchemy import Uuid
 from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy.orm import Mapped
@@ -174,7 +175,7 @@ class BlobSQLModel(Base):
     __tablename__ = "blobs"
 
     id: Mapped[str] = mapped_column(primary_key=True)
-    data: Mapped[str]
+    data: Mapped[bytes] = mapped_column(LargeBinary)
     size: Mapped[int]
 
     def to_blob_metadata(self):

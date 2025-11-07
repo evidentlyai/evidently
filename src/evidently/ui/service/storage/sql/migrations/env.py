@@ -18,8 +18,28 @@ config = getattr(context, "config", None)
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
+# Only configure logging when running via Alembic CLI (not programmatically)
+# This prevents overriding the application's logging configuration when migrations
+# are run from within the application (e.g., on startup)
 if config is not None and config.config_file_name is not None:
-    fileConfig(config.config_file_name)
+    # Check if we're being called from Alembic CLI vs programmatically
+    # When called programmatically (e.g., via migrate_database), we don't want
+    # to override the application's logging configuration
+    import os
+    import sys
+
+    # Only configure logging if:
+    # 1. Running via Alembic CLI (alembic command in argv[0])
+    # 2. Or explicitly set via environment variable
+    is_alembic_cli = (
+        "alembic" in sys.argv[0]
+        or os.path.basename(sys.argv[0]) == "alembic"
+        or any("alembic" in arg for arg in sys.argv)
+    )
+
+    # Don't configure logging when called programmatically to avoid overriding app logging
+    if is_alembic_cli:
+        fileConfig(config.config_file_name)
 
 # add your model's MetaData object here
 # for 'autogenerate' support
