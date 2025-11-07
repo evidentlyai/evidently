@@ -85,11 +85,22 @@ class GenericLLMDescriptor(Descriptor):
             else:
                 columns = [(col, ColumnType.Text) for col in df.columns]
 
-            return {f"{self.alias} {col}": DatasetColumn(col_type, df[col]) for (col, col_type) in columns}
+            return {
+                f"{self.alias} {col}": DatasetColumn(
+                    col_type,
+                    df[col].astype(float) if col_type == ColumnType.Numerical else df[col],
+                )
+                for (col, col_type) in columns
+            }
         if isinstance(self.prompt, TemplatePromptContent):
+            column_type = self.prompt.template.get_type(self.prompt.template.get_main_output_column())
+            if column_type == ColumnType.Numerical:
+                column_data = pd.Series(result).astype(float)
+            else:
+                column_data = pd.Series(result)
             return DatasetColumn(
-                self.prompt.template.get_type(self.prompt.template.get_main_output_column()),
-                pd.Series(result),
+                column_type,
+                column_data,
             )
         return DatasetColumn(ColumnType.Text, pd.Series(result))
 
