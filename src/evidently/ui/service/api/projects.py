@@ -37,6 +37,7 @@ from evidently.ui.service.api.models import ReportModel
 from evidently.ui.service.base import BatchMetricData
 from evidently.ui.service.base import Project
 from evidently.ui.service.base import SeriesResponse
+from evidently.ui.service.datasets.snapshot_links import SnapshotDatasetLinksManager
 from evidently.ui.service.managers.projects import ProjectManager
 from evidently.ui.service.type_aliases import OrgID
 from evidently.ui.service.type_aliases import ProjectID
@@ -75,8 +76,14 @@ async def list_snapshots(
     project_manager: Annotated[ProjectManager, Dependency(skip_validation=True)],
     log_event: Callable,
     user_id: UserID,
+    snapshot_dataset_links: Annotated[
+        SnapshotDatasetLinksManager, Dependency(skip_validation=True, default=None)
+    ] = None,
 ) -> List[SnapshotMetadataModel]:
     snapshots = await project_manager.list_snapshots(user_id, project.id)
+    if snapshot_dataset_links is not None:
+        for snapshot in snapshots:
+            snapshot.links = await snapshot_dataset_links.get_links(project.id, snapshot.id)
     log_event("list_snapshots", reports_count=len(snapshots))
     return snapshots
 

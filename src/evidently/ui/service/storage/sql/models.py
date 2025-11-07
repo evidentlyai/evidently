@@ -277,4 +277,22 @@ class DatasetSQLModel(Base):
             origin=dataset.origin.value,
             metadata_json=dataset.metadata,
             tags=dataset.tags,
+            tracing_params=json.loads(dataset.tracing_params.json()) if dataset.tracing_params else None,
         )
+
+
+class SnapshotDatasetsSQLModel(Base):
+    """SQL model for snapshot-dataset links."""
+
+    __tablename__ = "snapshot_datasets"
+
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    snapshot_id: Mapped[SnapshotID] = mapped_column(ForeignKey("snapshots.id", ondelete="CASCADE"), index=True)
+    dataset_id: Mapped[DatasetID] = mapped_column(ForeignKey("datasets.id", ondelete="CASCADE"), index=True)
+    dataset_type: Mapped[str]  # input/output etc
+    dataset_subtype: Mapped[str]  # current/reference/ etc
+
+    __table_args__ = (
+        Index("ix_snapshot_datasets_snapshot_id", "snapshot_id"),
+        Index("ix_snapshot_datasets_dataset_id", "dataset_id"),
+    )

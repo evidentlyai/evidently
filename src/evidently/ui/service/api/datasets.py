@@ -44,8 +44,10 @@ from evidently.ui.service.datasets.metadata import DatasetMetadata
 from evidently.ui.service.datasets.metadata import DatasetMetadataFull
 from evidently.ui.service.datasets.metadata import DatasetOrigin
 from evidently.ui.service.datasets.models import DatasetPagination
+from evidently.ui.service.datasets.snapshot_links import SnapshotDatasetLinksManager
 from evidently.ui.service.managers.datasets import DatasetManager
 from evidently.ui.service.type_aliases import DatasetID
+from evidently.ui.service.type_aliases import SnapshotID
 
 
 class UploadDatasetRequest(BaseModel):
@@ -104,10 +106,19 @@ class PatchDatasetRequest(EvidentlyAPIModel):
 async def upload_dataset(
     data: Annotated[UploadDatasetRequest, Body(media_type=RequestEncodingType.MULTI_PART)],
     dataset_manager: Annotated[DatasetManager, Dependency(skip_validation=True)],
+    snapshot_dataset_links: Annotated["SnapshotDatasetLinksManager", Dependency(skip_validation=True)],
     user_id: UserID,
     project_id: ProjectID,
+    snapshot_id: Annotated[Optional[SnapshotID], Parameter(title="snapshot id")] = None,
+    dataset_type: Annotated[Optional[str], Parameter(title="dataset type (input/output)")] = None,
+    dataset_subtype: Annotated[Optional[str], Parameter(title="dataset subtype (current/reference)")] = None,
 ) -> UploadDatasetResponse:
     """Upload a dataset."""
+    if snapshot_id is not None:
+        if dataset_type is None or dataset_subtype is None:
+            raise HTTPException(
+                status_code=400, detail="snapshot_id, dataset_type and dataset_subtype must be specified together"
+            )
 
     default_dd = (
         Dataset.from_pandas(pd.DataFrame()).data_definition if data.data_definition is None else data.data_definition
@@ -123,6 +134,21 @@ async def upload_dataset(
         metadata=data.metadata,
         tags=data.tags,
     )
+
+    if (
+        snapshot_id is not None
+        and dataset_type is not None
+        and dataset_subtype is not None
+        and snapshot_dataset_links is not None
+    ):
+        await snapshot_dataset_links.link_dataset_snapshot(
+            project_id=project_id,
+            snapshot_id=snapshot_id,
+            dataset_id=dataset.id,
+            dataset_type=dataset_type,
+            dataset_subtype=dataset_subtype,
+        )
+
     return UploadDatasetResponse(dataset=dataset)
 
 

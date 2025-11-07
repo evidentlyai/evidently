@@ -14,12 +14,15 @@ from evidently.ui.service.base import ProjectMetadataStorage
 from evidently.ui.service.components.base import Component
 from evidently.ui.service.components.base import ComponentContext
 from evidently.ui.service.components.base import FactoryComponent
+from evidently.ui.service.components.snapshot_links import SnapshotDatasetLinksComponent
 from evidently.ui.service.datasets.metadata import DatasetMetadataStorage
 from evidently.ui.service.datasets.metadata import FileDatasetMetadataStorage
+from evidently.ui.service.datasets.snapshot_links import SnapshotDatasetLinksManager
 from evidently.ui.service.managers.projects import ProjectManager
 from evidently.ui.service.storage.common import NoopAuthManager
 from evidently.ui.service.storage.local import FSSpecBlobStorage
 from evidently.ui.service.storage.local import create_local_project_manager
+from evidently.ui.service.storage.local.snapshot_links import FileSnapshotDatasetLinksManager
 
 
 class DatasetMetadataComponent(FactoryComponent[DatasetMetadataStorage], ABC):
@@ -64,6 +67,8 @@ class StorageComponent(Component, ABC):
             deps["dataset_metadata"] = Provide(self.dataset_metadata_provider(), use_cache=self.use_cache)
         if ctx.get_component(DatasetFileStorageComponent, required=False) is None:
             deps["dataset_blob_storage"] = Provide(self.dataset_blob_storage_provider(), use_cache=self.use_cache)
+        if ctx.get_component(SnapshotDatasetLinksComponent, required=False) is None:
+            deps["snapshot_dataset_links"] = Provide(self.snapshot_dataset_links_provider(), use_cache=self.use_cache)
         # todo: same for project_manager dependencies
         return deps
 
@@ -77,6 +82,9 @@ class StorageComponent(Component, ABC):
     def dataset_metadata_provider(self) -> Callable[..., Awaitable[DatasetMetadataStorage]]:
         raise NotImplementedError(f"{self.__class__.__name__} does not have default dataset_metadata provider")
 
+    def snapshot_dataset_links_provider(self) -> Callable[..., Awaitable[SnapshotDatasetLinksManager]]:
+        raise NotImplementedError(f"{self.__class__.__name__} does not have default snapshot_dataset_links provider")
+
 
 class LocalStorageComponent(StorageComponent):
     class Config:
@@ -86,13 +94,28 @@ class LocalStorageComponent(StorageComponent):
     autorefresh: bool = True
 
     def project_manager_provider(self):
-        return lambda: create_local_project_manager(self.path, autorefresh=self.autorefresh, auth=NoopAuthManager())
+        async def project_manager_factory() -> ProjectManager:
+            return create_local_project_manager(self.path, autorefresh=self.autorefresh, auth=NoopAuthManager())
+
+        return project_manager_factory
 
     def dataset_blob_storage_provider(self):
-        return lambda: FSSpecBlobStorage(base_path=self.path)
+        async def dataset_blob_storage_factory() -> BlobStorage:
+            return FSSpecBlobStorage(base_path=self.path)
+
+        return dataset_blob_storage_factory
 
     def dataset_metadata_provider(self):
-        return lambda: FileDatasetMetadataStorage(base_path=self.path)
+        async def dataset_metadata_factory() -> DatasetMetadataStorage:
+            return FileDatasetMetadataStorage(base_path=self.path)
+
+        return dataset_metadata_factory
+
+    def snapshot_dataset_links_provider(self):
+        async def snapshot_dataset_links_factory() -> SnapshotDatasetLinksManager:
+            return FileSnapshotDatasetLinksManager(base_path=self.path)
+
+        return snapshot_dataset_links_factory
 
 
 class MetadataStorageComponent(FactoryComponent[ProjectMetadataStorage], ABC):

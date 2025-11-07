@@ -19,6 +19,7 @@ from evidently.ui.service.base import DataStorage
 from evidently.ui.service.base import ProjectMetadataStorage
 from evidently.ui.service.components.base import Component
 from evidently.ui.service.components.base import ComponentContext
+from evidently.ui.service.components.snapshot_links import SnapshotDatasetLinksComponent
 from evidently.ui.service.components.storage import BlobStorageComponent
 from evidently.ui.service.components.storage import DatasetFileStorageComponent
 from evidently.ui.service.components.storage import DatasetMetadataComponent
@@ -26,12 +27,14 @@ from evidently.ui.service.components.storage import DataStorageComponent
 from evidently.ui.service.components.storage import MetadataStorageComponent
 from evidently.ui.service.components.storage import StorageComponent
 from evidently.ui.service.datasets.metadata import DatasetMetadataStorage
+from evidently.ui.service.datasets.snapshot_links import SnapshotDatasetLinksManager
 from evidently.ui.service.managers.projects import ProjectManager
 from evidently.ui.service.storage.common import NoopAuthManager
 from evidently.ui.service.storage.sql.blob import SQLBlobStorage
 from evidently.ui.service.storage.sql.data import SQLDataStorage
 from evidently.ui.service.storage.sql.dataset import SQLDatasetMetadataStorage
 from evidently.ui.service.storage.sql.metadata import SQLProjectMetadataStorage
+from evidently.ui.service.storage.sql.snapshot_links import SQLSnapshotDatasetLinksManager
 from evidently.ui.service.storage.sql.utils import create_sql_project_manager
 
 
@@ -145,6 +148,12 @@ class SQLStorageComponent(StorageComponent):
 
         return dataset_metadata_factory
 
+    def snapshot_dataset_links_provider(self) -> Callable[..., Awaitable[SnapshotDatasetLinksManager]]:
+        async def snapshot_dataset_links_factory(engine: Engine) -> SnapshotDatasetLinksManager:
+            return SQLSnapshotDatasetLinksManager(engine=engine)
+
+        return snapshot_dataset_links_factory
+
 
 class SQLDatasetMetadataComponent(DatasetMetadataComponent):
     """SQL-based dataset metadata storage component."""
@@ -174,3 +183,18 @@ class SQLDatasetFileStorageComponent(DatasetFileStorageComponent):
             return SQLBlobStorage(engine=engine)
 
         return sql_dataset_file_storage
+
+
+class SQLSnapshotDatasetLinksComponent(SnapshotDatasetLinksComponent):
+    """SQL-based snapshot dataset links component."""
+
+    __require__: ClassVar = [DatabaseComponent]
+
+    class Config:
+        type_alias = "sql"
+
+    def dependency_factory(self) -> Callable[..., SnapshotDatasetLinksManager]:
+        def sql_snapshot_dataset_links(engine: Engine) -> SnapshotDatasetLinksManager:
+            return SQLSnapshotDatasetLinksManager(engine=engine)
+
+        return sql_snapshot_dataset_links
