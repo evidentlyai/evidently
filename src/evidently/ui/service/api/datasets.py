@@ -244,6 +244,7 @@ async def download_dataset(
         )
     return ASGIResponse(
         body=buf.getvalue(),
+        media_type="application/octet-stream",
         headers=[("Content-Disposition", f"attachment; filename={dataset_id}.{file_format}")],
     )
 

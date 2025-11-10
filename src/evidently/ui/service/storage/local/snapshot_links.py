@@ -47,6 +47,9 @@ class FileSnapshotDatasetLinksManager(SnapshotDatasetLinksManager):
         """Link a dataset to a snapshot."""
         links_path = _get_links_path(project_id, snapshot_id)
 
+        # Create directory if it doesn't exist
+        self.location.makedirs(posixpath.dirname(links_path))
+
         # Load existing links or create new
         if self.location.exists(links_path):
             with self.location.open(links_path, "r") as f:
