@@ -29,7 +29,7 @@ class FSSpecBlobComponent(BlobStorageComponent):
     path: str
 
     def dependency_factory(self) -> Callable[..., BlobStorage]:
-        async def blob_storage_factory() -> BlobStorage:
+        def blob_storage_factory() -> BlobStorage:
             return FSSpecBlobStorage(base_path=self.path)
 
         return blob_storage_factory
@@ -80,7 +80,7 @@ class JsonDatasetMetadataComponent(DatasetMetadataComponent):
     path: str = "workspace"
 
     def dependency_factory(self) -> Callable[..., DatasetMetadataStorage]:
-        async def dataset_metadata_factory() -> DatasetMetadataStorage:
+        def dataset_metadata_factory() -> DatasetMetadataStorage:
             return FileDatasetMetadataStorage(base_path=self.path)
 
         return dataset_metadata_factory
@@ -95,7 +95,7 @@ class FSSpecDatasetFileStorageComponent(DatasetFileStorageComponent):
     path: str = "workspace"
 
     def dependency_factory(self) -> Callable[..., BlobStorage]:
-        async def blob_storage_factory() -> BlobStorage:
+        def blob_storage_factory() -> BlobStorage:
             return FSSpecBlobStorage(base_path=self.path)
 
         return blob_storage_factory
@@ -110,7 +110,7 @@ class FileSnapshotDatasetLinksComponent(SnapshotDatasetLinksComponent):
     path: str = "workspace"
 
     def dependency_factory(self) -> Callable[..., SnapshotDatasetLinksManager]:
-        async def snapshot_dataset_links_factory() -> SnapshotDatasetLinksManager:
+        def snapshot_dataset_links_factory() -> SnapshotDatasetLinksManager:
             return FileSnapshotDatasetLinksManager(base_path=self.path)
 
         return snapshot_dataset_links_factory

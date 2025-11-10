@@ -412,6 +412,9 @@ class Workspace(WorkspaceBase):
             dataset_metadata=FileDatasetMetadataStorage(base_path=self.path),
             dataset_file_storage=DatasetFileStorage(dataset_blob_storage=FSSpecBlobStorage(path)),
         )
+        from evidently.ui.service.storage.local.snapshot_links import FileSnapshotDatasetLinksManager
+
+        self.dataset_links = FileSnapshotDatasetLinksManager(path)
 
     def add_project(self, project: ProjectModel, org_id: Optional[OrgID] = None) -> Project:
         project_model = self.state.write_project(project)
@@ -467,10 +470,13 @@ class Workspace(WorkspaceBase):
 
         assert isinstance(metadata, JsonFileProjectMetadataStorage)
         metadata.state.reload(force=True)
+        from evidently.ui.service.type_aliases import ProjectID as ServiceProjectID
+
+        project_uuid: ServiceProjectID = uuid.UUID(str(project_id))
         dataset_metadata = async_to_sync(
             self.datasets.upload_dataset(
                 ZERO_UUID,
-                project_id=project_id,
+                project_id=project_uuid,
                 name=name,
                 description=description,
                 data=dataset.as_dataframe(),
@@ -480,6 +486,12 @@ class Workspace(WorkspaceBase):
                 tags=dataset.tags,
             )
         )
+        if link is not None:
+            async_to_sync(
+                self.dataset_links.link_dataset_snapshot(
+                    project_uuid, link.snapshot_id, dataset_metadata.id, link.dataset_type, link.dataset_subtype
+                )
+            )
         return dataset_metadata.id
 
     def save_dashboard(self, project_id: ProjectID, dashboard: DashboardModel):

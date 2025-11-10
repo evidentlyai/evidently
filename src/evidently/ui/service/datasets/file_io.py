@@ -5,6 +5,7 @@ from typing import Container
 from typing import List
 from typing import Optional
 from typing import Tuple
+from typing import cast
 
 import pandas as pd
 from litestar.datastructures import UploadFile
@@ -91,7 +92,9 @@ class FileIO:
             user_id, project_id, dataset_id, upload_file, allowed_extensions=self.ALLOWED_FILE_READERS.keys()
         )
         try:
-            reader: Callable[[BytesIO], pd.DataFrame] = self.ALLOWED_FILE_READERS[file_extension]
+            reader: Callable[[BytesIO], pd.DataFrame] = cast(
+                Callable[[BytesIO], pd.DataFrame], self.ALLOWED_FILE_READERS[file_extension]
+            )
             current_data = reader(BytesIO(file_content))
         except ParserError as e:
             raise HTTPException(status_code=400, detail=f"Wrong file content: {str(e)}")
@@ -139,7 +142,9 @@ class FileIO:
         if file_extension not in self.ALLOWED_FILE_READERS.keys():
             raise HTTPException(status_code=400, detail="Extension not allowed")
         file_content = self.file_storage.get_dataset(file_id)
-        reader: Callable[[BytesIO], pd.DataFrame] = self.ALLOWED_FILE_READERS[file_extension]
+        reader: Callable[[BytesIO], pd.DataFrame] = cast(
+            Callable[[BytesIO], pd.DataFrame], self.ALLOWED_FILE_READERS[file_extension]
+        )
         df = reader(BytesIO(file_content))
         return df
 

@@ -6,7 +6,7 @@ from typing import Callable
 from typing import Dict
 from typing import List
 from typing import Optional
-from typing import Type
+from typing import TypeAlias
 
 import pandas as pd
 from litestar import Router
@@ -363,13 +363,13 @@ async def materialize_from_source(
 # We need this endpoint to export
 # some additional models to open api schema
 # TODO: fix this endpoint
-_filter_model: Type = create_model(
-    "Filters", **{"by_string": (FilterByString, ...), "by_number": (FilterByNumber, ...)}
-)  # type: ignore[valid-type]
+_filter_model = create_model("Filters", by_string=(FilterByString, ...), by_number=(FilterByNumber, ...))  # type: ignore[call-overload]
+
+FilterModel: TypeAlias = _filter_model  # type: ignore[valid-type]
 
 
 @get("/models/additional")
-async def additional_models() -> List[_filter_model]:
+async def additional_models() -> List[FilterModel]:  # type: ignore[valid-type]
     """Get additional schema for datasets."""
     return []
 
