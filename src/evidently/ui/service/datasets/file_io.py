@@ -47,17 +47,17 @@ def calculate_data_definition(current_data: pd.DataFrame) -> DataDefinition:
     return dataset.data_definition
 
 
+def read_parquet(path) -> pd.DataFrame:
+    """Read parquet file."""
+    df = pd.read_parquet(path, engine="pyarrow")
+    return df
+
+
 class FileIO:
     """Utility for reading and writing dataset files."""
 
     def __init__(self, file_storage: DatasetFileStorage):
         self.file_storage = file_storage
-
-    @staticmethod
-    def read_parquet(path) -> pd.DataFrame:
-        """Read parquet file."""
-        df = pd.read_parquet(path, engine="pyarrow")
-        return df
 
     ALLOWED_FILE_READERS = {
         ".csv": pd.read_csv,
