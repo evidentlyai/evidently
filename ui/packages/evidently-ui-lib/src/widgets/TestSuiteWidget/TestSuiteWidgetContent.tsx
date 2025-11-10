@@ -2,7 +2,7 @@ import { Box, Button, Collapse, Grid, Select } from '@mui/material'
 import { AlertTitle } from '@mui/material'
 import React, { useState } from 'react'
 import type { TestDataInfo, TestGroupData, TestGroupTypeData, TestSuiteWidgetParams } from '~/api'
-import { AlertThemed } from '~/components/AlertThemed'
+import { AlertThemed } from '~/components/Alert/AlertThemed'
 import TestInfo, { StateToSeverity } from './TestData'
 
 type TestSuiteFoldingProps = {

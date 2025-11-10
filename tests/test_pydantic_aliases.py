@@ -56,7 +56,19 @@ from evidently.pydantic_utils import WithTestAndMetricDependencies
 from evidently.pydantic_utils import get_base_class
 from evidently.pydantic_utils import is_not_abstract
 from evidently.sdk.configs import ConfigContent
+from evidently.ui.service.components import DataStorageComponent
+from evidently.ui.service.components import MetadataStorageComponent
 from evidently.ui.service.components.base import Component
+from evidently.ui.service.components.snapshot_links import SnapshotDatasetLinksComponent
+from evidently.ui.service.components.storage import BlobStorageComponent
+from evidently.ui.service.components.storage import DatasetFileStorageComponent
+from evidently.ui.service.components.storage import DatasetMetadataComponent
+from evidently.ui.service.components.storage import StorageComponent
+from evidently.ui.service.datasets.data_source import DataSource
+from evidently.ui.service.datasets.data_source import DataSourceDTO
+from evidently.ui.service.datasets.filters import FilterBy
+from evidently.ui.service.datasets.filters import FilterByNumber
+from evidently.ui.service.datasets.filters import FilterByString
 
 T = TypeVar("T")
 
@@ -115,6 +127,17 @@ REGISTRY_MAPPING: Dict[Type[PolymorphicModel], str] = {
     Splitter: registries.rag.__name__,
     BaseDatasetGenerator: registries.datagen.__name__,
     SpecialColumnInfo: registries.descriptors.__name__,
+    BlobStorageComponent: registries.components.__name__,
+    DataStorageComponent: registries.components.__name__,
+    MetadataStorageComponent: registries.components.__name__,
+    StorageComponent: registries.components.__name__,
+    DatasetFileStorageComponent: registries.components.__name__,
+    DatasetMetadataComponent: registries.components.__name__,
+    SnapshotDatasetLinksComponent: registries.components.__name__,
+    DataSource: registries.dataset_models.__name__,
+    FilterByNumber: registries.dataset_models.__name__,
+    FilterByString: registries.dataset_models.__name__,
+    DataSourceDTO: registries.dataset_models.__name__,
 }
 
 
@@ -198,8 +221,14 @@ def test_all_aliases_correct():
         Splitter: Splitter.__alias_type__,
         BaseDatasetGenerator: BaseDatasetGenerator.__alias_type__,
         SpecialColumnInfo: SpecialColumnInfo.__alias_type__,
+        DataSourceDTO: DataSourceDTO.__alias_type__,
+        DataSource: DataSource.__alias_type__,
     }
-    skip = [Component, ComponentLegacy]
+    skip = [
+        Component,
+        ComponentLegacy,
+        FilterBy,
+    ]
     skip_literal = [EvidentlyBaseModel, WithTestAndMetricDependencies, BasePreset]
     for cls in find_all_subclasses(PolymorphicModel, include_abstract=True):
         if cls in skip_literal or any(issubclass(cls, s) for s in skip) or not is_not_abstract(cls):

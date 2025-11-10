@@ -1,5 +1,5 @@
 import type { AdditionalGraphInfo } from '~/api'
-import { PieDashboardPanel } from '~/components/v2/Dashboard/Panels/implementations/Pie'
+import { PieDashboardPanel } from '~/components/Dashboard/Panels/implementations/Pie'
 
 type RenderPlotlyPIEProps = AdditionalGraphInfo & {
   widgetSize: number

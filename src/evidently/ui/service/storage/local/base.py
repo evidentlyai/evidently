@@ -8,6 +8,7 @@ from typing import Dict
 from typing import List
 from typing import Optional
 from typing import Set
+from typing import Union
 
 import uuid6
 
@@ -74,17 +75,23 @@ class FSSpecBlobStorage(BlobStorage):
 
     @contextlib.contextmanager
     def open_blob(self, blob_id: str):
-        with self.location.open(blob_id) as f:
+        with self.location.open(blob_id, "rb") as f:
             yield f
 
-    async def put_blob(self, blob_id: BlobID, obj: str) -> BlobID:
+    async def put_blob(self, blob_id: BlobID, obj: Union[str, bytes]) -> BlobID:
         self.location.makedirs(posixpath.dirname(blob_id))
-        with self.location.open(blob_id, "w") as f:
+        with self.location.open(blob_id, "w" if isinstance(obj, str) else "wb") as f:
             f.write(obj)
         return blob_id
 
     async def get_blob_metadata(self, blob_id: BlobID) -> BlobMetadata:
         return BlobMetadata(id=blob_id, size=self.location.size(blob_id))
+
+    def blob_exists(self, id: BlobID):
+        return self.location.exists(id)
+
+    async def delete_blob(self, blob_id: BlobID):
+        self.location.rmtree(str(blob_id))
 
 
 def load_project(location: FSLocation, path: str) -> Optional[Project]:

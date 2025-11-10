@@ -1,3 +1,5 @@
+from typing import Optional
+
 from fsspec.implementations.local import LocalFileSystem
 
 from ...managers.auth import AuthManager
@@ -21,8 +23,10 @@ def start_workspace_watchdog(path: str, state: LocalState):
     print(f"Observer for '{path}' started")
 
 
-def create_local_project_manager(path: str, autorefresh: bool, auth: AuthManager = None) -> ProjectManager:
-    state = LocalState.load(path, None)
+def create_local_project_manager(
+    path: str, autorefresh: bool, auth: AuthManager = None, state: Optional[LocalState] = None
+) -> ProjectManager:
+    state = state or LocalState.load(path, None)
 
     metadata = JsonFileProjectMetadataStorage(path=path, local_state=state)
     data = InMemoryDataStorage(path=path, local_state=state)

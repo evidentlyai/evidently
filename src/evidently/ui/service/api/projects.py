@@ -1,3 +1,4 @@
+import asyncio
 import datetime
 import json
 from typing import Callable
@@ -37,6 +38,7 @@ from evidently.ui.service.api.models import ReportModel
 from evidently.ui.service.base import BatchMetricData
 from evidently.ui.service.base import Project
 from evidently.ui.service.base import SeriesResponse
+from evidently.ui.service.datasets.snapshot_links import SnapshotDatasetLinksManager
 from evidently.ui.service.managers.projects import ProjectManager
 from evidently.ui.service.type_aliases import OrgID
 from evidently.ui.service.type_aliases import ProjectID
@@ -75,8 +77,16 @@ async def list_snapshots(
     project_manager: Annotated[ProjectManager, Dependency(skip_validation=True)],
     log_event: Callable,
     user_id: UserID,
+    snapshot_dataset_links: Annotated[
+        SnapshotDatasetLinksManager, Dependency(skip_validation=True, default=None)
+    ] = None,
 ) -> List[SnapshotMetadataModel]:
     snapshots = await project_manager.list_snapshots(user_id, project.id)
+    if snapshot_dataset_links is not None:
+        coroutines = (snapshot_dataset_links.get_links(project.id, snapshot.id) for snapshot in snapshots)
+        links_results = await asyncio.gather(*coroutines)
+        for snapshot, links in zip(snapshots, links_results):
+            snapshot.links = links
     log_event("list_snapshots", reports_count=len(snapshots))
     return snapshots
 
@@ -218,8 +228,12 @@ async def get_snapshot_data(
 
 @get("/{project_id:uuid}/{snapshot_id:uuid}/metadata")
 async def get_snapshot_metadata(
-    snapshot_metadata: Annotated[SnapshotMetadataModel, Dependency()],
     log_event: Callable,
+    snapshot_metadata: Annotated[SnapshotMetadataModel, Dependency()],
+    project: Annotated[Project, Dependency()],
+    snapshot_dataset_links: Annotated[
+        SnapshotDatasetLinksManager, Dependency(skip_validation=True, default=None)
+    ] = None,
 ) -> SnapshotMetadataModel:
     log_event(
         "get_snapshot_metadata",
@@ -229,6 +243,10 @@ async def get_snapshot_metadata(
         test_presets=snapshot_metadata.metadata.get(TEST_PRESETS, []),
         test_generators=snapshot_metadata.metadata.get(TEST_GENERATORS, []),
     )
+
+    if snapshot_dataset_links is not None:
+        snapshot_metadata.links = await snapshot_dataset_links.get_links(project.id, snapshot_metadata.id)
+
     return snapshot_metadata
 
 

@@ -266,6 +266,18 @@ class BlobStorage(ABC):
     async def get_blob_metadata(self, blob_id: BlobID) -> BlobMetadata:
         raise NotImplementedError
 
+    def get_blob_data(self, id: BlobID) -> bytes:
+        with self.open_blob(id) as blob:
+            return blob.read()
+
+    @abstractmethod
+    def blob_exists(self, id: BlobID):
+        raise NotImplementedError
+
+    @abstractmethod
+    async def delete_blob(self, id: BlobID):
+        raise NotImplementedError
+
 
 class ProjectDashboardStorage:
     @abstractmethod

@@ -2,7 +2,7 @@ import type React from 'react'
 
 import type { MultiTabWidgetParams } from '~/api'
 
-import AutoTabs from '~/components/AutoTabs'
+import AutoTabs from '~/components/Tabs/AutoTabs'
 import { WidgetRenderer } from './WidgetRenderer'
 
 const TabbedWidgetContent: React.FunctionComponent<

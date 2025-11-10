@@ -4,7 +4,7 @@ import { useState } from 'react'
 import type { TestDataInfo, TestState } from '~/api'
 
 import ReactMarkdown from 'react-markdown'
-import { AlertThemed } from '~/components/AlertThemed'
+import { AlertThemed } from '~/components/Alert/AlertThemed'
 import { BigTableDetails } from '~/widgets/BigTableWidget/BigTableDetails'
 
 const availableStates: TestState[] = ['unknown', 'success', 'warning', 'fail']

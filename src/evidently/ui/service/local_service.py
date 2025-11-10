@@ -21,6 +21,7 @@ from evidently.ui.service.components.base import Component
 from evidently.ui.service.components.base import ComponentContext
 from evidently.ui.service.components.base import ServiceComponent
 from evidently.ui.service.components.dashboard import DashboardComponent
+from evidently.ui.service.components.datasets import DatasetComponent
 from evidently.ui.service.components.security import NoSecurityComponent
 from evidently.ui.service.components.security import SecurityComponent
 from evidently.ui.service.components.storage import LocalStorageComponent
@@ -134,4 +135,5 @@ class LocalConfig(AppConfig):
     storage: StorageComponent = LocalStorageComponent()
     telemetry: TelemetryComponent = TelemetryComponent()
     dashboard: DashboardComponent = DashboardComponent()
+    datasets: DatasetComponent = DatasetComponent()
     litestar: LitestarComponent = LitestarComponent()

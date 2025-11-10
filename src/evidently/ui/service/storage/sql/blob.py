@@ -3,8 +3,10 @@ import io
 import json
 from typing import IO
 from typing import Iterator
+from typing import Union
 
 from sqlalchemy import Engine
+from sqlalchemy import select
 
 from evidently.legacy.suite.base_suite import Snapshot
 from evidently.legacy.utils import NumpyEncoder
@@ -30,15 +32,22 @@ class SQLBlobStorage(BaseSQLStorage, BlobStorage):
     def open_blob(self, blob_id: BlobID) -> Iterator[IO]:
         """Open blob for reading."""
         with self.session as session:
-            blob_model = session.query(BlobSQLModel).filter(BlobSQLModel.id == blob_id).first()
+            blob_model = session.scalar(select(BlobSQLModel).where(BlobSQLModel.id == blob_id))
             if blob_model is None:
                 raise FileNotFoundError(f"Blob {blob_id} not found")
-            yield io.StringIO(blob_model.data)
+            yield io.BytesIO(blob_model.data)
 
-    async def put_blob(self, blob_id: BlobID, obj: str) -> BlobID:
+    async def put_blob(self, blob_id: BlobID, obj: Union[str, bytes]) -> BlobID:
         """Store blob data."""
         with self.session as session:
-            blob_model = BlobSQLModel(id=blob_id, data=obj, size=len(obj))
+            # Convert string to bytes for storage
+            if isinstance(obj, str):
+                data = obj.encode("utf-8")
+            else:
+                data = obj
+            size = len(data)
+
+            blob_model = BlobSQLModel(id=blob_id, data=data, size=size)
             session.merge(blob_model)
             session.commit()
         return blob_id
@@ -46,10 +55,24 @@ class SQLBlobStorage(BaseSQLStorage, BlobStorage):
     async def get_blob_metadata(self, blob_id: BlobID):
         """Get blob metadata."""
         with self.session as session:
-            blob_model = session.query(BlobSQLModel).filter(BlobSQLModel.id == blob_id).first()
+            blob_model = session.scalar(select(BlobSQLModel).where(BlobSQLModel.id == blob_id))
             if blob_model is None:
                 raise FileNotFoundError(f"Blob {blob_id} not found")
             return blob_model.to_blob_metadata()
+
+    def blob_exists(self, blob_id: BlobID) -> bool:
+        """Check if blob exists."""
+        with self.session as session:
+            blob_model = session.scalar(select(BlobSQLModel).where(BlobSQLModel.id == blob_id))
+            return blob_model is not None
+
+    async def delete_blob(self, blob_id: BlobID):
+        """Delete blob."""
+        with self.session as session:
+            blob_model = session.scalar(select(BlobSQLModel).where(BlobSQLModel.id == blob_id))
+            if blob_model is not None:
+                session.delete(blob_model)
+                session.commit()
 
     async def put_snapshot(self, project_id: ProjectID, snapshot: Snapshot):
         """Store snapshot as blob."""

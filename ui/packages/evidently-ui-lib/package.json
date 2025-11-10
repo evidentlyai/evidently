@@ -31,6 +31,8 @@
     "@mui/icons-material": "^7.0.2",
     "@mui/material": "^7.0.2",
     "@mui/x-date-pickers": "^8.2.0",
+    "@mui/x-data-grid": "^7.16.0",
+    "material-ui-popup-state": "^5.0.10",
     "@mui/x-charts": "^8.2.0",
     "@nivo/bar": "^0.62.0",
     "@nivo/line": "^0.62.0",

@@ -6,6 +6,7 @@ from typing import Set
 from sqlalchemy import delete
 from sqlalchemy import select
 from sqlalchemy import update
+from sqlalchemy.orm import Session
 
 from evidently.core.serialization import SnapshotModel
 from evidently.legacy.ui.dashboards import DashboardConfig
@@ -18,12 +19,27 @@ from evidently.ui.service.errors import SnapshotNotFound
 from evidently.ui.service.type_aliases import OrgID
 from evidently.ui.service.type_aliases import ProjectID
 from evidently.ui.service.type_aliases import SnapshotID
+from evidently.ui.service.type_aliases import UserID
 
 from .base import BaseSQLStorage
 from .models import ProjectSQLModel
 from .models import SnapshotSQLModel
-from .utils import get_or_create_user
-from .utils import get_project
+from .models import UserSQLModel
+
+
+def get_or_create_user(session: Session, user_id: UserID) -> UserSQLModel:
+    """Get or create a user in the database."""
+    user_model = session.query(UserSQLModel).filter(UserSQLModel.id == user_id).first()
+    if user_model is None:
+        user_model = UserSQLModel(id=user_id, name="Unknown User")
+        session.add(user_model)
+        session.flush()
+    return user_model
+
+
+def get_project(session: Session, project_id: ProjectID) -> Optional[ProjectSQLModel]:
+    """Get a project by ID."""
+    return session.query(ProjectSQLModel).filter(ProjectSQLModel.id == project_id).first()
 
 
 class SQLProjectMetadataStorage(BaseSQLStorage, ProjectMetadataStorage):

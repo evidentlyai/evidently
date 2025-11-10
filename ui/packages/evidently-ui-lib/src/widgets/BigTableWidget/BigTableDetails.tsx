@@ -6,8 +6,8 @@ import type { AdditionalGraphInfo, BigTableRowDetails, DetailsPart, WidgetSize }
 
 import DashboardContext, { type DashboardContextState } from '~/contexts/DashboardContext'
 
-import AutoTabs from '~/components/AutoTabs'
-import LoadableView from '~/components/LoadableVIew'
+import AutoTabs from '~/components/Tabs/AutoTabs'
+import LoadableView from '~/components/Utils/LoadableVIew'
 
 import BigGraphWidgetContent from '~/widgets/BigGraphWidgetContent'
 import InsightBlock from '~/widgets/InsightBlock'

@@ -3,7 +3,7 @@ import DashboardContext, { CreateDashboardContextState } from '~/contexts/Dashbo
 import { Box } from '@mui/material'
 import type { AdditionalGraphInfo, WidgetInfo } from '~/api'
 import type { DashboardInfoModel } from '~/api/types'
-import { SnapshotWidgets } from '~/components/WidgetsContent'
+import { SnapshotWidgets } from '~/components/Widgets/WidgetsContent'
 
 export function StandaloneSnapshotWidgets({
   dashboard: { widgets },

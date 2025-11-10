@@ -28,6 +28,7 @@ services:
       - "8000:8000"
     volumes:
       - ./postgres_config.yaml:/app/config.yaml:ro
+      - ./workspace:/app/workspace
     command: ["--port", "8000", "--conf-path", "/app/config.yaml"]
     environment:
       EVIDENTLY_DEBUG: 1

@@ -36,6 +36,7 @@ from evidently.legacy.ui.workspace.cloud import ACCESS_TOKEN_COOKIE
 from evidently.legacy.ui.workspace.cloud import TOKEN_HEADER_NAME
 from evidently.legacy.ui.workspace.remote import RemoteBase
 from evidently.legacy.ui.workspace.remote import T
+from evidently.legacy.utils.sync import async_to_sync
 from evidently.sdk.configs import RemoteConfigManager
 from evidently.sdk.datasets import DatasetList
 from evidently.sdk.datasets import RemoteDatasetsManager
@@ -45,6 +46,11 @@ from evidently.sdk.models import DashboardTabModel
 from evidently.sdk.models import ProjectModel
 from evidently.sdk.models import SnapshotLink
 from evidently.sdk.prompts import RemotePromptManager
+from evidently.ui.service.datasets.metadata import DatasetOrigin
+from evidently.ui.service.storage.common import NoopAuthManager
+from evidently.ui.service.storage.local import FSSpecBlobStorage
+from evidently.ui.service.storage.local import create_local_project_manager
+from evidently.ui.service.type_aliases import ZERO_UUID
 from evidently.ui.storage.local.base import SNAPSHOTS_DIR_NAME
 from evidently.ui.storage.local.base import LocalState
 from evidently.ui.utils import get_html_link_to_report
@@ -397,6 +403,18 @@ class Workspace(WorkspaceBase):
     def __init__(self, path: str):
         self.path = path
         self.state = LocalState(self.path)
+        from evidently.ui.service.datasets.metadata import FileDatasetMetadataStorage
+        from evidently.ui.service.managers.datasets import DatasetManager
+        from evidently.ui.service.storage.local.dataset import DatasetFileStorage
+
+        self.datasets = DatasetManager(
+            project_manager=create_local_project_manager(path, False, NoopAuthManager()),
+            dataset_metadata=FileDatasetMetadataStorage(base_path=self.path),
+            dataset_file_storage=DatasetFileStorage(dataset_blob_storage=FSSpecBlobStorage(path)),
+        )
+        from evidently.ui.service.storage.local.snapshot_links import FileSnapshotDatasetLinksManager
+
+        self.dataset_links = FileSnapshotDatasetLinksManager(path)
 
     def add_project(self, project: ProjectModel, org_id: Optional[OrgID] = None) -> Project:
         project_model = self.state.write_project(project)
@@ -447,7 +465,34 @@ class Workspace(WorkspaceBase):
         description: Optional[str],
         link: Optional[SnapshotLink] = None,
     ) -> DatasetID:
-        raise NotImplementedError("Datasets are not supported yet in local workspace")
+        metadata = self.datasets.project_manager.project_metadata
+        from evidently.ui.service.storage.local import JsonFileProjectMetadataStorage
+
+        assert isinstance(metadata, JsonFileProjectMetadataStorage)
+        metadata.state.reload(force=True)
+        from evidently.ui.service.type_aliases import ProjectID as ServiceProjectID
+
+        project_uuid: ServiceProjectID = uuid.UUID(str(project_id))
+        dataset_metadata = async_to_sync(
+            self.datasets.upload_dataset(
+                ZERO_UUID,
+                project_id=project_uuid,
+                name=name,
+                description=description,
+                data=dataset.as_dataframe(),
+                data_definition=dataset.data_definition,
+                origin=DatasetOrigin.file,
+                metadata=dataset.metadata,
+                tags=dataset.tags,
+            )
+        )
+        if link is not None:
+            async_to_sync(
+                self.dataset_links.link_dataset_snapshot(
+                    project_uuid, link.snapshot_id, dataset_metadata.id, link.dataset_type, link.dataset_subtype
+                )
+            )
+        return dataset_metadata.id
 
     def save_dashboard(self, project_id: ProjectID, dashboard: DashboardModel):
         self.state.write_dashboard(project_id, dashboard)
@@ -475,6 +520,7 @@ class RemoteWorkspace(RemoteBase, WorkspaceBase):  # todo: reuse cloud ws
         self.base_url = base_url
         self.secret = secret
         self.verify()
+        self.datasets = RemoteDatasetsManager(self, "/api/datasets")
 
     def _prepare_request(
         self,
@@ -573,7 +619,13 @@ class RemoteWorkspace(RemoteBase, WorkspaceBase):  # todo: reuse cloud ws
         description: Optional[str],
         link: Optional[SnapshotLink] = None,
     ) -> DatasetID:
-        raise NotImplementedError("Adding datasets is not supported yet")
+        return self.datasets.add(project_id=project_id, dataset=dataset, name=name, description=description, link=link)
+
+    def load_dataset(self, dataset_id: DatasetID) -> Dataset:
+        return self.datasets.load(dataset_id)
+
+    def list_datasets(self, project: STR_UUID, origins: Optional[List[str]] = None) -> DatasetList:
+        return self.datasets.list(project, origins=origins)
 
     def save_dashboard(self, project_id: ProjectID, dashboard: DashboardModel):
         self._request(f"/api/v2/dashboards/{project_id}", method="POST", body=dashboard.dict())
@@ -603,7 +655,7 @@ class CloudWorkspace(RemoteWorkspace):
         self._logged_in: bool = False
         super().__init__(base_url=url if url is not None else self.URL)
         self.prompts = RemotePromptManager(self)
-        self.datasets = RemoteDatasetsManager(self)
+        self.datasets = RemoteDatasetsManager(self, "/api/v2/datasets")
         self.configs = RemoteConfigManager(self)
 
     def _get_jwt_token(self):
@@ -731,22 +783,6 @@ class CloudWorkspace(RemoteWorkspace):
 
     def list_orgs(self) -> List[Org]:
         return [o.to_org() for o in self._request("/api/orgs", "GET", response_model=List[OrgModel])]
-
-    def add_dataset(
-        self,
-        project_id: STR_UUID,
-        dataset: Dataset,
-        name: str,
-        description: Optional[str],
-        link: Optional[SnapshotLink] = None,
-    ) -> DatasetID:
-        return self.datasets.add(project_id=project_id, dataset=dataset, name=name, description=description, link=link)
-
-    def load_dataset(self, dataset_id: DatasetID) -> Dataset:
-        return self.datasets.load(dataset_id)
-
-    def list_datasets(self, project: STR_UUID, origins: Optional[List[str]] = None) -> DatasetList:
-        return self.datasets.list(project, origins=origins)
 
     def _get_snapshot_url(self, project_id: STR_UUID, snapshot_id: STR_UUID) -> str:
         return urljoin(self.base_url, f"/v2/projects/{project_id}/explore/{snapshot_id}")

@@ -20,4 +20,6 @@ export type GetRouteByPath<K extends RoutesWithLoader['path']> = Extract<
   { path: K }
 >
 
+export type GetParamsByPath<K extends RoutesWithLoader['path']> = GetRouteByPath<K>['params']
+
 export type __TESTS_ROUTE_STRUCTURE = Expect<ExpectEqActuall<GetRouteStructure<typeof routes>>>

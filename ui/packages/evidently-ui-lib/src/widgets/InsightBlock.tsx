@@ -3,7 +3,7 @@ import type React from 'react'
 import { AlertTitle } from '@mui/material'
 
 import type { InsightsParams } from '~/api'
-import { AlertThemed } from '~/components/AlertThemed'
+import { AlertThemed } from '~/components/Alert/AlertThemed'
 
 interface InsightBlockProps {
   data: InsightsParams

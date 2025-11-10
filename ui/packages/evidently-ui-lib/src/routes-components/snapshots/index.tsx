@@ -26,10 +26,10 @@ import { useLocalStorage } from '@uidotdev/usehooks'
 import { Delete as DeleteIcon } from '@mui/icons-material'
 import { Autocomplete } from '@mui/material'
 import type { DownloadSnapshotURL, MetadataModel, ReportModel } from '~/api/types'
-import { DownloadButton } from '~/components/DownloadButton'
-import { HidedTags } from '~/components/HidedTags'
-import { JsonViewThemed } from '~/components/JsonView'
-import { TextWithCopyIcon } from '~/components/TextWithCopyIcon'
+import { DownloadButton } from '~/components/Actions/DownloadButton'
+import { HidedTags } from '~/components/Tags/HidedTags'
+import { JsonViewThemed } from '~/components/Utils/JsonView'
+import { TextWithCopyIcon } from '~/components/Utils/TextWithCopyIcon'
 import { useUpdateQueryStringValueWithoutNavigation } from '~/hooks/useUpdateQueryStringValueWithoutNavigation'
 
 import dayjs from 'dayjs'
@@ -156,7 +156,7 @@ export const SnapshotsListTemplate = ({
 
   const FilterComponent = (
     <Box sx={{ padding: 2 }}>
-      <Grid container gap={2} alignItems={'flex-end'} justifyContent={'space-around'}>
+      <Grid container gap={2} alignItems={'flex-end'} justifyContent={'space-between'}>
         <Grid size={{ xs: 12, md: 4 }}>
           <Autocomplete
             multiple
@@ -344,15 +344,17 @@ export const SnapshotsListTemplate = ({
 
                       <Box>
                         <Tooltip title='delete snapshot' placement='top'>
-                          <IconButton
-                            onClick={() => {
-                              onDeleteSnapshot({ snapshotId: snapshot.id })
-                            }}
-                            color='primary'
-                            disabled={disabled}
-                          >
-                            <DeleteIcon />
-                          </IconButton>
+                          <span>
+                            <IconButton
+                              onClick={() => {
+                                onDeleteSnapshot({ snapshotId: snapshot.id })
+                              }}
+                              color='primary'
+                              disabled={disabled}
+                            >
+                              <DeleteIcon />
+                            </IconButton>
+                          </span>
                         </Tooltip>
                       </Box>
                     </>

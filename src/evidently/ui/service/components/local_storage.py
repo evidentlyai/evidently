@@ -6,13 +6,20 @@ from evidently.ui.service.base import BlobStorage
 from evidently.ui.service.base import DataStorage
 from evidently.ui.service.base import ProjectMetadataStorage
 from evidently.ui.service.components.base import FactoryComponent
+from evidently.ui.service.components.snapshot_links import SnapshotDatasetLinksComponent
 from evidently.ui.service.components.storage import BlobStorageComponent
+from evidently.ui.service.components.storage import DatasetFileStorageComponent
+from evidently.ui.service.components.storage import DatasetMetadataComponent
 from evidently.ui.service.components.storage import DataStorageComponent
 from evidently.ui.service.components.storage import MetadataStorageComponent
+from evidently.ui.service.datasets.metadata import DatasetMetadataStorage
+from evidently.ui.service.datasets.metadata import FileDatasetMetadataStorage
+from evidently.ui.service.datasets.snapshot_links import SnapshotDatasetLinksManager
 from evidently.ui.service.storage.local import FSSpecBlobStorage
 from evidently.ui.service.storage.local import InMemoryDataStorage
 from evidently.ui.service.storage.local import JsonFileProjectMetadataStorage
 from evidently.ui.service.storage.local import LocalState
+from evidently.ui.service.storage.local.snapshot_links import FileSnapshotDatasetLinksManager
 
 
 class FSSpecBlobComponent(BlobStorageComponent):
@@ -22,7 +29,10 @@ class FSSpecBlobComponent(BlobStorageComponent):
     path: str
 
     def dependency_factory(self) -> Callable[..., BlobStorage]:
-        return lambda: FSSpecBlobStorage(base_path=self.path)
+        def blob_storage_factory() -> BlobStorage:
+            return FSSpecBlobStorage(base_path=self.path)
+
+        return blob_storage_factory
 
 
 class JsonMetadataComponent(MetadataStorageComponent):
@@ -59,3 +69,48 @@ class LocalStateComponent(FactoryComponent[LocalState]):
 
     def dependency_factory(self) -> Callable[..., LocalState]:
         return lambda: LocalState(path=self.path, project_manager=None)
+
+
+class JsonDatasetMetadataComponent(DatasetMetadataComponent):
+    """JSON file-based dataset metadata storage component."""
+
+    class Config:
+        type_alias = "json_file"
+
+    path: str = "workspace"
+
+    def dependency_factory(self) -> Callable[..., DatasetMetadataStorage]:
+        def dataset_metadata_factory() -> DatasetMetadataStorage:
+            return FileDatasetMetadataStorage(base_path=self.path)
+
+        return dataset_metadata_factory
+
+
+class FSSpecDatasetFileStorageComponent(DatasetFileStorageComponent):
+    """FSSpec-based dataset file storage component."""
+
+    class Config:
+        type_alias = "fsspec"
+
+    path: str = "workspace"
+
+    def dependency_factory(self) -> Callable[..., BlobStorage]:
+        def blob_storage_factory() -> BlobStorage:
+            return FSSpecBlobStorage(base_path=self.path)
+
+        return blob_storage_factory
+
+
+class FileSnapshotDatasetLinksComponent(SnapshotDatasetLinksComponent):
+    """File-based snapshot dataset links component."""
+
+    class Config:
+        type_alias = "file"
+
+    path: str = "workspace"
+
+    def dependency_factory(self) -> Callable[..., SnapshotDatasetLinksManager]:
+        def snapshot_dataset_links_factory() -> SnapshotDatasetLinksManager:
+            return FileSnapshotDatasetLinksManager(base_path=self.path)
+
+        return snapshot_dataset_links_factory

@@ -14,3 +14,5 @@ export const REST_PARAMS_FOR_FETCHER_SUBMIT = {
 
 export const clamp = ({ value, min, max }: Record<'value' | 'min' | 'max', number>) =>
   Math.min(Math.max(value, min), max)
+
+export const isNotNull = <T,>(arg: T): arg is Exclude<T, null> => arg !== null

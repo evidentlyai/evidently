@@ -10,6 +10,7 @@ from typing import Optional
 from sqlalchemy import JSON
 from sqlalchemy import ForeignKey
 from sqlalchemy import Index
+from sqlalchemy import LargeBinary
 from sqlalchemy import Uuid
 from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy.orm import Mapped
@@ -17,6 +18,7 @@ from sqlalchemy.orm import mapped_column
 from sqlalchemy.orm import relationship
 
 from evidently._pydantic_compat import parse_obj_as
+from evidently.core.datasets import DataDefinition
 from evidently.core.metric_types import Metric
 from evidently.core.serialization import SnapshotModel
 from evidently.legacy.core import new_id
@@ -25,6 +27,7 @@ from evidently.sdk.models import SnapshotMetadataModel
 from evidently.ui.service.base import BlobMetadata
 from evidently.ui.service.base import Project
 from evidently.ui.service.base import User
+from evidently.ui.service.type_aliases import DatasetID
 from evidently.ui.service.type_aliases import ProjectID
 from evidently.ui.service.type_aliases import SnapshotID
 from evidently.ui.service.type_aliases import UserID
@@ -172,7 +175,7 @@ class BlobSQLModel(Base):
     __tablename__ = "blobs"
 
     id: Mapped[str] = mapped_column(primary_key=True)
-    data: Mapped[str]
+    data: Mapped[bytes] = mapped_column(LargeBinary)
     size: Mapped[int]
 
     def to_blob_metadata(self):
@@ -180,3 +183,116 @@ class BlobSQLModel(Base):
         from evidently.ui.service.base import BlobMetadata
 
         return BlobMetadata(id=self.id, size=self.size)
+
+
+class DatasetSQLModel(Base):
+    """Dataset model for SQL storage."""
+
+    __tablename__ = "datasets"
+
+    id: Mapped[DatasetID] = mapped_column(primary_key=True, default=new_id)
+
+    project_id: Mapped[ProjectID] = mapped_column(ForeignKey("projects.id", ondelete="CASCADE"))
+    project: Mapped["ProjectSQLModel"] = relationship()
+
+    author_id: Mapped[UserID] = mapped_column(ForeignKey("users.id"))
+    author: Mapped["UserSQLModel"] = relationship()
+
+    name: Mapped[str]
+    description: Mapped[Optional[str]]
+
+    created_at: Mapped[datetime.datetime]
+    updated_at: Mapped[datetime.datetime]
+
+    data_definition: Mapped[JSON_FIELD]
+    source: Mapped[JSON_FIELD]
+    origin: Mapped[str]
+    size_bytes: Mapped[int]
+    row_count: Mapped[int]
+    column_count: Mapped[int]
+
+    all_columns: Mapped[List[str]]
+    deleted: Mapped[Optional[datetime.datetime]] = mapped_column(nullable=True)
+
+    is_draft: Mapped[Optional[bool]] = mapped_column(nullable=False, default=False)
+    draft_params: Mapped[JSON_FIELD] = mapped_column(nullable=True, default=None)
+
+    metadata_json: Mapped[JSON_FIELD]
+    tags: Mapped[List[str]]
+
+    tracing_params: Mapped[JSON_FIELD] = mapped_column(nullable=True, default=None)
+
+    def to_dataset_metadata(self):
+        """Convert model to DatasetMetadataFull."""
+        from evidently.ui.service.datasets.data_source import DataSource
+        from evidently.ui.service.datasets.metadata import DatasetMetadataFull
+        from evidently.ui.service.datasets.metadata import DatasetOrigin
+        from evidently.ui.service.datasets.metadata import DatasetTracingParams
+
+        return DatasetMetadataFull(
+            name=self.name,
+            size_bytes=self.size_bytes,
+            row_count=self.row_count,
+            column_count=self.column_count,
+            description=self.description or "",
+            id=self.id,
+            project_id=self.project_id,
+            author_id=self.author_id,
+            all_columns=self.all_columns,
+            data_definition=parse_obj_as(DataDefinition, self.data_definition),
+            source=parse_obj_as(DataSource, self.source),
+            created_at=self.created_at,
+            updated_at=self.updated_at,
+            author_name=self.author.name if self.author else "Unknown User",
+            is_draft=self.is_draft,
+            draft_params=self.draft_params,
+            origin=DatasetOrigin(self.origin),
+            metadata=self.metadata_json,
+            tags=self.tags,
+            tracing_params=parse_obj_as(DatasetTracingParams, self.tracing_params) if self.tracing_params else None,
+        )
+
+    @classmethod
+    def from_dataset_metadata(
+        cls, dataset, author_id: UserID, timestamp: Optional[datetime.datetime] = None
+    ) -> "DatasetSQLModel":
+        """Create model from DatasetMetadata."""
+        timestamp = timestamp or datetime.datetime.now()
+        return DatasetSQLModel(
+            name=dataset.name,
+            size_bytes=dataset.size_bytes,
+            row_count=dataset.row_count,
+            column_count=dataset.column_count,
+            description=dataset.description,
+            id=dataset.id,
+            project_id=dataset.project_id,
+            all_columns=dataset.all_columns,
+            data_definition=json.loads(dataset.data_definition.json()),
+            source=json.loads(dataset.source.json()),
+            author_id=author_id,
+            created_at=timestamp,
+            updated_at=timestamp,
+            is_draft=dataset.is_draft,
+            draft_params=dataset.draft_params,
+            origin=dataset.origin.value,
+            metadata_json=dataset.metadata,
+            tags=dataset.tags,
+            tracing_params=json.loads(dataset.tracing_params.json()) if dataset.tracing_params else None,
+        )
+
+
+class SnapshotDatasetsSQLModel(Base):
+    """SQL model for snapshot-dataset links."""
+
+    __tablename__ = "snapshot_datasets"
+
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    snapshot_id: Mapped[SnapshotID] = mapped_column(ForeignKey("snapshots.id", ondelete="CASCADE"), index=True)
+    dataset_id: Mapped[DatasetID] = mapped_column(ForeignKey("datasets.id", ondelete="CASCADE"), index=True)
+    dataset_type: Mapped[str]  # input/output etc
+    dataset_subtype: Mapped[str]  # current/reference/ etc
+
+    __table_args__ = (
+        Index("ix_snapshot_datasets_snapshot_id", "snapshot_id"),
+        Index("ix_snapshot_datasets_dataset_id", "dataset_id"),
+    )
