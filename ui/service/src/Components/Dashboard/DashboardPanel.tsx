@@ -64,7 +64,7 @@ const RenderPanelByDataFetchWithHint: PanelComponentType = (props) => {
     <>
       {isHovered && (
         <OneTimeHint
-          storageKey='click-on-datapoints-one-time-hint'
+          storageKey='one-time-hint-click-on-datapoints'
           hintMessage='You can click on the data point to open the Report.'
         />
       )}

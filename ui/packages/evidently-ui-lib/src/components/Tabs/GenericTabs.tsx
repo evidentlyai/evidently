@@ -7,10 +7,11 @@ export type GenericTabsProps<Tabs extends TabType> = {
   onTabChange: (newTab: Tabs['key']) => void
   tabs: Tabs[]
   size?: keyof typeof sizeTokens
+  isLoading?: boolean
 }
 
 export const GenericTabs = <Tabs extends TabType>(props: GenericTabsProps<Tabs>) => {
-  const { activeTab, onTabChange, tabs, size = 'medium' } = props
+  const { activeTab, onTabChange, tabs, size = 'medium', isLoading = false } = props
 
   const tokens = sizeTokens[size]
   return (
@@ -27,7 +28,6 @@ export const GenericTabs = <Tabs extends TabType>(props: GenericTabsProps<Tabs>)
         }
       })}
       value={activeTab}
-      onChange={(_, newValue) => onTabChange(newValue)}
     >
       {tabs.map((tab) => (
         <Tab
@@ -46,8 +46,10 @@ export const GenericTabs = <Tabs extends TabType>(props: GenericTabsProps<Tabs>)
             '&:hover': { backgroundColor: 'action.selected' }
           })}
           key={tab.key}
+          disabled={isLoading}
           label={tab.label}
           value={tab.key}
+          onClick={() => onTabChange(tab.key)}
         />
       ))}
     </Tabs>
