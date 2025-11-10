@@ -6,7 +6,6 @@ from typing import Callable
 from typing import Dict
 from typing import List
 from typing import Optional
-from typing import TypeAlias
 
 import pandas as pd
 from litestar import Router
@@ -23,6 +22,7 @@ from litestar.params import Dependency
 from litestar.params import Parameter
 from litestar.response.base import ASGIResponse
 from typing_extensions import Annotated
+from typing_extensions import TypeAlias
 
 from evidently._pydantic_compat import BaseModel
 from evidently._pydantic_compat import Extra
