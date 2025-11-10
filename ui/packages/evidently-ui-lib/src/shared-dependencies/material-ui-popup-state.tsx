@@ -1,1 +1,5 @@
 export * from 'material-ui-popup-state'
+export * from 'material-ui-popup-state/hooks'
+export { default as PopupState } from 'material-ui-popup-state'
+export { default as HoverPopover } from 'material-ui-popup-state/HoverPopover'
+export type { PopupState as PopupStateType } from 'material-ui-popup-state/hooks'
