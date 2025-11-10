@@ -462,6 +462,11 @@ class Workspace(WorkspaceBase):
         description: Optional[str],
         link: Optional[SnapshotLink] = None,
     ) -> DatasetID:
+        metadata = self.datasets.project_manager.project_metadata
+        from evidently.ui.service.storage.local import JsonFileProjectMetadataStorage
+
+        assert isinstance(metadata, JsonFileProjectMetadataStorage)
+        metadata.state.reload(force=True)
         dataset_metadata = async_to_sync(
             self.datasets.upload_dataset(
                 ZERO_UUID,
