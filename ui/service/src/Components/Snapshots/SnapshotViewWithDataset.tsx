@@ -1,6 +1,7 @@
 import type { DashboardInfoModel, DatasetPaginationModel } from 'evidently-ui-lib/api/types'
 import type { ErrorResponse } from 'evidently-ui-lib/api/types/utils'
 import type { DatasetParamsProps } from 'evidently-ui-lib/components/Datasets/types'
+import { useUpdateQueryStringValueWithoutNavigation } from 'evidently-ui-lib/hooks/useUpdateQueryStringValueWithoutNavigation'
 import { ExpandLess, ExpandMore } from 'evidently-ui-lib/shared-dependencies/mui-icons-material'
 import {
   Box,
@@ -9,6 +10,7 @@ import {
   Stack,
   Typography
 } from 'evidently-ui-lib/shared-dependencies/mui-material'
+import { useSearchParams } from 'evidently-ui-lib/shared-dependencies/react-router-dom'
 import { useState } from 'react'
 import { DatasetViewer } from '~/Components/Datasets/DatasetViewer'
 import { SnapshotView } from '~/Components/Snapshots/SnapshotView'
@@ -32,7 +34,13 @@ export const SnapshotViewWithDataset = (props: SnapshotViewWithDatasetProps) => 
   const { snapshot, projectId, snapshotId, linkedDatasetData, datasetParams, isLoading } = props
   const { type: datasetStatus } = linkedDatasetData
 
-  const [showDataset, setShowDataset] = useState(true)
+  const hideDatasetKey = 'hide-dataset'
+
+  const [searchParams] = useSearchParams()
+  const hideDatasetDefault = searchParams.get(hideDatasetKey)
+
+  const [showDataset, setShowDataset] = useState(!hideDatasetDefault)
+  useUpdateQueryStringValueWithoutNavigation(hideDatasetKey, !showDataset ? 'true' : '')
 
   const actuallyShowDataset = datasetStatus === 'success' && showDataset
 
