@@ -36,6 +36,7 @@ from evidently.legacy.ui.workspace.cloud import ACCESS_TOKEN_COOKIE
 from evidently.legacy.ui.workspace.cloud import TOKEN_HEADER_NAME
 from evidently.legacy.ui.workspace.remote import RemoteBase
 from evidently.legacy.ui.workspace.remote import T
+from evidently.legacy.utils.sync import async_to_sync
 from evidently.sdk.configs import RemoteConfigManager
 from evidently.sdk.datasets import DatasetList
 from evidently.sdk.datasets import RemoteDatasetsManager
@@ -45,6 +46,11 @@ from evidently.sdk.models import DashboardTabModel
 from evidently.sdk.models import ProjectModel
 from evidently.sdk.models import SnapshotLink
 from evidently.sdk.prompts import RemotePromptManager
+from evidently.ui.service.datasets.metadata import DatasetOrigin
+from evidently.ui.service.storage.common import NoopAuthManager
+from evidently.ui.service.storage.local import FSSpecBlobStorage
+from evidently.ui.service.storage.local import create_local_project_manager
+from evidently.ui.service.type_aliases import ZERO_UUID
 from evidently.ui.storage.local.base import SNAPSHOTS_DIR_NAME
 from evidently.ui.storage.local.base import LocalState
 from evidently.ui.utils import get_html_link_to_report
@@ -397,6 +403,15 @@ class Workspace(WorkspaceBase):
     def __init__(self, path: str):
         self.path = path
         self.state = LocalState(self.path)
+        from evidently.ui.service.datasets.metadata import FileDatasetMetadataStorage
+        from evidently.ui.service.managers.datasets import DatasetManager
+        from evidently.ui.service.storage.local.dataset import DatasetFileStorage
+
+        self.datasets = DatasetManager(
+            project_manager=create_local_project_manager(path, False, NoopAuthManager()),
+            dataset_metadata=FileDatasetMetadataStorage(base_path=self.path),
+            dataset_file_storage=DatasetFileStorage(dataset_blob_storage=FSSpecBlobStorage(path)),
+        )
 
     def add_project(self, project: ProjectModel, org_id: Optional[OrgID] = None) -> Project:
         project_model = self.state.write_project(project)
@@ -447,7 +462,20 @@ class Workspace(WorkspaceBase):
         description: Optional[str],
         link: Optional[SnapshotLink] = None,
     ) -> DatasetID:
-        raise NotImplementedError("Datasets are not supported yet in local workspace")
+        dataset_metadata = async_to_sync(
+            self.datasets.upload_dataset(
+                ZERO_UUID,
+                project_id=project_id,
+                name=name,
+                description=description,
+                data=dataset.as_dataframe(),
+                data_definition=dataset.data_definition,
+                origin=DatasetOrigin.file,
+                metadata=dataset.metadata,
+                tags=dataset.tags,
+            )
+        )
+        return dataset_metadata.id
 
     def save_dashboard(self, project_id: ProjectID, dashboard: DashboardModel):
         self.state.write_dashboard(project_id, dashboard)

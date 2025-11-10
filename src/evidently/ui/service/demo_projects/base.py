@@ -1,6 +1,7 @@
 import dataclasses
 import warnings
 from typing import Callable
+from typing import List
 from typing import Optional
 from typing import Tuple
 from typing import Union
@@ -21,6 +22,7 @@ class DemoProject:
     create_project: Callable[[WorkspaceBase, str], Project]
     create_data: Callable[[], DemoData]
     create_snapshot: Optional[Callable[[int, DemoData], Snapshot]]
+    create_datasets: Optional[Callable[[], List[Tuple[Dataset, str, str]]]]
     count: int
 
     def create(self, workspace: Union[str, WorkspaceBase]):
@@ -39,6 +41,9 @@ class DemoProject:
         project = self.create_project(ws, self.name)
         data = self.create_data()
 
+        if self.create_datasets is not None:
+            for dataset, name, description in self.create_datasets():
+                ws.add_dataset(project.id, dataset, name, description)
         for i in range(0, self.count):
             if self.create_snapshot is not None:
                 snapshot = self.create_snapshot(i, data)
