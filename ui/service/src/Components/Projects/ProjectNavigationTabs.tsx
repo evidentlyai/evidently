@@ -1,6 +1,6 @@
 import { GenericTabs } from 'evidently-ui-lib/components/Tabs/GenericTabs'
 import { Fade } from 'evidently-ui-lib/shared-dependencies/mui-material'
-import { useParams } from 'evidently-ui-lib/shared-dependencies/react-router-dom'
+import { useNavigation, useParams } from 'evidently-ui-lib/shared-dependencies/react-router-dom'
 import { useMatchRouter, useNavigate } from '~/routes/type-safe-route-helpers/hooks'
 import type { GetParamsByPath } from '~/routes/types'
 
@@ -16,6 +16,10 @@ export const ProjectNavigationTabs = () => {
 
   const shouldRender = isOnProjectPages && projectId
 
+  const navigation = useNavigation()
+
+  const isLoading = navigation.state !== 'idle'
+
   if (!shouldRender) {
     return null
   }
@@ -30,6 +34,7 @@ export const ProjectNavigationTabs = () => {
     <Fade in timeout={700}>
       <div>
         <GenericTabs
+          isLoading={isLoading}
           size='large'
           activeTab={activeTab}
           tabs={
