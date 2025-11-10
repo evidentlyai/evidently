@@ -344,15 +344,17 @@ export const SnapshotsListTemplate = ({
 
                       <Box>
                         <Tooltip title='delete snapshot' placement='top'>
-                          <IconButton
-                            onClick={() => {
-                              onDeleteSnapshot({ snapshotId: snapshot.id })
-                            }}
-                            color='primary'
-                            disabled={disabled}
-                          >
-                            <DeleteIcon />
-                          </IconButton>
+                          <span>
+                            <IconButton
+                              onClick={() => {
+                                onDeleteSnapshot({ snapshotId: snapshot.id })
+                              }}
+                              color='primary'
+                              disabled={disabled}
+                            >
+                              <DeleteIcon />
+                            </IconButton>
+                          </span>
                         </Tooltip>
                       </Box>
                     </>

@@ -1,6 +1,10 @@
 import { GenericTabs } from 'evidently-ui-lib/components/Tabs/GenericTabs'
 import { Fade } from 'evidently-ui-lib/shared-dependencies/mui-material'
-import { useNavigation, useParams } from 'evidently-ui-lib/shared-dependencies/react-router-dom'
+import {
+  useLocation,
+  useNavigation,
+  useParams
+} from 'evidently-ui-lib/shared-dependencies/react-router-dom'
 import { useMatchRouter, useNavigate } from '~/routes/type-safe-route-helpers/hooks'
 import type { GetParamsByPath } from '~/routes/types'
 
@@ -11,6 +15,8 @@ export const ProjectNavigationTabs = () => {
   const isOnReportsPages = useMatchRouter({ path: '/projects/:projectId/reports' })
   const isOnDatasetsPages = useMatchRouter({ path: '/projects/:projectId/datasets' })
   const isOnProjectPages = useMatchRouter({ path: '/projects/:projectId' })
+
+  const { pathname: currentPath } = useLocation()
 
   const { projectId } = useParams() as Partial<GetParamsByPath<'/projects/:projectId'>>
 
@@ -45,7 +51,19 @@ export const ProjectNavigationTabs = () => {
             ] as const
           }
           onTabChange={(tab) => {
-            navigate({ to: `/projects/:projectId/${tab}`, paramsToReplace: { projectId } })
+            const normalizePath = (path: string) => path.replace('?index', '').replace(/\/$/, '')
+
+            const goToPath = `/projects/:projectId/${tab}` as const
+
+            const isSamePath =
+              normalizePath(currentPath) ===
+              normalizePath(goToPath.replace(':projectId', projectId))
+
+            if (isSamePath) {
+              return
+            }
+
+            navigate({ to: goToPath, paramsToReplace: { projectId } })
           }}
         />
       </div>

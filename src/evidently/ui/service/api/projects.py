@@ -1,3 +1,4 @@
+import asyncio
 import datetime
 import json
 from typing import Callable
@@ -82,8 +83,10 @@ async def list_snapshots(
 ) -> List[SnapshotMetadataModel]:
     snapshots = await project_manager.list_snapshots(user_id, project.id)
     if snapshot_dataset_links is not None:
-        for snapshot in snapshots:
-            snapshot.links = await snapshot_dataset_links.get_links(project.id, snapshot.id)
+        coroutines = (snapshot_dataset_links.get_links(project.id, snapshot.id) for snapshot in snapshots)
+        links_results = await asyncio.gather(*coroutines)
+        for snapshot, links in zip(snapshots, links_results):
+            snapshot.links = links
     log_event("list_snapshots", reports_count=len(snapshots))
     return snapshots
 
@@ -225,8 +228,12 @@ async def get_snapshot_data(
 
 @get("/{project_id:uuid}/{snapshot_id:uuid}/metadata")
 async def get_snapshot_metadata(
-    snapshot_metadata: Annotated[SnapshotMetadataModel, Dependency()],
     log_event: Callable,
+    snapshot_metadata: Annotated[SnapshotMetadataModel, Dependency()],
+    project: Annotated[Project, Dependency()],
+    snapshot_dataset_links: Annotated[
+        SnapshotDatasetLinksManager, Dependency(skip_validation=True, default=None)
+    ] = None,
 ) -> SnapshotMetadataModel:
     log_event(
         "get_snapshot_metadata",
@@ -236,6 +243,10 @@ async def get_snapshot_metadata(
         test_presets=snapshot_metadata.metadata.get(TEST_PRESETS, []),
         test_generators=snapshot_metadata.metadata.get(TEST_GENERATORS, []),
     )
+
+    if snapshot_dataset_links is not None:
+        snapshot_metadata.links = await snapshot_dataset_links.get_links(project.id, snapshot_metadata.id)
+
     return snapshot_metadata
 
 
