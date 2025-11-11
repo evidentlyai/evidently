@@ -3,13 +3,7 @@ import type { ErrorResponse } from 'evidently-ui-lib/api/types/utils'
 import type { DatasetParamsProps } from 'evidently-ui-lib/components/Datasets/types'
 import { useUpdateQueryStringValueWithoutNavigation } from 'evidently-ui-lib/hooks/useUpdateQueryStringValueWithoutNavigation'
 import { ExpandLess, ExpandMore } from 'evidently-ui-lib/shared-dependencies/mui-icons-material'
-import {
-  Box,
-  Button,
-  Divider,
-  Stack,
-  Typography
-} from 'evidently-ui-lib/shared-dependencies/mui-material'
+import { Box, Button, Stack, Typography } from 'evidently-ui-lib/shared-dependencies/mui-material'
 import { useSearchParams } from 'evidently-ui-lib/shared-dependencies/react-router-dom'
 import { useState } from 'react'
 import { DatasetViewer } from '~/Components/Datasets/DatasetViewer'
@@ -49,11 +43,12 @@ export const SnapshotViewWithDataset = (props: SnapshotViewWithDatasetProps) => 
   }
 
   return (
-    <Stack sx={{ maxHeight: 'calc(100vh - 230px)' }} gap={2}>
+    <Stack gap={2}>
       <Stack direction={'row'} justifyContent={'center'} gap={2}>
         {datasetStatus === 'success' && (
           <>
             <Button
+              size='small'
               variant='outlined'
               onClick={() => setShowDataset((prev) => !prev)}
               startIcon={showDataset ? <ExpandLess /> : <ExpandMore />}
@@ -62,6 +57,7 @@ export const SnapshotViewWithDataset = (props: SnapshotViewWithDatasetProps) => 
             </Button>
 
             <RouterLink
+              size='small'
               variant='contained'
               type='button'
               title='Go to dataset'
@@ -78,23 +74,30 @@ export const SnapshotViewWithDataset = (props: SnapshotViewWithDatasetProps) => 
         )}
       </Stack>
 
-      <Box sx={[actuallyShowDataset && { overflow: 'scroll', maxHeight: '40vh' }]}>
+      <Box
+        sx={[
+          actuallyShowDataset && {
+            maxHeight: '50vh',
+            overflow: 'scroll',
+            border: '1px solid',
+            borderColor: 'divider',
+            borderRadius: 1,
+            p: 1.5
+          }
+        ]}
+      >
         <SnapshotView data={snapshot} projectId={projectId} snapshotId={snapshotId} />
       </Box>
 
       {actuallyShowDataset && (
-        <>
-          <Divider />
-
-          <Stack flex={1} minHeight={0}>
-            <DatasetViewer
-              datasetId={linkedDatasetData.datasetId}
-              data={linkedDatasetData.datasetData}
-              datasetParams={datasetParams}
-              isLoading={isLoading}
-            />
-          </Stack>
-        </>
+        <Stack minHeight={'30vh'} maxHeight={'60vh'}>
+          <DatasetViewer
+            datasetId={linkedDatasetData.datasetId}
+            data={linkedDatasetData.datasetData}
+            datasetParams={datasetParams}
+            isLoading={isLoading}
+          />
+        </Stack>
       )}
     </Stack>
   )
