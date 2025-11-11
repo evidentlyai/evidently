@@ -30,6 +30,7 @@ jobs:
     outputs:
       evidently_any_modified: ${{ steps.changed-files.outputs.evidently_python_any_modified == 'true' }}
       ui_any_modified: ${{ steps.changed-files.outputs.ui_any_modified == 'true' }}
+      ui_service_tests_need_run: ${{ steps.changed-files.outputs.evidently_python_any_modified == 'true' || steps.changed-files.outputs.ui_build_any_modified == 'true' }}
     steps:
       - uses: actions/checkout@v4
 
@@ -55,6 +56,11 @@ jobs:
             ui:
               - .github/**
               - ui/**
+            ui_build:
+              - .github/**
+              - src/evidently/**/ui/**/assets/**
+              - src/evidently/nbextension/**
+
 
       - name: Run step if evidently_python file(s) change
         if: steps.changed-files.outputs.evidently_python_any_modified == 'true'
@@ -67,6 +73,13 @@ jobs:
         run: |
           echo "One or more ui file(s) has changed."
           echo "List all the files that have changed: ${{ steps.changed-files.outputs.ui_all_changed_and_modified_files }}"
+
+      - name: Run step if UI service tests need to be run
+        if: steps.changed-files.outputs.evidently_python_any_modified == 'true' || steps.changed-files.outputs.ui_build_any_modified == 'true'
+        run: |
+          echo "UI service tests need to be run."
+          echo "List all the files that have changed: ${{ steps.changed-files.outputs.ui_build_all_changed_and_modified_files }}"
+          echo "List all the files that have changed: ${{ steps.changed-files.outputs.evidently_python_all_changed_and_modified_files }}"
 
   linter:
     # The type of runner that the job will run on
@@ -254,7 +267,7 @@ jobs:
     name: UI service tests
     runs-on: ubuntu-22.04
     needs: changed_files
-    if: ${{ github.event.pull_request.draft == false && needs.changed_files.outputs.evidently_any_modified == 'true' }}
+    if: ${{ github.event.pull_request.draft == false && needs.changed_files.outputs.ui_service_tests_need_run == 'true' }}
 
     steps:
       - name: ⬇️ Checkout repo
