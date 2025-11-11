@@ -2,6 +2,7 @@ import tempfile
 
 import pytest
 from sqlalchemy import create_engine
+from sqlalchemy.pool import NullPool
 
 from evidently.legacy.core import new_id
 from evidently.ui.service.base import Project
@@ -14,33 +15,53 @@ from evidently.ui.service.type_aliases import ZERO_UUID
 @pytest.fixture
 def sqlite_engine():
     """Create a temporary SQLite database for testing."""
-    with tempfile.NamedTemporaryFile(suffix=".db", delete=False) as f:
-        db_path = f.name
-
-    engine = create_engine(f"sqlite:///{db_path}")
-    migrate_database(f"sqlite:///{db_path}")
-
-    yield engine
-
-    engine.dispose(close=True)
-
+    import gc
     import os
     import sys
     import time
 
-    if sys.platform == "win32":
-        time.sleep(0.1)
+    with tempfile.NamedTemporaryFile(suffix=".db", delete=False) as f:
+        db_path = f.name
 
-    max_retries = 5
+    # Use NullPool to avoid connection pooling issues on Windows
+    engine = create_engine(f"sqlite:///{db_path}", poolclass=NullPool)
+    migrate_database(f"sqlite:///{db_path}")
+
+    yield engine
+
+    # Close all connections and dispose the engine
+    engine.dispose(close=True)
+
+    # Force garbage collection to ensure all references are cleared
+    gc.collect()
+
+    # On Windows, files can't be deleted if they're still open
+    # Wait longer and retry more times
+    if sys.platform == "win32":
+        time.sleep(0.2)
+
+    max_retries = 10
     for attempt in range(max_retries):
         try:
             os.unlink(db_path)
             break
         except PermissionError:
             if attempt < max_retries - 1:
-                time.sleep(0.1)
+                # Increase wait time with each retry
+                time.sleep(0.1 * (attempt + 1))
+                # Force another garbage collection
+                gc.collect()
             else:
-                raise
+                # On Windows, sometimes we need to just skip the cleanup
+                # The temp file will be cleaned up by the OS eventually
+                if sys.platform == "win32":
+                    import warnings
+
+                    warnings.warn(
+                        f"Could not delete SQLite database file {db_path} on Windows. It will be cleaned up by the OS."
+                    )
+                else:
+                    raise
 
 
 @pytest.fixture
