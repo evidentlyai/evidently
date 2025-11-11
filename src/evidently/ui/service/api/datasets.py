@@ -22,12 +22,10 @@ from litestar.params import Dependency
 from litestar.params import Parameter
 from litestar.response.base import ASGIResponse
 from typing_extensions import Annotated
-from typing_extensions import TypeAlias
 
 from evidently._pydantic_compat import BaseModel
 from evidently._pydantic_compat import Extra
 from evidently._pydantic_compat import ValidationError
-from evidently._pydantic_compat import create_model
 from evidently._pydantic_compat import parse_obj_as
 from evidently.core.datasets import DataDefinition
 from evidently.core.datasets import Dataset
@@ -38,8 +36,6 @@ from evidently.legacy.ui.type_aliases import UserID
 from evidently.ui.service.datasets.data_source import DataSourceDTO
 from evidently.ui.service.datasets.data_source import SortBy
 from evidently.ui.service.datasets.filters import FilterBy
-from evidently.ui.service.datasets.filters import FilterByNumber
-from evidently.ui.service.datasets.filters import FilterByString
 from evidently.ui.service.datasets.metadata import DatasetMetadata
 from evidently.ui.service.datasets.metadata import DatasetMetadataFull
 from evidently.ui.service.datasets.metadata import DatasetOrigin
@@ -361,20 +357,6 @@ async def materialize_from_source(
     return MaterializeDatasetResponse(dataset_id=dataset.id)
 
 
-# We need this endpoint to export
-# some additional models to open api schema
-# TODO: fix this endpoint
-_filter_model = create_model("Filters", by_string=(FilterByString, ...), by_number=(FilterByNumber, ...))  # type: ignore[call-overload]
-
-FilterModel: TypeAlias = _filter_model  # type: ignore[valid-type]
-
-
-@get("/models/additional")
-async def additional_models() -> List[FilterModel]:  # type: ignore[valid-type]
-    """Get additional schema for datasets."""
-    return []
-
-
 def datasets_api(guard: Callable) -> Router:
     """Create datasets API router."""
     return Router(
@@ -383,7 +365,6 @@ def datasets_api(guard: Callable) -> Router:
             Router(
                 "",
                 route_handlers=[
-                    additional_models,
                     upload_dataset,
                     update_dataset,
                     delete_dataset,
