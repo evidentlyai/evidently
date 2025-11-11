@@ -49,3 +49,11 @@ export type DatasetFilter =
 export type DatasetModel = Schemas['DatasetMetadataResponse']
 
 export type PatchDatasetRequestModel = Schemas['PatchDatasetRequest']
+
+export type DownloadDatasetURLTemplateString = {
+  path: Extract<keyof paths, '/api/datasets/{dataset_id}/download'>
+  query: Exclude<
+    paths['/api/datasets/{dataset_id}/download']['get']['parameters']['query'],
+    undefined
+  >
+}

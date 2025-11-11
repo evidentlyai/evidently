@@ -1,11 +1,11 @@
 import type { DatasetPaginationModel } from 'evidently-ui-lib/api/types'
-import { Toolbar } from 'evidently-ui-lib/components/Datasets/Toolbar/index'
 import {
   DatasetViewerGeneral,
   type DatasetViewerGeneralProps
 } from 'evidently-ui-lib/components/Datasets/Viewer/DatasetViewerGeneral'
 import { useDatasetDataProps } from 'evidently-ui-lib/components/Datasets/hooks'
 import type { DatasetParamsProps } from 'evidently-ui-lib/components/Datasets/types'
+import { Toolbar } from './Toolbar'
 
 type DatasetViewerProps = {
   datasetId: string
@@ -32,7 +32,12 @@ export const DatasetViewer = (props: DatasetViewerProps) => {
   }
 
   return (
-    <Toolbar.Context.Provider value={toolbarComponentProps}>
+    <Toolbar.Context.Provider
+      value={{
+        toolbarComponentProps,
+        downloadDatasetButtonProps: { datasetId }
+      }}
+    >
       <DatasetViewerGeneral
         rows={rows}
         columns={columns}

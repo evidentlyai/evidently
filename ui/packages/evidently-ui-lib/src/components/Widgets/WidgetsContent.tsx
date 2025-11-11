@@ -40,11 +40,11 @@ const SnapshotWidgetsV1: React.FC<{ widgets: WidgetInfo[] }> = ({ widgets }) => 
   const isTestSuite = widgets.some(isTestSuitePredicate)
 
   return (
-    <>
+    <Box>
       {Component && <Component variant={isTestSuite ? 'tests' : 'metrics'} />}
 
       <DrawWidgets widgets={widgets} />
-    </>
+    </Box>
   )
 }
 
