@@ -21,6 +21,7 @@ if v == 1:
     from pydantic.fields import SHAPE_DICT  # type: ignore[attr-defined,no-redef]
     from pydantic.fields import SHAPE_LIST  # type: ignore[attr-defined,no-redef]
     from pydantic.fields import SHAPE_SET  # type: ignore[attr-defined,no-redef]
+    from pydantic.fields import SHAPE_SINGLETON  # type: ignore[attr-defined,no-redef]
     from pydantic.fields import SHAPE_TUPLE  # type: ignore[attr-defined,no-redef]
     from pydantic.fields import ModelField  # type: ignore[attr-defined,no-redef]
     from pydantic.main import ModelMetaclass  # type: ignore[attr-defined,no-redef]
@@ -50,6 +51,7 @@ else:
     from pydantic.v1.fields import SHAPE_DICT  # type: ignore[assignment,no-redef]
     from pydantic.v1.fields import SHAPE_LIST  # type: ignore[assignment,no-redef]
     from pydantic.v1.fields import SHAPE_SET  # type: ignore[assignment,no-redef]
+    from pydantic.v1.fields import SHAPE_SINGLETON  # type: ignore[assignment,no-redef]
     from pydantic.v1.fields import SHAPE_TUPLE  # type: ignore[assignment,no-redef]
     from pydantic.v1.fields import ModelField  # type: ignore[assignment,no-redef]
     from pydantic.v1.main import ModelMetaclass  # type: ignore[assignment,no-redef]
@@ -74,6 +76,7 @@ __all__ = [
     "SHAPE_DICT",
     "SHAPE_LIST",
     "SHAPE_SET",
+    "SHAPE_SINGLETON",
     "SHAPE_TUPLE",
     "ModelField",
     "ModelMetaclass",

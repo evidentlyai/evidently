@@ -18,12 +18,12 @@ from litestar.contrib.pydantic import PydanticSchemaPlugin
 from litestar.openapi.spec import Schema
 from litestar.serialization import get_serializer
 from litestar.typing import FieldDefinition
-from pydantic.v1.fields import SHAPE_DICT
-from pydantic.v1.fields import SHAPE_LIST
-from pydantic.v1.fields import SHAPE_SINGLETON
-from pydantic.v1.fields import ModelField
 from typing_inspect import is_generic_type
 
+from evidently._pydantic_compat import SHAPE_DICT
+from evidently._pydantic_compat import SHAPE_LIST
+from evidently._pydantic_compat import SHAPE_SINGLETON
+from evidently._pydantic_compat import ModelField
 from evidently._pydantic_compat import create_model
 from evidently._pydantic_compat import import_string
 from evidently.pydantic_utils import TYPE_ALIASES
