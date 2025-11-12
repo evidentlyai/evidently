@@ -1,4 +1,3 @@
-import random
 from abc import ABC
 from math import ceil
 from typing import Any
@@ -21,7 +20,6 @@ from evidently.llm.datagen.config import UserProfile
 from evidently.llm.rag.index import DataCollection
 from evidently.llm.rag.index import DataCollectionProvider
 from evidently.llm.rag.splitter import Chunk
-from evidently.llm.rag.splitter import ChunkSet
 from evidently.llm.utils.blocks import PromptBlock
 from evidently.llm.utils.prompt_render import PreparedTemplate
 from evidently.llm.utils.templates import StrPromptTemplate
@@ -86,10 +84,6 @@ class RagResponsePromptTemplate(WithSystemPrompt, StrPromptTemplate):
         """
 
 
-def generate_chunksets(documents: DataCollection, count: int, chunks_per_set: int) -> List[ChunkSet]:
-    return [[random.choice(documents.chunks) for _ in range(chunks_per_set)] for _ in range(count)]
-
-
 class BaseRagDatasetGenerator(BaseLLMDatasetGenerator, ABC):
     data_collection: DataCollectionProvider
 
@@ -152,9 +146,9 @@ class RagQueryDatasetGenerator(BaseRagDatasetGenerator):
     async def generate_queries_with_context(self) -> Tuple[DataCollection, List[RAGQuery]]:
         documents = self.data_collection.get_data_collection()
         chunk_set_count, chunks_in_set_count, questions_per_chunkset = self.get_chunks_and_query_count(
-            len(documents.chunks)
+            documents.get_count()
         )
-        chunk_sets = generate_chunksets(documents, chunk_set_count, chunks_in_set_count)
+        chunk_sets = documents.generate_chunksets(chunk_set_count, chunks_in_set_count)
         queries: List[RAGQuery] = await self.generate_queries(chunk_sets, questions_per_chunkset)
         return documents, queries
 
