@@ -71,7 +71,7 @@ class PolymorphicPydanticSchemaPlugin(PydanticSchemaPlugin):
 class _AdditionalModelsComponent(Component):
     def get_route_handlers(self, ctx: ComponentContext):
         @get("/_schema/filterby")
-        @replace_signature({}, return_annotation=create_model("Filters", **{"all_set": (FilterBy, ...)}))
+        @replace_signature({}, return_annotation=create_model("Filters", **{"all_set": (FilterBy, ...)}))  # type: ignore[call-overload]
         async def filterby(): ...
 
         return [filterby]
