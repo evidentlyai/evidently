@@ -385,7 +385,7 @@ class WorkspaceBase(ABC):
         project_id: STR_UUID,
         dataset: Dataset,
         name: str,
-        description: Optional[str],
+        description: Optional[str] = None,
         link: Optional[SnapshotLink] = None,
     ) -> DatasetID:
         raise NotImplementedError
@@ -462,17 +462,17 @@ class Workspace(WorkspaceBase):
         project_id: STR_UUID,
         dataset: Dataset,
         name: str,
-        description: Optional[str],
+        description: Optional[str] = None,
         link: Optional[SnapshotLink] = None,
     ) -> DatasetID:
         metadata = self.datasets.project_manager.project_metadata
         from evidently.ui.service.storage.local import JsonFileProjectMetadataStorage
 
+        project_uuid: ProjectID = uuid.UUID(str(project_id))
         assert isinstance(metadata, JsonFileProjectMetadataStorage)
-        metadata.state.reload(force=True)
-        from evidently.ui.service.type_aliases import ProjectID as ServiceProjectID
+        if project_uuid not in metadata.state.projects:
+            metadata.state.reload(force=True)
 
-        project_uuid: ServiceProjectID = uuid.UUID(str(project_id))
         dataset_metadata = async_to_sync(
             self.datasets.upload_dataset(
                 ZERO_UUID,
@@ -616,7 +616,7 @@ class RemoteWorkspace(RemoteBase, WorkspaceBase):  # todo: reuse cloud ws
         project_id: STR_UUID,
         dataset: Dataset,
         name: str,
-        description: Optional[str],
+        description: Optional[str] = None,
         link: Optional[SnapshotLink] = None,
     ) -> DatasetID:
         return self.datasets.add(project_id=project_id, dataset=dataset, name=name, description=description, link=link)

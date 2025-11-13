@@ -279,7 +279,27 @@ class ValueStats(ColumnMetricContainer):
         ]
 
     def _render_text(self, context: "Context") -> List[BaseWidgetInfo]:
-        raise NotImplementedError()
+        return [
+            rich_data(
+                title=self.column,
+                description=context.column(self.column).column_type.value,
+                header=["current", "reference"] if context.has_reference else ["current"],
+                metrics=[
+                    {
+                        "label": "count",
+                        "values": self._get_metric(context, RowCount(column=self.column, tests=self.row_count_tests)),
+                    },
+                    {
+                        "label": "missing",
+                        "values": self._get_metric(
+                            context,
+                            MissingValueCount(column=self.column, tests=self.missing_values_count_tests),
+                        ),
+                    },
+                ],
+                graph=None,
+            )
+        ]
 
     def _render_datetime(self, context: "Context") -> List[BaseWidgetInfo]:
         result = context.get_metric_result(MinValue(column=self.column, tests=[]).get_metric_id()).get_widgets()[0]
