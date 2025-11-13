@@ -468,11 +468,11 @@ class Workspace(WorkspaceBase):
         metadata = self.datasets.project_manager.project_metadata
         from evidently.ui.service.storage.local import JsonFileProjectMetadataStorage
 
+        project_uuid: ProjectID = uuid.UUID(str(project_id))
         assert isinstance(metadata, JsonFileProjectMetadataStorage)
-        metadata.state.reload(force=True)
-        from evidently.ui.service.type_aliases import ProjectID as ServiceProjectID
+        if project_uuid not in metadata.state.projects:
+            metadata.state.reload(force=True)
 
-        project_uuid: ServiceProjectID = uuid.UUID(str(project_id))
         dataset_metadata = async_to_sync(
             self.datasets.upload_dataset(
                 ZERO_UUID,
