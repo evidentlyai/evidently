@@ -385,7 +385,7 @@ class WorkspaceBase(ABC):
         project_id: STR_UUID,
         dataset: Dataset,
         name: str,
-        description: Optional[str],
+        description: Optional[str] = None,
         link: Optional[SnapshotLink] = None,
     ) -> DatasetID:
         raise NotImplementedError
@@ -462,7 +462,7 @@ class Workspace(WorkspaceBase):
         project_id: STR_UUID,
         dataset: Dataset,
         name: str,
-        description: Optional[str],
+        description: Optional[str] = None,
         link: Optional[SnapshotLink] = None,
     ) -> DatasetID:
         metadata = self.datasets.project_manager.project_metadata
@@ -616,7 +616,7 @@ class RemoteWorkspace(RemoteBase, WorkspaceBase):  # todo: reuse cloud ws
         project_id: STR_UUID,
         dataset: Dataset,
         name: str,
-        description: Optional[str],
+        description: Optional[str] = None,
         link: Optional[SnapshotLink] = None,
     ) -> DatasetID:
         return self.datasets.add(project_id=project_id, dataset=dataset, name=name, description=description, link=link)
