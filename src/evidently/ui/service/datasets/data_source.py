@@ -3,6 +3,7 @@ from typing import TYPE_CHECKING
 from typing import ClassVar
 from typing import List
 from typing import Optional
+from typing import Tuple
 from typing import Type
 
 import pandas as pd
@@ -147,9 +148,10 @@ class DataSourceDTO(AutoAliasMixin, PolymorphicModel, ABC):
         return self.__data_source_type__(**self.__dict__, **kwargs)
 
     @staticmethod
-    def for_type(data_source_type: Type[DataSource], __module__: str) -> Type["DataSourceDTO"]:
+    def for_type(
+        data_source_type: Type[DataSource], __module__: str, exclude: Tuple[str, ...]
+    ) -> Type["DataSourceDTO"]:
         """Create a DTO type for a data source type."""
-        exclude = ("project_id", "user_id")
         namespace = {
             "__annotations__": {n: f.outer_type_ for n, f in data_source_type.__fields__.items() if n not in exclude},
             **{n: f.default for n, f in data_source_type.__fields__.items() if n not in exclude and not f.required},
@@ -161,5 +163,5 @@ class DataSourceDTO(AutoAliasMixin, PolymorphicModel, ABC):
         return new_dto_type
 
 
-DatasetDataSourceDTO = DataSourceDTO.for_type(DatasetDataSource, __name__)
-FileDataSourceDTO = DataSourceDTO.for_type(FileDataSource, __name__)
+DatasetDataSourceDTO = DataSourceDTO.for_type(DatasetDataSource, __name__, exclude=("project_id", "user_id"))
+FileDataSourceDTO = DataSourceDTO.for_type(FileDataSource, __name__, exclude=("project_id", "user_id"))
