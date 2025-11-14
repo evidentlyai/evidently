@@ -1,5 +1,5 @@
 import { responseParser } from 'evidently-ui-lib/api/client-heplers'
-import type { PatchDatasetRequestModel } from 'evidently-ui-lib/api/types'
+import type { Schemas } from 'evidently-ui-lib/api/types'
 import { isSuccessData } from 'evidently-ui-lib/api/utils'
 import { useDatasetParamsFromSearch } from 'evidently-ui-lib/components/Datasets/hooks'
 import { getDatasetParamsForAPI } from 'evidently-ui-lib/components/Datasets/utils'
@@ -76,7 +76,7 @@ export const actions = {
       paramsToReplace: { projectId }
     })
   },
-  'update-dataset-metadata': async (args: ActionArgs<{ data: PatchDatasetRequestModel }>) => {
+  'update-dataset-metadata': async (args: ActionArgs<{ data: Schemas['PatchDatasetRequest'] }>) => {
     const { data, params } = args
     const body = data
 

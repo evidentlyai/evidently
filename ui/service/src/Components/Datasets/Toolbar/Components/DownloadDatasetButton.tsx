@@ -1,4 +1,4 @@
-import type { DownloadDatasetURLTemplateString } from 'evidently-ui-lib/api/types'
+import type { BackendPaths } from 'evidently-ui-lib/api/types'
 import {
   PopupState,
   bindPopover,
@@ -13,12 +13,19 @@ import {
   Typography
 } from 'evidently-ui-lib/shared-dependencies/mui-material'
 
-const downloadDatasetUrlTemplate: DownloadDatasetURLTemplateString['path'] =
-  '/api/datasets/{dataset_id}/download'
+const downloadDatasetPath = '/api/datasets/{dataset_id}/download' as const
+
+type DownloadDatasetPath = Extract<keyof BackendPaths, typeof downloadDatasetPath>
+type DownloadDatasetQueryKeys = keyof Exclude<
+  BackendPaths[DownloadDatasetPath]['get']['parameters']['query'],
+  undefined
+>
+
+const downloadDatasetUrlTemplate: DownloadDatasetPath = downloadDatasetPath
 
 const getDownloadCSVURL = ({ datasetId }: { datasetId: string }) => {
   const url = downloadDatasetUrlTemplate.replace('{dataset_id}', datasetId)
-  const format = 'format' satisfies keyof DownloadDatasetURLTemplateString['query']
+  const format = 'format' satisfies DownloadDatasetQueryKeys
 
   return `${url}?${format}=${encodeURIComponent('csv+file')}`
 }

@@ -6,7 +6,6 @@ import pandas as pd
 
 from evidently._pydantic_compat import Extra
 from evidently.pydantic_utils import PolymorphicModel
-from evidently.pydantic_utils import register_type_alias
 
 
 class FilterBy(PolymorphicModel):
@@ -116,14 +115,3 @@ def filter_df(df: pd.DataFrame, filter_by: Optional[List[FilterBy]]) -> pd.DataF
     combined_condition = reduce(lambda x, y: x & y, conditions)
     filtered_df = df[combined_condition]
     return filtered_df
-
-
-register_type_alias(FilterBy, "evidently.ui.service.datasets.filters.EqualFilter", "eq")
-register_type_alias(FilterBy, "evidently.ui.service.datasets.filters.GTEFilter", "gte")
-register_type_alias(FilterBy, "evidently.ui.service.datasets.filters.GTFilter", "gt")
-register_type_alias(FilterBy, "evidently.ui.service.datasets.filters.LTEFilter", "lte")
-register_type_alias(FilterBy, "evidently.ui.service.datasets.filters.LTFilter", "lt")
-register_type_alias(FilterBy, "evidently.ui.service.datasets.filters.NotEqualFilter", "not_eq")
-register_type_alias(FilterBy, "evidently.ui.service.datasets.filters.ContainsStrFilter", "contains")
-register_type_alias(FilterBy, "evidently.ui.service.datasets.filters.EndsWithFilter", "ends_with")
-register_type_alias(FilterBy, "evidently.ui.service.datasets.filters.StartsWithFilter", "starts_with")
