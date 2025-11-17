@@ -62,6 +62,9 @@ class CloudMetadataStorage(RemoteProjectMetadataStorage):
     def __init__(self, base_url: str, token: str, token_cookie_name: str):
         self.token = token
         self.token_cookie_name = token_cookie_name
+        self._api_key = None
+        if token.startswith("sk_") and len(token.split(".")) >= 3:
+            self._api_key = token
         self._jwt_token: Optional[str] = None
         self._logged_in: bool = False
         super().__init__(base_url=base_url)
@@ -97,7 +100,10 @@ class CloudMetadataStorage(RemoteProjectMetadataStorage):
         )
         if path == "/api/users/login":
             return r
-        r.cookies[self.token_cookie_name] = self.jwt_token
+        if self._api_key is not None:
+            r.headers["Authorization"] = f"Bearer {self._api_key}"
+        else:
+            r.cookies[self.token_cookie_name] = self.jwt_token
         return r
 
     @overload
@@ -292,6 +298,8 @@ class CloudWorkspace(WorkspaceView):
                 "To use CloudWorkspace you must provide a token through argument or env variable EVIDENTLY_API_KEY"
             )
         self.token = token
+        if token.startswith("sk_") and len(token.split(".")) >= 3:
+            self._api_key = token
         self.url = url if url is not None else self.URL
 
         # todo: default org if user have only one
