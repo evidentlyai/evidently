@@ -6,10 +6,10 @@ import type { components, paths } from '~/api/types/endpoints'
 import type { WidgetInfo } from '~/api'
 
 export type BackendPaths = paths
+export type Schemas = components['schemas']
 ///////////////////////////////
 ///  TYPES
 ///////////////////////////////
-type Schemas = components['schemas']
 
 type OmitNever<T> = { [K in keyof T as T[K] extends never ? never : K]: T[K] }
 
@@ -34,26 +34,5 @@ export type DashboardPanelPlotModel = Schemas['DashboardModel']['panels'][number
 export type DashboardTabModel = Schemas['DashboardModel']['tabs'][number]
 export type DatasetPaginationModel = Schemas['DatasetPagination']
 export type UpdatedCell = { column: string; row: number; updated_value?: string | number }
-
-// TODO: fix this type export
-// export type DatasetFilterType = Schemas['Filters']
-
-export type DatasetFilter =
-  | (Omit<Schemas['Filters']['by_string'], 'type'> & {
-      type: Exclude<Schemas['Filters']['by_string']['type'], 'filter_by_string'>
-    })
-  | (Omit<Schemas['Filters']['by_number'], 'type'> & {
-      type: Exclude<Schemas['Filters']['by_number']['type'], 'filter_by_number'>
-    })
-
+export type DatasetFilter = Schemas['Filters']['all_set']
 export type DatasetModel = Schemas['DatasetMetadataResponse']
-
-export type PatchDatasetRequestModel = Schemas['PatchDatasetRequest']
-
-export type DownloadDatasetURLTemplateString = {
-  path: Extract<keyof paths, '/api/datasets/{dataset_id}/download'>
-  query: Exclude<
-    paths['/api/datasets/{dataset_id}/download']['get']['parameters']['query'],
-    undefined
-  >
-}

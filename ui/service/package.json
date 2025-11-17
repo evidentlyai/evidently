@@ -8,7 +8,8 @@
     "build": "vite build",
     "code-check": "biome check",
     "preview": "vite preview",
-    "test": "playwright test"
+    "test": "playwright test",
+    "sync-back": "cd ../.. && ./.github/scripts/get-types-from-back.sh"
   },
   "dependencies": {
     "evidently-ui-lib": "workspace:*",

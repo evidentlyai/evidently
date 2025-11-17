@@ -24,11 +24,12 @@ UUID_REGEX = re.compile(r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a
 
 
 class DatasetOrigin(Enum):
-    """Origin of a dataset."""
-
     file = "file"
     tracing = "tracing"
+    snapshot_builder = "snapshot_builder"
     dataset = "dataset"
+    datagen = "datagen"
+    run_descriptors = "run_descriptors"
 
 
 class DatasetTracingParams(BaseModel):
