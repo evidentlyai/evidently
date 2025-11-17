@@ -109,12 +109,9 @@ class FileTracingStorage(TracingStorage):
         """
         # Find project_id by searching for the dataset (export_id is the dataset_id)
         project_id = self._find_project_id_for_dataset(export_id)
-        if project_id is None:
-            # Fallback to old location if dataset not found yet
-            return posixpath.join("traces", str(export_id) + ".jsonl")
         return posixpath.join(str(project_id), "datasets", str(export_id), "traces.jsonl")
 
-    def _find_project_id_for_dataset(self, dataset_id: DatasetID) -> Optional[ProjectID]:
+    def _find_project_id_for_dataset(self, dataset_id: DatasetID) -> ProjectID:
         """Find project_id for a dataset by searching the filesystem."""
         from evidently.ui.service.datasets.metadata import UUID_REGEX
 
@@ -132,7 +129,7 @@ class FileTracingStorage(TracingStorage):
                     continue
                 if dataset_dir == str(dataset_id):
                     return project_id
-        return None
+        raise ValueError(f"Dataset {dataset_id} not found. Cannot determine project_id for trace storage.")
 
     @classmethod
     def provide(cls, base_path: str) -> "FileTracingStorage":
@@ -158,7 +155,11 @@ class FileTracingStorage(TracingStorage):
 
     def read_as_dataframe(self, export_id: ExportID) -> pd.DataFrame:
         """Read traces as DataFrame."""
-        file_path = self._get_trace_file_path(export_id)
+        try:
+            file_path = self._get_trace_file_path(export_id)
+        except ValueError:
+            # Dataset not found, return empty DataFrame
+            return pd.DataFrame()
         if not self.location.exists(file_path):
             return pd.DataFrame()
 
@@ -174,7 +175,11 @@ class FileTracingStorage(TracingStorage):
 
     async def get_data_definition(self, export_id: ExportID) -> Tuple[DataDefinition, List[str]]:
         """Get data definition for traces."""
-        df = self.read_as_dataframe(export_id)
+        try:
+            df = self.read_as_dataframe(export_id)
+        except ValueError:
+            # Dataset not found, return empty data definition
+            return DataDefinition(), []
         if df.empty:
             return DataDefinition(), []
         dataset = Dataset.from_pandas(df)
@@ -189,7 +194,11 @@ class FileTracingStorage(TracingStorage):
         id_to: Optional[int] = None,
     ) -> pd.DataFrame:
         """Read traces with filters."""
-        file_path = self._get_trace_file_path(export_id)
+        try:
+            file_path = self._get_trace_file_path(export_id)
+        except ValueError:
+            # Dataset not found, return empty DataFrame
+            return pd.DataFrame()
         if not self.location.exists(file_path):
             return pd.DataFrame()
 
@@ -220,6 +229,32 @@ class FileTracingStorage(TracingStorage):
         """Get trace range for a run."""
         from evidently.ui.service.datasets.metadata import UUID_REGEX
 
+        def check_trace_file(file_path: str) -> Optional[uuid.UUID]:
+            """Check a trace file and return max trace_id within time range."""
+            if not self.location.exists(file_path):
+                return None
+
+            max_trace_id = None
+            line_num = 0
+            with self.location.open(file_path, "r") as f:
+                for line in f:
+                    if line.strip():
+                        line_num += 1
+                        if line_num <= start_id:
+                            continue
+
+                        trace_dict = json.loads(line)
+                        trace_model = TraceModel(**trace_dict)
+
+                        if trace_model.start_time >= start_time and trace_model.start_time <= end_time:
+                            try:
+                                trace_uuid = uuid.UUID(trace_model.trace_id)
+                                if max_trace_id is None or trace_uuid > max_trace_id:
+                                    max_trace_id = trace_uuid
+                            except ValueError:
+                                pass
+            return max_trace_id
+
         # Search all project/datasets directories for trace files
         max_trace_id = None
         for project_dir in self.location.listdir(""):
@@ -234,27 +269,10 @@ class FileTracingStorage(TracingStorage):
                     continue
 
                 file_path = posixpath.join(project_dir, "datasets", dataset_dir, "traces.jsonl")
-                if not self.location.exists(file_path):
-                    continue
-
-                line_num = 0
-                with self.location.open(file_path, "r") as f:
-                    for line in f:
-                        if line.strip():
-                            line_num += 1
-                            if line_num <= start_id:
-                                continue
-
-                            trace_dict = json.loads(line)
-                            trace_model = TraceModel(**trace_dict)
-
-                            if trace_model.start_time >= start_time and trace_model.start_time <= end_time:
-                                try:
-                                    trace_uuid = uuid.UUID(trace_model.trace_id)
-                                    if max_trace_id is None or trace_uuid > max_trace_id:
-                                        max_trace_id = trace_uuid
-                                except ValueError:
-                                    pass
+                file_max = check_trace_file(file_path)
+                if file_max is not None:
+                    if max_trace_id is None or file_max > max_trace_id:
+                        max_trace_id = file_max
 
         return max_trace_id
 
@@ -265,7 +283,11 @@ class FileTracingStorage(TracingStorage):
         timestamp_to: Optional[datetime],
     ) -> List[TraceModel]:
         """Read traces with filter as TraceModel list."""
-        file_path = self._get_trace_file_path(export_id)
+        try:
+            file_path = self._get_trace_file_path(export_id)
+        except ValueError:
+            # Dataset not found, return empty list
+            return []
         if not self.location.exists(file_path):
             return []
 
@@ -287,7 +309,11 @@ class FileTracingStorage(TracingStorage):
 
     async def delete_trace(self, export_id: ExportID, trace_id: str) -> None:
         """Delete a trace by rewriting the file without that trace."""
-        file_path = self._get_trace_file_path(export_id)
+        try:
+            file_path = self._get_trace_file_path(export_id)
+        except ValueError:
+            # Dataset not found, nothing to delete
+            return
         if not self.location.exists(file_path):
             return
 

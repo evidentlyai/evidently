@@ -8,7 +8,12 @@ from opentelemetry.proto.trace.v1 import trace_pb2
 from sqlalchemy import create_engine
 from sqlalchemy.pool import NullPool
 
+from evidently.core.datasets import DataDefinition
 from evidently.legacy.core import new_id
+from evidently.ui.service.datasets.data_source import TracingDataSource
+from evidently.ui.service.datasets.metadata import DatasetMetadata
+from evidently.ui.service.datasets.metadata import DatasetOrigin
+from evidently.ui.service.datasets.metadata import FileDatasetMetadataStorage
 from evidently.ui.service.tracing.storage.base import ExportID
 from evidently.ui.service.tracing.storage.file import FileTracingStorage
 from evidently.ui.service.tracing.storage.sql import SQLTracingStorage
@@ -69,7 +74,7 @@ def sqlite_engine():
 
 
 @pytest.fixture
-def file_storage(tmp_path):
+def file_storage(tmp_path, dataset_metadata_storage):
     """Create file-based tracing storage."""
     return FileTracingStorage(base_path=tmp_path)
 
@@ -81,9 +86,54 @@ def sql_storage(sqlite_engine):
 
 
 @pytest.fixture
+def project_id():
+    """Create a test project ID."""
+    return new_id()
+
+
+@pytest.fixture
+def user_id():
+    """Create a test user ID."""
+    return new_id()
+
+
+@pytest.fixture
 def export_id():
     """Create a test export ID."""
     return new_id()
+
+
+@pytest.fixture
+def dataset_metadata_storage(tmp_path):
+    """Create dataset metadata storage."""
+    return FileDatasetMetadataStorage(base_path=tmp_path)
+
+
+@pytest.fixture
+def create_tracing_dataset(dataset_metadata_storage, project_id, user_id, export_id):
+    """Create a tracing dataset metadata."""
+    import asyncio
+
+    dataset = DatasetMetadata(
+        id=export_id,
+        project_id=project_id,
+        author_id=user_id,
+        name="test-tracing-dataset",
+        source=TracingDataSource(export_id=export_id),
+        data_definition=DataDefinition(),
+        description="",
+        size_bytes=0,
+        row_count=0,
+        column_count=0,
+        all_columns=[],
+        is_draft=False,
+        draft_params=None,
+        origin=DatasetOrigin.tracing,
+        metadata={},
+        tags=[],
+    )
+    asyncio.run(dataset_metadata_storage.add_dataset_metadata(user_id, project_id, dataset))
+    return dataset
 
 
 @pytest.fixture
@@ -187,7 +237,7 @@ def create_test_trace_request_with_multiple_spans(
 
 
 @pytest.mark.parametrize("storage", ["file_storage", "sql_storage"])
-def test_save_trace(request, storage, export_id, trace_id):
+def test_save_trace(request, storage, export_id, trace_id, create_tracing_dataset):
     """Test saving a trace."""
     storage_instance = request.getfixturevalue(storage)
     trace_request = create_test_trace_request(export_id, trace_id)
@@ -202,7 +252,7 @@ def test_save_trace(request, storage, export_id, trace_id):
 
 
 @pytest.mark.parametrize("storage", ["file_storage", "sql_storage"])
-def test_save_multiple_traces(request, storage, export_id):
+def test_save_multiple_traces(request, storage, export_id, create_tracing_dataset):
     """Test saving multiple traces."""
     storage_instance = request.getfixturevalue(storage)
     trace_id1 = uuid.uuid4()
@@ -222,7 +272,7 @@ def test_save_multiple_traces(request, storage, export_id):
 
 
 @pytest.mark.parametrize("storage", ["file_storage", "sql_storage"])
-def test_read_as_dataframe(request, storage, export_id, trace_id):
+def test_read_as_dataframe(request, storage, export_id, trace_id, create_tracing_dataset):
     """Test reading traces as DataFrame."""
     storage_instance = request.getfixturevalue(storage)
     trace_request = create_test_trace_request(export_id, trace_id)
@@ -239,7 +289,7 @@ def test_read_as_dataframe(request, storage, export_id, trace_id):
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("storage", ["file_storage", "sql_storage"])
-async def test_get_data_definition(request, storage, export_id, trace_id):
+async def test_get_data_definition(request, storage, export_id, trace_id, create_tracing_dataset):
     """Test getting data definition."""
     storage_instance = request.getfixturevalue(storage)
     trace_request = create_test_trace_request(export_id, trace_id)
@@ -254,7 +304,7 @@ async def test_get_data_definition(request, storage, export_id, trace_id):
 
 
 @pytest.mark.parametrize("storage", ["file_storage", "sql_storage"])
-def test_read_with_filter_timestamp(request, storage, export_id):
+def test_read_with_filter_timestamp(request, storage, export_id, create_tracing_dataset):
     """Test reading traces with timestamp filter."""
     storage_instance = request.getfixturevalue(storage)
     trace_id1 = uuid.uuid4()
@@ -275,7 +325,7 @@ def test_read_with_filter_timestamp(request, storage, export_id):
 
 
 @pytest.mark.parametrize("storage", ["file_storage", "sql_storage"])
-def test_read_traces_with_filter(request, storage, export_id):
+def test_read_traces_with_filter(request, storage, export_id, create_tracing_dataset):
     """Test reading traces with filter."""
     storage_instance = request.getfixturevalue(storage)
     trace_id1 = uuid.uuid4()
@@ -296,7 +346,7 @@ def test_read_traces_with_filter(request, storage, export_id):
 
 
 @pytest.mark.parametrize("storage", ["file_storage", "sql_storage"])
-def test_read_traces_with_multiple_spans(request, storage, export_id, trace_id):
+def test_read_traces_with_multiple_spans(request, storage, export_id, trace_id, create_tracing_dataset):
     """Test reading traces with multiple spans."""
     storage_instance = request.getfixturevalue(storage)
     trace_request = create_test_trace_request_with_multiple_spans(export_id, trace_id)
@@ -314,7 +364,7 @@ def test_read_traces_with_multiple_spans(request, storage, export_id, trace_id):
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("storage", ["file_storage", "sql_storage"])
-async def test_delete_trace(request, storage, export_id, trace_id):
+async def test_delete_trace(request, storage, export_id, trace_id, create_tracing_dataset):
     """Test deleting a trace."""
     storage_instance = request.getfixturevalue(storage)
     trace_request = create_test_trace_request(export_id, trace_id)
@@ -331,7 +381,7 @@ async def test_delete_trace(request, storage, export_id, trace_id):
 
 
 @pytest.mark.parametrize("storage", ["file_storage", "sql_storage"])
-def test_get_trace_range_for_run(request, storage, export_id):
+def test_get_trace_range_for_run(request, storage, export_id, create_tracing_dataset):
     """Test getting trace range for a run."""
     storage_instance = request.getfixturevalue(storage)
     trace_id1 = uuid.uuid4()
@@ -364,7 +414,7 @@ def test_read_empty_export_id(request, storage, export_id):
 
 
 @pytest.mark.parametrize("storage", ["file_storage", "sql_storage"])
-def test_append_mode(request, storage, export_id):
+def test_append_mode(request, storage, export_id, create_tracing_dataset):
     """Test that file storage supports append mode."""
     storage_instance = request.getfixturevalue(storage)
     trace_id1 = uuid.uuid4()
@@ -381,7 +431,7 @@ def test_append_mode(request, storage, export_id):
 
 
 @pytest.mark.parametrize("storage", ["file_storage", "sql_storage"])
-def test_trace_attributes_preserved(request, storage, export_id, trace_id):
+def test_trace_attributes_preserved(request, storage, export_id, trace_id, create_tracing_dataset):
     """Test that trace attributes are preserved."""
     storage_instance = request.getfixturevalue(storage)
     trace_request = create_test_trace_request(export_id, trace_id)

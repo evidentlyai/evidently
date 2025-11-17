@@ -30,3 +30,5 @@ register_type_alias(FilterBy, "evidently.ui.service.datasets.filters.EndsWithFil
 register_type_alias(FilterBy, "evidently.ui.service.datasets.filters.StartsWithFilter", "starts_with")
 register_type_alias(DataSourceDTO, "evidently.ui.service.datasets.data_source.DatasetDataSourceDTO", "evidently:data_source_dto:DatasetDataSourceDTO")
 register_type_alias(DataSourceDTO, "evidently.ui.service.datasets.data_source.FileDataSourceDTO", "evidently:data_source_dto:FileDataSourceDTO")
+
+register_type_alias(DataSource, "evidently.ui.service.datasets.data_source.TracingDataSource", "evidently:data_source:TracingDataSource")

@@ -277,14 +277,12 @@ class ListDatasetResponse(EvidentlyAPIModel):
 async def list_datasets(
     dataset_manager: Annotated[DatasetManager, Dependency(skip_validation=True)],
     user_id: UserID,
-    project_id: Optional[ProjectID] = None,
+    project_id: ProjectID,
     limit: Annotated[Optional[int], Parameter(title="Page size")] = None,
     origin: Annotated[Optional[List[DatasetOrigin]], Parameter(schema_extra={"type": "array"})] = None,
     draft: Annotated[Optional[bool], Parameter(title="Return draft datasets")] = False,
 ) -> ListDatasetResponse:
     """List datasets."""
-    if project_id is None:
-        raise HTTPException(status_code=400, detail="project_id is required")
     datasets = await dataset_manager.list_datasets(user_id, project_id, limit, origin, draft)
     return ListDatasetResponse(datasets=[DatasetMetadataResponse.from_dataset_metadata(d) for d in datasets])
 

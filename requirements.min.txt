@@ -27,6 +27,7 @@ deprecation==2.1.0
 uuid6==2024.7.10
 cryptography==43.0.1
 tracely==0.2.9
+opentelemetry-proto>=1.25.0
 
 openai==1.16.2
 evaluate==0.4.1
