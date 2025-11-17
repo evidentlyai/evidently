@@ -25,11 +25,13 @@ from evidently.ui.service.datasets.metadata import DatasetMetadata
 from evidently.ui.service.datasets.metadata import DatasetMetadataFull
 from evidently.ui.service.datasets.metadata import DatasetMetadataStorage
 from evidently.ui.service.datasets.metadata import DatasetOrigin
+from evidently.ui.service.datasets.metadata import DatasetTracingParams
 from evidently.ui.service.datasets.models import ColumnDataType
 from evidently.ui.service.datasets.models import DatasetColumn
 from evidently.ui.service.datasets.models import DatasetPagination
 from evidently.ui.service.datasets.models import Metadata
 from evidently.ui.service.storage.local.dataset import DatasetFileStorage
+from evidently.ui.service.tracing.storage.base import TracingStorage
 from evidently.ui.service.type_aliases import DatasetID
 
 DEFAULT_INDEX_COLUMN = "_evidently_index"
@@ -44,6 +46,7 @@ class DatasetManager(BaseManager):
     project_manager: ProjectManager
     dataset_metadata: DatasetMetadataStorage
     dataset_file_storage: DatasetFileStorage
+    tracing_storage: TracingStorage
 
     async def upload_dataset(
         self,
@@ -125,6 +128,19 @@ class DatasetManager(BaseManager):
             dataset.tags = tags
 
         await self.dataset_metadata.update_dataset_metadata(dataset_id=dataset_id, new_metadata=dataset)
+
+    async def update_dataset_tracing_metadata(
+        self,
+        user_id: UserID,
+        dataset_id: DatasetID,
+        tracing_metadata: DatasetTracingParams,
+    ) -> None:
+        """Update tracing metadata for a dataset."""
+        dataset = await self.dataset_metadata.get_dataset_metadata(dataset_id)
+        if dataset is None:
+            raise ValueError(f"Dataset {dataset_id} not found")
+
+        await self.dataset_metadata.update_dataset_tracing_metadata(dataset_id, tracing_metadata)
 
     async def delete_dataset(self, user_id: UserID, dataset_id: DatasetID) -> None:
         """Delete a dataset."""
@@ -219,6 +235,54 @@ class DatasetManager(BaseManager):
     async def datasets_count(self, user_id: UserID, project_id: ProjectID) -> int:
         """Count datasets in a project."""
         return await self.dataset_metadata.datasets_count(project_id)
+
+    async def create_tracing_dataset(
+        self,
+        user_id: UserID,
+        project_id: ProjectID,
+        name: str,
+    ) -> DatasetMetadata:
+        """Create a tracing dataset."""
+        project_model = await self.project_manager.get_project(user_id, project_id)
+        if project_model is None:
+            raise ValueError(f"Project {project_id} not found")
+
+        # Check if dataset with this name already exists
+        existing = await self.dataset_metadata.list_datasets_metadata(
+            project_id,
+            None,
+            origin=[DatasetOrigin.tracing],
+            draft=False,
+        )
+        for dataset in existing:
+            if dataset.name == name:
+                return dataset
+
+        dataset_id = new_id()
+        from evidently.ui.service.datasets.data_source import TracingDataSource
+
+        dataset = DatasetMetadata(
+            id=dataset_id,
+            project_id=project_id,
+            author_id=user_id,
+            name=name,
+            source=TracingDataSource(export_id=dataset_id),
+            data_definition=DataDefinition(),
+            description="",
+            size_bytes=0,
+            row_count=0,
+            column_count=0,
+            all_columns=[],
+            is_draft=False,
+            draft_params=None,
+            origin=DatasetOrigin.tracing,
+            metadata={},
+            tags=[],
+        )
+
+        dataset_id = await self.dataset_metadata.add_dataset_metadata(user_id, project_id, dataset)
+        dataset = await self.dataset_metadata.get_dataset_metadata(dataset_id)
+        return dataset
 
 
 def paginate_df(

@@ -23,6 +23,7 @@ from evidently.ui.service.storage.common import NoopAuthManager
 from evidently.ui.service.storage.local import FSSpecBlobStorage
 from evidently.ui.service.storage.local import create_local_project_manager
 from evidently.ui.service.storage.local.snapshot_links import FileSnapshotDatasetLinksManager
+from evidently.ui.service.tracing.storage.base import TracingStorage
 
 
 class DatasetMetadataComponent(FactoryComponent[DatasetMetadataStorage], ABC):
@@ -59,6 +60,8 @@ class StorageComponent(Component, ABC):
     sync_to_thread: ClassVar[bool] = False
 
     def get_dependencies(self, ctx: ComponentContext) -> Dict[str, Provide]:
+        from evidently.ui.service.components.tracing import TracingStorageComponent
+
         deps = {
             "project_manager": Provide(self.project_manager_provider(), use_cache=self.use_cache),
         }
@@ -69,6 +72,8 @@ class StorageComponent(Component, ABC):
             deps["dataset_blob_storage"] = Provide(self.dataset_blob_storage_provider(), use_cache=self.use_cache)
         if ctx.get_component(SnapshotDatasetLinksComponent, required=False) is None:
             deps["snapshot_dataset_links"] = Provide(self.snapshot_dataset_links_provider(), use_cache=self.use_cache)
+        if ctx.get_component(TracingStorageComponent, required=False) is None:
+            deps["tracing_storage"] = Provide(self.tracing_storage_provider(), use_cache=self.use_cache)
         # todo: same for project_manager dependencies
         return deps
 
@@ -84,6 +89,9 @@ class StorageComponent(Component, ABC):
 
     def snapshot_dataset_links_provider(self) -> Callable[..., Awaitable[SnapshotDatasetLinksManager]]:
         raise NotImplementedError(f"{self.__class__.__name__} does not have default snapshot_dataset_links provider")
+
+    def tracing_storage_provider(self) -> Callable[..., TracingStorage]:
+        raise NotImplementedError(f"{self.__class__.__name__} does not have default tracing_storage provider")
 
 
 class LocalStorageComponent(StorageComponent):
@@ -116,6 +124,14 @@ class LocalStorageComponent(StorageComponent):
             return FileSnapshotDatasetLinksManager(base_path=self.path)
 
         return snapshot_dataset_links_factory
+
+    def tracing_storage_provider(self):
+        from evidently.ui.service.tracing.storage.file import FileTracingStorage
+
+        def tracing_storage_factory() -> TracingStorage:
+            return FileTracingStorage.provide(self.path)
+
+        return tracing_storage_factory
 
 
 class MetadataStorageComponent(FactoryComponent[ProjectMetadataStorage], ABC):

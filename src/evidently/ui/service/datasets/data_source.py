@@ -1,3 +1,4 @@
+import datetime
 from abc import ABC
 from typing import TYPE_CHECKING
 from typing import ClassVar
@@ -161,6 +162,33 @@ class DataSourceDTO(AutoAliasMixin, PolymorphicModel, ABC):
         new_dto_type.__data_source_type__ = data_source_type
         new_dto_type.__module__ = __module__
         return new_dto_type
+
+
+class TracingDataSource(SortedFilteredDataSource):
+    """Data source that reads from tracing storage."""
+
+    export_id: DatasetID
+    timestamp_from: Optional[datetime.datetime] = None
+    timestamp_to: Optional[datetime.datetime] = None
+
+    async def materialize(self, dataset_manager: "DatasetManager") -> MaterializedDataset:
+        """Materialize the tracing data source."""
+        from evidently.ui.service.tracing.storage.base import TracingStorage
+
+        if dataset_manager.tracing_storage is None:
+            raise DatasetReadError("Tracing storage not available")
+
+        tracing_storage: TracingStorage = dataset_manager.tracing_storage
+        df = tracing_storage.read_with_filter(
+            self.export_id,
+            timestamp_from=self.timestamp_from,
+            timestamp_to=self.timestamp_to,
+        )
+        return self.post_process(df)
+
+    def get_original_dataset_id(self) -> Optional[DatasetID]:
+        """Get the original dataset ID."""
+        return self.export_id
 
 
 DatasetDataSourceDTO = DataSourceDTO.for_type(DatasetDataSource, __name__, exclude=("project_id", "user_id"))

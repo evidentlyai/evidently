@@ -334,6 +334,38 @@ class MaterializeDatasetResponse(EvidentlyAPIModel):
     dataset_id: DatasetID
 
 
+class AddTracingDatasetRequest(BaseModel):
+    """Request for creating a tracing dataset."""
+
+    name: str
+
+    class Config:
+        extra = "forbid"
+
+
+class AddTracingDatasetResponse(EvidentlyAPIModel):
+    """Response for creating a tracing dataset."""
+
+    dataset_id: DatasetID
+    external_dataset_id: str = ""
+
+
+@post("/tracing")
+async def add_tracing_dataset(
+    data: AddTracingDatasetRequest,
+    dataset_manager: Annotated[DatasetManager, Dependency(skip_validation=True)],
+    user_id: UserID,
+    project_id: ProjectID,
+) -> AddTracingDatasetResponse:
+    """Create a tracing dataset."""
+    dataset = await dataset_manager.create_tracing_dataset(
+        user_id=user_id,
+        project_id=project_id,
+        name=data.name,
+    )
+    return AddTracingDatasetResponse(dataset_id=dataset.id, external_dataset_id="")
+
+
 @post("/materialize")
 async def materialize_from_source(
     data: MaterializeDatasetRequest,
@@ -374,6 +406,7 @@ def datasets_api(guard: Callable) -> Router:
                     get_dataset_metadata,
                     get_data_definition,
                     materialize_from_source,
+                    add_tracing_dataset,
                 ],
             ),
         ],
