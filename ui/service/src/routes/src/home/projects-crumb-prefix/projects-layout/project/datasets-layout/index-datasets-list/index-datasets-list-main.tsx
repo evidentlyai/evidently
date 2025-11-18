@@ -53,7 +53,7 @@ export const Component = () => {
       datasets={datasets}
       GetDatasetLinkByID={GetDatasetLinkByID}
       isLoading={isLoading}
-      onUpdateMetadata={({ datasetId, ...data }) => {
+      onUpdateMetadata={({ datasetId, data }) => {
         updateDatasetMetadataFetcher.submit({
           paramsToReplace: { projectId, datasetId },
           data

@@ -1,6 +1,7 @@
 import { Box, InputBase, type InputBaseProps } from '@mui/material'
 import {
   type GridColDef,
+  type GridColumnVisibilityModel,
   type GridRenderCellParams,
   type GridRenderEditCellParams,
   type GridSortModel,
@@ -27,6 +28,13 @@ type ColumnRaw = GridColDef & {
     | null
 }
 
+export type SpecialColumnType =
+  | 'link_to_trace'
+  | 'human_feedback_label'
+  | 'human_feedback_comment'
+  | 'prompt_result'
+  | null
+
 export const useDatasetDataProps = (data: DatasetPaginationModel, isEditable?: boolean) => {
   const columnsRaw: ColumnRaw[] = useMemo(
     () =>
@@ -36,7 +44,7 @@ export const useDatasetDataProps = (data: DatasetPaginationModel, isEditable?: b
         const isIndex = column.is_index
         const isColumnBig = data.items.some((e) => String(e?.[columnIndex] ?? '').length > 50)
 
-        const specialType = (() => {
+        const specialType: SpecialColumnType = (() => {
           const serviceColumns = data.metadata.data_definition?.service_columns
 
           if (
@@ -311,6 +319,19 @@ export const RenderCell = (props: RenderCellProps) => {
   const stringValue = String(props.value)
 
   return <Box sx={{ maxHeight: 500, overflow: 'auto', whiteSpace: 'pre-wrap' }}>{stringValue}</Box>
+}
+
+export const useColumnVisibilityModelHidingTokensAndCostColumns = (columns: string[]) => {
+  const initialVisibility = Object.fromEntries(
+    columns
+      .filter((c) => /.*\.(tokens|cost)\..*/.test(c) || c.startsWith('service_name'))
+      .map((c) => [c, false])
+  )
+
+  const [columnVisibilityModel, onColumnVisibilityModelChange] =
+    useState<GridColumnVisibilityModel>(initialVisibility)
+
+  return [columnVisibilityModel, onColumnVisibilityModelChange] as const
 }
 
 const NAVIGATE_OPTIONS = { replace: true, preventScrollReset: true } as const
