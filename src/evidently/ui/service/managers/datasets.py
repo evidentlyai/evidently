@@ -254,14 +254,14 @@ class DatasetManager(BaseManager):
             origin=[DatasetOrigin.tracing],
             draft=False,
         )
-        for dataset in existing:
-            if dataset.name == name:
-                return dataset
+        for existing_dataset in existing:
+            if existing_dataset.name == name:
+                return existing_dataset
 
         dataset_id = new_id()
         from evidently.ui.service.datasets.data_source import TracingDataSource
 
-        dataset = DatasetMetadata(
+        new_dataset = DatasetMetadata(
             id=dataset_id,
             project_id=project_id,
             author_id=user_id,
@@ -280,7 +280,7 @@ class DatasetManager(BaseManager):
             tags=[],
         )
 
-        dataset_id = await self.dataset_metadata.add_dataset_metadata(user_id, project_id, dataset)
+        dataset_id = await self.dataset_metadata.add_dataset_metadata(user_id, project_id, new_dataset)
         dataset_full = await self.dataset_metadata.get_dataset_metadata(dataset_id)
         if dataset_full is None:
             raise ValueError(f"Dataset {dataset_id} not found after creation")
