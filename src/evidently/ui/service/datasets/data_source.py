@@ -193,3 +193,4 @@ class TracingDataSource(SortedFilteredDataSource):
 
 DatasetDataSourceDTO = DataSourceDTO.for_type(DatasetDataSource, __name__, exclude=("project_id", "user_id"))
 FileDataSourceDTO = DataSourceDTO.for_type(FileDataSource, __name__, exclude=("project_id", "user_id"))
+TracingDataSourceDTO = DataSourceDTO.for_type(TracingDataSource, __name__, exclude=tuple())

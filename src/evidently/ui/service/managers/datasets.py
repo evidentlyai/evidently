@@ -241,7 +241,7 @@ class DatasetManager(BaseManager):
         user_id: UserID,
         project_id: ProjectID,
         name: str,
-    ) -> DatasetMetadata:
+    ) -> DatasetMetadataFull:
         """Create a tracing dataset."""
         project_model = await self.project_manager.get_project(user_id, project_id)
         if project_model is None:

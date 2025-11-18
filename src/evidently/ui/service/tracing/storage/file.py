@@ -67,7 +67,10 @@ def _convert_protobuf_to_trace_model(
                 if traces_dict[trace_id].start_time > start_time:
                     traces_dict[trace_id].start_time = start_time
                 if end_time is not None:
-                    if traces_dict[trace_id].end_time is None or traces_dict[trace_id].end_time < end_time:
+                    current_end_time = traces_dict[trace_id].end_time
+                    if current_end_time is None:
+                        traces_dict[trace_id].end_time = end_time
+                    elif current_end_time < end_time:
                         traces_dict[trace_id].end_time = end_time
 
     return list(traces_dict.values())
@@ -358,11 +361,17 @@ def _trace_to_dict(export_id: ExportID, trace: TraceModel) -> dict:
                 token_id = key.split(".", 1)[1]
                 if isinstance(value, (int, float)):
                     current_total = result.get(f"total_tokens.{token_id}", 0)
-                    result[f"total_tokens.{token_id}"] = current_total + int(value)
+                    if isinstance(current_total, int):
+                        result[f"total_tokens.{token_id}"] = current_total + int(value)
+                    else:
+                        result[f"total_tokens.{token_id}"] = int(value)
             if key.startswith("cost."):
                 token_id = key.split(".", 1)[1]
                 if isinstance(value, (int, float)):
                     current_total = result.get(f"total_cost.{token_id}", 0.0)
-                    result[f"total_cost.{token_id}"] = current_total + float(value)
+                    if isinstance(current_total, (int, float)):
+                        result[f"total_cost.{token_id}"] = float(current_total) + float(value)
+                    else:
+                        result[f"total_cost.{token_id}"] = float(value)
 
     return result
