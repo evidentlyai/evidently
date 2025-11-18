@@ -62,6 +62,7 @@ setup_args = dict(
         "deprecation>=2.1.0",
         "uuid6>=2024.7.10",
         "cryptography>=43.0.1",
+        "opentelemetry-proto>=1.25.0",
     ],
     extras_require={
         "dev": [
