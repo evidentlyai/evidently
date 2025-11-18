@@ -5,6 +5,7 @@ from datetime import datetime
 from typing import List
 from typing import Optional
 from typing import Tuple
+from typing import Union
 
 import pandas as pd
 from opentelemetry.proto.collector.trace.v1 import trace_service_pb2
@@ -65,13 +66,14 @@ def _convert_protobuf_to_trace_model(
                 traces_dict[trace_id].spans.append(span_model)
                 if traces_dict[trace_id].start_time > start_time:
                     traces_dict[trace_id].start_time = start_time
-                if end_time and (traces_dict[trace_id].end_time is None or traces_dict[trace_id].end_time < end_time):
-                    traces_dict[trace_id].end_time = end_time
+                if end_time is not None:
+                    if traces_dict[trace_id].end_time is None or traces_dict[trace_id].end_time < end_time:
+                        traces_dict[trace_id].end_time = end_time
 
     return list(traces_dict.values())
 
 
-def _convert_protobuf_value(value) -> str | int | float | list:
+def _convert_protobuf_value(value) -> Union[str, int, float, list]:
     """Convert protobuf value to Python value."""
     which = value.WhichOneof("value")
     if which == "string_value":
@@ -132,7 +134,7 @@ class FileTracingStorage(TracingStorage):
         raise ValueError(f"Dataset {dataset_id} not found. Cannot determine project_id for trace storage.")
 
     @classmethod
-    def provide(cls, base_path: str) -> "FileTracingStorage":
+    def provide(cls, base_path: str) -> "TracingStorage":  # type: ignore[override]
         """Provide instance for dependency injection."""
         return cls(base_path)
 
@@ -225,7 +227,7 @@ class FileTracingStorage(TracingStorage):
 
         return pd.DataFrame(traces)
 
-    def get_trace_range_for_run(self, start_id: int, start_time: datetime, end_time: datetime) -> Optional[int]:
+    def get_trace_range_for_run(self, start_id: int, start_time: datetime, end_time: datetime) -> Optional[uuid.UUID]:
         """Get trace range for a run."""
         from evidently.ui.service.datasets.metadata import UUID_REGEX
 
@@ -354,9 +356,13 @@ def _trace_to_dict(export_id: ExportID, trace: TraceModel) -> dict:
                 result[f"{span.span_name}.{key}"] = value
             if key.startswith("tokens."):
                 token_id = key.split(".", 1)[1]
-                result[f"total_tokens.{token_id}"] = result.get(f"total_tokens.{token_id}", 0) + int(value)
+                if isinstance(value, (int, float)):
+                    current_total = result.get(f"total_tokens.{token_id}", 0)
+                    result[f"total_tokens.{token_id}"] = current_total + int(value)
             if key.startswith("cost."):
                 token_id = key.split(".", 1)[1]
-                result[f"total_cost.{token_id}"] = result.get(f"total_cost.{token_id}", 0) + float(value)
+                if isinstance(value, (int, float)):
+                    current_total = result.get(f"total_cost.{token_id}", 0.0)
+                    result[f"total_cost.{token_id}"] = current_total + float(value)
 
     return result

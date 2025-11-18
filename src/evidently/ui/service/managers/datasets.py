@@ -281,8 +281,10 @@ class DatasetManager(BaseManager):
         )
 
         dataset_id = await self.dataset_metadata.add_dataset_metadata(user_id, project_id, dataset)
-        dataset = await self.dataset_metadata.get_dataset_metadata(dataset_id)
-        return dataset
+        dataset_full = await self.dataset_metadata.get_dataset_metadata(dataset_id)
+        if dataset_full is None:
+            raise ValueError(f"Dataset {dataset_id} not found after creation")
+        return dataset_full
 
 
 def paginate_df(

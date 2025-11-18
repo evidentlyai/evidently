@@ -5,11 +5,11 @@ from typing import Dict
 from typing import List
 from typing import Optional
 from typing import Tuple
-from typing import TypeAlias
 from typing import Union
 
 import pandas as pd
 from opentelemetry.proto.collector.trace.v1 import trace_service_pb2
+from typing_extensions import TypeAlias
 
 from evidently._pydantic_compat import BaseModel
 from evidently.core.datasets import DataDefinition
@@ -74,20 +74,16 @@ class TracingStorage(abc.ABC):
         raise NotImplementedError()
 
     @abc.abstractmethod
-    def get_trace_range_for_run(self, start_id: int, start_time: datetime, end_time: datetime) -> Optional[int]:
+    def get_trace_range_for_run(self, start_id: int, start_time: datetime, end_time: datetime) -> Optional[uuid.UUID]:
         raise NotImplementedError()
 
     @abc.abstractmethod
     async def delete_trace(self, export_id: ExportID, trace_id: str) -> None:
         raise NotImplementedError()
 
-    @classmethod
-    def provide(cls) -> "TracingStorage":
-        raise NotImplementedError()
-
 
 class NoopTracingStorage(TracingStorage):
-    def get_trace_range_for_run(self, start_id: int, start_time: datetime, end_time: datetime) -> Optional[int]:
+    def get_trace_range_for_run(self, start_id: int, start_time: datetime, end_time: datetime) -> Optional[uuid.UUID]:
         return None
 
     def save(

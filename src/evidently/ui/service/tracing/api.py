@@ -177,12 +177,12 @@ async def _determine_session_info(traces: List[TraceModel]) -> DatasetTracingPar
 
 
 async def _split_by_session(traces: List[TraceModel], session_field: str) -> Dict[str, List[TraceModel]]:
-    result = defaultdict(list)
+    result: Dict[str, List[TraceModel]] = defaultdict(list)
     for trace in traces:
         span = _get_first_span(trace)
         if span is None:
             continue
-        session_id = span.attributes.get(session_field, "undefined")
+        session_id = str(span.attributes.get(session_field, "undefined"))
         result[session_id].append(trace)
     return result
 
@@ -190,13 +190,13 @@ async def _split_by_session(traces: List[TraceModel], session_field: str) -> Dic
 async def _split_by_user(
     traces: List[TraceModel], user_field: str, dialog_split_sec: int
 ) -> Dict[str, List[TraceModel]]:
-    result = defaultdict(list)
+    result: Dict[str, List[TraceModel]] = defaultdict(list)
     traces_by_users: Dict[str, List[TraceModel]] = defaultdict(list)
     for trace in traces:
         span = _get_first_span(trace)
         if span is None:
             continue
-        user_id = span.attributes.get(user_field, "undefined")
+        user_id = str(span.attributes.get(user_field, "undefined"))
         traces_by_users[user_id].append(trace)
     for user_id, user_traces in traces_by_users.items():
         start_time = user_traces[-1].start_time.timestamp()

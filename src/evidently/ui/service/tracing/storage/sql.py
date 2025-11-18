@@ -80,7 +80,7 @@ class SQLTracingStorage(BaseSQLStorage, TracingStorage):
             TraceSpanModel.__table__.create(engine, checkfirst=True)
 
     @classmethod
-    def provide(cls, engine: Engine) -> "SQLTracingStorage":
+    def provide(cls, engine: Engine) -> "TracingStorage":  # type: ignore[override]
         """Provide instance for dependency injection."""
         return cls(engine)
 
@@ -179,7 +179,7 @@ class SQLTracingStorage(BaseSQLStorage, TracingStorage):
             ).all()
             return _convert_to_dataframe(export_id, data)
 
-    def get_trace_range_for_run(self, start_id: int, start_time: datetime, end_time: datetime) -> Optional[int]:
+    def get_trace_range_for_run(self, start_id: int, start_time: datetime, end_time: datetime) -> Optional[uuid.UUID]:
         """Get trace range for a run."""
         with self.session as session:
             max_id = session.execute(
