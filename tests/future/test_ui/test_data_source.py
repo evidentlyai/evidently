@@ -234,7 +234,7 @@ async def test_dataset_data_source_materialize_with_sorting(dataset_manager_mock
 async def test_dataset_data_source_materialize_missing_dataset(dataset_manager_mock, test_user_id):
     """Test DatasetDataSource.materialize() with missing dataset."""
     from evidently.legacy.core import new_id
-    from evidently.ui.service.datasets.data_source import DatasetReadError
+    from evidently.ui.service.errors import DatasetNotFound
 
     dataset_source = DatasetDataSource(
         user_id=test_user_id,
@@ -243,5 +243,5 @@ async def test_dataset_data_source_materialize_missing_dataset(dataset_manager_m
         sort_by=None,
     )
 
-    with pytest.raises(DatasetReadError, match="not found"):
+    with pytest.raises(DatasetNotFound):
         await dataset_source.materialize(dataset_manager_mock)

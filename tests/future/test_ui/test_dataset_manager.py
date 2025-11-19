@@ -261,7 +261,9 @@ async def test_upload_dataset_from_file(
 @pytest.mark.asyncio
 async def test_get_dataset_metadata_not_found(dataset_manager, test_user_id):
     """Test getting non-existent dataset metadata."""
-    with pytest.raises(ValueError, match="not found"):
+    from evidently.ui.service.errors import DatasetNotFound
+
+    with pytest.raises(DatasetNotFound):
         await dataset_manager.get_dataset_metadata(test_user_id, new_id())
 
 
@@ -324,7 +326,9 @@ async def test_delete_dataset(
         [],
     )
     await dataset_manager.delete_dataset(test_user_id, dataset.id)
-    with pytest.raises(ValueError, match="not found"):
+    from evidently.ui.service.errors import DatasetNotFound
+
+    with pytest.raises(DatasetNotFound):
         await dataset_manager.get_dataset_metadata(test_user_id, dataset.id)
 
 
