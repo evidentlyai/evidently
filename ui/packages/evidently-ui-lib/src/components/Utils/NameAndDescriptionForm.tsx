@@ -101,6 +101,7 @@ export const NameAndDescriptionPopover = (props: NameAndDescriptionPopoverProps)
       {(popupState) => (
         <>
           <Button
+            size='small'
             disabled={buttonDisabled}
             variant='outlined'
             startIcon={<BackupTableOutlinedIcon />}
