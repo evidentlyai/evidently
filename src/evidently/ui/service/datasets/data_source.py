@@ -191,6 +191,33 @@ class TracingDataSource(SortedFilteredDataSource):
         return self.export_id
 
 
+class TracingSessionDataSource(TracingDataSource):
+    """Data source that reads from tracing storage and groups by session."""
+
+    session_id_column: str
+    timestamp_column: str
+    question_column: str
+    response_column: str
+
+    async def materialize(self, dataset_manager: "DatasetManager") -> MaterializedDataset:
+        """Materialize the tracing session data source."""
+        df = await super().materialize(dataset_manager)
+
+        df_sorted = df.sort_values(by=[self.session_id_column, self.timestamp_column])
+        df_grouped = (
+            df_sorted.groupby(self.session_id_column)
+            .apply(
+                lambda x: "\n\n".join(
+                    [f"USER: {q}\n\nAGENT: {r}" for q, r in zip(x[self.question_column], x[self.response_column])]
+                )
+            )
+            .reset_index()
+        )
+        df_grouped.columns = ["session_id", "conversation"]
+        return df_grouped
+
+
 DatasetDataSourceDTO = DataSourceDTO.for_type(DatasetDataSource, __name__, exclude=("project_id", "user_id"))
 FileDataSourceDTO = DataSourceDTO.for_type(FileDataSource, __name__, exclude=("project_id", "user_id"))
 TracingDataSourceDTO = DataSourceDTO.for_type(TracingDataSource, __name__, exclude=tuple())
+TracingSessionDataSourceDTO = DataSourceDTO.for_type(TracingSessionDataSource, __name__, exclude=tuple())

@@ -168,14 +168,29 @@ class FileTracingStorage(TracingStorage):
         if not self.location.exists(file_path):
             return pd.DataFrame()
 
-        traces = []
+        traces_dict: dict[str, TraceModel] = {}
         with self.location.open(file_path, "r") as f:
             for line in f:
                 if line.strip():
                     trace_dict = json.loads(line)
                     trace_model = TraceModel(**trace_dict)
-                    traces.append(_trace_to_dict(export_id, trace_model))
+                    trace_id = trace_model.trace_id
 
+                    if trace_id not in traces_dict:
+                        traces_dict[trace_id] = trace_model
+                    else:
+                        # Merge spans from this trace into the existing one
+                        existing_trace = traces_dict[trace_id]
+                        existing_trace.spans.extend(trace_model.spans)
+                        # Update start_time to be the earliest
+                        if trace_model.start_time < existing_trace.start_time:
+                            existing_trace.start_time = trace_model.start_time
+                        # Update end_time to be the latest
+                        if trace_model.end_time is not None:
+                            if existing_trace.end_time is None or trace_model.end_time > existing_trace.end_time:
+                                existing_trace.end_time = trace_model.end_time
+
+        traces = [_trace_to_dict(export_id, trace) for trace in traces_dict.values()]
         return pd.DataFrame(traces)
 
     async def get_data_definition(self, export_id: ExportID) -> Tuple[DataDefinition, List[str]]:
@@ -207,7 +222,7 @@ class FileTracingStorage(TracingStorage):
         if not self.location.exists(file_path):
             return pd.DataFrame()
 
-        traces = []
+        traces_dict: dict[str, TraceModel] = {}
         line_num = 0
         with self.location.open(file_path, "r") as f:
             for line in f:
@@ -226,8 +241,22 @@ class FileTracingStorage(TracingStorage):
                     if timestamp_to is not None and trace_model.start_time > timestamp_to:
                         continue
 
-                    traces.append(_trace_to_dict(export_id, trace_model))
+                    trace_id = trace_model.trace_id
+                    if trace_id not in traces_dict:
+                        traces_dict[trace_id] = trace_model
+                    else:
+                        # Merge spans from this trace into the existing one
+                        existing_trace = traces_dict[trace_id]
+                        existing_trace.spans.extend(trace_model.spans)
+                        # Update start_time to be the earliest
+                        if trace_model.start_time < existing_trace.start_time:
+                            existing_trace.start_time = trace_model.start_time
+                        # Update end_time to be the latest
+                        if trace_model.end_time is not None:
+                            if existing_trace.end_time is None or trace_model.end_time > existing_trace.end_time:
+                                existing_trace.end_time = trace_model.end_time
 
+        traces = [_trace_to_dict(export_id, trace) for trace in traces_dict.values()]
         return pd.DataFrame(traces)
 
     def get_trace_range_for_run(self, start_id: int, start_time: datetime, end_time: datetime) -> Optional[uuid.UUID]:
@@ -296,7 +325,7 @@ class FileTracingStorage(TracingStorage):
         if not self.location.exists(file_path):
             return []
 
-        traces = []
+        traces_dict: dict[str, TraceModel] = {}
         with self.location.open(file_path, "r") as f:
             for line in f:
                 if line.strip():
@@ -308,9 +337,22 @@ class FileTracingStorage(TracingStorage):
                     if timestamp_to is not None and trace_model.start_time > timestamp_to:
                         continue
 
-                    traces.append(trace_model)
+                    trace_id = trace_model.trace_id
+                    if trace_id not in traces_dict:
+                        traces_dict[trace_id] = trace_model
+                    else:
+                        # Merge spans from this trace into the existing one
+                        existing_trace = traces_dict[trace_id]
+                        existing_trace.spans.extend(trace_model.spans)
+                        # Update start_time to be the earliest
+                        if trace_model.start_time < existing_trace.start_time:
+                            existing_trace.start_time = trace_model.start_time
+                        # Update end_time to be the latest
+                        if trace_model.end_time is not None:
+                            if existing_trace.end_time is None or trace_model.end_time > existing_trace.end_time:
+                                existing_trace.end_time = trace_model.end_time
 
-        return traces
+        return list(traces_dict.values())
 
     async def delete_trace(self, export_id: ExportID, trace_id: str) -> None:
         """Delete a trace by rewriting the file without that trace."""
