@@ -41,7 +41,7 @@ export const Component = () => {
       {viewMode && projectId && exportId && (
         <Stack my={2} direction={'row'} justifyItems={'center'} gap={2}>
           <Stack ref={traceToolbarRef} justifyContent={'center'} />
-          <Stack flexGrow={1} direction={'row'} justifyContent={'flex-end'} pr={3}>
+          <Stack flexGrow={1} direction={'row'} justifyContent={'flex-end'}>
             <SwitchViewMode
               value={viewMode}
               onChange={(newMode) => {

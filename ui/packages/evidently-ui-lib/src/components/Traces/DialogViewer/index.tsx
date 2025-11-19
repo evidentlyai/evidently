@@ -9,10 +9,11 @@ import type { Description } from './types'
 type DialogViewerProps = {
   data: Record<string, TraceModel[]>
   description: Description
+  LinkToTrace: (props: { traceId: string }) => JSX.Element
 }
 
 export const DialogViewer = (props: DialogViewerProps) => {
-  const { data, description } = props
+  const { data, description, LinkToTrace } = props
 
   const ref = useRef<HTMLElement>(null)
   let input = description.inputAttribute
@@ -156,6 +157,7 @@ export const DialogViewer = (props: DialogViewerProps) => {
               <Box key={v.trace_id} width={0.95} mx={'auto'}>
                 <TraceComponent
                   data={v}
+                  LinkToTrace={LinkToTrace}
                   description={{
                     ...description,
                     inputAttribute: input,

@@ -1,19 +1,18 @@
-import { KeyboardArrowDown } from '@mui/icons-material'
-import { Accordion, AccordionDetails, AccordionSummary, Stack, Typography } from '@mui/material'
+import { Stack } from '@mui/material'
 import type { TraceModel } from 'api/types'
 import dayjs from 'dayjs'
 import { SplitField } from '../helpers'
 import type { Description } from '../types'
 import { Message } from './Message'
-import { SpanComponent } from './SpanComponent'
 
 type TraceComponentProps = {
   data: TraceModel
   description: Description
+  LinkToTrace: (props: { traceId: string }) => JSX.Element
 }
 
 export const TraceComponent = (props: TraceComponentProps) => {
-  const { data, description } = props
+  const { data, description, LinkToTrace } = props
 
   const rootSpans = data.spans.filter((s) => s.parent_span_id === '')
   const [inputSpanName, inputField] = SplitField(description.inputAttribute)
@@ -25,7 +24,7 @@ export const TraceComponent = (props: TraceComponentProps) => {
     outputSpanName === '' ? lastSpan : data.spans.filter((s) => s.span_name === outputSpanName)[0]
   const startTime = dayjs(data.start_time).locale('en-gb')
   const endTime = dayjs(data.end_time).locale('en-gb')
-  const totalTraceTime = endTime.unix() - startTime.unix()
+
   return (
     <Stack gap={2} direction={'column'}>
       <Message
@@ -42,36 +41,9 @@ export const TraceComponent = (props: TraceComponentProps) => {
         align={'right'}
       />
 
-      <Accordion
-        sx={{
-          mt: 2,
-          '&::before': { display: 'none' },
-          borderRadius: '5px',
-          border: '1px solid',
-          borderColor: 'divider'
-        }}
-        slotProps={{ transition: { unmountOnExit: true, mountOnEnter: true } }}
-      >
-        <AccordionSummary expandIcon={<KeyboardArrowDown />}>
-          <Typography variant='h6'>
-            <b>Spans</b>
-          </Typography>
-        </AccordionSummary>
-        <AccordionDetails>
-          {data.spans
-            .filter((s) => s.parent_span_id === '')
-            .map((s) => (
-              <SpanComponent
-                key={s.span_id}
-                data={s}
-                spans={data.spans}
-                traceStart={startTime.unix()}
-                totalTraceTime={totalTraceTime}
-                index={0}
-              />
-            ))}
-        </AccordionDetails>
-      </Accordion>
+      <Stack direction={'row'} gap={1} justifyContent={'center'}>
+        <LinkToTrace traceId={data.trace_id} />
+      </Stack>
     </Stack>
   )
 }

@@ -14,12 +14,15 @@ import {
   Autocomplete,
   Box,
   Button,
+  Divider,
   Fade,
   Portal,
   Stack,
-  TextField
+  TextField,
+  Typography
 } from 'evidently-ui-lib/shared-dependencies/mui-material'
 import { useState } from 'react'
+import { LinkToTrace } from '~/Components/Datasets/LinkToTrace'
 import { clientAPI } from '~/api'
 import { useSubmitFetcher } from '~/routes/type-safe-route-helpers/hooks'
 import type { GetRouteByPath } from '~/routes/types'
@@ -143,9 +146,22 @@ export const Component = () => {
   return (
     <>
       <Portal container={() => traceToolbarRef.current}>
-        <Stack gap={2} direction={'row'} justifyContent={'center'} alignItems={'flex-end'}>
+        <Stack
+          gap={2}
+          direction={'row'}
+          justifyContent={'center'}
+          alignItems={'flex-end'}
+          border={1}
+          borderColor='divider'
+          borderRadius={1}
+          p={2}
+        >
           <Box>
             <Box minWidth={180}>
+              <Typography variant='subtitle2' gutterBottom>
+                Session splitting type
+              </Typography>
+
               <Autocomplete
                 fullWidth
                 size='small'
@@ -157,17 +173,19 @@ export const Component = () => {
                   }
                 }}
                 value={viewParams.session_type}
-                ListboxProps={{ sx: { maxHeight: 200 } }}
                 options={['ungrouped', 'session', 'user']}
-                renderInput={(params) => <TextField {...params} label={'Session splitting type'} />}
+                renderInput={(params) => <TextField {...params} />}
               />
             </Box>
           </Box>
 
           <Fade in={viewParams.session_type === 'session'} mountOnEnter unmountOnExit exit={false}>
             <Box>
+              <Typography variant='subtitle2' gutterBottom>
+                Session Field
+              </Typography>
+
               <TextField
-                label={'Session Field'}
                 name='session_attribute'
                 size={'small'}
                 defaultValue={viewParams.session_attribute}
@@ -180,8 +198,11 @@ export const Component = () => {
 
           <Fade in={viewParams.session_type === 'user'} mountOnEnter unmountOnExit exit={false}>
             <Box>
+              <Typography variant='subtitle2' gutterBottom>
+                User ID Field
+              </Typography>
+
               <TextField
-                label={'User ID Field'}
                 name='user_id_attribute'
                 size={'small'}
                 defaultValue={viewParams.user_id_attribute}
@@ -208,7 +229,10 @@ export const Component = () => {
             </Box>
           </Fade>
 
+          <Divider orientation='vertical' flexItem />
+
           <Button
+            size='small'
             disabled={!isStateNotSyncWithFilter && !isMessageFieldsChanged}
             variant='outlined'
             onClick={() => {
@@ -228,43 +252,41 @@ export const Component = () => {
               })
             }}
           >
-            Apply
+            Apply filters
           </Button>
 
-          <Stack flex={1} direction={'row'} justifyContent={'flex-end'}>
-            <NameAndDescriptionPopover
-              buttonDisabled={isStateNotSyncWithFilter || !isCanCreateDataset || isLoading}
-              formProps={{
-                allowSubmitDefaults: true,
-                submitButtonTitle: 'Submit',
-                defaultValues: { name: `Export of ${data.name}` },
-                isLoading: exportToDatasetFetcher.state !== 'idle',
-                onSubmit: ({ name, description }) => {
-                  const [spanName] = viewParams.input_attribute.split(':')
+          <NameAndDescriptionPopover
+            buttonDisabled={isStateNotSyncWithFilter || !isCanCreateDataset || isLoading}
+            formProps={{
+              allowSubmitDefaults: true,
+              submitButtonTitle: 'Submit',
+              defaultValues: { name: `Export of ${data.name}` },
+              isLoading: exportToDatasetFetcher.state !== 'idle',
+              onSubmit: ({ name, description }) => {
+                const [spanName] = viewParams.input_attribute.split(':')
 
-                  exportToDatasetFetcher.submit({
-                    data: {
-                      name,
-                      description,
-                      source: {
-                        type: 'evidently:data_source_dto:TracingSessionDataSourceDTO',
-                        export_id: exportId,
-                        session_id_column: `${spanName}:${viewParams.session_attribute}`.replaceAll(
-                          ':',
-                          '.'
-                        ),
-                        question_column: viewParams.input_attribute.replaceAll(':', '.'),
-                        response_column: viewParams.output_attribute.replaceAll(':', '.'),
-                        timestamp_column: 'timestamp'
-                      }
-                    },
-                    paramsToReplace: { projectId }
-                  })
-                }
-              }}
-              buttonTitle='Export to Dataset'
-            />
-          </Stack>
+                exportToDatasetFetcher.submit({
+                  data: {
+                    name,
+                    description,
+                    source: {
+                      type: 'evidently:data_source_dto:TracingSessionDataSourceDTO',
+                      export_id: exportId,
+                      session_id_column: `${spanName}:${viewParams.session_attribute}`.replaceAll(
+                        ':',
+                        '.'
+                      ),
+                      question_column: viewParams.input_attribute.replaceAll(':', '.'),
+                      response_column: viewParams.output_attribute.replaceAll(':', '.'),
+                      timestamp_column: 'timestamp'
+                    }
+                  },
+                  paramsToReplace: { projectId }
+                })
+              }
+            }}
+            buttonTitle='Export to Dataset'
+          />
         </Stack>
       </Portal>
       <Box>
@@ -273,6 +295,15 @@ export const Component = () => {
             <Box my={3}>
               <DialogViewer
                 key={exportId}
+                LinkToTrace={({ traceId }) => (
+                  <LinkToTrace
+                    title='Go to trace'
+                    variant='outlined'
+                    exportId={exportId}
+                    projectId={projectId}
+                    traceId={traceId}
+                  />
+                )}
                 data={data.traces}
                 description={{
                   inputAttribute: viewParams.input_attribute,
