@@ -45,30 +45,12 @@ export const handle = { crumb }
 ///////////////////
 //    LOADER
 ///////////////////
-export const loadData = async ({ params, query }: loadDataArgs) => {
+export const loadData = async ({ params }: loadDataArgs) => {
   const { exportId } = params as CurrentRouteParams
-
-  const sessionType = query.session_type || null
-  const sessionAttribute = query.session_attribute || undefined
-  const userIdAttribute = query.user_id_attribute || undefined
-  const splitTime = query.split_time_seconds || undefined
-
-  const exactType: 'session' | 'user' | 'ungrouped' | undefined =
-    sessionType === 'user' || sessionType === 'session' || sessionType === 'ungrouped'
-      ? sessionType
-      : undefined
 
   return clientAPI
     .GET('/api/v1/traces/list', {
-      params: {
-        query: {
-          export_id: exportId,
-          session_field: sessionAttribute,
-          user_field: userIdAttribute,
-          time_split_sec: splitTime ? Number.parseInt(splitTime) : undefined,
-          type: exactType
-        }
-      }
+      params: { query: { export_id: exportId, getter_type: 'use_metadata_params_from_filters' } }
     })
     .then(responseParser())
     .then((traces) => ({

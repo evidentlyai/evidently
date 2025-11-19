@@ -81,6 +81,11 @@ class TraceListType(Enum):
     User = "user"
 
 
+class TraceListGetterType(Enum):
+    use_metadata_params_from_filters = "use_metadata_params_from_filters"
+    ungrouped = "ungrouped"
+
+
 class DatasetMetadata(BaseModel):
     id: uuid.UUID
     name: str
@@ -112,10 +117,7 @@ async def trace_sessions(
     dataset_manager: Annotated[DatasetManager, Dependency(skip_validation=True)],
     user_id: UserID,
     export_id: uuid.UUID,
-    type: TraceListType = TraceListType.Auto,
-    session_field: str = "session_id",
-    user_field: str = "user_id",
-    time_split_sec: int = 30 * 60,
+    getter_type: TraceListGetterType,
 ) -> TraceSessionsResponse:
     traces = tracing_storage.read_traces_with_filter(export_id, None, None)
     dataset = await dataset_manager.get_dataset_metadata(user_id, export_id)
@@ -123,18 +125,23 @@ async def trace_sessions(
         raise NotFoundException(f"Dataset {export_id} not found")
 
     metadata = DatasetMetadata(id=dataset.id, name=dataset.name)
-    if type == TraceListType.Auto:
-        tracing_session_params = (
-            await _determine_session_info(traces) if dataset.tracing_params is None else dataset.tracing_params
-        )
-        if tracing_session_params is None:
-            type = TraceListType.Ungrouped
-        else:
-            metadata.params = tracing_session_params
-            if tracing_session_params.session_type is None:
-                type = TraceListType.Ungrouped
-            else:
-                type = TraceListType(tracing_session_params.session_type)
+
+    tracing_session_params = (
+        await _determine_session_info(traces) if dataset.tracing_params is None else dataset.tracing_params
+    )
+
+    metadata.params = tracing_session_params
+
+    if getter_type == TraceListGetterType.ungrouped:
+        return TraceSessionsResponse(sessions={"undefined": traces}, metadata=metadata)
+
+    type = TraceListType.Ungrouped
+    if metadata.params.session_type is not None:
+        type = TraceListType(tracing_session_params.session_type)
+
+    session_field = metadata.params.session_field or "session_id"
+    user_field = metadata.params.user_field or "user_id"
+    time_split_sec = metadata.params.dialog_split_time_seconds or 30 * 60
 
     if type == TraceListType.Session:
         return TraceSessionsResponse(sessions=await _split_by_session(traces, session_field), metadata=metadata)
@@ -142,6 +149,7 @@ async def trace_sessions(
         return TraceSessionsResponse(
             sessions=await _split_by_user(traces, user_field, time_split_sec), metadata=metadata
         )
+
     return TraceSessionsResponse(sessions={"undefined": traces}, metadata=metadata)
 
 

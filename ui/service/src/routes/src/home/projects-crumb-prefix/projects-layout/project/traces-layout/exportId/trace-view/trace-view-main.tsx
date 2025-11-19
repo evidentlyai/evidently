@@ -36,7 +36,9 @@ export const loadData = async ({ params }: loadDataArgs<{ queryKeys: 'trace-id' 
   const { exportId } = params as CurrentRouteParams
 
   return clientAPI
-    .GET('/api/v1/traces/list', { params: { query: { export_id: exportId } } })
+    .GET('/api/v1/traces/list', {
+      params: { query: { export_id: exportId, getter_type: 'ungrouped' } }
+    })
     .then(responseParser())
     .then((traces) => ({ traces: traces.sessions, name: traces.metadata.name }))
 }
