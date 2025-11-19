@@ -36,3 +36,5 @@ export type DatasetPaginationModel = Schemas['DatasetPagination']
 export type UpdatedCell = { column: string; row: number; updated_value?: string | number }
 export type DatasetFilter = Schemas['Filters']['all_set']
 export type DatasetModel = Schemas['DatasetMetadataResponse']
+export type TraceModel = Schemas['TraceModel']
+export type SpanModel = Schemas['SpanModel']

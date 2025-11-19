@@ -1,67 +1,66 @@
-import { Delete as DeleteIcon } from '@mui/icons-material'
-import { Edit as EditIcon } from '@mui/icons-material'
-import { Close as CloseIcon } from '@mui/icons-material'
+import dayjs from 'dayjs'
+import {
+  EditDatasetMetadataComponent,
+  type UpdateMetadataArgs
+} from 'evidently-ui-lib/components/Datasets/Metadata/EditDatasetMetadata'
+import { GenericTable } from 'evidently-ui-lib/components/Table/GenericTable'
+import { HidedTags } from 'evidently-ui-lib/components/Tags/HidedTags'
+import { JsonViewThemed } from 'evidently-ui-lib/components/Utils/JsonView'
+import { NameAndID } from 'evidently-ui-lib/components/Utils/NameAndID'
+import {
+  Close as CloseIcon,
+  Delete as DeleteIcon
+} from 'evidently-ui-lib/shared-dependencies/mui-icons-material'
+import { Edit as EditIcon } from 'evidently-ui-lib/shared-dependencies/mui-icons-material'
 import {
   Box,
   Chip,
   Dialog,
   DialogContent,
+  DialogTitle,
   IconButton,
   Stack,
   Tooltip,
   Typography
-} from '@mui/material'
-import dayjs from 'dayjs'
+} from 'evidently-ui-lib/shared-dependencies/mui-material'
 import { useState } from 'react'
 import type { DatasetModel } from '~/api/types'
-import {
-  EditDatasetMetadataComponent,
-  type UpdateMetadataArgs
-} from '~/components/Datasets/Metadata/EditDatasetMetadata'
-import { GenericTable } from '~/components/Table/GenericTable'
-import { HidedTags } from '~/components/Tags/HidedTags'
-import { JsonViewThemed } from '~/components/Utils/JsonView'
-import { NameAndID } from '~/components/Utils/NameAndID'
 
-export type DatasetsTableV2Props = {
-  datasets: DatasetModel[]
+export type TracesTableProps = {
+  traces: DatasetModel[]
   GetDatasetLinkByID: (args: { dataset: DatasetModel }) => JSX.Element
   onDelete: (datasetId: string) => void
-  onUpdateMetadata: (args: {
-    datasetId: string
-    data: UpdateMetadataArgs
-  }) => void
   isLoading: boolean
+  onUpdateMetadata: (args: { datasetId: string; data: UpdateMetadataArgs }) => void
 }
 
-export const DatasetsTableV2 = (props: DatasetsTableV2Props) => {
-  const { datasets, GetDatasetLinkByID, onDelete, onUpdateMetadata, isLoading } = props
+export const TracesTable = (props: TracesTableProps) => {
+  const { traces, GetDatasetLinkByID, onDelete, onUpdateMetadata, isLoading } = props
 
-  const availableTags = Array.from(new Set(datasets.flatMap(({ tags }) => tags)))
+  const availableTags = [...new Set(traces.flatMap(({ tags }) => tags))]
 
-  const nameAndIdKeyLabel = { key: 'dataset', label: 'Dataset' }
-
-  const storageKey = 'favourite-datasets-ids'
-  const emptyMessage = "You don't have any datasets yet."
+  const storageKey = 'favorite-traces-ids'
+  const emptyMessage = "You don't have any traces yet."
 
   return (
     <>
       <GenericTable
-        data={datasets}
+        data={traces}
         isLoading={isLoading}
         columns={[
           {
-            ...nameAndIdKeyLabel,
-            render: (dataset) => (
+            key: 'trace',
+            label: 'Export ID',
+            render: (trace) => (
               <Box minWidth={260}>
-                <NameAndID name={dataset.name} id={dataset.id} />
+                <NameAndID name={trace.name} id={trace.id} />
               </Box>
             )
           },
           {
             key: 'description',
             label: 'Description',
-            render: (dataset) => (
+            render: (trace) => (
               <Typography
                 sx={{
                   whiteSpace: 'nowrap',
@@ -70,49 +69,43 @@ export const DatasetsTableV2 = (props: DatasetsTableV2Props) => {
                 }}
                 variant='body2'
               >
-                {dataset.description}
+                {trace.description}
               </Typography>
             )
           },
           {
             key: 'tags',
             label: 'Tags',
-            render: (dataset) => (
+            render: (trace) => (
               <Box minWidth={250}>
-                <HidedTags onClick={() => {}} tags={dataset.tags} />
+                <HidedTags onClick={() => {}} tags={trace.tags} />
               </Box>
             )
           },
           {
             key: 'metadata',
             label: 'Metadata',
-            render: (dataset) => (
+            render: (trace) => (
               <Box minWidth={150}>
-                <JsonViewThemed value={dataset.metadata} enableClipboard={false} />
+                <JsonViewThemed value={trace.metadata} enableClipboard={false} />
               </Box>
             )
           },
           {
             key: 'type',
             label: 'Type',
-            render: (dataset) => <Chip size='medium' label={dataset.origin} />
-          },
-          {
-            key: 'row_count',
-            label: 'Rows count',
-            sortable: { getSortValue: (dataset) => dataset.row_count },
-            render: (dataset) => <Typography variant='body2'>{dataset.row_count}</Typography>
+            render: (trace) => <Chip size='medium' label={trace.origin} />
           },
           {
             key: 'created_at',
             label: 'Created at',
             sortable: {
-              getSortValue: (dataset) => dataset.created_at,
+              getSortValue: (trace) => trace.created_at,
               isDateString: true
             },
-            render: (dataset) => (
+            render: (trace) => (
               <Typography variant='body2' sx={{ minWidth: 200 }}>
-                {dayjs(dataset.created_at).locale('en-gb').format('llll')}
+                {dayjs(trace.created_at).locale('en-gb').format('llll')}
               </Typography>
             )
           },
@@ -121,17 +114,17 @@ export const DatasetsTableV2 = (props: DatasetsTableV2Props) => {
             label: 'Action',
             align: 'center',
             sticky: true,
-            render: (dataset) => (
+            render: (trace) => (
               <Stack direction='row' gap={1} alignItems='center' justifyContent={'center'}>
-                <GetDatasetLinkByID dataset={dataset} />
+                <GetDatasetLinkByID dataset={trace} />
 
-                <EditDialog
-                  dataset={dataset}
+                <EditTraceDialog
+                  trace={trace}
                   availableTags={availableTags}
                   isLoading={isLoading}
                   onUpdateMetadata={(data) =>
                     onUpdateMetadata({
-                      datasetId: dataset.id,
+                      datasetId: trace.id,
                       data
                     })
                   }
@@ -142,7 +135,7 @@ export const DatasetsTableV2 = (props: DatasetsTableV2Props) => {
                     <IconButton
                       disabled={isLoading}
                       size='small'
-                      onClick={() => onDelete(dataset.id)}
+                      onClick={() => onDelete(trace.id)}
                     >
                       <DeleteIcon />
                     </IconButton>
@@ -162,23 +155,28 @@ export const DatasetsTableV2 = (props: DatasetsTableV2Props) => {
   )
 }
 
-type EditDialogProps = {
-  dataset: DatasetModel
+type EditTraceDialogProps = {
+  trace: DatasetModel
   availableTags: string[]
   isLoading: boolean
   onUpdateMetadata: (args: UpdateMetadataArgs) => void
 }
 
-const EditDialog = ({ dataset, availableTags, isLoading, onUpdateMetadata }: EditDialogProps) => {
+const EditTraceDialog = (props: EditTraceDialogProps) => {
+  const { trace, availableTags, isLoading, onUpdateMetadata } = props
+
   const [open, setOpen] = useState(false)
 
   return (
     <>
       <Tooltip title='Edit'>
-        <IconButton disabled={isLoading} onClick={() => setOpen(true)}>
-          <EditIcon />
-        </IconButton>
+        <span>
+          <IconButton disabled={isLoading} onClick={() => setOpen(true)}>
+            <EditIcon />
+          </IconButton>
+        </span>
       </Tooltip>
+
       <Dialog
         PaperComponent={Box}
         slotProps={{
@@ -191,25 +189,28 @@ const EditDialog = ({ dataset, availableTags, isLoading, onUpdateMetadata }: Edi
             }
           }
         }}
-        fullWidth
-        maxWidth='md'
         open={open}
         onClose={() => setOpen(false)}
+        fullWidth
+        maxWidth='md'
       >
+        <DialogTitle>
+          <Box display='flex' alignItems='center' justifyContent='space-between'>
+            <Typography variant='h6'>Edit Trace</Typography>
+            <IconButton onClick={() => setOpen(false)} size='small'>
+              <CloseIcon />
+            </IconButton>
+          </Box>
+        </DialogTitle>
+
         <DialogContent>
           <Box p={2}>
-            <Stack direction={'row'} justifyContent={'flex-end'}>
-              <IconButton onClick={() => setOpen(false)}>
-                <CloseIcon />
-              </IconButton>
-            </Stack>
-
             <EditDatasetMetadataComponent
-              name={dataset.name}
-              description={dataset.description}
+              name={trace.name}
+              description={trace.description}
               availableTags={availableTags}
-              tags={dataset.tags ?? []}
-              metadata={dataset.metadata ?? {}}
+              tags={trace.tags ?? []}
+              metadata={trace.metadata ?? {}}
               onSave={(data) => {
                 onUpdateMetadata(data)
 
