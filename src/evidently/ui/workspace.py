@@ -651,6 +651,9 @@ class CloudWorkspace(RemoteWorkspace):
             )
         self.token = token
         self.token_cookie_name = ACCESS_TOKEN_COOKIE.key
+        self._api_key = None
+        if token.startswith("sk_") and len(token.split(".")) >= 3:
+            self._api_key = token
         self._jwt_token: Optional[str] = None
         self._logged_in: bool = False
         super().__init__(base_url=url if url is not None else self.URL)
@@ -689,7 +692,10 @@ class CloudWorkspace(RemoteWorkspace):
         )
         if path == "/api/users/login":
             return r
-        r.cookies[self.token_cookie_name] = self.jwt_token
+        if self._api_key is not None:
+            r.headers["Authorization"] = f"Bearer {self._api_key}"
+        else:
+            r.cookies[self.token_cookie_name] = self.jwt_token
         return r
 
     @overload
