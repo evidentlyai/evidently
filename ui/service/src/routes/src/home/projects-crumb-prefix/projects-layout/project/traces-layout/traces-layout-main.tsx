@@ -4,7 +4,7 @@ import {
 } from 'evidently-ui-lib/components/Traces/SwitchViewMode'
 import { TraceToolbarRefContext } from 'evidently-ui-lib/contexts/TraceToolbarContext'
 import type { CrumbDefinition } from 'evidently-ui-lib/router-utils/router-builder'
-import { Box, Stack } from 'evidently-ui-lib/shared-dependencies/mui-material'
+import { Stack } from 'evidently-ui-lib/shared-dependencies/mui-material'
 import { Outlet, useParams } from 'evidently-ui-lib/shared-dependencies/react-router-dom'
 import { useRef } from 'react'
 import { useMatchRouter, useNavigate } from '~/routes/type-safe-route-helpers/hooks'
@@ -40,7 +40,7 @@ export const Component = () => {
     <>
       {viewMode && projectId && exportId && (
         <Stack my={2} direction={'row'} justifyItems={'center'} gap={2}>
-          <Box ref={traceToolbarRef} />
+          <Stack ref={traceToolbarRef} justifyContent={'center'} />
           <Stack flexGrow={1} direction={'row'} justifyContent={'flex-end'} pr={3}>
             <SwitchViewMode
               value={viewMode}

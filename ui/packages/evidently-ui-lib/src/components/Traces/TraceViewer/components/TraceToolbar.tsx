@@ -26,8 +26,8 @@ export const TraceToolbar = (props: TraceToolbarProps) => {
   } = props
 
   return (
-    <Stack py={2} direction={'row'} gap={2}>
-      <Button variant='outlined' onClick={() => onBackToTableView()}>
+    <Stack py={2} direction={'row'} gap={2} alignItems={'center'}>
+      <Button variant='contained' startIcon={<ArrowBackIcon />} onClick={() => onBackToTableView()}>
         Go to table view
       </Button>
       <Box width={410}>

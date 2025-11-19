@@ -30,7 +30,9 @@ export const SingleTraceView = (props: SingleTraceViewProps) => {
   const selectedSpan = trace.spans.find((span) => span.span_id === spanId)
 
   if (spanId && !selectedSpan) {
-    setSpanId(trace.spans.at(0)?.span_id ?? '')
+    const rootSpan = trace.spans.find((s) => s.parent_span_id === '')
+
+    setSpanId(rootSpan?.span_id ?? '')
     setCollapsedSpanIds([])
   }
 
