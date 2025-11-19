@@ -258,21 +258,22 @@ export const Component = () => {
                 defaultValues: { name: `Export of ${data.name}` },
                 isLoading: exportToDatasetFetcher.state !== 'idle',
                 onSubmit: ({ name, description }) => {
-                  // const [spanName] = viewParams.input_attribute.split(':')
+                  const [spanName] = viewParams.input_attribute.split(':')
 
                   exportToDatasetFetcher.submit({
                     data: {
                       name,
                       description,
                       source: {
-                        type: 'evidently:data_source_dto:TracingDataSourceDTO', // TODO: fix it
-                        export_id: exportId
-                        // session_id_column: `${spanName}:${viewParams.session_attribute}`.replaceAll(
-                        //   ':',
-                        //   '.'
-                        // ),
-                        // question_column: viewParams.input_attribute.replaceAll(':', '.'),
-                        // response_column: viewParams.output_attribute.replaceAll(':', '.')
+                        type: 'evidently:data_source_dto:TracingSessionDataSourceDTO',
+                        export_id: exportId,
+                        session_id_column: `${spanName}:${viewParams.session_attribute}`.replaceAll(
+                          ':',
+                          '.'
+                        ),
+                        question_column: viewParams.input_attribute.replaceAll(':', '.'),
+                        response_column: viewParams.output_attribute.replaceAll(':', '.'),
+                        timestamp_column: 'timestamp'
                       }
                     },
                     paramsToReplace: { projectId }

@@ -3,7 +3,6 @@ import {
   Box,
   Button,
   Chip,
-  Collapse,
   Fade,
   IconButton,
   Stack,
@@ -247,11 +246,7 @@ export const TraceComponent = (props: TraceComponentProps) => {
                             )}
 
                             <Stack direction={'row'} gap={1}>
-                              <Collapse
-                                in={collapsedSpanIds.includes(selectedSpan.span_id)}
-                                mountOnEnter
-                                unmountOnExit
-                              >
+                              {collapsedSpanIds.includes(selectedSpan.span_id) && (
                                 <Button
                                   size='small'
                                   variant='outlined'
@@ -263,8 +258,9 @@ export const TraceComponent = (props: TraceComponentProps) => {
                                 >
                                   Expand to see childs
                                 </Button>
-                              </Collapse>
-                              <Collapse in={Boolean(selectedSpan.parent_span_id)}>
+                              )}
+
+                              {selectedSpan.parent_span_id && (
                                 <Box>
                                   <Button
                                     size='small'
@@ -274,7 +270,7 @@ export const TraceComponent = (props: TraceComponentProps) => {
                                     Go to parent
                                   </Button>
                                 </Box>
-                              </Collapse>
+                              )}
                             </Stack>
                           </Stack>
 
