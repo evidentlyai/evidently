@@ -1,6 +1,7 @@
 import json
 import posixpath
 import uuid
+import warnings
 from datetime import datetime
 from typing import List
 from typing import Optional
@@ -8,12 +9,14 @@ from typing import Tuple
 from typing import Union
 
 import pandas as pd
+from fsspec.implementations.local import LocalFileSystem
 from opentelemetry.proto.collector.trace.v1 import trace_service_pb2
 
 from evidently.core.datasets import DataDefinition
 from evidently.core.datasets import Dataset
 from evidently.legacy.ui.type_aliases import DatasetID
 from evidently.legacy.ui.type_aliases import ProjectID
+from evidently.ui.service.errors import DatasetNotFound
 from evidently.ui.service.storage.fslocation import FSLocation
 from evidently.ui.service.tracing.storage.base import ExportID
 from evidently.ui.service.tracing.storage.base import SpanModel
@@ -96,9 +99,11 @@ def _convert_protobuf_value(value) -> Union[str, int, float, list]:
 class FileTracingStorage(TracingStorage):
     """File system-based tracing storage using JSONL files."""
 
-    def __init__(self, base_path: str):
+    def __init__(self, base_path: str, force_append: bool = False):
         self.base_path = base_path
+        self.force_append = force_append
         self._location: Optional[FSLocation] = None
+        self._append_warning_shown = False
 
     @property
     def location(self) -> FSLocation:
@@ -106,6 +111,14 @@ class FileTracingStorage(TracingStorage):
         if self._location is None:
             self._location = FSLocation(self.base_path)
         return self._location
+
+    def _supports_append(self) -> bool:
+        """Check if the filesystem supports append mode."""
+        # If force_append is set, use append mode regardless of filesystem
+        if self.force_append:
+            return True
+        # Only LocalFileSystem supports append mode
+        return isinstance(self.location.fs, LocalFileSystem)
 
     def _get_trace_file_path(self, export_id: ExportID) -> str:
         """Get the file path for a trace dataset.
@@ -134,12 +147,12 @@ class FileTracingStorage(TracingStorage):
                     continue
                 if dataset_dir == str(dataset_id):
                     return project_id
-        raise ValueError(f"Dataset {dataset_id} not found. Cannot determine project_id for trace storage.")
+        raise DatasetNotFound()
 
     @classmethod
-    def provide(cls, base_path: str) -> "TracingStorage":  # type: ignore[override]
+    def provide(cls, base_path: str, force_append: bool = False) -> "TracingStorage":  # type: ignore[override]
         """Provide instance for dependency injection."""
-        return cls(base_path)
+        return cls(base_path, force_append=force_append)
 
     def save(
         self,
@@ -147,22 +160,72 @@ class FileTracingStorage(TracingStorage):
         service_name: Optional[str],
         trace: trace_service_pb2.ExportTraceServiceRequest,
     ) -> None:
-        """Save trace data to JSONL file in append mode."""
+        """Save trace data to JSONL file."""
         trace_models = _convert_protobuf_to_trace_model(export_id, service_name, trace)
         file_path = self._get_trace_file_path(export_id)
 
         self.location.makedirs(posixpath.dirname(file_path))
 
-        with self.location.open(file_path, "a") as f:
+        if self._supports_append():
+            # Use append mode for filesystems that support it (local filesystem)
+            with self.location.open(file_path, "a") as f:
+                for trace_model in trace_models:
+                    json_line = trace_model.json()
+                    f.write(json_line + "\n")
+        else:
+            # For non-LocalFileSystem, use read-modify-write pattern
+            if not self._append_warning_shown:
+                fs_name = type(self.location.fs).__name__
+                protocol = getattr(self.location.fs, "protocol", None)
+                fs_desc = f"{fs_name}" + (f" ({protocol})" if protocol else "")
+                warnings.warn(
+                    f"Filesystem {fs_desc} does not support append mode. "
+                    "Using read-modify-write which may be slow for large files. "
+                    "Consider using SQL storage for better performance with object storage backends, "
+                    "or set force_append=True if you want to use append mode anyway",
+                    UserWarning,
+                    stacklevel=2,
+                )
+                self._append_warning_shown = True
+
+            # Read existing traces
+            existing_traces_dict: dict[str, TraceModel] = {}
+            if self.location.exists(file_path):
+                with self.location.open(file_path, "r") as f:
+                    for line in f:
+                        if line.strip():
+                            trace_dict = json.loads(line)
+                            trace_model = TraceModel(**trace_dict)
+                            existing_traces_dict[trace_model.trace_id] = trace_model
+
+            # Merge new traces with existing ones
             for trace_model in trace_models:
-                json_line = trace_model.json()
-                f.write(json_line + "\n")
+                trace_id = trace_model.trace_id
+                if trace_id in existing_traces_dict:
+                    # Merge spans from this trace into the existing one
+                    existing_trace = existing_traces_dict[trace_id]
+                    existing_trace.spans.extend(trace_model.spans)
+                    # Update start_time to be the earliest
+                    if trace_model.start_time < existing_trace.start_time:
+                        existing_trace.start_time = trace_model.start_time
+                    # Update end_time to be the latest
+                    if trace_model.end_time is not None:
+                        if existing_trace.end_time is None or trace_model.end_time > existing_trace.end_time:
+                            existing_trace.end_time = trace_model.end_time
+                else:
+                    existing_traces_dict[trace_id] = trace_model
+
+            # Write all traces back
+            with self.location.open(file_path, "w") as f:
+                for trace_model in existing_traces_dict.values():
+                    json_line = trace_model.json()
+                    f.write(json_line + "\n")
 
     def read_as_dataframe(self, export_id: ExportID) -> pd.DataFrame:
         """Read traces as DataFrame."""
         try:
             file_path = self._get_trace_file_path(export_id)
-        except ValueError:
+        except DatasetNotFound:
             # Dataset not found, return empty DataFrame
             return pd.DataFrame()
         if not self.location.exists(file_path):
@@ -197,7 +260,7 @@ class FileTracingStorage(TracingStorage):
         """Get data definition for traces."""
         try:
             df = self.read_as_dataframe(export_id)
-        except ValueError:
+        except DatasetNotFound:
             # Dataset not found, return empty data definition
             return DataDefinition(), []
         if df.empty:
@@ -216,7 +279,7 @@ class FileTracingStorage(TracingStorage):
         """Read traces with filters."""
         try:
             file_path = self._get_trace_file_path(export_id)
-        except ValueError:
+        except DatasetNotFound:
             # Dataset not found, return empty DataFrame
             return pd.DataFrame()
         if not self.location.exists(file_path):
@@ -319,7 +382,7 @@ class FileTracingStorage(TracingStorage):
         """Read traces with filter as TraceModel list."""
         try:
             file_path = self._get_trace_file_path(export_id)
-        except ValueError:
+        except DatasetNotFound:
             # Dataset not found, return empty list
             return []
         if not self.location.exists(file_path):
@@ -358,7 +421,7 @@ class FileTracingStorage(TracingStorage):
         """Delete a trace by rewriting the file without that trace."""
         try:
             file_path = self._get_trace_file_path(export_id)
-        except ValueError:
+        except DatasetNotFound:
             # Dataset not found, nothing to delete
             return
         if not self.location.exists(file_path):

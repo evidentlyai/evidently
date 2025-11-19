@@ -30,6 +30,8 @@ from evidently.ui.service.datasets.models import ColumnDataType
 from evidently.ui.service.datasets.models import DatasetColumn
 from evidently.ui.service.datasets.models import DatasetPagination
 from evidently.ui.service.datasets.models import Metadata
+from evidently.ui.service.errors import DatasetNotFound
+from evidently.ui.service.errors import ProjectNotFound
 from evidently.ui.service.storage.local.dataset import DatasetFileStorage
 from evidently.ui.service.tracing.storage.base import TracingStorage
 from evidently.ui.service.type_aliases import DatasetID
@@ -65,7 +67,7 @@ class DatasetManager(BaseManager):
         """Upload a dataset."""
         project_model = await self.project_manager.get_project(user_id, project_id)
         if project_model is None:
-            raise ValueError(f"Project {project_id} not found")
+            raise ProjectNotFound()
 
         file_data = data if isinstance(data, UploadFile) else get_upload_file(data, name)
         io = FileIO(self.dataset_file_storage)
@@ -114,7 +116,7 @@ class DatasetManager(BaseManager):
         """Update a dataset."""
         dataset = await self.dataset_metadata.get_dataset_metadata(dataset_id)
         if dataset is None:
-            raise ValueError(f"Dataset {dataset_id} not found")
+            raise DatasetNotFound()
 
         if name is not None:
             dataset.name = name
@@ -138,7 +140,7 @@ class DatasetManager(BaseManager):
         """Update tracing metadata for a dataset."""
         dataset = await self.dataset_metadata.get_dataset_metadata(dataset_id)
         if dataset is None:
-            raise ValueError(f"Dataset {dataset_id} not found")
+            raise DatasetNotFound()
 
         await self.dataset_metadata.update_dataset_tracing_metadata(dataset_id, tracing_metadata)
 
@@ -146,14 +148,14 @@ class DatasetManager(BaseManager):
         """Delete a dataset."""
         dataset = await self.dataset_metadata.get_dataset_metadata(dataset_id)
         if dataset is None:
-            raise ValueError(f"Dataset {dataset_id} not found")
+            raise DatasetNotFound()
         await self.dataset_metadata.mark_dataset_deleted(dataset.id)
 
     async def get_dataset_metadata(self, user_id: UserID, dataset_id: DatasetID) -> DatasetMetadata:
         """Get dataset metadata."""
         dataset = await self.dataset_metadata.get_dataset_metadata(dataset_id)
         if not dataset:
-            raise ValueError(f"Dataset {dataset_id} not found")
+            raise DatasetNotFound()
         return dataset
 
     async def get_dataset(
@@ -166,7 +168,7 @@ class DatasetManager(BaseManager):
         """Get a dataset as a dataframe."""
         dataset = await self.get_dataset_metadata(user_id, dataset_id)
         if dataset is None:
-            raise ValueError(f"Dataset {dataset_id} not found")
+            raise DatasetNotFound()
         source = DatasetDataSource(filter_by=filter_queries, sort_by=sort_by, user_id=user_id, dataset_id=dataset_id)
         df = await source.materialize(self)
         return df, dataset
@@ -245,7 +247,7 @@ class DatasetManager(BaseManager):
         """Create a tracing dataset."""
         project_model = await self.project_manager.get_project(user_id, project_id)
         if project_model is None:
-            raise ValueError(f"Project {project_id} not found")
+            raise ProjectNotFound()
 
         # Check if dataset with this name already exists
         existing = await self.dataset_metadata.list_datasets_metadata(
@@ -283,7 +285,7 @@ class DatasetManager(BaseManager):
         dataset_id = await self.dataset_metadata.add_dataset_metadata(user_id, project_id, new_dataset)
         dataset_full = await self.dataset_metadata.get_dataset_metadata(dataset_id)
         if dataset_full is None:
-            raise ValueError(f"Dataset {dataset_id} not found after creation")
+            raise DatasetNotFound()
         return dataset_full
 
 

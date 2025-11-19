@@ -17,6 +17,7 @@ from evidently.core.metric_types import AutoAliasMixin
 from evidently.pydantic_utils import PolymorphicModel
 from evidently.ui.service.datasets.filters import FilterBy
 from evidently.ui.service.datasets.filters import filter_df
+from evidently.ui.service.errors import DatasetNotFound
 from evidently.ui.service.errors import EvidentlyServiceError
 from evidently.ui.service.storage.local.dataset import DatasetFileStorage
 from evidently.ui.service.type_aliases import DatasetID
@@ -125,7 +126,7 @@ class DatasetDataSource(SortedFilteredDataSource):
         """Materialize the dataset data source."""
         dataset = await dataset_manager.get_dataset_metadata(self.user_id, self.dataset_id)
         if not dataset:
-            raise DatasetReadError(f"Dataset {self.dataset_id} not found")
+            raise DatasetNotFound()
         df = await dataset.source.materialize(dataset_manager)
         return self.post_process(df)
 
