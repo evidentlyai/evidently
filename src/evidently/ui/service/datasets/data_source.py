@@ -213,7 +213,7 @@ class TracingSessionDataSource(TracingDataSource):
             )
             .reset_index()
         )
-        df_grouped.columns = ["session_id", "conversation"]
+        df_grouped.columns = ["session_id", "conversation"]  # type: ignore[assignment]
         return df_grouped
 
 
