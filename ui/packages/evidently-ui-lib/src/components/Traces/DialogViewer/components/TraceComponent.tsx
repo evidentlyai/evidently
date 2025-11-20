@@ -41,7 +41,7 @@ export const TraceComponent = (props: TraceComponentProps) => {
         align={'right'}
       />
 
-      <Stack direction={'row'} gap={1} justifyContent={'center'}>
+      <Stack direction={'row'} justifyContent={'center'}>
         <LinkToTrace traceId={data.trace_id} />
       </Stack>
     </Stack>

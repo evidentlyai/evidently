@@ -215,8 +215,11 @@ export const Component = () => {
 
           <Fade in={viewParams.session_type === 'user'} mountOnEnter unmountOnExit exit={false}>
             <Box>
+              <Typography variant='subtitle2' gutterBottom>
+                Dialog Split Time (sec)
+              </Typography>
+
               <TextField
-                label={'Dialog Split Time (sec)'}
                 slotProps={{ htmlInput: { min: 1 } }}
                 name='split_time_seconds'
                 type='number'
