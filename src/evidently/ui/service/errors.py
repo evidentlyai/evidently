@@ -45,6 +45,10 @@ class SnapshotNotFound(EntityNotFound):
     entity_name = "Snapshot"
 
 
+class DatasetNotFound(EntityNotFound):
+    entity_name = "Dataset"
+
+
 class NotEnoughPermissions(EvidentlyServiceError):
     def to_response(self) -> Response:
         return Response(

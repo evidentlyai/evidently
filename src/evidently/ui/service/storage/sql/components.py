@@ -154,6 +154,15 @@ class SQLStorageComponent(StorageComponent):
 
         return snapshot_dataset_links_factory
 
+    def tracing_storage_provider(self):
+        from evidently.ui.service.tracing.storage.base import TracingStorage
+        from evidently.ui.service.tracing.storage.sql import SQLTracingStorage
+
+        async def tracing_storage_factory(engine: Engine) -> TracingStorage:
+            return SQLTracingStorage.provide(engine)
+
+        return tracing_storage_factory
+
 
 class SQLDatasetMetadataComponent(DatasetMetadataComponent):
     """SQL-based dataset metadata storage component."""

@@ -18,6 +18,7 @@ from evidently.legacy.ui.type_aliases import DatasetID
 from evidently.legacy.ui.type_aliases import ProjectID
 from evidently.legacy.ui.type_aliases import UserID
 from evidently.ui.service.datasets.data_source import DataSource
+from evidently.ui.service.errors import DatasetNotFound
 from evidently.ui.service.storage.fslocation import FSLocation
 
 UUID_REGEX = re.compile(r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$", re.IGNORECASE)
@@ -166,12 +167,12 @@ class FileDatasetMetadataStorage(DatasetMetadataStorage):
         # Load existing metadata to get project_id
         existing = await self.get_dataset_metadata(dataset_id)
         if existing is None:
-            raise ValueError(f"Dataset {dataset_id} not found")
+            raise DatasetNotFound()
 
         # Update metadata
         metadata_path = self._metadata_path(existing.project_id, dataset_id)
         if not self.location.exists(metadata_path):
-            raise ValueError(f"Dataset {dataset_id} not found")
+            raise DatasetNotFound()
 
         # Update timestamps
         if not isinstance(new_metadata, DatasetMetadataFull):
@@ -187,7 +188,28 @@ class FileDatasetMetadataStorage(DatasetMetadataStorage):
             f.write(new_metadata.json(indent=2))
 
     async def update_dataset_tracing_metadata(self, dataset_id: DatasetID, tracing_metadata: DatasetTracingParams):
-        raise NotImplementedError("Tracing datasets are not yet supported")
+        """Update tracing metadata for a dataset."""
+        # Load existing metadata to get project_id
+        existing = await self.get_dataset_metadata(dataset_id)
+        if existing is None:
+            raise DatasetNotFound()
+
+        # Update metadata
+        metadata_path = self._metadata_path(existing.project_id, dataset_id)
+        if not self.location.exists(metadata_path):
+            raise DatasetNotFound()
+
+        # Load existing metadata
+        with self.location.open(metadata_path, "r") as f:
+            metadata_dict = json.load(f)
+
+        # Update tracing_params
+        metadata_dict["tracing_params"] = json.loads(tracing_metadata.json())
+        metadata_dict["updated_at"] = datetime.datetime.now().isoformat()
+
+        # Save updated metadata
+        with self.location.open(metadata_path, "w") as f:
+            json.dump(metadata_dict, f, indent=2, default=str)
 
     async def get_dataset_metadata(self, dataset_id: DatasetID) -> Optional[DatasetMetadataFull]:
         """Get dataset metadata by ID."""
@@ -222,11 +244,11 @@ class FileDatasetMetadataStorage(DatasetMetadataStorage):
         """Mark a dataset as deleted (soft delete)."""
         existing = await self.get_dataset_metadata(dataset_id)
         if existing is None:
-            raise ValueError(f"Dataset {dataset_id} not found")
+            raise DatasetNotFound()
 
         metadata_path = self._metadata_path(existing.project_id, dataset_id)
         if not self.location.exists(metadata_path):
-            raise ValueError(f"Dataset {dataset_id} not found")
+            raise DatasetNotFound()
 
         # Load, mark as deleted, and save
         with self.location.open(metadata_path, "r") as f:
@@ -242,7 +264,7 @@ class FileDatasetMetadataStorage(DatasetMetadataStorage):
         """Permanently delete dataset metadata."""
         existing = await self.get_dataset_metadata(dataset_id)
         if existing is None:
-            raise ValueError(f"Dataset {dataset_id} not found")
+            raise DatasetNotFound()
 
         dataset_dir = self._dataset_dir(existing.project_id, dataset_id)
         if self.location.exists(dataset_dir):

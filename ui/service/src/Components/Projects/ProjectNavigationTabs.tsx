@@ -15,6 +15,7 @@ export const ProjectNavigationTabs = () => {
   const isOnReportsPages = useMatchRouter({ path: '/projects/:projectId/reports' })
   const isOnDatasetsPages = useMatchRouter({ path: '/projects/:projectId/datasets' })
   const isOnProjectPages = useMatchRouter({ path: '/projects/:projectId' })
+  const isOnTracesPages = useMatchRouter({ path: '/projects/:projectId/traces' })
 
   const { pathname: currentPath } = useLocation()
 
@@ -33,7 +34,8 @@ export const ProjectNavigationTabs = () => {
   const { activeTab } = {
     activeTab: '?index' as const, // default tab
     ...(isOnReportsPages && { activeTab: 'reports' as const }),
-    ...(isOnDatasetsPages && { activeTab: 'datasets' as const })
+    ...(isOnDatasetsPages && { activeTab: 'datasets' as const }),
+    ...(isOnTracesPages && { activeTab: 'traces' as const })
   }
 
   return (
@@ -47,7 +49,8 @@ export const ProjectNavigationTabs = () => {
             [
               { key: '?index', label: 'Dashboard' },
               { key: 'reports', label: 'Reports' },
-              { key: 'datasets', label: 'Datasets' }
+              { key: 'datasets', label: 'Datasets' },
+              { key: 'traces', label: 'Traces' }
             ] as const
           }
           onTabChange={(tab) => {

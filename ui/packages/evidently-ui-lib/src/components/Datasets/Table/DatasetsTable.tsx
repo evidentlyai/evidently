@@ -14,92 +14,23 @@ import {
 import dayjs from 'dayjs'
 import { useState } from 'react'
 import type { DatasetModel } from '~/api/types'
-import { EditDatasetMetadataComponent } from '~/components/Datasets/Metadata/EditDatasetMetadata'
+import {
+  EditDatasetMetadataComponent,
+  type UpdateMetadataArgs
+} from '~/components/Datasets/Metadata/EditDatasetMetadata'
 import { GenericTable } from '~/components/Table/GenericTable'
 import { HidedTags } from '~/components/Tags/HidedTags'
 import { JsonViewThemed } from '~/components/Utils/JsonView'
 import { NameAndID } from '~/components/Utils/NameAndID'
 
-type UpdateMetadataArgs = {
-  datasetId: string
-  name: string
-  description: string
-  tags: string[]
-  metadata: { [p: string]: string }
-}
-
-type EditDialogProps = {
-  dataset: DatasetModel
-  availableTags: string[]
-  isLoading: boolean
-  onUpdateMetadata: (args: UpdateMetadataArgs) => void
-}
-
-const EditDialog = ({ dataset, availableTags, isLoading, onUpdateMetadata }: EditDialogProps) => {
-  const [open, setOpen] = useState(false)
-
-  return (
-    <>
-      <Tooltip title='Edit'>
-        <IconButton disabled={isLoading} onClick={() => setOpen(true)}>
-          <EditIcon />
-        </IconButton>
-      </Tooltip>
-      <Dialog
-        PaperComponent={Box}
-        slotProps={{
-          paper: {
-            sx: {
-              backgroundColor: 'background.default',
-              border: '1px solid',
-              borderColor: 'divider',
-              borderRadius: 1
-            }
-          }
-        }}
-        fullWidth
-        maxWidth='md'
-        open={open}
-        onClose={() => setOpen(false)}
-      >
-        <DialogContent>
-          <Box p={2}>
-            <Stack direction={'row'} justifyContent={'flex-end'}>
-              <IconButton onClick={() => setOpen(false)}>
-                <CloseIcon />
-              </IconButton>
-            </Stack>
-
-            <EditDatasetMetadataComponent
-              name={dataset.name}
-              description={dataset.description}
-              availableTags={availableTags}
-              tags={dataset.tags ?? []}
-              metadata={dataset.metadata ?? {}}
-              onSave={(name, description, tags, metadata) => {
-                onUpdateMetadata({
-                  datasetId: dataset.id,
-                  name,
-                  description,
-                  tags,
-                  metadata
-                })
-
-                setOpen(false)
-              }}
-            />
-          </Box>
-        </DialogContent>
-      </Dialog>
-    </>
-  )
-}
-
 export type DatasetsTableV2Props = {
   datasets: DatasetModel[]
   GetDatasetLinkByID: (args: { dataset: DatasetModel }) => JSX.Element
   onDelete: (datasetId: string) => void
-  onUpdateMetadata: (args: UpdateMetadataArgs) => void
+  onUpdateMetadata: (args: {
+    datasetId: string
+    data: UpdateMetadataArgs
+  }) => void
   isLoading: boolean
 }
 
@@ -198,7 +129,12 @@ export const DatasetsTableV2 = (props: DatasetsTableV2Props) => {
                   dataset={dataset}
                   availableTags={availableTags}
                   isLoading={isLoading}
-                  onUpdateMetadata={onUpdateMetadata}
+                  onUpdateMetadata={(data) =>
+                    onUpdateMetadata({
+                      datasetId: dataset.id,
+                      data
+                    })
+                  }
                 />
 
                 <Box>
@@ -222,6 +158,67 @@ export const DatasetsTableV2 = (props: DatasetsTableV2Props) => {
         defaultSort={{ column: 'created_at', direction: 'desc' }}
         enableOverflowScroll
       />
+    </>
+  )
+}
+
+type EditDialogProps = {
+  dataset: DatasetModel
+  availableTags: string[]
+  isLoading: boolean
+  onUpdateMetadata: (args: UpdateMetadataArgs) => void
+}
+
+const EditDialog = ({ dataset, availableTags, isLoading, onUpdateMetadata }: EditDialogProps) => {
+  const [open, setOpen] = useState(false)
+
+  return (
+    <>
+      <Tooltip title='Edit'>
+        <IconButton disabled={isLoading} onClick={() => setOpen(true)}>
+          <EditIcon />
+        </IconButton>
+      </Tooltip>
+      <Dialog
+        PaperComponent={Box}
+        slotProps={{
+          paper: {
+            sx: {
+              backgroundColor: 'background.default',
+              border: '1px solid',
+              borderColor: 'divider',
+              borderRadius: 1
+            }
+          }
+        }}
+        fullWidth
+        maxWidth='md'
+        open={open}
+        onClose={() => setOpen(false)}
+      >
+        <DialogContent>
+          <Box p={2}>
+            <Stack direction={'row'} justifyContent={'flex-end'}>
+              <IconButton onClick={() => setOpen(false)}>
+                <CloseIcon />
+              </IconButton>
+            </Stack>
+
+            <EditDatasetMetadataComponent
+              name={dataset.name}
+              description={dataset.description}
+              availableTags={availableTags}
+              tags={dataset.tags ?? []}
+              metadata={dataset.metadata ?? {}}
+              onSave={(data) => {
+                onUpdateMetadata(data)
+
+                setOpen(false)
+              }}
+            />
+          </Box>
+        </DialogContent>
+      </Dialog>
     </>
   )
 }

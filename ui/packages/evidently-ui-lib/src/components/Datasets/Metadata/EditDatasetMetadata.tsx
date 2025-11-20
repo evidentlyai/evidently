@@ -4,18 +4,20 @@ import { useState } from 'react'
 import { TagsAutocomplete } from '~/components/Tags/TagsAutocomplete'
 import { MetadataEditor } from './MetadataEditor'
 
-export type EditDatasetMetadataProps = {
+export type UpdateMetadataArgs = {
+  name: string
+  description: string
+  tags: string[]
+  metadata: { [p: string]: string }
+}
+
+type EditDatasetMetadataProps = {
   name: string
   description: string
   availableTags: string[]
   tags: string[]
   metadata: { [p: string]: { [p: string]: string } | string[] | string }
-  onSave: (
-    name: string,
-    description: string,
-    tags: string[],
-    metadata: { [p: string]: string }
-  ) => void
+  onSave: (args: UpdateMetadataArgs) => void
 }
 
 export const EditDatasetMetadataComponent = (props: EditDatasetMetadataProps) => {
@@ -28,6 +30,7 @@ export const EditDatasetMetadataComponent = (props: EditDatasetMetadataProps) =>
       return { key: it[0], value: val }
     })
   )
+
   return (
     <>
       <Stack direction={'column'} spacing={2}>
@@ -56,16 +59,16 @@ export const EditDatasetMetadataComponent = (props: EditDatasetMetadataProps) =>
           <Button
             variant='outlined'
             onClick={() => {
-              props.onSave(
+              props.onSave({
                 name,
                 description,
                 tags,
-                Object.fromEntries(
+                metadata: Object.fromEntries(
                   metadataItems
                     .filter((v) => v.key !== '' && v.value !== '')
                     .map((v) => [v.key, v.value])
                 )
-              )
+              })
             }}
           >
             Save

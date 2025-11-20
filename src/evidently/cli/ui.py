@@ -1,6 +1,9 @@
 import os
+import threading
+import time
 from typing import Optional
 
+import requests
 import uuid6
 from typer import BadParameter
 from typer import Option
@@ -8,7 +11,9 @@ from typer import echo
 
 from evidently.cli.main import app
 from evidently.ui.service.app import get_config
+from evidently.ui.service.demo_projects import DEMO_PROJECTS
 from evidently.ui.service.demo_projects import DEMO_PROJECTS_NAMES
+from evidently.ui.workspace import RemoteWorkspace
 
 
 def setup_deterministic_generation_uuid(seed: int = 8754):
@@ -24,6 +29,53 @@ def setup_deterministic_generation_uuid(seed: int = 8754):
 
     uuid.uuid4 = deterministic_uuid
     uuid6.uuid7 = deterministic_uuid
+
+
+def _create_demo_projects_task(demo_names: list[str], host: str, port: int, secret: Optional[str]):
+    """Background task that waits for server and creates demo projects."""
+    base_url = f"http://{host}:{port}"
+
+    # Wait for server to be ready by polling /api/version
+    max_retries = 30
+    retry_delay = 0.5
+    for attempt in range(max_retries):
+        try:
+            response = requests.get(f"{base_url}/api/version", timeout=1)
+            if response.status_code == 200:
+                break
+        except Exception:
+            pass
+
+        if attempt < max_retries - 1:
+            time.sleep(retry_delay)
+        else:
+            echo(f"Warning: Could not connect to server at {base_url} after {max_retries} attempts")
+            return
+
+    # Create demo projects using RemoteWorkspace
+    try:
+        ws = RemoteWorkspace(base_url, secret=secret)
+
+        for demo_name in demo_names:
+            if demo_name not in DEMO_PROJECTS:
+                echo(f"Warning: Unknown demo project: {demo_name}")
+                continue
+
+            demo_project = DEMO_PROJECTS[demo_name]
+
+            # Check if project already exists
+            existing_projects = ws.list_projects()
+            has_demo_project = any(p.name == demo_project.name for p in existing_projects)
+
+            if not has_demo_project:
+                echo(f"Creating demo project '{demo_project.name}'...")
+                demo_project.create(ws)
+                echo(f"Demo project '{demo_project.name}' created successfully")
+            else:
+                echo(f"Demo project '{demo_project.name}' already exists, skipping")
+
+    except Exception as e:
+        echo(f"Error creating demo projects: {e}")
 
 
 @app.command("ui")
@@ -45,8 +97,6 @@ def ui(
         setup_deterministic_generation_uuid()
 
     from evidently.ui.service.app import run
-    from evidently.ui.service.demo_projects import DEMO_PROJECTS
-    from evidently.ui.workspace import Workspace
 
     demos = demo_projects.split(",") if demo_projects else []
     if "all" in demos:
@@ -56,14 +106,14 @@ def ui(
         raise BadParameter(f"Unknown demo project name '{missing[0]}'")
 
     if demos:
-        ws = Workspace.create(workspace)
-        for demo_project in demos:
-            dp = DEMO_PROJECTS[demo_project]
+        # Start background task in a daemon thread
+        thread = threading.Thread(
+            target=_create_demo_projects_task,
+            args=(demos, host, port, secret),
+            daemon=True,
+        )
+        thread.start()
 
-            has_demo_project = any(p.name == dp.name for p in ws.list_projects())
-            if not has_demo_project:
-                echo(f"Generating demo project '{dp.name}'...")
-                dp.create(workspace)
     config = get_config(
         host=host,
         port=port,

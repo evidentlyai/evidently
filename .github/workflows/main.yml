@@ -302,11 +302,17 @@ jobs:
       - name: 🔍 Get bikes dataset cached
         uses: ./.github/share-actions/get-bikes-dataset-cached
 
+      - name: Create demo projects
+        env:
+          EXPERIMENTAL_DETERMINISTIC_UUID: "true"
+          EVIDENTLY_TEST_ENVIRONMENT: 1
+        run: evidently demo_project --project bikes --path workspace-for-visual-testing
+
       - name: Run UI
         env:
           EXPERIMENTAL_DETERMINISTIC_UUID: "true"
           EVIDENTLY_TEST_ENVIRONMENT: 1
-        run: evidently ui --port 8000 --workspace workspace-for-visual-testing --demo-projects bikes &
+        run: evidently ui --port 8000 --workspace workspace-for-visual-testing &
 
       - name: Wait UI to be ready to test
         working-directory: ui/service

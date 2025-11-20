@@ -10,6 +10,7 @@ from evidently.ui.service.storage.sql.models import PointSQLModel  # noqa: F401
 from evidently.ui.service.storage.sql.models import ProjectSQLModel  # noqa: F401
 from evidently.ui.service.storage.sql.models import SnapshotSQLModel  # noqa: F401
 from evidently.ui.service.storage.sql.models import UserSQLModel  # noqa: F401
+from evidently.ui.service.tracing.storage.sql import TraceSpanModel  # noqa: F401
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
