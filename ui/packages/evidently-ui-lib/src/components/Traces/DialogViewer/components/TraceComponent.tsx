@@ -1,4 +1,4 @@
-import { Stack } from '@mui/material'
+import { Box, Stack } from '@mui/material'
 import type { TraceModel } from 'api/types'
 import dayjs from 'dayjs'
 import { SplitField } from '../helpers'
@@ -26,13 +26,26 @@ export const TraceComponent = (props: TraceComponentProps) => {
   const endTime = dayjs(data.end_time).locale('en-gb')
 
   return (
-    <Stack gap={2} direction={'column'}>
-      <Message
-        title={'User'}
-        message={inputSpan ? inputSpan.attributes[inputField]?.toString() : '<undefined>'}
-        align={'left'}
-        time={startTime.isValid() ? startTime.format('ddd, MMM D, YYYY h:mm:ss A') : 'NaT'}
-      />
+    <Stack
+      gap={2}
+      direction={'column'}
+      sx={{
+        '& .link-to-trace': { opacity: 0, transition: 'opacity 0.2s ease-in-out' },
+        '&:hover .link-to-trace': { opacity: 1 }
+      }}
+    >
+      <Box position='relative'>
+        <Box className='link-to-trace' position={'absolute'} right={40} top={15}>
+          <LinkToTrace traceId={data.trace_id} />
+        </Box>
+
+        <Message
+          title={'User'}
+          message={inputSpan ? inputSpan.attributes[inputField]?.toString() : '<undefined>'}
+          align={'left'}
+          time={startTime.isValid() ? startTime.format('ddd, MMM D, YYYY h:mm:ss A') : 'NaT'}
+        />
+      </Box>
 
       <Message
         title={'Assistant'}
@@ -40,10 +53,6 @@ export const TraceComponent = (props: TraceComponentProps) => {
         time={endTime.isValid() ? endTime.format('ddd, MMM D, YYYY h:mm:ss A') : 'NaT'}
         align={'right'}
       />
-
-      <Stack direction={'row'} justifyContent={'center'}>
-        <LinkToTrace traceId={data.trace_id} />
-      </Stack>
     </Stack>
   )
 }

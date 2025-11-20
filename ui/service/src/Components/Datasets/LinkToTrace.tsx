@@ -9,15 +9,28 @@ type LinkToTraceProps = {
   title?: string
   variant?: ButtonProps['variant']
   target?: HTMLAttributeAnchorTarget | undefined
+  startIcon?: React.ReactNode
+  endIcon?: React.ReactNode
 }
 
 export const LinkToTrace = (props: LinkToTraceProps) => {
-  const { title = 'Go to trace', exportId, traceId, projectId, variant, target } = props
+  const {
+    title = 'Go to trace',
+    exportId,
+    traceId,
+    projectId,
+    variant,
+    target,
+    startIcon,
+    endIcon
+  } = props
 
   return (
     <RouterLink
       type='button'
       size='small'
+      startIcon={startIcon}
+      endIcon={endIcon}
       title={title}
       target={target}
       variant={variant}

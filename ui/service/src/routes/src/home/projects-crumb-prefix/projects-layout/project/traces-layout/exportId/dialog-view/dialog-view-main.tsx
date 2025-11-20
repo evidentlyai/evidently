@@ -10,6 +10,7 @@ import {
 } from 'evidently-ui-lib/router-utils/hooks'
 import type { CrumbDefinition } from 'evidently-ui-lib/router-utils/router-builder'
 import type { ActionArgs, GetParams, loadDataArgs } from 'evidently-ui-lib/router-utils/types'
+import { ArrowForward as ArrowForwardIcon } from 'evidently-ui-lib/shared-dependencies/mui-icons-material'
 import {
   Autocomplete,
   Box,
@@ -53,7 +54,7 @@ export const loadData = async ({ params }: loadDataArgs) => {
 
   return clientAPI
     .GET('/api/v1/traces/list', {
-      params: { query: { export_id: exportId, getter_type: 'use_metadata_params_from_filters' } }
+      params: { query: { export_id: exportId, getter_type: 'with_filters_from_metadata' } }
     })
     .then(responseParser())
     .then((traces) => ({
@@ -298,16 +299,17 @@ export const Component = () => {
             <Box my={3}>
               <DialogViewer
                 key={exportId}
+                data={data.traces}
                 LinkToTrace={({ traceId }) => (
                   <LinkToTrace
                     title='Go to trace'
                     variant='outlined'
+                    endIcon={<ArrowForwardIcon />}
                     exportId={exportId}
                     projectId={projectId}
                     traceId={traceId}
                   />
                 )}
-                data={data.traces}
                 description={{
                   inputAttribute: viewParams.input_attribute,
                   setInputAttribute: (state) => {
