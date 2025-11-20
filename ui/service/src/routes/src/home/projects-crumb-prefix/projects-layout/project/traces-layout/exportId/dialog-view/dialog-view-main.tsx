@@ -54,7 +54,7 @@ export const loadData = async ({ params }: loadDataArgs) => {
 
   return clientAPI
     .GET('/api/v1/traces/list', {
-      params: { query: { export_id: exportId, getter_type: 'use_metadata_params_from_filters' } }
+      params: { query: { export_id: exportId, getter_type: 'with_filters_from_metadata' } }
     })
     .then(responseParser())
     .then((traces) => ({

@@ -82,7 +82,7 @@ class TraceListType(Enum):
 
 
 class TraceListGetterType(Enum):
-    use_metadata_params_from_filters = "use_metadata_params_from_filters"
+    with_filters_from_metadata = "with_filters_from_metadata"
     ungrouped = "ungrouped"
 
 
