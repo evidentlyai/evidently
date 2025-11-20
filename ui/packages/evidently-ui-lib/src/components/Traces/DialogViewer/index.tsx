@@ -152,7 +152,7 @@ export const DialogViewer = (props: DialogViewerProps) => {
             </Box>
           </Stack>
 
-          <Stack gap={2} direction={'column'} divider={<Divider sx={{ my: 3 }} />}>
+          <Stack gap={2} direction={'column'} divider={<Divider />}>
             {selectedTraces.map((v) => (
               <Box key={v.trace_id} width={0.95} mx={'auto'}>
                 <TraceComponent
