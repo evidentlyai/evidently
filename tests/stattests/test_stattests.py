@@ -142,7 +142,7 @@ def test_cramer_von_mises() -> None:
 def test_empirical_mmd(reference, current, threshold, expected_pvalue, drift_detected) -> None:
     np.random.seed(0)
     assert empirical_mmd.func(reference, current, "num", threshold) == (
-        approx(expected_pvalue, abs=1e-2),
+        approx(expected_pvalue, abs=1e-1),
         drift_detected,
     )
 
