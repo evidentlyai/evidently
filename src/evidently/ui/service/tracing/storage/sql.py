@@ -252,7 +252,10 @@ def _collect_trace(data: Sequence[TraceSpanModel]) -> List[TraceModel]:
         trace.spans.append(span)
     if trace is not None:
         trace.end_time = None if len(trace.spans) == 0 else trace.spans[-1].end_time
+        # Sort spans by start_time before appending trace
+        trace.spans.sort(key=lambda s: s.start_time)
         traces.append(trace)
+    traces.sort(key=lambda t: t.start_time)
     return traces
 
 
@@ -293,4 +296,7 @@ def _collect_trace_for_dataframe(export_id: uuid.UUID, data: Sequence[TraceSpanM
 
 def _convert_to_dataframe(export_id: uuid.UUID, data: Sequence[TraceSpanModel]) -> pd.DataFrame:
     """Convert trace spans to DataFrame."""
-    return pd.DataFrame(_collect_trace_for_dataframe(export_id, data))
+    df = pd.DataFrame(_collect_trace_for_dataframe(export_id, data))
+    if not df.empty:
+        df = df.sort_values(by="timestamp", ascending=True)
+    return df

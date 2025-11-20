@@ -207,9 +207,9 @@ async def _split_by_user(
         user_id = str(span.attributes.get(user_field, "undefined"))
         traces_by_users[user_id].append(trace)
     for user_id, user_traces in traces_by_users.items():
-        start_time = user_traces[-1].start_time.timestamp()
-        session_id = user_id + f":{user_traces[-1].start_time.isoformat()}"
-        for trace in reversed(user_traces):
+        start_time = user_traces[0].start_time.timestamp()
+        session_id = user_id + f":{user_traces[0].start_time.isoformat()}"
+        for trace in user_traces:
             trace_start = trace.start_time.timestamp()
             if (trace_start - start_time) > dialog_split_sec:
                 session_id = user_id + f":{trace.start_time.isoformat()}"

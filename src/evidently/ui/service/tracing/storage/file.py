@@ -253,8 +253,15 @@ class FileTracingStorage(TracingStorage):
                             if existing_trace.end_time is None or trace_model.end_time > existing_trace.end_time:
                                 existing_trace.end_time = trace_model.end_time
 
+        # Sort spans within each trace by start_time
+        for trace in traces_dict.values():
+            trace.spans.sort(key=lambda s: s.start_time)
+
         traces = [_trace_to_dict(export_id, trace) for trace in traces_dict.values()]
-        return pd.DataFrame(traces)
+        df = pd.DataFrame(traces)
+        if not df.empty:
+            df = df.sort_values(by="timestamp", ascending=True)
+        return df
 
     async def get_data_definition(self, export_id: ExportID) -> Tuple[DataDefinition, List[str]]:
         """Get data definition for traces."""
@@ -319,8 +326,15 @@ class FileTracingStorage(TracingStorage):
                             if existing_trace.end_time is None or trace_model.end_time > existing_trace.end_time:
                                 existing_trace.end_time = trace_model.end_time
 
+        # Sort spans within each trace by start_time
+        for trace in traces_dict.values():
+            trace.spans.sort(key=lambda s: s.start_time)
+
         traces = [_trace_to_dict(export_id, trace) for trace in traces_dict.values()]
-        return pd.DataFrame(traces)
+        df = pd.DataFrame(traces)
+        if not df.empty:
+            df = df.sort_values(by="timestamp", ascending=True)
+        return df
 
     def get_trace_range_for_run(self, start_id: int, start_time: datetime, end_time: datetime) -> Optional[uuid.UUID]:
         """Get trace range for a run."""
@@ -415,7 +429,13 @@ class FileTracingStorage(TracingStorage):
                             if existing_trace.end_time is None or trace_model.end_time > existing_trace.end_time:
                                 existing_trace.end_time = trace_model.end_time
 
-        return list(traces_dict.values())
+        # Sort spans within each trace by start_time
+        for trace in traces_dict.values():
+            trace.spans.sort(key=lambda s: s.start_time)
+
+        traces = list(traces_dict.values())
+        traces.sort(key=lambda t: t.start_time)
+        return traces
 
     async def delete_trace(self, export_id: ExportID, trace_id: str) -> None:
         """Delete a trace by rewriting the file without that trace."""
