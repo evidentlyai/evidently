@@ -158,7 +158,7 @@ class SQLStorageComponent(StorageComponent):
         from evidently.ui.service.tracing.storage.base import TracingStorage
         from evidently.ui.service.tracing.storage.sql import SQLTracingStorage
 
-        def tracing_storage_factory(engine: Engine) -> TracingStorage:
+        async def tracing_storage_factory(engine: Engine) -> TracingStorage:
             return SQLTracingStorage.provide(engine)
 
         return tracing_storage_factory

@@ -90,7 +90,7 @@ class StorageComponent(Component, ABC):
     def snapshot_dataset_links_provider(self) -> Callable[..., Awaitable[SnapshotDatasetLinksManager]]:
         raise NotImplementedError(f"{self.__class__.__name__} does not have default snapshot_dataset_links provider")
 
-    def tracing_storage_provider(self) -> Callable[..., TracingStorage]:
+    def tracing_storage_provider(self) -> Callable[..., Awaitable[TracingStorage]]:
         raise NotImplementedError(f"{self.__class__.__name__} does not have default tracing_storage provider")
 
 
@@ -128,7 +128,7 @@ class LocalStorageComponent(StorageComponent):
     def tracing_storage_provider(self):
         from evidently.ui.service.tracing.storage.file import FileTracingStorage
 
-        def tracing_storage_factory() -> TracingStorage:
+        async def tracing_storage_factory() -> TracingStorage:
             return FileTracingStorage.provide(self.path)
 
         return tracing_storage_factory

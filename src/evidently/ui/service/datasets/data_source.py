@@ -6,6 +6,7 @@ from typing import List
 from typing import Optional
 from typing import Tuple
 from typing import Type
+from uuid import UUID
 
 import pandas as pd
 from litestar import Response
@@ -165,6 +166,12 @@ class DataSourceDTO(AutoAliasMixin, PolymorphicModel, ABC):
         return new_dto_type
 
 
+def convert_uuid_to_str_in_place(df: pd.DataFrame):
+    for col in df.columns:
+        if df[col].dtype == "object" and isinstance(df[col].iloc[0], UUID):
+            df[col] = df[col].astype(str)
+
+
 class TracingDataSource(SortedFilteredDataSource):
     """Data source that reads from tracing storage."""
 
@@ -185,6 +192,7 @@ class TracingDataSource(SortedFilteredDataSource):
             timestamp_from=self.timestamp_from,
             timestamp_to=self.timestamp_to,
         )
+        convert_uuid_to_str_in_place(df)
         return self.post_process(df)
 
     def get_original_dataset_id(self) -> Optional[DatasetID]:
