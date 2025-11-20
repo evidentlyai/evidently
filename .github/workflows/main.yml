@@ -306,7 +306,7 @@ jobs:
         env:
           EXPERIMENTAL_DETERMINISTIC_UUID: "true"
           EVIDENTLY_TEST_ENVIRONMENT: 1
-        run: evidently demo_project bikes --path workspace-for-visual-testing
+        run: evidently demo_project --project bikes --path workspace-for-visual-testing
 
       - name: Run UI
         env:
