@@ -72,7 +72,7 @@ To install from PyPI:
 ```sh
 pip install evidently
 ```
-To install Evidently using conda installer, run:
+To install Evidently using the conda installer, run:
 
 ```sh
 conda install -c conda-forge evidently
@@ -177,14 +177,14 @@ To get the output as JSON or Python dictionary:
 my_eval.json()
 # my_eval.dict()
 ```
-You can choose other Presets, create Reports from indiviudal Metrics and configure pass/fail conditions.
+You can choose other Presets, create Reports from individual Metrics and configure pass/fail conditions.
 
 ## Monitoring dashboard
 
 This launches a demo project in the locally hosted Evidently UI. Sign up for [Evidently Cloud](https://docs.evidentlyai.com/docs/setup/cloud) to instantly get a managed version with additional features.
 
 
-if you have [uv](https://docs.astral.sh/uv/) you can run Evidently UI with a single command.
+If you have [uv](https://docs.astral.sh/uv/) installed, you can run Evidently UI with a single command:
 ```shell
 uv run --with evidently evidently ui --demo-projects all
 ```
@@ -225,7 +225,7 @@ Here are examples of things you can check:
 We welcome contributions! Read the [Guide](CONTRIBUTING.md) to learn more.
 
 # :books: Documentation
-For more examples, refer to a complete <a href="https://docs.evidentlyai.com">Documentation</a>.
+For more examples, refer to the complete <a href="https://docs.evidentlyai.com">documentation</a>.
 
 # :white_check_mark: Discord Community
 If you want to chat and connect, join our [Discord community](https://discord.gg/xZjKRaNp8b)!
