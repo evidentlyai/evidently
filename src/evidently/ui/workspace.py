@@ -390,6 +390,12 @@ class WorkspaceBase(ABC):
     ) -> DatasetID:
         raise NotImplementedError
 
+    def load_dataset(self, dataset_id: DatasetID) -> Dataset:
+        raise NotImplementedError
+
+    def list_datasets(self, project: STR_UUID, origins: Optional[List[str]] = None) -> DatasetList:
+        raise NotImplementedError
+
     @abc.abstractmethod
     def save_dashboard(self, project_id: ProjectID, dashboard: DashboardModel):
         raise NotImplementedError
@@ -493,6 +499,61 @@ class Workspace(WorkspaceBase):
                 )
             )
         return dataset_metadata.id
+
+    def list_datasets(self, project: STR_UUID, origins: Optional[List[str]] = None) -> DatasetList:
+        from evidently.sdk.datasets import DatasetInfo
+
+        project_uuid: ProjectID = uuid.UUID(str(project))
+        origin_enums = None
+        if origins:
+            origin_enums = [DatasetOrigin(o) for o in origins]
+
+        datasets_metadata = async_to_sync(
+            self.datasets.list_datasets(
+                user_id=ZERO_UUID,
+                project_id=project_uuid,
+                limit=None,
+                origin=origin_enums,
+                draft=None,
+            )
+        )
+
+        dataset_infos = [
+            DatasetInfo(
+                id=d.id,
+                project_id=d.project_id,
+                name=d.name,
+                size_bytes=d.size_bytes,
+                row_count=d.row_count,
+                column_count=d.column_count,
+                description=d.description,
+                created_at=d.created_at,
+                author_name=d.author_name,
+                origin=d.origin.value,
+                tags=d.tags,
+                metadata=d.metadata,
+            )
+            for d in datasets_metadata
+        ]
+
+        return DatasetList(datasets=dataset_infos)
+
+    def load_dataset(self, dataset_id: DatasetID) -> Dataset:
+        df, dataset_metadata = async_to_sync(
+            self.datasets.get_dataset(
+                user_id=ZERO_UUID,
+                dataset_id=dataset_id,
+                sort_by=None,
+                filter_queries=None,
+            )
+        )
+
+        return Dataset.from_pandas(
+            df,
+            data_definition=dataset_metadata.data_definition,
+            metadata=dataset_metadata.metadata,
+            tags=dataset_metadata.tags,
+        )
 
     def save_dashboard(self, project_id: ProjectID, dashboard: DashboardModel):
         self.state.write_dashboard(project_id, dashboard)
