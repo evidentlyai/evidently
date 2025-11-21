@@ -196,6 +196,13 @@ virtualenv venv
 source venv/bin/activate
 ```
 
+On Windows, activate the environment with PowerShell or Command Prompt:
+
+```
+.\venv\Scripts\Activate.ps1  # PowerShell
+venv\Scripts\activate.bat    # Command Prompt
+```
+
 After installing Evidently (`pip install evidently`), run the Evidently UI with the demo projects:
 ```
 evidently ui --demo-projects all
