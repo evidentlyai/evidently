@@ -108,7 +108,9 @@ FILE_LINK_WITH_ID_TEMPLATE = """
 <div class="evidently-links container">
     <p>
         <b>{id_title}:</b> <span>{id}</span>
-        <b>file:</b> <span>{url}</span>
+    </p>
+    <p>
+        <b>File:</b> <span>{url}</span>
     </p>
 </div>
 """
