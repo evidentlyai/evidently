@@ -97,7 +97,7 @@ export const DatasetViewerGeneral = (props: DatasetViewerGeneralProps) => {
   return (
     <>
       <DataGrid
-        slots={additionalSlots}
+        slots={{ ...additionalSlots, toolbar: hideControls ? undefined : additionalSlots?.toolbar }}
         slotProps={{
           toolbar: {
             printOptions: { disableToolbarButton: true },
@@ -121,11 +121,7 @@ export const DatasetViewerGeneral = (props: DatasetViewerGeneralProps) => {
         pageSizeOptions={[5, 10, 25, 50, 100]}
         paginationModel={paginationModel}
         onPaginationModelChange={setPaginationModel}
-        {...(hideControls && {
-          disableColumnSorting: true,
-          hideFooter: true,
-          density: 'compact'
-        })}
+        {...(hideControls && { disableColumnSorting: true, hideFooter: true, density: 'compact' })}
         sx={{
           '& .MuiDataGrid-cell--flex': { display: 'block !important' },
           '&.MuiDataGrid-root--densityCompact .MuiDataGrid-cell': { py: '8px' },
