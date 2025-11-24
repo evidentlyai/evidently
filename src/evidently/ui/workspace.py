@@ -1,5 +1,6 @@
 import abc
 import os
+import pathlib
 import uuid
 from abc import ABC
 from abc import abstractmethod
@@ -53,6 +54,7 @@ from evidently.ui.service.storage.local import create_local_project_manager
 from evidently.ui.service.type_aliases import ZERO_UUID
 from evidently.ui.storage.local.base import SNAPSHOTS_DIR_NAME
 from evidently.ui.storage.local.base import LocalState
+from evidently.ui.utils import get_file_link_to_report
 from evidently.ui.utils import get_html_link_to_report
 
 
@@ -263,7 +265,12 @@ class SnapshotRef(BaseModel):
         return f"Report ID: {self.id}\nLink: {self.url}"
 
     def _repr_html_(self):
-        return get_html_link_to_report(url_to_report=self.url, report_id=self.id)
+        if self.url.startswith("http:") or self.url.startswith("https:"):
+            return get_html_link_to_report(url_to_report=self.url, report_id=self.id)
+        if pathlib.Path(self.url).is_absolute():
+            return get_file_link_to_report(url_to_report=self.url, report_id=self.id)
+        else:
+            return get_html_link_to_report(url_to_report=self.url, report_id=self.id)
 
 
 class WorkspaceBase(ABC):
