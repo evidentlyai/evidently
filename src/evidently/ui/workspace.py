@@ -1,6 +1,5 @@
 import abc
 import os
-import pathlib
 import uuid
 from abc import ABC
 from abc import abstractmethod
@@ -447,12 +446,7 @@ class Workspace(WorkspaceBase):
         self.state.write_project(project)
 
     def _get_snapshot_url(self, project_id: STR_UUID, snapshot_id: STR_UUID) -> str:
-        return (
-            pathlib.Path(self.path)
-            .joinpath(str(project_id), SNAPSHOTS_DIR_NAME, str(snapshot_id) + ".json")
-            .absolute()
-            .as_uri()
-        )
+        return os.path.join(self.path, str(project_id), SNAPSHOTS_DIR_NAME, str(snapshot_id) + ".json")
 
     def _add_run(self, project_id: STR_UUID, snapshot: Snapshot) -> SnapshotID:
         snapshot_id = new_id()
