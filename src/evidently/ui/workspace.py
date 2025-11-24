@@ -412,11 +412,13 @@ class Workspace(WorkspaceBase):
         from evidently.ui.service.datasets.metadata import FileDatasetMetadataStorage
         from evidently.ui.service.managers.datasets import DatasetManager
         from evidently.ui.service.storage.local.dataset import DatasetFileStorage
+        from evidently.ui.service.tracing.storage.file import FileTracingStorage
 
         self.datasets = DatasetManager(
             project_manager=create_local_project_manager(path, False, NoopAuthManager()),
             dataset_metadata=FileDatasetMetadataStorage(base_path=self.path),
             dataset_file_storage=DatasetFileStorage(dataset_blob_storage=FSSpecBlobStorage(path)),
+            tracing_storage=FileTracingStorage(path),
         )
         from evidently.ui.service.storage.local.snapshot_links import FileSnapshotDatasetLinksManager
 

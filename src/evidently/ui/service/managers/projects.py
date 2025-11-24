@@ -6,8 +6,6 @@ from typing import List
 from typing import Optional
 
 from litestar.exceptions import HTTPException
-from litestar.params import Dependency
-from typing_extensions import Annotated
 
 from evidently._pydantic_compat import parse_obj_as
 from evidently.core.serialization import SnapshotModel
@@ -43,22 +41,6 @@ class ProjectManager(BaseManager):
     auth_manager: AuthManager
     blob_storage: BlobStorage
     data_storage: DataStorage
-
-    def __init__(
-        self,
-        project_metadata: Annotated[ProjectMetadataStorage, Dependency()],
-        auth_manager: Annotated[AuthManager, Dependency()],
-        blob_storage: Annotated[BlobStorage, Dependency()],
-        data_storage: Annotated[DataStorage, Dependency()],
-        dashboard_manager: Annotated[DashboardManager, Dependency()],
-        **dependencies,
-    ):
-        super().__init__(**dependencies)
-        self.project_metadata: ProjectMetadataStorage = project_metadata
-        self.auth_manager: AuthManager = auth_manager
-        self.blob_storage = blob_storage
-        self.data_storage = data_storage
-        self.dashboard_manager = dashboard_manager
 
     async def create_project(
         self,

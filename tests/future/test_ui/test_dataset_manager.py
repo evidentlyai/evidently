@@ -170,6 +170,7 @@ def dataset_manager(dataset_metadata_storage, dataset_file_storage, mock_project
         project_manager=mock_project_manager,
         dataset_metadata=dataset_metadata_storage,
         dataset_file_storage=dataset_file_storage,
+        tracing_storage=MagicMock(),
     )
 
 
