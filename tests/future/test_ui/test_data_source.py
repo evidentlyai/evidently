@@ -138,6 +138,7 @@ async def test_file_data_source_materialize(
         project_manager=project_manager,
         dataset_metadata=MagicMock(),
         dataset_file_storage=dataset_file_storage,
+        tracing_storage=MagicMock(),
     )
 
     # Create FileDataSource pointing to the stored file
@@ -165,6 +166,7 @@ async def test_file_data_source_materialize_missing_file(dataset_file_storage, t
         project_manager=project_manager,
         dataset_metadata=MagicMock(),
         dataset_file_storage=dataset_file_storage,
+        tracing_storage=MagicMock(),
     )
 
     file_source = FileDataSource(project_id=test_project_id, filename="nonexistent/file.parquet")

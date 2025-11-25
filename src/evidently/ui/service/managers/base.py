@@ -1,6 +1,7 @@
 from inspect import Parameter
 from inspect import Signature
 from typing import Any
+from typing import ClassVar
 from typing import Dict
 from typing import Type
 
@@ -41,24 +42,40 @@ class ProviderGetter:
 class BaseDependant:
     """Base class that allows to define dependencies as class fields"""
 
+    __dependencies__: ClassVar
+
     provide = ProviderGetter()
 
     def __init__(self, **dependencies):
+        self._validate(dependencies)
         for k, v in dependencies.items():
             setattr(self, k, v)
+
+    @classmethod
+    def _validate(cls, dependencies: Dict[str, Any]):
+        deps = set(dependencies.keys())
+        required = set(_get_manager_deps(cls))
+        if deps == required:
+            return
+        if deps - required:
+            raise ValueError(f"Extra dependencies {deps - required}")
+        if required - deps:
+            raise ValueError(f"Missing dependencies {required - deps}")
 
     async def post_provide(self):
         pass
 
 
 def _get_manager_deps(dependant_type: Type[BaseDependant]) -> Dict[str, Type]:
-    return {
-        name: cls
-        for bt in dependant_type.mro()
-        if issubclass(bt, BaseDependant)
-        for name, cls in getattr(bt, "__annotations__", {}).items()
-        if not is_classvar(cls)
-    }
+    if not hasattr(dependant_type, "__dependencies__"):
+        dependant_type.__dependencies__ = {
+            name: cls
+            for bt in dependant_type.mro()
+            if issubclass(bt, BaseDependant)
+            for name, cls in getattr(bt, "__annotations__", {}).items()
+            if not is_classvar(cls)
+        }
+    return dependant_type.__dependencies__
 
 
 class BaseManager(BaseDependant):

@@ -43,11 +43,13 @@ class ProjectManager(BaseManager):
         data_storage: Annotated[DataStorage, Dependency()],
         **dependencies,
     ):
-        super().__init__(**dependencies)
-        self.project_metadata: ProjectMetadataStorage = project_metadata
-        self.auth_manager: AuthManager = auth_manager
-        self.blob_storage = blob_storage
-        self.data_storage = data_storage
+        super().__init__(
+            project_metadata=project_metadata,
+            auth_manager=auth_manager,
+            blob_storage=blob_storage,
+            data_storage=data_storage,
+            **dependencies,
+        )
 
     async def create_project(
         self,
