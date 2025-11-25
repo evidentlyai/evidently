@@ -14,6 +14,7 @@ import numpy as np
 from evidently._pydantic_compat import PrivateAttr
 from evidently.llm.rag.splitter import AnySplitter
 from evidently.llm.rag.splitter import Chunk
+from evidently.llm.rag.splitter import ChunkSet
 from evidently.llm.rag.splitter import Splitter
 from evidently.llm.rag.utils import read_text
 from evidently.pydantic_utils import AutoAliasMixin
@@ -69,7 +70,7 @@ class ChunksDataCollectionProvider(DataCollectionProvider):
     chunks: List[Chunk]
 
     def _get_data_collection(self):
-        dc = DataCollection(name="chunks", chunks=self.chunks)
+        dc = FaissDataCollection(name="chunks", chunks=self.chunks)
         dc.init_collection()
         return dc
 
@@ -96,7 +97,7 @@ class FileDataCollectionProvider(DataCollectionProvider):
         splitter = Splitter.from_any(self.splitter, self.chunk_size, self.chunk_overlap)
         chunks = list(splitter.split([read_text(p) for p in paths]))
 
-        data_collection = DataCollection(name=file_path.name, chunks=chunks)
+        data_collection = FaissDataCollection(name=file_path.name, chunks=chunks)
         data_collection.init_collection()
         return data_collection
 
@@ -119,7 +120,21 @@ def _get_embedding(text):
     return np.array(embedding).astype("float32")  # Convert to numpy float32 for FAISS compatibility
 
 
-class DataCollection:
+class DataCollection(ABC):
+    @abstractmethod
+    def find_relevant_chunks(self, question: str, n_results: int = 3) -> List[Chunk]:
+        raise NotImplementedError
+
+    @abstractmethod
+    def get_count(self) -> int:
+        raise NotImplementedError
+
+    @abstractmethod
+    def generate_chunksets(self, count: int, chunks_per_set: int) -> List[ChunkSet]:
+        raise NotImplementedError
+
+
+class FaissDataCollection(DataCollection):
     name: str
     chunks: List[Chunk]
     index: Optional["IndexFlatL2"] = None
@@ -163,3 +178,12 @@ class DataCollection:
         _, indexes = self.index.search(np.array([query_emb]), n_results)
         relevant_chunks = [self.chunks[i] for i in indexes.reshape(-1)]
         return relevant_chunks
+
+    def get_count(self) -> int:
+        return len(self.chunks)
+
+    def generate_chunksets(self, count: int, chunks_per_set: int) -> List[ChunkSet]:
+        """Generate random chunksets for RAG dataset generation."""
+        import random
+
+        return [[random.choice(self.chunks) for _ in range(chunks_per_set)] for _ in range(count)]

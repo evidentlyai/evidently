@@ -97,6 +97,9 @@ setup_args = dict(
             "llama-index>=0.10",
             "faiss-cpu>=1.8.0",
         ],
+        "iris": [
+            "iris>=1.0.7",
+        ],
         "spark": ["pyspark>=3.4.0,<4"],
         "fsspec": [
             "s3fs>=2024.9.0",
