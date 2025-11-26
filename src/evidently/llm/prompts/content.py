@@ -1,3 +1,4 @@
+import json
 from abc import abstractmethod
 from enum import Enum
 from typing import Any
@@ -10,6 +11,8 @@ from evidently.llm.models import LLMMessage
 from evidently.llm.templates import BaseLLMPromptTemplate
 from evidently.pydantic_utils import AutoAliasMixin
 from evidently.pydantic_utils import EvidentlyBaseModel
+from evidently.sdk.artifacts import ArtifactContent
+from evidently.sdk.artifacts import ArtifactContentType
 
 
 class PromptContentType(str, Enum):
@@ -55,6 +58,15 @@ class PromptContent(AutoAliasMixin, EvidentlyBaseModel):
 
     def get_response_type(self):
         return str
+
+
+class ArtifactPromptContent(ArtifactContent[PromptContent]):
+    __value_class__: ClassVar = PromptContent
+    __value_type__: ClassVar = ArtifactContentType.Prompt
+
+    @classmethod
+    def from_value(cls, value: PromptContent) -> "ArtifactContent":
+        return ArtifactPromptContent(data=json.loads(value.json()))
 
 
 class TextPromptContent(PromptContent):

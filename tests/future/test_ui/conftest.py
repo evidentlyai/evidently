@@ -1,15 +1,23 @@
+import json
 import tempfile
 
 import pytest
+from litestar.testing import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.pool import NullPool
 
+from evidently._pydantic_compat import BaseModel
 from evidently.legacy.core import new_id
+from evidently.legacy.utils import NumpyEncoder
+from evidently.ui.service.app import create_app
 from evidently.ui.service.base import Project
 from evidently.ui.service.base import User
+from evidently.ui.service.local_service import LocalConfig
 from evidently.ui.service.storage.sql.metadata import SQLProjectMetadataStorage
 from evidently.ui.service.storage.sql.utils import migrate_database
 from evidently.ui.service.type_aliases import ZERO_UUID
+
+HEADERS = {"Content-Type": "application/json"}
 
 
 @pytest.fixture
@@ -90,3 +98,23 @@ def test_project_id():
 def metadata_storage(sqlite_engine):
     """Create SQL metadata storage instance."""
     return SQLProjectMetadataStorage(sqlite_engine)
+
+
+@pytest.fixture
+def test_client(tmp_path):
+    """Create a test client."""
+    config = LocalConfig()
+    config.storage.path = str(tmp_path)
+    app = create_app(config=config)
+    return TestClient(app=app)
+
+
+@pytest.fixture
+def mock_project():
+    """Create a mock project."""
+    return Project(name="mock", team_id=None)
+
+
+def _dumps(obj: BaseModel):
+    """Dump object to JSON string."""
+    return json.dumps(obj.dict(), allow_nan=True, cls=NumpyEncoder)

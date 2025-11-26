@@ -38,7 +38,7 @@ from evidently.legacy.ui.workspace.cloud import TOKEN_HEADER_NAME
 from evidently.legacy.ui.workspace.remote import RemoteBase
 from evidently.legacy.ui.workspace.remote import T
 from evidently.legacy.utils.sync import async_to_sync
-from evidently.sdk.configs import RemoteConfigManager
+from evidently.sdk.configs import CloudConfigManager
 from evidently.sdk.datasets import DatasetList
 from evidently.sdk.datasets import RemoteDatasetsManager
 from evidently.sdk.models import DashboardModel
@@ -46,7 +46,7 @@ from evidently.sdk.models import DashboardPanelPlot
 from evidently.sdk.models import DashboardTabModel
 from evidently.sdk.models import ProjectModel
 from evidently.sdk.models import SnapshotLink
-from evidently.sdk.prompts import RemotePromptManager
+from evidently.sdk.prompts import CloudPromptManager
 from evidently.ui.service.datasets.metadata import DatasetOrigin
 from evidently.ui.service.storage.common import NoopAuthManager
 from evidently.ui.service.storage.local import FSSpecBlobStorage
@@ -431,6 +431,17 @@ class Workspace(WorkspaceBase):
 
         self.dataset_links = FileSnapshotDatasetLinksManager(path)
 
+        # Add local SDK managers for artifacts, prompts, and configs
+        from evidently.sdk.local import LocalArtifactManager
+        from evidently.sdk.local import LocalConfigManager
+        from evidently.sdk.local import LocalPromptManager
+        from evidently.ui.service.storage.local.artifacts import FileArtifactStorage
+
+        artifact_storage = FileArtifactStorage(base_path=self.path)
+        self.artifacts = LocalArtifactManager(artifact_storage)
+        self.prompts = LocalPromptManager(artifact_storage)
+        self.configs = LocalConfigManager(artifact_storage)
+
     def add_project(self, project: ProjectModel, org_id: Optional[OrgID] = None) -> Project:
         project_model = self.state.write_project(project)
         dashboard = _RemoteProjectDashboard(project.id, self)
@@ -586,11 +597,24 @@ class RemoteWorkspace(RemoteBase, WorkspaceBase):  # todo: reuse cloud ws
         except (HTTPError, JSONDecodeError, KeyError, AssertionError) as e:
             raise ValueError(f"Evidently API not available at {self.base_url}") from e
 
-    def __init__(self, base_url: str, secret: Optional[str] = None):
+    def __init__(self, base_url: str, secret: Optional[str] = None, verify: bool = True):
         self.base_url = base_url
         self.secret = secret
-        self.verify()
+        if verify:
+            self.verify()
         self.datasets = RemoteDatasetsManager(self, "/api/datasets")
+        # artifacts uses artifacts SDK and OSS artifacts API
+        from evidently.sdk.artifacts import RemoteArtifactManager
+
+        self.artifacts = RemoteArtifactManager(self)
+        # prompts uses artifacts SDK via ArtifactPromptContent and OSS artifacts API
+        from evidently.sdk.adapters import PromptArtifactAdapter
+
+        self.prompts = PromptArtifactAdapter(self)
+        # configs uses artifacts SDK via OSS artifacts API
+        from evidently.sdk.adapters import ConfigArtifactAdapter
+
+        self.configs = ConfigArtifactAdapter(self)
 
     def _prepare_request(
         self,
@@ -727,9 +751,13 @@ class CloudWorkspace(RemoteWorkspace):
         self._jwt_token: Optional[str] = None
         self._logged_in: bool = False
         super().__init__(base_url=url if url is not None else self.URL)
-        self.prompts = RemotePromptManager(self)
+        self.prompts = CloudPromptManager(self)
         self.datasets = RemoteDatasetsManager(self, "/api/v2/datasets")
-        self.configs = RemoteConfigManager(self)
+        self.configs = CloudConfigManager(self)
+        # artifacts uses artifacts SDK interface but configs cloud API
+        from evidently.sdk.adapters import ArtifactConfigAdapter
+
+        self.artifacts = ArtifactConfigAdapter(self)
 
     def _get_jwt_token(self):
         return super()._request("/api/users/login", "GET", headers={TOKEN_HEADER_NAME: self.token}).text

@@ -163,6 +163,14 @@ class SQLStorageComponent(StorageComponent):
 
         return tracing_storage_factory
 
+    def artifact_storage_provider(self):
+        from evidently.ui.service.storage.sql.artifacts import SQLArtifactStorage
+
+        async def artifact_storage_factory(engine: Engine):
+            return SQLArtifactStorage(engine=engine)
+
+        return artifact_storage_factory
+
 
 class SQLDatasetMetadataComponent(DatasetMetadataComponent):
     """SQL-based dataset metadata storage component."""

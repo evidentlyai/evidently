@@ -1,0 +1,270 @@
+import json
+import uuid
+from abc import ABC
+from abc import abstractmethod
+from datetime import datetime
+from enum import Enum
+from typing import TYPE_CHECKING
+from typing import Any
+from typing import ClassVar
+from typing import Dict
+from typing import Generic
+from typing import List
+from typing import Literal
+from typing import Optional
+from typing import Type
+from typing import TypeVar
+from typing import Union
+
+from evidently._pydantic_compat import BaseModel
+from evidently._pydantic_compat import Field
+from evidently._pydantic_compat import PrivateAttr
+from evidently._pydantic_compat import parse_obj_as
+from evidently.errors import EvidentlyError
+from evidently.pydantic_utils import AutoAliasMixin
+from evidently.pydantic_utils import EvidentlyBaseModel
+from evidently.ui.service.type_aliases import STR_UUID
+from evidently.ui.service.type_aliases import ZERO_UUID
+from evidently.ui.service.type_aliases import ProjectID
+from evidently.ui.service.type_aliases import UserID
+
+if TYPE_CHECKING:
+    from evidently.ui.workspace import Workspace
+
+ArtifactID = uuid.UUID
+ArtifactVersionID = uuid.UUID
+
+# Type aliases for user-facing APIs that accept both str and UUID
+ArtifactIDInput = STR_UUID
+ArtifactVersionIDInput = STR_UUID
+
+
+class ArtifactContentType(str, Enum):
+    Prompt = "prompt"
+    Config = "config"
+    Descriptor = "descriptor"
+    RunDescriptorsConfig = "run-descriptors-config"
+
+
+TArtifactValue = TypeVar("TArtifactValue")
+
+
+class ArtifactContent(AutoAliasMixin, EvidentlyBaseModel, Generic[TArtifactValue], ABC):
+    __alias_type__: ClassVar = "artifact_content"
+    __value_class__: ClassVar[Type[TArtifactValue]]
+    __value_type__: ClassVar[ArtifactContentType]
+
+    class Config:
+        is_base_type = True
+
+    data: Any
+
+    def get_value(self) -> TArtifactValue:
+        return parse_obj_as(self.__value_class__, self.data)
+
+    def get_type(self) -> ArtifactContentType:
+        return self.__value_type__
+
+    @classmethod
+    @abstractmethod
+    def from_value(cls, value: TArtifactValue) -> "ArtifactContent":
+        raise NotImplementedError()
+
+    def __init_subclass__(cls):
+        _CONTENT_TYPE_MAPPING[cls.__value_class__] = cls
+        super().__init_subclass__()
+
+
+_CONTENT_TYPE_MAPPING: Dict[Type, Type[ArtifactContent]] = {}
+
+
+def _parse_any_to_content(value: Any) -> ArtifactContent:
+    for base_type, content_type in _CONTENT_TYPE_MAPPING.items():
+        if isinstance(value, base_type):
+            return content_type.from_value(value)
+    raise ValueError(f"Cannot convert {value} to ArtifactContent")
+
+
+class ArtifactMetadata(BaseModel):
+    created_at: datetime = Field(default_factory=datetime.now)
+    updated_at: datetime = Field(default_factory=datetime.now)
+    author: Optional[UserID] = None
+    description: Optional[str] = None
+
+
+class Artifact(BaseModel):
+    id: ArtifactID = ZERO_UUID
+    project_id: ProjectID = ZERO_UUID
+    name: str
+    metadata: ArtifactMetadata = ArtifactMetadata()
+
+
+class ArtifactVersionMetadata(BaseModel):
+    created_at: datetime = Field(default_factory=datetime.now)
+    updated_at: datetime = Field(default_factory=datetime.now)
+    author: Optional[UserID] = None
+    comment: Optional[str] = None
+
+
+class ArtifactVersion(BaseModel):
+    id: ArtifactVersionID = ZERO_UUID
+    artifact_id: ArtifactID = ZERO_UUID
+    version: int
+    metadata: ArtifactVersionMetadata = ArtifactVersionMetadata()
+    content: ArtifactContent
+    content_type: ArtifactContentType
+
+    def __init__(
+        self,
+        content: Union[Any, ArtifactContent],
+        version: int,
+        id: ArtifactVersionID = ZERO_UUID,
+        artifact_id: ArtifactID = ZERO_UUID,
+        metadata: Optional[ArtifactVersionMetadata] = None,
+        content_type: Optional[ArtifactContentType] = None,
+        **data: Any,
+    ):
+        if not isinstance(content, ArtifactContent):
+            try:
+                content = parse_obj_as(ArtifactContent, content)  # type: ignore[type-abstract]
+            except ValueError:
+                content = _parse_any_to_content(content)
+
+        if content_type is None:
+            content_type = content.get_type()
+        elif content_type != content.get_type():
+            raise ValueError(f"Wrong content type for content {content.__class__.__name__}")
+
+        super().__init__(
+            content=content,
+            version=version,
+            id=id,
+            artifact_id=artifact_id,
+            metadata=metadata or ArtifactVersionMetadata(),
+            content_type=content_type,
+            **data,
+        )
+
+
+VersionOrLatest = Union[int, Literal["latest"]]
+T = TypeVar("T")
+
+
+class RemoteArtifact(Artifact):
+    _manager: "RemoteArtifactManager" = PrivateAttr()
+
+    def bind(self, manager: "RemoteArtifactManager") -> "RemoteArtifact":
+        self._manager = manager
+        return self
+
+    def list_versions(self) -> List[ArtifactVersion]:
+        return self._manager.list_versions(self.id)
+
+    def get_version(self, version: VersionOrLatest = "latest") -> ArtifactVersion:
+        return self._manager.get_version(self.id, version)
+
+    def bump_version(self, content: Any):
+        return self._manager.bump_artifact_version(self.id, content)
+
+    def delete(self):
+        return self._manager.delete_artifact(self.id)
+
+    def delete_version(self, version_id: ArtifactVersionID):
+        return self._manager.delete_version(version_id)
+
+    def save(self):
+        self._manager.update_artifact(self)
+
+
+class RemoteArtifactManager:
+    """Remote artifact manager that works with /api/artifacts endpoint (OSS)."""
+
+    def __init__(self, workspace: "Workspace"):
+        self._ws = workspace
+        self._api_prefix = "/api/artifacts"
+
+    def list_artifacts(self, project_id: STR_UUID) -> List[RemoteArtifact]:
+        return [
+            p.bind(self)
+            for p in self._ws._request(
+                f"{self._api_prefix}",
+                "GET",
+                query_params={"project_id": str(project_id)},
+                response_model=List[RemoteArtifact],
+            )
+        ]
+
+    def get_or_create_artifact(self, project_id: STR_UUID, name: str) -> RemoteArtifact:
+        try:
+            return self.get_artifact(project_id, name)
+        except EvidentlyError as e:
+            error_msg = e.get_message()
+            if "artifact not found" not in error_msg.lower() and "Artifact not found" not in error_msg:
+                raise e
+            return self.create_artifact(project_id, name)
+
+    def get_artifact(self, project_id: STR_UUID, name: str) -> RemoteArtifact:
+        return self._ws._request(
+            f"{self._api_prefix}/by-name/{name}",
+            "GET",
+            query_params={"project_id": str(project_id)},
+            response_model=RemoteArtifact,
+        ).bind(self)
+
+    def get_artifact_by_id(self, project_id: STR_UUID, artifact_id: ArtifactIDInput) -> RemoteArtifact:
+        return self._ws._request(f"{self._api_prefix}/{artifact_id}", "GET", response_model=RemoteArtifact).bind(self)
+
+    def create_artifact(self, project_id: STR_UUID, name: str) -> RemoteArtifact:
+        return self._ws._request(
+            f"{self._api_prefix}/",
+            "POST",
+            query_params={"project_id": str(project_id)},
+            body=Artifact(name=name, metadata=ArtifactMetadata()).dict(),
+            response_model=RemoteArtifact,
+        ).bind(self)
+
+    def delete_artifact(self, artifact_id: ArtifactIDInput):
+        return self._ws._request(f"{self._api_prefix}/{artifact_id}", "DELETE")
+
+    def update_artifact(self, artifact: Artifact):
+        self._ws._request(
+            f"{self._api_prefix}/{artifact.id}",
+            "PUT",
+            body=json.loads(artifact.json()),
+        )
+
+    def list_versions(self, artifact_id: ArtifactIDInput) -> List[ArtifactVersion]:
+        return self._ws._request(
+            f"{self._api_prefix}/{artifact_id}/versions", "GET", response_model=List[ArtifactVersion]
+        )
+
+    def get_version(self, artifact_id: ArtifactIDInput, version: VersionOrLatest = "latest") -> ArtifactVersion:
+        return self._ws._request(
+            f"{self._api_prefix}/{artifact_id}/versions/{version}", "GET", response_model=ArtifactVersion
+        )
+
+    def get_version_by_id(self, artifact_version_id: ArtifactVersionIDInput) -> ArtifactVersion:
+        return self._ws._request(
+            f"{self._api_prefix}/artifact-versions/{artifact_version_id}", "GET", response_model=ArtifactVersion
+        )
+
+    def create_version(self, artifact_id: ArtifactIDInput, version: int, content: Any) -> ArtifactVersion:
+        return self._ws._request(
+            f"{self._api_prefix}/{artifact_id}/versions",
+            "POST",
+            body=ArtifactVersion(version=version, content=content).dict(),
+            response_model=ArtifactVersion,
+        )
+
+    def delete_version(self, artifact_version_id: ArtifactVersionIDInput):
+        self._ws._request(f"{self._api_prefix}/artifact-versions/{artifact_version_id}", "DELETE")
+
+    def bump_artifact_version(self, artifact_id: ArtifactIDInput, content: Any) -> ArtifactVersion:
+        try:
+            latest = self.get_version(artifact_id)
+            version = latest.version + 1
+        except EvidentlyError as e:
+            if e.get_message() != "EvidentlyError: Artifact version not found":
+                raise e
+            version = 1
+        return self.create_version(artifact_id, version, content)
