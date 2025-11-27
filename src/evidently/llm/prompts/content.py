@@ -1,4 +1,3 @@
-import json
 from abc import abstractmethod
 from enum import Enum
 from typing import Any
@@ -64,9 +63,11 @@ class ArtifactPromptContent(ArtifactContent[PromptContent]):
     __value_class__: ClassVar = PromptContent
     __value_type__: ClassVar = ArtifactContentType.Prompt
 
+    data: PromptContent
+
     @classmethod
     def from_value(cls, value: PromptContent) -> "ArtifactContent":
-        return ArtifactPromptContent(data=json.loads(value.json()))
+        return ArtifactPromptContent(data=value)
 
 
 class TextPromptContent(PromptContent):
