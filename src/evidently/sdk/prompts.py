@@ -1,5 +1,7 @@
 import json
 import uuid
+from abc import ABC
+from abc import abstractmethod
 from datetime import datetime
 from typing import TYPE_CHECKING
 from typing import Any
@@ -94,33 +96,102 @@ VersionOrLatest = Union[int, Literal["latest"]]
 
 
 class RemotePrompt(Prompt):
-    _manager: "CloudPromptManager" = PrivateAttr()
+    _api: "PromptAPI" = PrivateAttr()
 
-    def bind(self, manager: "CloudPromptManager") -> "RemotePrompt":
-        self._manager = manager
+    def bind(self, api: "PromptAPI") -> "RemotePrompt":
+        self._api = api
         return self
 
     def list_versions(self) -> List[PromptVersion]:
-        return self._manager.list_versions(self.id)
+        return self._api.list_versions(self.id)
 
     def get_version(self, version: VersionOrLatest = "latest") -> PromptVersion:
-        return self._manager.get_version(self.id, version)
+        return self._api.get_version(self.id, version)
 
     def bump_version(self, content: Any):
-        return self._manager.bump_prompt_version(self.id, content)
+        return self._api.bump_prompt_version(self.id, content)
 
     def delete(self):
-        return self._manager.delete_prompt(self.id)
+        return self._api.delete_prompt(self.id)
 
     def delete_version(self, version_id: PromptVersionID):
-        return self._manager.delete_version(version_id)
+        return self._api.delete_version(version_id)
 
     def save(self):
-        self._manager.update_prompt(self)
+        self._api.update_prompt(self)
 
 
-class CloudPromptManager:
-    """Cloud-only prompt manager that works with /api/prompts endpoint."""
+class PromptAPI(ABC):
+    """Abstract base class for prompt API."""
+
+    @abstractmethod
+    def list_prompts(self, project_id: STR_UUID) -> List[RemotePrompt]:
+        """List all prompts in a project."""
+        ...
+
+    @abstractmethod
+    def get_or_create_prompt(self, project_id: STR_UUID, name: str) -> RemotePrompt:
+        """Get or create a prompt by name."""
+        ...
+
+    @abstractmethod
+    def get_prompt(self, project_id: STR_UUID, name: str) -> RemotePrompt:
+        """Get a prompt by name."""
+        ...
+
+    @abstractmethod
+    def get_prompt_by_id(self, project_id: STR_UUID, prompt_id: PromptIDInput) -> RemotePrompt:
+        """Get a prompt by ID."""
+        ...
+
+    @abstractmethod
+    def create_prompt(self, project_id: STR_UUID, name: str) -> RemotePrompt:
+        """Create a new prompt."""
+        ...
+
+    @abstractmethod
+    def delete_prompt(self, prompt_id: PromptIDInput):
+        """Delete a prompt."""
+        ...
+
+    @abstractmethod
+    def update_prompt(self, prompt: Prompt):
+        """Update a prompt."""
+        ...
+
+    @abstractmethod
+    def list_versions(self, prompt_id: PromptIDInput) -> List[PromptVersion]:
+        """List all versions of a prompt."""
+        ...
+
+    @abstractmethod
+    def get_version(self, prompt_id: PromptIDInput, version: VersionOrLatest = "latest") -> PromptVersion:
+        """Get a specific version of a prompt."""
+        ...
+
+    @abstractmethod
+    def get_version_by_id(self, prompt_version_id: PromptVersionIDInput) -> PromptVersion:
+        """Get a version by its ID."""
+        ...
+
+    @abstractmethod
+    def create_version(self, prompt_id: PromptIDInput, version: int, content: Any) -> PromptVersion:
+        """Create a new version of a prompt."""
+        ...
+
+    @abstractmethod
+    def delete_version(self, prompt_version_id: PromptVersionIDInput):
+        """Delete a version."""
+        ...
+
+    @abstractmethod
+    def bump_prompt_version(self, prompt_id: PromptIDInput, content: Any) -> PromptVersion:
+        """Bump prompt version (create next version)."""
+        ...
+
+
+class CloudPromptAPI(PromptAPI):
+    """Cloud-only prompt API that works with /api/prompts endpoint."""
 
     def __init__(self, workspace: "CloudWorkspace"):
         self._ws = workspace

@@ -6,6 +6,8 @@ All config classes are now aliases to artifact classes.
 """
 
 import json
+from abc import ABC
+from abc import abstractmethod
 from typing import TYPE_CHECKING
 from typing import Any
 from typing import ClassVar
@@ -19,13 +21,11 @@ from evidently.errors import EvidentlyError
 from evidently.sdk.artifacts import Artifact as GenericConfig
 from evidently.sdk.artifacts import ArtifactContent as ConfigContent
 from evidently.sdk.artifacts import ArtifactContentType as ConfigContentType
-from evidently.sdk.artifacts import ArtifactID as ConfigID
 from evidently.sdk.artifacts import ArtifactIDInput as ConfigIDInput
 from evidently.sdk.artifacts import ArtifactMetadata as ConfigMetadata
 from evidently.sdk.artifacts import ArtifactVersion as ConfigVersion
 from evidently.sdk.artifacts import ArtifactVersionID as ConfigVersionID
 from evidently.sdk.artifacts import ArtifactVersionIDInput as ConfigVersionIDInput
-from evidently.sdk.artifacts import ArtifactVersionMetadata as ConfigVersionMetadata
 from evidently.sdk.artifacts import VersionOrLatest
 from evidently.ui.service.type_aliases import STR_UUID
 
@@ -36,31 +36,31 @@ T = TypeVar("T")
 
 
 class RemoteGenericConfig(GenericConfig):
-    """Remote config that binds to CloudConfigManager."""
+    """Remote config that binds to ConfigAPI."""
 
-    _manager: "CloudConfigManager" = PrivateAttr()
+    _api: "ConfigAPI" = PrivateAttr()
 
-    def bind(self, manager: "CloudConfigManager") -> "RemoteGenericConfig":
-        self._manager = manager
+    def bind(self, api: "ConfigAPI") -> "RemoteGenericConfig":
+        self._api = api
         return self
 
     def list_versions(self) -> List[ConfigVersion]:
-        return self._manager.list_versions(self.id)
+        return self._api.list_versions(self.id)
 
     def get_version(self, version: VersionOrLatest = "latest") -> ConfigVersion:
-        return self._manager.get_version(self.id, version)
+        return self._api.get_version(self.id, version)
 
     def bump_version(self, content: Any):
-        return self._manager.bump_config_version(self.id, content)
+        return self._api.bump_config_version(self.id, content)
 
     def delete(self):
-        return self._manager.delete_config(self.id)
+        return self._api.delete_config(self.id)
 
     def delete_version(self, version_id: ConfigVersionID):
-        return self._manager.delete_version(version_id)
+        return self._api.delete_version(version_id)
 
     def save(self):
-        self._manager.update_config(self)
+        self._api.update_config(self)
 
 
 class DescriptorContent(ConfigContent[Descriptor]):
@@ -74,8 +74,77 @@ class DescriptorContent(ConfigContent[Descriptor]):
         return DescriptorContent(data=json.loads(value.json()))
 
 
-class CloudConfigManager:
-    """Cloud-only config manager that works with /api/configs endpoint.
+class ConfigAPI(ABC):
+    """Abstract base class for config API."""
+
+    @abstractmethod
+    def list_configs(self, project_id: STR_UUID) -> List[RemoteGenericConfig]:
+        """List all configs in a project."""
+        ...
+
+    @abstractmethod
+    def get_or_create_config(self, project_id: STR_UUID, name: str) -> RemoteGenericConfig:
+        """Get or create a config by name."""
+        ...
+
+    @abstractmethod
+    def get_config(self, project_id: STR_UUID, name: str) -> RemoteGenericConfig:
+        """Get a config by name."""
+        ...
+
+    @abstractmethod
+    def get_config_by_id(self, project_id: STR_UUID, config_id: ConfigIDInput) -> RemoteGenericConfig:
+        """Get a config by ID."""
+        ...
+
+    @abstractmethod
+    def create_config(self, project_id: STR_UUID, name: str) -> RemoteGenericConfig:
+        """Create a new config."""
+        ...
+
+    @abstractmethod
+    def delete_config(self, config_id: ConfigIDInput):
+        """Delete a config."""
+        ...
+
+    @abstractmethod
+    def update_config(self, config: GenericConfig):
+        """Update a config."""
+        ...
+
+    @abstractmethod
+    def list_versions(self, config_id: ConfigIDInput) -> List[ConfigVersion]:
+        """List all versions of a config."""
+        ...
+
+    @abstractmethod
+    def get_version(self, config_id: ConfigIDInput, version: VersionOrLatest = "latest") -> ConfigVersion:
+        """Get a specific version of a config."""
+        ...
+
+    @abstractmethod
+    def get_version_by_id(self, config_version_id: ConfigVersionIDInput) -> ConfigVersion:
+        """Get a version by its ID."""
+        ...
+
+    @abstractmethod
+    def create_version(self, config_id: ConfigIDInput, version: int, content: Any) -> ConfigVersion:
+        """Create a new version of a config."""
+        ...
+
+    @abstractmethod
+    def delete_version(self, config_version_id: ConfigVersionIDInput):
+        """Delete a version."""
+        ...
+
+    @abstractmethod
+    def bump_config_version(self, config_id: ConfigIDInput, content: Any) -> ConfigVersion:
+        """Bump config version (create next version)."""
+        ...
+
+
+class CloudConfigAPI(ConfigAPI):
+    """Cloud-only config API that works with /api/configs endpoint.
 
     Uses backported Config models (which are actually Artifact models).
     """
@@ -181,24 +250,3 @@ class CloudConfigManager:
 
     def get_descriptor(self, project_id: STR_UUID, name: str, version: VersionOrLatest = "latest") -> Descriptor:
         return self._get_typed_version(project_id, name, version, Descriptor)  # type: ignore[type-abstract]
-
-
-__all__ = [
-    "ConfigID",
-    "ConfigVersionID",
-    "ConfigContentType",
-    "ConfigContent",
-    "ConfigMetadata",
-    "GenericConfig",
-    "ConfigVersionMetadata",
-    "ConfigVersion",
-    "VersionOrLatest",
-    "DescriptorContent",
-    "RemoteGenericConfig",
-    "CloudConfigManager",
-    # Backward compatibility alias
-    "RemoteConfigManager",
-]
-
-# Backward compatibility alias
-RemoteConfigManager = CloudConfigManager

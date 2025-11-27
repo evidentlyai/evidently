@@ -5,10 +5,8 @@ These managers provide the same SDK interface as RemoteWorkspace but work
 directly with local storage, similar to how datasets work in Workspace.
 """
 
-from typing import TYPE_CHECKING
 from typing import Any
 from typing import List
-from typing import cast
 
 from evidently.core.datasets import Descriptor
 from evidently.errors import EvidentlyError
@@ -17,6 +15,7 @@ from evidently.legacy.utils.sync import async_to_sync
 from evidently.llm.prompts.content import ArtifactPromptContent
 from evidently.llm.prompts.content import PromptContent
 from evidently.sdk.artifacts import Artifact
+from evidently.sdk.artifacts import ArtifactAPI
 from evidently.sdk.artifacts import ArtifactID
 from evidently.sdk.artifacts import ArtifactMetadata
 from evidently.sdk.artifacts import ArtifactVersion
@@ -24,12 +23,14 @@ from evidently.sdk.artifacts import ArtifactVersionID
 from evidently.sdk.artifacts import ArtifactVersionMetadata
 from evidently.sdk.artifacts import RemoteArtifact
 from evidently.sdk.artifacts import VersionOrLatest
+from evidently.sdk.configs import ConfigAPI
 from evidently.sdk.configs import ConfigMetadata
 from evidently.sdk.configs import ConfigVersion
 from evidently.sdk.configs import ConfigVersionMetadata
 from evidently.sdk.configs import GenericConfig
 from evidently.sdk.configs import RemoteGenericConfig
 from evidently.sdk.prompts import Prompt
+from evidently.sdk.prompts import PromptAPI
 from evidently.sdk.prompts import PromptMetadata
 from evidently.sdk.prompts import PromptVersion
 from evidently.sdk.prompts import PromptVersionMetadata
@@ -40,11 +41,8 @@ from evidently.ui.service.type_aliases import ZERO_UUID
 from evidently.ui.service.type_aliases import ProjectID
 from evidently.ui.service.type_aliases import UserID
 
-if TYPE_CHECKING:
-    pass
 
-
-class LocalArtifactManager:
+class LocalArtifactAPI(ArtifactAPI):
     """Local artifact manager that works directly with storage."""
 
     def __init__(self, artifact_storage: ArtifactStorage, user_id: UserID = ZERO_UUID):
@@ -153,24 +151,19 @@ class LocalArtifactManager:
 
     def _to_remote_artifact(self, artifact: Artifact) -> RemoteArtifact:
         """Convert Artifact to RemoteArtifact."""
-        # RemoteArtifact expects RemoteArtifactManager, but we implement the same interface
-        from evidently.sdk.artifacts import RemoteArtifactManager
-
-        return RemoteArtifact(**artifact.dict()).bind(cast(RemoteArtifactManager, self))
+        return RemoteArtifact(**artifact.dict()).bind(self)
 
 
-class LocalPromptManager:
-    """Local prompt manager that works with artifacts storage via ArtifactPromptContent."""
+class LocalPromptAPI(PromptAPI):
+    """Local prompt API that works with artifacts storage via ArtifactPromptContent."""
 
     def __init__(self, artifact_storage: ArtifactStorage, user_id: UserID = ZERO_UUID):
-        self._artifact_manager = LocalArtifactManager(artifact_storage, user_id)
+        self._artifact_manager = LocalArtifactAPI(artifact_storage, user_id)
         self._storage = artifact_storage
         self._user_id = user_id
 
     def _artifact_to_prompt(self, artifact: RemoteArtifact) -> RemotePrompt:
         """Convert artifact to prompt."""
-        from evidently.sdk.prompts import CloudPromptManager
-
         prompt = Prompt(
             id=artifact.id,
             project_id=artifact.project_id,
@@ -181,7 +174,7 @@ class LocalPromptManager:
                 author=artifact.metadata.author,
             ),
         )
-        return RemotePrompt(**prompt.dict()).bind(cast(CloudPromptManager, self))
+        return RemotePrompt(**prompt.dict()).bind(self)
 
     def _artifact_version_to_prompt_version(self, artifact_version: ArtifactVersion) -> PromptVersion:
         """Convert artifact version to prompt version."""
@@ -236,7 +229,8 @@ class LocalPromptManager:
 
     def delete_prompt(self, prompt_id: STR_UUID):
         """Delete a prompt."""
-        return self._artifact_manager.delete_artifact(prompt_id)
+        artifact_uuid = ArtifactID(prompt_id) if isinstance(prompt_id, str) else prompt_id
+        return self._artifact_manager.delete_artifact(artifact_uuid)
 
     def update_prompt(self, prompt: Prompt):
         """Update a prompt."""
@@ -254,49 +248,55 @@ class LocalPromptManager:
 
     def list_versions(self, prompt_id: STR_UUID) -> List[PromptVersion]:
         """List all versions of a prompt."""
-        artifact_versions = self._artifact_manager.list_versions(prompt_id)
+        artifact_uuid = ArtifactID(prompt_id) if isinstance(prompt_id, str) else prompt_id
+        artifact_versions = self._artifact_manager.list_versions(artifact_uuid)
         return [self._artifact_version_to_prompt_version(av) for av in artifact_versions]
 
     def get_version(self, prompt_id: STR_UUID, version: VersionOrLatest = "latest") -> PromptVersion:
         """Get a specific version of a prompt."""
-        artifact_version = self._artifact_manager.get_version(prompt_id, version)
+        artifact_uuid = ArtifactID(prompt_id) if isinstance(prompt_id, str) else prompt_id
+        artifact_version = self._artifact_manager.get_version(artifact_uuid, version)
         return self._artifact_version_to_prompt_version(artifact_version)
 
     def get_version_by_id(self, prompt_version_id: STR_UUID) -> PromptVersion:
         """Get a version by its ID."""
-        artifact_version = self._artifact_manager.get_version_by_id(prompt_version_id)
+        version_uuid = ArtifactVersionID(prompt_version_id) if isinstance(prompt_version_id, str) else prompt_version_id
+        artifact_version = self._artifact_manager.get_version_by_id(version_uuid)
         return self._artifact_version_to_prompt_version(artifact_version)
 
     def create_version(self, prompt_id: STR_UUID, version: int, content: Any) -> PromptVersion:
         """Create a new version of a prompt."""
+        artifact_uuid = ArtifactID(prompt_id) if isinstance(prompt_id, str) else prompt_id
         # Wrap PromptContent in ArtifactPromptContent
         if not isinstance(content, PromptContent):
             content = PromptContent.parse(content)
         artifact_content = ArtifactPromptContent.from_value(content)
 
-        artifact_version = self._artifact_manager.create_version(prompt_id, version, artifact_content)
+        artifact_version = self._artifact_manager.create_version(artifact_uuid, version, artifact_content)
         return self._artifact_version_to_prompt_version(artifact_version)
 
     def delete_version(self, prompt_version_id: STR_UUID):
         """Delete a version."""
-        return self._artifact_manager.delete_version(prompt_version_id)
+        version_uuid = ArtifactVersionID(prompt_version_id) if isinstance(prompt_version_id, str) else prompt_version_id
+        return self._artifact_manager.delete_version(version_uuid)
 
     def bump_prompt_version(self, prompt_id: STR_UUID, content: Any) -> PromptVersion:
         """Bump prompt version (create next version)."""
+        artifact_uuid = ArtifactID(prompt_id) if isinstance(prompt_id, str) else prompt_id
         # Wrap PromptContent in ArtifactPromptContent
         if not isinstance(content, PromptContent):
             content = PromptContent.parse(content)
         artifact_content = ArtifactPromptContent.from_value(content)
 
-        artifact_version = self._artifact_manager.bump_artifact_version(prompt_id, artifact_content)
+        artifact_version = self._artifact_manager.bump_artifact_version(artifact_uuid, artifact_content)
         return self._artifact_version_to_prompt_version(artifact_version)
 
 
-class LocalConfigManager:
-    """Local config manager that works with artifacts storage."""
+class LocalConfigAPI(ConfigAPI):
+    """Local config API that works with artifacts storage."""
 
     def __init__(self, artifact_storage: ArtifactStorage, user_id: UserID = ZERO_UUID):
-        self._artifact_manager = LocalArtifactManager(artifact_storage, user_id)
+        self._artifact_manager = LocalArtifactAPI(artifact_storage, user_id)
         self._storage = artifact_storage
         self._user_id = user_id
 
@@ -313,9 +313,7 @@ class LocalConfigManager:
                 description=artifact.metadata.description,
             ),
         )
-        from evidently.sdk.configs import CloudConfigManager
-
-        return RemoteGenericConfig(**config.dict()).bind(cast(CloudConfigManager, self))
+        return RemoteGenericConfig(**config.dict()).bind(self)
 
     def _artifact_version_to_config_version(self, artifact_version: ArtifactVersion) -> ConfigVersion:
         """Convert artifact version to config version."""
@@ -359,7 +357,8 @@ class LocalConfigManager:
 
     def delete_config(self, config_id: STR_UUID):
         """Delete a config."""
-        return self._artifact_manager.delete_artifact(config_id)
+        artifact_uuid = ArtifactID(config_id) if isinstance(config_id, str) else config_id
+        return self._artifact_manager.delete_artifact(artifact_uuid)
 
     def update_config(self, config: GenericConfig):
         """Update a config."""
@@ -378,31 +377,37 @@ class LocalConfigManager:
 
     def list_versions(self, config_id: STR_UUID) -> List[ConfigVersion]:
         """List all versions of a config."""
-        artifact_versions = self._artifact_manager.list_versions(config_id)
+        artifact_uuid = ArtifactID(config_id) if isinstance(config_id, str) else config_id
+        artifact_versions = self._artifact_manager.list_versions(artifact_uuid)
         return [self._artifact_version_to_config_version(av) for av in artifact_versions]
 
     def get_version(self, config_id: STR_UUID, version: VersionOrLatest = "latest") -> ConfigVersion:
         """Get a specific version of a config."""
-        artifact_version = self._artifact_manager.get_version(config_id, version)
+        artifact_uuid = ArtifactID(config_id) if isinstance(config_id, str) else config_id
+        artifact_version = self._artifact_manager.get_version(artifact_uuid, version)
         return self._artifact_version_to_config_version(artifact_version)
 
     def get_version_by_id(self, config_version_id: STR_UUID) -> ConfigVersion:
         """Get a version by its ID."""
-        artifact_version = self._artifact_manager.get_version_by_id(config_version_id)
+        version_uuid = ArtifactVersionID(config_version_id) if isinstance(config_version_id, str) else config_version_id
+        artifact_version = self._artifact_manager.get_version_by_id(version_uuid)
         return self._artifact_version_to_config_version(artifact_version)
 
     def create_version(self, config_id: STR_UUID, version: int, content: Any) -> ConfigVersion:
         """Create a new version of a config."""
-        artifact_version = self._artifact_manager.create_version(config_id, version, content)
+        artifact_uuid = ArtifactID(config_id) if isinstance(config_id, str) else config_id
+        artifact_version = self._artifact_manager.create_version(artifact_uuid, version, content)
         return self._artifact_version_to_config_version(artifact_version)
 
     def delete_version(self, config_version_id: STR_UUID):
         """Delete a version."""
-        return self._artifact_manager.delete_version(config_version_id)
+        version_uuid = ArtifactVersionID(config_version_id) if isinstance(config_version_id, str) else config_version_id
+        return self._artifact_manager.delete_version(version_uuid)
 
     def bump_config_version(self, config_id: STR_UUID, content: Any) -> ConfigVersion:
         """Bump config version (create next version)."""
-        artifact_version = self._artifact_manager.bump_artifact_version(config_id, content)
+        artifact_uuid = ArtifactID(config_id) if isinstance(config_id, str) else config_id
+        artifact_version = self._artifact_manager.bump_artifact_version(artifact_uuid, content)
         return self._artifact_version_to_config_version(artifact_version)
 
     def _add_typed_version(self, project_id: STR_UUID, name: str, value: Any) -> ConfigVersion:

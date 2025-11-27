@@ -29,7 +29,7 @@ from evidently.ui.service.type_aliases import ProjectID
 from evidently.ui.service.type_aliases import UserID
 
 if TYPE_CHECKING:
-    from evidently.ui.workspace import Workspace
+    from evidently.ui.workspace import RemoteWorkspace
 
 ArtifactID = uuid.UUID
 ArtifactVersionID = uuid.UUID
@@ -151,35 +151,104 @@ T = TypeVar("T")
 
 
 class RemoteArtifact(Artifact):
-    _manager: "RemoteArtifactManager" = PrivateAttr()
+    _api: "ArtifactAPI" = PrivateAttr()
 
-    def bind(self, manager: "RemoteArtifactManager") -> "RemoteArtifact":
-        self._manager = manager
+    def bind(self, api: "ArtifactAPI") -> "RemoteArtifact":
+        self._api = api
         return self
 
     def list_versions(self) -> List[ArtifactVersion]:
-        return self._manager.list_versions(self.id)
+        return self._api.list_versions(self.id)
 
     def get_version(self, version: VersionOrLatest = "latest") -> ArtifactVersion:
-        return self._manager.get_version(self.id, version)
+        return self._api.get_version(self.id, version)
 
     def bump_version(self, content: Any):
-        return self._manager.bump_artifact_version(self.id, content)
+        return self._api.bump_artifact_version(self.id, content)
 
     def delete(self):
-        return self._manager.delete_artifact(self.id)
+        return self._api.delete_artifact(self.id)
 
     def delete_version(self, version_id: ArtifactVersionID):
-        return self._manager.delete_version(version_id)
+        return self._api.delete_version(version_id)
 
     def save(self):
-        self._manager.update_artifact(self)
+        self._api.update_artifact(self)
 
 
-class RemoteArtifactManager:
-    """Remote artifact manager that works with /api/artifacts endpoint (OSS)."""
+class ArtifactAPI(ABC):
+    """Abstract base class for artifact API."""
 
-    def __init__(self, workspace: "Workspace"):
+    @abstractmethod
+    def list_artifacts(self, project_id: STR_UUID) -> List[RemoteArtifact]:
+        """List all artifacts in a project."""
+        ...
+
+    @abstractmethod
+    def get_or_create_artifact(self, project_id: STR_UUID, name: str) -> RemoteArtifact:
+        """Get or create an artifact by name."""
+        ...
+
+    @abstractmethod
+    def get_artifact(self, project_id: STR_UUID, name: str) -> RemoteArtifact:
+        """Get an artifact by name."""
+        ...
+
+    @abstractmethod
+    def get_artifact_by_id(self, project_id: STR_UUID, artifact_id: ArtifactIDInput) -> RemoteArtifact:
+        """Get an artifact by ID."""
+        ...
+
+    @abstractmethod
+    def create_artifact(self, project_id: STR_UUID, name: str) -> RemoteArtifact:
+        """Create a new artifact."""
+        ...
+
+    @abstractmethod
+    def delete_artifact(self, artifact_id: ArtifactIDInput):
+        """Delete an artifact."""
+        ...
+
+    @abstractmethod
+    def update_artifact(self, artifact: Artifact):
+        """Update an artifact."""
+        ...
+
+    @abstractmethod
+    def list_versions(self, artifact_id: ArtifactIDInput) -> List[ArtifactVersion]:
+        """List all versions of an artifact."""
+        ...
+
+    @abstractmethod
+    def get_version(self, artifact_id: ArtifactIDInput, version: VersionOrLatest = "latest") -> ArtifactVersion:
+        """Get a specific version of an artifact."""
+        ...
+
+    @abstractmethod
+    def get_version_by_id(self, artifact_version_id: ArtifactVersionIDInput) -> ArtifactVersion:
+        """Get a version by its ID."""
+        ...
+
+    @abstractmethod
+    def create_version(self, artifact_id: ArtifactIDInput, version: int, content: Any) -> ArtifactVersion:
+        """Create a new version of an artifact."""
+        ...
+
+    @abstractmethod
+    def delete_version(self, artifact_version_id: ArtifactVersionIDInput):
+        """Delete a version."""
+        ...
+
+    @abstractmethod
+    def bump_artifact_version(self, artifact_id: ArtifactIDInput, content: Any) -> ArtifactVersion:
+        """Bump artifact version (create next version)."""
+        ...
+
+
+class RemoteArtifactAPI(ArtifactAPI):
+    """Remote artifact API that works with /api/artifacts endpoint (OSS)."""
+
+    def __init__(self, workspace: "RemoteWorkspace"):
         self._ws = workspace
         self._api_prefix = "/api/artifacts"
 
