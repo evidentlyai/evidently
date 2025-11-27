@@ -92,6 +92,9 @@ importers:
       react-router-dom:
         specifier: ^6.16.0
         version: 6.16.0(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
+      react-transition-group:
+        specifier: ^4.4.5
+        version: 4.4.5(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       tiny-invariant:
         specifier: ^1.3.1
         version: 1.3.1
@@ -114,6 +117,9 @@ importers:
       '@types/react-plotly.js':
         specifier: ^2.6.1
         version: 2.6.1
+      '@types/react-transition-group':
+        specifier: ^4.4.10
+        version: 4.4.12(@types/react@18.2.0)
       typescript:
         specifier: ^5.7.2
         version: 5.7.2
@@ -1418,9 +1424,6 @@ packages:
 
   '@types/react-plotly.js@2.6.1':
     resolution: {integrity: sha512-vFJZRCC2Pav0NdrFm0grPMm9+67ejGZZglDBWqo+J6VFbB4CAatjoNiowfardznuujaaoDNoZ4MSCFwYyVk4aA==}
-
-  '@types/react-transition-group@4.4.11':
-    resolution: {integrity: sha512-RM05tAniPZ5DZPzzNFP+DmrcOdD0efDUxMy3145oljWSl3x9ZV5vhme98gTxFrj2lhXvmGNnUiuDyJgY9IKkNA==}
 
   '@types/react-transition-group@4.4.12':
     resolution: {integrity: sha512-8TV6R3h2j7a91c+1DXdJi3Syo69zzIZbz7Lg5tORM5LEJG7X/E6a1V3drRyBRZq7/utz7A+c4OgYLiLcYGHG6w==}
@@ -3748,7 +3751,7 @@ snapshots:
       '@mui/material': 7.0.2(@emotion/react@11.11.1(@types/react@18.2.0)(react@18.2.0))(@emotion/styled@11.11.0(@emotion/react@11.11.1(@types/react@18.2.0)(react@18.2.0))(@types/react@18.2.0)(react@18.2.0))(@types/react@18.2.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       '@mui/system': 7.0.2(@emotion/react@11.11.1(@types/react@18.2.0)(react@18.2.0))(@emotion/styled@11.11.0(@emotion/react@11.11.1(@types/react@18.2.0)(react@18.2.0))(@types/react@18.2.0)(react@18.2.0))(@types/react@18.2.0)(react@18.2.0)
       '@mui/utils': 5.17.1(@types/react@18.2.0)(react@18.2.0)
-      '@types/react-transition-group': 4.4.11
+      '@types/react-transition-group': 4.4.12(@types/react@18.2.0)
       clsx: 2.1.1
       prop-types: 15.8.1
       react: 18.2.0
@@ -4241,10 +4244,6 @@ snapshots:
   '@types/react-plotly.js@2.6.1':
     dependencies:
       '@types/plotly.js': 2.12.27
-      '@types/react': 18.2.0
-
-  '@types/react-transition-group@4.4.11':
-    dependencies:
       '@types/react': 18.2.0
 
   '@types/react-transition-group@4.4.12(@types/react@18.2.0)':
