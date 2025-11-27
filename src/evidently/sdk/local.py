@@ -17,9 +17,11 @@ from evidently.llm.prompts.content import PromptContent
 from evidently.sdk.artifacts import Artifact
 from evidently.sdk.artifacts import ArtifactAPI
 from evidently.sdk.artifacts import ArtifactID
+from evidently.sdk.artifacts import ArtifactIDInput
 from evidently.sdk.artifacts import ArtifactMetadata
 from evidently.sdk.artifacts import ArtifactVersion
 from evidently.sdk.artifacts import ArtifactVersionID
+from evidently.sdk.artifacts import ArtifactVersionIDInput
 from evidently.sdk.artifacts import ArtifactVersionMetadata
 from evidently.sdk.artifacts import RemoteArtifact
 from evidently.sdk.artifacts import VersionOrLatest
@@ -97,48 +99,58 @@ class LocalArtifactAPI(ArtifactAPI):
         artifact = async_to_sync(self._storage.add_artifact(project_uuid, artifact))
         return self._to_remote_artifact(artifact)
 
-    def delete_artifact(self, artifact_id: ArtifactID):
+    def delete_artifact(self, artifact_id: ArtifactIDInput):
         """Delete an artifact."""
-        async_to_sync(self._storage.delete_artifact(artifact_id))
+        artifact_id_uuid = ArtifactID(artifact_id) if isinstance(artifact_id, str) else artifact_id
+        async_to_sync(self._storage.delete_artifact(artifact_id_uuid))
 
     def update_artifact(self, artifact: Artifact):
         """Update an artifact."""
         async_to_sync(self._storage.update_artifact(artifact.id, artifact))
 
-    def list_versions(self, artifact_id: ArtifactID) -> List[ArtifactVersion]:
+    def list_versions(self, artifact_id: ArtifactIDInput) -> List[ArtifactVersion]:
         """List all versions of an artifact."""
-        return async_to_sync(self._storage.list_artifact_versions(artifact_id))
+        artifact_id_uuid = ArtifactID(artifact_id) if isinstance(artifact_id, str) else artifact_id
+        return async_to_sync(self._storage.list_artifact_versions(artifact_id_uuid))
 
-    def get_version(self, artifact_id: ArtifactID, version: VersionOrLatest = "latest") -> ArtifactVersion:
+    def get_version(self, artifact_id: ArtifactIDInput, version: VersionOrLatest = "latest") -> ArtifactVersion:
         """Get a specific version of an artifact."""
-        artifact_version = async_to_sync(self._storage.get_artifact_version_by_version(artifact_id, version))
+        artifact_id_uuid = ArtifactID(artifact_id) if isinstance(artifact_id, str) else artifact_id
+        artifact_version = async_to_sync(self._storage.get_artifact_version_by_version(artifact_id_uuid, version))
         if artifact_version is None:
             raise EvidentlyError("artifact version not found")
         return artifact_version
 
-    def get_version_by_id(self, artifact_version_id: ArtifactVersionID) -> ArtifactVersion:
+    def get_version_by_id(self, artifact_version_id: ArtifactVersionIDInput) -> ArtifactVersion:
         """Get a version by its ID."""
-        version = async_to_sync(self._storage.get_artifact_version(artifact_version_id))
+        version_id_uuid = (
+            ArtifactVersionID(artifact_version_id) if isinstance(artifact_version_id, str) else artifact_version_id
+        )
+        version = async_to_sync(self._storage.get_artifact_version(version_id_uuid))
         if version is None:
             raise EvidentlyError("artifact version not found")
         return version
 
-    def create_version(self, artifact_id: ArtifactID, version: int, content: Any) -> ArtifactVersion:
+    def create_version(self, artifact_id: ArtifactIDInput, version: int, content: Any) -> ArtifactVersion:
         """Create a new version of an artifact."""
+        artifact_id_uuid = ArtifactID(artifact_id) if isinstance(artifact_id, str) else artifact_id
         artifact_version = ArtifactVersion(
             id=new_id(),
-            artifact_id=artifact_id,
+            artifact_id=artifact_id_uuid,
             version=version,
             content=content,
             metadata=ArtifactVersionMetadata(),
         )
-        return async_to_sync(self._storage.add_artifact_version(artifact_id, artifact_version))
+        return async_to_sync(self._storage.add_artifact_version(artifact_id_uuid, artifact_version))
 
-    def delete_version(self, artifact_version_id: ArtifactVersionID):
+    def delete_version(self, artifact_version_id: ArtifactVersionIDInput):
         """Delete a version."""
-        async_to_sync(self._storage.delete_artifact_version(artifact_version_id))
+        version_id_uuid = (
+            ArtifactVersionID(artifact_version_id) if isinstance(artifact_version_id, str) else artifact_version_id
+        )
+        async_to_sync(self._storage.delete_artifact_version(version_id_uuid))
 
-    def bump_artifact_version(self, artifact_id: ArtifactID, content: Any) -> ArtifactVersion:
+    def bump_artifact_version(self, artifact_id: ArtifactIDInput, content: Any) -> ArtifactVersion:
         """Bump artifact version (create next version)."""
         try:
             latest = self.get_version(artifact_id)
