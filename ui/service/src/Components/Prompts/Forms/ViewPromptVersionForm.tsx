@@ -1,6 +1,6 @@
-import { Box, Button, Stack } from '@mui/material'
-import type { PromptTemplate, PromptVersionModel } from '~/api/types'
-import { ViewPromptVersion } from '~/components/Prompts/Versions/View'
+import type { PromptTemplate, PromptVersionModel } from 'evidently-ui-lib/api/types'
+import { ViewPromptVersion } from 'evidently-ui-lib/components/Prompts/Versions/View/index'
+import { Box, Button, Stack } from 'evidently-ui-lib/shared-dependencies/mui-material'
 
 export type ViewPromptVersionFormProps = {
   promptVersion: PromptVersionModel

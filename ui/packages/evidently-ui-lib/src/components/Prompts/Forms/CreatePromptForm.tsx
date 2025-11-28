@@ -47,7 +47,7 @@ export const CreatePromptForm = (props: CreatePromptFormProps) => {
             <Button
               disabled={isLoading || !isDirty || Object.keys(errors).length > 0}
               type='submit'
-              variant='outlined'
+              variant='contained'
             >
               Submit
             </Button>

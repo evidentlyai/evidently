@@ -2,9 +2,13 @@ import type { PromptVersionModel } from '~/api/types'
 import { assertNever } from '~/utils'
 import type { PromptVersionState } from './Edit'
 
-export const promptVersion2EditState = ({
-  promptVersion
-}: { promptVersion: PromptVersionModel | null | undefined }): PromptVersionState => {
+type PromptVersion2EditStateArgs = {
+  promptVersion: PromptVersionModel | null | undefined
+}
+
+export const promptVersion2EditState = (args: PromptVersion2EditStateArgs): PromptVersionState => {
+  const { promptVersion } = args
+
   if (!promptVersion) {
     return {
       variant: 'text',
@@ -53,9 +57,15 @@ export const promptVersion2EditState = ({
   assertNever(promptVersion?.content.type)
 }
 
-export const editState2PromptVersion = ({
-  editState
-}: { editState: PromptVersionState }): Omit<PromptVersionModel, 'version'> => {
+type EditState2PromptVersionArgs = {
+  editState: PromptVersionState
+}
+
+export const editState2PromptVersion = (
+  args: EditState2PromptVersionArgs
+): Omit<PromptVersionModel, 'version'> => {
+  const { editState } = args
+
   if (editState.variant === 'text') {
     return {
       content_type: editState.variant,

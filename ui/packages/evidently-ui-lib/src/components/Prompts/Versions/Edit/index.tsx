@@ -1,4 +1,4 @@
-import { Box, Button, Divider, Stack, Typography } from '@mui/material'
+import { Box, Button, Stack, Typography } from '@mui/material'
 import { useState } from 'react'
 import type { LLMPromptTemplateModel, PromptTemplate } from '~/api/types'
 import { BinaryTemplateSelector } from '~/components/Descriptors/Features/LLMJudge/BinaryTemplateChips'
@@ -140,11 +140,9 @@ export const PromptVersionForm = (props: PromptVersionFormProps) => {
 
   return (
     <Box>
-      <Typography fontWeight={600} align='center' variant='h4' gutterBottom>
+      <Typography fontWeight={600} align='center' variant='h4' gutterBottom mb={4}>
         Create prompt version
       </Typography>
-
-      <Divider sx={{ my: 2 }} />
 
       <WithErrors errors={errors} showErrors={showErrors}>
         <PromptVersionEditor

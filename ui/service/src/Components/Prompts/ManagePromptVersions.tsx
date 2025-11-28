@@ -1,17 +1,19 @@
-import { Box, Stack, Typography } from '@mui/material'
+import type { PromptVersionModel } from 'evidently-ui-lib/api/types'
+import { PromptInfoHeader } from 'evidently-ui-lib/components/Prompts/PromptInfoHeader'
+import { PromptVersionsSidebar } from 'evidently-ui-lib/components/Prompts/PromptVersionsSidebar'
+import type { ModeType } from 'evidently-ui-lib/components/Prompts/ToggleViewEdit'
+import { promptVersion2EditState } from 'evidently-ui-lib/components/Prompts/Versions/utils'
+import { Box, Stack, Typography } from 'evidently-ui-lib/shared-dependencies/mui-material'
 import type React from 'react'
 import { useMemo } from 'react'
-import type { PromptVersionModel } from '~/api/types'
-import { PromptInfoHeader } from '~/components/Prompts/PromptInfoHeader'
-import { PromptVersionsSidebar } from '~/components/Prompts/PromptVersionsSidebar'
-import type { ModeType } from '~/components/Prompts/ToggleViewEdit'
 import {
   EditPromptVersionForm,
   type EditPromptVersionFormProps
-} from '~/components/Prompts/Versions/Forms/EditPromptVersionForm'
-import type { ViewPromptVersionFormProps } from '~/components/Prompts/Versions/Forms/ViewPromptVersionForm'
-import { ViewPromptVersionForm } from '~/components/Prompts/Versions/Forms/ViewPromptVersionForm'
-import { promptVersion2EditState } from '~/components/Prompts/Versions/utils'
+} from './Forms/EditPromptVersionForm'
+import {
+  ViewPromptVersionForm,
+  type ViewPromptVersionFormProps
+} from './Forms/ViewPromptVersionForm'
 
 export type ManagePromptVersionsProps = {
   promptId: string
@@ -53,7 +55,7 @@ export const ManagePromptVersions = (props: ManagePromptVersionsProps) => {
     <>
       {promptVersions.length === 0 && (
         <Stack direction={'column'} gap={1} alignItems={'center'} justifyContent={'center'}>
-          <Typography mt={3} variant='h6' align='center'>
+          <Typography mt={3} variant='h4' align='center' gutterBottom>
             You don't have any versions yet.
           </Typography>
 

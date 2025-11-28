@@ -18,12 +18,10 @@ export const Prompt = (props: PromptProps) => {
       {role && (
         <Box position={'absolute'} top={10} left={15}>
           <Stack direction={'row'} alignItems={'center'} gap={1}>
-            <Typography
-              sx={{ fontFamily: 'monospace', whiteSpace: 'break-spaces', fontSize: '1rem' }}
-            >
+            <Typography variant='body2' fontFamily={'monospace'}>
               Role:
             </Typography>
-            <Chip label={role} sx={{ fontFamily: 'monospace', whiteSpace: 'break-spaces' }} />
+            <Chip size='small' label={role} sx={{ fontFamily: 'monospace' }} />
           </Stack>
         </Box>
       )}

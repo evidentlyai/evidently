@@ -39,7 +39,7 @@ export const CreateFirstPromptVersionForm = (props: CreateFirstPromptVersionForm
 
   return (
     <Box>
-      <Typography align='center' variant='h5' gutterBottom>
+      <Typography fontWeight={600} align='center' variant='h4' gutterBottom mb={4}>
         Create your first prompt version
       </Typography>
 

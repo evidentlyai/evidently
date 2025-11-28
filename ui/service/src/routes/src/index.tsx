@@ -15,6 +15,13 @@ import { DatasetsLayout } from './home/projects-crumb-prefix/projects-layout/pro
 import { IndexDatasetsList } from './home/projects-crumb-prefix/projects-layout/project/datasets-layout/index-datasets-list/import'
 import { Project } from './home/projects-crumb-prefix/projects-layout/project/import'
 import { LoadPanelPointsAPIV2 } from './home/projects-crumb-prefix/projects-layout/project/load-panel-points/import'
+import { CreateNewPromptRoute } from './home/projects-crumb-prefix/projects-layout/project/prompts-layout/create-new-prompt/import'
+import { PromptsRouteLayout } from './home/projects-crumb-prefix/projects-layout/project/prompts-layout/import'
+import { IndexPromptsListRoute } from './home/projects-crumb-prefix/projects-layout/project/prompts-layout/index-prompts-list/import'
+import { PromptIdRoute } from './home/projects-crumb-prefix/projects-layout/project/prompts-layout/promptId/import'
+import { IndexSelectActionsRoute } from './home/projects-crumb-prefix/projects-layout/project/prompts-layout/promptId/index-select-actions/import'
+import { ManagePromptVersionsRoute } from './home/projects-crumb-prefix/projects-layout/project/prompts-layout/promptId/manage-prompt-versions/import'
+import { PromptIdCreateNewVersionRoute } from './home/projects-crumb-prefix/projects-layout/project/prompts-layout/promptId/new-prompt-version/import'
 import { ReportsLayout } from './home/projects-crumb-prefix/projects-layout/project/reports-layout/import'
 import { IndexReportsList } from './home/projects-crumb-prefix/projects-layout/project/reports-layout/index-reports-list/import'
 import { DatasetView } from './home/projects-crumb-prefix/projects-layout/project/traces-layout/exportId/dataset-view/import'
@@ -65,6 +72,23 @@ export const routes = [
                           Route(DatasetView, { path: 'dataset' } as const),
                           Route(TraceView, { path: 'trace' } as const),
                           Route(DialogView, { path: 'dialog' } as const)
+                        ]
+                      } as const)
+                    ]
+                  } as const),
+
+                  Route(PromptsRouteLayout, {
+                    path: 'prompts',
+                    children: [
+                      Route(IndexPromptsListRoute, { index: true } as const),
+                      Route(CreateNewPromptRoute, { path: 'new' } as const),
+
+                      Route(PromptIdRoute, {
+                        path: ':promptId',
+                        children: [
+                          Route(IndexSelectActionsRoute, { index: true } as const),
+                          Route(ManagePromptVersionsRoute, { path: 'manage' } as const),
+                          Route(PromptIdCreateNewVersionRoute, { path: 'new-version' } as const)
                         ]
                       } as const)
                     ]

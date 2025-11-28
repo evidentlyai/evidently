@@ -5,9 +5,7 @@ import {
   Button,
   Chip,
   Collapse,
-  FormControl,
   IconButton,
-  InputLabel,
   MenuItem,
   Select,
   Stack,
@@ -67,13 +65,17 @@ export const EditPromptVersionMessages = ({ state, setState }: EditPromptVersion
             <Collapse key={message.id}>
               <Stack direction={'row'} useFlexGap gap={2} alignItems={'flex-start'} mb={2}>
                 {state.messages.length > 1 && (
-                  <Box width={130} sx={{ transform: 'translateY(-8px)' }}>
-                    <FormControl fullWidth>
-                      <InputLabel>Role</InputLabel>
+                  <Box width={210}>
+                    <Stack direction={'row'} alignItems={'flex-start'} gap={2}>
+                      <Typography variant='body2' color='text.secondary'>
+                        Role:
+                      </Typography>
+
                       <Select
+                        fullWidth
+                        variant='outlined'
                         value={message.role}
-                        label='Role'
-                        renderValue={(value) => <Chip label={value} size='small' />}
+                        size='medium'
                         onChange={(e) =>
                           setState((p) => ({
                             ...p,
@@ -92,7 +94,7 @@ export const EditPromptVersionMessages = ({ state, setState }: EditPromptVersion
                           <Chip label='system' size='small' />
                         </MenuItem>
                       </Select>
-                    </FormControl>
+                    </Stack>
                   </Box>
                 )}
 

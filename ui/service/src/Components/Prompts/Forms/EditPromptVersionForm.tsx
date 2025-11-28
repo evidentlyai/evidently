@@ -1,14 +1,14 @@
-import { Box, Button, Stack } from '@mui/material'
-import { useState } from 'react'
-import type { LLMPromptTemplateModel, PromptTemplate } from '~/api/types'
-import { createContextForErrors } from '~/components/FormHelpers/createContextForErrors'
-import { useCustomFormValidator } from '~/components/FormHelpers/hooks'
+import type { LLMPromptTemplateModel, PromptTemplate } from 'evidently-ui-lib/api/types'
+import { createContextForErrors } from 'evidently-ui-lib/components/FormHelpers/createContextForErrors'
+import { useCustomFormValidator } from 'evidently-ui-lib/components/FormHelpers/hooks'
 import {
   PromptVersionEditor,
   type PromptVersionErrorFields,
   type PromptVersionState,
   getPromptVersionErrors
-} from '~/components/Prompts/Versions/Edit'
+} from 'evidently-ui-lib/components/Prompts/Versions/Edit/index'
+import { Box, Button, Stack } from 'evidently-ui-lib/shared-dependencies/mui-material'
+import { useState } from 'react'
 
 const PromptVersionHelpers = createContextForErrors<PromptVersionErrorFields>()
 
