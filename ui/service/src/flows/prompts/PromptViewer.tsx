@@ -1,6 +1,7 @@
 import type { PromptTemplate } from 'evidently-ui-lib/api/types'
 import { CollapsiblePromptDisplay } from 'evidently-ui-lib/components/Prompts/CollapsiblePromptDisplay'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { useLoader } from '~/routes/type-safe-route-helpers/hooks'
 
 type PromptViewerProps = {
   data: PromptTemplate
@@ -8,53 +9,38 @@ type PromptViewerProps = {
 }
 
 export const PromptViewer = (props: PromptViewerProps) => {
-  const { /*data,*/ buttonTitle } = props
+  const { data, buttonTitle } = props
 
-  // const promptFetcher = useLoader('/api/prompt-preview')
+  const promptFetcher = useLoader('/api/load-prompt-preview')
 
   const [details, setDetails] = useState(false)
 
-  // const prompt = promptFetcher.data
-  //   ? typeof promptFetcher.data === 'string'
-  //     ? promptFetcher.data
-  //     : promptFetcher.data && `Error: ${promptFetcher.data.error.detail}`
-  //   : ''
+  const prompt = promptFetcher.data
+    ? typeof promptFetcher.data === 'string'
+      ? promptFetcher.data
+      : promptFetcher.data && `Error: ${promptFetcher.data.error.detail}`
+    : ''
 
-  // // biome-ignore lint/correctness/useExhaustiveDependencies: fine
-  // useEffect(() => {
-  //   if (promptFetcher.state === 'idle' && details) {
-  //     promptFetcher.load({
-  //       query: { payload: JSON.stringify({ template: data } satisfies PromptTemplateRequestModel) }
-  //     })
-  //   }
-  // }, [
-  //   details,
-  //   // may be track manually better?
+  const payload = JSON.stringify(data satisfies PromptTemplate)
 
-  //   // template.include_category,
-  //   // template.criteria,
-  //   // template.include_score,
-  //   // template.include_reasoning
-  //   JSON.stringify(data)
-  // ])
+  // biome-ignore lint/correctness/useExhaustiveDependencies: fine
+  useEffect(() => {
+    if (!(details && promptFetcher.state === 'idle')) {
+      return
+    }
 
-  // const isLoading = promptFetcher.state !== 'idle'
+    promptFetcher.load({ query: { payload } })
+  }, [details, payload])
 
-  //   <CollapsiblePromptDisplay
-  //   details={details}
-  //   setDetails={setDetails}
-  //   buttonTitle={buttonTitle}
-  //   prompt={prompt}
-  //   isLoading={isLoading}
-  // />
+  const isLoading = promptFetcher.state !== 'idle'
 
   return (
     <CollapsiblePromptDisplay
       details={details}
       setDetails={setDetails}
       buttonTitle={buttonTitle}
-      prompt={''} // TODO: fix
-      isLoading={false} // TODO: fix
+      prompt={prompt}
+      isLoading={isLoading}
     />
   )
 }

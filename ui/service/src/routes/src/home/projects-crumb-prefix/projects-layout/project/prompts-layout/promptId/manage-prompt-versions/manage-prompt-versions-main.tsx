@@ -1,5 +1,4 @@
 import { responseParser } from 'evidently-ui-lib/api/client-heplers'
-import type { LLMPromptTemplateModel } from 'evidently-ui-lib/api/types'
 import { isSuccessData } from 'evidently-ui-lib/api/utils'
 import type { ModeType } from 'evidently-ui-lib/components/Prompts/ToggleViewEdit'
 import { editState2PromptVersion } from 'evidently-ui-lib/components/Prompts/Versions/utils'
@@ -39,8 +38,16 @@ export const handle = { crumb }
 export const loadData = async ({ params }: loadDataArgs) => {
   const { promptId: prompt_id } = params as CurrentRouteParams
 
-  return Promise.all([
-    [] as LLMPromptTemplateModel[], // TODO: Add prompts templates later
+  const [prompts, promptVersions, latestPromptVersion] = await Promise.all([
+    clientAPI
+      .GET('/api/llm_judges/templates')
+      .then(responseParser())
+      .then((template) =>
+        template.map(({ prompt, ...rest }) => ({
+          ...rest,
+          prompt: prompt.replaceAll('{input}', '{{input}}').trim()
+        }))
+      ),
     clientAPI
       .GET('/api/prompts/{prompt_id}/versions', {
         params: { path: { prompt_id } }
@@ -52,11 +59,9 @@ export const loadData = async ({ params }: loadDataArgs) => {
       })
       .then(responseParser({ notThrowExc: true }))
       .then((data) => (isSuccessData(data) ? data : null))
-  ]).then(([prompts, promptVersions, latestPromptVersion]) => ({
-    prompts,
-    promptVersions,
-    latestPromptVersion
-  }))
+  ])
+
+  return { prompts, promptVersions, latestPromptVersion }
 }
 
 ///////////////////

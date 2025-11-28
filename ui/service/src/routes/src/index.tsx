@@ -15,6 +15,7 @@ import { DatasetsLayoutRoute } from './home/projects-crumb-prefix/projects-layou
 import { IndexDatasetsListRoute } from './home/projects-crumb-prefix/projects-layout/project/datasets-layout/index-datasets-list/import'
 import { ProjectRoute } from './home/projects-crumb-prefix/projects-layout/project/import'
 import { LoadPanelPointsAPIRoute } from './home/projects-crumb-prefix/projects-layout/project/load-panel-points/import'
+import { LoadPromptAPIRoute } from './home/projects-crumb-prefix/projects-layout/project/load-prompt/import'
 import { CreateNewPromptRoute } from './home/projects-crumb-prefix/projects-layout/project/prompts-layout/create-new-prompt/import'
 import { PromptsRouteLayout } from './home/projects-crumb-prefix/projects-layout/project/prompts-layout/import'
 import { IndexPromptsListRoute } from './home/projects-crumb-prefix/projects-layout/project/prompts-layout/index-prompts-list/import'
@@ -38,6 +39,8 @@ export const routes = [
       Route(ProjectsCrumbPrefixRoute, {
         children: [
           Route(IndexProjectsListRoute, { index: true } as const),
+
+          Route(LoadPromptAPIRoute, { path: 'api/load-prompt-preview' } as const),
 
           Route(ProjectsLayoutRoute, {
             path: 'projects',
