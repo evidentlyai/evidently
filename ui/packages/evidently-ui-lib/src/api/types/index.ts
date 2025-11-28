@@ -38,3 +38,17 @@ export type DatasetFilter = Schemas['Filters']['all_set']
 export type DatasetModel = Schemas['DatasetMetadataResponse']
 export type TraceModel = Schemas['TraceModel']
 export type SpanModel = Schemas['SpanModel']
+export type PromptModel = Schemas['Prompt']
+export type PromptVersionModel = Schemas['PromptVersion']
+
+export type PromptTemplate =
+  | Schemas['BinaryClassificationPromptTemplate']
+  | Schemas['MulticlassClassificationPromptTemplate']
+
+// TODO: just use Schemas['LLMPromptTemplateModel']
+export type LLMPromptTemplateModel = {
+  name: string
+  output_format: string
+  prompt: string
+  template: components['schemas']['BinaryClassificationPromptTemplate']
+}

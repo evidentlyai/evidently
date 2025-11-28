@@ -1,1 +1,1 @@
-export * as DatasetView from './dataset-view-main'
+export * as DatasetViewRoute from './dataset-view-main'

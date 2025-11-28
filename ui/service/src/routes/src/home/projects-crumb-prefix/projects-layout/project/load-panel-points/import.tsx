@@ -1,1 +1,1 @@
-export * as LoadPanelPointsAPIV2 from './load-panel-points-main'
+export * as LoadPanelPointsAPIRoute from './load-panel-points-main'

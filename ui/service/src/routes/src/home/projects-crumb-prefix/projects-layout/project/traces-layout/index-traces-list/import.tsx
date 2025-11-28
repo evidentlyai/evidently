@@ -1,1 +1,1 @@
-export * as IndexTracesList from './index-traces-list-main'
+export * as IndexTracesListRoute from './index-traces-list-main'
