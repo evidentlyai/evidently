@@ -198,25 +198,20 @@ export const LLMJudgeTemplateEditor = (props: LLMJudgeTemplateFeatureEditorProps
               </Typography>
 
               <Autocomplete
-                multiple
-                // hack for get Chip rendered
-                value={state.uncertainty ? [state.uncertainty] : []}
-                // hack for get Chip rendered
-                onChange={(_, value) => setState({ ...state, uncertainty: value.at(-1) ?? '' })}
-                options={['unknown', 'target', 'non_target']}
-                renderValue={(value, getItemProps) =>
-                  value.map((option, index) => {
-                    const { key, ...itemProps } = getItemProps({ index })
-                    return (
-                      <Chip key={key} variant='filled' size='small' label={option} {...itemProps} />
-                    )
-                  })
-                }
+                value={state.uncertainty}
+                onChange={(_, value) => setState({ ...state, uncertainty: value ?? undefined })}
+                options={['unknown', 'target', 'non_target'] as const}
+                renderValue={(value, getItemProps) => {
+                  if (!value) return null
+                  const itemProps = getItemProps()
+                  return <Chip variant='filled' size='small' label={value} {...itemProps} />
+                }}
                 renderInput={(params) => (
                   <TextField error={errors.uncertainty.isError} {...params} variant='outlined' />
                 )}
                 size='small'
               />
+
               {errors.uncertainty.errorMessage && (
                 <FormHelperText>{errors.uncertainty.errorMessage}</FormHelperText>
               )}
@@ -350,8 +345,19 @@ export const LLMJudgeTemplateEditor = (props: LLMJudgeTemplateFeatureEditorProps
         </Typography>
 
         <CategoryScoreReasoning
-          values={state}
-          setValues={(values) => setState({ ...state, ...values })}
+          values={{
+            include_category: state.include_category,
+            include_reasoning: state.include_reasoning,
+            include_score: state.include_score
+          }}
+          setValues={(values) =>
+            setState({
+              ...state,
+              include_category: values.include_category ?? undefined,
+              include_reasoning: values.include_reasoning ?? undefined,
+              include_score: values.include_score ?? undefined
+            })
+          }
           error={errors.reasoning_category_score.isError}
           errorMessage={errors.reasoning_category_score.errorMessage}
         />
