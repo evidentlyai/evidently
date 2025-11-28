@@ -1,1 +1,1 @@
-export * as ProjectsLayout from './projects-layout-main'
+export * as ProjectsLayoutRoute from './projects-layout-main'
