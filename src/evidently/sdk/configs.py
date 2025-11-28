@@ -26,6 +26,7 @@ from evidently.sdk.artifacts import ArtifactMetadata as ConfigMetadata
 from evidently.sdk.artifacts import ArtifactVersion as ConfigVersion
 from evidently.sdk.artifacts import ArtifactVersionID as ConfigVersionID
 from evidently.sdk.artifacts import ArtifactVersionIDInput as ConfigVersionIDInput
+from evidently.sdk.artifacts import ArtifactVersionMetadata as ConfigVersionMetadata
 from evidently.sdk.artifacts import VersionOrLatest
 from evidently.ui.service.type_aliases import STR_UUID
 
@@ -250,3 +251,14 @@ class CloudConfigAPI(ConfigAPI):
 
     def get_descriptor(self, project_id: STR_UUID, name: str, version: VersionOrLatest = "latest") -> Descriptor:
         return self._get_typed_version(project_id, name, version, Descriptor)  # type: ignore[type-abstract]
+
+
+__all__ = [
+    "ConfigMetadata",
+    "ConfigVersionMetadata",
+    "GenericConfig",
+    "ConfigContent",
+    "RemoteGenericConfig",
+    "CloudConfigAPI",
+    "ConfigVersion",
+]
