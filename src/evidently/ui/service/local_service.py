@@ -13,6 +13,7 @@ from litestar.logging import LoggingConfig
 
 from evidently.errors import EvidentlyError
 from evidently.ui.service.api.artifacts import artifacts_router
+from evidently.ui.service.api.llm_judges import llm_judges_router
 from evidently.ui.service.api.projects import create_projects_api
 from evidently.ui.service.api.projects import projects_api_dependencies
 from evidently.ui.service.api.prompts import prompts_router
@@ -52,7 +53,13 @@ class LocalServiceComponent(ServiceComponent):
 
     def get_api_route_handlers(self, ctx: ComponentContext):
         guard = ctx.get_component(SecurityComponent).get_auth_guard()
-        return [create_projects_api(guard), service_api(), artifacts_router(), prompts_router()]
+        return [
+            create_projects_api(guard),
+            service_api(),
+            artifacts_router(),
+            prompts_router(),
+            llm_judges_router(),
+        ]
 
     def get_dependencies(self, ctx: ComponentContext) -> Dict[str, Provide]:
         from evidently.ui.service.managers.artifacts import ArtifactManager
