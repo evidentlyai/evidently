@@ -295,6 +295,8 @@ class InMemoryDataStorage(DataStorage):
         return self._add_snapshot_points_sync(project_id, snapshot_id, snapshot)
 
     def _add_snapshot_points_sync(self, project_id: ProjectID, snapshot_id: SnapshotID, snapshot: SnapshotModel):
+        if project_id in self._metrics_points and snapshot_id in self._metrics_points[project_id]:
+            self._metrics_points[project_id][snapshot_id] = []
         for result in snapshot.metric_results.values():
             if isinstance(result, SingleValue):
                 self._add_value(project_id, snapshot_id, snapshot.timestamp, result)
