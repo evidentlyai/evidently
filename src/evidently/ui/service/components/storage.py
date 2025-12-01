@@ -19,6 +19,7 @@ from evidently.ui.service.datasets.metadata import DatasetMetadataStorage
 from evidently.ui.service.datasets.metadata import FileDatasetMetadataStorage
 from evidently.ui.service.datasets.snapshot_links import SnapshotDatasetLinksManager
 from evidently.ui.service.managers.projects import ProjectManager
+from evidently.ui.service.storage.artifacts import ArtifactStorage
 from evidently.ui.service.storage.common import NoopAuthManager
 from evidently.ui.service.storage.local import FSSpecBlobStorage
 from evidently.ui.service.storage.local import create_local_project_manager
@@ -74,6 +75,7 @@ class StorageComponent(Component, ABC):
             deps["snapshot_dataset_links"] = Provide(self.snapshot_dataset_links_provider(), use_cache=self.use_cache)
         if ctx.get_component(TracingStorageComponent, required=False) is None:
             deps["tracing_storage"] = Provide(self.tracing_storage_provider(), use_cache=self.use_cache)
+        deps["artifact_storage"] = Provide(self.artifact_storage_provider(), use_cache=self.use_cache)
         # todo: same for project_manager dependencies
         return deps
 
@@ -92,6 +94,9 @@ class StorageComponent(Component, ABC):
 
     def tracing_storage_provider(self) -> Callable[..., Awaitable[TracingStorage]]:
         raise NotImplementedError(f"{self.__class__.__name__} does not have default tracing_storage provider")
+
+    def artifact_storage_provider(self) -> Callable[..., Awaitable["ArtifactStorage"]]:
+        raise NotImplementedError(f"{self.__class__.__name__} does not have default artifact_storage provider")
 
 
 class LocalStorageComponent(StorageComponent):
@@ -132,6 +137,14 @@ class LocalStorageComponent(StorageComponent):
             return FileTracingStorage.provide(self.path)
 
         return tracing_storage_factory
+
+    def artifact_storage_provider(self):
+        from evidently.ui.service.storage.local.artifacts import FileArtifactStorage
+
+        async def artifact_storage_factory():
+            return FileArtifactStorage(base_path=self.path)
+
+        return artifact_storage_factory
 
 
 class MetadataStorageComponent(FactoryComponent[ProjectMetadataStorage], ABC):

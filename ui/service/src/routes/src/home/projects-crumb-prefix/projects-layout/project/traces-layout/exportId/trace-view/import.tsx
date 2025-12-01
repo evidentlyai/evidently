@@ -1,1 +1,1 @@
-export * as TraceView from './trace-view-main'
+export * as TraceViewRoute from './trace-view-main'

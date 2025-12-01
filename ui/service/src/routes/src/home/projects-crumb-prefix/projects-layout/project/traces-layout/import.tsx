@@ -1,1 +1,1 @@
-export * as TracesLayout from './traces-layout-main'
+export * as TracesLayoutRoute from './traces-layout-main'

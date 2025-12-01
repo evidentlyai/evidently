@@ -2,6 +2,9 @@ from logging.config import fileConfig
 
 from alembic import context
 
+from evidently.ui.service.storage.sql.artifacts import ArtifactModel  # noqa: F401
+from evidently.ui.service.storage.sql.artifacts import ArtifactVersionModel  # noqa: F401
+
 # Import all models so Alembic can detect them
 from evidently.ui.service.storage.sql.models import Base  # noqa: F401
 from evidently.ui.service.storage.sql.models import BlobSQLModel  # noqa: F401

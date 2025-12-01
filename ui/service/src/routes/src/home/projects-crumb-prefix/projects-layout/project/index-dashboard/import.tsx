@@ -2,4 +2,4 @@
 
 // we export it lazy because of ~2.6 MB chunk size :) plotly.js is too big :3
 const lazy = () => import('./index-dashboard-main')
-export const IndexDashboardLazy = { lazy } as const
+export const IndexDashboardRoute = { lazy } as const

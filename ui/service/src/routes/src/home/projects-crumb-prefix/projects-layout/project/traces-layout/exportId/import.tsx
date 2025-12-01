@@ -1,1 +1,1 @@
-export * as ExportId from './exportId-main'
+export * as ExportIdRoute from './exportId-main'

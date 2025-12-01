@@ -1,1 +1,1 @@
-export * as DialogView from './dialog-view-main'
+export * as DialogViewRoute from './dialog-view-main'

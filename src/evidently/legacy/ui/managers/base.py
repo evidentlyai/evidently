@@ -73,7 +73,7 @@ def _get_manager_deps(dependant_type: Type[BaseDependant]) -> Dict[str, Type]:
             for bt in dependant_type.mro()
             if issubclass(bt, BaseDependant)
             for name, cls in getattr(bt, "__annotations__", {}).items()
-            if not is_classvar(cls)
+            if not is_classvar(cls) and not name.startswith("_")
         }
     return dependant_type.__dependencies__
 
