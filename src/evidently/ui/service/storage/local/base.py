@@ -4,6 +4,7 @@ import json
 import posixpath
 import re
 import uuid
+from typing import Callable
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -108,6 +109,7 @@ class LocalState(WorkspaceLocalState):
         self.project_manager = project_manager
         self.projects: Dict[ProjectID, Project] = {}
         self.snapshots: Dict[ProjectID, Dict[SnapshotID, SnapshotModel]] = {}
+        self.callbacks: List[Callable[[ProjectID, SnapshotID, SnapshotModel], None]] = []
 
     @classmethod
     def load(cls, path: str, project_manager: Optional[ProjectManager]):
@@ -145,12 +147,17 @@ class LocalState(WorkspaceLocalState):
                 continue
             self.reload_snapshot(project, snapshot_id, skip_errors)
 
+    def register_new_snapshot_callback(self, callback: Callable[[ProjectID, SnapshotID, SnapshotModel], None]):
+        self.callbacks.append(callback)
+
     def reload_snapshot(self, project: Project, snapshot_id: SnapshotID, skip_errors: bool = True):
         try:
             snapshot_path = posixpath.join(str(project.id), SNAPSHOTS, str(snapshot_id) + ".json")
             with self.location.open(snapshot_path) as f:
                 model = parse_obj_as(SnapshotModel, json.load(f))
             self.snapshots[project.id][snapshot_id] = model
+            for callback in self.callbacks:
+                callback(project.id, snapshot_id, model)
         except ValidationError as e:
             if not skip_errors:
                 raise ValueError(f"{snapshot_id} is malformed") from e
@@ -276,6 +283,7 @@ class InMemoryDataStorage(DataStorage):
         for project_id, snapshots in self._state.snapshots.items():
             for snapshot_id, snapshot in snapshots.items():
                 self._add_snapshot_points_sync(project_id, snapshot_id, snapshot)
+        self._state.register_new_snapshot_callback(self._add_snapshot_points_sync)
 
     @property
     def state(self):
