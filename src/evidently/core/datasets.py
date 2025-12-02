@@ -492,7 +492,7 @@ class TestSummaryInfo(SpecialColumnInfo):
 
     @property
     def has_all(self):
-        return self.any_column is not None
+        return self.all_column is not None
 
     @property
     def has_any(self):
