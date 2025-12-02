@@ -34,6 +34,15 @@ from .models import SnapshotSQLModel
 INSERT_CHUNK_SIZE = 1000
 
 
+def _normalize_params(params: Dict[str, str]) -> Dict[str, str]:
+    """Normalize params by filtering out None values and string 'None' values.
+
+    This ensures that old points with replace_nan=None are grouped with new points
+    that don't have replace_nan at all (due to exclude_none=True in metric config).
+    """
+    return {k: v for k, v in params.items() if v is not None and v != "None"}
+
+
 def _find_filter_index(
     filters: List[SeriesFilter],
     metric_type: str,
@@ -62,6 +71,9 @@ def _collect_series(data, filters: Optional[List[SeriesFilter]]) -> SeriesRespon
     series_filters_map: Dict[tuple, int] = {}
 
     for metric_type, params, snapshot_id, timestamp, snapshot_tags, snapshot_metadata, value in data:
+        # Normalize params to filter out None values for backward compatibility
+        normalized_params = _normalize_params(params)
+
         snapshot_meta = SeriesSource(
             snapshot_id=snapshot_id,
             timestamp=timestamp,
@@ -76,11 +88,11 @@ def _collect_series(data, filters: Optional[List[SeriesFilter]]) -> SeriesRespon
             sources.append(snapshot_meta)
             index += 1
 
-        series_id = metric_type + ":" + ",".join([f"{k}={v}" for k, v in params.items()])
+        series_id = metric_type + ":" + ",".join([f"{k}={v}" for k, v in normalized_params.items()])
 
         key = (
             metric_type,
-            frozenset(params.items()),
+            frozenset(normalized_params.items()),
             frozenset(snapshot_tags),
             frozenset(snapshot_metadata.items()),
         )
@@ -93,7 +105,9 @@ def _collect_series(data, filters: Optional[List[SeriesFilter]]) -> SeriesRespon
             if stored_index is not None:
                 filter_index = stored_index
             else:
-                found_index = _find_filter_index(filters, metric_type, params, snapshot_tags, snapshot_metadata)
+                found_index = _find_filter_index(
+                    filters, metric_type, normalized_params, snapshot_tags, snapshot_metadata
+                )
                 if found_index is None:
                     continue
                 filter_index = found_index
@@ -108,7 +122,7 @@ def _collect_series(data, filters: Optional[List[SeriesFilter]]) -> SeriesRespon
             series[series_id] = Series(
                 metric_type=metric_type,
                 filter_index=filter_index,
-                params=params,
+                params=normalized_params,
                 values=([None] * index) + [value_float],
             )
         else:
@@ -385,12 +399,15 @@ class SQLDataStorage(BaseSQLStorage, DataStorage):
                 if not params:
                     params = {}
 
+                # Normalize params to filter out None values for backward compatibility
+                normalized_params = _normalize_params(params)
+
                 # Apply series filter matching
                 matched = False
                 for filter_item in series_filter:
                     if filter_item.metric not in ("*", metric_type):
                         continue
-                    if params.items() < filter_item.metric_labels.items():
+                    if normalized_params.items() < filter_item.metric_labels.items():
                         continue
                     if not (set(tags) >= set(filter_item.tags)):
                         continue
@@ -405,7 +422,7 @@ class SQLDataStorage(BaseSQLStorage, DataStorage):
                 data_results.append(
                     (
                         metric_type,
-                        params,
+                        normalized_params,
                         snapshot_id,
                         timestamp,
                         tags,
