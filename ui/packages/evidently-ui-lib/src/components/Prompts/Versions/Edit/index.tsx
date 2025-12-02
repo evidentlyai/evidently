@@ -124,10 +124,11 @@ type PromptVersionFormProps = {
   buttonTitle: string
   prompts: LLMPromptTemplateModel[]
   PromptViewerComponent: (args: { data: PromptTemplate }) => JSX.Element
+  isLoading: boolean
 }
 
 export const PromptVersionForm = (props: PromptVersionFormProps) => {
-  const { defaultValues, onSuccess, buttonTitle, prompts, PromptViewerComponent } = props
+  const { defaultValues, onSuccess, buttonTitle, prompts, PromptViewerComponent, isLoading } = props
 
   const [state, setState] = useState(defaultValues)
 
@@ -154,7 +155,11 @@ export const PromptVersionForm = (props: PromptVersionFormProps) => {
       </WithErrors>
 
       <Stack mt={2} direction={'row'} justifyContent={'flex-end'}>
-        <Button {...submitButtonProps} variant='contained'>
+        <Button
+          onClick={submitButtonProps.onClick}
+          disabled={isLoading || submitButtonProps.disabled}
+          variant='contained'
+        >
           {buttonTitle}
         </Button>
       </Stack>
