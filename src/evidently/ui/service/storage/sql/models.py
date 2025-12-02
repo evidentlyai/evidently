@@ -296,3 +296,6 @@ class SnapshotDatasetsSQLModel(Base):
         Index("ix_snapshot_datasets_snapshot_id", "snapshot_id"),
         Index("ix_snapshot_datasets_dataset_id", "dataset_id"),
     )
+
+
+# Import artifact models to register them with Base

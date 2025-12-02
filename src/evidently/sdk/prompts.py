@@ -1,5 +1,7 @@
 import json
 import uuid
+from abc import ABC
+from abc import abstractmethod
 from datetime import datetime
 from typing import TYPE_CHECKING
 from typing import Any
@@ -16,6 +18,7 @@ from evidently._pydantic_compat import parse_obj_as
 from evidently.errors import EvidentlyError
 from evidently.llm.prompts.content import PromptContent
 from evidently.llm.prompts.content import PromptContentType
+from evidently.ui.service.type_aliases import STR_UUID
 from evidently.ui.service.type_aliases import ZERO_UUID
 from evidently.ui.service.type_aliases import ProjectID
 from evidently.ui.service.type_aliases import UserID
@@ -25,6 +28,10 @@ if TYPE_CHECKING:
 
 PromptID = uuid.UUID
 PromptVersionID = uuid.UUID
+
+# Type aliases for user-facing APIs that accept both str and UUID
+PromptIDInput = STR_UUID
+PromptVersionIDInput = STR_UUID
 
 
 class PromptMetadata(BaseModel):
@@ -89,44 +96,115 @@ VersionOrLatest = Union[int, Literal["latest"]]
 
 
 class RemotePrompt(Prompt):
-    _manager: "RemotePromptManager" = PrivateAttr()
+    _api: "PromptAPI" = PrivateAttr()
 
-    def bind(self, manager: "RemotePromptManager") -> "RemotePrompt":
-        self._manager = manager
+    def bind(self, api: "PromptAPI") -> "RemotePrompt":
+        self._api = api
         return self
 
     def list_versions(self) -> List[PromptVersion]:
-        return self._manager.list_versions(self.id)
+        return self._api.list_versions(self.id)
 
     def get_version(self, version: VersionOrLatest = "latest") -> PromptVersion:
-        return self._manager.get_version(self.id, version)
+        return self._api.get_version(self.id, version)
 
     def bump_version(self, content: Any):
-        return self._manager.bump_prompt_version(self.id, content)
+        return self._api.bump_prompt_version(self.id, content)
 
     def delete(self):
-        return self._manager.delete_prompt(self.id)
+        return self._api.delete_prompt(self.id)
 
     def delete_version(self, version_id: PromptVersionID):
-        return self._manager.delete_version(version_id)
+        return self._api.delete_version(version_id)
 
     def save(self):
-        self._manager.update_prompt(self)
+        self._api.update_prompt(self)
 
 
-class RemotePromptManager:
+class PromptAPI(ABC):
+    """Abstract base class for prompt API."""
+
+    @abstractmethod
+    def list_prompts(self, project_id: STR_UUID) -> List[RemotePrompt]:
+        """List all prompts in a project."""
+        ...
+
+    @abstractmethod
+    def get_or_create_prompt(self, project_id: STR_UUID, name: str) -> RemotePrompt:
+        """Get or create a prompt by name."""
+        ...
+
+    @abstractmethod
+    def get_prompt(self, project_id: STR_UUID, name: str) -> RemotePrompt:
+        """Get a prompt by name."""
+        ...
+
+    @abstractmethod
+    def get_prompt_by_id(self, project_id: STR_UUID, prompt_id: PromptIDInput) -> RemotePrompt:
+        """Get a prompt by ID."""
+        ...
+
+    @abstractmethod
+    def create_prompt(self, project_id: STR_UUID, name: str) -> RemotePrompt:
+        """Create a new prompt."""
+        ...
+
+    @abstractmethod
+    def delete_prompt(self, prompt_id: PromptIDInput):
+        """Delete a prompt."""
+        ...
+
+    @abstractmethod
+    def update_prompt(self, prompt: Prompt):
+        """Update a prompt."""
+        ...
+
+    @abstractmethod
+    def list_versions(self, prompt_id: PromptIDInput) -> List[PromptVersion]:
+        """List all versions of a prompt."""
+        ...
+
+    @abstractmethod
+    def get_version(self, prompt_id: PromptIDInput, version: VersionOrLatest = "latest") -> PromptVersion:
+        """Get a specific version of a prompt."""
+        ...
+
+    @abstractmethod
+    def get_version_by_id(self, prompt_version_id: PromptVersionIDInput) -> PromptVersion:
+        """Get a version by its ID."""
+        ...
+
+    @abstractmethod
+    def create_version(self, prompt_id: PromptIDInput, version: int, content: Any) -> PromptVersion:
+        """Create a new version of a prompt."""
+        ...
+
+    @abstractmethod
+    def delete_version(self, prompt_version_id: PromptVersionIDInput):
+        """Delete a version."""
+        ...
+
+    @abstractmethod
+    def bump_prompt_version(self, prompt_id: PromptIDInput, content: Any) -> PromptVersion:
+        """Bump prompt version (create next version)."""
+        ...
+
+
+class CloudPromptAPI(PromptAPI):
+    """Cloud-only prompt API that works with /api/prompts endpoint."""
+
     def __init__(self, workspace: "CloudWorkspace"):
         self._ws = workspace
 
-    def list_prompts(self, project_id: ProjectID) -> List[RemotePrompt]:
+    def list_prompts(self, project_id: STR_UUID) -> List[RemotePrompt]:
         return [
             p.bind(self)
             for p in self._ws._request(
-                "/api/prompts", "GET", query_params={"project_id": project_id}, response_model=List[RemotePrompt]
+                "/api/prompts", "GET", query_params={"project_id": str(project_id)}, response_model=List[RemotePrompt]
             )
         ]
 
-    def get_or_create_prompt(self, project_id: ProjectID, name: str) -> RemotePrompt:
+    def get_or_create_prompt(self, project_id: STR_UUID, name: str) -> RemotePrompt:
         try:
             return self.get_prompt(project_id, name)
         except EvidentlyError as e:
@@ -134,24 +212,27 @@ class RemotePromptManager:
                 raise e
             return self.create_prompt(project_id, name)
 
-    def get_prompt(self, project_id: ProjectID, name: str) -> RemotePrompt:
+    def get_prompt(self, project_id: STR_UUID, name: str) -> RemotePrompt:
         return self._ws._request(
-            f"/api/prompts/by-name/{name}", "GET", query_params={"project_id": project_id}, response_model=RemotePrompt
+            f"/api/prompts/by-name/{name}",
+            "GET",
+            query_params={"project_id": str(project_id)},
+            response_model=RemotePrompt,
         ).bind(self)
 
-    def get_prompt_by_id(self, project_id: ProjectID, prompt_id: PromptID) -> RemotePrompt:
+    def get_prompt_by_id(self, project_id: STR_UUID, prompt_id: PromptIDInput) -> RemotePrompt:
         return self._ws._request(f"/api/prompts/{prompt_id}", "GET", response_model=RemotePrompt).bind(self)
 
-    def create_prompt(self, project_id: ProjectID, name: str) -> RemotePrompt:
+    def create_prompt(self, project_id: STR_UUID, name: str) -> RemotePrompt:
         return self._ws._request(
             "/api/prompts/",
             "POST",
-            query_params={"project_id": project_id},
+            query_params={"project_id": str(project_id)},
             body=Prompt(name=name, metadata=PromptMetadata()).dict(),
             response_model=RemotePrompt,
         ).bind(self)
 
-    def delete_prompt(self, prompt_id: PromptID):
+    def delete_prompt(self, prompt_id: PromptIDInput):
         return self._ws._request(f"/api/prompts/{prompt_id}", "DELETE")
 
     def update_prompt(self, prompt: Prompt):
@@ -161,18 +242,18 @@ class RemotePromptManager:
             body=json.loads(prompt.json()),
         )
 
-    def list_versions(self, prompt_id: PromptID) -> List[PromptVersion]:
+    def list_versions(self, prompt_id: PromptIDInput) -> List[PromptVersion]:
         return self._ws._request(f"/api/prompts/{prompt_id}/versions", "GET", response_model=List[PromptVersion])
 
-    def get_version(self, prompt_id: PromptID, version: VersionOrLatest = "latest") -> PromptVersion:
+    def get_version(self, prompt_id: PromptIDInput, version: VersionOrLatest = "latest") -> PromptVersion:
         return self._ws._request(f"/api/prompts/{prompt_id}/versions/{version}", "GET", response_model=PromptVersion)
 
-    def get_version_by_id(self, prompt_version_id: PromptVersionID) -> PromptVersion:
+    def get_version_by_id(self, prompt_version_id: PromptVersionIDInput) -> PromptVersion:
         return self._ws._request(
             f"/api/prompts/prompt-versions/{prompt_version_id}", "GET", response_model=PromptVersion
         )
 
-    def create_version(self, prompt_id: PromptID, version: int, content: Any) -> PromptVersion:
+    def create_version(self, prompt_id: PromptIDInput, version: int, content: Any) -> PromptVersion:
         return self._ws._request(
             f"/api/prompts/{prompt_id}/versions",
             "POST",
@@ -180,10 +261,10 @@ class RemotePromptManager:
             response_model=PromptVersion,
         )
 
-    def delete_version(self, prompt_version_id: PromptVersionID):
+    def delete_version(self, prompt_version_id: PromptVersionIDInput):
         self._ws._request(f"/api/prompts/prompt-versions/{prompt_version_id}", "DELETE")
 
-    def bump_prompt_version(self, prompt_id: PromptID, content: Any) -> PromptVersion:
+    def bump_prompt_version(self, prompt_id: PromptIDInput, content: Any) -> PromptVersion:
         # todo: single request?
         try:
             latest = self.get_version(prompt_id)

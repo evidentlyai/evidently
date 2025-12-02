@@ -1,1 +1,1 @@
-export * as IndexRedirect from './index-redirect-main'
+export * as IndexTracingExportIdRedirectRoute from './index-redirect-main'

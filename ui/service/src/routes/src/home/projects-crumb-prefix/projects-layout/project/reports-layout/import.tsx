@@ -1,1 +1,1 @@
-export * as ReportsLayout from './reports-layout-main'
+export * as ReportsLayoutRoute from './reports-layout-main'
