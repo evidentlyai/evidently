@@ -130,6 +130,7 @@ export const Component = () => {
     return (
       <Box maxWidth={'md'} mx={'auto'} mt={3}>
         <CreateFirstPromptVersionForm
+          isLoading={createPromptFetcher.state !== 'idle'}
           PromptViewerComponent={PromptViewer}
           onSuccess={(editState) => {
             createPromptFetcher.submit({
@@ -150,6 +151,7 @@ export const Component = () => {
   return (
     <Box maxWidth={'md'} mx={'auto'} mt={3}>
       <PromptVersionForm
+        isLoading={createPromptFetcher.state !== 'idle'}
         PromptViewerComponent={PromptViewer}
         prompts={prompts}
         onSuccess={(editState) => {

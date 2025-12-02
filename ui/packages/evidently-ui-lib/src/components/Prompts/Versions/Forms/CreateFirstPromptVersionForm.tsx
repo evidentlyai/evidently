@@ -22,10 +22,11 @@ type CreateFirstPromptVersionFormProps = {
   defaultValues: PromptVersionState
   prompts: LLMPromptTemplateModel[]
   PromptViewerComponent: (args: { data: PromptTemplate }) => JSX.Element
+  isLoading: boolean
 }
 
 export const CreateFirstPromptVersionForm = (props: CreateFirstPromptVersionFormProps) => {
-  const { defaultValues, onSuccess, prompts, PromptViewerComponent } = props
+  const { defaultValues, onSuccess, prompts, PromptViewerComponent, isLoading } = props
   const [state, setState] = useState(defaultValues)
 
   const errors = getPromptVersionErrors(state)
@@ -79,7 +80,11 @@ export const CreateFirstPromptVersionForm = (props: CreateFirstPromptVersionForm
         </WithErrors>
 
         <Stack mt={2} direction={'row'} justifyContent={'flex-end'}>
-          <Button {...submitButtonProps} variant='contained'>
+          <Button
+            onClick={submitButtonProps.onClick}
+            disabled={isLoading || submitButtonProps.disabled}
+            variant='contained'
+          >
             Save
           </Button>
         </Stack>
