@@ -2,6 +2,7 @@ import os
 import threading
 import time
 from typing import Optional
+from typing import cast
 
 import requests
 import uuid6
@@ -14,6 +15,7 @@ from evidently.ui.service.app import get_config
 from evidently.ui.service.demo_projects import DEMO_PROJECT_NAMES_FOR_CLI
 from evidently.ui.service.demo_projects import DEMO_PROJECTS
 from evidently.ui.service.demo_projects import DEMO_PROJECTS_NAMES
+from evidently.ui.service.demo_projects import DemoProjectsNames
 from evidently.ui.workspace import RemoteWorkspace
 
 
@@ -62,7 +64,8 @@ def _create_demo_projects_task(demo_names: list[str], host: str, port: int, secr
                 echo(f"Warning: Unknown demo project: {demo_name}")
                 continue
 
-            demo_project = DEMO_PROJECTS[demo_name]
+            # TODO: better type safety
+            demo_project = DEMO_PROJECTS[cast(DemoProjectsNames, demo_name)]
 
             # Check if project already exists
             existing_projects = ws.list_projects()
@@ -99,9 +102,10 @@ def ui(
 
     from evidently.ui.service.app import run
 
-    demos = demo_projects.split(",") if demo_projects else []
+    demos: list[str] = demo_projects.split(",") if demo_projects else []
     if "all" in demos:
-        demos = DEMO_PROJECTS_NAMES
+        # TODO: better type safety
+        demos = cast(list[str], list(DEMO_PROJECTS_NAMES))
     missing = [dp for dp in demos if dp not in DEMO_PROJECTS]
     if missing:
         raise BadParameter(f"Unknown demo project name '{missing[0]}'")

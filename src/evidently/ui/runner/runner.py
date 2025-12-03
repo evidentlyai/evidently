@@ -176,7 +176,7 @@ class _EvidentlyUIRunnerImpl(BaseModel):
         atexit.register(lambda: self.__terminate_process(process))
 
         # wait for service to start
-        current_wait_time = 0
+        current_wait_time: float = 0.0
         while process.poll() is None:
             time.sleep(time_step)
             current_wait_time += time_step
@@ -188,7 +188,10 @@ class _EvidentlyUIRunnerImpl(BaseModel):
                 return RunServiceInfoVariants.Success(port=port, process=process)
 
         assert isinstance(process.returncode, int) and process.returncode > 0
-        error_message = process.stderr.read().decode("utf-8")
+        if process.stderr is None:
+            error_message = "Unknown error: stderr is not available"
+        else:
+            error_message = process.stderr.read().decode("utf-8")
 
         return RunServiceInfoVariants.Failed(error_message=error_message)
 
