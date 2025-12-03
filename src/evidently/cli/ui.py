@@ -11,6 +11,7 @@ from typer import echo
 
 from evidently.cli.main import app
 from evidently.ui.service.app import get_config
+from evidently.ui.service.demo_projects import DEMO_PROJECT_NAMES_FOR_CLI
 from evidently.ui.service.demo_projects import DEMO_PROJECTS
 from evidently.ui.service.demo_projects import DEMO_PROJECTS_NAMES
 from evidently.ui.workspace import RemoteWorkspace
@@ -86,7 +87,7 @@ def ui(
     demo_projects: str = Option(
         "",
         "--demo-projects",
-        help=f"Comma-separated list of demo projects to generate. Possible values: [{'|'.join(['all'] + DEMO_PROJECTS_NAMES)}]",
+        help=f"Comma-separated list of demo projects to generate. Possible values: [{'|'.join(DEMO_PROJECT_NAMES_FOR_CLI)}]",
     ),
     secret: Optional[str] = Option(None, help="Secret for writing operations"),
     litestar_request_max_body_size: Optional[int] = Option(None, help="Request body size limit"),
