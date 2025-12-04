@@ -97,6 +97,8 @@ jobs:
           cache: "pip"
           cache-dependency-path: requirements.min.txt
       # Runs a single command using the runners shell
+      - name: Install pytorch for linux
+        run: pip install torch --index-url https://download.pytorch.org/whl/cpu
       - name: Install dependencies
         run: pip install -r requirements.min.txt && pip install -r requirements.dev.txt
       - name: Run pre-commit
