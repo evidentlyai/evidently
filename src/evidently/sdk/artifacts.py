@@ -96,7 +96,7 @@ class Artifact(BaseModel):
     id: ArtifactID = ZERO_UUID
     project_id: ProjectID = ZERO_UUID
     name: str
-    metadata: ArtifactMetadata = ArtifactMetadata()
+    metadata: ArtifactMetadata = Field(default_factory=ArtifactMetadata)
 
 
 class ArtifactVersionMetadata(BaseModel):
@@ -110,7 +110,7 @@ class ArtifactVersion(BaseModel):
     id: ArtifactVersionID = ZERO_UUID
     artifact_id: ArtifactID = ZERO_UUID
     version: int
-    metadata: ArtifactVersionMetadata = ArtifactVersionMetadata()
+    metadata: ArtifactVersionMetadata = Field(default_factory=ArtifactVersionMetadata)
     content: ArtifactContent
     content_type: ArtifactContentType
 

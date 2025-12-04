@@ -44,7 +44,7 @@ class Prompt(BaseModel):
     id: PromptID = ZERO_UUID
     project_id: ProjectID = ZERO_UUID
     name: str
-    metadata: PromptMetadata = PromptMetadata()
+    metadata: PromptMetadata = Field(default_factory=PromptMetadata)
 
 
 class PromptVersionMetadata(BaseModel):
@@ -57,7 +57,7 @@ class PromptVersion(BaseModel):
     id: PromptVersionID = ZERO_UUID
     prompt_id: PromptID = ZERO_UUID
     version: int
-    metadata: PromptVersionMetadata = PromptVersionMetadata()
+    metadata: PromptVersionMetadata = Field(default_factory=PromptVersionMetadata)
     content: PromptContent
     content_type: PromptContentType
 
