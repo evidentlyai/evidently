@@ -133,7 +133,12 @@ jobs:
           architecture: "x64"
           cache: "pip"
           cache-dependency-path: requirements.min.txt
-
+      - uses: actions/cache@v4
+        id: cache-scipy-data
+        with:
+          path: ~/scikit_learn_data
+          key: cache-scipy-data
+          enableCrossOsArchive: true
       - name: 🔍 Get bikes dataset cached
         uses: ./.github/share-actions/get-bikes-dataset-cached
       - name: Install pytorch for linux
