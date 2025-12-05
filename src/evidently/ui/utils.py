@@ -1,4 +1,4 @@
-HTML_LINK_WITH_ID_TEMPLATE = """
+EVIDENTLY_STYLES_COMMON = """
 <style>
 .evidently-links.container {{
     padding: 10px;
@@ -46,7 +46,11 @@ HTML_LINK_WITH_ID_TEMPLATE = """
     color: #fff;
 }}
 </style>
+"""
 
+HTML_LINK_WITH_ID_TEMPLATE = (
+    EVIDENTLY_STYLES_COMMON
+    + """
 <div class="evidently-links container">
     <a target="_blank" href="{button_url}">{button_title}</a>
     <p>
@@ -54,57 +58,12 @@ HTML_LINK_WITH_ID_TEMPLATE = """
     </p>
 </div>
 """
+)
 
 
-FILE_LINK_WITH_ID_TEMPLATE = """
-<style>
-.evidently-links.container {{
-    padding: 10px;
-    font-family:
-        -apple-system,
-        BlinkMacSystemFont,
-        Segoe UI,
-        Roboto,
-        Oxygen,
-        Ubuntu,
-        Cantarell,
-        Fira Sans,
-        Droid Sans,
-        Helvetica Neue,
-        sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-
-    display: flex;
-    align-items: flex-start;
-    flex-direction: column;
-    gap: 10px;
-}}
-
-.evidently-links.container > p {{
-    margin: 0;
-    font-size: 0.85rem;
-}}
-
-.evidently-links.container > a {{
-    font-size: 1rem;
-    font-weight: bold;
-    padding: 10px 15px;
-    border-radius: 5px;
-    background-color: #202830;
-    color: #fff;
-    border: 0;
-    text-decoration: none;
-    cursor: pointer;
-    transition: all 0.2s;
-}}
-
-.evidently-links.container > a:hover {{
-    background-color: #455565;
-    color: #fff;
-}}
-</style>
-
+FILE_LINK_WITH_ID_TEMPLATE = (
+    EVIDENTLY_STYLES_COMMON
+    + """
 <div class="evidently-links container">
     <p>
         <b>{id_title}:</b> <span>{id}</span>
@@ -114,9 +73,22 @@ FILE_LINK_WITH_ID_TEMPLATE = """
     </p>
 </div>
 """
+)
+
+RUNNING_SERVICE_LINK_TEMPLATE = (
+    EVIDENTLY_STYLES_COMMON
+    + """
+<div class="evidently-links container">\
+    <a target="_blank" href="{url_to_service}">{title}</a>
+    <p>
+        <b>Service running on:</b> <a target="_blank" href="{url_to_service}">{url_to_service}</a>
+    </p>
+</div>
+"""
+)
 
 
-def html_link_template(*, id: str, button_url: str, button_title: str, id_title: str) -> str:
+def _html_link_to_report_template(*, id: str, button_url: str, button_title: str, id_title: str) -> str:
     params = dict(
         id=id,
         id_title=id_title,
@@ -127,8 +99,27 @@ def html_link_template(*, id: str, button_url: str, button_title: str, id_title:
     return HTML_LINK_WITH_ID_TEMPLATE.format(**params)
 
 
+def _running_service_link_template(*, url_to_service: str):
+    params = dict(
+        url_to_service=url_to_service,
+        title="Go to Service",
+    )
+
+    return RUNNING_SERVICE_LINK_TEMPLATE.format(**params)
+
+
+def _file_link_to_report_template(*, url_to_report: str, report_id: str):
+    params = dict(
+        id=report_id,
+        id_title="Report ID",
+        url=url_to_report,
+    )
+
+    return FILE_LINK_WITH_ID_TEMPLATE.format(params)
+
+
 def get_html_link_to_report(*, url_to_report: str, report_id: str):
-    return html_link_template(
+    return _html_link_to_report_template(
         id=report_id,
         id_title="Report ID",
         button_title="View report",
@@ -136,11 +127,9 @@ def get_html_link_to_report(*, url_to_report: str, report_id: str):
     )
 
 
+def get_html_link_to_running_service(*, url_to_service: str):
+    return _running_service_link_template(url_to_service=url_to_service)
+
+
 def get_file_link_to_report(*, url_to_report: str, report_id: str):
-    return FILE_LINK_WITH_ID_TEMPLATE.format(
-        **{
-            "id": report_id,
-            "id_title": "Report ID",
-            "url": url_to_report,
-        }
-    )
+    return _file_link_to_report_template(url_to_report=url_to_report, report_id=report_id)

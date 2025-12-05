@@ -1,6 +1,7 @@
 import os
 import sys
 from typing import Optional
+from typing import cast
 
 from typer import Option
 from typer import echo
@@ -8,6 +9,7 @@ from typer import echo
 from evidently.cli.main import app
 from evidently.cli.ui import setup_deterministic_generation_uuid
 from evidently.ui.service.demo_projects import DEMO_PROJECTS
+from evidently.ui.service.demo_projects import DemoProjectsNames
 from evidently.ui.workspace import RemoteWorkspace
 from evidently.ui.workspace import WorkspaceBase
 
@@ -20,7 +22,8 @@ def generate_demo_project(
 ):
     if os.environ.get("EXPERIMENTAL_DETERMINISTIC_UUID"):
         setup_deterministic_generation_uuid()
-    _project = DEMO_PROJECTS.get(project)
+    # TODO: better type safety
+    _project = DEMO_PROJECTS.get(cast(DemoProjectsNames, project))
     if _project is None:
         echo(f"Demo project {project} not found.")
         sys.exit(1)
