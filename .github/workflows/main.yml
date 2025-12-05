@@ -115,6 +115,8 @@ jobs:
       - uses: actions/checkout@v4
       - name: 🔍 Get bikes dataset cached
         uses: ./.github/share-actions/get-bikes-dataset-cached
+      - name: 🔍 Get scipy dataset cached
+        uses: ./.github/share-actions/get-scipy-datasets
 
   test-minimal:
     name: Test on minimal requirements
