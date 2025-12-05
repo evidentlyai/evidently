@@ -1,0 +1,22 @@
+name: Get bikes dataset cached
+runs:
+  using: "composite"
+  steps:
+    - uses: actions/cache@v4
+      id: cache-scipy-data
+      with:
+        path: ~/scikit_learn_data
+        key: cache-scipy-data
+        enableCrossOsArchive: true
+
+    - name: Install python
+      if: ${{ steps.cache-bikes-dataset.outputs.cache-hit != 'true' }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.9"
+        architecture: "x64"
+        cache: "uv"
+    - name: Install sklearn
+      if: ${{ steps.cache-bikes-dataset.outputs.cache-hit != 'true' }}
+      run: uv -vvv run --with scikit-learn python -c "from sklearn import datasets; datasets.fetch_california_housing(); datasets.fetch_lfw_people()"
+      shell: bash
