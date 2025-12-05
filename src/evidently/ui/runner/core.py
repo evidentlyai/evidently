@@ -7,21 +7,22 @@ from typing import Union
 
 from evidently._pydantic_compat import BaseModel
 from evidently._pydantic_compat import PrivateAttr
+from evidently.ui.runner.utils import get_url_to_service
+from evidently.ui.runner.utils import is_service_running
+from evidently.ui.runner.utils import terminate_process
 from evidently.ui.service.demo_projects import DemoProjectNamesForCliType
 from evidently.ui.utils import get_html_link_to_running_service
 from evidently.ui.workspace import RemoteWorkspace
 
 
-def get_url_to_service(*, port: int) -> str:
-    return f"http://127.0.0.1:{port}"
-
-
 class RunServiceInfoVariants:
     class Success(BaseModel):
         port: int
-        process: Optional[subprocess.Popen] = None
+        process: subprocess.Popen
 
         class Config:
+            """@private"""
+
             arbitrary_types_allowed = True
 
         def __str__(self) -> str:
@@ -50,42 +51,17 @@ RunServiceInfo = Union[RunServiceInfoVariants.Success, RunServiceInfoVariants.Fa
 
 
 class _EvidentlyUIRunnerImpl(BaseModel):
-    @staticmethod
-    def __terminate_process(process: subprocess.Popen):
-        # Send termination signal
-        process.terminate()
-        print("Sent termination signal to the running process.")
-
-        # Wait for process to terminate (with timeout)
-        try:
-            print("Waiting for the process to terminate gracefully...")
-            process.wait(timeout=5)
-        except subprocess.TimeoutExpired:
-            # Force kill if it doesn't terminate gracefully
-            print("Process did not terminate gracefully. Sending kill signal...")
-            process.kill()
-            process.wait()
-
-        # Verify process has terminated
-        if process.poll() is not None:
-            print("Successfully terminated the running process.")
-        else:
-            print("Warning: Process termination status unclear.")
-
     # User-configurable service parameters
     port: Optional[int]
     workspace: Optional[str]
     demo_projects: Optional[List[DemoProjectNamesForCliType]]
     # Internal state: caches the service execution result after run() is called
     _run_info: Optional[RunServiceInfo] = PrivateAttr(default=None)
+    _atexit_handler: Optional[object] = PrivateAttr(default=None)
 
     def run(self, *, force: bool) -> RunServiceInfo:
         if force:
-            if isinstance(self._run_info, RunServiceInfoVariants.Success) and self._run_info.process is not None:
-                self.__terminate_process(self._run_info.process)
-                self._run_info = None
-
-            self._run_info = None
+            self._stop_service()
 
         if self._run_info is not None:
             return self._run_info
@@ -139,12 +115,17 @@ class _EvidentlyUIRunnerImpl(BaseModel):
             print(self._run_info)
             return
 
-        if self._run_info.process is None:
-            print("We have no control over the running process. Please terminate it manually.")
-            return
+        self._stop_service()
 
-        self.__terminate_process(self._run_info.process)
+    def _stop_service(self):
+        if isinstance(self._run_info, RunServiceInfoVariants.Success):
+            terminate_process(self._run_info.process)
+
         self._run_info = None
+
+        if self._atexit_handler:
+            atexit.unregister(self._atexit_handler)
+            self._atexit_handler = None
 
     def get_workspace(self) -> RemoteWorkspace:
         if self._run_info is None:
@@ -161,8 +142,9 @@ class _EvidentlyUIRunnerImpl(BaseModel):
     def __run_evidently_service_on_port(
         self, *, port: int, max_wait_time_in_seconds: int = 10, time_step: float = 0.5
     ) -> RunServiceInfo:
-        if self.__is_service_running(port=port):
-            return RunServiceInfoVariants.Success(port=port)
+        if is_service_running(port=port):
+            error_message = f"Service is already running on port {port}"
+            return RunServiceInfoVariants.Failed(error_message=error_message)
 
         cmd = self.__get_launch_evidently_ui_cmd(port=port)
 
@@ -173,7 +155,12 @@ class _EvidentlyUIRunnerImpl(BaseModel):
             stderr=subprocess.PIPE,
         )
 
-        atexit.register(lambda: self.__terminate_process(process))
+        def _terminate_process():
+            terminate_process(process)
+            self._run_info = None
+
+        self._atexit_handler = _terminate_process
+        atexit.register(_terminate_process)
 
         # wait for service to start
         current_wait_time: float = 0.0
@@ -184,7 +171,7 @@ class _EvidentlyUIRunnerImpl(BaseModel):
             if current_wait_time > max_wait_time_in_seconds:
                 break
 
-            if self.__is_service_running(port=port):
+            if is_service_running(port=port):
                 return RunServiceInfoVariants.Success(port=port, process=process)
 
         assert isinstance(process.returncode, int) and process.returncode > 0
@@ -206,33 +193,6 @@ class _EvidentlyUIRunnerImpl(BaseModel):
                 return result
 
         return RunServiceInfoVariants.Failed(error_message=f"Failed to run on ports: {ports}")
-
-    def __is_service_running(self, *, port: int):
-        import requests
-
-        try:
-            data = self.__call_service_healt_check(port=port)
-
-            version = data.get("version")
-            application = data.get("application")
-
-            if application == "Evidently UI" and version:
-                return True
-        except requests.exceptions.RequestException:
-            pass
-
-        return False
-
-    def __call_service_healt_check(self, *, port: int):
-        import requests
-
-        response = requests.get(f"{get_url_to_service(port=port)}/api/version")
-        if response.status_code == 200:
-            if response.headers.get("Content-Type") == "application/json":
-                data = response.json()
-                return data
-
-        return {}
 
     def __get_launch_evidently_ui_cmd(self, *, port: int) -> list[str]:
         cmd = ["evidently", "ui", "--port", str(port)]
