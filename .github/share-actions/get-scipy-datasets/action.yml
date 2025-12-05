@@ -15,7 +15,6 @@ runs:
       with:
         python-version: "3.9"
         architecture: "x64"
-        cache: "uv"
     - name: Install sklearn
       if: ${{ steps.cache-bikes-dataset.outputs.cache-hit != 'true' }}
       run: uv -vvv run --with scikit-learn python -c "from sklearn import datasets; datasets.fetch_california_housing(); datasets.fetch_lfw_people()"
