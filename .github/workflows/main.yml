@@ -115,6 +115,8 @@ jobs:
       - uses: actions/checkout@v4
       - name: 🔍 Get bikes dataset cached
         uses: ./.github/share-actions/get-bikes-dataset-cached
+      - name: 🔍 Get scipy dataset cached
+        uses: ./.github/share-actions/get-scipy-datasets
 
   test-minimal:
     name: Test on minimal requirements
@@ -133,7 +135,8 @@ jobs:
           architecture: "x64"
           cache: "pip"
           cache-dependency-path: requirements.min.txt
-
+      - name: Get scipy dataset cached
+        uses: ./.github/share-actions/get-scipy-datasets
       - name: 🔍 Get bikes dataset cached
         uses: ./.github/share-actions/get-bikes-dataset-cached
       - name: Install pytorch for linux
@@ -172,16 +175,11 @@ jobs:
           python-version: ${{ matrix.python }}
           cache: "pip"
           cache-dependency-path: setup.py
-      - uses: actions/cache@v4
-        id: cache-scipy-data
-        with:
-          path: ~/scikit_learn_data
-          key: cache-scipy-data
-          enableCrossOsArchive: true
+      - name: Get scipy dataset cached
+        uses: ./.github/share-actions/get-scipy-datasets
       - name: Install pytorch for linux
         if: runner.os == 'Linux' && runner.arch == 'X64'
         run: pip install torch --index-url https://download.pytorch.org/whl/cpu
-
       - name: 🔍 Get bikes dataset cached
         uses: ./.github/share-actions/get-bikes-dataset-cached
 
