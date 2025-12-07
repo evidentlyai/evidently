@@ -18,5 +18,5 @@ runs:
         python-version: "3.11"
     - name: Download datasets
       if: ${{ steps.cache-scipy-data.outputs.cache-hit != 'true' }}
-      run: uv run --with scikit-learn python -c "from sklearn import datasets; datasets.fetch_california_housing(); datasets.fetch_lfw_people()"
+      run: uv run --with scikit-learn --with pillow python -c "from sklearn import datasets; datasets.fetch_california_housing(); datasets.fetch_lfw_people(); datasets.fetch_20newsgroups()"
       shell: bash
