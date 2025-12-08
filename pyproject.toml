@@ -2,8 +2,9 @@
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
-[tool.hatch.build.hooks.custom]
-path = "hatch_build_hook.py"
+[tool.hatch.version]
+source = "code"
+path = "src/evidently/_version.py"
 
 [project]
 name = "evidently"
@@ -111,22 +112,23 @@ sql = [
 [project.scripts]
 evidently = "evidently.cli:app"
 
+[project.urls]
+Homepage = "https://github.com/evidentlyai/evidently"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/evidently"]
 
 [tool.hatch.build.targets.wheel.shared-data]
-"evidently" = [
-    "nbextension/static",
-    "legacy/ui/assets",
-    "ui/service/assets",
-    "ui/service/storage/sql/migrations",
-]
+"src/evidently/nbextension/static" = "evidently/nbextension/static"
+"src/evidently/legacy/ui/assets" = "evidently/legacy/ui/assets"
+"src/evidently/ui/service/assets" = "evidently/ui/service/assets"
+"src/evidently/ui/service/storage/sql/migrations" = "evidently/ui/service/storage/sql/migrations"
 
 [tool.hatch.build.targets.sdist]
 include = [
     "/README.md",
     "/MANIFEST.in",
+    "/src",
 ]
 
 [tool.mypy]
