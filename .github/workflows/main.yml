@@ -27,7 +27,9 @@ jobs:
   changed_files:
     runs-on: ubuntu-22.04 # windows-latest || macos-latest
     name: 👀 List Changed Files
+    if: ${{ github.event.pull_request.draft == false }}
     outputs:
+      api_reference_any_modified: ${{ steps.changed-files.outputs.api_reference_any_modified == 'true' }}
       evidently_any_modified: ${{ steps.changed-files.outputs.evidently_python_any_modified == 'true' }}
       ui_any_modified: ${{ steps.changed-files.outputs.ui_any_modified == 'true' }}
       ui_service_tests_need_run: ${{ steps.changed-files.outputs.evidently_python_any_modified == 'true' || steps.changed-files.outputs.ui_build_any_modified == 'true' }}
@@ -39,6 +41,9 @@ jobs:
         uses: tj-actions/changed-files@v42
         with:
           files_yaml: |
+            api_reference:
+              - .github/**
+              - api-reference/**
             evidently_python:
               - .github/**
               - src/evidently/**
@@ -74,6 +79,12 @@ jobs:
           echo "One or more ui file(s) has changed."
           echo "List all the files that have changed: ${{ steps.changed-files.outputs.ui_all_changed_and_modified_files }}"
 
+      - name: Run step if API reference file(s) changed
+        if: steps.changed-files.outputs.api_reference_any_modified == 'true'
+        run: |
+          echo "One or more api reference file(s) has changed."
+          echo "List all the files that have changed: ${{ steps.changed-files.outputs.api_reference_all_changed_and_modified_files }}"
+
       - name: Run step if UI service tests need to be run
         if: steps.changed-files.outputs.evidently_python_any_modified == 'true' || steps.changed-files.outputs.ui_build_any_modified == 'true'
         run: |
@@ -85,7 +96,7 @@ jobs:
     # The type of runner that the job will run on
     runs-on: ubuntu-22.04
     needs: changed_files
-    if: ${{ github.event.pull_request.draft == false && needs.changed_files.outputs.evidently_any_modified == 'true' }}
+    if: ${{ needs.changed_files.outputs.evidently_any_modified == 'true' }}
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
@@ -110,7 +121,7 @@ jobs:
     name: Prepare cache data
     runs-on: ubuntu-22.04
     needs: changed_files
-    if: ${{ github.event.pull_request.draft == false && needs.changed_files.outputs.evidently_any_modified == 'true' }}
+    if: ${{ needs.changed_files.outputs.evidently_any_modified == 'true' }}
     steps:
       - uses: actions/checkout@v4
       - name: 🔍 Get bikes dataset cached
@@ -124,7 +135,7 @@ jobs:
     needs:
       - changed_files
       - prepare-cache-data
-    if: ${{ github.event.pull_request.draft == false && needs.changed_files.outputs.evidently_any_modified == 'true' }}
+    if: ${{ needs.changed_files.outputs.evidently_any_modified == 'true' }}
     env:
       EVIDENTLY_TEST_ENVIRONMENT: 1
     steps:
@@ -193,7 +204,7 @@ jobs:
     name: Python build
     runs-on: ubuntu-22.04
     needs: changed_files
-    if: ${{ github.event.pull_request.draft == false && needs.changed_files.outputs.evidently_any_modified == 'true' }}
+    if: ${{ needs.changed_files.outputs.evidently_any_modified == 'true' }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -217,11 +228,38 @@ jobs:
           name: build-artifacts
           path: dist/
 
+  generate-and-save-api-reference:
+    name: Generate API reference documentation
+    runs-on: ubuntu-22.04
+    needs: changed_files
+    if: ${{ needs.changed_files.outputs.api_reference_any_modified == 'true' || needs.changed_files.outputs.evidently_any_modified == 'true' }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: 📚 Generate and upload API reference
+        uses: ./.github/share-actions/generate-and-save-api-reference
+
+
+  # download-and-deploy-api-reference:
+  #   name: Download and deploy API reference documentation
+  #   runs-on: ubuntu-22.04
+  #   needs: generate-and-save-api-reference
+  #   permissions:
+  #     contents: write
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #       with:
+  #         ref: gh-pages
+
+  #     # this action exists in `gh-pages` branch
+  #     - name: 📚 Download and deploy API reference documentation
+  #       uses: ./.github/share-actions/deploy-just-saved-api-reference
+
+
   ui-build:
     name: UI build
     runs-on: ubuntu-22.04
     needs: changed_files
-    if: ${{ github.event.pull_request.draft == false && needs.changed_files.outputs.ui_any_modified == 'true' }}
+    if: ${{ needs.changed_files.outputs.ui_any_modified == 'true' }}
 
     steps:
       - name: ⬇️ Checkout repo
@@ -239,7 +277,7 @@ jobs:
     name: UI code-check
     runs-on: ubuntu-22.04
     needs: changed_files
-    if: ${{ github.event.pull_request.draft == false && (needs.changed_files.outputs.ui_any_modified == 'true' || needs.changed_files.outputs.evidently_any_modified == 'true') }}
+    if: ${{ needs.changed_files.outputs.ui_any_modified == 'true' || needs.changed_files.outputs.evidently_any_modified == 'true' }}
 
     steps:
       - name: ⬇️ Checkout repo
@@ -263,7 +301,7 @@ jobs:
     name: UI service tests
     runs-on: ubuntu-22.04
     needs: changed_files
-    if: ${{ github.event.pull_request.draft == false && needs.changed_files.outputs.ui_service_tests_need_run == 'true' }}
+    if: ${{ needs.changed_files.outputs.ui_service_tests_need_run == 'true' }}
 
     steps:
       - name: ⬇️ Checkout repo
@@ -329,7 +367,7 @@ jobs:
     name: UI html visual tests
     runs-on: ubuntu-22.04
     needs: changed_files
-    if: ${{ github.event.pull_request.draft == false && needs.changed_files.outputs.evidently_any_modified == 'true' }}
+    if: ${{ needs.changed_files.outputs.evidently_any_modified == 'true' }}
 
     steps:
       - name: ⬇️ Checkout repo

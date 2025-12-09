@@ -26,11 +26,10 @@ from typer import echo
 
 # Constants
 GITHUB_REPO_URL = "https://github.com/evidentlyai/evidently"
-GITHUB_REPO_URL_BLOB_PREFIX = f"{GITHUB_REPO_URL}/blob"
 THEME_DIR = "evidently-theme"
 OUTPUT_DIR = "dist"
 
-# Get the script's directory (docs directory) to ensure paths are always correct
+# Get the script's directory (api-reference directory) to ensure paths are always correct
 SCRIPT_DIR = Path(__file__).parent.resolve()
 THEME_DIR_PATH = SCRIPT_DIR / THEME_DIR
 OUTPUT_DIR_PATH = SCRIPT_DIR / OUTPUT_DIR
@@ -44,8 +43,8 @@ def get_pdoc_flags() -> list[str]:
         "--no-show-source",
         "-t",
         str(THEME_DIR_PATH),
-        "--logo",
-        "https://app.evidently.cloud/static/img/logo-cloud.png",
+        # "--logo",
+        # "https://app.evidently.cloud/static/img/logo-cloud.png",
         "--favicon",
         "https://demo.evidentlyai.com/favicon.ico",
     ]
@@ -126,16 +125,23 @@ def format_local_path(path: Path) -> str:
 
 
 def generate_docs_by_git_revision(
-    revision: str, no_cache: bool = False, uv_run_flags: str = "", modules: list[str] | None = None
+    revision: str,
+    no_cache: bool = False,
+    uv_run_flags: str = "",
+    modules: list[str] | None = None,
+    repo_url: str | None = None,
+    api_reference_index_href: str = "/",
 ) -> None:
     """Generate documentation from a git revision (branch, tag, or commit)."""
-    evidently_ref = f"git+{GITHUB_REPO_URL}.git@{revision}"
+    github_repo_url = repo_url or GITHUB_REPO_URL
+    github_blob_prefix = f"{github_repo_url}/blob"
+    evidently_ref = f"git+{github_repo_url}.git@{revision}"
 
     becho("Generating documentation for git revision...")
     yecho(revision)
 
     version = format_revision_name(revision).replace("-", ": ", 1)
-    github_blob_url = f"{GITHUB_REPO_URL_BLOB_PREFIX}/{revision}/src/evidently/"
+    github_blob_url = f"{github_blob_prefix}/{revision}/src/evidently/"
     output_path = OUTPUT_DIR_PATH / format_revision_name(revision)
 
     modules_to_use = merge_modules_with_defaults(modules)
@@ -148,19 +154,27 @@ def generate_docs_by_git_revision(
         no_cache=no_cache,
         uv_run_flags=uv_run_flags,
         modules=modules_to_use,
+        api_reference_index_href=api_reference_index_href,
     )
 
 
 def generate_docs_by_pypi_version(
-    version: str, no_cache: bool = False, uv_run_flags: str = "", modules: list[str] | None = None
+    version: str,
+    no_cache: bool = False,
+    uv_run_flags: str = "",
+    modules: list[str] | None = None,
+    repo_url: str | None = None,
+    api_reference_index_href: str = "/",
 ) -> None:
     """Generate documentation from a PyPI package version."""
     evidently_ref = f"evidently=={version}"
 
     becho(f"Generating documentation for PyPI version {version}...")
 
+    github_repo_url = repo_url or GITHUB_REPO_URL
+    github_blob_prefix = f"{github_repo_url}/blob"
     version_label = f"Version: {version}"
-    github_blob_url = f"{GITHUB_REPO_URL_BLOB_PREFIX}/v{version}/src/evidently/"
+    github_blob_url = f"{github_blob_prefix}/v{version}/src/evidently/"
     output_path = OUTPUT_DIR_PATH / version
 
     modules_to_use = merge_modules_with_defaults(modules)
@@ -173,11 +187,17 @@ def generate_docs_by_pypi_version(
         no_cache=no_cache,
         uv_run_flags=uv_run_flags,
         modules=modules_to_use,
+        api_reference_index_href=api_reference_index_href,
     )
 
 
 def generate_docs_from_local_source(
-    no_cache: bool = False, uv_run_flags: str = "", modules: list[str] | None = None, watch: bool = False
+    no_cache: bool = False,
+    uv_run_flags: str = "",
+    modules: list[str] | None = None,
+    watch: bool = False,
+    repo_url: str | None = None,
+    api_reference_index_href: str = "/",
 ) -> None:
     """Generate documentation from a local source."""
     path_to_evidently = Path(__file__).parent.parent.resolve()
@@ -185,8 +205,10 @@ def generate_docs_from_local_source(
     becho("Generating documentation for local path...")
     yecho(path_to_evidently)
 
+    github_repo_url = repo_url or GITHUB_REPO_URL
+    github_blob_prefix = f"{github_repo_url}/blob"
     version = f"Local file: {path_to_evidently}"
-    github_blob_url = f"{GITHUB_REPO_URL_BLOB_PREFIX}/main/src/evidently/"
+    github_blob_url = f"{github_blob_prefix}/main/src/evidently/"
     output_path = OUTPUT_DIR_PATH / format_local_path(path_to_evidently)
 
     modules_to_use = merge_modules_with_defaults(modules)
@@ -200,6 +222,7 @@ def generate_docs_from_local_source(
         uv_run_flags=uv_run_flags,
         modules=modules_to_use,
         watch=watch,
+        api_reference_index_href=api_reference_index_href,
     )
 
 
@@ -213,12 +236,14 @@ def run_pdoc(
     uv_run_flags: str = "",
     modules: list[str],
     watch: bool = False,
+    api_reference_index_href: str = "/",
 ) -> None:
     """Run pdoc command with the given parameters."""
 
     # Set environment variables
     env = os.environ.copy()
     env["VERSION"] = version
+    env["API_REFERENCE_INDEX_HREF"] = api_reference_index_href
 
     cmd = [
         "uv",
@@ -268,6 +293,12 @@ def generate_docs(
     modules: str = Option(
         None, "--modules", help="Comma-separated list of modules to document (default: just top level 'evidently')"
     ),
+    repo_url: str = Option(
+        None, "--repo-url", help="Custom GitHub repository URL (default: https://github.com/evidentlyai/evidently)"
+    ),
+    api_reference_index_href: str = Option(
+        "/", "--api-reference-index-href", help="Href path for the 'All versions' link (default: '/')"
+    ),
 ):
     """Generate documentation for Evidently.
 
@@ -296,11 +327,32 @@ def generate_docs(
         modules_list = [m.strip() for m in modules.split(",") if m.strip()]
 
     if pypi_version:
-        generate_docs_by_pypi_version(pypi_version, no_cache, uv_run_flags, modules_list)
+        generate_docs_by_pypi_version(
+            version=pypi_version,
+            no_cache=no_cache,
+            uv_run_flags=uv_run_flags,
+            modules=modules_list,
+            repo_url=repo_url,
+            api_reference_index_href=api_reference_index_href,
+        )
     elif git_revision:
-        generate_docs_by_git_revision(git_revision, no_cache, uv_run_flags, modules_list)
+        generate_docs_by_git_revision(
+            revision=git_revision,
+            no_cache=no_cache,
+            uv_run_flags=uv_run_flags,
+            modules=modules_list,
+            repo_url=repo_url,
+            api_reference_index_href=api_reference_index_href,
+        )
     elif local_source_code:
-        generate_docs_from_local_source(no_cache, uv_run_flags, modules_list, watch=watch)
+        generate_docs_from_local_source(
+            no_cache=no_cache,
+            uv_run_flags=uv_run_flags,
+            modules=modules_list,
+            watch=watch,
+            repo_url=repo_url,
+            api_reference_index_href=api_reference_index_href,
+        )
 
     becho("Done")
 
