@@ -142,6 +142,7 @@ class _EvidentlyUIRunnerImpl(BaseModel):
     def get_workspace(self) -> RemoteWorkspace:
         if not isinstance(self._run_info, RunServiceInfoVariants.Success):
             self._run_info.raise_on_error()
+            raise ServiceRunnerError(f"Unexpected status: {self._run_info}")
 
         return RemoteWorkspace(base_url=get_url_to_service(port=self._run_info.port))
 
