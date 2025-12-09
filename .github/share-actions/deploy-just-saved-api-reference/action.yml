@@ -1,0 +1,19 @@
+name: Download api-reference artifact
+runs:
+  using: "composite"
+  steps:
+    - name: Download documentation artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: api-reference
+        path: artifacts/api-reference
+
+    - name: 📦 Setup node and pnpm install
+      uses: ./.github/share-actions/setup-node-and-pnpm-install
+
+    - name: 🔧 Push API reference documentation
+      shell: bash
+      run: pnpm run-all
+
+    - name: 🚀 Push API reference documentation
+      uses: ./.github/share-actions/commit-and-push-docs

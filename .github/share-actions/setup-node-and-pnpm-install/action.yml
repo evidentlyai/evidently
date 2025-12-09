@@ -1,0 +1,17 @@
+name: Setup node and pnpm install
+runs:
+  using: "composite"
+  steps:
+    - uses: pnpm/action-setup@v3
+      with:
+        version: 9
+
+    - name: Use Node.js 20
+      uses: actions/setup-node@v4
+      with:
+        node-version: 24
+        cache: "pnpm"
+
+    - name: 📥 Install node dependencies
+      run: pnpm i --frozen-lockfile --prod
+      shell: bash

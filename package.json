@@ -1,0 +1,18 @@
+{
+  "name": "evidently",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "call-action": "pnpm --filter index-manager call-action",
+    "run-all": "pnpm call-action run-all",
+    "type-check": "pnpm -r type-check",
+    "code-check": "biome check"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@biomejs/biome": "1.9.4"
+  }
+}
