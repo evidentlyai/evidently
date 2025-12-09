@@ -1,6 +1,8 @@
 import atexit
+import logging
 import subprocess
 import time
+from typing import Callable
 from typing import List
 from typing import Optional
 from typing import Union
@@ -14,9 +16,31 @@ from evidently.ui.service.demo_projects import DemoProjectNamesForCliType
 from evidently.ui.utils import get_html_link_to_running_service
 from evidently.ui.workspace import RemoteWorkspace
 
+logger = logging.getLogger(__name__)
+if not logger.handlers:
+    logger.setLevel(logging.INFO)
+    handler = logging.StreamHandler()
+    formatter = logging.Formatter("%(asctime)s [%(levelname)s]: %(message)s")
+    handler.setFormatter(formatter)
+    logger.addHandler(handler)
+
+
+class RunServiceInfo(BaseModel):
+    def raise_on_error(self):
+        pass
+
+
+class ServiceRunnerError(Exception):
+    """
+    Runner failed to start or terminate service.
+    """
+
+    def __init__(self, message: str):
+        super().__init__(message)
+
 
 class RunServiceInfoVariants:
-    class Success(BaseModel):
+    class Success(RunServiceInfo):
         port: int
         process: subprocess.Popen
 
@@ -34,7 +58,11 @@ class RunServiceInfoVariants:
         def _repr_html_(self):
             return get_html_link_to_running_service(url_to_service=get_url_to_service(port=self.port))
 
-    class Failed(BaseModel):
+    class NotRunning(RunServiceInfo):
+        def raise_on_error(self):
+            raise ServiceRunnerError("Service is not running. Please run it first using `run()` method.")
+
+    class Failed(RunServiceInfo):
         error_message: str
 
         def __str__(self) -> str:
@@ -43,11 +71,25 @@ class RunServiceInfoVariants:
         def __repr__(self) -> str:
             return self.error_message
 
-    Success = Success
-    Failed = Failed
+        def raise_on_error(self):
+            raise ServiceRunnerError(message=self.error_message)
 
 
-RunServiceInfo = Union[RunServiceInfoVariants.Success, RunServiceInfoVariants.Failed]
+class _ServiceIframeHandler:
+    port: int
+
+    def __init__(self, port: int):
+        self.port = port
+
+    def _repr_html_(self):
+        return f"""
+                <iframe
+                    class="evidently-ui-iframe"
+                    frameborder="0"
+                    style="width: 100%; height: 1300px; max-height: 80vh"
+                    src="{get_url_to_service(port=self.port)}"
+                />
+            """
 
 
 class _EvidentlyUIRunnerImpl(BaseModel):
@@ -56,97 +98,61 @@ class _EvidentlyUIRunnerImpl(BaseModel):
     workspace: Optional[str]
     demo_projects: Optional[List[DemoProjectNamesForCliType]]
     # Internal state: caches the service execution result after run() is called
-    _run_info: Optional[RunServiceInfo] = PrivateAttr(default=None)
-    _atexit_handler: Optional[object] = PrivateAttr(default=None)
+    _run_info: RunServiceInfo = PrivateAttr(default_factory=lambda: RunServiceInfoVariants.NotRunning())
+    _atexit_handler: Optional[Callable[[], object]] = PrivateAttr(default=None)
 
     def run(self, *, force: bool) -> RunServiceInfo:
         if force:
             self._stop_service()
 
-        if self._run_info is not None:
+        if isinstance(self._run_info, RunServiceInfoVariants.Success):
             return self._run_info
 
         if self.port:
-            self._run_info = self.__run_evidently_service_on_port(port=self.port)
-            print(self._run_info)
+            self._run_info = self._run_evidently_service_on_port(port=self.port)
+            logger.info(self._run_info)
             return self._run_info
 
         # by default try to run on ports 8000-8005
-        self._run_info = self.__run_evidently_service_try_on_ports_range(ports=list(range(8000, 8006)))
-        print(self._run_info)
+        self._run_info = self._run_evidently_service_try_on_ports_range(ports=list(range(8000, 8006)))
+        logger.info(self._run_info)
         return self._run_info
 
     def show_service(self):
-        if self._run_info is None:
-            print("Service is not running. Please run it first using `run()` method.")
-            return
+        if not isinstance(self._run_info, RunServiceInfoVariants.Success):
+            self._run_info.raise_on_error()
+            raise ServiceRunnerError(f"Unexpected status: {self._run_info}")
 
-        if isinstance(self._run_info, RunServiceInfoVariants.Failed):
-            print("Service failed to run")
-            print(self._run_info)
-            return
-
-        class _show_html(BaseModel):
-            html: str
-
-            def _repr_html_(self):
-                return f"""
-                {self.html}
-                """
-
-        return _show_html(
-            html=f"""
-                <iframe
-                    class="evidently-ui-iframe"
-                    frameborder="0"
-                    style="width: 100%; height: 1300px; max-height: 80vh"
-                    src="{get_url_to_service(port=self._run_info.port)}"
-                />
-            """
-        )
+        return _ServiceIframeHandler(self._run_info.port)
 
     def terminate(self):
-        if self._run_info is None:
-            print("Service is not running. Please run it first using `run()` method.")
-            return
-
-        if isinstance(self._run_info, RunServiceInfoVariants.Failed):
-            print("Service failed to run")
-            print(self._run_info)
-            return
-
+        self._run_info.raise_on_error()
         self._stop_service()
 
     def _stop_service(self):
         if isinstance(self._run_info, RunServiceInfoVariants.Success):
             terminate_process(self._run_info.process)
 
-        self._run_info = None
+        self._run_info = RunServiceInfoVariants.NotRunning()
 
         if self._atexit_handler:
             atexit.unregister(self._atexit_handler)
             self._atexit_handler = None
 
     def get_workspace(self) -> RemoteWorkspace:
-        if self._run_info is None:
-            print("Service is not running. Please run it first using `run()` method.")
-            raise ValueError("Service is not running")
-
-        if isinstance(self._run_info, RunServiceInfoVariants.Failed):
-            print("Service failed to run")
-            print(self._run_info)
-            raise ValueError("Service is not running")
+        if not isinstance(self._run_info, RunServiceInfoVariants.Success):
+            self._run_info.raise_on_error()
 
         return RemoteWorkspace(base_url=get_url_to_service(port=self._run_info.port))
 
-    def __run_evidently_service_on_port(
+    def _run_evidently_service_on_port(
         self, *, port: int, max_wait_time_in_seconds: int = 10, time_step: float = 0.5
     ) -> RunServiceInfo:
         if is_service_running(port=port):
             error_message = f"Service is already running on port {port}"
             return RunServiceInfoVariants.Failed(error_message=error_message)
 
-        cmd = self.__get_launch_evidently_ui_cmd(port=port)
+        cmd = self._get_launch_evidently_ui_cmd(port=port)
 
         # run service in background
         process = subprocess.Popen(
@@ -157,7 +163,7 @@ class _EvidentlyUIRunnerImpl(BaseModel):
 
         def _terminate_process():
             terminate_process(process)
-            self._run_info = None
+            self._run_info = RunServiceInfoVariants.NotRunning()
 
         self._atexit_handler = _terminate_process
         atexit.register(_terminate_process)
@@ -182,19 +188,19 @@ class _EvidentlyUIRunnerImpl(BaseModel):
 
         return RunServiceInfoVariants.Failed(error_message=error_message)
 
-    def __run_evidently_service_try_on_ports_range(self, *, ports: List[int]) -> RunServiceInfo:
+    def _run_evidently_service_try_on_ports_range(self, *, ports: List[int]) -> RunServiceInfo:
         for port in ports:
-            result = self.__run_evidently_service_on_port(port=port)
+            result = self._run_evidently_service_on_port(port=port)
 
             if isinstance(result, RunServiceInfoVariants.Failed):
-                print(result)
+                logger.warning(f"Failed to run service on port {port}: {result}")
 
             if isinstance(result, RunServiceInfoVariants.Success):
                 return result
 
         return RunServiceInfoVariants.Failed(error_message=f"Failed to run on ports: {ports}")
 
-    def __get_launch_evidently_ui_cmd(self, *, port: int) -> list[str]:
+    def _get_launch_evidently_ui_cmd(self, *, port: int) -> list[str]:
         cmd = ["evidently", "ui", "--port", str(port)]
 
         if self.demo_projects:
@@ -272,12 +278,3 @@ class EvidentlyUIRunner:
         Terminate the Evidently UI service.
         """
         self._runner.terminate()
-
-
-# if __name__ == "__main__":
-#     impl = EvidentlyUIRunner()
-#     impl.run()
-
-#     print("wait 10 seconds")
-#     time.sleep(10)
-#     print("done")
