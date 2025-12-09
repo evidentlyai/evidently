@@ -1,0 +1,16 @@
+{% extends "default/index.html.jinja2" %}
+
+{% block nav %}
+
+    <div class="version-header" style="margin-bottom: 1.5rem;">
+        <a class="all-versions-link" href="/">All versions</a>
+        <p class="version-info" title="{{ env["VERSION"] | default("1.0") }}">{{ env["VERSION"] | default("1.0") }}</p>
+    </div>
+
+    <h2>Available Modules</h2>
+    <ul>
+        {% for submodule in all_modules if "._" not in submodule and not submodule.startswith("_") %}
+            <li><a href="{{ submodule.replace(".","/") }}.html">{{ submodule }}</a></li>
+        {% endfor %}
+    </ul>
+{% endblock %}
