@@ -19,11 +19,14 @@ RUN apt-get update && \
         gcc
 
 WORKDIR /src
-COPY setup.py .
+COPY pyproject.toml .
 COPY README.md .
+COPY MANIFEST.in .
+COPY hatch_build_hook.py .
 COPY src ./src
 
-RUN pip install . \
+RUN curl -LsSf https://astral.sh/uv/install.sh | sh \
+    && /root/.cargo/bin/uv pip install . \
     && rm -rf /src
 
 WORKDIR /app

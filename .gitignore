@@ -12,6 +12,7 @@ example_scripts
 dist
 build
 MANIFEST
+uv.lock
 
 profile.json
 

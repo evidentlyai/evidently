@@ -14,16 +14,20 @@ LABEL maintainer="mike0sv@evidentlyai.com"
 
 
 WORKDIR /src
-COPY setup.py .
+COPY pyproject.toml .
 COPY README.md .
+COPY MANIFEST.in .
+COPY hatch_build_hook.py .
 COPY src ./src
 RUN apt-get update && \
     apt-get install -y \
         build-essential \
         make \
         gcc \
-    && pip install .${INSTALL_EXTRAS} \
-    && apt-get remove -y --purge make gcc build-essential \
+        curl \
+    && curl -LsSf https://astral.sh/uv/install.sh | sh \
+    && /root/.cargo/bin/uv pip install .${INSTALL_EXTRAS} \
+    && apt-get remove -y --purge make gcc build-essential curl \
     && apt-get autoremove -y \
     && rm -rf /var/lib/apt/lists/* \
     && rm -rf /src
