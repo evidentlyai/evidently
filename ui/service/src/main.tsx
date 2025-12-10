@@ -8,6 +8,9 @@ import { router } from './routes/router'
 
 import './index.css'
 
+// just to include to bundle (dist/static/img/evidently-ai-logo.png)
+import 'assets/evidently-ai-logo.png'
+
 const rootElement = document.getElementById('root')
 
 if (rootElement) {
