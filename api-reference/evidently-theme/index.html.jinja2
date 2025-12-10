@@ -1,0 +1,13 @@
+{% extends "default/index.html.jinja2" %}
+
+{% block nav %}
+
+    {% include "version_header.html.jinja2" %}
+
+    <h2>Available Modules</h2>
+    <ul>
+        {% for submodule in all_modules if "._" not in submodule and not submodule.startswith("_") %}
+            <li><a href="{{ submodule.replace(".","/") }}.html">{{ submodule }}</a></li>
+        {% endfor %}
+    </ul>
+{% endblock %}

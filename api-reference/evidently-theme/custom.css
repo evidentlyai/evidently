@@ -1,0 +1,162 @@
+nav.pdoc {
+    box-shadow: none;
+    background: var(--pdoc-nav-background);
+}
+
+nav.pdoc a:hover {
+    color: var(--link);
+    background: var(--nav-hover);
+}
+
+nav.pdoc a:active,
+nav.pdoc a.active {
+    color: var(--link);
+    background: var(--active);
+}
+
+nav.pdoc h2 {
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--muted);
+    margin: 2rem 0 0.75rem 0;
+    padding: 0;
+}
+
+.pdoc h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin: 0 0 1.5rem 0;
+    padding: 0;
+    line-height: 1.2;
+    color: var(--text);
+}
+
+.pdoc h3 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 2rem 0 0.75rem 0;
+    padding: 0;
+    line-height: 1.4;
+    color: var(--text);
+}
+
+.pdoc a {
+    color: var(--link);
+    text-decoration: none;
+    transition: color 0.15s ease;
+}
+
+.pdoc a:hover {
+    color: var(--link-hover);
+    text-decoration: underline;
+}
+
+.pdoc .pdoc-button {
+    border: 1px solid var(--border);
+    box-shadow: none;
+    border-radius: 6px;
+    padding: 0.5rem 1rem;
+    transition: all 0.15s ease;
+    background: var(--accent);
+    color: var(--text);
+}
+
+.pdoc .pdoc-button:hover {
+    border-color: var(--link);
+    background: var(--active);
+}
+
+.pdoc .pdoc-button.git-button:hover,
+.pdoc .pdoc-button.module-list-button:hover {
+    border-color: var(--border);
+    background: var(--accent);
+    color: var(--link) !important;
+}
+
+.pdoc .pdoc-button.module-list-button {
+    border-color: var(--border);
+    width: calc(100% - var(--pad-global));
+
+}
+
+.pdoc input[type="search"] {
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 0.5rem 0.75rem;
+    width: 100%;
+    margin: 0.5rem 0;
+    background: var(--accent);
+    color: var(--text);
+    font-size: 0.875rem;
+    transition: border-color 0.15s ease;
+}
+
+.pdoc input[type="search"]:focus {
+    outline: none;
+    border-color: var(--link);
+    box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.1);
+}
+
+.pdoc input[type="search"]::placeholder {
+    color: var(--muted);
+}
+
+nav.pdoc a.class:hover:before {
+    color: var(--link) !important;
+}
+
+nav.pdoc a:hover.function:after {
+    color: var(--link) !important;
+}
+
+.version-header {
+    display: flex;
+    gap: 1rem;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.all-versions-link {
+    font-size: 0.875rem;
+    color: var(--muted);
+    display: inline-block;
+    padding-right: var(--pad);
+    white-space: nowrap;
+    padding: 0.5rem !important;
+    border-radius: 0.5rem;
+    text-decoration: underline !important;
+}
+
+.version-info {
+    padding-right: var(--pad);
+    font-size: 0.8125rem;
+    color: var(--muted);
+    font-weight: 400;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    margin: 0;
+}
+
+main.pdoc {
+    max-width: 1400px;
+    width: unset !important;
+}
+
+.pdoc .attr {
+    border-radius: 0.5rem;
+    border: 1px solid var(--border);
+}
+
+:target {
+    outline: 2px solid rgba(96, 165, 250, 0.7);
+    outline-offset: 0rem;
+    border-radius: 0.5rem;
+    box-shadow: none !important;
+}
+
+.pdoc *:target > .attr {
+    background-color: var(--accent) !important;
+}
