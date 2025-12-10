@@ -44,7 +44,7 @@ def get_pdoc_flags() -> list[str]:
         "-t",
         str(THEME_DIR_PATH),
         # "--logo",
-        # "https://app.evidently.cloud/static/img/logo-cloud.png",
+        # "https://demo.evidentlyai.com/static/img/evidently-ai-logo.png",
         "--favicon",
         "https://demo.evidentlyai.com/favicon.ico",
     ]
