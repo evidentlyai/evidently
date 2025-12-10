@@ -28,7 +28,7 @@ export const htmlToString = (html: SafeHtml, makePretty = true) => {
   const htmlString = String(html)
 
   if (makePretty) {
-    return prettify(htmlString)
+    return `${prettify(htmlString)}\n`
   }
 
   return htmlString
