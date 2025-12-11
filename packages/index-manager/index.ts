@@ -31,10 +31,10 @@ switch (action) {
     break
   default:
     console.error(`Unknown action: ${action}`)
-    console.error(`Available actions:`)
-    console.error(`- index:write`)
-    console.error(`- index:print`)
-    console.error(`- index:prepare-api-reference`)
-    console.error(`- run-all`)
+    console.error('Available actions:')
+    console.error('- index:write')
+    console.error('- index:print')
+    console.error('- index:prepare-api-reference')
+    console.error('- run-all')
     process.exit(1)
 }

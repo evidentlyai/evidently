@@ -31,10 +31,10 @@ export const createBody = () => {
 
     return entries
       .filter((entry) => entry.isDirectory())
-      .map((entry) => ({
-        path: entry.name,
-        displayName: getDisplayNameByApiReferenceFolderName(entry.name)
-      }))
+      .map(({ name }) => {
+        const displayName = getDisplayNameByApiReferenceFolderName(name)
+        return { path: name, displayName }
+      })
   })()
 
   return html`
@@ -44,7 +44,7 @@ export const createBody = () => {
         <article>
           <header>
             <h1>Evidently API Reference</h1>
-            <p>Browse available API documentation</p>
+            <h6>Browse available API documentation</h6>
           </header>
           ${
             apiReferenceDescriptors.length > 0

@@ -5,15 +5,16 @@
   "type": "module",
   "scripts": {
     "type-check": "tsc",
-    "call-action": "pnpm dlx tsx ./index.ts"
+    "call-action": "pnpm tsx ./index.ts"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@remix-run/html-template": "^0.3.0",
-    "@types/node": "^24",
-    "htmlfy": "^1.0.1"
+    "@types/node": "^24.10.2",
+    "htmlfy": "^1.0.1",
+    "tsx": "^4.21.0"
   },
   "devDependencies": {
     "typescript": "^5.9.3"
