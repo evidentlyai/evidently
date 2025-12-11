@@ -11,9 +11,9 @@ runs:
     - name: 📦 Setup node and pnpm install
       uses: ./.github/share-actions/setup-node-and-pnpm-install
 
-    - name: 🔧 Push API reference documentation
-      shell: bash
+    - name: 🔧 Run generation
       run: pnpm run-all
+      shell: bash
 
     - name: 🚀 Push API reference documentation
       uses: ./.github/share-actions/commit-and-push-docs

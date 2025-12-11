@@ -1,0 +1,19 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: "v4.6.0"
+    hooks:
+      - id: check-case-conflict
+      - id: check-merge-conflict
+      - id: check-toml
+      - id: check-yaml
+        exclude: '(docs)/.*'
+      - id: end-of-file-fixer
+        exclude: '(docs)/.*'
+      - id: trailing-whitespace
+        exclude: '(docs)/.*'
+
+  - repo: https://github.com/biomejs/pre-commit
+    rev: "v0.4.0"
+    hooks:
+      - id: biome-check
+        additional_dependencies: ["@biomejs/biome@1.9.4"]
