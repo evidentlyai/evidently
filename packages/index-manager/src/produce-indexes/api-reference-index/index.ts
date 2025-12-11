@@ -44,7 +44,7 @@ export const createBody = () => {
         <article>
           <header>
             <h1>Evidently API Reference</h1>
-            <h6>Browse available API documentation</h6>
+            <h5>Browse available API documentation</h5>
           </header>
           ${
             apiReferenceDescriptors.length > 0
