@@ -2,13 +2,17 @@
 
 Tools for generating API reference documentation using [pdoc](https://pdoc.dev/docs/pdoc.html). Documentation can be built from local source code, git revisions, or published PyPI versions.
 
-> **To serve the generated documentation artifacts:**
-> ```bash
-> # cd ./docs
-> npx http-server -p 3000 -c-1 ./dist
-> # `-c-1` disables caching
-> # you can also use other static file servers
-> ```
+### Local development
+
+
+```bash
+./api-reference/local-dev.sh
+```
+
+Starts a local development server with live reloading. This command:
+- Starts a live-server to serve the generated documentation at `http://localhost:8080` (or next available port)
+- Watches for Python file changes and automatically regenerates the documentation using `./api-reference/generate.py --local-source-code`
+
 
 ## Quick Start
 
@@ -28,9 +32,6 @@ Tools for generating API reference documentation using [pdoc](https://pdoc.dev/d
 ```bash
 # Generate static files
 ./api-reference/generate.py --local-source-code
-
-# Watch mode (live updates)
-./api-reference/generate.py --local-source-code --watch
 ```
 
 ### Git Revisions
