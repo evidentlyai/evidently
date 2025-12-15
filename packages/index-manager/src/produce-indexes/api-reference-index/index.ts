@@ -37,6 +37,9 @@ export const createBody = () => {
       })
   })()
 
+  const mainDescriptors = apiReferenceDescriptors.filter(({ path }) => path === 'main')
+  const otherDescriptors = apiReferenceDescriptors.filter(({ path }) => path !== 'main')
+
   return html`
     <body>
       <main class="container">
@@ -49,9 +52,25 @@ export const createBody = () => {
           ${
             apiReferenceDescriptors.length > 0
               ? html`
-              <ul>
-                ${apiReferenceDescriptors.map(({ path, displayName }) => html`<li><a href="./${path}">${displayName}</a></li>`)}
-              </ul>
+              ${
+                mainDescriptors.length > 0
+                  ? html`
+                    ${mainDescriptors.map(({ path, displayName }) => html`<p><a href="./${path}">${displayName}</a></p>`)}
+                  `
+                  : ''
+              }
+              ${
+                otherDescriptors.length > 0
+                  ? html`
+                    <details>
+                      <summary>Other api references</summary>
+                      <ul>
+                        ${otherDescriptors.map(({ path, displayName }) => html`<li><a href="./${path}">${displayName}</a></li>`)}
+                      </ul>
+                    </details>
+                  `
+                  : ''
+              }
             `
               : html`<p>No API reference found</p>`
           }
