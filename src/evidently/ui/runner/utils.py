@@ -1,14 +1,14 @@
 import subprocess
 
 
-def get_url_to_service(*, port: int) -> str:
+def get_url_to_service_by_port(*, port: int) -> str:
     return f"http://127.0.0.1:{port}"
 
 
 def call_service_healt_check(*, port: int):
     import requests
 
-    response = requests.get(f"{get_url_to_service(port=port)}/api/version")
+    response = requests.get(f"{get_url_to_service_by_port(port=port)}/api/version")
     if response.status_code == 200:
         if response.headers.get("Content-Type") == "application/json":
             data = response.json()
