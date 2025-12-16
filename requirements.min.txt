@@ -1,4 +1,4 @@
-# keep in sync with setup.py install_require block (but there should be set as lower bound).
+# keep in sync with pyproject.toml [project] dependencies (but there should be set as lower bound).
 plotly==5.10.0
 statsmodels==0.12.2
 scikit-learn==1.1.1
