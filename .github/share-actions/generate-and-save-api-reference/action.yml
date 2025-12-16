@@ -1,0 +1,22 @@
+name: Generate docs and upload artifact
+runs:
+  using: "composite"
+  steps:
+    - name: Install uv
+      uses: astral-sh/setup-uv@v7
+      with:
+        python-version: "3.11"
+
+    - name: Generate documentation
+      run: |
+        ./api-reference/generate.py \
+          --api-reference-index-href "/evidently/api-reference" \
+          --git-revision ${{ github.head_ref || github.ref_name }}
+      shell: bash
+
+    - name: Upload documentation artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: api-reference
+        path: api-reference/dist
+        retention-days: 5

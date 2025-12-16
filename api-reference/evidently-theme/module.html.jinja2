@@ -1,0 +1,25 @@
+{% extends "default/module.html.jinja2" %}
+{% block attribution %}{% endblock %}
+
+
+{% block edit_button %}
+    {% if edit_url %}
+        {% if "github.com" in edit_url %}
+            {% set edit_text = "View on GitHub" %}
+        {% elif "gitlab" in edit_url %}
+            {% set edit_text = "Edit on GitLab" %}
+        {% else %}
+            {% set edit_text = "Edit Source" %}
+        {% endif %}
+        <a class="pdoc-button git-button" href="{{ edit_url }}">{{ edit_text }}</a>
+    {% endif %}
+{% endblock %}
+
+
+{% block search_box %}
+    {% include "version_header.html.jinja2" %}
+    {% if search and all_modules|length > 1 %}
+        <input type="search" placeholder="Search..." role="searchbox" aria-label="search"
+                pattern=".+" required>
+    {% endif %}
+{% endblock %}
