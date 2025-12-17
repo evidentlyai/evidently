@@ -4,13 +4,13 @@ from typing import Optional
 from typing import Sequence
 from typing import Tuple
 
-from evidently import ColumnType
 from evidently.core.container import MetricContainer
 from evidently.core.container import MetricOrContainer
 from evidently.core.metric_types import DataframeMetric
 from evidently.core.metric_types import DataframeValue
 from evidently.core.metric_types import MetricId
 from evidently.core.report import Context
+from evidently.legacy.core import ColumnType
 from evidently.legacy.metrics.data_quality.column_correlations_metric import ColumnCorrelationsMetric
 from evidently.legacy.metrics.data_quality.column_correlations_metric import ColumnCorrelationsMetricResult
 from evidently.legacy.metrics.data_quality.dataset_correlations_metric import DatasetCorrelationsMetric
