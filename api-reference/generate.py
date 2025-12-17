@@ -148,7 +148,7 @@ def generate_docs_by_git_revision(
 
     run_pdoc(
         version=version,
-        evidently_ref=evidently_ref,
+        evidently_ref=f"{evidently_ref}[sql]",
         github_blob_url=github_blob_url,
         output_path=str(output_path),
         no_cache=no_cache,
@@ -181,7 +181,7 @@ def generate_docs_by_pypi_version(
 
     run_pdoc(
         version=version_label,
-        evidently_ref=evidently_ref,
+        evidently_ref=f"{evidently_ref}[sql]",
         github_blob_url=github_blob_url,
         output_path=str(output_path),
         no_cache=no_cache,
@@ -215,7 +215,7 @@ def generate_docs_from_local_source(
 
     run_pdoc(
         version=version,
-        evidently_ref=str(path_to_evidently),
+        evidently_ref=f"{str(path_to_evidently)}[sql]",
         github_blob_url=github_blob_url,
         output_path=str(output_path),
         no_cache=no_cache,
