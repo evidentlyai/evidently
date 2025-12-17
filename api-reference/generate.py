@@ -5,8 +5,6 @@
 #     "pdoc>=16.0.0",
 #     "tracely>=0.2.12",
 #     "typer>=0.3",
-#     "sqlalchemy>=2.0.0",
-#     "alembic>=1.13.0",
 # ]
 # ///
 
@@ -252,6 +250,7 @@ def run_pdoc(
         "run",
         *build_uv_run_flags(uv_run_flags, no_cache),
         *build_with_flag_for_evidently(evidently_ref),
+        # "pdoc",
         "python",
         str(PDOC_ENTRYPOINT),
         *get_pdoc_flags(),
