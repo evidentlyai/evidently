@@ -33,6 +33,7 @@ OUTPUT_DIR = "dist"
 SCRIPT_DIR = Path(__file__).parent.resolve()
 THEME_DIR_PATH = SCRIPT_DIR / THEME_DIR
 OUTPUT_DIR_PATH = SCRIPT_DIR / OUTPUT_DIR
+PDOC_ENTRYPOINT = SCRIPT_DIR / "_pdoc_entrypoint.py"
 
 
 # pdoc flags (will be set dynamically to use absolute paths)
@@ -250,7 +251,8 @@ def run_pdoc(
         "run",
         *build_uv_run_flags(uv_run_flags, no_cache),
         *build_with_flag_for_evidently(evidently_ref),
-        "pdoc",
+        "python",
+        str(PDOC_ENTRYPOINT),
         *get_pdoc_flags(),
         "-e",
         f"evidently={github_blob_url}",

@@ -1,5 +1,14 @@
 #!/usr/bin/env python
 # coding: utf-8
+from evidently import descriptors
+from evidently import generators
+from evidently import guardrails
+from evidently import llm
+from evidently import metrics
+from evidently import presets
+from evidently import sdk
+from evidently import tests
+from evidently import ui
 from evidently.core.compare import compare
 from evidently.core.datasets import BinaryClassification
 from evidently.core.datasets import DataDefinition
@@ -32,5 +41,14 @@ __all__ = [
     "Recsys",
     "LLMClassification",
     "compare",
+    "metrics",
+    "presets",
+    "tests",
+    "generators",
+    "llm",
+    "guardrails",
+    "descriptors",
+    "sdk",
+    "ui",
     "ColumnType",  # legacy support
 ]
