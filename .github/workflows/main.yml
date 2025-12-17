@@ -154,9 +154,9 @@ jobs:
         uses: astral-sh/setup-uv@v4
       - name: Install pytorch for linux
         if: runner.os == 'Linux' && runner.arch == 'X64'
-        run: uv pip install torch --index-url https://download.pytorch.org/whl/cpu
+        run: uv pip install --system torch --index-url https://download.pytorch.org/whl/cpu
       - name: Install package
-        run: uv pip install --constraint requirements.min.txt -e .[dev,spark,fsspec,llm,sql]
+        run: uv pip install --system --constraint requirements.min.txt -e .[dev,spark,fsspec,llm,sql]
       - name: Run Tests
         run: python -m pytest --durations=50
   test:
