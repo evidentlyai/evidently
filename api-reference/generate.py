@@ -6,6 +6,8 @@
 #     "sniffio>=1.3.1", # bump litestar and then remove sniffio from here
 #     "tracely>=0.2.12",
 #     "typer>=0.3",
+#     "sqlalchemy>=2.0.0",
+#     "alembic>=1.13.0",
 # ]
 # ///
 
