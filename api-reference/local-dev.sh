@@ -7,4 +7,4 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 npx live-server $SCRIPT_DIR/dist &
 
 ## Start the nodemon process to generate the documentation
-npx nodemon -e 'py' --exec "$SCRIPT_DIR/generate.py --local-source-code"
+npx nodemon -V -e 'py' --exec "$SCRIPT_DIR/generate.py --local-source-code"

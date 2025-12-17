@@ -3,7 +3,6 @@
 # requires-python = ">=3.11"
 # dependencies = [
 #     "pdoc>=16.0.0",
-#     "sniffio>=1.3.1", # bump litestar and then remove sniffio from here
 #     "tracely>=0.2.12",
 #     "typer>=0.3",
 # ]
