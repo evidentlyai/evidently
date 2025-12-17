@@ -20,6 +20,7 @@ import re
 import subprocess
 import sys
 from pathlib import Path
+from typing import Optional
 
 from typer import BadParameter
 from typer import Option
@@ -35,7 +36,6 @@ OUTPUT_DIR = "dist"
 SCRIPT_DIR = Path(__file__).parent.resolve()
 THEME_DIR_PATH = SCRIPT_DIR / THEME_DIR
 OUTPUT_DIR_PATH = SCRIPT_DIR / OUTPUT_DIR
-PDOC_ENTRYPOINT = SCRIPT_DIR / "_pdoc_entrypoint.py"
 
 
 # pdoc flags (will be set dynamically to use absolute paths)
@@ -63,19 +63,18 @@ def yecho(message: str) -> None:
     print(f"\033[33m{message}\033[0m")
 
 
-def merge_modules_with_defaults(modules: list[str] | None = None) -> list[str]:
-    # Standart modules to document
-    DEFAULT_MODULES = [
-        "evidently",
-        # "evidently.guardrails",
-        # "evidently.sdk",
-        # "evidently.llm",
-        # "evidently.metrics",
-        # "evidently.ui.runner",
-    ]
+def merge_modules_with_defaults(modules: Optional[list[str]] = None) -> list[str]:
+    MAIN_MODULE = "evidently"
+    MAIN_MODULE_SUBMODULE_TO_EXCLUDE = "!evidently._registry"
 
     if not modules:
-        return DEFAULT_MODULES
+        return [
+            MAIN_MODULE,
+            MAIN_MODULE_SUBMODULE_TO_EXCLUDE,
+        ]
+
+    if MAIN_MODULE in modules and MAIN_MODULE_SUBMODULE_TO_EXCLUDE not in modules:
+        return [*modules, MAIN_MODULE_SUBMODULE_TO_EXCLUDE]
 
     return modules
 
@@ -131,8 +130,8 @@ def generate_docs_by_git_revision(
     revision: str,
     no_cache: bool = False,
     uv_run_flags: str = "",
-    modules: list[str] | None = None,
-    repo_url: str | None = None,
+    modules: Optional[list[str]] = None,
+    repo_url: Optional[str] = None,
     api_reference_index_href: str = "/",
 ) -> None:
     """Generate documentation from a git revision (branch, tag, or commit)."""
@@ -165,8 +164,8 @@ def generate_docs_by_pypi_version(
     version: str,
     no_cache: bool = False,
     uv_run_flags: str = "",
-    modules: list[str] | None = None,
-    repo_url: str | None = None,
+    modules: Optional[list[str]] = None,
+    repo_url: Optional[str] = None,
     api_reference_index_href: str = "/",
 ) -> None:
     """Generate documentation from a PyPI package version."""
@@ -197,9 +196,9 @@ def generate_docs_by_pypi_version(
 def generate_docs_from_local_source(
     no_cache: bool = False,
     uv_run_flags: str = "",
-    modules: list[str] | None = None,
+    modules: Optional[list[str]] = None,
     watch: bool = False,
-    repo_url: str | None = None,
+    repo_url: Optional[str] = None,
     api_reference_index_href: str = "/",
 ) -> None:
     """Generate documentation from a local source."""
@@ -253,8 +252,7 @@ def run_pdoc(
         "run",
         *build_uv_run_flags(uv_run_flags, no_cache),
         *build_with_flag_for_evidently(evidently_ref),
-        "python",
-        str(PDOC_ENTRYPOINT),
+        "pdoc",
         *get_pdoc_flags(),
         "-e",
         f"evidently={github_blob_url}",
