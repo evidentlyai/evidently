@@ -865,7 +865,7 @@
                     <div class="attr class">
             
     <span class="def">class</span>
-    <span class="name">GroupBy</span><wbr>(<span class="base">evidently.core.container.MetricContainer</span>):
+    <span class="name">GroupBy</span><wbr>(<span class="base"><a href="core/container.html#MetricContainer">evidently.core.container.MetricContainer</a></span>):
 
         
     </div>
@@ -876,7 +876,7 @@
                             <div id="GroupBy.__init__" class="classattr">
                                 <div class="attr function">
             
-        <span class="name">GroupBy</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="n">metric</span><span class="p">:</span> <span class="n">evidently</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">metric_types</span><span class="o">.</span><span class="n">Metric</span>,</span><span class="param">	<span class="n">column_name</span><span class="p">:</span> <span class="nb">str</span>,</span><span class="param">	<span class="n">include_tests</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span></span>)</span>
+        <span class="name">GroupBy</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="n">metric</span><span class="p">:</span> <span class="n"><a href="core/metric_types.html#Metric">evidently.core.metric_types.Metric</a></span>,</span><span class="param">	<span class="n">column_name</span><span class="p">:</span> <span class="nb">str</span>,</span><span class="param">	<span class="n">include_tests</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span></span>)</span>
 
         
     </div>
@@ -891,7 +891,7 @@
                             </div>
                             <div id="GroupBy.metric" class="classattr">
                                 <div class="attr variable">
-            <span class="name">metric</span><span class="annotation">: evidently.core.metric_types.Metric</span>
+            <span class="name">metric</span><span class="annotation">: <a href="core/metric_types.html#Metric">evidently.core.metric_types.Metric</a></span>
 
         
     </div>
@@ -915,7 +915,7 @@
                                 <div class="attr function">
             
         <span class="def">def</span>
-        <span class="name">generate_metrics</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="bp">self</span>,</span><span class="param">	<span class="n">context</span><span class="p">:</span> <span class="n">evidently</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">report</span><span class="o">.</span><span class="n">Context</span></span><span class="return-annotation">) -> <span class="n">Sequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">evidently</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">metric_types</span><span class="o">.</span><span class="n">Metric</span><span class="p">,</span> <span class="n">evidently</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">container</span><span class="o">.</span><span class="n">MetricContainer</span><span class="p">]]</span>:</span></span>
+        <span class="name">generate_metrics</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="bp">self</span>,</span><span class="param">	<span class="n">context</span><span class="p">:</span> <span class="n"><a href="core/report.html#Context">evidently.core.report.Context</a></span></span><span class="return-annotation">) -> <span class="n">Sequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n"><a href="core/metric_types.html#Metric">evidently.core.metric_types.Metric</a></span><span class="p">,</span> <span class="n"><a href="core/container.html#MetricContainer">evidently.core.container.MetricContainer</a></span><span class="p">]]</span>:</span></span>
 
         
     </div>
@@ -928,7 +928,7 @@
                                 <div class="attr function">
             
         <span class="def">def</span>
-        <span class="name">label_metric</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span>, </span><span class="param"><span class="n">label</span><span class="p">:</span> <span class="nb">object</span></span><span class="return-annotation">) -> <span class="n">evidently</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">metric_types</span><span class="o">.</span><span class="n">Metric</span>:</span></span>
+        <span class="name">label_metric</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span>, </span><span class="param"><span class="n">label</span><span class="p">:</span> <span class="nb">object</span></span><span class="return-annotation">) -> <span class="n"><a href="core/metric_types.html#Metric">evidently.core.metric_types.Metric</a></span>:</span></span>
 
         
     </div>
@@ -937,12 +937,25 @@
     
 
                             </div>
+                            <div class="inherited">
+                                <h5>Inherited Members</h5>
+                                <dl>
+                                    <div><dt><a href="core/container.html#MetricContainer">evidently.core.container.MetricContainer</a></dt>
+                                <dd id="GroupBy.Config" class="class"><a href="core/container.html#MetricContainer.Config">Config</a></dd>
+                <dd id="GroupBy.include_tests" class="variable"><a href="core/container.html#MetricContainer.include_tests">include_tests</a></dd>
+                <dd id="GroupBy.metrics" class="function"><a href="core/container.html#MetricContainer.metrics">metrics</a></dd>
+                <dd id="GroupBy.render" class="function"><a href="core/container.html#MetricContainer.render">render</a></dd>
+                <dd id="GroupBy.list_metrics" class="function"><a href="core/container.html#MetricContainer.list_metrics">list_metrics</a></dd>
+
+            </div>
+                                </dl>
+                            </div>
                 </section>
                 <section id="RowTestSummary">
                     <div class="attr class">
             
     <span class="def">class</span>
-    <span class="name">RowTestSummary</span><wbr>(<span class="base">evidently.core.container.MetricContainer</span>):
+    <span class="name">RowTestSummary</span><wbr>(<span class="base"><a href="core/container.html#MetricContainer">evidently.core.container.MetricContainer</a></span>):
 
         
     </div>
@@ -976,7 +989,7 @@
                                 <div class="attr function">
             
         <span class="def">def</span>
-        <span class="name">generate_metrics</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="bp">self</span>,</span><span class="param">	<span class="n">context</span><span class="p">:</span> <span class="n">evidently</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">report</span><span class="o">.</span><span class="n">Context</span></span><span class="return-annotation">) -> <span class="n">Sequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">evidently</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">metric_types</span><span class="o">.</span><span class="n">Metric</span><span class="p">,</span> <span class="n">evidently</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">container</span><span class="o">.</span><span class="n">MetricContainer</span><span class="p">]]</span>:</span></span>
+        <span class="name">generate_metrics</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="bp">self</span>,</span><span class="param">	<span class="n">context</span><span class="p">:</span> <span class="n"><a href="core/report.html#Context">evidently.core.report.Context</a></span></span><span class="return-annotation">) -> <span class="n">Sequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n"><a href="core/metric_types.html#Metric">evidently.core.metric_types.Metric</a></span><span class="p">,</span> <span class="n"><a href="core/container.html#MetricContainer">evidently.core.container.MetricContainer</a></span><span class="p">]]</span>:</span></span>
 
         
     </div>
@@ -1015,7 +1028,7 @@
                                 <div class="attr function">
             
         <span class="def">def</span>
-        <span class="name">get_test_column_metric</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span>, </span><span class="param"><span class="n">test_column</span><span class="p">:</span> <span class="nb">str</span>, </span><span class="param"><span class="n">context</span></span><span class="return-annotation">) -> <span class="n">evidently</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">metric_types</span><span class="o">.</span><span class="n">Metric</span>:</span></span>
+        <span class="name">get_test_column_metric</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span>, </span><span class="param"><span class="n">test_column</span><span class="p">:</span> <span class="nb">str</span>, </span><span class="param"><span class="n">context</span></span><span class="return-annotation">) -> <span class="n"><a href="core/metric_types.html#Metric">evidently.core.metric_types.Metric</a></span>:</span></span>
 
         
     </div>
@@ -1028,7 +1041,7 @@
                                 <div class="attr function">
             
         <span class="def">def</span>
-        <span class="name">render</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="bp">self</span>,</span><span class="param">	<span class="n">context</span><span class="p">:</span> <span class="n">evidently</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">report</span><span class="o">.</span><span class="n">Context</span>,</span><span class="param">	<span class="n">child_widgets</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="n">evidently</span><span class="o">.</span><span class="n">legacy</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">widget</span><span class="o">.</span><span class="n">BaseWidgetInfo</span><span class="p">]]]]</span> <span class="o">=</span> <span class="kc">None</span></span><span class="return-annotation">) -> <span class="n">List</span><span class="p">[</span><span class="n">evidently</span><span class="o">.</span><span class="n">legacy</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">widget</span><span class="o">.</span><span class="n">BaseWidgetInfo</span><span class="p">]</span>:</span></span>
+        <span class="name">render</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="bp">self</span>,</span><span class="param">	<span class="n">context</span><span class="p">:</span> <span class="n"><a href="core/report.html#Context">evidently.core.report.Context</a></span>,</span><span class="param">	<span class="n">child_widgets</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="n">evidently</span><span class="o">.</span><span class="n">legacy</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">widget</span><span class="o">.</span><span class="n">BaseWidgetInfo</span><span class="p">]]]]</span> <span class="o">=</span> <span class="kc">None</span></span><span class="return-annotation">) -> <span class="n">List</span><span class="p">[</span><span class="n">evidently</span><span class="o">.</span><span class="n">legacy</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">widget</span><span class="o">.</span><span class="n">BaseWidgetInfo</span><span class="p">]</span>:</span></span>
 
         
     </div>
@@ -1036,6 +1049,19 @@
     
     
 
+                            </div>
+                            <div class="inherited">
+                                <h5>Inherited Members</h5>
+                                <dl>
+                                    <div><dt><a href="core/container.html#MetricContainer">evidently.core.container.MetricContainer</a></dt>
+                                <dd id="RowTestSummary.__init__" class="function"><a href="core/container.html#MetricContainer.__init__">MetricContainer</a></dd>
+                <dd id="RowTestSummary.Config" class="class"><a href="core/container.html#MetricContainer.Config">Config</a></dd>
+                <dd id="RowTestSummary.include_tests" class="variable"><a href="core/container.html#MetricContainer.include_tests">include_tests</a></dd>
+                <dd id="RowTestSummary.metrics" class="function"><a href="core/container.html#MetricContainer.metrics">metrics</a></dd>
+                <dd id="RowTestSummary.list_metrics" class="function"><a href="core/container.html#MetricContainer.list_metrics">list_metrics</a></dd>
+
+            </div>
+                                </dl>
                             </div>
                 </section>
                 <section id="CategoryCount">
@@ -1053,7 +1079,7 @@
                             <div id="CategoryCount.__init__" class="classattr">
                                 <div class="attr function">
             
-        <span class="name">CategoryCount</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="n">column</span><span class="p">:</span> <span class="nb">str</span>,</span><span class="param">	<span class="n">categories</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">pydantic</span><span class="o">.</span><span class="n">v1</span><span class="o">.</span><span class="n">types</span><span class="o">.</span><span class="n">StrictBool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">category</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pydantic</span><span class="o">.</span><span class="n">v1</span><span class="o">.</span><span class="n">types</span><span class="o">.</span><span class="n">StrictBool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">tests</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">evidently</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">metric_types</span><span class="o">.</span><span class="n">MetricTest</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">share_tests</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">evidently</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">metric_types</span><span class="o">.</span><span class="n">MetricTest</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span></span>)</span>
+        <span class="name">CategoryCount</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="n">column</span><span class="p">:</span> <span class="nb">str</span>,</span><span class="param">	<span class="n">categories</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">pydantic</span><span class="o">.</span><span class="n">v1</span><span class="o">.</span><span class="n">types</span><span class="o">.</span><span class="n">StrictBool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">category</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pydantic</span><span class="o">.</span><span class="n">v1</span><span class="o">.</span><span class="n">types</span><span class="o">.</span><span class="n">StrictBool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">tests</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n"><a href="core/metric_types.html#MetricTest">evidently.core.metric_types.MetricTest</a></span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">share_tests</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n"><a href="core/metric_types.html#MetricTest">evidently.core.metric_types.MetricTest</a></span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span></span>)</span>
 
         
     </div>
@@ -1087,6 +1113,30 @@
     
     
 
+                            </div>
+                            <div class="inherited">
+                                <h5>Inherited Members</h5>
+                                <dl>
+                                    <div><dt><a href="core/metric_types.html#ColumnMetric">evidently.core.metric_types.ColumnMetric</a></dt>
+                                <dd id="CategoryCount.column" class="variable"><a href="core/metric_types.html#ColumnMetric.column">column</a></dd>
+
+            </div>
+            <div><dt><a href="core/metric_types.html#CountMetric">evidently.core.metric_types.CountMetric</a></dt>
+                                <dd id="CategoryCount.tests" class="variable"><a href="core/metric_types.html#CountMetric.tests">tests</a></dd>
+                <dd id="CategoryCount.share_tests" class="variable"><a href="core/metric_types.html#CountMetric.share_tests">share_tests</a></dd>
+                <dd id="CategoryCount.get_bound_tests" class="function"><a href="core/metric_types.html#CountMetric.get_bound_tests">get_bound_tests</a></dd>
+                <dd id="CategoryCount.validate_tests" class="function"><a href="core/metric_types.html#CountMetric.validate_tests">validate_tests</a></dd>
+                <dd id="CategoryCount.validate_share_tests" class="function"><a href="core/metric_types.html#CountMetric.validate_share_tests">validate_share_tests</a></dd>
+
+            </div>
+            <div><dt><a href="core/metric_types.html#Metric">evidently.core.metric_types.Metric</a></dt>
+                                <dd id="CategoryCount.to_calculation" class="function"><a href="core/metric_types.html#Metric.to_calculation">to_calculation</a></dd>
+                <dd id="CategoryCount.get_metric_id" class="function"><a href="core/metric_types.html#Metric.get_metric_id">get_metric_id</a></dd>
+                <dd id="CategoryCount.metric_id" class="variable"><a href="core/metric_types.html#Metric.metric_id">metric_id</a></dd>
+                <dd id="CategoryCount.call" class="function"><a href="core/metric_types.html#Metric.call">call</a></dd>
+
+            </div>
+                                </dl>
                             </div>
                 </section>
                 <section id="ValueDrift">
@@ -1122,6 +1172,28 @@
     
     
 
+                            </div>
+                            <div class="inherited">
+                                <h5>Inherited Members</h5>
+                                <dl>
+                                    <div><dt><a href="core/metric_types.html#ColumnMetric">evidently.core.metric_types.ColumnMetric</a></dt>
+                                <dd id="ValueDrift.column" class="variable"><a href="core/metric_types.html#ColumnMetric.column">column</a></dd>
+
+            </div>
+            <div><dt><a href="core/metric_types.html#SingleValueMetric">evidently.core.metric_types.SingleValueMetric</a></dt>
+                                <dd id="ValueDrift.tests" class="variable"><a href="core/metric_types.html#SingleValueMetric.tests">tests</a></dd>
+                <dd id="ValueDrift.get_bound_tests" class="function"><a href="core/metric_types.html#SingleValueMetric.get_bound_tests">get_bound_tests</a></dd>
+                <dd id="ValueDrift.validate_tests" class="function"><a href="core/metric_types.html#SingleValueMetric.validate_tests">validate_tests</a></dd>
+
+            </div>
+            <div><dt><a href="core/metric_types.html#Metric">evidently.core.metric_types.Metric</a></dt>
+                                <dd id="ValueDrift.to_calculation" class="function"><a href="core/metric_types.html#Metric.to_calculation">to_calculation</a></dd>
+                <dd id="ValueDrift.get_metric_id" class="function"><a href="core/metric_types.html#Metric.get_metric_id">get_metric_id</a></dd>
+                <dd id="ValueDrift.metric_id" class="variable"><a href="core/metric_types.html#Metric.metric_id">metric_id</a></dd>
+                <dd id="ValueDrift.call" class="function"><a href="core/metric_types.html#Metric.call">call</a></dd>
+
+            </div>
+                                </dl>
                             </div>
                 </section>
                 <section id="DriftedColumnsCount">
@@ -1290,6 +1362,26 @@
     
 
                             </div>
+                            <div class="inherited">
+                                <h5>Inherited Members</h5>
+                                <dl>
+                                    <div><dt><a href="core/metric_types.html#CountMetric">evidently.core.metric_types.CountMetric</a></dt>
+                                <dd id="DriftedColumnsCount.tests" class="variable"><a href="core/metric_types.html#CountMetric.tests">tests</a></dd>
+                <dd id="DriftedColumnsCount.share_tests" class="variable"><a href="core/metric_types.html#CountMetric.share_tests">share_tests</a></dd>
+                <dd id="DriftedColumnsCount.get_bound_tests" class="function"><a href="core/metric_types.html#CountMetric.get_bound_tests">get_bound_tests</a></dd>
+                <dd id="DriftedColumnsCount.validate_tests" class="function"><a href="core/metric_types.html#CountMetric.validate_tests">validate_tests</a></dd>
+                <dd id="DriftedColumnsCount.validate_share_tests" class="function"><a href="core/metric_types.html#CountMetric.validate_share_tests">validate_share_tests</a></dd>
+
+            </div>
+            <div><dt><a href="core/metric_types.html#Metric">evidently.core.metric_types.Metric</a></dt>
+                                <dd id="DriftedColumnsCount.to_calculation" class="function"><a href="core/metric_types.html#Metric.to_calculation">to_calculation</a></dd>
+                <dd id="DriftedColumnsCount.get_metric_id" class="function"><a href="core/metric_types.html#Metric.get_metric_id">get_metric_id</a></dd>
+                <dd id="DriftedColumnsCount.metric_id" class="variable"><a href="core/metric_types.html#Metric.metric_id">metric_id</a></dd>
+                <dd id="DriftedColumnsCount.call" class="function"><a href="core/metric_types.html#Metric.call">call</a></dd>
+
+            </div>
+                                </dl>
+                            </div>
                 </section>
                 <section id="MaxValue">
                     <div class="attr class">
@@ -1303,6 +1395,28 @@
     
     
 
+                            <div class="inherited">
+                                <h5>Inherited Members</h5>
+                                <dl>
+                                    <div><dt><a href="core/metric_types.html#ColumnMetric">evidently.core.metric_types.ColumnMetric</a></dt>
+                                <dd id="MaxValue.column" class="variable"><a href="core/metric_types.html#ColumnMetric.column">column</a></dd>
+
+            </div>
+            <div><dt><a href="core/metric_types.html#SingleValueMetric">evidently.core.metric_types.SingleValueMetric</a></dt>
+                                <dd id="MaxValue.tests" class="variable"><a href="core/metric_types.html#SingleValueMetric.tests">tests</a></dd>
+                <dd id="MaxValue.get_bound_tests" class="function"><a href="core/metric_types.html#SingleValueMetric.get_bound_tests">get_bound_tests</a></dd>
+                <dd id="MaxValue.validate_tests" class="function"><a href="core/metric_types.html#SingleValueMetric.validate_tests">validate_tests</a></dd>
+
+            </div>
+            <div><dt><a href="core/metric_types.html#Metric">evidently.core.metric_types.Metric</a></dt>
+                                <dd id="MaxValue.to_calculation" class="function"><a href="core/metric_types.html#Metric.to_calculation">to_calculation</a></dd>
+                <dd id="MaxValue.get_metric_id" class="function"><a href="core/metric_types.html#Metric.get_metric_id">get_metric_id</a></dd>
+                <dd id="MaxValue.metric_id" class="variable"><a href="core/metric_types.html#Metric.metric_id">metric_id</a></dd>
+                <dd id="MaxValue.call" class="function"><a href="core/metric_types.html#Metric.call">call</a></dd>
+
+            </div>
+                                </dl>
+                            </div>
                 </section>
                 <section id="MeanValue">
                     <div class="attr class">
@@ -1316,6 +1430,28 @@
     
     
 
+                            <div class="inherited">
+                                <h5>Inherited Members</h5>
+                                <dl>
+                                    <div><dt><a href="core/metric_types.html#ColumnMetric">evidently.core.metric_types.ColumnMetric</a></dt>
+                                <dd id="MeanValue.column" class="variable"><a href="core/metric_types.html#ColumnMetric.column">column</a></dd>
+
+            </div>
+            <div><dt><a href="core/metric_types.html#SingleValueMetric">evidently.core.metric_types.SingleValueMetric</a></dt>
+                                <dd id="MeanValue.tests" class="variable"><a href="core/metric_types.html#SingleValueMetric.tests">tests</a></dd>
+                <dd id="MeanValue.get_bound_tests" class="function"><a href="core/metric_types.html#SingleValueMetric.get_bound_tests">get_bound_tests</a></dd>
+                <dd id="MeanValue.validate_tests" class="function"><a href="core/metric_types.html#SingleValueMetric.validate_tests">validate_tests</a></dd>
+
+            </div>
+            <div><dt><a href="core/metric_types.html#Metric">evidently.core.metric_types.Metric</a></dt>
+                                <dd id="MeanValue.to_calculation" class="function"><a href="core/metric_types.html#Metric.to_calculation">to_calculation</a></dd>
+                <dd id="MeanValue.get_metric_id" class="function"><a href="core/metric_types.html#Metric.get_metric_id">get_metric_id</a></dd>
+                <dd id="MeanValue.metric_id" class="variable"><a href="core/metric_types.html#Metric.metric_id">metric_id</a></dd>
+                <dd id="MeanValue.call" class="function"><a href="core/metric_types.html#Metric.call">call</a></dd>
+
+            </div>
+                                </dl>
+                            </div>
                 </section>
                 <section id="MedianValue">
                     <div class="attr class">
@@ -1329,6 +1465,28 @@
     
     
 
+                            <div class="inherited">
+                                <h5>Inherited Members</h5>
+                                <dl>
+                                    <div><dt><a href="core/metric_types.html#ColumnMetric">evidently.core.metric_types.ColumnMetric</a></dt>
+                                <dd id="MedianValue.column" class="variable"><a href="core/metric_types.html#ColumnMetric.column">column</a></dd>
+
+            </div>
+            <div><dt><a href="core/metric_types.html#SingleValueMetric">evidently.core.metric_types.SingleValueMetric</a></dt>
+                                <dd id="MedianValue.tests" class="variable"><a href="core/metric_types.html#SingleValueMetric.tests">tests</a></dd>
+                <dd id="MedianValue.get_bound_tests" class="function"><a href="core/metric_types.html#SingleValueMetric.get_bound_tests">get_bound_tests</a></dd>
+                <dd id="MedianValue.validate_tests" class="function"><a href="core/metric_types.html#SingleValueMetric.validate_tests">validate_tests</a></dd>
+
+            </div>
+            <div><dt><a href="core/metric_types.html#Metric">evidently.core.metric_types.Metric</a></dt>
+                                <dd id="MedianValue.to_calculation" class="function"><a href="core/metric_types.html#Metric.to_calculation">to_calculation</a></dd>
+                <dd id="MedianValue.get_metric_id" class="function"><a href="core/metric_types.html#Metric.get_metric_id">get_metric_id</a></dd>
+                <dd id="MedianValue.metric_id" class="variable"><a href="core/metric_types.html#Metric.metric_id">metric_id</a></dd>
+                <dd id="MedianValue.call" class="function"><a href="core/metric_types.html#Metric.call">call</a></dd>
+
+            </div>
+                                </dl>
+                            </div>
                 </section>
                 <section id="MinValue">
                     <div class="attr class">
@@ -1342,6 +1500,28 @@
     
     
 
+                            <div class="inherited">
+                                <h5>Inherited Members</h5>
+                                <dl>
+                                    <div><dt><a href="core/metric_types.html#ColumnMetric">evidently.core.metric_types.ColumnMetric</a></dt>
+                                <dd id="MinValue.column" class="variable"><a href="core/metric_types.html#ColumnMetric.column">column</a></dd>
+
+            </div>
+            <div><dt><a href="core/metric_types.html#SingleValueMetric">evidently.core.metric_types.SingleValueMetric</a></dt>
+                                <dd id="MinValue.tests" class="variable"><a href="core/metric_types.html#SingleValueMetric.tests">tests</a></dd>
+                <dd id="MinValue.get_bound_tests" class="function"><a href="core/metric_types.html#SingleValueMetric.get_bound_tests">get_bound_tests</a></dd>
+                <dd id="MinValue.validate_tests" class="function"><a href="core/metric_types.html#SingleValueMetric.validate_tests">validate_tests</a></dd>
+
+            </div>
+            <div><dt><a href="core/metric_types.html#Metric">evidently.core.metric_types.Metric</a></dt>
+                                <dd id="MinValue.to_calculation" class="function"><a href="core/metric_types.html#Metric.to_calculation">to_calculation</a></dd>
+                <dd id="MinValue.get_metric_id" class="function"><a href="core/metric_types.html#Metric.get_metric_id">get_metric_id</a></dd>
+                <dd id="MinValue.metric_id" class="variable"><a href="core/metric_types.html#Metric.metric_id">metric_id</a></dd>
+                <dd id="MinValue.call" class="function"><a href="core/metric_types.html#Metric.call">call</a></dd>
+
+            </div>
+                                </dl>
+                            </div>
                 </section>
                 <section id="MissingValueCount">
                     <div class="attr class">
@@ -1355,6 +1535,30 @@
     
     
 
+                            <div class="inherited">
+                                <h5>Inherited Members</h5>
+                                <dl>
+                                    <div><dt><a href="core/metric_types.html#ColumnMetric">evidently.core.metric_types.ColumnMetric</a></dt>
+                                <dd id="MissingValueCount.column" class="variable"><a href="core/metric_types.html#ColumnMetric.column">column</a></dd>
+
+            </div>
+            <div><dt><a href="core/metric_types.html#CountMetric">evidently.core.metric_types.CountMetric</a></dt>
+                                <dd id="MissingValueCount.tests" class="variable"><a href="core/metric_types.html#CountMetric.tests">tests</a></dd>
+                <dd id="MissingValueCount.share_tests" class="variable"><a href="core/metric_types.html#CountMetric.share_tests">share_tests</a></dd>
+                <dd id="MissingValueCount.get_bound_tests" class="function"><a href="core/metric_types.html#CountMetric.get_bound_tests">get_bound_tests</a></dd>
+                <dd id="MissingValueCount.validate_tests" class="function"><a href="core/metric_types.html#CountMetric.validate_tests">validate_tests</a></dd>
+                <dd id="MissingValueCount.validate_share_tests" class="function"><a href="core/metric_types.html#CountMetric.validate_share_tests">validate_share_tests</a></dd>
+
+            </div>
+            <div><dt><a href="core/metric_types.html#Metric">evidently.core.metric_types.Metric</a></dt>
+                                <dd id="MissingValueCount.to_calculation" class="function"><a href="core/metric_types.html#Metric.to_calculation">to_calculation</a></dd>
+                <dd id="MissingValueCount.get_metric_id" class="function"><a href="core/metric_types.html#Metric.get_metric_id">get_metric_id</a></dd>
+                <dd id="MissingValueCount.metric_id" class="variable"><a href="core/metric_types.html#Metric.metric_id">metric_id</a></dd>
+                <dd id="MissingValueCount.call" class="function"><a href="core/metric_types.html#Metric.call">call</a></dd>
+
+            </div>
+                                </dl>
+                            </div>
                 </section>
                 <section id="InListValueCount">
                     <div class="attr class">
@@ -1378,6 +1582,30 @@
     
     
 
+                            </div>
+                            <div class="inherited">
+                                <h5>Inherited Members</h5>
+                                <dl>
+                                    <div><dt><a href="core/metric_types.html#ColumnMetric">evidently.core.metric_types.ColumnMetric</a></dt>
+                                <dd id="InListValueCount.column" class="variable"><a href="core/metric_types.html#ColumnMetric.column">column</a></dd>
+
+            </div>
+            <div><dt><a href="core/metric_types.html#CountMetric">evidently.core.metric_types.CountMetric</a></dt>
+                                <dd id="InListValueCount.tests" class="variable"><a href="core/metric_types.html#CountMetric.tests">tests</a></dd>
+                <dd id="InListValueCount.share_tests" class="variable"><a href="core/metric_types.html#CountMetric.share_tests">share_tests</a></dd>
+                <dd id="InListValueCount.get_bound_tests" class="function"><a href="core/metric_types.html#CountMetric.get_bound_tests">get_bound_tests</a></dd>
+                <dd id="InListValueCount.validate_tests" class="function"><a href="core/metric_types.html#CountMetric.validate_tests">validate_tests</a></dd>
+                <dd id="InListValueCount.validate_share_tests" class="function"><a href="core/metric_types.html#CountMetric.validate_share_tests">validate_share_tests</a></dd>
+
+            </div>
+            <div><dt><a href="core/metric_types.html#Metric">evidently.core.metric_types.Metric</a></dt>
+                                <dd id="InListValueCount.to_calculation" class="function"><a href="core/metric_types.html#Metric.to_calculation">to_calculation</a></dd>
+                <dd id="InListValueCount.get_metric_id" class="function"><a href="core/metric_types.html#Metric.get_metric_id">get_metric_id</a></dd>
+                <dd id="InListValueCount.metric_id" class="variable"><a href="core/metric_types.html#Metric.metric_id">metric_id</a></dd>
+                <dd id="InListValueCount.call" class="function"><a href="core/metric_types.html#Metric.call">call</a></dd>
+
+            </div>
+                                </dl>
                             </div>
                 </section>
                 <section id="InRangeValueCount">
@@ -1414,6 +1642,30 @@
     
 
                             </div>
+                            <div class="inherited">
+                                <h5>Inherited Members</h5>
+                                <dl>
+                                    <div><dt><a href="core/metric_types.html#ColumnMetric">evidently.core.metric_types.ColumnMetric</a></dt>
+                                <dd id="InRangeValueCount.column" class="variable"><a href="core/metric_types.html#ColumnMetric.column">column</a></dd>
+
+            </div>
+            <div><dt><a href="core/metric_types.html#CountMetric">evidently.core.metric_types.CountMetric</a></dt>
+                                <dd id="InRangeValueCount.tests" class="variable"><a href="core/metric_types.html#CountMetric.tests">tests</a></dd>
+                <dd id="InRangeValueCount.share_tests" class="variable"><a href="core/metric_types.html#CountMetric.share_tests">share_tests</a></dd>
+                <dd id="InRangeValueCount.get_bound_tests" class="function"><a href="core/metric_types.html#CountMetric.get_bound_tests">get_bound_tests</a></dd>
+                <dd id="InRangeValueCount.validate_tests" class="function"><a href="core/metric_types.html#CountMetric.validate_tests">validate_tests</a></dd>
+                <dd id="InRangeValueCount.validate_share_tests" class="function"><a href="core/metric_types.html#CountMetric.validate_share_tests">validate_share_tests</a></dd>
+
+            </div>
+            <div><dt><a href="core/metric_types.html#Metric">evidently.core.metric_types.Metric</a></dt>
+                                <dd id="InRangeValueCount.to_calculation" class="function"><a href="core/metric_types.html#Metric.to_calculation">to_calculation</a></dd>
+                <dd id="InRangeValueCount.get_metric_id" class="function"><a href="core/metric_types.html#Metric.get_metric_id">get_metric_id</a></dd>
+                <dd id="InRangeValueCount.metric_id" class="variable"><a href="core/metric_types.html#Metric.metric_id">metric_id</a></dd>
+                <dd id="InRangeValueCount.call" class="function"><a href="core/metric_types.html#Metric.call">call</a></dd>
+
+            </div>
+                                </dl>
+                            </div>
                 </section>
                 <section id="OutListValueCount">
                     <div class="attr class">
@@ -1437,6 +1689,30 @@
     
     
 
+                            </div>
+                            <div class="inherited">
+                                <h5>Inherited Members</h5>
+                                <dl>
+                                    <div><dt><a href="core/metric_types.html#ColumnMetric">evidently.core.metric_types.ColumnMetric</a></dt>
+                                <dd id="OutListValueCount.column" class="variable"><a href="core/metric_types.html#ColumnMetric.column">column</a></dd>
+
+            </div>
+            <div><dt><a href="core/metric_types.html#CountMetric">evidently.core.metric_types.CountMetric</a></dt>
+                                <dd id="OutListValueCount.tests" class="variable"><a href="core/metric_types.html#CountMetric.tests">tests</a></dd>
+                <dd id="OutListValueCount.share_tests" class="variable"><a href="core/metric_types.html#CountMetric.share_tests">share_tests</a></dd>
+                <dd id="OutListValueCount.get_bound_tests" class="function"><a href="core/metric_types.html#CountMetric.get_bound_tests">get_bound_tests</a></dd>
+                <dd id="OutListValueCount.validate_tests" class="function"><a href="core/metric_types.html#CountMetric.validate_tests">validate_tests</a></dd>
+                <dd id="OutListValueCount.validate_share_tests" class="function"><a href="core/metric_types.html#CountMetric.validate_share_tests">validate_share_tests</a></dd>
+
+            </div>
+            <div><dt><a href="core/metric_types.html#Metric">evidently.core.metric_types.Metric</a></dt>
+                                <dd id="OutListValueCount.to_calculation" class="function"><a href="core/metric_types.html#Metric.to_calculation">to_calculation</a></dd>
+                <dd id="OutListValueCount.get_metric_id" class="function"><a href="core/metric_types.html#Metric.get_metric_id">get_metric_id</a></dd>
+                <dd id="OutListValueCount.metric_id" class="variable"><a href="core/metric_types.html#Metric.metric_id">metric_id</a></dd>
+                <dd id="OutListValueCount.call" class="function"><a href="core/metric_types.html#Metric.call">call</a></dd>
+
+            </div>
+                                </dl>
                             </div>
                 </section>
                 <section id="OutRangeValueCount">
@@ -1473,6 +1749,30 @@
     
 
                             </div>
+                            <div class="inherited">
+                                <h5>Inherited Members</h5>
+                                <dl>
+                                    <div><dt><a href="core/metric_types.html#ColumnMetric">evidently.core.metric_types.ColumnMetric</a></dt>
+                                <dd id="OutRangeValueCount.column" class="variable"><a href="core/metric_types.html#ColumnMetric.column">column</a></dd>
+
+            </div>
+            <div><dt><a href="core/metric_types.html#CountMetric">evidently.core.metric_types.CountMetric</a></dt>
+                                <dd id="OutRangeValueCount.tests" class="variable"><a href="core/metric_types.html#CountMetric.tests">tests</a></dd>
+                <dd id="OutRangeValueCount.share_tests" class="variable"><a href="core/metric_types.html#CountMetric.share_tests">share_tests</a></dd>
+                <dd id="OutRangeValueCount.get_bound_tests" class="function"><a href="core/metric_types.html#CountMetric.get_bound_tests">get_bound_tests</a></dd>
+                <dd id="OutRangeValueCount.validate_tests" class="function"><a href="core/metric_types.html#CountMetric.validate_tests">validate_tests</a></dd>
+                <dd id="OutRangeValueCount.validate_share_tests" class="function"><a href="core/metric_types.html#CountMetric.validate_share_tests">validate_share_tests</a></dd>
+
+            </div>
+            <div><dt><a href="core/metric_types.html#Metric">evidently.core.metric_types.Metric</a></dt>
+                                <dd id="OutRangeValueCount.to_calculation" class="function"><a href="core/metric_types.html#Metric.to_calculation">to_calculation</a></dd>
+                <dd id="OutRangeValueCount.get_metric_id" class="function"><a href="core/metric_types.html#Metric.get_metric_id">get_metric_id</a></dd>
+                <dd id="OutRangeValueCount.metric_id" class="variable"><a href="core/metric_types.html#Metric.metric_id">metric_id</a></dd>
+                <dd id="OutRangeValueCount.call" class="function"><a href="core/metric_types.html#Metric.call">call</a></dd>
+
+            </div>
+                                </dl>
+                            </div>
                 </section>
                 <section id="QuantileValue">
                     <div class="attr class">
@@ -1497,6 +1797,28 @@
     
 
                             </div>
+                            <div class="inherited">
+                                <h5>Inherited Members</h5>
+                                <dl>
+                                    <div><dt><a href="core/metric_types.html#ColumnMetric">evidently.core.metric_types.ColumnMetric</a></dt>
+                                <dd id="QuantileValue.column" class="variable"><a href="core/metric_types.html#ColumnMetric.column">column</a></dd>
+
+            </div>
+            <div><dt><a href="core/metric_types.html#SingleValueMetric">evidently.core.metric_types.SingleValueMetric</a></dt>
+                                <dd id="QuantileValue.tests" class="variable"><a href="core/metric_types.html#SingleValueMetric.tests">tests</a></dd>
+                <dd id="QuantileValue.get_bound_tests" class="function"><a href="core/metric_types.html#SingleValueMetric.get_bound_tests">get_bound_tests</a></dd>
+                <dd id="QuantileValue.validate_tests" class="function"><a href="core/metric_types.html#SingleValueMetric.validate_tests">validate_tests</a></dd>
+
+            </div>
+            <div><dt><a href="core/metric_types.html#Metric">evidently.core.metric_types.Metric</a></dt>
+                                <dd id="QuantileValue.to_calculation" class="function"><a href="core/metric_types.html#Metric.to_calculation">to_calculation</a></dd>
+                <dd id="QuantileValue.get_metric_id" class="function"><a href="core/metric_types.html#Metric.get_metric_id">get_metric_id</a></dd>
+                <dd id="QuantileValue.metric_id" class="variable"><a href="core/metric_types.html#Metric.metric_id">metric_id</a></dd>
+                <dd id="QuantileValue.call" class="function"><a href="core/metric_types.html#Metric.call">call</a></dd>
+
+            </div>
+                                </dl>
+                            </div>
                 </section>
                 <section id="StdValue">
                     <div class="attr class">
@@ -1510,6 +1832,28 @@
     
     
 
+                            <div class="inherited">
+                                <h5>Inherited Members</h5>
+                                <dl>
+                                    <div><dt><a href="core/metric_types.html#ColumnMetric">evidently.core.metric_types.ColumnMetric</a></dt>
+                                <dd id="StdValue.column" class="variable"><a href="core/metric_types.html#ColumnMetric.column">column</a></dd>
+
+            </div>
+            <div><dt><a href="core/metric_types.html#SingleValueMetric">evidently.core.metric_types.SingleValueMetric</a></dt>
+                                <dd id="StdValue.tests" class="variable"><a href="core/metric_types.html#SingleValueMetric.tests">tests</a></dd>
+                <dd id="StdValue.get_bound_tests" class="function"><a href="core/metric_types.html#SingleValueMetric.get_bound_tests">get_bound_tests</a></dd>
+                <dd id="StdValue.validate_tests" class="function"><a href="core/metric_types.html#SingleValueMetric.validate_tests">validate_tests</a></dd>
+
+            </div>
+            <div><dt><a href="core/metric_types.html#Metric">evidently.core.metric_types.Metric</a></dt>
+                                <dd id="StdValue.to_calculation" class="function"><a href="core/metric_types.html#Metric.to_calculation">to_calculation</a></dd>
+                <dd id="StdValue.get_metric_id" class="function"><a href="core/metric_types.html#Metric.get_metric_id">get_metric_id</a></dd>
+                <dd id="StdValue.metric_id" class="variable"><a href="core/metric_types.html#Metric.metric_id">metric_id</a></dd>
+                <dd id="StdValue.call" class="function"><a href="core/metric_types.html#Metric.call">call</a></dd>
+
+            </div>
+                                </dl>
+                            </div>
                 </section>
                 <section id="SumValue">
                     <div class="attr class">
@@ -1523,6 +1867,28 @@
     
     
 
+                            <div class="inherited">
+                                <h5>Inherited Members</h5>
+                                <dl>
+                                    <div><dt><a href="core/metric_types.html#ColumnMetric">evidently.core.metric_types.ColumnMetric</a></dt>
+                                <dd id="SumValue.column" class="variable"><a href="core/metric_types.html#ColumnMetric.column">column</a></dd>
+
+            </div>
+            <div><dt><a href="core/metric_types.html#SingleValueMetric">evidently.core.metric_types.SingleValueMetric</a></dt>
+                                <dd id="SumValue.tests" class="variable"><a href="core/metric_types.html#SingleValueMetric.tests">tests</a></dd>
+                <dd id="SumValue.get_bound_tests" class="function"><a href="core/metric_types.html#SingleValueMetric.get_bound_tests">get_bound_tests</a></dd>
+                <dd id="SumValue.validate_tests" class="function"><a href="core/metric_types.html#SingleValueMetric.validate_tests">validate_tests</a></dd>
+
+            </div>
+            <div><dt><a href="core/metric_types.html#Metric">evidently.core.metric_types.Metric</a></dt>
+                                <dd id="SumValue.to_calculation" class="function"><a href="core/metric_types.html#Metric.to_calculation">to_calculation</a></dd>
+                <dd id="SumValue.get_metric_id" class="function"><a href="core/metric_types.html#Metric.get_metric_id">get_metric_id</a></dd>
+                <dd id="SumValue.metric_id" class="variable"><a href="core/metric_types.html#Metric.metric_id">metric_id</a></dd>
+                <dd id="SumValue.call" class="function"><a href="core/metric_types.html#Metric.call">call</a></dd>
+
+            </div>
+                                </dl>
+                            </div>
                 </section>
                 <section id="UniqueValueCount">
                     <div class="attr class">
@@ -1536,6 +1902,30 @@
     
     
 
+                            <div class="inherited">
+                                <h5>Inherited Members</h5>
+                                <dl>
+                                    <div><dt><a href="core/metric_types.html#ColumnMetric">evidently.core.metric_types.ColumnMetric</a></dt>
+                                <dd id="UniqueValueCount.column" class="variable"><a href="core/metric_types.html#ColumnMetric.column">column</a></dd>
+
+            </div>
+            <div><dt><a href="core/metric_types.html#ByLabelCountMetric">evidently.core.metric_types.ByLabelCountMetric</a></dt>
+                                <dd id="UniqueValueCount.replace_nan" class="variable"><a href="core/metric_types.html#ByLabelCountMetric.replace_nan">replace_nan</a></dd>
+                <dd id="UniqueValueCount.tests" class="variable"><a href="core/metric_types.html#ByLabelCountMetric.tests">tests</a></dd>
+                <dd id="UniqueValueCount.share_tests" class="variable"><a href="core/metric_types.html#ByLabelCountMetric.share_tests">share_tests</a></dd>
+                <dd id="UniqueValueCount.get_bound_tests" class="function"><a href="core/metric_types.html#ByLabelCountMetric.get_bound_tests">get_bound_tests</a></dd>
+                <dd id="UniqueValueCount.validate_tests" class="function"><a href="core/metric_types.html#ByLabelCountMetric.validate_tests">validate_tests</a></dd>
+
+            </div>
+            <div><dt><a href="core/metric_types.html#Metric">evidently.core.metric_types.Metric</a></dt>
+                                <dd id="UniqueValueCount.to_calculation" class="function"><a href="core/metric_types.html#Metric.to_calculation">to_calculation</a></dd>
+                <dd id="UniqueValueCount.get_metric_id" class="function"><a href="core/metric_types.html#Metric.get_metric_id">get_metric_id</a></dd>
+                <dd id="UniqueValueCount.metric_id" class="variable"><a href="core/metric_types.html#Metric.metric_id">metric_id</a></dd>
+                <dd id="UniqueValueCount.call" class="function"><a href="core/metric_types.html#Metric.call">call</a></dd>
+
+            </div>
+                                </dl>
+                            </div>
                 </section>
                 <section id="ColumnCount">
                     <div class="attr class">
@@ -1560,6 +1950,24 @@
     
 
                             </div>
+                            <div class="inherited">
+                                <h5>Inherited Members</h5>
+                                <dl>
+                                    <div><dt><a href="core/metric_types.html#SingleValueMetric">evidently.core.metric_types.SingleValueMetric</a></dt>
+                                <dd id="ColumnCount.tests" class="variable"><a href="core/metric_types.html#SingleValueMetric.tests">tests</a></dd>
+                <dd id="ColumnCount.get_bound_tests" class="function"><a href="core/metric_types.html#SingleValueMetric.get_bound_tests">get_bound_tests</a></dd>
+                <dd id="ColumnCount.validate_tests" class="function"><a href="core/metric_types.html#SingleValueMetric.validate_tests">validate_tests</a></dd>
+
+            </div>
+            <div><dt><a href="core/metric_types.html#Metric">evidently.core.metric_types.Metric</a></dt>
+                                <dd id="ColumnCount.to_calculation" class="function"><a href="core/metric_types.html#Metric.to_calculation">to_calculation</a></dd>
+                <dd id="ColumnCount.get_metric_id" class="function"><a href="core/metric_types.html#Metric.get_metric_id">get_metric_id</a></dd>
+                <dd id="ColumnCount.metric_id" class="variable"><a href="core/metric_types.html#Metric.metric_id">metric_id</a></dd>
+                <dd id="ColumnCount.call" class="function"><a href="core/metric_types.html#Metric.call">call</a></dd>
+
+            </div>
+                                </dl>
+                            </div>
                 </section>
                 <section id="RowCount">
                     <div class="attr class">
@@ -1573,6 +1981,24 @@
     
     
 
+                            <div class="inherited">
+                                <h5>Inherited Members</h5>
+                                <dl>
+                                    <div><dt><a href="core/metric_types.html#SingleValueMetric">evidently.core.metric_types.SingleValueMetric</a></dt>
+                                <dd id="RowCount.tests" class="variable"><a href="core/metric_types.html#SingleValueMetric.tests">tests</a></dd>
+                <dd id="RowCount.get_bound_tests" class="function"><a href="core/metric_types.html#SingleValueMetric.get_bound_tests">get_bound_tests</a></dd>
+                <dd id="RowCount.validate_tests" class="function"><a href="core/metric_types.html#SingleValueMetric.validate_tests">validate_tests</a></dd>
+
+            </div>
+            <div><dt><a href="core/metric_types.html#Metric">evidently.core.metric_types.Metric</a></dt>
+                                <dd id="RowCount.to_calculation" class="function"><a href="core/metric_types.html#Metric.to_calculation">to_calculation</a></dd>
+                <dd id="RowCount.get_metric_id" class="function"><a href="core/metric_types.html#Metric.get_metric_id">get_metric_id</a></dd>
+                <dd id="RowCount.metric_id" class="variable"><a href="core/metric_types.html#Metric.metric_id">metric_id</a></dd>
+                <dd id="RowCount.call" class="function"><a href="core/metric_types.html#Metric.call">call</a></dd>
+
+            </div>
+                                </dl>
+                            </div>
                 </section>
                 <section id="DuplicatedRowCount">
                     <div class="attr class">
@@ -1586,6 +2012,24 @@
     
     
 
+                            <div class="inherited">
+                                <h5>Inherited Members</h5>
+                                <dl>
+                                    <div><dt><a href="core/metric_types.html#SingleValueMetric">evidently.core.metric_types.SingleValueMetric</a></dt>
+                                <dd id="DuplicatedRowCount.tests" class="variable"><a href="core/metric_types.html#SingleValueMetric.tests">tests</a></dd>
+                <dd id="DuplicatedRowCount.get_bound_tests" class="function"><a href="core/metric_types.html#SingleValueMetric.get_bound_tests">get_bound_tests</a></dd>
+                <dd id="DuplicatedRowCount.validate_tests" class="function"><a href="core/metric_types.html#SingleValueMetric.validate_tests">validate_tests</a></dd>
+
+            </div>
+            <div><dt><a href="core/metric_types.html#Metric">evidently.core.metric_types.Metric</a></dt>
+                                <dd id="DuplicatedRowCount.to_calculation" class="function"><a href="core/metric_types.html#Metric.to_calculation">to_calculation</a></dd>
+                <dd id="DuplicatedRowCount.get_metric_id" class="function"><a href="core/metric_types.html#Metric.get_metric_id">get_metric_id</a></dd>
+                <dd id="DuplicatedRowCount.metric_id" class="variable"><a href="core/metric_types.html#Metric.metric_id">metric_id</a></dd>
+                <dd id="DuplicatedRowCount.call" class="function"><a href="core/metric_types.html#Metric.call">call</a></dd>
+
+            </div>
+                                </dl>
+                            </div>
                 </section>
                 <section id="DuplicatedColumnsCount">
                     <div class="attr class">
@@ -1599,6 +2043,24 @@
     
     
 
+                            <div class="inherited">
+                                <h5>Inherited Members</h5>
+                                <dl>
+                                    <div><dt><a href="core/metric_types.html#SingleValueMetric">evidently.core.metric_types.SingleValueMetric</a></dt>
+                                <dd id="DuplicatedColumnsCount.tests" class="variable"><a href="core/metric_types.html#SingleValueMetric.tests">tests</a></dd>
+                <dd id="DuplicatedColumnsCount.get_bound_tests" class="function"><a href="core/metric_types.html#SingleValueMetric.get_bound_tests">get_bound_tests</a></dd>
+                <dd id="DuplicatedColumnsCount.validate_tests" class="function"><a href="core/metric_types.html#SingleValueMetric.validate_tests">validate_tests</a></dd>
+
+            </div>
+            <div><dt><a href="core/metric_types.html#Metric">evidently.core.metric_types.Metric</a></dt>
+                                <dd id="DuplicatedColumnsCount.to_calculation" class="function"><a href="core/metric_types.html#Metric.to_calculation">to_calculation</a></dd>
+                <dd id="DuplicatedColumnsCount.get_metric_id" class="function"><a href="core/metric_types.html#Metric.get_metric_id">get_metric_id</a></dd>
+                <dd id="DuplicatedColumnsCount.metric_id" class="variable"><a href="core/metric_types.html#Metric.metric_id">metric_id</a></dd>
+                <dd id="DuplicatedColumnsCount.call" class="function"><a href="core/metric_types.html#Metric.call">call</a></dd>
+
+            </div>
+                                </dl>
+                            </div>
                 </section>
                 <section id="DatasetMissingValueCount">
                     <div class="attr class">
@@ -1612,6 +2074,26 @@
     
     
 
+                            <div class="inherited">
+                                <h5>Inherited Members</h5>
+                                <dl>
+                                    <div><dt><a href="core/metric_types.html#CountMetric">evidently.core.metric_types.CountMetric</a></dt>
+                                <dd id="DatasetMissingValueCount.tests" class="variable"><a href="core/metric_types.html#CountMetric.tests">tests</a></dd>
+                <dd id="DatasetMissingValueCount.share_tests" class="variable"><a href="core/metric_types.html#CountMetric.share_tests">share_tests</a></dd>
+                <dd id="DatasetMissingValueCount.get_bound_tests" class="function"><a href="core/metric_types.html#CountMetric.get_bound_tests">get_bound_tests</a></dd>
+                <dd id="DatasetMissingValueCount.validate_tests" class="function"><a href="core/metric_types.html#CountMetric.validate_tests">validate_tests</a></dd>
+                <dd id="DatasetMissingValueCount.validate_share_tests" class="function"><a href="core/metric_types.html#CountMetric.validate_share_tests">validate_share_tests</a></dd>
+
+            </div>
+            <div><dt><a href="core/metric_types.html#Metric">evidently.core.metric_types.Metric</a></dt>
+                                <dd id="DatasetMissingValueCount.to_calculation" class="function"><a href="core/metric_types.html#Metric.to_calculation">to_calculation</a></dd>
+                <dd id="DatasetMissingValueCount.get_metric_id" class="function"><a href="core/metric_types.html#Metric.get_metric_id">get_metric_id</a></dd>
+                <dd id="DatasetMissingValueCount.metric_id" class="variable"><a href="core/metric_types.html#Metric.metric_id">metric_id</a></dd>
+                <dd id="DatasetMissingValueCount.call" class="function"><a href="core/metric_types.html#Metric.call">call</a></dd>
+
+            </div>
+                                </dl>
+                            </div>
                 </section>
                 <section id="AlmostConstantColumnsCount">
                     <div class="attr class">
@@ -1625,6 +2107,24 @@
     
     
 
+                            <div class="inherited">
+                                <h5>Inherited Members</h5>
+                                <dl>
+                                    <div><dt><a href="core/metric_types.html#SingleValueMetric">evidently.core.metric_types.SingleValueMetric</a></dt>
+                                <dd id="AlmostConstantColumnsCount.tests" class="variable"><a href="core/metric_types.html#SingleValueMetric.tests">tests</a></dd>
+                <dd id="AlmostConstantColumnsCount.get_bound_tests" class="function"><a href="core/metric_types.html#SingleValueMetric.get_bound_tests">get_bound_tests</a></dd>
+                <dd id="AlmostConstantColumnsCount.validate_tests" class="function"><a href="core/metric_types.html#SingleValueMetric.validate_tests">validate_tests</a></dd>
+
+            </div>
+            <div><dt><a href="core/metric_types.html#Metric">evidently.core.metric_types.Metric</a></dt>
+                                <dd id="AlmostConstantColumnsCount.to_calculation" class="function"><a href="core/metric_types.html#Metric.to_calculation">to_calculation</a></dd>
+                <dd id="AlmostConstantColumnsCount.get_metric_id" class="function"><a href="core/metric_types.html#Metric.get_metric_id">get_metric_id</a></dd>
+                <dd id="AlmostConstantColumnsCount.metric_id" class="variable"><a href="core/metric_types.html#Metric.metric_id">metric_id</a></dd>
+                <dd id="AlmostConstantColumnsCount.call" class="function"><a href="core/metric_types.html#Metric.call">call</a></dd>
+
+            </div>
+                                </dl>
+                            </div>
                 </section>
                 <section id="AlmostDuplicatedColumnsCount">
                     <div class="attr class">
@@ -1638,6 +2138,24 @@
     
     
 
+                            <div class="inherited">
+                                <h5>Inherited Members</h5>
+                                <dl>
+                                    <div><dt><a href="core/metric_types.html#SingleValueMetric">evidently.core.metric_types.SingleValueMetric</a></dt>
+                                <dd id="AlmostDuplicatedColumnsCount.tests" class="variable"><a href="core/metric_types.html#SingleValueMetric.tests">tests</a></dd>
+                <dd id="AlmostDuplicatedColumnsCount.get_bound_tests" class="function"><a href="core/metric_types.html#SingleValueMetric.get_bound_tests">get_bound_tests</a></dd>
+                <dd id="AlmostDuplicatedColumnsCount.validate_tests" class="function"><a href="core/metric_types.html#SingleValueMetric.validate_tests">validate_tests</a></dd>
+
+            </div>
+            <div><dt><a href="core/metric_types.html#Metric">evidently.core.metric_types.Metric</a></dt>
+                                <dd id="AlmostDuplicatedColumnsCount.to_calculation" class="function"><a href="core/metric_types.html#Metric.to_calculation">to_calculation</a></dd>
+                <dd id="AlmostDuplicatedColumnsCount.get_metric_id" class="function"><a href="core/metric_types.html#Metric.get_metric_id">get_metric_id</a></dd>
+                <dd id="AlmostDuplicatedColumnsCount.metric_id" class="variable"><a href="core/metric_types.html#Metric.metric_id">metric_id</a></dd>
+                <dd id="AlmostDuplicatedColumnsCount.call" class="function"><a href="core/metric_types.html#Metric.call">call</a></dd>
+
+            </div>
+                                </dl>
+                            </div>
                 </section>
                 <section id="ConstantColumnsCount">
                     <div class="attr class">
@@ -1651,6 +2169,24 @@
     
     
 
+                            <div class="inherited">
+                                <h5>Inherited Members</h5>
+                                <dl>
+                                    <div><dt><a href="core/metric_types.html#SingleValueMetric">evidently.core.metric_types.SingleValueMetric</a></dt>
+                                <dd id="ConstantColumnsCount.tests" class="variable"><a href="core/metric_types.html#SingleValueMetric.tests">tests</a></dd>
+                <dd id="ConstantColumnsCount.get_bound_tests" class="function"><a href="core/metric_types.html#SingleValueMetric.get_bound_tests">get_bound_tests</a></dd>
+                <dd id="ConstantColumnsCount.validate_tests" class="function"><a href="core/metric_types.html#SingleValueMetric.validate_tests">validate_tests</a></dd>
+
+            </div>
+            <div><dt><a href="core/metric_types.html#Metric">evidently.core.metric_types.Metric</a></dt>
+                                <dd id="ConstantColumnsCount.to_calculation" class="function"><a href="core/metric_types.html#Metric.to_calculation">to_calculation</a></dd>
+                <dd id="ConstantColumnsCount.get_metric_id" class="function"><a href="core/metric_types.html#Metric.get_metric_id">get_metric_id</a></dd>
+                <dd id="ConstantColumnsCount.metric_id" class="variable"><a href="core/metric_types.html#Metric.metric_id">metric_id</a></dd>
+                <dd id="ConstantColumnsCount.call" class="function"><a href="core/metric_types.html#Metric.call">call</a></dd>
+
+            </div>
+                                </dl>
+                            </div>
                 </section>
                 <section id="EmptyRowsCount">
                     <div class="attr class">
@@ -1664,6 +2200,24 @@
     
     
 
+                            <div class="inherited">
+                                <h5>Inherited Members</h5>
+                                <dl>
+                                    <div><dt><a href="core/metric_types.html#SingleValueMetric">evidently.core.metric_types.SingleValueMetric</a></dt>
+                                <dd id="EmptyRowsCount.tests" class="variable"><a href="core/metric_types.html#SingleValueMetric.tests">tests</a></dd>
+                <dd id="EmptyRowsCount.get_bound_tests" class="function"><a href="core/metric_types.html#SingleValueMetric.get_bound_tests">get_bound_tests</a></dd>
+                <dd id="EmptyRowsCount.validate_tests" class="function"><a href="core/metric_types.html#SingleValueMetric.validate_tests">validate_tests</a></dd>
+
+            </div>
+            <div><dt><a href="core/metric_types.html#Metric">evidently.core.metric_types.Metric</a></dt>
+                                <dd id="EmptyRowsCount.to_calculation" class="function"><a href="core/metric_types.html#Metric.to_calculation">to_calculation</a></dd>
+                <dd id="EmptyRowsCount.get_metric_id" class="function"><a href="core/metric_types.html#Metric.get_metric_id">get_metric_id</a></dd>
+                <dd id="EmptyRowsCount.metric_id" class="variable"><a href="core/metric_types.html#Metric.metric_id">metric_id</a></dd>
+                <dd id="EmptyRowsCount.call" class="function"><a href="core/metric_types.html#Metric.call">call</a></dd>
+
+            </div>
+                                </dl>
+                            </div>
                 </section>
                 <section id="EmptyColumnsCount">
                     <div class="attr class">
@@ -1677,6 +2231,24 @@
     
     
 
+                            <div class="inherited">
+                                <h5>Inherited Members</h5>
+                                <dl>
+                                    <div><dt><a href="core/metric_types.html#SingleValueMetric">evidently.core.metric_types.SingleValueMetric</a></dt>
+                                <dd id="EmptyColumnsCount.tests" class="variable"><a href="core/metric_types.html#SingleValueMetric.tests">tests</a></dd>
+                <dd id="EmptyColumnsCount.get_bound_tests" class="function"><a href="core/metric_types.html#SingleValueMetric.get_bound_tests">get_bound_tests</a></dd>
+                <dd id="EmptyColumnsCount.validate_tests" class="function"><a href="core/metric_types.html#SingleValueMetric.validate_tests">validate_tests</a></dd>
+
+            </div>
+            <div><dt><a href="core/metric_types.html#Metric">evidently.core.metric_types.Metric</a></dt>
+                                <dd id="EmptyColumnsCount.to_calculation" class="function"><a href="core/metric_types.html#Metric.to_calculation">to_calculation</a></dd>
+                <dd id="EmptyColumnsCount.get_metric_id" class="function"><a href="core/metric_types.html#Metric.get_metric_id">get_metric_id</a></dd>
+                <dd id="EmptyColumnsCount.metric_id" class="variable"><a href="core/metric_types.html#Metric.metric_id">metric_id</a></dd>
+                <dd id="EmptyColumnsCount.call" class="function"><a href="core/metric_types.html#Metric.call">call</a></dd>
+
+            </div>
+                                </dl>
+                            </div>
                 </section>
                 <section id="DummyF1Score">
                     <div class="attr class">
@@ -1690,6 +2262,24 @@
     
     
 
+                            <div class="inherited">
+                                <h5>Inherited Members</h5>
+                                <dl>
+                                    <div><dt><a href="core/metric_types.html#SingleValueMetric">evidently.core.metric_types.SingleValueMetric</a></dt>
+                                <dd id="DummyF1Score.tests" class="variable"><a href="core/metric_types.html#SingleValueMetric.tests">tests</a></dd>
+                <dd id="DummyF1Score.get_bound_tests" class="function"><a href="core/metric_types.html#SingleValueMetric.get_bound_tests">get_bound_tests</a></dd>
+                <dd id="DummyF1Score.validate_tests" class="function"><a href="core/metric_types.html#SingleValueMetric.validate_tests">validate_tests</a></dd>
+
+            </div>
+            <div><dt><a href="core/metric_types.html#Metric">evidently.core.metric_types.Metric</a></dt>
+                                <dd id="DummyF1Score.to_calculation" class="function"><a href="core/metric_types.html#Metric.to_calculation">to_calculation</a></dd>
+                <dd id="DummyF1Score.get_metric_id" class="function"><a href="core/metric_types.html#Metric.get_metric_id">get_metric_id</a></dd>
+                <dd id="DummyF1Score.metric_id" class="variable"><a href="core/metric_types.html#Metric.metric_id">metric_id</a></dd>
+                <dd id="DummyF1Score.call" class="function"><a href="core/metric_types.html#Metric.call">call</a></dd>
+
+            </div>
+                                </dl>
+                            </div>
                 </section>
                 <section id="DummyPrecision">
                     <div class="attr class">
@@ -1703,6 +2293,24 @@
     
     
 
+                            <div class="inherited">
+                                <h5>Inherited Members</h5>
+                                <dl>
+                                    <div><dt><a href="core/metric_types.html#SingleValueMetric">evidently.core.metric_types.SingleValueMetric</a></dt>
+                                <dd id="DummyPrecision.tests" class="variable"><a href="core/metric_types.html#SingleValueMetric.tests">tests</a></dd>
+                <dd id="DummyPrecision.get_bound_tests" class="function"><a href="core/metric_types.html#SingleValueMetric.get_bound_tests">get_bound_tests</a></dd>
+                <dd id="DummyPrecision.validate_tests" class="function"><a href="core/metric_types.html#SingleValueMetric.validate_tests">validate_tests</a></dd>
+
+            </div>
+            <div><dt><a href="core/metric_types.html#Metric">evidently.core.metric_types.Metric</a></dt>
+                                <dd id="DummyPrecision.to_calculation" class="function"><a href="core/metric_types.html#Metric.to_calculation">to_calculation</a></dd>
+                <dd id="DummyPrecision.get_metric_id" class="function"><a href="core/metric_types.html#Metric.get_metric_id">get_metric_id</a></dd>
+                <dd id="DummyPrecision.metric_id" class="variable"><a href="core/metric_types.html#Metric.metric_id">metric_id</a></dd>
+                <dd id="DummyPrecision.call" class="function"><a href="core/metric_types.html#Metric.call">call</a></dd>
+
+            </div>
+                                </dl>
+                            </div>
                 </section>
                 <section id="DummyRecall">
                     <div class="attr class">
@@ -1716,6 +2324,24 @@
     
     
 
+                            <div class="inherited">
+                                <h5>Inherited Members</h5>
+                                <dl>
+                                    <div><dt><a href="core/metric_types.html#SingleValueMetric">evidently.core.metric_types.SingleValueMetric</a></dt>
+                                <dd id="DummyRecall.tests" class="variable"><a href="core/metric_types.html#SingleValueMetric.tests">tests</a></dd>
+                <dd id="DummyRecall.get_bound_tests" class="function"><a href="core/metric_types.html#SingleValueMetric.get_bound_tests">get_bound_tests</a></dd>
+                <dd id="DummyRecall.validate_tests" class="function"><a href="core/metric_types.html#SingleValueMetric.validate_tests">validate_tests</a></dd>
+
+            </div>
+            <div><dt><a href="core/metric_types.html#Metric">evidently.core.metric_types.Metric</a></dt>
+                                <dd id="DummyRecall.to_calculation" class="function"><a href="core/metric_types.html#Metric.to_calculation">to_calculation</a></dd>
+                <dd id="DummyRecall.get_metric_id" class="function"><a href="core/metric_types.html#Metric.get_metric_id">get_metric_id</a></dd>
+                <dd id="DummyRecall.metric_id" class="variable"><a href="core/metric_types.html#Metric.metric_id">metric_id</a></dd>
+                <dd id="DummyRecall.call" class="function"><a href="core/metric_types.html#Metric.call">call</a></dd>
+
+            </div>
+                                </dl>
+                            </div>
                 </section>
                 <section id="F1Score">
                     <div class="attr class">
@@ -1740,6 +2366,24 @@
     
 
                             </div>
+                            <div class="inherited">
+                                <h5>Inherited Members</h5>
+                                <dl>
+                                    <div><dt><a href="core/metric_types.html#SingleValueMetric">evidently.core.metric_types.SingleValueMetric</a></dt>
+                                <dd id="F1Score.tests" class="variable"><a href="core/metric_types.html#SingleValueMetric.tests">tests</a></dd>
+                <dd id="F1Score.get_bound_tests" class="function"><a href="core/metric_types.html#SingleValueMetric.get_bound_tests">get_bound_tests</a></dd>
+                <dd id="F1Score.validate_tests" class="function"><a href="core/metric_types.html#SingleValueMetric.validate_tests">validate_tests</a></dd>
+
+            </div>
+            <div><dt><a href="core/metric_types.html#Metric">evidently.core.metric_types.Metric</a></dt>
+                                <dd id="F1Score.to_calculation" class="function"><a href="core/metric_types.html#Metric.to_calculation">to_calculation</a></dd>
+                <dd id="F1Score.get_metric_id" class="function"><a href="core/metric_types.html#Metric.get_metric_id">get_metric_id</a></dd>
+                <dd id="F1Score.metric_id" class="variable"><a href="core/metric_types.html#Metric.metric_id">metric_id</a></dd>
+                <dd id="F1Score.call" class="function"><a href="core/metric_types.html#Metric.call">call</a></dd>
+
+            </div>
+                                </dl>
+                            </div>
                 </section>
                 <section id="Accuracy">
                     <div class="attr class">
@@ -1753,6 +2397,24 @@
     
     
 
+                            <div class="inherited">
+                                <h5>Inherited Members</h5>
+                                <dl>
+                                    <div><dt><a href="core/metric_types.html#SingleValueMetric">evidently.core.metric_types.SingleValueMetric</a></dt>
+                                <dd id="Accuracy.tests" class="variable"><a href="core/metric_types.html#SingleValueMetric.tests">tests</a></dd>
+                <dd id="Accuracy.get_bound_tests" class="function"><a href="core/metric_types.html#SingleValueMetric.get_bound_tests">get_bound_tests</a></dd>
+                <dd id="Accuracy.validate_tests" class="function"><a href="core/metric_types.html#SingleValueMetric.validate_tests">validate_tests</a></dd>
+
+            </div>
+            <div><dt><a href="core/metric_types.html#Metric">evidently.core.metric_types.Metric</a></dt>
+                                <dd id="Accuracy.to_calculation" class="function"><a href="core/metric_types.html#Metric.to_calculation">to_calculation</a></dd>
+                <dd id="Accuracy.get_metric_id" class="function"><a href="core/metric_types.html#Metric.get_metric_id">get_metric_id</a></dd>
+                <dd id="Accuracy.metric_id" class="variable"><a href="core/metric_types.html#Metric.metric_id">metric_id</a></dd>
+                <dd id="Accuracy.call" class="function"><a href="core/metric_types.html#Metric.call">call</a></dd>
+
+            </div>
+                                </dl>
+                            </div>
                 </section>
                 <section id="Precision">
                     <div class="attr class">
@@ -1798,6 +2460,24 @@
     
     
 
+                            </div>
+                            <div class="inherited">
+                                <h5>Inherited Members</h5>
+                                <dl>
+                                    <div><dt><a href="core/metric_types.html#SingleValueMetric">evidently.core.metric_types.SingleValueMetric</a></dt>
+                                <dd id="Precision.tests" class="variable"><a href="core/metric_types.html#SingleValueMetric.tests">tests</a></dd>
+                <dd id="Precision.get_bound_tests" class="function"><a href="core/metric_types.html#SingleValueMetric.get_bound_tests">get_bound_tests</a></dd>
+                <dd id="Precision.validate_tests" class="function"><a href="core/metric_types.html#SingleValueMetric.validate_tests">validate_tests</a></dd>
+
+            </div>
+            <div><dt><a href="core/metric_types.html#Metric">evidently.core.metric_types.Metric</a></dt>
+                                <dd id="Precision.to_calculation" class="function"><a href="core/metric_types.html#Metric.to_calculation">to_calculation</a></dd>
+                <dd id="Precision.get_metric_id" class="function"><a href="core/metric_types.html#Metric.get_metric_id">get_metric_id</a></dd>
+                <dd id="Precision.metric_id" class="variable"><a href="core/metric_types.html#Metric.metric_id">metric_id</a></dd>
+                <dd id="Precision.call" class="function"><a href="core/metric_types.html#Metric.call">call</a></dd>
+
+            </div>
+                                </dl>
                             </div>
                 </section>
                 <section id="Recall">
@@ -1845,6 +2525,24 @@
     
 
                             </div>
+                            <div class="inherited">
+                                <h5>Inherited Members</h5>
+                                <dl>
+                                    <div><dt><a href="core/metric_types.html#SingleValueMetric">evidently.core.metric_types.SingleValueMetric</a></dt>
+                                <dd id="Recall.tests" class="variable"><a href="core/metric_types.html#SingleValueMetric.tests">tests</a></dd>
+                <dd id="Recall.get_bound_tests" class="function"><a href="core/metric_types.html#SingleValueMetric.get_bound_tests">get_bound_tests</a></dd>
+                <dd id="Recall.validate_tests" class="function"><a href="core/metric_types.html#SingleValueMetric.validate_tests">validate_tests</a></dd>
+
+            </div>
+            <div><dt><a href="core/metric_types.html#Metric">evidently.core.metric_types.Metric</a></dt>
+                                <dd id="Recall.to_calculation" class="function"><a href="core/metric_types.html#Metric.to_calculation">to_calculation</a></dd>
+                <dd id="Recall.get_metric_id" class="function"><a href="core/metric_types.html#Metric.get_metric_id">get_metric_id</a></dd>
+                <dd id="Recall.metric_id" class="variable"><a href="core/metric_types.html#Metric.metric_id">metric_id</a></dd>
+                <dd id="Recall.call" class="function"><a href="core/metric_types.html#Metric.call">call</a></dd>
+
+            </div>
+                                </dl>
+                            </div>
                 </section>
                 <section id="TPR">
                     <div class="attr class">
@@ -1868,6 +2566,24 @@
     
     
 
+                            </div>
+                            <div class="inherited">
+                                <h5>Inherited Members</h5>
+                                <dl>
+                                    <div><dt><a href="core/metric_types.html#SingleValueMetric">evidently.core.metric_types.SingleValueMetric</a></dt>
+                                <dd id="TPR.tests" class="variable"><a href="core/metric_types.html#SingleValueMetric.tests">tests</a></dd>
+                <dd id="TPR.get_bound_tests" class="function"><a href="core/metric_types.html#SingleValueMetric.get_bound_tests">get_bound_tests</a></dd>
+                <dd id="TPR.validate_tests" class="function"><a href="core/metric_types.html#SingleValueMetric.validate_tests">validate_tests</a></dd>
+
+            </div>
+            <div><dt><a href="core/metric_types.html#Metric">evidently.core.metric_types.Metric</a></dt>
+                                <dd id="TPR.to_calculation" class="function"><a href="core/metric_types.html#Metric.to_calculation">to_calculation</a></dd>
+                <dd id="TPR.get_metric_id" class="function"><a href="core/metric_types.html#Metric.get_metric_id">get_metric_id</a></dd>
+                <dd id="TPR.metric_id" class="variable"><a href="core/metric_types.html#Metric.metric_id">metric_id</a></dd>
+                <dd id="TPR.call" class="function"><a href="core/metric_types.html#Metric.call">call</a></dd>
+
+            </div>
+                                </dl>
                             </div>
                 </section>
                 <section id="TNR">
@@ -1893,6 +2609,24 @@
     
 
                             </div>
+                            <div class="inherited">
+                                <h5>Inherited Members</h5>
+                                <dl>
+                                    <div><dt><a href="core/metric_types.html#SingleValueMetric">evidently.core.metric_types.SingleValueMetric</a></dt>
+                                <dd id="TNR.tests" class="variable"><a href="core/metric_types.html#SingleValueMetric.tests">tests</a></dd>
+                <dd id="TNR.get_bound_tests" class="function"><a href="core/metric_types.html#SingleValueMetric.get_bound_tests">get_bound_tests</a></dd>
+                <dd id="TNR.validate_tests" class="function"><a href="core/metric_types.html#SingleValueMetric.validate_tests">validate_tests</a></dd>
+
+            </div>
+            <div><dt><a href="core/metric_types.html#Metric">evidently.core.metric_types.Metric</a></dt>
+                                <dd id="TNR.to_calculation" class="function"><a href="core/metric_types.html#Metric.to_calculation">to_calculation</a></dd>
+                <dd id="TNR.get_metric_id" class="function"><a href="core/metric_types.html#Metric.get_metric_id">get_metric_id</a></dd>
+                <dd id="TNR.metric_id" class="variable"><a href="core/metric_types.html#Metric.metric_id">metric_id</a></dd>
+                <dd id="TNR.call" class="function"><a href="core/metric_types.html#Metric.call">call</a></dd>
+
+            </div>
+                                </dl>
+                            </div>
                 </section>
                 <section id="FPR">
                     <div class="attr class">
@@ -1916,6 +2650,24 @@
     
     
 
+                            </div>
+                            <div class="inherited">
+                                <h5>Inherited Members</h5>
+                                <dl>
+                                    <div><dt><a href="core/metric_types.html#SingleValueMetric">evidently.core.metric_types.SingleValueMetric</a></dt>
+                                <dd id="FPR.tests" class="variable"><a href="core/metric_types.html#SingleValueMetric.tests">tests</a></dd>
+                <dd id="FPR.get_bound_tests" class="function"><a href="core/metric_types.html#SingleValueMetric.get_bound_tests">get_bound_tests</a></dd>
+                <dd id="FPR.validate_tests" class="function"><a href="core/metric_types.html#SingleValueMetric.validate_tests">validate_tests</a></dd>
+
+            </div>
+            <div><dt><a href="core/metric_types.html#Metric">evidently.core.metric_types.Metric</a></dt>
+                                <dd id="FPR.to_calculation" class="function"><a href="core/metric_types.html#Metric.to_calculation">to_calculation</a></dd>
+                <dd id="FPR.get_metric_id" class="function"><a href="core/metric_types.html#Metric.get_metric_id">get_metric_id</a></dd>
+                <dd id="FPR.metric_id" class="variable"><a href="core/metric_types.html#Metric.metric_id">metric_id</a></dd>
+                <dd id="FPR.call" class="function"><a href="core/metric_types.html#Metric.call">call</a></dd>
+
+            </div>
+                                </dl>
                             </div>
                 </section>
                 <section id="FNR">
@@ -1941,6 +2693,24 @@
     
 
                             </div>
+                            <div class="inherited">
+                                <h5>Inherited Members</h5>
+                                <dl>
+                                    <div><dt><a href="core/metric_types.html#SingleValueMetric">evidently.core.metric_types.SingleValueMetric</a></dt>
+                                <dd id="FNR.tests" class="variable"><a href="core/metric_types.html#SingleValueMetric.tests">tests</a></dd>
+                <dd id="FNR.get_bound_tests" class="function"><a href="core/metric_types.html#SingleValueMetric.get_bound_tests">get_bound_tests</a></dd>
+                <dd id="FNR.validate_tests" class="function"><a href="core/metric_types.html#SingleValueMetric.validate_tests">validate_tests</a></dd>
+
+            </div>
+            <div><dt><a href="core/metric_types.html#Metric">evidently.core.metric_types.Metric</a></dt>
+                                <dd id="FNR.to_calculation" class="function"><a href="core/metric_types.html#Metric.to_calculation">to_calculation</a></dd>
+                <dd id="FNR.get_metric_id" class="function"><a href="core/metric_types.html#Metric.get_metric_id">get_metric_id</a></dd>
+                <dd id="FNR.metric_id" class="variable"><a href="core/metric_types.html#Metric.metric_id">metric_id</a></dd>
+                <dd id="FNR.call" class="function"><a href="core/metric_types.html#Metric.call">call</a></dd>
+
+            </div>
+                                </dl>
+                            </div>
                 </section>
                 <section id="LogLoss">
                     <div class="attr class">
@@ -1964,6 +2734,24 @@
     
     
 
+                            </div>
+                            <div class="inherited">
+                                <h5>Inherited Members</h5>
+                                <dl>
+                                    <div><dt><a href="core/metric_types.html#SingleValueMetric">evidently.core.metric_types.SingleValueMetric</a></dt>
+                                <dd id="LogLoss.tests" class="variable"><a href="core/metric_types.html#SingleValueMetric.tests">tests</a></dd>
+                <dd id="LogLoss.get_bound_tests" class="function"><a href="core/metric_types.html#SingleValueMetric.get_bound_tests">get_bound_tests</a></dd>
+                <dd id="LogLoss.validate_tests" class="function"><a href="core/metric_types.html#SingleValueMetric.validate_tests">validate_tests</a></dd>
+
+            </div>
+            <div><dt><a href="core/metric_types.html#Metric">evidently.core.metric_types.Metric</a></dt>
+                                <dd id="LogLoss.to_calculation" class="function"><a href="core/metric_types.html#Metric.to_calculation">to_calculation</a></dd>
+                <dd id="LogLoss.get_metric_id" class="function"><a href="core/metric_types.html#Metric.get_metric_id">get_metric_id</a></dd>
+                <dd id="LogLoss.metric_id" class="variable"><a href="core/metric_types.html#Metric.metric_id">metric_id</a></dd>
+                <dd id="LogLoss.call" class="function"><a href="core/metric_types.html#Metric.call">call</a></dd>
+
+            </div>
+                                </dl>
                             </div>
                 </section>
                 <section id="RocAuc">
@@ -2000,6 +2788,24 @@
     
 
                             </div>
+                            <div class="inherited">
+                                <h5>Inherited Members</h5>
+                                <dl>
+                                    <div><dt><a href="core/metric_types.html#SingleValueMetric">evidently.core.metric_types.SingleValueMetric</a></dt>
+                                <dd id="RocAuc.tests" class="variable"><a href="core/metric_types.html#SingleValueMetric.tests">tests</a></dd>
+                <dd id="RocAuc.get_bound_tests" class="function"><a href="core/metric_types.html#SingleValueMetric.get_bound_tests">get_bound_tests</a></dd>
+                <dd id="RocAuc.validate_tests" class="function"><a href="core/metric_types.html#SingleValueMetric.validate_tests">validate_tests</a></dd>
+
+            </div>
+            <div><dt><a href="core/metric_types.html#Metric">evidently.core.metric_types.Metric</a></dt>
+                                <dd id="RocAuc.to_calculation" class="function"><a href="core/metric_types.html#Metric.to_calculation">to_calculation</a></dd>
+                <dd id="RocAuc.get_metric_id" class="function"><a href="core/metric_types.html#Metric.get_metric_id">get_metric_id</a></dd>
+                <dd id="RocAuc.metric_id" class="variable"><a href="core/metric_types.html#Metric.metric_id">metric_id</a></dd>
+                <dd id="RocAuc.call" class="function"><a href="core/metric_types.html#Metric.call">call</a></dd>
+
+            </div>
+                                </dl>
+                            </div>
                 </section>
                 <section id="F1ByLabel">
                     <div class="attr class">
@@ -2013,6 +2819,24 @@
     
     
 
+                            <div class="inherited">
+                                <h5>Inherited Members</h5>
+                                <dl>
+                                    <div><dt><a href="core/metric_types.html#ByLabelMetric">evidently.core.metric_types.ByLabelMetric</a></dt>
+                                <dd id="F1ByLabel.tests" class="variable"><a href="core/metric_types.html#ByLabelMetric.tests">tests</a></dd>
+                <dd id="F1ByLabel.get_bound_tests" class="function"><a href="core/metric_types.html#ByLabelMetric.get_bound_tests">get_bound_tests</a></dd>
+                <dd id="F1ByLabel.validate_tests" class="function"><a href="core/metric_types.html#ByLabelMetric.validate_tests">validate_tests</a></dd>
+
+            </div>
+            <div><dt><a href="core/metric_types.html#Metric">evidently.core.metric_types.Metric</a></dt>
+                                <dd id="F1ByLabel.to_calculation" class="function"><a href="core/metric_types.html#Metric.to_calculation">to_calculation</a></dd>
+                <dd id="F1ByLabel.get_metric_id" class="function"><a href="core/metric_types.html#Metric.get_metric_id">get_metric_id</a></dd>
+                <dd id="F1ByLabel.metric_id" class="variable"><a href="core/metric_types.html#Metric.metric_id">metric_id</a></dd>
+                <dd id="F1ByLabel.call" class="function"><a href="core/metric_types.html#Metric.call">call</a></dd>
+
+            </div>
+                                </dl>
+                            </div>
                 </section>
                 <section id="PrecisionByLabel">
                     <div class="attr class">
@@ -2026,6 +2850,24 @@
     
     
 
+                            <div class="inherited">
+                                <h5>Inherited Members</h5>
+                                <dl>
+                                    <div><dt><a href="core/metric_types.html#ByLabelMetric">evidently.core.metric_types.ByLabelMetric</a></dt>
+                                <dd id="PrecisionByLabel.tests" class="variable"><a href="core/metric_types.html#ByLabelMetric.tests">tests</a></dd>
+                <dd id="PrecisionByLabel.get_bound_tests" class="function"><a href="core/metric_types.html#ByLabelMetric.get_bound_tests">get_bound_tests</a></dd>
+                <dd id="PrecisionByLabel.validate_tests" class="function"><a href="core/metric_types.html#ByLabelMetric.validate_tests">validate_tests</a></dd>
+
+            </div>
+            <div><dt><a href="core/metric_types.html#Metric">evidently.core.metric_types.Metric</a></dt>
+                                <dd id="PrecisionByLabel.to_calculation" class="function"><a href="core/metric_types.html#Metric.to_calculation">to_calculation</a></dd>
+                <dd id="PrecisionByLabel.get_metric_id" class="function"><a href="core/metric_types.html#Metric.get_metric_id">get_metric_id</a></dd>
+                <dd id="PrecisionByLabel.metric_id" class="variable"><a href="core/metric_types.html#Metric.metric_id">metric_id</a></dd>
+                <dd id="PrecisionByLabel.call" class="function"><a href="core/metric_types.html#Metric.call">call</a></dd>
+
+            </div>
+                                </dl>
+                            </div>
                 </section>
                 <section id="RecallByLabel">
                     <div class="attr class">
@@ -2039,6 +2881,24 @@
     
     
 
+                            <div class="inherited">
+                                <h5>Inherited Members</h5>
+                                <dl>
+                                    <div><dt><a href="core/metric_types.html#ByLabelMetric">evidently.core.metric_types.ByLabelMetric</a></dt>
+                                <dd id="RecallByLabel.tests" class="variable"><a href="core/metric_types.html#ByLabelMetric.tests">tests</a></dd>
+                <dd id="RecallByLabel.get_bound_tests" class="function"><a href="core/metric_types.html#ByLabelMetric.get_bound_tests">get_bound_tests</a></dd>
+                <dd id="RecallByLabel.validate_tests" class="function"><a href="core/metric_types.html#ByLabelMetric.validate_tests">validate_tests</a></dd>
+
+            </div>
+            <div><dt><a href="core/metric_types.html#Metric">evidently.core.metric_types.Metric</a></dt>
+                                <dd id="RecallByLabel.to_calculation" class="function"><a href="core/metric_types.html#Metric.to_calculation">to_calculation</a></dd>
+                <dd id="RecallByLabel.get_metric_id" class="function"><a href="core/metric_types.html#Metric.get_metric_id">get_metric_id</a></dd>
+                <dd id="RecallByLabel.metric_id" class="variable"><a href="core/metric_types.html#Metric.metric_id">metric_id</a></dd>
+                <dd id="RecallByLabel.call" class="function"><a href="core/metric_types.html#Metric.call">call</a></dd>
+
+            </div>
+                                </dl>
+                            </div>
                 </section>
                 <section id="RocAucByLabel">
                     <div class="attr class">
@@ -2052,6 +2912,24 @@
     
     
 
+                            <div class="inherited">
+                                <h5>Inherited Members</h5>
+                                <dl>
+                                    <div><dt><a href="core/metric_types.html#ByLabelMetric">evidently.core.metric_types.ByLabelMetric</a></dt>
+                                <dd id="RocAucByLabel.tests" class="variable"><a href="core/metric_types.html#ByLabelMetric.tests">tests</a></dd>
+                <dd id="RocAucByLabel.get_bound_tests" class="function"><a href="core/metric_types.html#ByLabelMetric.get_bound_tests">get_bound_tests</a></dd>
+                <dd id="RocAucByLabel.validate_tests" class="function"><a href="core/metric_types.html#ByLabelMetric.validate_tests">validate_tests</a></dd>
+
+            </div>
+            <div><dt><a href="core/metric_types.html#Metric">evidently.core.metric_types.Metric</a></dt>
+                                <dd id="RocAucByLabel.to_calculation" class="function"><a href="core/metric_types.html#Metric.to_calculation">to_calculation</a></dd>
+                <dd id="RocAucByLabel.get_metric_id" class="function"><a href="core/metric_types.html#Metric.get_metric_id">get_metric_id</a></dd>
+                <dd id="RocAucByLabel.metric_id" class="variable"><a href="core/metric_types.html#Metric.metric_id">metric_id</a></dd>
+                <dd id="RocAucByLabel.call" class="function"><a href="core/metric_types.html#Metric.call">call</a></dd>
+
+            </div>
+                                </dl>
+                            </div>
                 </section>
                 <section id="MeanError">
                     <div class="attr class">
@@ -2113,6 +2991,26 @@
     
     
 
+                            </div>
+                            <div class="inherited">
+                                <h5>Inherited Members</h5>
+                                <dl>
+                                    <div><dt><a href="core/metric_types.html#MeanStdMetric">evidently.core.metric_types.MeanStdMetric</a></dt>
+                                <dd id="MeanError.mean_tests" class="variable"><a href="core/metric_types.html#MeanStdMetric.mean_tests">mean_tests</a></dd>
+                <dd id="MeanError.std_tests" class="variable"><a href="core/metric_types.html#MeanStdMetric.std_tests">std_tests</a></dd>
+                <dd id="MeanError.get_bound_tests" class="function"><a href="core/metric_types.html#MeanStdMetric.get_bound_tests">get_bound_tests</a></dd>
+                <dd id="MeanError.validate_mean_tests" class="function"><a href="core/metric_types.html#MeanStdMetric.validate_mean_tests">validate_mean_tests</a></dd>
+                <dd id="MeanError.validate_std_tests" class="function"><a href="core/metric_types.html#MeanStdMetric.validate_std_tests">validate_std_tests</a></dd>
+
+            </div>
+            <div><dt><a href="core/metric_types.html#Metric">evidently.core.metric_types.Metric</a></dt>
+                                <dd id="MeanError.to_calculation" class="function"><a href="core/metric_types.html#Metric.to_calculation">to_calculation</a></dd>
+                <dd id="MeanError.get_metric_id" class="function"><a href="core/metric_types.html#Metric.get_metric_id">get_metric_id</a></dd>
+                <dd id="MeanError.metric_id" class="variable"><a href="core/metric_types.html#Metric.metric_id">metric_id</a></dd>
+                <dd id="MeanError.call" class="function"><a href="core/metric_types.html#Metric.call">call</a></dd>
+
+            </div>
+                                </dl>
                             </div>
                 </section>
                 <section id="MAE">
@@ -2176,6 +3074,26 @@
     
 
                             </div>
+                            <div class="inherited">
+                                <h5>Inherited Members</h5>
+                                <dl>
+                                    <div><dt><a href="core/metric_types.html#MeanStdMetric">evidently.core.metric_types.MeanStdMetric</a></dt>
+                                <dd id="MAE.mean_tests" class="variable"><a href="core/metric_types.html#MeanStdMetric.mean_tests">mean_tests</a></dd>
+                <dd id="MAE.std_tests" class="variable"><a href="core/metric_types.html#MeanStdMetric.std_tests">std_tests</a></dd>
+                <dd id="MAE.get_bound_tests" class="function"><a href="core/metric_types.html#MeanStdMetric.get_bound_tests">get_bound_tests</a></dd>
+                <dd id="MAE.validate_mean_tests" class="function"><a href="core/metric_types.html#MeanStdMetric.validate_mean_tests">validate_mean_tests</a></dd>
+                <dd id="MAE.validate_std_tests" class="function"><a href="core/metric_types.html#MeanStdMetric.validate_std_tests">validate_std_tests</a></dd>
+
+            </div>
+            <div><dt><a href="core/metric_types.html#Metric">evidently.core.metric_types.Metric</a></dt>
+                                <dd id="MAE.to_calculation" class="function"><a href="core/metric_types.html#Metric.to_calculation">to_calculation</a></dd>
+                <dd id="MAE.get_metric_id" class="function"><a href="core/metric_types.html#Metric.get_metric_id">get_metric_id</a></dd>
+                <dd id="MAE.metric_id" class="variable"><a href="core/metric_types.html#Metric.metric_id">metric_id</a></dd>
+                <dd id="MAE.call" class="function"><a href="core/metric_types.html#Metric.call">call</a></dd>
+
+            </div>
+                                </dl>
+                            </div>
                 </section>
                 <section id="MAPE">
                     <div class="attr class">
@@ -2227,6 +3145,26 @@
     
 
                             </div>
+                            <div class="inherited">
+                                <h5>Inherited Members</h5>
+                                <dl>
+                                    <div><dt><a href="core/metric_types.html#MeanStdMetric">evidently.core.metric_types.MeanStdMetric</a></dt>
+                                <dd id="MAPE.mean_tests" class="variable"><a href="core/metric_types.html#MeanStdMetric.mean_tests">mean_tests</a></dd>
+                <dd id="MAPE.std_tests" class="variable"><a href="core/metric_types.html#MeanStdMetric.std_tests">std_tests</a></dd>
+                <dd id="MAPE.get_bound_tests" class="function"><a href="core/metric_types.html#MeanStdMetric.get_bound_tests">get_bound_tests</a></dd>
+                <dd id="MAPE.validate_mean_tests" class="function"><a href="core/metric_types.html#MeanStdMetric.validate_mean_tests">validate_mean_tests</a></dd>
+                <dd id="MAPE.validate_std_tests" class="function"><a href="core/metric_types.html#MeanStdMetric.validate_std_tests">validate_std_tests</a></dd>
+
+            </div>
+            <div><dt><a href="core/metric_types.html#Metric">evidently.core.metric_types.Metric</a></dt>
+                                <dd id="MAPE.to_calculation" class="function"><a href="core/metric_types.html#Metric.to_calculation">to_calculation</a></dd>
+                <dd id="MAPE.get_metric_id" class="function"><a href="core/metric_types.html#Metric.get_metric_id">get_metric_id</a></dd>
+                <dd id="MAPE.metric_id" class="variable"><a href="core/metric_types.html#Metric.metric_id">metric_id</a></dd>
+                <dd id="MAPE.call" class="function"><a href="core/metric_types.html#Metric.call">call</a></dd>
+
+            </div>
+                                </dl>
+                            </div>
                 </section>
                 <section id="RMSE">
                     <div class="attr class">
@@ -2273,6 +3211,24 @@
     
 
                             </div>
+                            <div class="inherited">
+                                <h5>Inherited Members</h5>
+                                <dl>
+                                    <div><dt><a href="core/metric_types.html#SingleValueMetric">evidently.core.metric_types.SingleValueMetric</a></dt>
+                                <dd id="RMSE.tests" class="variable"><a href="core/metric_types.html#SingleValueMetric.tests">tests</a></dd>
+                <dd id="RMSE.get_bound_tests" class="function"><a href="core/metric_types.html#SingleValueMetric.get_bound_tests">get_bound_tests</a></dd>
+                <dd id="RMSE.validate_tests" class="function"><a href="core/metric_types.html#SingleValueMetric.validate_tests">validate_tests</a></dd>
+
+            </div>
+            <div><dt><a href="core/metric_types.html#Metric">evidently.core.metric_types.Metric</a></dt>
+                                <dd id="RMSE.to_calculation" class="function"><a href="core/metric_types.html#Metric.to_calculation">to_calculation</a></dd>
+                <dd id="RMSE.get_metric_id" class="function"><a href="core/metric_types.html#Metric.get_metric_id">get_metric_id</a></dd>
+                <dd id="RMSE.metric_id" class="variable"><a href="core/metric_types.html#Metric.metric_id">metric_id</a></dd>
+                <dd id="RMSE.call" class="function"><a href="core/metric_types.html#Metric.call">call</a></dd>
+
+            </div>
+                                </dl>
+                            </div>
                 </section>
                 <section id="R2Score">
                     <div class="attr class">
@@ -2307,6 +3263,24 @@
     
     
 
+                            </div>
+                            <div class="inherited">
+                                <h5>Inherited Members</h5>
+                                <dl>
+                                    <div><dt><a href="core/metric_types.html#SingleValueMetric">evidently.core.metric_types.SingleValueMetric</a></dt>
+                                <dd id="R2Score.tests" class="variable"><a href="core/metric_types.html#SingleValueMetric.tests">tests</a></dd>
+                <dd id="R2Score.get_bound_tests" class="function"><a href="core/metric_types.html#SingleValueMetric.get_bound_tests">get_bound_tests</a></dd>
+                <dd id="R2Score.validate_tests" class="function"><a href="core/metric_types.html#SingleValueMetric.validate_tests">validate_tests</a></dd>
+
+            </div>
+            <div><dt><a href="core/metric_types.html#Metric">evidently.core.metric_types.Metric</a></dt>
+                                <dd id="R2Score.to_calculation" class="function"><a href="core/metric_types.html#Metric.to_calculation">to_calculation</a></dd>
+                <dd id="R2Score.get_metric_id" class="function"><a href="core/metric_types.html#Metric.get_metric_id">get_metric_id</a></dd>
+                <dd id="R2Score.metric_id" class="variable"><a href="core/metric_types.html#Metric.metric_id">metric_id</a></dd>
+                <dd id="R2Score.call" class="function"><a href="core/metric_types.html#Metric.call">call</a></dd>
+
+            </div>
+                                </dl>
                             </div>
                 </section>
                 <section id="AbsMaxError">
@@ -2343,6 +3317,24 @@
     
 
                             </div>
+                            <div class="inherited">
+                                <h5>Inherited Members</h5>
+                                <dl>
+                                    <div><dt><a href="core/metric_types.html#SingleValueMetric">evidently.core.metric_types.SingleValueMetric</a></dt>
+                                <dd id="AbsMaxError.tests" class="variable"><a href="core/metric_types.html#SingleValueMetric.tests">tests</a></dd>
+                <dd id="AbsMaxError.get_bound_tests" class="function"><a href="core/metric_types.html#SingleValueMetric.get_bound_tests">get_bound_tests</a></dd>
+                <dd id="AbsMaxError.validate_tests" class="function"><a href="core/metric_types.html#SingleValueMetric.validate_tests">validate_tests</a></dd>
+
+            </div>
+            <div><dt><a href="core/metric_types.html#Metric">evidently.core.metric_types.Metric</a></dt>
+                                <dd id="AbsMaxError.to_calculation" class="function"><a href="core/metric_types.html#Metric.to_calculation">to_calculation</a></dd>
+                <dd id="AbsMaxError.get_metric_id" class="function"><a href="core/metric_types.html#Metric.get_metric_id">get_metric_id</a></dd>
+                <dd id="AbsMaxError.metric_id" class="variable"><a href="core/metric_types.html#Metric.metric_id">metric_id</a></dd>
+                <dd id="AbsMaxError.call" class="function"><a href="core/metric_types.html#Metric.call">call</a></dd>
+
+            </div>
+                                </dl>
+                            </div>
                 </section>
                 <section id="DummyMAE">
                     <div class="attr class">
@@ -2356,6 +3348,24 @@
     
     
 
+                            <div class="inherited">
+                                <h5>Inherited Members</h5>
+                                <dl>
+                                    <div><dt><a href="core/metric_types.html#SingleValueMetric">evidently.core.metric_types.SingleValueMetric</a></dt>
+                                <dd id="DummyMAE.tests" class="variable"><a href="core/metric_types.html#SingleValueMetric.tests">tests</a></dd>
+                <dd id="DummyMAE.get_bound_tests" class="function"><a href="core/metric_types.html#SingleValueMetric.get_bound_tests">get_bound_tests</a></dd>
+                <dd id="DummyMAE.validate_tests" class="function"><a href="core/metric_types.html#SingleValueMetric.validate_tests">validate_tests</a></dd>
+
+            </div>
+            <div><dt><a href="core/metric_types.html#Metric">evidently.core.metric_types.Metric</a></dt>
+                                <dd id="DummyMAE.to_calculation" class="function"><a href="core/metric_types.html#Metric.to_calculation">to_calculation</a></dd>
+                <dd id="DummyMAE.get_metric_id" class="function"><a href="core/metric_types.html#Metric.get_metric_id">get_metric_id</a></dd>
+                <dd id="DummyMAE.metric_id" class="variable"><a href="core/metric_types.html#Metric.metric_id">metric_id</a></dd>
+                <dd id="DummyMAE.call" class="function"><a href="core/metric_types.html#Metric.call">call</a></dd>
+
+            </div>
+                                </dl>
+                            </div>
                 </section>
                 <section id="DummyMAPE">
                     <div class="attr class">
@@ -2369,6 +3379,24 @@
     
     
 
+                            <div class="inherited">
+                                <h5>Inherited Members</h5>
+                                <dl>
+                                    <div><dt><a href="core/metric_types.html#SingleValueMetric">evidently.core.metric_types.SingleValueMetric</a></dt>
+                                <dd id="DummyMAPE.tests" class="variable"><a href="core/metric_types.html#SingleValueMetric.tests">tests</a></dd>
+                <dd id="DummyMAPE.get_bound_tests" class="function"><a href="core/metric_types.html#SingleValueMetric.get_bound_tests">get_bound_tests</a></dd>
+                <dd id="DummyMAPE.validate_tests" class="function"><a href="core/metric_types.html#SingleValueMetric.validate_tests">validate_tests</a></dd>
+
+            </div>
+            <div><dt><a href="core/metric_types.html#Metric">evidently.core.metric_types.Metric</a></dt>
+                                <dd id="DummyMAPE.to_calculation" class="function"><a href="core/metric_types.html#Metric.to_calculation">to_calculation</a></dd>
+                <dd id="DummyMAPE.get_metric_id" class="function"><a href="core/metric_types.html#Metric.get_metric_id">get_metric_id</a></dd>
+                <dd id="DummyMAPE.metric_id" class="variable"><a href="core/metric_types.html#Metric.metric_id">metric_id</a></dd>
+                <dd id="DummyMAPE.call" class="function"><a href="core/metric_types.html#Metric.call">call</a></dd>
+
+            </div>
+                                </dl>
+                            </div>
                 </section>
                 <section id="DummyRMSE">
                     <div class="attr class">
@@ -2382,6 +3410,24 @@
     
     
 
+                            <div class="inherited">
+                                <h5>Inherited Members</h5>
+                                <dl>
+                                    <div><dt><a href="core/metric_types.html#SingleValueMetric">evidently.core.metric_types.SingleValueMetric</a></dt>
+                                <dd id="DummyRMSE.tests" class="variable"><a href="core/metric_types.html#SingleValueMetric.tests">tests</a></dd>
+                <dd id="DummyRMSE.get_bound_tests" class="function"><a href="core/metric_types.html#SingleValueMetric.get_bound_tests">get_bound_tests</a></dd>
+                <dd id="DummyRMSE.validate_tests" class="function"><a href="core/metric_types.html#SingleValueMetric.validate_tests">validate_tests</a></dd>
+
+            </div>
+            <div><dt><a href="core/metric_types.html#Metric">evidently.core.metric_types.Metric</a></dt>
+                                <dd id="DummyRMSE.to_calculation" class="function"><a href="core/metric_types.html#Metric.to_calculation">to_calculation</a></dd>
+                <dd id="DummyRMSE.get_metric_id" class="function"><a href="core/metric_types.html#Metric.get_metric_id">get_metric_id</a></dd>
+                <dd id="DummyRMSE.metric_id" class="variable"><a href="core/metric_types.html#Metric.metric_id">metric_id</a></dd>
+                <dd id="DummyRMSE.call" class="function"><a href="core/metric_types.html#Metric.call">call</a></dd>
+
+            </div>
+                                </dl>
+                            </div>
                 </section>
                 <section id="ScoreDistribution">
                     <div class="attr class">
@@ -2417,6 +3463,24 @@
     
 
                             </div>
+                            <div class="inherited">
+                                <h5>Inherited Members</h5>
+                                <dl>
+                                    <div><dt><a href="core/metric_types.html#SingleValueMetric">evidently.core.metric_types.SingleValueMetric</a></dt>
+                                <dd id="ScoreDistribution.tests" class="variable"><a href="core/metric_types.html#SingleValueMetric.tests">tests</a></dd>
+                <dd id="ScoreDistribution.get_bound_tests" class="function"><a href="core/metric_types.html#SingleValueMetric.get_bound_tests">get_bound_tests</a></dd>
+                <dd id="ScoreDistribution.validate_tests" class="function"><a href="core/metric_types.html#SingleValueMetric.validate_tests">validate_tests</a></dd>
+
+            </div>
+            <div><dt><a href="core/metric_types.html#Metric">evidently.core.metric_types.Metric</a></dt>
+                                <dd id="ScoreDistribution.to_calculation" class="function"><a href="core/metric_types.html#Metric.to_calculation">to_calculation</a></dd>
+                <dd id="ScoreDistribution.get_metric_id" class="function"><a href="core/metric_types.html#Metric.get_metric_id">get_metric_id</a></dd>
+                <dd id="ScoreDistribution.metric_id" class="variable"><a href="core/metric_types.html#Metric.metric_id">metric_id</a></dd>
+                <dd id="ScoreDistribution.call" class="function"><a href="core/metric_types.html#Metric.call">call</a></dd>
+
+            </div>
+                                </dl>
+                            </div>
                 </section>
                 <section id="NDCG">
                     <div class="attr class">
@@ -2430,6 +3494,24 @@
     
     
 
+                            <div class="inherited">
+                                <h5>Inherited Members</h5>
+                                <dl>
+                                    <div><dt><a href="core/metric_types.html#DataframeMetric">evidently.core.metric_types.DataframeMetric</a></dt>
+                                <dd id="NDCG.tests" class="variable"><a href="core/metric_types.html#DataframeMetric.tests">tests</a></dd>
+                <dd id="NDCG.get_bound_tests" class="function"><a href="core/metric_types.html#DataframeMetric.get_bound_tests">get_bound_tests</a></dd>
+                <dd id="NDCG.validate_tests" class="function"><a href="core/metric_types.html#DataframeMetric.validate_tests">validate_tests</a></dd>
+
+            </div>
+            <div><dt><a href="core/metric_types.html#Metric">evidently.core.metric_types.Metric</a></dt>
+                                <dd id="NDCG.to_calculation" class="function"><a href="core/metric_types.html#Metric.to_calculation">to_calculation</a></dd>
+                <dd id="NDCG.get_metric_id" class="function"><a href="core/metric_types.html#Metric.get_metric_id">get_metric_id</a></dd>
+                <dd id="NDCG.metric_id" class="variable"><a href="core/metric_types.html#Metric.metric_id">metric_id</a></dd>
+                <dd id="NDCG.call" class="function"><a href="core/metric_types.html#Metric.call">call</a></dd>
+
+            </div>
+                                </dl>
+                            </div>
                 </section>
                 <section id="FBetaTopK">
                     <div class="attr class">
@@ -2454,6 +3536,24 @@
     
 
                             </div>
+                            <div class="inherited">
+                                <h5>Inherited Members</h5>
+                                <dl>
+                                    <div><dt><a href="core/metric_types.html#DataframeMetric">evidently.core.metric_types.DataframeMetric</a></dt>
+                                <dd id="FBetaTopK.tests" class="variable"><a href="core/metric_types.html#DataframeMetric.tests">tests</a></dd>
+                <dd id="FBetaTopK.get_bound_tests" class="function"><a href="core/metric_types.html#DataframeMetric.get_bound_tests">get_bound_tests</a></dd>
+                <dd id="FBetaTopK.validate_tests" class="function"><a href="core/metric_types.html#DataframeMetric.validate_tests">validate_tests</a></dd>
+
+            </div>
+            <div><dt><a href="core/metric_types.html#Metric">evidently.core.metric_types.Metric</a></dt>
+                                <dd id="FBetaTopK.to_calculation" class="function"><a href="core/metric_types.html#Metric.to_calculation">to_calculation</a></dd>
+                <dd id="FBetaTopK.get_metric_id" class="function"><a href="core/metric_types.html#Metric.get_metric_id">get_metric_id</a></dd>
+                <dd id="FBetaTopK.metric_id" class="variable"><a href="core/metric_types.html#Metric.metric_id">metric_id</a></dd>
+                <dd id="FBetaTopK.call" class="function"><a href="core/metric_types.html#Metric.call">call</a></dd>
+
+            </div>
+                                </dl>
+                            </div>
                 </section>
                 <section id="HitRate">
                     <div class="attr class">
@@ -2467,6 +3567,24 @@
     
     
 
+                            <div class="inherited">
+                                <h5>Inherited Members</h5>
+                                <dl>
+                                    <div><dt><a href="core/metric_types.html#DataframeMetric">evidently.core.metric_types.DataframeMetric</a></dt>
+                                <dd id="HitRate.tests" class="variable"><a href="core/metric_types.html#DataframeMetric.tests">tests</a></dd>
+                <dd id="HitRate.get_bound_tests" class="function"><a href="core/metric_types.html#DataframeMetric.get_bound_tests">get_bound_tests</a></dd>
+                <dd id="HitRate.validate_tests" class="function"><a href="core/metric_types.html#DataframeMetric.validate_tests">validate_tests</a></dd>
+
+            </div>
+            <div><dt><a href="core/metric_types.html#Metric">evidently.core.metric_types.Metric</a></dt>
+                                <dd id="HitRate.to_calculation" class="function"><a href="core/metric_types.html#Metric.to_calculation">to_calculation</a></dd>
+                <dd id="HitRate.get_metric_id" class="function"><a href="core/metric_types.html#Metric.get_metric_id">get_metric_id</a></dd>
+                <dd id="HitRate.metric_id" class="variable"><a href="core/metric_types.html#Metric.metric_id">metric_id</a></dd>
+                <dd id="HitRate.call" class="function"><a href="core/metric_types.html#Metric.call">call</a></dd>
+
+            </div>
+                                </dl>
+                            </div>
                 </section>
                 <section id="MAP">
                     <div class="attr class">
@@ -2480,6 +3598,24 @@
     
     
 
+                            <div class="inherited">
+                                <h5>Inherited Members</h5>
+                                <dl>
+                                    <div><dt><a href="core/metric_types.html#DataframeMetric">evidently.core.metric_types.DataframeMetric</a></dt>
+                                <dd id="MAP.tests" class="variable"><a href="core/metric_types.html#DataframeMetric.tests">tests</a></dd>
+                <dd id="MAP.get_bound_tests" class="function"><a href="core/metric_types.html#DataframeMetric.get_bound_tests">get_bound_tests</a></dd>
+                <dd id="MAP.validate_tests" class="function"><a href="core/metric_types.html#DataframeMetric.validate_tests">validate_tests</a></dd>
+
+            </div>
+            <div><dt><a href="core/metric_types.html#Metric">evidently.core.metric_types.Metric</a></dt>
+                                <dd id="MAP.to_calculation" class="function"><a href="core/metric_types.html#Metric.to_calculation">to_calculation</a></dd>
+                <dd id="MAP.get_metric_id" class="function"><a href="core/metric_types.html#Metric.get_metric_id">get_metric_id</a></dd>
+                <dd id="MAP.metric_id" class="variable"><a href="core/metric_types.html#Metric.metric_id">metric_id</a></dd>
+                <dd id="MAP.call" class="function"><a href="core/metric_types.html#Metric.call">call</a></dd>
+
+            </div>
+                                </dl>
+                            </div>
                 </section>
                 <section id="MRR">
                     <div class="attr class">
@@ -2493,6 +3629,24 @@
     
     
 
+                            <div class="inherited">
+                                <h5>Inherited Members</h5>
+                                <dl>
+                                    <div><dt><a href="core/metric_types.html#DataframeMetric">evidently.core.metric_types.DataframeMetric</a></dt>
+                                <dd id="MRR.tests" class="variable"><a href="core/metric_types.html#DataframeMetric.tests">tests</a></dd>
+                <dd id="MRR.get_bound_tests" class="function"><a href="core/metric_types.html#DataframeMetric.get_bound_tests">get_bound_tests</a></dd>
+                <dd id="MRR.validate_tests" class="function"><a href="core/metric_types.html#DataframeMetric.validate_tests">validate_tests</a></dd>
+
+            </div>
+            <div><dt><a href="core/metric_types.html#Metric">evidently.core.metric_types.Metric</a></dt>
+                                <dd id="MRR.to_calculation" class="function"><a href="core/metric_types.html#Metric.to_calculation">to_calculation</a></dd>
+                <dd id="MRR.get_metric_id" class="function"><a href="core/metric_types.html#Metric.get_metric_id">get_metric_id</a></dd>
+                <dd id="MRR.metric_id" class="variable"><a href="core/metric_types.html#Metric.metric_id">metric_id</a></dd>
+                <dd id="MRR.call" class="function"><a href="core/metric_types.html#Metric.call">call</a></dd>
+
+            </div>
+                                </dl>
+                            </div>
                 </section>
                 <section id="PrecisionTopK">
                     <div class="attr class">
@@ -2506,6 +3660,24 @@
     
     
 
+                            <div class="inherited">
+                                <h5>Inherited Members</h5>
+                                <dl>
+                                    <div><dt><a href="core/metric_types.html#DataframeMetric">evidently.core.metric_types.DataframeMetric</a></dt>
+                                <dd id="PrecisionTopK.tests" class="variable"><a href="core/metric_types.html#DataframeMetric.tests">tests</a></dd>
+                <dd id="PrecisionTopK.get_bound_tests" class="function"><a href="core/metric_types.html#DataframeMetric.get_bound_tests">get_bound_tests</a></dd>
+                <dd id="PrecisionTopK.validate_tests" class="function"><a href="core/metric_types.html#DataframeMetric.validate_tests">validate_tests</a></dd>
+
+            </div>
+            <div><dt><a href="core/metric_types.html#Metric">evidently.core.metric_types.Metric</a></dt>
+                                <dd id="PrecisionTopK.to_calculation" class="function"><a href="core/metric_types.html#Metric.to_calculation">to_calculation</a></dd>
+                <dd id="PrecisionTopK.get_metric_id" class="function"><a href="core/metric_types.html#Metric.get_metric_id">get_metric_id</a></dd>
+                <dd id="PrecisionTopK.metric_id" class="variable"><a href="core/metric_types.html#Metric.metric_id">metric_id</a></dd>
+                <dd id="PrecisionTopK.call" class="function"><a href="core/metric_types.html#Metric.call">call</a></dd>
+
+            </div>
+                                </dl>
+                            </div>
                 </section>
                 <section id="RecallTopK">
                     <div class="attr class">
@@ -2519,6 +3691,24 @@
     
     
 
+                            <div class="inherited">
+                                <h5>Inherited Members</h5>
+                                <dl>
+                                    <div><dt><a href="core/metric_types.html#DataframeMetric">evidently.core.metric_types.DataframeMetric</a></dt>
+                                <dd id="RecallTopK.tests" class="variable"><a href="core/metric_types.html#DataframeMetric.tests">tests</a></dd>
+                <dd id="RecallTopK.get_bound_tests" class="function"><a href="core/metric_types.html#DataframeMetric.get_bound_tests">get_bound_tests</a></dd>
+                <dd id="RecallTopK.validate_tests" class="function"><a href="core/metric_types.html#DataframeMetric.validate_tests">validate_tests</a></dd>
+
+            </div>
+            <div><dt><a href="core/metric_types.html#Metric">evidently.core.metric_types.Metric</a></dt>
+                                <dd id="RecallTopK.to_calculation" class="function"><a href="core/metric_types.html#Metric.to_calculation">to_calculation</a></dd>
+                <dd id="RecallTopK.get_metric_id" class="function"><a href="core/metric_types.html#Metric.get_metric_id">get_metric_id</a></dd>
+                <dd id="RecallTopK.metric_id" class="variable"><a href="core/metric_types.html#Metric.metric_id">metric_id</a></dd>
+                <dd id="RecallTopK.call" class="function"><a href="core/metric_types.html#Metric.call">call</a></dd>
+
+            </div>
+                                </dl>
+                            </div>
                 </section>
                 <section id="PopularityBiasMetric">
                     <div class="attr class">
@@ -2576,6 +3766,24 @@
     
 
                             </div>
+                            <div class="inherited">
+                                <h5>Inherited Members</h5>
+                                <dl>
+                                    <div><dt><a href="core/metric_types.html#SingleValueMetric">evidently.core.metric_types.SingleValueMetric</a></dt>
+                                <dd id="PopularityBiasMetric.tests" class="variable"><a href="core/metric_types.html#SingleValueMetric.tests">tests</a></dd>
+                <dd id="PopularityBiasMetric.get_bound_tests" class="function"><a href="core/metric_types.html#SingleValueMetric.get_bound_tests">get_bound_tests</a></dd>
+                <dd id="PopularityBiasMetric.validate_tests" class="function"><a href="core/metric_types.html#SingleValueMetric.validate_tests">validate_tests</a></dd>
+
+            </div>
+            <div><dt><a href="core/metric_types.html#Metric">evidently.core.metric_types.Metric</a></dt>
+                                <dd id="PopularityBiasMetric.to_calculation" class="function"><a href="core/metric_types.html#Metric.to_calculation">to_calculation</a></dd>
+                <dd id="PopularityBiasMetric.get_metric_id" class="function"><a href="core/metric_types.html#Metric.get_metric_id">get_metric_id</a></dd>
+                <dd id="PopularityBiasMetric.metric_id" class="variable"><a href="core/metric_types.html#Metric.metric_id">metric_id</a></dd>
+                <dd id="PopularityBiasMetric.call" class="function"><a href="core/metric_types.html#Metric.call">call</a></dd>
+
+            </div>
+                                </dl>
+                            </div>
                 </section>
                 <section id="Personalization">
                     <div class="attr class">
@@ -2610,6 +3818,24 @@
     
     
 
+                            </div>
+                            <div class="inherited">
+                                <h5>Inherited Members</h5>
+                                <dl>
+                                    <div><dt><a href="core/metric_types.html#SingleValueMetric">evidently.core.metric_types.SingleValueMetric</a></dt>
+                                <dd id="Personalization.tests" class="variable"><a href="core/metric_types.html#SingleValueMetric.tests">tests</a></dd>
+                <dd id="Personalization.get_bound_tests" class="function"><a href="core/metric_types.html#SingleValueMetric.get_bound_tests">get_bound_tests</a></dd>
+                <dd id="Personalization.validate_tests" class="function"><a href="core/metric_types.html#SingleValueMetric.validate_tests">validate_tests</a></dd>
+
+            </div>
+            <div><dt><a href="core/metric_types.html#Metric">evidently.core.metric_types.Metric</a></dt>
+                                <dd id="Personalization.to_calculation" class="function"><a href="core/metric_types.html#Metric.to_calculation">to_calculation</a></dd>
+                <dd id="Personalization.get_metric_id" class="function"><a href="core/metric_types.html#Metric.get_metric_id">get_metric_id</a></dd>
+                <dd id="Personalization.metric_id" class="variable"><a href="core/metric_types.html#Metric.metric_id">metric_id</a></dd>
+                <dd id="Personalization.call" class="function"><a href="core/metric_types.html#Metric.call">call</a></dd>
+
+            </div>
+                                </dl>
                             </div>
                 </section>
                 <section id="Diversity">
@@ -2657,6 +3883,24 @@
     
 
                             </div>
+                            <div class="inherited">
+                                <h5>Inherited Members</h5>
+                                <dl>
+                                    <div><dt><a href="core/metric_types.html#SingleValueMetric">evidently.core.metric_types.SingleValueMetric</a></dt>
+                                <dd id="Diversity.tests" class="variable"><a href="core/metric_types.html#SingleValueMetric.tests">tests</a></dd>
+                <dd id="Diversity.get_bound_tests" class="function"><a href="core/metric_types.html#SingleValueMetric.get_bound_tests">get_bound_tests</a></dd>
+                <dd id="Diversity.validate_tests" class="function"><a href="core/metric_types.html#SingleValueMetric.validate_tests">validate_tests</a></dd>
+
+            </div>
+            <div><dt><a href="core/metric_types.html#Metric">evidently.core.metric_types.Metric</a></dt>
+                                <dd id="Diversity.to_calculation" class="function"><a href="core/metric_types.html#Metric.to_calculation">to_calculation</a></dd>
+                <dd id="Diversity.get_metric_id" class="function"><a href="core/metric_types.html#Metric.get_metric_id">get_metric_id</a></dd>
+                <dd id="Diversity.metric_id" class="variable"><a href="core/metric_types.html#Metric.metric_id">metric_id</a></dd>
+                <dd id="Diversity.call" class="function"><a href="core/metric_types.html#Metric.call">call</a></dd>
+
+            </div>
+                                </dl>
+                            </div>
                 </section>
                 <section id="Serendipity">
                     <div class="attr class">
@@ -2703,6 +3947,24 @@
     
 
                             </div>
+                            <div class="inherited">
+                                <h5>Inherited Members</h5>
+                                <dl>
+                                    <div><dt><a href="core/metric_types.html#SingleValueMetric">evidently.core.metric_types.SingleValueMetric</a></dt>
+                                <dd id="Serendipity.tests" class="variable"><a href="core/metric_types.html#SingleValueMetric.tests">tests</a></dd>
+                <dd id="Serendipity.get_bound_tests" class="function"><a href="core/metric_types.html#SingleValueMetric.get_bound_tests">get_bound_tests</a></dd>
+                <dd id="Serendipity.validate_tests" class="function"><a href="core/metric_types.html#SingleValueMetric.validate_tests">validate_tests</a></dd>
+
+            </div>
+            <div><dt><a href="core/metric_types.html#Metric">evidently.core.metric_types.Metric</a></dt>
+                                <dd id="Serendipity.to_calculation" class="function"><a href="core/metric_types.html#Metric.to_calculation">to_calculation</a></dd>
+                <dd id="Serendipity.get_metric_id" class="function"><a href="core/metric_types.html#Metric.get_metric_id">get_metric_id</a></dd>
+                <dd id="Serendipity.metric_id" class="variable"><a href="core/metric_types.html#Metric.metric_id">metric_id</a></dd>
+                <dd id="Serendipity.call" class="function"><a href="core/metric_types.html#Metric.call">call</a></dd>
+
+            </div>
+                                </dl>
+                            </div>
                 </section>
                 <section id="Novelty">
                     <div class="attr class">
@@ -2737,6 +3999,24 @@
     
     
 
+                            </div>
+                            <div class="inherited">
+                                <h5>Inherited Members</h5>
+                                <dl>
+                                    <div><dt><a href="core/metric_types.html#SingleValueMetric">evidently.core.metric_types.SingleValueMetric</a></dt>
+                                <dd id="Novelty.tests" class="variable"><a href="core/metric_types.html#SingleValueMetric.tests">tests</a></dd>
+                <dd id="Novelty.get_bound_tests" class="function"><a href="core/metric_types.html#SingleValueMetric.get_bound_tests">get_bound_tests</a></dd>
+                <dd id="Novelty.validate_tests" class="function"><a href="core/metric_types.html#SingleValueMetric.validate_tests">validate_tests</a></dd>
+
+            </div>
+            <div><dt><a href="core/metric_types.html#Metric">evidently.core.metric_types.Metric</a></dt>
+                                <dd id="Novelty.to_calculation" class="function"><a href="core/metric_types.html#Metric.to_calculation">to_calculation</a></dd>
+                <dd id="Novelty.get_metric_id" class="function"><a href="core/metric_types.html#Metric.get_metric_id">get_metric_id</a></dd>
+                <dd id="Novelty.metric_id" class="variable"><a href="core/metric_types.html#Metric.metric_id">metric_id</a></dd>
+                <dd id="Novelty.call" class="function"><a href="core/metric_types.html#Metric.call">call</a></dd>
+
+            </div>
+                                </dl>
                             </div>
                 </section>
                 <section id="ItemBias">
@@ -2799,7 +4079,7 @@
                                 <div class="attr function">
             
         <span class="def">def</span>
-        <span class="name">get_bound_tests</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="bp">self</span>,</span><span class="param">	<span class="n">context</span><span class="p">:</span> <span class="n">evidently</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">report</span><span class="o">.</span><span class="n">Context</span></span><span class="return-annotation">) -> <span class="n">List</span><span class="p">[</span><span class="n">evidently</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">metric_types</span><span class="o">.</span><span class="n">BoundTest</span><span class="p">]</span>:</span></span>
+        <span class="name">get_bound_tests</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="bp">self</span>,</span><span class="param">	<span class="n">context</span><span class="p">:</span> <span class="n"><a href="core/report.html#Context">evidently.core.report.Context</a></span></span><span class="return-annotation">) -> <span class="n">List</span><span class="p">[</span><span class="n"><a href="core/metric_types.html#BoundTest">evidently.core.metric_types.BoundTest</a></span><span class="p">]</span>:</span></span>
 
         
     </div>
@@ -2807,6 +4087,18 @@
     
     
 
+                            </div>
+                            <div class="inherited">
+                                <h5>Inherited Members</h5>
+                                <dl>
+                                    <div><dt><a href="core/metric_types.html#Metric">evidently.core.metric_types.Metric</a></dt>
+                                <dd id="ItemBias.to_calculation" class="function"><a href="core/metric_types.html#Metric.to_calculation">to_calculation</a></dd>
+                <dd id="ItemBias.get_metric_id" class="function"><a href="core/metric_types.html#Metric.get_metric_id">get_metric_id</a></dd>
+                <dd id="ItemBias.metric_id" class="variable"><a href="core/metric_types.html#Metric.metric_id">metric_id</a></dd>
+                <dd id="ItemBias.call" class="function"><a href="core/metric_types.html#Metric.call">call</a></dd>
+
+            </div>
+                                </dl>
                             </div>
                 </section>
                 <section id="UserBias">
@@ -2858,7 +4150,7 @@
                                 <div class="attr function">
             
         <span class="def">def</span>
-        <span class="name">get_bound_tests</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="bp">self</span>,</span><span class="param">	<span class="n">context</span><span class="p">:</span> <span class="n">evidently</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">report</span><span class="o">.</span><span class="n">Context</span></span><span class="return-annotation">) -> <span class="n">List</span><span class="p">[</span><span class="n">evidently</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">metric_types</span><span class="o">.</span><span class="n">BoundTest</span><span class="p">]</span>:</span></span>
+        <span class="name">get_bound_tests</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="bp">self</span>,</span><span class="param">	<span class="n">context</span><span class="p">:</span> <span class="n"><a href="core/report.html#Context">evidently.core.report.Context</a></span></span><span class="return-annotation">) -> <span class="n">List</span><span class="p">[</span><span class="n"><a href="core/metric_types.html#BoundTest">evidently.core.metric_types.BoundTest</a></span><span class="p">]</span>:</span></span>
 
         
     </div>
@@ -2866,6 +4158,18 @@
     
     
 
+                            </div>
+                            <div class="inherited">
+                                <h5>Inherited Members</h5>
+                                <dl>
+                                    <div><dt><a href="core/metric_types.html#Metric">evidently.core.metric_types.Metric</a></dt>
+                                <dd id="UserBias.to_calculation" class="function"><a href="core/metric_types.html#Metric.to_calculation">to_calculation</a></dd>
+                <dd id="UserBias.get_metric_id" class="function"><a href="core/metric_types.html#Metric.get_metric_id">get_metric_id</a></dd>
+                <dd id="UserBias.metric_id" class="variable"><a href="core/metric_types.html#Metric.metric_id">metric_id</a></dd>
+                <dd id="UserBias.call" class="function"><a href="core/metric_types.html#Metric.call">call</a></dd>
+
+            </div>
+                                </dl>
                             </div>
                 </section>
                 <section id="RecCasesTable">
@@ -2913,6 +4217,24 @@
     
 
                             </div>
+                            <div class="inherited">
+                                <h5>Inherited Members</h5>
+                                <dl>
+                                    <div><dt><a href="core/metric_types.html#DataframeMetric">evidently.core.metric_types.DataframeMetric</a></dt>
+                                <dd id="RecCasesTable.tests" class="variable"><a href="core/metric_types.html#DataframeMetric.tests">tests</a></dd>
+                <dd id="RecCasesTable.get_bound_tests" class="function"><a href="core/metric_types.html#DataframeMetric.get_bound_tests">get_bound_tests</a></dd>
+                <dd id="RecCasesTable.validate_tests" class="function"><a href="core/metric_types.html#DataframeMetric.validate_tests">validate_tests</a></dd>
+
+            </div>
+            <div><dt><a href="core/metric_types.html#Metric">evidently.core.metric_types.Metric</a></dt>
+                                <dd id="RecCasesTable.to_calculation" class="function"><a href="core/metric_types.html#Metric.to_calculation">to_calculation</a></dd>
+                <dd id="RecCasesTable.get_metric_id" class="function"><a href="core/metric_types.html#Metric.get_metric_id">get_metric_id</a></dd>
+                <dd id="RecCasesTable.metric_id" class="variable"><a href="core/metric_types.html#Metric.metric_id">metric_id</a></dd>
+                <dd id="RecCasesTable.call" class="function"><a href="core/metric_types.html#Metric.call">call</a></dd>
+
+            </div>
+                                </dl>
+                            </div>
                 </section>
                 <section id="DummyTPR">
                     <div class="attr class">
@@ -2926,6 +4248,24 @@
     
     
 
+                            <div class="inherited">
+                                <h5>Inherited Members</h5>
+                                <dl>
+                                    <div><dt><a href="core/metric_types.html#SingleValueMetric">evidently.core.metric_types.SingleValueMetric</a></dt>
+                                <dd id="DummyTPR.tests" class="variable"><a href="core/metric_types.html#SingleValueMetric.tests">tests</a></dd>
+                <dd id="DummyTPR.get_bound_tests" class="function"><a href="core/metric_types.html#SingleValueMetric.get_bound_tests">get_bound_tests</a></dd>
+                <dd id="DummyTPR.validate_tests" class="function"><a href="core/metric_types.html#SingleValueMetric.validate_tests">validate_tests</a></dd>
+
+            </div>
+            <div><dt><a href="core/metric_types.html#Metric">evidently.core.metric_types.Metric</a></dt>
+                                <dd id="DummyTPR.to_calculation" class="function"><a href="core/metric_types.html#Metric.to_calculation">to_calculation</a></dd>
+                <dd id="DummyTPR.get_metric_id" class="function"><a href="core/metric_types.html#Metric.get_metric_id">get_metric_id</a></dd>
+                <dd id="DummyTPR.metric_id" class="variable"><a href="core/metric_types.html#Metric.metric_id">metric_id</a></dd>
+                <dd id="DummyTPR.call" class="function"><a href="core/metric_types.html#Metric.call">call</a></dd>
+
+            </div>
+                                </dl>
+                            </div>
                 </section>
                 <section id="DummyTNR">
                     <div class="attr class">
@@ -2939,6 +4279,24 @@
     
     
 
+                            <div class="inherited">
+                                <h5>Inherited Members</h5>
+                                <dl>
+                                    <div><dt><a href="core/metric_types.html#SingleValueMetric">evidently.core.metric_types.SingleValueMetric</a></dt>
+                                <dd id="DummyTNR.tests" class="variable"><a href="core/metric_types.html#SingleValueMetric.tests">tests</a></dd>
+                <dd id="DummyTNR.get_bound_tests" class="function"><a href="core/metric_types.html#SingleValueMetric.get_bound_tests">get_bound_tests</a></dd>
+                <dd id="DummyTNR.validate_tests" class="function"><a href="core/metric_types.html#SingleValueMetric.validate_tests">validate_tests</a></dd>
+
+            </div>
+            <div><dt><a href="core/metric_types.html#Metric">evidently.core.metric_types.Metric</a></dt>
+                                <dd id="DummyTNR.to_calculation" class="function"><a href="core/metric_types.html#Metric.to_calculation">to_calculation</a></dd>
+                <dd id="DummyTNR.get_metric_id" class="function"><a href="core/metric_types.html#Metric.get_metric_id">get_metric_id</a></dd>
+                <dd id="DummyTNR.metric_id" class="variable"><a href="core/metric_types.html#Metric.metric_id">metric_id</a></dd>
+                <dd id="DummyTNR.call" class="function"><a href="core/metric_types.html#Metric.call">call</a></dd>
+
+            </div>
+                                </dl>
+                            </div>
                 </section>
                 <section id="DummyRocAuc">
                     <div class="attr class">
@@ -2952,6 +4310,24 @@
     
     
 
+                            <div class="inherited">
+                                <h5>Inherited Members</h5>
+                                <dl>
+                                    <div><dt><a href="core/metric_types.html#SingleValueMetric">evidently.core.metric_types.SingleValueMetric</a></dt>
+                                <dd id="DummyRocAuc.tests" class="variable"><a href="core/metric_types.html#SingleValueMetric.tests">tests</a></dd>
+                <dd id="DummyRocAuc.get_bound_tests" class="function"><a href="core/metric_types.html#SingleValueMetric.get_bound_tests">get_bound_tests</a></dd>
+                <dd id="DummyRocAuc.validate_tests" class="function"><a href="core/metric_types.html#SingleValueMetric.validate_tests">validate_tests</a></dd>
+
+            </div>
+            <div><dt><a href="core/metric_types.html#Metric">evidently.core.metric_types.Metric</a></dt>
+                                <dd id="DummyRocAuc.to_calculation" class="function"><a href="core/metric_types.html#Metric.to_calculation">to_calculation</a></dd>
+                <dd id="DummyRocAuc.get_metric_id" class="function"><a href="core/metric_types.html#Metric.get_metric_id">get_metric_id</a></dd>
+                <dd id="DummyRocAuc.metric_id" class="variable"><a href="core/metric_types.html#Metric.metric_id">metric_id</a></dd>
+                <dd id="DummyRocAuc.call" class="function"><a href="core/metric_types.html#Metric.call">call</a></dd>
+
+            </div>
+                                </dl>
+                            </div>
                 </section>
                 <section id="DummyLogLoss">
                     <div class="attr class">
@@ -2965,6 +4341,24 @@
     
     
 
+                            <div class="inherited">
+                                <h5>Inherited Members</h5>
+                                <dl>
+                                    <div><dt><a href="core/metric_types.html#SingleValueMetric">evidently.core.metric_types.SingleValueMetric</a></dt>
+                                <dd id="DummyLogLoss.tests" class="variable"><a href="core/metric_types.html#SingleValueMetric.tests">tests</a></dd>
+                <dd id="DummyLogLoss.get_bound_tests" class="function"><a href="core/metric_types.html#SingleValueMetric.get_bound_tests">get_bound_tests</a></dd>
+                <dd id="DummyLogLoss.validate_tests" class="function"><a href="core/metric_types.html#SingleValueMetric.validate_tests">validate_tests</a></dd>
+
+            </div>
+            <div><dt><a href="core/metric_types.html#Metric">evidently.core.metric_types.Metric</a></dt>
+                                <dd id="DummyLogLoss.to_calculation" class="function"><a href="core/metric_types.html#Metric.to_calculation">to_calculation</a></dd>
+                <dd id="DummyLogLoss.get_metric_id" class="function"><a href="core/metric_types.html#Metric.get_metric_id">get_metric_id</a></dd>
+                <dd id="DummyLogLoss.metric_id" class="variable"><a href="core/metric_types.html#Metric.metric_id">metric_id</a></dd>
+                <dd id="DummyLogLoss.call" class="function"><a href="core/metric_types.html#Metric.call">call</a></dd>
+
+            </div>
+                                </dl>
+                            </div>
                 </section>
                 <section id="DummyFPR">
                     <div class="attr class">
@@ -2978,6 +4372,24 @@
     
     
 
+                            <div class="inherited">
+                                <h5>Inherited Members</h5>
+                                <dl>
+                                    <div><dt><a href="core/metric_types.html#SingleValueMetric">evidently.core.metric_types.SingleValueMetric</a></dt>
+                                <dd id="DummyFPR.tests" class="variable"><a href="core/metric_types.html#SingleValueMetric.tests">tests</a></dd>
+                <dd id="DummyFPR.get_bound_tests" class="function"><a href="core/metric_types.html#SingleValueMetric.get_bound_tests">get_bound_tests</a></dd>
+                <dd id="DummyFPR.validate_tests" class="function"><a href="core/metric_types.html#SingleValueMetric.validate_tests">validate_tests</a></dd>
+
+            </div>
+            <div><dt><a href="core/metric_types.html#Metric">evidently.core.metric_types.Metric</a></dt>
+                                <dd id="DummyFPR.to_calculation" class="function"><a href="core/metric_types.html#Metric.to_calculation">to_calculation</a></dd>
+                <dd id="DummyFPR.get_metric_id" class="function"><a href="core/metric_types.html#Metric.get_metric_id">get_metric_id</a></dd>
+                <dd id="DummyFPR.metric_id" class="variable"><a href="core/metric_types.html#Metric.metric_id">metric_id</a></dd>
+                <dd id="DummyFPR.call" class="function"><a href="core/metric_types.html#Metric.call">call</a></dd>
+
+            </div>
+                                </dl>
+                            </div>
                 </section>
                 <section id="DummyFNR">
                     <div class="attr class">
@@ -2991,6 +4403,24 @@
     
     
 
+                            <div class="inherited">
+                                <h5>Inherited Members</h5>
+                                <dl>
+                                    <div><dt><a href="core/metric_types.html#SingleValueMetric">evidently.core.metric_types.SingleValueMetric</a></dt>
+                                <dd id="DummyFNR.tests" class="variable"><a href="core/metric_types.html#SingleValueMetric.tests">tests</a></dd>
+                <dd id="DummyFNR.get_bound_tests" class="function"><a href="core/metric_types.html#SingleValueMetric.get_bound_tests">get_bound_tests</a></dd>
+                <dd id="DummyFNR.validate_tests" class="function"><a href="core/metric_types.html#SingleValueMetric.validate_tests">validate_tests</a></dd>
+
+            </div>
+            <div><dt><a href="core/metric_types.html#Metric">evidently.core.metric_types.Metric</a></dt>
+                                <dd id="DummyFNR.to_calculation" class="function"><a href="core/metric_types.html#Metric.to_calculation">to_calculation</a></dd>
+                <dd id="DummyFNR.get_metric_id" class="function"><a href="core/metric_types.html#Metric.get_metric_id">get_metric_id</a></dd>
+                <dd id="DummyFNR.metric_id" class="variable"><a href="core/metric_types.html#Metric.metric_id">metric_id</a></dd>
+                <dd id="DummyFNR.call" class="function"><a href="core/metric_types.html#Metric.call">call</a></dd>
+
+            </div>
+                                </dl>
+                            </div>
                 </section>
                 <section id="DummyAccuracy">
                     <div class="attr class">
@@ -3004,12 +4434,30 @@
     
     
 
+                            <div class="inherited">
+                                <h5>Inherited Members</h5>
+                                <dl>
+                                    <div><dt><a href="core/metric_types.html#SingleValueMetric">evidently.core.metric_types.SingleValueMetric</a></dt>
+                                <dd id="DummyAccuracy.tests" class="variable"><a href="core/metric_types.html#SingleValueMetric.tests">tests</a></dd>
+                <dd id="DummyAccuracy.get_bound_tests" class="function"><a href="core/metric_types.html#SingleValueMetric.get_bound_tests">get_bound_tests</a></dd>
+                <dd id="DummyAccuracy.validate_tests" class="function"><a href="core/metric_types.html#SingleValueMetric.validate_tests">validate_tests</a></dd>
+
+            </div>
+            <div><dt><a href="core/metric_types.html#Metric">evidently.core.metric_types.Metric</a></dt>
+                                <dd id="DummyAccuracy.to_calculation" class="function"><a href="core/metric_types.html#Metric.to_calculation">to_calculation</a></dd>
+                <dd id="DummyAccuracy.get_metric_id" class="function"><a href="core/metric_types.html#Metric.get_metric_id">get_metric_id</a></dd>
+                <dd id="DummyAccuracy.metric_id" class="variable"><a href="core/metric_types.html#Metric.metric_id">metric_id</a></dd>
+                <dd id="DummyAccuracy.call" class="function"><a href="core/metric_types.html#Metric.call">call</a></dd>
+
+            </div>
+                                </dl>
+                            </div>
                 </section>
                 <section id="ColumnCorrelations">
                     <div class="attr class">
             
     <span class="def">class</span>
-    <span class="name">ColumnCorrelations</span><wbr>(<span class="base">evidently.core.container.MetricContainer</span>):
+    <span class="name">ColumnCorrelations</span><wbr>(<span class="base"><a href="core/container.html#MetricContainer">evidently.core.container.MetricContainer</a></span>):
 
         
     </div>
@@ -3032,7 +4480,7 @@
                                 <div class="attr function">
             
         <span class="def">def</span>
-        <span class="name">generate_metrics</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="bp">self</span>,</span><span class="param">	<span class="n">context</span><span class="p">:</span> <span class="n">evidently</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">report</span><span class="o">.</span><span class="n">Context</span></span><span class="return-annotation">) -> <span class="n">Sequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">evidently</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">metric_types</span><span class="o">.</span><span class="n">Metric</span><span class="p">,</span> <span class="n">evidently</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">container</span><span class="o">.</span><span class="n">MetricContainer</span><span class="p">]]</span>:</span></span>
+        <span class="name">generate_metrics</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="bp">self</span>,</span><span class="param">	<span class="n">context</span><span class="p">:</span> <span class="n"><a href="core/report.html#Context">evidently.core.report.Context</a></span></span><span class="return-annotation">) -> <span class="n">Sequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n"><a href="core/metric_types.html#Metric">evidently.core.metric_types.Metric</a></span><span class="p">,</span> <span class="n"><a href="core/container.html#MetricContainer">evidently.core.container.MetricContainer</a></span><span class="p">]]</span>:</span></span>
 
         
     </div>
@@ -3045,7 +4493,7 @@
                                 <div class="attr function">
             
         <span class="def">def</span>
-        <span class="name">render</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="bp">self</span>,</span><span class="param">	<span class="n">context</span><span class="p">:</span> <span class="n">evidently</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">report</span><span class="o">.</span><span class="n">Context</span>,</span><span class="param">	<span class="n">child_widgets</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="n">evidently</span><span class="o">.</span><span class="n">legacy</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">widget</span><span class="o">.</span><span class="n">BaseWidgetInfo</span><span class="p">]]]]</span> <span class="o">=</span> <span class="kc">None</span></span><span class="return-annotation">) -> <span class="n">List</span><span class="p">[</span><span class="n">evidently</span><span class="o">.</span><span class="n">legacy</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">widget</span><span class="o">.</span><span class="n">BaseWidgetInfo</span><span class="p">]</span>:</span></span>
+        <span class="name">render</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="bp">self</span>,</span><span class="param">	<span class="n">context</span><span class="p">:</span> <span class="n"><a href="core/report.html#Context">evidently.core.report.Context</a></span>,</span><span class="param">	<span class="n">child_widgets</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="n">evidently</span><span class="o">.</span><span class="n">legacy</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">widget</span><span class="o">.</span><span class="n">BaseWidgetInfo</span><span class="p">]]]]</span> <span class="o">=</span> <span class="kc">None</span></span><span class="return-annotation">) -> <span class="n">List</span><span class="p">[</span><span class="n">evidently</span><span class="o">.</span><span class="n">legacy</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">widget</span><span class="o">.</span><span class="n">BaseWidgetInfo</span><span class="p">]</span>:</span></span>
 
         
     </div>
@@ -3053,6 +4501,19 @@
     
     
 
+                            </div>
+                            <div class="inherited">
+                                <h5>Inherited Members</h5>
+                                <dl>
+                                    <div><dt><a href="core/container.html#MetricContainer">evidently.core.container.MetricContainer</a></dt>
+                                <dd id="ColumnCorrelations.__init__" class="function"><a href="core/container.html#MetricContainer.__init__">MetricContainer</a></dd>
+                <dd id="ColumnCorrelations.Config" class="class"><a href="core/container.html#MetricContainer.Config">Config</a></dd>
+                <dd id="ColumnCorrelations.include_tests" class="variable"><a href="core/container.html#MetricContainer.include_tests">include_tests</a></dd>
+                <dd id="ColumnCorrelations.metrics" class="function"><a href="core/container.html#MetricContainer.metrics">metrics</a></dd>
+                <dd id="ColumnCorrelations.list_metrics" class="function"><a href="core/container.html#MetricContainer.list_metrics">list_metrics</a></dd>
+
+            </div>
+                                </dl>
                             </div>
                 </section>
                 <section id="CorrelationMatrix">
@@ -3078,12 +4539,30 @@
     
 
                             </div>
+                            <div class="inherited">
+                                <h5>Inherited Members</h5>
+                                <dl>
+                                    <div><dt><a href="core/metric_types.html#DataframeMetric">evidently.core.metric_types.DataframeMetric</a></dt>
+                                <dd id="CorrelationMatrix.tests" class="variable"><a href="core/metric_types.html#DataframeMetric.tests">tests</a></dd>
+                <dd id="CorrelationMatrix.get_bound_tests" class="function"><a href="core/metric_types.html#DataframeMetric.get_bound_tests">get_bound_tests</a></dd>
+                <dd id="CorrelationMatrix.validate_tests" class="function"><a href="core/metric_types.html#DataframeMetric.validate_tests">validate_tests</a></dd>
+
+            </div>
+            <div><dt><a href="core/metric_types.html#Metric">evidently.core.metric_types.Metric</a></dt>
+                                <dd id="CorrelationMatrix.to_calculation" class="function"><a href="core/metric_types.html#Metric.to_calculation">to_calculation</a></dd>
+                <dd id="CorrelationMatrix.get_metric_id" class="function"><a href="core/metric_types.html#Metric.get_metric_id">get_metric_id</a></dd>
+                <dd id="CorrelationMatrix.metric_id" class="variable"><a href="core/metric_types.html#Metric.metric_id">metric_id</a></dd>
+                <dd id="CorrelationMatrix.call" class="function"><a href="core/metric_types.html#Metric.call">call</a></dd>
+
+            </div>
+                                </dl>
+                            </div>
                 </section>
                 <section id="DatasetCorrelations">
                     <div class="attr class">
             
     <span class="def">class</span>
-    <span class="name">DatasetCorrelations</span><wbr>(<span class="base">evidently.core.container.MetricContainer</span>):
+    <span class="name">DatasetCorrelations</span><wbr>(<span class="base"><a href="core/container.html#MetricContainer">evidently.core.container.MetricContainer</a></span>):
 
         
     </div>
@@ -3095,7 +4574,7 @@
                                 <div class="attr function">
             
         <span class="def">def</span>
-        <span class="name">generate_metrics</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="bp">self</span>,</span><span class="param">	<span class="n">context</span><span class="p">:</span> <span class="n">evidently</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">report</span><span class="o">.</span><span class="n">Context</span></span><span class="return-annotation">) -> <span class="n">Sequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">evidently</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">metric_types</span><span class="o">.</span><span class="n">Metric</span><span class="p">,</span> <span class="n">evidently</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">container</span><span class="o">.</span><span class="n">MetricContainer</span><span class="p">]]</span>:</span></span>
+        <span class="name">generate_metrics</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="bp">self</span>,</span><span class="param">	<span class="n">context</span><span class="p">:</span> <span class="n"><a href="core/report.html#Context">evidently.core.report.Context</a></span></span><span class="return-annotation">) -> <span class="n">Sequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n"><a href="core/metric_types.html#Metric">evidently.core.metric_types.Metric</a></span><span class="p">,</span> <span class="n"><a href="core/container.html#MetricContainer">evidently.core.container.MetricContainer</a></span><span class="p">]]</span>:</span></span>
 
         
     </div>
@@ -3108,7 +4587,7 @@
                                 <div class="attr function">
             
         <span class="def">def</span>
-        <span class="name">render</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="bp">self</span>,</span><span class="param">	<span class="n">context</span><span class="p">:</span> <span class="n">evidently</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">report</span><span class="o">.</span><span class="n">Context</span>,</span><span class="param">	<span class="n">child_widgets</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="n">evidently</span><span class="o">.</span><span class="n">legacy</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">widget</span><span class="o">.</span><span class="n">BaseWidgetInfo</span><span class="p">]]]]</span> <span class="o">=</span> <span class="kc">None</span></span><span class="return-annotation">) -> <span class="n">List</span><span class="p">[</span><span class="n">evidently</span><span class="o">.</span><span class="n">legacy</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">widget</span><span class="o">.</span><span class="n">BaseWidgetInfo</span><span class="p">]</span>:</span></span>
+        <span class="name">render</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="bp">self</span>,</span><span class="param">	<span class="n">context</span><span class="p">:</span> <span class="n"><a href="core/report.html#Context">evidently.core.report.Context</a></span>,</span><span class="param">	<span class="n">child_widgets</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="n">evidently</span><span class="o">.</span><span class="n">legacy</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">widget</span><span class="o">.</span><span class="n">BaseWidgetInfo</span><span class="p">]]]]</span> <span class="o">=</span> <span class="kc">None</span></span><span class="return-annotation">) -> <span class="n">List</span><span class="p">[</span><span class="n">evidently</span><span class="o">.</span><span class="n">legacy</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">widget</span><span class="o">.</span><span class="n">BaseWidgetInfo</span><span class="p">]</span>:</span></span>
 
         
     </div>
@@ -3116,6 +4595,19 @@
     
     
 
+                            </div>
+                            <div class="inherited">
+                                <h5>Inherited Members</h5>
+                                <dl>
+                                    <div><dt><a href="core/container.html#MetricContainer">evidently.core.container.MetricContainer</a></dt>
+                                <dd id="DatasetCorrelations.__init__" class="function"><a href="core/container.html#MetricContainer.__init__">MetricContainer</a></dd>
+                <dd id="DatasetCorrelations.Config" class="class"><a href="core/container.html#MetricContainer.Config">Config</a></dd>
+                <dd id="DatasetCorrelations.include_tests" class="variable"><a href="core/container.html#MetricContainer.include_tests">include_tests</a></dd>
+                <dd id="DatasetCorrelations.metrics" class="function"><a href="core/container.html#MetricContainer.metrics">metrics</a></dd>
+                <dd id="DatasetCorrelations.list_metrics" class="function"><a href="core/container.html#MetricContainer.list_metrics">list_metrics</a></dd>
+
+            </div>
+                                </dl>
                             </div>
                 </section>
                 <section id="ColumnCorrelationMatrix">
@@ -3151,6 +4643,24 @@
     
     
 
+                            </div>
+                            <div class="inherited">
+                                <h5>Inherited Members</h5>
+                                <dl>
+                                    <div><dt><a href="core/metric_types.html#DataframeMetric">evidently.core.metric_types.DataframeMetric</a></dt>
+                                <dd id="ColumnCorrelationMatrix.tests" class="variable"><a href="core/metric_types.html#DataframeMetric.tests">tests</a></dd>
+                <dd id="ColumnCorrelationMatrix.get_bound_tests" class="function"><a href="core/metric_types.html#DataframeMetric.get_bound_tests">get_bound_tests</a></dd>
+                <dd id="ColumnCorrelationMatrix.validate_tests" class="function"><a href="core/metric_types.html#DataframeMetric.validate_tests">validate_tests</a></dd>
+
+            </div>
+            <div><dt><a href="core/metric_types.html#Metric">evidently.core.metric_types.Metric</a></dt>
+                                <dd id="ColumnCorrelationMatrix.to_calculation" class="function"><a href="core/metric_types.html#Metric.to_calculation">to_calculation</a></dd>
+                <dd id="ColumnCorrelationMatrix.get_metric_id" class="function"><a href="core/metric_types.html#Metric.get_metric_id">get_metric_id</a></dd>
+                <dd id="ColumnCorrelationMatrix.metric_id" class="variable"><a href="core/metric_types.html#Metric.metric_id">metric_id</a></dd>
+                <dd id="ColumnCorrelationMatrix.call" class="function"><a href="core/metric_types.html#Metric.call">call</a></dd>
+
+            </div>
+                                </dl>
                             </div>
                 </section>
     </main>

@@ -822,7 +822,7 @@
                     <div class="attr function">
             
         <span class="def">def</span>
-        <span class="name">metric_result_v2_to_v1</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="n">metric_result</span><span class="p">:</span> <span class="n">evidently</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">metric_types</span><span class="o">.</span><span class="n">MetricResult</span>,</span><span class="param">	<span class="n">ignore_widget</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span></span><span class="return-annotation">) -> <span class="n">evidently</span><span class="o">.</span><span class="n">legacy</span><span class="o">.</span><span class="n">base_metric</span><span class="o">.</span><span class="n">MetricResult</span>:</span></span>
+        <span class="name">metric_result_v2_to_v1</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="n">metric_result</span><span class="p">:</span> <span class="n"><a href="../core/metric_types.html#MetricResult">evidently.core.metric_types.MetricResult</a></span>,</span><span class="param">	<span class="n">ignore_widget</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span></span><span class="return-annotation">) -> <span class="n">evidently</span><span class="o">.</span><span class="n">legacy</span><span class="o">.</span><span class="n">base_metric</span><span class="o">.</span><span class="n">MetricResult</span>:</span></span>
 
         
     </div>
@@ -845,7 +845,7 @@
 
                             <div id="MetricV2Adapter.metric" class="classattr">
                                 <div class="attr variable">
-            <span class="name">metric</span><span class="annotation">: Union[evidently.core.metric_types.Metric, dict]</span>
+            <span class="name">metric</span><span class="annotation">: Union[<a href="../core/metric_types.html#Metric">evidently.core.metric_types.Metric</a>, dict]</span>
 
         
     </div>
@@ -1075,7 +1075,7 @@ For example, a generic mapping type might be defined as::</p>
                     <div class="attr function">
             
         <span class="def">def</span>
-        <span class="name">metric_v2_to_v1</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="n">metric</span><span class="p">:</span> <span class="n">evidently</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">metric_types</span><span class="o">.</span><span class="n">Metric</span></span><span class="return-annotation">) -> <span class="n">evidently</span><span class="o">.</span><span class="n">legacy</span><span class="o">.</span><span class="n">base_metric</span><span class="o">.</span><span class="n">Metric</span>:</span></span>
+        <span class="name">metric_v2_to_v1</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="n">metric</span><span class="p">:</span> <span class="n"><a href="../core/metric_types.html#Metric">evidently.core.metric_types.Metric</a></span></span><span class="return-annotation">) -> <span class="n">evidently</span><span class="o">.</span><span class="n">legacy</span><span class="o">.</span><span class="n">base_metric</span><span class="o">.</span><span class="n">Metric</span>:</span></span>
 
         
     </div>
@@ -1103,7 +1103,7 @@ For example, a generic mapping type might be defined as::</p>
                     <div class="attr function">
             
         <span class="def">def</span>
-        <span class="name">snapshot_v2_to_v1</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="n">snapshot</span><span class="p">:</span> <span class="n">evidently</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">report</span><span class="o">.</span><span class="n">Snapshot</span></span><span class="return-annotation">) -> <span class="n">evidently</span><span class="o">.</span><span class="n">legacy</span><span class="o">.</span><span class="n">suite</span><span class="o">.</span><span class="n">base_suite</span><span class="o">.</span><span class="n">Snapshot</span>:</span></span>
+        <span class="name">snapshot_v2_to_v1</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="n">snapshot</span><span class="p">:</span> <span class="n"><a href="../core/report.html#Snapshot">evidently.core.report.Snapshot</a></span></span><span class="return-annotation">) -> <span class="n">evidently</span><span class="o">.</span><span class="n">legacy</span><span class="o">.</span><span class="n">suite</span><span class="o">.</span><span class="n">base_suite</span><span class="o">.</span><span class="n">Snapshot</span>:</span></span>
 
         
     </div>
@@ -1272,7 +1272,7 @@ For example, a generic mapping type might be defined as::</p>
                             </div>
                             <div id="TestV2Adapter.test" class="classattr">
                                 <div class="attr variable">
-            <span class="name">test</span><span class="annotation">: evidently.core.metric_types.BoundTest</span>
+            <span class="name">test</span><span class="annotation">: <a href="../core/metric_types.html#BoundTest">evidently.core.metric_types.BoundTest</a></span>
 
         
     </div>
@@ -1411,7 +1411,7 @@ For example, a generic mapping type might be defined as::</p>
                                 <div class="attr function">
             
         <span class="def">def</span>
-        <span class="name">get_tests</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="bp">self</span>,</span><span class="param">	<span class="n">value</span><span class="p">:</span> <span class="o">~</span><span class="n">TResult</span></span><span class="return-annotation">) -> <span class="n">Generator</span><span class="p">[</span><span class="n">evidently</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">metric_types</span><span class="o">.</span><span class="n">MetricTestResult</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span>:</span></span>
+        <span class="name">get_tests</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="bp">self</span>,</span><span class="param">	<span class="n">value</span><span class="p">:</span> <span class="o">~</span><span class="n">TResult</span></span><span class="return-annotation">) -> <span class="n">Generator</span><span class="p">[</span><span class="n"><a href="../core/metric_types.html#MetricTestResult">evidently.core.metric_types.MetricTestResult</a></span><span class="p">,</span> <span class="n">NoneType</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span>:</span></span>
 
         
     </div>
@@ -1424,7 +1424,7 @@ For example, a generic mapping type might be defined as::</p>
                                 <div class="attr function">
             
         <span class="def">def</span>
-        <span class="name">get_bound_tests</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="bp">self</span>,</span><span class="param">	<span class="n">context</span><span class="p">:</span> <span class="n">evidently</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">report</span><span class="o">.</span><span class="n">Context</span></span><span class="return-annotation">) -> <span class="n">List</span><span class="p">[</span><span class="n">evidently</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">metric_types</span><span class="o">.</span><span class="n">BoundTest</span><span class="p">]</span>:</span></span>
+        <span class="name">get_bound_tests</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="bp">self</span>,</span><span class="param">	<span class="n">context</span><span class="p">:</span> <span class="n"><a href="../core/report.html#Context">evidently.core.report.Context</a></span></span><span class="return-annotation">) -> <span class="n">List</span><span class="p">[</span><span class="n"><a href="../core/metric_types.html#BoundTest">evidently.core.metric_types.BoundTest</a></span><span class="p">]</span>:</span></span>
 
         
     </div>
@@ -1432,6 +1432,17 @@ For example, a generic mapping type might be defined as::</p>
     
     
 
+                            </div>
+                            <div class="inherited">
+                                <h5>Inherited Members</h5>
+                                <dl>
+                                    <div><dt><a href="../core/metric_types.html#Metric">evidently.core.metric_types.Metric</a></dt>
+                                <dd id="TestsConfig.get_metric_id" class="function"><a href="../core/metric_types.html#Metric.get_metric_id">get_metric_id</a></dd>
+                <dd id="TestsConfig.metric_id" class="variable"><a href="../core/metric_types.html#Metric.metric_id">metric_id</a></dd>
+                <dd id="TestsConfig.call" class="function"><a href="../core/metric_types.html#Metric.call">call</a></dd>
+
+            </div>
+                                </dl>
                             </div>
                 </section>
                 <section id="main">

@@ -130,6 +130,51 @@
             <li>
                     <a class="variable" href="#ConfigVersion">ConfigVersion</a>
             </li>
+            <li>
+                    <a class="class" href="#ConfigAPI">ConfigAPI</a>
+                            <ul class="memberlist">
+                        <li>
+                                <a class="function" href="#ConfigAPI.list_configs">list_configs</a>
+                        </li>
+                        <li>
+                                <a class="function" href="#ConfigAPI.get_or_create_config">get_or_create_config</a>
+                        </li>
+                        <li>
+                                <a class="function" href="#ConfigAPI.get_config">get_config</a>
+                        </li>
+                        <li>
+                                <a class="function" href="#ConfigAPI.get_config_by_id">get_config_by_id</a>
+                        </li>
+                        <li>
+                                <a class="function" href="#ConfigAPI.create_config">create_config</a>
+                        </li>
+                        <li>
+                                <a class="function" href="#ConfigAPI.delete_config">delete_config</a>
+                        </li>
+                        <li>
+                                <a class="function" href="#ConfigAPI.update_config">update_config</a>
+                        </li>
+                        <li>
+                                <a class="function" href="#ConfigAPI.list_versions">list_versions</a>
+                        </li>
+                        <li>
+                                <a class="function" href="#ConfigAPI.get_version">get_version</a>
+                        </li>
+                        <li>
+                                <a class="function" href="#ConfigAPI.get_version_by_id">get_version_by_id</a>
+                        </li>
+                        <li>
+                                <a class="function" href="#ConfigAPI.create_version">create_version</a>
+                        </li>
+                        <li>
+                                <a class="function" href="#ConfigAPI.delete_version">delete_version</a>
+                        </li>
+                        <li>
+                                <a class="function" href="#ConfigAPI.bump_config_version">bump_config_version</a>
+                        </li>
+                </ul>
+
+            </li>
     </ul>
 
 
@@ -218,7 +263,7 @@ All config classes are now aliases to artifact classes.</p>
                                 <div class="attr function">
             
         <span class="def">def</span>
-        <span class="name">bind</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="bp">self</span>,</span><span class="param">	<span class="n">api</span><span class="p">:</span> <span class="n">evidently</span><span class="o">.</span><span class="n">sdk</span><span class="o">.</span><span class="n">configs</span><span class="o">.</span><span class="n">ConfigAPI</span></span><span class="return-annotation">) -> <span class="n"><a href="#RemoteGenericConfig">RemoteGenericConfig</a></span>:</span></span>
+        <span class="name">bind</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="bp">self</span>,</span><span class="param">	<span class="n">api</span><span class="p">:</span> <span class="n"><a href="#ConfigAPI">ConfigAPI</a></span></span><span class="return-annotation">) -> <span class="n"><a href="#RemoteGenericConfig">RemoteGenericConfig</a></span>:</span></span>
 
         
     </div>
@@ -545,7 +590,7 @@ All config classes are now aliases to artifact classes.</p>
                                 <div class="attr function">
             
         <span class="def">def</span>
-        <span class="name">add_descriptor</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="bp">self</span>,</span><span class="param">	<span class="n">project_id</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">uuid</span><span class="o">.</span><span class="n">UUID</span><span class="p">]</span>,</span><span class="param">	<span class="n">name</span><span class="p">:</span> <span class="nb">str</span>,</span><span class="param">	<span class="n">descriptor</span><span class="p">:</span> <span class="n">evidently</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">Descriptor</span></span><span class="return-annotation">):</span></span>
+        <span class="name">add_descriptor</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="bp">self</span>,</span><span class="param">	<span class="n">project_id</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">uuid</span><span class="o">.</span><span class="n">UUID</span><span class="p">]</span>,</span><span class="param">	<span class="n">name</span><span class="p">:</span> <span class="nb">str</span>,</span><span class="param">	<span class="n">descriptor</span><span class="p">:</span> <span class="n"><a href="../core/datasets.html#Descriptor">evidently.core.datasets.Descriptor</a></span></span><span class="return-annotation">):</span></span>
 
         
     </div>
@@ -558,7 +603,7 @@ All config classes are now aliases to artifact classes.</p>
                                 <div class="attr function">
             
         <span class="def">def</span>
-        <span class="name">get_descriptor</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="bp">self</span>,</span><span class="param">	<span class="n">project_id</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">uuid</span><span class="o">.</span><span class="n">UUID</span><span class="p">]</span>,</span><span class="param">	<span class="n">name</span><span class="p">:</span> <span class="nb">str</span>,</span><span class="param">	<span class="n">version</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;latest&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="s1">&#39;latest&#39;</span></span><span class="return-annotation">) -> <span class="n">evidently</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">Descriptor</span>:</span></span>
+        <span class="name">get_descriptor</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="bp">self</span>,</span><span class="param">	<span class="n">project_id</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">uuid</span><span class="o">.</span><span class="n">UUID</span><span class="p">]</span>,</span><span class="param">	<span class="n">name</span><span class="p">:</span> <span class="nb">str</span>,</span><span class="param">	<span class="n">version</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;latest&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="s1">&#39;latest&#39;</span></span><span class="return-annotation">) -> <span class="n"><a href="../core/datasets.html#Descriptor">evidently.core.datasets.Descriptor</a></span>:</span></span>
 
         
     </div>
@@ -579,6 +624,229 @@ All config classes are now aliases to artifact classes.</p>
     
     
 
+                </section>
+                <section id="ConfigAPI">
+                    <div class="attr class">
+            
+    <span class="def">class</span>
+    <span class="name">ConfigAPI</span><wbr>(<span class="base">abc.ABC</span>):
+
+        
+    </div>
+    <a class="headerlink" href="#ConfigAPI"></a>
+    
+            <div class="docstring"><p>Abstract base class for config API.</p>
+</div>
+
+
+                            <div id="ConfigAPI.list_configs" class="classattr">
+                                <div class="attr function">
+                    <div class="decorator decorator-abstractmethod">@abstractmethod</div>
+
+        <span class="def">def</span>
+        <span class="name">list_configs</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="bp">self</span>,</span><span class="param">	<span class="n">project_id</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">uuid</span><span class="o">.</span><span class="n">UUID</span><span class="p">]</span></span><span class="return-annotation">) -> <span class="n">List</span><span class="p">[</span><span class="n"><a href="#RemoteGenericConfig">RemoteGenericConfig</a></span><span class="p">]</span>:</span></span>
+
+        
+    </div>
+    <a class="headerlink" href="#ConfigAPI.list_configs"></a>
+    
+            <div class="docstring"><p>List all configs in a project.</p>
+</div>
+
+
+                            </div>
+                            <div id="ConfigAPI.get_or_create_config" class="classattr">
+                                <div class="attr function">
+                    <div class="decorator decorator-abstractmethod">@abstractmethod</div>
+
+        <span class="def">def</span>
+        <span class="name">get_or_create_config</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="bp">self</span>,</span><span class="param">	<span class="n">project_id</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">uuid</span><span class="o">.</span><span class="n">UUID</span><span class="p">]</span>,</span><span class="param">	<span class="n">name</span><span class="p">:</span> <span class="nb">str</span></span><span class="return-annotation">) -> <span class="n"><a href="#RemoteGenericConfig">RemoteGenericConfig</a></span>:</span></span>
+
+        
+    </div>
+    <a class="headerlink" href="#ConfigAPI.get_or_create_config"></a>
+    
+            <div class="docstring"><p>Get or create a config by name.</p>
+</div>
+
+
+                            </div>
+                            <div id="ConfigAPI.get_config" class="classattr">
+                                <div class="attr function">
+                    <div class="decorator decorator-abstractmethod">@abstractmethod</div>
+
+        <span class="def">def</span>
+        <span class="name">get_config</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="bp">self</span>,</span><span class="param">	<span class="n">project_id</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">uuid</span><span class="o">.</span><span class="n">UUID</span><span class="p">]</span>,</span><span class="param">	<span class="n">name</span><span class="p">:</span> <span class="nb">str</span></span><span class="return-annotation">) -> <span class="n"><a href="#RemoteGenericConfig">RemoteGenericConfig</a></span>:</span></span>
+
+        
+    </div>
+    <a class="headerlink" href="#ConfigAPI.get_config"></a>
+    
+            <div class="docstring"><p>Get a config by name.</p>
+</div>
+
+
+                            </div>
+                            <div id="ConfigAPI.get_config_by_id" class="classattr">
+                                <div class="attr function">
+                    <div class="decorator decorator-abstractmethod">@abstractmethod</div>
+
+        <span class="def">def</span>
+        <span class="name">get_config_by_id</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="bp">self</span>,</span><span class="param">	<span class="n">project_id</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">uuid</span><span class="o">.</span><span class="n">UUID</span><span class="p">]</span>,</span><span class="param">	<span class="n">config_id</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">uuid</span><span class="o">.</span><span class="n">UUID</span><span class="p">]</span></span><span class="return-annotation">) -> <span class="n"><a href="#RemoteGenericConfig">RemoteGenericConfig</a></span>:</span></span>
+
+        
+    </div>
+    <a class="headerlink" href="#ConfigAPI.get_config_by_id"></a>
+    
+            <div class="docstring"><p>Get a config by ID.</p>
+</div>
+
+
+                            </div>
+                            <div id="ConfigAPI.create_config" class="classattr">
+                                <div class="attr function">
+                    <div class="decorator decorator-abstractmethod">@abstractmethod</div>
+
+        <span class="def">def</span>
+        <span class="name">create_config</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="bp">self</span>,</span><span class="param">	<span class="n">project_id</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">uuid</span><span class="o">.</span><span class="n">UUID</span><span class="p">]</span>,</span><span class="param">	<span class="n">name</span><span class="p">:</span> <span class="nb">str</span></span><span class="return-annotation">) -> <span class="n"><a href="#RemoteGenericConfig">RemoteGenericConfig</a></span>:</span></span>
+
+        
+    </div>
+    <a class="headerlink" href="#ConfigAPI.create_config"></a>
+    
+            <div class="docstring"><p>Create a new config.</p>
+</div>
+
+
+                            </div>
+                            <div id="ConfigAPI.delete_config" class="classattr">
+                                <div class="attr function">
+                    <div class="decorator decorator-abstractmethod">@abstractmethod</div>
+
+        <span class="def">def</span>
+        <span class="name">delete_config</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span>, </span><span class="param"><span class="n">config_id</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">uuid</span><span class="o">.</span><span class="n">UUID</span><span class="p">]</span></span><span class="return-annotation">):</span></span>
+
+        
+    </div>
+    <a class="headerlink" href="#ConfigAPI.delete_config"></a>
+    
+            <div class="docstring"><p>Delete a config.</p>
+</div>
+
+
+                            </div>
+                            <div id="ConfigAPI.update_config" class="classattr">
+                                <div class="attr function">
+                    <div class="decorator decorator-abstractmethod">@abstractmethod</div>
+
+        <span class="def">def</span>
+        <span class="name">update_config</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span>, </span><span class="param"><span class="n">config</span><span class="p">:</span> <span class="n"><a href="artifacts.html#Artifact">evidently.sdk.artifacts.Artifact</a></span></span><span class="return-annotation">):</span></span>
+
+        
+    </div>
+    <a class="headerlink" href="#ConfigAPI.update_config"></a>
+    
+            <div class="docstring"><p>Update a config.</p>
+</div>
+
+
+                            </div>
+                            <div id="ConfigAPI.list_versions" class="classattr">
+                                <div class="attr function">
+                    <div class="decorator decorator-abstractmethod">@abstractmethod</div>
+
+        <span class="def">def</span>
+        <span class="name">list_versions</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="bp">self</span>,</span><span class="param">	<span class="n">config_id</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">uuid</span><span class="o">.</span><span class="n">UUID</span><span class="p">]</span></span><span class="return-annotation">) -> <span class="n">List</span><span class="p">[</span><span class="n"><a href="artifacts.html#ArtifactVersion">evidently.sdk.artifacts.ArtifactVersion</a></span><span class="p">]</span>:</span></span>
+
+        
+    </div>
+    <a class="headerlink" href="#ConfigAPI.list_versions"></a>
+    
+            <div class="docstring"><p>List all versions of a config.</p>
+</div>
+
+
+                            </div>
+                            <div id="ConfigAPI.get_version" class="classattr">
+                                <div class="attr function">
+                    <div class="decorator decorator-abstractmethod">@abstractmethod</div>
+
+        <span class="def">def</span>
+        <span class="name">get_version</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="bp">self</span>,</span><span class="param">	<span class="n">config_id</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">uuid</span><span class="o">.</span><span class="n">UUID</span><span class="p">]</span>,</span><span class="param">	<span class="n">version</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;latest&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="s1">&#39;latest&#39;</span></span><span class="return-annotation">) -> <span class="n"><a href="artifacts.html#ArtifactVersion">evidently.sdk.artifacts.ArtifactVersion</a></span>:</span></span>
+
+        
+    </div>
+    <a class="headerlink" href="#ConfigAPI.get_version"></a>
+    
+            <div class="docstring"><p>Get a specific version of a config.</p>
+</div>
+
+
+                            </div>
+                            <div id="ConfigAPI.get_version_by_id" class="classattr">
+                                <div class="attr function">
+                    <div class="decorator decorator-abstractmethod">@abstractmethod</div>
+
+        <span class="def">def</span>
+        <span class="name">get_version_by_id</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="bp">self</span>,</span><span class="param">	<span class="n">config_version_id</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">uuid</span><span class="o">.</span><span class="n">UUID</span><span class="p">]</span></span><span class="return-annotation">) -> <span class="n"><a href="artifacts.html#ArtifactVersion">evidently.sdk.artifacts.ArtifactVersion</a></span>:</span></span>
+
+        
+    </div>
+    <a class="headerlink" href="#ConfigAPI.get_version_by_id"></a>
+    
+            <div class="docstring"><p>Get a version by its ID.</p>
+</div>
+
+
+                            </div>
+                            <div id="ConfigAPI.create_version" class="classattr">
+                                <div class="attr function">
+                    <div class="decorator decorator-abstractmethod">@abstractmethod</div>
+
+        <span class="def">def</span>
+        <span class="name">create_version</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="bp">self</span>,</span><span class="param">	<span class="n">config_id</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">uuid</span><span class="o">.</span><span class="n">UUID</span><span class="p">]</span>,</span><span class="param">	<span class="n">version</span><span class="p">:</span> <span class="nb">int</span>,</span><span class="param">	<span class="n">content</span><span class="p">:</span> <span class="n">Any</span></span><span class="return-annotation">) -> <span class="n"><a href="artifacts.html#ArtifactVersion">evidently.sdk.artifacts.ArtifactVersion</a></span>:</span></span>
+
+        
+    </div>
+    <a class="headerlink" href="#ConfigAPI.create_version"></a>
+    
+            <div class="docstring"><p>Create a new version of a config.</p>
+</div>
+
+
+                            </div>
+                            <div id="ConfigAPI.delete_version" class="classattr">
+                                <div class="attr function">
+                    <div class="decorator decorator-abstractmethod">@abstractmethod</div>
+
+        <span class="def">def</span>
+        <span class="name">delete_version</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span>, </span><span class="param"><span class="n">config_version_id</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">uuid</span><span class="o">.</span><span class="n">UUID</span><span class="p">]</span></span><span class="return-annotation">):</span></span>
+
+        
+    </div>
+    <a class="headerlink" href="#ConfigAPI.delete_version"></a>
+    
+            <div class="docstring"><p>Delete a version.</p>
+</div>
+
+
+                            </div>
+                            <div id="ConfigAPI.bump_config_version" class="classattr">
+                                <div class="attr function">
+                    <div class="decorator decorator-abstractmethod">@abstractmethod</div>
+
+        <span class="def">def</span>
+        <span class="name">bump_config_version</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="bp">self</span>,</span><span class="param">	<span class="n">config_id</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">uuid</span><span class="o">.</span><span class="n">UUID</span><span class="p">]</span>,</span><span class="param">	<span class="n">content</span><span class="p">:</span> <span class="n">Any</span></span><span class="return-annotation">) -> <span class="n"><a href="artifacts.html#ArtifactVersion">evidently.sdk.artifacts.ArtifactVersion</a></span>:</span></span>
+
+        
+    </div>
+    <a class="headerlink" href="#ConfigAPI.bump_config_version"></a>
+    
+            <div class="docstring"><p>Bump config version (create next version).</p>
+</div>
+
+
+                            </div>
                 </section>
     </main>
 <script>
