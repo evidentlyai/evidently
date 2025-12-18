@@ -13,6 +13,8 @@ from typing import Tuple
 from typing import TypeVar
 from typing import Union
 
+from typing_extensions import TypeAlias
+
 from evidently.core.base_types import Label
 from evidently.core.metric_types import Metric
 from evidently.core.metric_types import MetricCalculationBase
@@ -309,6 +311,26 @@ class SnapshotItem:
 
 
 class Snapshot:
+    """Snapshot contains the computed results of running a `Report` on datasets.
+
+    A `Snapshot` (also aliased as `Run`) contains:
+    - Computed metric results for each metric in the report
+    - Test results if tests were configured
+    - Metadata, tags, and timestamp
+    - Methods to export results as HTML, JSON, or Python dictionary
+
+    You typically create a `Snapshot` by calling `report.run()` with your datasets.
+
+    Example:
+    ```python
+    report = Report([DataSummaryPreset()])
+    snapshot = report.run(current_data, reference_data)
+    snapshot.save_html("report.html")  # Export as HTML
+    snapshot.json()  # Export as JSON string
+    snapshot.dict()  # Export as Python dictionary
+    ```
+    """
+
     _report: "Report"
     _context: Context  # stores report calculation progress
     _metrics: Dict[MetricId, MetricResult]
@@ -329,6 +351,7 @@ class Snapshot:
         metadata: Dict[str, MetadataValueType],
         tags: List[str],
     ):
+        """Initialize a `Snapshot` (typically created by `Report.run()`, not called directly)."""
         self._name = name
         self._report = report
         self._context = Context(report)
@@ -375,6 +398,7 @@ class Snapshot:
         reference_data: Optional[Dataset],
         additional_data: Optional[Dict[str, Dataset]] = None,
     ):
+        """Run the report computation on datasets (typically called by `Report.run()`, not directly)."""
         self.context.init_dataset(current_data, reference_data, additional_data)
         self._metrics = {}
         self._snapshot_item, self._widgets = self._run_items(self.report.items(), self._metrics)
@@ -388,6 +412,14 @@ class Snapshot:
             ]
 
     def get_html_str(self, as_iframe: bool):
+        """Get HTML representation of the snapshot.
+
+        Args:
+        * `as_iframe`: If True, returns HTML suitable for embedding in iframe. If False, returns standalone HTML.
+
+        Returns:
+        * HTML string representation of the report
+        """
         from evidently.legacy.renderers.html_widgets import group_widget
 
         widgets_to_render: List[BaseWidgetInfo] = [group_widget(title="", widgets=self._widgets)] + self._tests_widgets
@@ -421,14 +453,29 @@ class Snapshot:
         return HTML(render_widgets(widgets_to_render))
 
     def json(self) -> str:
+        """Export snapshot results as JSON string.
+
+        Returns:
+        * JSON string containing metrics and test results
+        """
         return json.dumps(self.dict(), cls=NumpyEncoder)
 
     def save_html(self, filename: Union[str, typing.IO]):
+        """Save snapshot as HTML file.
+
+        Args:
+        * `filename`: File path (string) or file-like object to write HTML to
+        """
         if isinstance(filename, str):
             with open(filename, "w", encoding="utf-8") as out_file:
                 out_file.write(self.get_html_str(as_iframe=False))
 
     def save_json(self, filename: Union[str, typing.IO]):
+        """Save snapshot as JSON file.
+
+        Args:
+        * `filename`: File path (string) or file-like object to write JSON to
+        """
         if isinstance(filename, str):
             with open(filename, "w", encoding="utf-8") as out_file:
                 json.dump(self.dict(), out_file, cls=NumpyEncoder)
@@ -439,12 +486,27 @@ class Snapshot:
         return snapshot_v2_to_v1(self)
 
     def dumps(self) -> str:
+        """Export snapshot as JSON string (full serialization format).
+
+        Returns:
+        * JSON string with complete snapshot data including widgets and metadata
+        """
         return json.dumps(self.dump_dict(), cls=NumpyEncoder)
 
     def dump_dict(self) -> dict:
+        """Export snapshot as Python dictionary (full serialization format).
+
+        Returns:
+        * Dictionary with complete snapshot data including widgets and metadata
+        """
         return self.to_snapshot_model().dict()
 
     def to_snapshot_model(self):
+        """Convert snapshot to serialization model.
+
+        Returns:
+        * `SnapshotModel` object for serialization
+        """
         snapshot = SnapshotModel(
             report=ReportModel(items=[]),
             name=self._name,
@@ -460,20 +522,52 @@ class Snapshot:
 
     @staticmethod
     def load(path: Union[str, pathlib.Path]):
+        """Load a snapshot from a JSON file.
+
+        Args:
+        * `path`: Path to JSON file containing snapshot data
+
+        Returns:
+        * `Snapshot` object loaded from file
+        """
         with open(path, "r", encoding="utf-8") as in_file:
             return Snapshot.loads(in_file.read())
 
     @staticmethod
     def loads(data: str) -> "Snapshot":
+        """Load a snapshot from a JSON string.
+
+        Args:
+        * `data`: JSON string containing snapshot data
+
+        Returns:
+        * `Snapshot` object loaded from string
+        """
         return Snapshot.load_dict(json.loads(data))
 
     @staticmethod
     def load_dict(data: dict) -> "Snapshot":
+        """Load a snapshot from a Python dictionary.
+
+        Args:
+        * `data`: Dictionary containing snapshot data
+
+        Returns:
+        * `Snapshot` object loaded from dictionary
+        """
         model = SnapshotModel.parse_obj(data)
         return Snapshot.load_model(model)
 
     @staticmethod
     def load_model(model: SnapshotModel) -> "Snapshot":
+        """Load a snapshot from a `SnapshotModel` object.
+
+        Args:
+        * `model`: `SnapshotModel` object
+
+        Returns:
+        * `Snapshot` object loaded from model
+        """
         snapshot = Snapshot(
             report=Report([]),
             name=model.name,
@@ -488,6 +582,11 @@ class Snapshot:
         return snapshot
 
     def dict(self) -> dict:
+        """Export snapshot results as Python dictionary (metrics and tests only).
+
+        Returns:
+        * Dictionary with metrics and test results (simplified format)
+        """
         return {
             "metrics": [
                 self._metrics[metric].to_dict() if self._metrics.get(metric) is not None else {}
@@ -498,23 +597,73 @@ class Snapshot:
 
     @property
     def tests_results(self):
+        """Get all test results from all metrics in the snapshot.
+
+        Returns:
+        * List of all test results across all metrics
+        """
         return [test_result for metric in self._top_level_metrics for test_result in self._metrics[metric].tests]
 
     @property
     def metric_results(self):
+        """Get all metric results from the snapshot.
+
+        Returns:
+        * Dictionary mapping metric IDs to their results
+        """
         return self._metrics
 
     def get_name(self) -> Optional[str]:
+        """Get the name of this snapshot.
+
+        Returns:
+        * `Snapshot` name or None if not set
+        """
         return self._name
 
     def set_name(self, name: str):
+        """Set the name of this snapshot.
+
+        Args:
+        * `name`: Name to assign to the snapshot
+        """
         self._name = name
 
 
-Run = Snapshot
+Run: TypeAlias = Snapshot
 
 
 class Report:
+    """Report lets you structure and run evaluations on the dataset or column-level.
+
+    You can generate `Report` objects after you get descriptors, or for any existing dataset like a table with ML model logs.
+    Use `Report` to:
+    - Summarize computed text descriptors across all inputs
+    - Analyze any tabular dataset (descriptive stats, quality, drift)
+    - Evaluate AI system performance (regression, classification, ranking, etc.)
+
+    Each `Report` runs a computation and visualizes a set of Metrics and conditional Tests.
+    If you pass two datasets, you get a side-by-side comparison.
+
+    Using a preset:
+    ```python
+    report = Report([DataSummaryPreset()])
+    my_eval = report.run(eval_data_1, None)
+    ```
+
+    Using custom metrics:
+    ```python
+    report = Report([ColumnCount(), ValueStats(column="target")])
+    my_eval = report.run(eval_data_1, None)
+    ```
+
+    With reference data for drift detection:
+    ```python
+    report = Report([DataDriftPreset()])
+    my_eval = report.run(eval_data_1, eval_data_2)
+    ```
+    """
+
     metrics: List[MetricOrContainer]
     metadata: Dict[str, MetadataValueType]
     tags: List[str]
@@ -531,6 +680,18 @@ class Report:
         dataset_id: str = None,
         include_tests: bool = False,
     ):
+        """Initialize a Report with metrics and optional metadata.
+
+        Args:
+        * `metrics`: List of metrics or metric containers to include in the report
+        * `metadata`: Optional dictionary of metadata key-value pairs
+        * `tags`: Optional list of tags for categorizing reports
+        * `model_id`: Optional model identifier (sets metadata["model_id"])
+        * `reference_id`: Optional reference dataset identifier (sets metadata["reference_id"])
+        * `batch_size`: Optional batch size identifier (sets metadata["batch_size"])
+        * `dataset_id`: Optional dataset identifier (sets metadata["dataset_id"])
+        * `include_tests`: Whether to include automatic tests for metrics
+        """
         self.metrics = metrics
         self.metadata = metadata or {}
         self.tags = tags or []
@@ -555,6 +716,26 @@ class Report:
         tags: List[str] = None,
         name: Optional[str] = None,
     ) -> Snapshot:
+        """Run the report on datasets and return a `Snapshot` with computed results.
+
+        Args:
+        * `current_data`: Current dataset to evaluate (`pandas.DataFrame` or `evidently.core.datasets.Dataset`)
+        * `reference_data`: Optional reference dataset for comparison/drift detection
+        * `additional_data`: Optional dictionary of additional datasets by name
+        * `timestamp`: Optional timestamp for the snapshot (defaults to now)
+        * `metadata`: Optional metadata to merge with report metadata
+        * `tags`: Optional tags to merge with report tags
+        * `name`: Optional name for the snapshot
+
+        Returns:
+        * `Snapshot`: Object containing computed metric results, tests, and visualizations
+
+        Example:
+        ```python
+        snapshot = report.run(current_data, reference_data, name="daily_check")
+        snapshot.save_html("report.html")
+        ```
+        """
         current_dataset = Dataset.from_any(current_data)
         reference_dataset = Dataset.from_any(reference_data) if reference_data is not None else None
 
@@ -576,20 +757,57 @@ class Report:
         return snapshot
 
     def items(self) -> Sequence[MetricOrContainer]:
+        """Get the list of metrics and containers in this report.
+
+        Returns:
+        * Sequence of metrics and metric containers configured in the report
+        """
         return self.metrics
 
     def set_batch_size(self, batch_size: str):
+        """Set the batch size identifier in report metadata.
+
+        Args:
+        * `batch_size`: Batch size identifier string
+
+        Returns:
+        * Self for method chaining
+        """
         self.metadata["batch_size"] = batch_size
         return self
 
     def set_model_id(self, model_id: str):
+        """Set the model identifier in report metadata.
+
+        Args:
+        * `model_id`: Model identifier string
+
+        Returns:
+        * Self for method chaining
+        """
         self.metadata["model_id"] = model_id
         return self
 
     def set_reference_id(self, reference_id: str):
+        """Set the reference dataset identifier in report metadata.
+
+        Args:
+        * `reference_id`: Reference dataset identifier string
+
+        Returns:
+        * Self for method chaining
+        """
         self.metadata["reference_id"] = reference_id
         return self
 
     def set_dataset_id(self, dataset_id: str):
+        """Set the dataset identifier in report metadata.
+
+        Args:
+        * `dataset_id`: Dataset identifier string
+
+        Returns:
+        * Self for method chaining
+        """
         self.metadata["dataset_id"] = dataset_id
         return self

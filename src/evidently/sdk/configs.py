@@ -261,4 +261,5 @@ __all__ = [
     "RemoteGenericConfig",
     "CloudConfigAPI",
     "ConfigVersion",
+    "ConfigAPI",
 ]

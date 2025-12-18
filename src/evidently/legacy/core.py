@@ -40,6 +40,22 @@ Label = Union[int, str, None]
 
 
 class ColumnType(Enum):
+    """Column data type enumeration.
+
+    Represents the type of data in a column. Used for automatic type inference
+    and to determine which metrics and tests are applicable.
+
+    **Values:**
+    - `Numerical`: Numeric columns (integers, floats)
+    - `Categorical`: Categorical columns with limited distinct values
+    - `Text`: Text/string columns
+    - `Datetime`: DateTime columns
+    - `Date`: Date columns
+    - `Id`: Identifier columns
+    - `Unknown`: Columns with unknown or unclassified type
+    - `List`: Columns containing lists or arrays
+    """
+
     Numerical = "num"
     Categorical = "cat"
     Text = "text"
