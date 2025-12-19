@@ -1145,18 +1145,8 @@ If you pass two datasets, you get a side-by-side comparison.</p>
     
             <div class="docstring"><p>Initialize a Report with metrics and optional metadata.</p>
 
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#Report.metrics">metrics</a></code>: List of metrics or metric containers to include in the report</li>
-<li><code><a href="#Report.metadata">metadata</a></code>: Optional dictionary of metadata key-value pairs</li>
-<li><code><a href="#Report.tags">tags</a></code>: Optional list of tags for categorizing reports</li>
-<li><code>model_id</code>: Optional model identifier (sets metadata["model_id"])</li>
-<li><code>reference_id</code>: Optional reference dataset identifier (sets metadata["reference_id"])</li>
-<li><code>batch_size</code>: Optional batch size identifier (sets metadata["batch_size"])</li>
-<li><code>dataset_id</code>: Optional dataset identifier (sets metadata["dataset_id"])</li>
-<li><code><a href="#Report.include_tests">include_tests</a></code>: Whether to include automatic tests for metrics</li>
-</ul>
+<p>The constructor maps parameters to class attributes. Additional convenience parameters
+(<code>model_id</code>, <code>reference_id</code>, <code>batch_size</code>, <code>dataset_id</code>) are stored in the <code><a href="#Report.metadata">metadata</a></code> dictionary.</p>
 </div>
 
 
@@ -1169,7 +1159,9 @@ If you pass two datasets, you get a side-by-side comparison.</p>
     </div>
     <a class="headerlink" href="#Report.metrics"></a>
     
-    
+            <div class="docstring"><p>List of metrics or metric containers to include in the report.</p>
+</div>
+
 
                             </div>
                             <div id="Report.metadata" class="classattr">
@@ -1180,7 +1172,9 @@ If you pass two datasets, you get a side-by-side comparison.</p>
     </div>
     <a class="headerlink" href="#Report.metadata"></a>
     
-    
+            <div class="docstring"><p>Dictionary of metadata key-value pairs.</p>
+</div>
+
 
                             </div>
                             <div id="Report.tags" class="classattr">
@@ -1191,7 +1185,9 @@ If you pass two datasets, you get a side-by-side comparison.</p>
     </div>
     <a class="headerlink" href="#Report.tags"></a>
     
-    
+            <div class="docstring"><p>List of tags for categorizing reports.</p>
+</div>
+
 
                             </div>
                             <div id="Report.include_tests" class="classattr">
@@ -1202,7 +1198,9 @@ If you pass two datasets, you get a side-by-side comparison.</p>
     </div>
     <a class="headerlink" href="#Report.include_tests"></a>
     
-    
+            <div class="docstring"><p>Whether to include automatic tests for metrics.</p>
+</div>
+
 
                             </div>
                             <div id="Report.run" class="classattr">

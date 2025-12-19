@@ -863,8 +863,19 @@ Returns:
     </div>
     <a class="headerlink" href="#Workspace"></a>
     
-            <div class="docstring"><p>Helper class that provides a standard way to create an ABC using
-inheritance.</p>
+            <div class="docstring"><p>Local file system workspace for storing projects, snapshots, and datasets.</p>
+
+<p><code><a href="#Workspace">Workspace</a></code> provides a local file-based storage backend for Evidently projects.
+All data is stored in the specified directory on the local file system.</p>
+
+<p>Example:</p>
+
+<div class="pdoc-code codehilite">
+<pre><span></span><code><span class="n">workspace</span> <span class="o">=</span> <span class="n"><a href="#Workspace.create">Workspace.create</a></span><span class="p">(</span><span class="s2">&quot;my_workspace&quot;</span><span class="p">)</span>
+<span class="n">project</span> <span class="o">=</span> <span class="n">workspace</span><span class="o">.</span><span class="n">add_project</span><span class="p">(</span><span class="n">ProjectModel</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;My Project&quot;</span><span class="p">))</span>
+<span class="n">workspace</span><span class="o">.</span><span class="n">add_run</span><span class="p">(</span><span class="n">project</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">snapshot</span><span class="p">)</span>
+</code></pre>
+</div>
 </div>
 
 
@@ -877,7 +888,15 @@ inheritance.</p>
     </div>
     <a class="headerlink" href="#Workspace.__init__"></a>
     
-    
+            <div class="docstring"><p>Initialize a local workspace.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code><a href="#Workspace.path">path</a></code>: Directory path where the workspace data will be stored</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="Workspace.path" class="classattr">
@@ -967,7 +986,22 @@ inheritance.</p>
     </div>
     <a class="headerlink" href="#Workspace.add_project"></a>
     
-    
+            <div class="docstring"><p>Add a new project to the workspace.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>project</code>: <code>ProjectModel</code> with project configuration</li>
+<li><code>org_id</code>: Optional organization ID (not used for local workspace)</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li><code><a href="#Project">Project</a></code> object for the newly created project</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="Workspace.get_project" class="classattr">
@@ -980,7 +1014,21 @@ inheritance.</p>
     </div>
     <a class="headerlink" href="#Workspace.get_project"></a>
     
-    
+            <div class="docstring"><p>Get a project by ID.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>project_id</code>: UUID of the project to retrieve</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li><code><a href="#Project">Project</a></code> object if found, None otherwise</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="Workspace.delete_project" class="classattr">
@@ -993,7 +1041,15 @@ inheritance.</p>
     </div>
     <a class="headerlink" href="#Workspace.delete_project"></a>
     
-    
+            <div class="docstring"><p>Delete a project from the workspace.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>project_id</code>: UUID of the project to delete</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="Workspace.list_projects" class="classattr">
@@ -1006,7 +1062,21 @@ inheritance.</p>
     </div>
     <a class="headerlink" href="#Workspace.list_projects"></a>
     
-    
+            <div class="docstring"><p>List all projects in the workspace.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>org_id</code>: Optional organization ID (not used for local workspace)</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li>Sequence of <code><a href="#Project">Project</a></code> objects</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="Workspace.update_project" class="classattr">
@@ -1019,7 +1089,15 @@ inheritance.</p>
     </div>
     <a class="headerlink" href="#Workspace.update_project"></a>
     
-    
+            <div class="docstring"><p>Update an existing project.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>project</code>: <code>ProjectModel</code> with updated project configuration</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="Workspace.get_run" class="classattr">
@@ -1032,7 +1110,22 @@ inheritance.</p>
     </div>
     <a class="headerlink" href="#Workspace.get_run"></a>
     
-    
+            <div class="docstring"><p>Get a snapshot (run) by ID.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>project_id</code>: UUID of the project containing the snapshot</li>
+<li><code>snapshot_id</code>: UUID of the snapshot to retrieve</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li><code>SnapshotModel</code> if found, None otherwise</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="Workspace.list_runs" class="classattr">
@@ -1045,7 +1138,21 @@ inheritance.</p>
     </div>
     <a class="headerlink" href="#Workspace.list_runs"></a>
     
-    
+            <div class="docstring"><p>List all snapshots (runs) for a project.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>project_id</code>: UUID of the project</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li>Sequence of snapshot IDs</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="Workspace.delete_run" class="classattr">
@@ -1058,7 +1165,16 @@ inheritance.</p>
     </div>
     <a class="headerlink" href="#Workspace.delete_run"></a>
     
-    
+            <div class="docstring"><p>Delete a snapshot (run) from a project.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>project_id</code>: UUID of the project containing the snapshot</li>
+<li><code>snapshot_id</code>: UUID of the snapshot to delete</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="Workspace.search_project" class="classattr">
@@ -1071,7 +1187,22 @@ inheritance.</p>
     </div>
     <a class="headerlink" href="#Workspace.search_project"></a>
     
-    
+            <div class="docstring"><p>Search for projects by name.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>project_name</code>: Name to search for (exact match)</li>
+<li><code>org_id</code>: Optional organization ID (not used for local workspace)</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li>Sequence of <code><a href="#Project">Project</a></code> objects matching the name</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="Workspace.add_dataset" class="classattr">
@@ -1123,7 +1254,16 @@ inheritance.</p>
     </div>
     <a class="headerlink" href="#Workspace.save_dashboard"></a>
     
-    
+            <div class="docstring"><p>Save a dashboard configuration for a project.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>project_id</code>: UUID of the project</li>
+<li><code>dashboard</code>: <code>DashboardModel</code> with dashboard configuration</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="Workspace.get_dashboard" class="classattr">
@@ -1136,7 +1276,21 @@ inheritance.</p>
     </div>
     <a class="headerlink" href="#Workspace.get_dashboard"></a>
     
-    
+            <div class="docstring"><p>Get the dashboard configuration for a project.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>project_id</code>: UUID of the project</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li><code>DashboardModel</code> with dashboard configuration</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="Workspace.create" class="classattr">
@@ -1150,7 +1304,21 @@ inheritance.</p>
     </div>
     <a class="headerlink" href="#Workspace.create"></a>
     
-    
+            <div class="docstring"><p>Create a new workspace instance.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code><a href="#Workspace.path">path</a></code>: Directory path where the workspace data will be stored (default: "workspace")</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li><code><a href="#Workspace">Workspace</a></code> instance</li>
+</ul>
+</div>
+
 
                             </div>
                             <div class="inherited">
@@ -1174,8 +1342,20 @@ inheritance.</p>
     </div>
     <a class="headerlink" href="#RemoteWorkspace"></a>
     
-            <div class="docstring"><p>Helper class that provides a standard way to create an ABC using
-inheritance.</p>
+            <div class="docstring"><p>Remote workspace for connecting to an Evidently API server.</p>
+
+<p><code><a href="#RemoteWorkspace">RemoteWorkspace</a></code> provides a client interface to connect to a remote Evidently
+API server. This allows you to store and manage projects, snapshots, and datasets
+on a remote server instead of locally.</p>
+
+<p>Example:</p>
+
+<div class="pdoc-code codehilite">
+<pre><span></span><code><span class="n">workspace</span> <span class="o">=</span> <span class="n">RemoteWorkspace</span><span class="p">(</span><span class="s2">&quot;http://localhost:8000&quot;</span><span class="p">,</span> <span class="n">secret</span><span class="o">=</span><span class="s2">&quot;my-secret&quot;</span><span class="p">)</span>
+<span class="n">project</span> <span class="o">=</span> <span class="n">workspace</span><span class="o">.</span><span class="n">add_project</span><span class="p">(</span><span class="n">ProjectModel</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;My Project&quot;</span><span class="p">))</span>
+<span class="n">workspace</span><span class="o">.</span><span class="n">add_run</span><span class="p">(</span><span class="n">project</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">snapshot</span><span class="p">)</span>
+</code></pre>
+</div>
 </div>
 
 
@@ -1188,7 +1368,17 @@ inheritance.</p>
     </div>
     <a class="headerlink" href="#RemoteWorkspace.__init__"></a>
     
-    
+            <div class="docstring"><p>Initialize a remote workspace connection.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code><a href="#RemoteWorkspace.base_url">base_url</a></code>: Base URL of the Evidently API server (e.g., "http://localhost:8000")</li>
+<li><code><a href="#RemoteWorkspace.secret">secret</a></code>: Optional secret key for authentication</li>
+<li><code><a href="#RemoteWorkspace.verify">verify</a></code>: If True, verify the server connection on initialization (default: True)</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="RemoteWorkspace.get_url" class="classattr">
@@ -1201,7 +1391,15 @@ inheritance.</p>
     </div>
     <a class="headerlink" href="#RemoteWorkspace.get_url"></a>
     
-    
+            <div class="docstring"><p>Get the base URL of the remote workspace.</p>
+
+<p>Returns:</p>
+
+<ul>
+<li>Base URL string of the remote API server</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="RemoteWorkspace.verify" class="classattr">
@@ -1214,7 +1412,15 @@ inheritance.</p>
     </div>
     <a class="headerlink" href="#RemoteWorkspace.verify"></a>
     
-    
+            <div class="docstring"><p>Verify that the remote server is running Evidently API.</p>
+
+<p>Raises:</p>
+
+<ul>
+<li>ValueError if the server is not available or not running Evidently API</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="RemoteWorkspace.base_url" class="classattr">
@@ -1293,7 +1499,28 @@ inheritance.</p>
     </div>
     <a class="headerlink" href="#RemoteWorkspace.add_project"></a>
     
-    
+            <div class="docstring"><p>Add a new project to the remote workspace.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>project</code>: <code>ProjectModel</code> with project configuration</li>
+<li><code>org_id</code>: Optional organization ID</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li><code><a href="#Project">Project</a></code> object for the newly created project</li>
+</ul>
+
+<p>Raises:</p>
+
+<ul>
+<li><code>EvidentlyError</code> if project creation fails</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="RemoteWorkspace.get_project" class="classattr">
@@ -1306,7 +1533,21 @@ inheritance.</p>
     </div>
     <a class="headerlink" href="#RemoteWorkspace.get_project"></a>
     
-    
+            <div class="docstring"><p>Get a project by ID from the remote workspace.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>project_id</code>: UUID of the project to retrieve</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li><code><a href="#Project">Project</a></code> object if found, None otherwise</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="RemoteWorkspace.delete_project" class="classattr">
@@ -1319,7 +1560,15 @@ inheritance.</p>
     </div>
     <a class="headerlink" href="#RemoteWorkspace.delete_project"></a>
     
-    
+            <div class="docstring"><p>Delete a project from the remote workspace.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>project_id</code>: UUID of the project to delete</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="RemoteWorkspace.list_projects" class="classattr">
@@ -1332,7 +1581,21 @@ inheritance.</p>
     </div>
     <a class="headerlink" href="#RemoteWorkspace.list_projects"></a>
     
-    
+            <div class="docstring"><p>List all projects in the remote workspace.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>org_id</code>: Optional organization ID</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li>Sequence of <code><a href="#Project">Project</a></code> objects</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="RemoteWorkspace.update_project" class="classattr">
@@ -1345,7 +1608,15 @@ inheritance.</p>
     </div>
     <a class="headerlink" href="#RemoteWorkspace.update_project"></a>
     
-    
+            <div class="docstring"><p>Update an existing project in the remote workspace.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>project</code>: <code>ProjectModel</code> with updated project configuration</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="RemoteWorkspace.delete_run" class="classattr">
@@ -1358,7 +1629,22 @@ inheritance.</p>
     </div>
     <a class="headerlink" href="#RemoteWorkspace.delete_run"></a>
     
-    
+            <div class="docstring"><p>Delete a snapshot (run) from a project.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>project_id</code>: UUID of the project containing the snapshot</li>
+<li><code>snapshot_id</code>: UUID of the snapshot to delete</li>
+</ul>
+
+<p>Raises:</p>
+
+<ul>
+<li>NotImplementedError (snapshot API not yet implemented)</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="RemoteWorkspace.get_run" class="classattr">
@@ -1371,7 +1657,28 @@ inheritance.</p>
     </div>
     <a class="headerlink" href="#RemoteWorkspace.get_run"></a>
     
-    
+            <div class="docstring"><p>Get a snapshot (run) by ID.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>project_id</code>: UUID of the project containing the snapshot</li>
+<li><code>snapshot_id</code>: UUID of the snapshot to retrieve</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li><code>SnapshotModel</code> if found, None otherwise</li>
+</ul>
+
+<p>Raises:</p>
+
+<ul>
+<li>NotImplementedError (snapshot API not yet implemented)</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="RemoteWorkspace.list_runs" class="classattr">
@@ -1384,7 +1691,27 @@ inheritance.</p>
     </div>
     <a class="headerlink" href="#RemoteWorkspace.list_runs"></a>
     
-    
+            <div class="docstring"><p>List all snapshots (runs) for a project.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>project_id</code>: UUID of the project</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li>Sequence of snapshot IDs</li>
+</ul>
+
+<p>Raises:</p>
+
+<ul>
+<li>NotImplementedError (snapshot API not yet implemented)</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="RemoteWorkspace.search_project" class="classattr">
@@ -1397,7 +1724,22 @@ inheritance.</p>
     </div>
     <a class="headerlink" href="#RemoteWorkspace.search_project"></a>
     
-    
+            <div class="docstring"><p>Search for projects by name.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>project_name</code>: Name to search for</li>
+<li><code>org_id</code>: Optional organization ID</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li>Sequence of <code><a href="#Project">Project</a></code> objects matching the name</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="RemoteWorkspace.add_dataset" class="classattr">
@@ -1410,7 +1752,25 @@ inheritance.</p>
     </div>
     <a class="headerlink" href="#RemoteWorkspace.add_dataset"></a>
     
-    
+            <div class="docstring"><p>Add a dataset to a project.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>project_id</code>: UUID of the project to add the dataset to</li>
+<li><code>dataset</code>: <code>Dataset</code> object to store</li>
+<li><code>name</code>: Name for the dataset</li>
+<li><code>description</code>: Optional description of the dataset</li>
+<li><code>link</code>: Optional link to associate the dataset with a snapshot</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li>UUID of the created dataset</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="RemoteWorkspace.load_dataset" class="classattr">
@@ -1423,7 +1783,21 @@ inheritance.</p>
     </div>
     <a class="headerlink" href="#RemoteWorkspace.load_dataset"></a>
     
-    
+            <div class="docstring"><p>Load a dataset by ID.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>dataset_id</code>: UUID of the dataset to load</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li><code>Dataset</code> object loaded from storage</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="RemoteWorkspace.list_datasets" class="classattr">
@@ -1436,7 +1810,22 @@ inheritance.</p>
     </div>
     <a class="headerlink" href="#RemoteWorkspace.list_datasets"></a>
     
-    
+            <div class="docstring"><p>List all datasets in a project.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>project</code>: UUID of the project</li>
+<li><code>origins</code>: Optional list of origin types to filter by</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li><code>DatasetList</code> containing dataset information</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="RemoteWorkspace.save_dashboard" class="classattr">
@@ -1449,7 +1838,16 @@ inheritance.</p>
     </div>
     <a class="headerlink" href="#RemoteWorkspace.save_dashboard"></a>
     
-    
+            <div class="docstring"><p>Save a dashboard configuration for a project.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>project_id</code>: UUID of the project</li>
+<li><code>dashboard</code>: <code>DashboardModel</code> with dashboard configuration</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="RemoteWorkspace.get_dashboard" class="classattr">
@@ -1462,7 +1860,21 @@ inheritance.</p>
     </div>
     <a class="headerlink" href="#RemoteWorkspace.get_dashboard"></a>
     
-    
+            <div class="docstring"><p>Get the dashboard configuration for a project.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>project_id</code>: UUID of the project</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li><code>DashboardModel</code> with dashboard configuration</li>
+</ul>
+</div>
+
 
                             </div>
                             <div class="inherited">
@@ -1486,8 +1898,19 @@ inheritance.</p>
     </div>
     <a class="headerlink" href="#CloudWorkspace"></a>
     
-            <div class="docstring"><p>Helper class that provides a standard way to create an ABC using
-inheritance.</p>
+            <div class="docstring"><p>Cloud workspace for connecting to Evidently Cloud service.</p>
+
+<p><code><a href="#CloudWorkspace">CloudWorkspace</a></code> provides a client interface to connect to Evidently Cloud,
+the hosted Evidently service. Requires an API key for authentication.</p>
+
+<p>Example:</p>
+
+<div class="pdoc-code codehilite">
+<pre><span></span><code><span class="n">workspace</span> <span class="o">=</span> <span class="n">CloudWorkspace</span><span class="p">(</span><span class="n">token</span><span class="o">=</span><span class="s2">&quot;sk_...&quot;</span><span class="p">)</span>
+<span class="n">project</span> <span class="o">=</span> <span class="n">workspace</span><span class="o">.</span><span class="n">add_project</span><span class="p">(</span><span class="n">ProjectModel</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;My Project&quot;</span><span class="p">))</span>
+<span class="n">workspace</span><span class="o">.</span><span class="n">add_run</span><span class="p">(</span><span class="n">project</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">snapshot</span><span class="p">)</span>
+</code></pre>
+</div>
 </div>
 
 
@@ -1500,7 +1923,23 @@ inheritance.</p>
     </div>
     <a class="headerlink" href="#CloudWorkspace.__init__"></a>
     
-    
+            <div class="docstring"><p>Initialize a cloud workspace connection.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code><a href="#CloudWorkspace.token">token</a></code>: API key token for authentication. If not provided, will try to read
+from <code>EVIDENTLY_API_KEY</code> environment variable</li>
+<li><code>url</code>: Optional custom cloud URL (defaults to "https://app.evidently.cloud")</li>
+</ul>
+
+<p>Raises:</p>
+
+<ul>
+<li>ValueError if token is not provided and not found in environment</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="CloudWorkspace.URL" class="classattr">
@@ -1596,7 +2035,7 @@ inheritance.</p>
                                 <div class="attr function">
             
         <span class="def">def</span>
-        <span class="name">create_org</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span>, </span><span class="param"><span class="n">name</span><span class="p">:</span> <span class="nb">str</span></span><span class="return-annotation">) -> <span class="n"><a href="service/base.html#Org">evidently.ui.service.base.Org</a></span>:</span></span>
+        <span class="name">create_org</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span>, </span><span class="param"><span class="n">name</span><span class="p">:</span> <span class="nb">str</span></span><span class="return-annotation">) -> <span class="n">evidently</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">Org</span>:</span></span>
 
         
     </div>
@@ -1609,7 +2048,7 @@ inheritance.</p>
                                 <div class="attr function">
             
         <span class="def">def</span>
-        <span class="name">list_orgs</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span></span><span class="return-annotation">) -> <span class="n">List</span><span class="p">[</span><span class="n"><a href="service/base.html#Org">evidently.ui.service.base.Org</a></span><span class="p">]</span>:</span></span>
+        <span class="name">list_orgs</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span></span><span class="return-annotation">) -> <span class="n">List</span><span class="p">[</span><span class="n">evidently</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">Org</span><span class="p">]</span>:</span></span>
 
         
     </div>

@@ -485,18 +485,8 @@ If you pass two datasets, you get a side-by-side comparison.</p>
     
             <div class="docstring"><p>Initialize a Report with metrics and optional metadata.</p>
 
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#Report.metrics">metrics</a></code>: List of metrics or metric containers to include in the report</li>
-<li><code><a href="#Report.metadata">metadata</a></code>: Optional dictionary of metadata key-value pairs</li>
-<li><code><a href="#Report.tags">tags</a></code>: Optional list of tags for categorizing reports</li>
-<li><code>model_id</code>: Optional model identifier (sets metadata["model_id"])</li>
-<li><code>reference_id</code>: Optional reference dataset identifier (sets metadata["reference_id"])</li>
-<li><code>batch_size</code>: Optional batch size identifier (sets metadata["batch_size"])</li>
-<li><code>dataset_id</code>: Optional dataset identifier (sets metadata["dataset_id"])</li>
-<li><code><a href="#Report.include_tests">include_tests</a></code>: Whether to include automatic tests for metrics</li>
-</ul>
+<p>The constructor maps parameters to class attributes. Additional convenience parameters
+(<code>model_id</code>, <code>reference_id</code>, <code>batch_size</code>, <code>dataset_id</code>) are stored in the <code><a href="#Report.metadata">metadata</a></code> dictionary.</p>
 </div>
 
 
@@ -509,7 +499,9 @@ If you pass two datasets, you get a side-by-side comparison.</p>
     </div>
     <a class="headerlink" href="#Report.metrics"></a>
     
-    
+            <div class="docstring"><p>List of metrics or metric containers to include in the report.</p>
+</div>
+
 
                             </div>
                             <div id="Report.metadata" class="classattr">
@@ -520,7 +512,9 @@ If you pass two datasets, you get a side-by-side comparison.</p>
     </div>
     <a class="headerlink" href="#Report.metadata"></a>
     
-    
+            <div class="docstring"><p>Dictionary of metadata key-value pairs.</p>
+</div>
+
 
                             </div>
                             <div id="Report.tags" class="classattr">
@@ -531,7 +525,9 @@ If you pass two datasets, you get a side-by-side comparison.</p>
     </div>
     <a class="headerlink" href="#Report.tags"></a>
     
-    
+            <div class="docstring"><p>List of tags for categorizing reports.</p>
+</div>
+
 
                             </div>
                             <div id="Report.include_tests" class="classattr">
@@ -542,7 +538,9 @@ If you pass two datasets, you get a side-by-side comparison.</p>
     </div>
     <a class="headerlink" href="#Report.include_tests"></a>
     
-    
+            <div class="docstring"><p>Whether to include automatic tests for metrics.</p>
+</div>
+
 
                             </div>
                             <div id="Report.run" class="classattr">
@@ -1135,25 +1133,6 @@ with additional metadata including:</p>
 <p>This allows Evidently to process the data correctly. Some evaluations need specific
 columns and will fail if they're missing.</p>
 
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#DataDefinition.id_column">id_column</a></code>: Column name with unique identifiers</li>
-<li><code><a href="#DataDefinition.timestamp">timestamp</a></code>: Column name with timestamp values</li>
-<li><code><a href="#DataDefinition.numerical_columns">numerical_columns</a></code>: List of numerical column names</li>
-<li><code><a href="#DataDefinition.categorical_columns">categorical_columns</a></code>: List of categorical column names</li>
-<li><code><a href="#DataDefinition.text_columns">text_columns</a></code>: List of text column names</li>
-<li><code><a href="#DataDefinition.datetime_columns">datetime_columns</a></code>: List of datetime column names</li>
-<li><code><a href="#DataDefinition.classification">classification</a></code>: List of classification task configurations (<code><a href="#BinaryClassification">BinaryClassification</a></code> or <code><a href="#MulticlassClassification">MulticlassClassification</a></code>)</li>
-<li><code><a href="#DataDefinition.regression">regression</a></code>: List of regression task configurations (<code><a href="#Regression">Regression</a></code>)</li>
-<li><code><a href="#DataDefinition.llm">llm</a></code>: LLM task configuration (<code><a href="#LLMClassification">LLMClassification</a></code>)</li>
-<li><code><a href="#DataDefinition.ranking">ranking</a></code>: List of ranking/recsys task configurations (<code><a href="#Recsys">Recsys</a></code>)</li>
-<li><code><a href="#DataDefinition.numerical_descriptors">numerical_descriptors</a></code>: List of numerical descriptor column names</li>
-<li><code><a href="#DataDefinition.categorical_descriptors">categorical_descriptors</a></code>: List of categorical descriptor column names</li>
-<li><code><a href="#DataDefinition.service_columns">service_columns</a></code>: Service columns like trace links</li>
-<li><code><a href="#DataDefinition.special_columns">special_columns</a></code>: Additional special column configurations</li>
-</ul>
-
 <p>Auto-mapping (empty DataDefinition):</p>
 
 <div class="pdoc-code codehilite">
@@ -1183,9 +1162,10 @@ columns and will fail if they're missing.</p>
     </div>
     <a class="headerlink" href="#DataDefinition.__init__"></a>
     
-            <div class="docstring"><p>Create a new model by parsing and validating input data from keyword arguments.</p>
+            <div class="docstring"><p>Initialize DataDefinition with column mappings.</p>
 
-<p>Raises ValidationError if the input data cannot be parsed to form a valid model.</p>
+<p>The constructor maps all parameters directly to the corresponding model fields.
+If <code><a href="#DataDefinition.numerical_descriptors">numerical_descriptors</a></code> or <code><a href="#DataDefinition.categorical_descriptors">categorical_descriptors</a></code> are not provided, they default to empty lists.</p>
 </div>
 
 
@@ -1198,7 +1178,9 @@ columns and will fail if they're missing.</p>
     </div>
     <a class="headerlink" href="#DataDefinition.id_column"></a>
     
-    
+            <div class="docstring"><p>Column name with unique identifiers.</p>
+</div>
+
 
                             </div>
                             <div id="DataDefinition.timestamp" class="classattr">
@@ -1209,7 +1191,9 @@ columns and will fail if they're missing.</p>
     </div>
     <a class="headerlink" href="#DataDefinition.timestamp"></a>
     
-    
+            <div class="docstring"><p>Column name with timestamp values.</p>
+</div>
+
 
                             </div>
                             <div id="DataDefinition.service_columns" class="classattr">
@@ -1220,7 +1204,9 @@ columns and will fail if they're missing.</p>
     </div>
     <a class="headerlink" href="#DataDefinition.service_columns"></a>
     
-    
+            <div class="docstring"><p>Service columns like trace links.</p>
+</div>
+
 
                             </div>
                             <div id="DataDefinition.numerical_columns" class="classattr">
@@ -1231,7 +1217,9 @@ columns and will fail if they're missing.</p>
     </div>
     <a class="headerlink" href="#DataDefinition.numerical_columns"></a>
     
-    
+            <div class="docstring"><p>List of numerical column names.</p>
+</div>
+
 
                             </div>
                             <div id="DataDefinition.categorical_columns" class="classattr">
@@ -1242,7 +1230,9 @@ columns and will fail if they're missing.</p>
     </div>
     <a class="headerlink" href="#DataDefinition.categorical_columns"></a>
     
-    
+            <div class="docstring"><p>List of categorical column names.</p>
+</div>
+
 
                             </div>
                             <div id="DataDefinition.text_columns" class="classattr">
@@ -1253,7 +1243,9 @@ columns and will fail if they're missing.</p>
     </div>
     <a class="headerlink" href="#DataDefinition.text_columns"></a>
     
-    
+            <div class="docstring"><p>List of text column names.</p>
+</div>
+
 
                             </div>
                             <div id="DataDefinition.datetime_columns" class="classattr">
@@ -1264,7 +1256,9 @@ columns and will fail if they're missing.</p>
     </div>
     <a class="headerlink" href="#DataDefinition.datetime_columns"></a>
     
-    
+            <div class="docstring"><p>List of datetime column names.</p>
+</div>
+
 
                             </div>
                             <div id="DataDefinition.unknown_columns" class="classattr">
@@ -1275,7 +1269,9 @@ columns and will fail if they're missing.</p>
     </div>
     <a class="headerlink" href="#DataDefinition.unknown_columns"></a>
     
-    
+            <div class="docstring"><p>List of unknown/unclassified column names.</p>
+</div>
+
 
                             </div>
                             <div id="DataDefinition.list_columns" class="classattr">
@@ -1286,7 +1282,9 @@ columns and will fail if they're missing.</p>
     </div>
     <a class="headerlink" href="#DataDefinition.list_columns"></a>
     
-    
+            <div class="docstring"><p>List of list/array column names.</p>
+</div>
+
 
                             </div>
                             <div id="DataDefinition.classification" class="classattr">
@@ -1297,7 +1295,9 @@ columns and will fail if they're missing.</p>
     </div>
     <a class="headerlink" href="#DataDefinition.classification"></a>
     
-    
+            <div class="docstring"><p>List of classification task configurations (<code><a href="#BinaryClassification">BinaryClassification</a></code> or <code><a href="#MulticlassClassification">MulticlassClassification</a></code>).</p>
+</div>
+
 
                             </div>
                             <div id="DataDefinition.regression" class="classattr">
@@ -1308,7 +1308,9 @@ columns and will fail if they're missing.</p>
     </div>
     <a class="headerlink" href="#DataDefinition.regression"></a>
     
-    
+            <div class="docstring"><p>List of regression task configurations (<code><a href="#Regression">Regression</a></code>).</p>
+</div>
+
 
                             </div>
                             <div id="DataDefinition.llm" class="classattr">
@@ -1319,7 +1321,9 @@ columns and will fail if they're missing.</p>
     </div>
     <a class="headerlink" href="#DataDefinition.llm"></a>
     
-    
+            <div class="docstring"><p>LLM task configuration (<code><a href="#LLMClassification">LLMClassification</a></code>).</p>
+</div>
+
 
                             </div>
                             <div id="DataDefinition.numerical_descriptors" class="classattr">
@@ -1330,7 +1334,9 @@ columns and will fail if they're missing.</p>
     </div>
     <a class="headerlink" href="#DataDefinition.numerical_descriptors"></a>
     
-    
+            <div class="docstring"><p>List of numerical descriptor column names.</p>
+</div>
+
 
                             </div>
                             <div id="DataDefinition.categorical_descriptors" class="classattr">
@@ -1341,7 +1347,9 @@ columns and will fail if they're missing.</p>
     </div>
     <a class="headerlink" href="#DataDefinition.categorical_descriptors"></a>
     
-    
+            <div class="docstring"><p>List of categorical descriptor column names.</p>
+</div>
+
 
                             </div>
                             <div id="DataDefinition.test_descriptors" class="classattr">
@@ -1352,7 +1360,9 @@ columns and will fail if they're missing.</p>
     </div>
     <a class="headerlink" href="#DataDefinition.test_descriptors"></a>
     
-    
+            <div class="docstring"><p>List of test descriptor column names.</p>
+</div>
+
 
                             </div>
                             <div id="DataDefinition.ranking" class="classattr">
@@ -1363,7 +1373,9 @@ columns and will fail if they're missing.</p>
     </div>
     <a class="headerlink" href="#DataDefinition.ranking"></a>
     
-    
+            <div class="docstring"><p>List of ranking/recsys task configurations (<code><a href="#Recsys">Recsys</a></code>).</p>
+</div>
+
 
                             </div>
                             <div id="DataDefinition.special_columns" class="classattr">
@@ -1374,7 +1386,9 @@ columns and will fail if they're missing.</p>
     </div>
     <a class="headerlink" href="#DataDefinition.special_columns"></a>
     
-    
+            <div class="docstring"><p>Additional special column configurations.</p>
+</div>
+
 
                             </div>
                             <div id="DataDefinition.get_numerical_columns" class="classattr">
@@ -1655,17 +1669,6 @@ columns and will fail if they're missing.</p>
 <p>Maps columns containing target labels and predictions for binary classification.
 Used in <code><a href="#DataDefinition">DataDefinition</a></code> to specify which columns contain classification data.</p>
 
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#BinaryClassification.name">name</a></code>: Identifier for this classification task (default: "default")</li>
-<li><code><a href="#BinaryClassification.target">target</a></code>: Column name with true binary labels</li>
-<li><code><a href="#BinaryClassification.prediction_labels">prediction_labels</a></code>: Column name with predicted binary labels (optional)</li>
-<li><code><a href="#BinaryClassification.prediction_probas">prediction_probas</a></code>: Column name with predicted probabilities (optional)</li>
-<li><code><a href="#BinaryClassification.pos_label">pos_label</a></code>: Value representing the positive class (default: 1)</li>
-<li><code><a href="#BinaryClassification.labels">labels</a></code>: Optional mapping of label values to display names</li>
-</ul>
-
 <p>Example:</p>
 
 <div class="pdoc-code codehilite">
@@ -1689,7 +1692,12 @@ Used in <code><a href="#DataDefinition">DataDefinition</a></code> to specify whi
     </div>
     <a class="headerlink" href="#BinaryClassification.__init__"></a>
     
-    
+            <div class="docstring"><p>Initialize binary classification configuration.</p>
+
+<p>If no arguments are provided, defaults to <code>target="target"</code> and <code>prediction_probas="prediction"</code>.
+Otherwise, requires <code><a href="#BinaryClassification.target">target</a></code> and at least one of <code><a href="#BinaryClassification.prediction_labels">prediction_labels</a></code> or <code><a href="#BinaryClassification.prediction_probas">prediction_probas</a></code>.</p>
+</div>
+
 
                             </div>
                             <div id="BinaryClassification.name" class="classattr">
@@ -1700,7 +1708,9 @@ Used in <code><a href="#DataDefinition">DataDefinition</a></code> to specify whi
     </div>
     <a class="headerlink" href="#BinaryClassification.name"></a>
     
-    
+            <div class="docstring"><p>Identifier for this classification task.</p>
+</div>
+
 
                             </div>
                             <div id="BinaryClassification.target" class="classattr">
@@ -1711,7 +1721,9 @@ Used in <code><a href="#DataDefinition">DataDefinition</a></code> to specify whi
     </div>
     <a class="headerlink" href="#BinaryClassification.target"></a>
     
-    
+            <div class="docstring"><p>Column name with true binary labels.</p>
+</div>
+
 
                             </div>
                             <div id="BinaryClassification.prediction_labels" class="classattr">
@@ -1722,7 +1734,9 @@ Used in <code><a href="#DataDefinition">DataDefinition</a></code> to specify whi
     </div>
     <a class="headerlink" href="#BinaryClassification.prediction_labels"></a>
     
-    
+            <div class="docstring"><p>Column name with predicted binary labels.</p>
+</div>
+
 
                             </div>
                             <div id="BinaryClassification.prediction_probas" class="classattr">
@@ -1733,7 +1747,9 @@ Used in <code><a href="#DataDefinition">DataDefinition</a></code> to specify whi
     </div>
     <a class="headerlink" href="#BinaryClassification.prediction_probas"></a>
     
-    
+            <div class="docstring"><p>Column name with predicted probabilities.</p>
+</div>
+
 
                             </div>
                             <div id="BinaryClassification.pos_label" class="classattr">
@@ -1744,7 +1760,9 @@ Used in <code><a href="#DataDefinition">DataDefinition</a></code> to specify whi
     </div>
     <a class="headerlink" href="#BinaryClassification.pos_label"></a>
     
-    
+            <div class="docstring"><p>Value representing the positive class.</p>
+</div>
+
 
                             </div>
                             <div id="BinaryClassification.labels" class="classattr">
@@ -1755,7 +1773,9 @@ Used in <code><a href="#DataDefinition">DataDefinition</a></code> to specify whi
     </div>
     <a class="headerlink" href="#BinaryClassification.labels"></a>
     
-    
+            <div class="docstring"><p>Optional mapping of label values to display names.</p>
+</div>
+
 
                             </div>
                 </section>
@@ -1774,16 +1794,6 @@ Used in <code><a href="#DataDefinition">DataDefinition</a></code> to specify whi
 
 <p>Maps columns containing target labels and predictions for multiclass classification.
 Used in <code><a href="#DataDefinition">DataDefinition</a></code> to specify which columns contain classification data.</p>
-
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#MulticlassClassification.name">name</a></code>: Identifier for this classification task (default: "default")</li>
-<li><code><a href="#MulticlassClassification.target">target</a></code>: Column name with true class labels</li>
-<li><code><a href="#MulticlassClassification.prediction_labels">prediction_labels</a></code>: Column name with predicted class labels (default: "prediction")</li>
-<li><code><a href="#MulticlassClassification.prediction_probas">prediction_probas</a></code>: List of column names with predicted probabilities per class (optional)</li>
-<li><code><a href="#MulticlassClassification.labels">labels</a></code>: Optional mapping of label values to display names</li>
-</ul>
 
 <p>Example:</p>
 
@@ -1809,7 +1819,12 @@ Used in <code><a href="#DataDefinition">DataDefinition</a></code> to specify whi
     </div>
     <a class="headerlink" href="#MulticlassClassification.__init__"></a>
     
-    
+            <div class="docstring"><p>Initialize multiclass classification configuration.</p>
+
+<p>If no arguments are provided, defaults to <code>target="target"</code> and <code>prediction_labels="prediction"</code>.
+Otherwise, requires <code><a href="#MulticlassClassification.target">target</a></code> and at least one of <code><a href="#MulticlassClassification.prediction_labels">prediction_labels</a></code> or <code><a href="#MulticlassClassification.prediction_probas">prediction_probas</a></code>.</p>
+</div>
+
 
                             </div>
                             <div id="MulticlassClassification.name" class="classattr">
@@ -1821,7 +1836,9 @@ Used in <code><a href="#DataDefinition">DataDefinition</a></code> to specify whi
     </div>
     <a class="headerlink" href="#MulticlassClassification.name"></a>
     
-    
+            <div class="docstring"><p>Identifier for this classification task.</p>
+</div>
+
 
                             </div>
                             <div id="MulticlassClassification.target" class="classattr">
@@ -1833,7 +1850,9 @@ Used in <code><a href="#DataDefinition">DataDefinition</a></code> to specify whi
     </div>
     <a class="headerlink" href="#MulticlassClassification.target"></a>
     
-    
+            <div class="docstring"><p>Column name with true class labels.</p>
+</div>
+
 
                             </div>
                             <div id="MulticlassClassification.prediction_labels" class="classattr">
@@ -1845,7 +1864,9 @@ Used in <code><a href="#DataDefinition">DataDefinition</a></code> to specify whi
     </div>
     <a class="headerlink" href="#MulticlassClassification.prediction_labels"></a>
     
-    
+            <div class="docstring"><p>Column name with predicted class labels.</p>
+</div>
+
 
                             </div>
                             <div id="MulticlassClassification.prediction_probas" class="classattr">
@@ -1857,7 +1878,9 @@ Used in <code><a href="#DataDefinition">DataDefinition</a></code> to specify whi
     </div>
     <a class="headerlink" href="#MulticlassClassification.prediction_probas"></a>
     
-    
+            <div class="docstring"><p>List of column names with predicted probabilities per class.</p>
+</div>
+
 
                             </div>
                             <div id="MulticlassClassification.labels" class="classattr">
@@ -1869,7 +1892,9 @@ Used in <code><a href="#DataDefinition">DataDefinition</a></code> to specify whi
     </div>
     <a class="headerlink" href="#MulticlassClassification.labels"></a>
     
-    
+            <div class="docstring"><p>Optional mapping of label values to display names.</p>
+</div>
+
 
                             </div>
                 </section>
@@ -1888,14 +1913,6 @@ Used in <code><a href="#DataDefinition">DataDefinition</a></code> to specify whi
 
 <p>Maps columns containing target values and predictions for regression.
 Used in <code><a href="#DataDefinition">DataDefinition</a></code> to specify which columns contain regression data.</p>
-
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#Regression.name">name</a></code>: Identifier for this regression task (default: "default")</li>
-<li><code><a href="#Regression.target">target</a></code>: Column name with actual/true values (default: "target")</li>
-<li><code><a href="#Regression.prediction">prediction</a></code>: Column name with predicted values (default: "prediction")</li>
-</ul>
 
 <p>Example:</p>
 
@@ -1929,7 +1946,9 @@ Used in <code><a href="#DataDefinition">DataDefinition</a></code> to specify whi
     </div>
     <a class="headerlink" href="#Regression.name"></a>
     
-    
+            <div class="docstring"><p>Identifier for this regression task.</p>
+</div>
+
 
                             </div>
                             <div id="Regression.target" class="classattr">
@@ -1941,7 +1960,9 @@ Used in <code><a href="#DataDefinition">DataDefinition</a></code> to specify whi
     </div>
     <a class="headerlink" href="#Regression.target"></a>
     
-    
+            <div class="docstring"><p>Column name with actual/true values.</p>
+</div>
+
 
                             </div>
                             <div id="Regression.prediction" class="classattr">
@@ -1953,7 +1974,9 @@ Used in <code><a href="#DataDefinition">DataDefinition</a></code> to specify whi
     </div>
     <a class="headerlink" href="#Regression.prediction"></a>
     
-    
+            <div class="docstring"><p>Column name with predicted values.</p>
+</div>
+
 
                             </div>
                 </section>
@@ -1972,17 +1995,6 @@ Used in <code><a href="#DataDefinition">DataDefinition</a></code> to specify whi
 
 <p>Maps columns for evaluating recommendation systems, including user-item interactions
 and relevance scores. Used in <code><a href="#DataDefinition">DataDefinition</a></code> to specify ranking/recsys data structure.</p>
-
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#Recsys.name">name</a></code>: Identifier for this ranking task (default: "default")</li>
-<li><code><a href="#Recsys.user_id">user_id</a></code>: Column name with user identifiers (default: "user_id")</li>
-<li><code><a href="#Recsys.item_id">item_id</a></code>: Column name with item identifiers (default: "item_id")</li>
-<li><code><a href="#Recsys.target">target</a></code>: Column name with relevance labels/scores (default: "target")</li>
-<li><code><a href="#Recsys.prediction">prediction</a></code>: Column name with predicted scores or ranks (default: "prediction")</li>
-<li><code><a href="#Recsys.recommendations_type">recommendations_type</a></code>: Type of prediction - "score" or "rank" (default: "score")</li>
-</ul>
 
 <p>Example:</p>
 
@@ -2016,7 +2028,9 @@ and relevance scores. Used in <code><a href="#DataDefinition">DataDefinition</a>
     </div>
     <a class="headerlink" href="#Recsys.name"></a>
     
-    
+            <div class="docstring"><p>Identifier for this ranking task.</p>
+</div>
+
 
                             </div>
                             <div id="Recsys.user_id" class="classattr">
@@ -2028,7 +2042,9 @@ and relevance scores. Used in <code><a href="#DataDefinition">DataDefinition</a>
     </div>
     <a class="headerlink" href="#Recsys.user_id"></a>
     
-    
+            <div class="docstring"><p>Column name with user identifiers.</p>
+</div>
+
 
                             </div>
                             <div id="Recsys.item_id" class="classattr">
@@ -2040,7 +2056,9 @@ and relevance scores. Used in <code><a href="#DataDefinition">DataDefinition</a>
     </div>
     <a class="headerlink" href="#Recsys.item_id"></a>
     
-    
+            <div class="docstring"><p>Column name with item identifiers.</p>
+</div>
+
 
                             </div>
                             <div id="Recsys.target" class="classattr">
@@ -2052,7 +2070,9 @@ and relevance scores. Used in <code><a href="#DataDefinition">DataDefinition</a>
     </div>
     <a class="headerlink" href="#Recsys.target"></a>
     
-    
+            <div class="docstring"><p>Column name with relevance labels/scores.</p>
+</div>
+
 
                             </div>
                             <div id="Recsys.prediction" class="classattr">
@@ -2064,7 +2084,9 @@ and relevance scores. Used in <code><a href="#DataDefinition">DataDefinition</a>
     </div>
     <a class="headerlink" href="#Recsys.prediction"></a>
     
-    
+            <div class="docstring"><p>Column name with predicted scores or ranks.</p>
+</div>
+
 
                             </div>
                             <div id="Recsys.recommendations_type" class="classattr">
@@ -2076,7 +2098,9 @@ and relevance scores. Used in <code><a href="#DataDefinition">DataDefinition</a>
     </div>
     <a class="headerlink" href="#Recsys.recommendations_type"></a>
     
-    
+            <div class="docstring"><p>Type of prediction - "score" or "rank".</p>
+</div>
+
 
                             </div>
                 </section>
@@ -2095,17 +2119,6 @@ and relevance scores. Used in <code><a href="#DataDefinition">DataDefinition</a>
 
 <p>Maps columns containing LLM inputs, outputs, and optional reasoning for LLM evaluation.
 Used in <code><a href="#DataDefinition">DataDefinition</a></code> to specify which columns contain LLM interaction data.</p>
-
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#LLMClassification.input">input</a></code>: Column name with LLM input/prompt text</li>
-<li><code><a href="#LLMClassification.target">target</a></code>: Column name with expected/ground truth output</li>
-<li><code><a href="#LLMClassification.predictions">predictions</a></code>: Column name with LLM-generated output (optional)</li>
-<li><code><a href="#LLMClassification.reasoning">reasoning</a></code>: Column name with reasoning text (optional)</li>
-<li><code><a href="#LLMClassification.prediction_reasoning">prediction_reasoning</a></code>: Column name with reasoning for predictions (optional)</li>
-<li><code><a href="#LLMClassification.name">name</a></code>: Identifier for this LLM task (default: "llm_default")</li>
-</ul>
 
 <p>Example:</p>
 
@@ -2142,7 +2155,9 @@ Used in <code><a href="#DataDefinition">DataDefinition</a></code> to specify whi
     </div>
     <a class="headerlink" href="#LLMClassification.input"></a>
     
-    
+            <div class="docstring"><p>Column name with LLM input/prompt text.</p>
+</div>
+
 
                             </div>
                             <div id="LLMClassification.target" class="classattr">
@@ -2153,7 +2168,9 @@ Used in <code><a href="#DataDefinition">DataDefinition</a></code> to specify whi
     </div>
     <a class="headerlink" href="#LLMClassification.target"></a>
     
-    
+            <div class="docstring"><p>Column name with expected/ground truth output.</p>
+</div>
+
 
                             </div>
                             <div id="LLMClassification.predictions" class="classattr">
@@ -2165,7 +2182,9 @@ Used in <code><a href="#DataDefinition">DataDefinition</a></code> to specify whi
     </div>
     <a class="headerlink" href="#LLMClassification.predictions"></a>
     
-    
+            <div class="docstring"><p>Column name with LLM-generated output.</p>
+</div>
+
 
                             </div>
                             <div id="LLMClassification.reasoning" class="classattr">
@@ -2177,7 +2196,9 @@ Used in <code><a href="#DataDefinition">DataDefinition</a></code> to specify whi
     </div>
     <a class="headerlink" href="#LLMClassification.reasoning"></a>
     
-    
+            <div class="docstring"><p>Column name with reasoning text.</p>
+</div>
+
 
                             </div>
                             <div id="LLMClassification.prediction_reasoning" class="classattr">
@@ -2189,7 +2210,9 @@ Used in <code><a href="#DataDefinition">DataDefinition</a></code> to specify whi
     </div>
     <a class="headerlink" href="#LLMClassification.prediction_reasoning"></a>
     
-    
+            <div class="docstring"><p>Column name with reasoning for predictions.</p>
+</div>
+
 
                             </div>
                             <div id="LLMClassification.name" class="classattr">
@@ -2201,7 +2224,9 @@ Used in <code><a href="#DataDefinition">DataDefinition</a></code> to specify whi
     </div>
     <a class="headerlink" href="#LLMClassification.name"></a>
     
-    
+            <div class="docstring"><p>Identifier for this LLM task.</p>
+</div>
+
 
                             </div>
                 </section>
@@ -2273,19 +2298,6 @@ only include metrics present in all runs.</li>
 
 <p>Represents the type of data in a column. Used for automatic type inference
 and to determine which metrics and tests are applicable.</p>
-
-<p><strong>Values:</strong></p>
-
-<ul>
-<li><code><a href="#ColumnType.Numerical">Numerical</a></code>: Numeric columns (integers, floats)</li>
-<li><code><a href="#ColumnType.Categorical">Categorical</a></code>: Categorical columns with limited distinct values</li>
-<li><code><a href="#ColumnType.Text">Text</a></code>: Text/string columns</li>
-<li><code><a href="#ColumnType.Datetime">Datetime</a></code>: DateTime columns</li>
-<li><code><a href="#ColumnType.Date">Date</a></code>: Date columns</li>
-<li><code><a href="#ColumnType.Id">Id</a></code>: Identifier columns</li>
-<li><code><a href="#ColumnType.Unknown">Unknown</a></code>: Columns with unknown or unclassified type</li>
-<li><code><a href="#ColumnType.List">List</a></code>: Columns containing lists or arrays</li>
-</ul>
 </div>
 
 
@@ -2298,7 +2310,9 @@ and to determine which metrics and tests are applicable.</p>
     </div>
     <a class="headerlink" href="#ColumnType.Numerical"></a>
     
-    
+            <div class="docstring"><p>Numeric columns (integers, floats).</p>
+</div>
+
 
                             </div>
                             <div id="ColumnType.Categorical" class="classattr">
@@ -2310,7 +2324,9 @@ and to determine which metrics and tests are applicable.</p>
     </div>
     <a class="headerlink" href="#ColumnType.Categorical"></a>
     
-    
+            <div class="docstring"><p>Categorical columns with limited distinct values.</p>
+</div>
+
 
                             </div>
                             <div id="ColumnType.Text" class="classattr">
@@ -2322,7 +2338,9 @@ and to determine which metrics and tests are applicable.</p>
     </div>
     <a class="headerlink" href="#ColumnType.Text"></a>
     
-    
+            <div class="docstring"><p>Text/string columns.</p>
+</div>
+
 
                             </div>
                             <div id="ColumnType.Datetime" class="classattr">
@@ -2334,7 +2352,9 @@ and to determine which metrics and tests are applicable.</p>
     </div>
     <a class="headerlink" href="#ColumnType.Datetime"></a>
     
-    
+            <div class="docstring"><p>DateTime columns.</p>
+</div>
+
 
                             </div>
                             <div id="ColumnType.Date" class="classattr">
@@ -2346,7 +2366,9 @@ and to determine which metrics and tests are applicable.</p>
     </div>
     <a class="headerlink" href="#ColumnType.Date"></a>
     
-    
+            <div class="docstring"><p>Date columns.</p>
+</div>
+
 
                             </div>
                             <div id="ColumnType.Id" class="classattr">
@@ -2358,7 +2380,9 @@ and to determine which metrics and tests are applicable.</p>
     </div>
     <a class="headerlink" href="#ColumnType.Id"></a>
     
-    
+            <div class="docstring"><p>Identifier columns.</p>
+</div>
+
 
                             </div>
                             <div id="ColumnType.Unknown" class="classattr">
@@ -2370,7 +2394,9 @@ and to determine which metrics and tests are applicable.</p>
     </div>
     <a class="headerlink" href="#ColumnType.Unknown"></a>
     
-    
+            <div class="docstring"><p>Columns with unknown or unclassified type.</p>
+</div>
+
 
                             </div>
                             <div id="ColumnType.List" class="classattr">
@@ -2382,7 +2408,9 @@ and to determine which metrics and tests are applicable.</p>
     </div>
     <a class="headerlink" href="#ColumnType.List"></a>
     
-    
+            <div class="docstring"><p>Columns containing lists or arrays.</p>
+</div>
+
 
                             </div>
                 </section>
