@@ -10,7 +10,9 @@ runs:
         path: ~/scikit_learn_data
         key: cache-scipy-data
         enableCrossOsArchive: true
-
+    - name: Show cache folder
+      run: ls ~/scikit_learn_data
+      shell: bash
     - name: Install the latest version of uv and set the python version
       if: ${{ steps.cache-scipy-data.outputs.cache-hit != 'true' }}
       uses: astral-sh/setup-uv@v7
