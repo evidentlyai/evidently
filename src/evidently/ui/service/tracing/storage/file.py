@@ -22,6 +22,7 @@ from evidently.ui.service.tracing.storage.base import ExportID
 from evidently.ui.service.tracing.storage.base import SpanModel
 from evidently.ui.service.tracing.storage.base import TraceModel
 from evidently.ui.service.tracing.storage.base import TracingStorage
+from evidently.ui.service.tracing.storage.base import _enrich_span_usage
 
 EVIDENTLY_TRACE_LINK_COLUMN_NAME = "_evidently_trace_link"
 
@@ -432,6 +433,8 @@ class FileTracingStorage(TracingStorage):
         # Sort spans within each trace by start_time
         for trace in traces_dict.values():
             trace.spans.sort(key=lambda s: s.start_time)
+            for span in trace.spans:
+                _enrich_span_usage(span)
 
         traces = list(traces_dict.values())
         traces.sort(key=lambda t: t.start_time)
