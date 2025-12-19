@@ -40,14 +40,28 @@ Label = Union[int, str, None]
 
 
 class ColumnType(Enum):
+    """Column data type enumeration.
+
+    Represents the type of data in a column. Used for automatic type inference
+    and to determine which metrics and tests are applicable.
+    """
+
     Numerical = "num"
+    """Numeric columns (integers, floats)."""
     Categorical = "cat"
+    """Categorical columns with limited distinct values."""
     Text = "text"
+    """Text/string columns."""
     Datetime = "datetime"
+    """DateTime columns."""
     Date = "data"
+    """Date columns."""
     Id = "id"
+    """Identifier columns."""
     Unknown = "unknown"
+    """Columns with unknown or unclassified type."""
     List = "list"
+    """Columns containing lists or arrays."""
 
 
 def _is_mapping_field(field: ModelField):

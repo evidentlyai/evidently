@@ -63,6 +63,7 @@ def merge_modules_with_defaults(modules: list[str] | None = None) -> list[str]:
     # Standart modules to document
     DEFAULT_MODULES = [
         "evidently",
+        "evidently.core",
         # "evidently.guardrails",
         # "evidently.sdk",
         # "evidently.llm",
@@ -93,7 +94,12 @@ def build_uv_run_flags(uv_run_flags: str = "", no_cache: bool = False) -> list[s
 
 def build_with_flag_for_evidently(evidently_ref: str) -> list[str]:
     """Build dependency flags list with the appropriate flag and ref pair."""
-    flag = "--with-editable" if evidently_ref.startswith("/") else "--with"
+    if not evidently_ref.endswith("[sql]"):
+        evidently_ref = f"{evidently_ref}[sql]"
+
+    is_local_path = evidently_ref.startswith("/")
+    flag = "--with-editable" if is_local_path else "--with"
+
     return [flag, evidently_ref]
 
 
@@ -200,6 +206,7 @@ def generate_docs_from_local_source(
 ) -> None:
     """Generate documentation from a local source."""
     path_to_evidently = Path(__file__).parent.parent.resolve()
+    evidently_ref = str(path_to_evidently)
 
     becho("Generating documentation for local path...")
     yecho(path_to_evidently)
@@ -214,7 +221,7 @@ def generate_docs_from_local_source(
 
     run_pdoc(
         version=version,
-        evidently_ref=str(path_to_evidently),
+        evidently_ref=evidently_ref,
         github_blob_url=github_blob_url,
         output_path=str(output_path),
         no_cache=no_cache,

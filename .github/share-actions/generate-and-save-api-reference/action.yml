@@ -11,7 +11,8 @@ runs:
       run: |
         ./api-reference/generate.py \
           --api-reference-index-href "/evidently/api-reference" \
-          --git-revision ${{ github.head_ref || github.ref_name }}
+          --git-revision ${{ github.head_ref || github.ref_name }} \
+          --modules evidently,evidently.core
       shell: bash
 
     - name: Upload documentation artifact

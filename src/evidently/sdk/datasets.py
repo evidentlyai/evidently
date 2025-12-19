@@ -9,10 +9,10 @@ from typing import Optional
 import pandas as pd
 from requests import Response
 
-from evidently import DataDefinition
-from evidently import Dataset
 from evidently._pydantic_compat import BaseModel
 from evidently._pydantic_compat import parse_obj_as
+from evidently.core.datasets import DataDefinition
+from evidently.core.datasets import Dataset
 from evidently.legacy.suite.base_suite import MetadataValueType
 from evidently.legacy.ui.workspace.cloud import NamedBytesIO
 from evidently.legacy.ui.workspace.cloud import read_multipart_response
