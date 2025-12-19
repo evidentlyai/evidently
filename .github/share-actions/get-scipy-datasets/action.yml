@@ -10,9 +10,6 @@ runs:
         path: ~/scikit_learn_data
         key: cache-scipy-data
         enableCrossOsArchive: true
-    - name: Show cache folder
-      run: ls ~/scikit_learn_data
-      shell: bash
     - name: Install the latest version of uv and set the python version
       if: ${{ steps.cache-scipy-data.outputs.cache-hit != 'true' }}
       uses: astral-sh/setup-uv@v7
@@ -21,4 +18,7 @@ runs:
     - name: Download datasets
       if: ${{ steps.cache-scipy-data.outputs.cache-hit != 'true' }}
       run: uv run --with scikit-learn --with pillow python -c "from sklearn import datasets; datasets.fetch_california_housing(); datasets.fetch_lfw_people(); datasets.fetch_20newsgroups()"
+      shell: bash
+    - name: Show cache folder
+      run: ls ~/scikit_learn_data
       shell: bash
