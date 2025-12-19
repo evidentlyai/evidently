@@ -1,5 +1,4 @@
 import dataclasses
-import os
 import pathlib
 from enum import Enum
 from typing import Any
@@ -121,9 +120,7 @@ def adult():
 
 @dataset
 def housing():
-    print(datasets.get_data_home())
-    print(os.listdir(datasets.get_data_home()))
-    housing_data = datasets.fetch_california_housing(as_frame=True, download_if_missing=False)
+    housing_data = datasets.fetch_california_housing(as_frame=True)
     housing = housing_data.frame
 
     housing.rename(columns={"MedHouseVal": "target"}, inplace=True)
