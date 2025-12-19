@@ -68,14 +68,6 @@ class BinaryClassification:
     Maps columns containing target labels and predictions for binary classification.
     Used in `DataDefinition` to specify which columns contain classification data.
 
-    Args:
-    * `name`: Identifier for this classification task (default: "default")
-    * `target`: Column name with true binary labels
-    * `prediction_labels`: Column name with predicted binary labels (optional)
-    * `prediction_probas`: Column name with predicted probabilities (optional)
-    * `pos_label`: Value representing the positive class (default: 1)
-    * `labels`: Optional mapping of label values to display names
-
     Example:
     ```python
     definition = DataDefinition(
@@ -88,11 +80,17 @@ class BinaryClassification:
     """
 
     name: str
+    """Identifier for this classification task."""
     target: str
+    """Column name with true binary labels."""
     prediction_labels: Optional[str]
+    """Column name with predicted binary labels."""
     prediction_probas: Optional[str]
+    """Column name with predicted probabilities."""
     pos_label: Label
+    """Value representing the positive class."""
     labels: Optional[Dict[Label, str]]
+    """Optional mapping of label values to display names."""
 
     def __init__(
         self,
@@ -104,6 +102,11 @@ class BinaryClassification:
         pos_label: Optional[str] = None,
         labels: Optional[Dict[Label, str]] = None,
     ):
+        """Initialize binary classification configuration.
+
+        If no arguments are provided, defaults to `target="target"` and `prediction_probas="prediction"`.
+        Otherwise, requires `target` and at least one of `prediction_labels` or `prediction_probas`.
+        """
         self.name = name
         if (
             target is None
@@ -136,13 +139,6 @@ class MulticlassClassification:
     Maps columns containing target labels and predictions for multiclass classification.
     Used in `DataDefinition` to specify which columns contain classification data.
 
-    Args:
-    * `name`: Identifier for this classification task (default: "default")
-    * `target`: Column name with true class labels
-    * `prediction_labels`: Column name with predicted class labels (default: "prediction")
-    * `prediction_probas`: List of column names with predicted probabilities per class (optional)
-    * `labels`: Optional mapping of label values to display names
-
     Example:
     ```python
     definition = DataDefinition(
@@ -156,10 +152,15 @@ class MulticlassClassification:
     """
 
     name: str = "default"
+    """Identifier for this classification task."""
     target: str = "target"
+    """Column name with true class labels."""
     prediction_labels: Optional[str] = "prediction"
+    """Column name with predicted class labels."""
     prediction_probas: Optional[List[str]] = None
+    """List of column names with predicted probabilities per class."""
     labels: Optional[Dict[Label, str]] = None
+    """Optional mapping of label values to display names."""
 
     def __init__(
         self,
@@ -170,6 +171,11 @@ class MulticlassClassification:
         prediction_probas: Optional[List[str]] = None,
         labels: Optional[Dict[Label, str]] = None,
     ):
+        """Initialize multiclass classification configuration.
+
+        If no arguments are provided, defaults to `target="target"` and `prediction_labels="prediction"`.
+        Otherwise, requires `target` and at least one of `prediction_labels` or `prediction_probas`.
+        """
         self.name = name
         if target is None and prediction_labels is None and prediction_probas is None and labels is None:
             self.target = "target"
@@ -197,11 +203,6 @@ class Regression:
     Maps columns containing target values and predictions for regression.
     Used in `DataDefinition` to specify which columns contain regression data.
 
-    Args:
-    * `name`: Identifier for this regression task (default: "default")
-    * `target`: Column name with actual/true values (default: "target")
-    * `prediction`: Column name with predicted values (default: "prediction")
-
     Example:
     ```python
     definition = DataDefinition(
@@ -211,8 +212,11 @@ class Regression:
     """
 
     name: str = "default"
+    """Identifier for this regression task."""
     target: str = "target"
+    """Column name with actual/true values."""
     prediction: str = "prediction"
+    """Column name with predicted values."""
 
 
 @dataclasses.dataclass
@@ -221,14 +225,6 @@ class Recsys:
 
     Maps columns for evaluating recommendation systems, including user-item interactions
     and relevance scores. Used in `DataDefinition` to specify ranking/recsys data structure.
-
-    Args:
-    * `name`: Identifier for this ranking task (default: "default")
-    * `user_id`: Column name with user identifiers (default: "user_id")
-    * `item_id`: Column name with item identifiers (default: "item_id")
-    * `target`: Column name with relevance labels/scores (default: "target")
-    * `prediction`: Column name with predicted scores or ranks (default: "prediction")
-    * `recommendations_type`: Type of prediction - "score" or "rank" (default: "score")
 
     Example:
     ```python
@@ -239,11 +235,17 @@ class Recsys:
     """
 
     name: str = "default"
+    """Identifier for this ranking task."""
     user_id: str = "user_id"
+    """Column name with user identifiers."""
     item_id: str = "item_id"
+    """Column name with item identifiers."""
     target: str = "target"
+    """Column name with relevance labels/scores."""
     prediction: str = "prediction"
+    """Column name with predicted scores or ranks."""
     recommendations_type: str = "score"
+    """Type of prediction - "score" or "rank"."""
 
 
 @dataclasses.dataclass
@@ -263,14 +265,6 @@ class LLMClassification:
     Maps columns containing LLM inputs, outputs, and optional reasoning for LLM evaluation.
     Used in `DataDefinition` to specify which columns contain LLM interaction data.
 
-    Args:
-    * `input`: Column name with LLM input/prompt text
-    * `target`: Column name with expected/ground truth output
-    * `predictions`: Column name with LLM-generated output (optional)
-    * `reasoning`: Column name with reasoning text (optional)
-    * `prediction_reasoning`: Column name with reasoning for predictions (optional)
-    * `name`: Identifier for this LLM task (default: "llm_default")
-
     Example:
     ```python
     definition = DataDefinition(
@@ -284,11 +278,17 @@ class LLMClassification:
     """
 
     input: str
+    """Column name with LLM input/prompt text."""
     target: str
+    """Column name with expected/ground truth output."""
     predictions: Optional[str] = None
+    """Column name with LLM-generated output."""
     reasoning: Optional[str] = None
+    """Column name with reasoning text."""
     prediction_reasoning: Optional[str] = None
+    """Column name with reasoning for predictions."""
     name: str = "llm_default"
+    """Identifier for this LLM task."""
 
 
 class SpecialColumnInfo(AutoAliasMixin, EvidentlyBaseModel):
@@ -327,22 +327,6 @@ class DataDefinition(BaseModel):
     This allows Evidently to process the data correctly. Some evaluations need specific
     columns and will fail if they're missing.
 
-    Args:
-    * `id_column`: Column name with unique identifiers
-    * `timestamp`: Column name with timestamp values
-    * `numerical_columns`: List of numerical column names
-    * `categorical_columns`: List of categorical column names
-    * `text_columns`: List of text column names
-    * `datetime_columns`: List of datetime column names
-    * `classification`: List of classification task configurations (`BinaryClassification` or `MulticlassClassification`)
-    * `regression`: List of regression task configurations (`Regression`)
-    * `llm`: LLM task configuration (`LLMClassification`)
-    * `ranking`: List of ranking/recsys task configurations (`Recsys`)
-    * `numerical_descriptors`: List of numerical descriptor column names
-    * `categorical_descriptors`: List of categorical descriptor column names
-    * `service_columns`: Service columns like trace links
-    * `special_columns`: Additional special column configurations
-
     Auto-mapping (empty DataDefinition):
     ```python
     dataset = Dataset.from_pandas(df, data_definition=DataDefinition())
@@ -359,22 +343,39 @@ class DataDefinition(BaseModel):
     """
 
     id_column: Optional[str] = None
+    """Column name with unique identifiers."""
     timestamp: Optional[str] = None
+    """Column name with timestamp values."""
     service_columns: Optional[ServiceColumns] = None
+    """Service columns like trace links."""
     numerical_columns: Optional[List[str]] = None
+    """List of numerical column names."""
     categorical_columns: Optional[List[str]] = None
+    """List of categorical column names."""
     text_columns: Optional[List[str]] = None
+    """List of text column names."""
     datetime_columns: Optional[List[str]] = None
+    """List of datetime column names."""
     unknown_columns: Optional[List[str]] = None
+    """List of unknown/unclassified column names."""
     list_columns: Optional[List[str]] = None
+    """List of list/array column names."""
     classification: Optional[List[Classification]] = None
+    """List of classification task configurations (`BinaryClassification` or `MulticlassClassification`)."""
     regression: Optional[List[Regression]] = None
+    """List of regression task configurations (`Regression`)."""
     llm: Optional[LLMDefinition] = None
+    """LLM task configuration (`LLMClassification`)."""
     numerical_descriptors: List[str] = []
+    """List of numerical descriptor column names."""
     categorical_descriptors: List[str] = []
+    """List of categorical descriptor column names."""
     test_descriptors: Optional[List[str]] = None
+    """List of test descriptor column names."""
     ranking: Optional[List[Recsys]] = None
+    """List of ranking/recsys task configurations (`Recsys`)."""
     special_columns: List[SpecialColumnInfo] = []
+    """Additional special column configurations."""
 
     def __init__(
         self,
@@ -396,6 +397,11 @@ class DataDefinition(BaseModel):
         service_columns: Optional[ServiceColumns] = None,
         special_columns: Optional[List[SpecialColumnInfo]] = None,
     ):
+        """Initialize DataDefinition with column mappings.
+
+        The constructor maps all parameters directly to the corresponding model fields.
+        If `numerical_descriptors` or `categorical_descriptors` are not provided, they default to empty lists.
+        """
         super().__init__(
             id_column=id_column,
             timestamp=timestamp,

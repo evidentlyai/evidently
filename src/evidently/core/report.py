@@ -665,9 +665,13 @@ class Report:
     """
 
     metrics: List[MetricOrContainer]
+    """List of metrics or metric containers to include in the report."""
     metadata: Dict[str, MetadataValueType]
+    """Dictionary of metadata key-value pairs."""
     tags: List[str]
+    """List of tags for categorizing reports."""
     include_tests: bool
+    """Whether to include automatic tests for metrics."""
 
     def __init__(
         self,
@@ -682,15 +686,8 @@ class Report:
     ):
         """Initialize a Report with metrics and optional metadata.
 
-        Args:
-        * `metrics`: List of metrics or metric containers to include in the report
-        * `metadata`: Optional dictionary of metadata key-value pairs
-        * `tags`: Optional list of tags for categorizing reports
-        * `model_id`: Optional model identifier (sets metadata["model_id"])
-        * `reference_id`: Optional reference dataset identifier (sets metadata["reference_id"])
-        * `batch_size`: Optional batch size identifier (sets metadata["batch_size"])
-        * `dataset_id`: Optional dataset identifier (sets metadata["dataset_id"])
-        * `include_tests`: Whether to include automatic tests for metrics
+        The constructor maps parameters to class attributes. Additional convenience parameters
+        (`model_id`, `reference_id`, `batch_size`, `dataset_id`) are stored in the `metadata` dictionary.
         """
         self.metrics = metrics
         self.metadata = metadata or {}

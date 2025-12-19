@@ -411,7 +411,25 @@ class WorkspaceBase(ABC):
 
 
 class Workspace(WorkspaceBase):
+    """Local file system workspace for storing projects, snapshots, and datasets.
+
+    `Workspace` provides a local file-based storage backend for Evidently projects.
+    All data is stored in the specified directory on the local file system.
+
+    Example:
+    ```python
+    workspace = Workspace.create("my_workspace")
+    project = workspace.add_project(ProjectModel(name="My Project"))
+    workspace.add_run(project.id, snapshot)
+    ```
+    """
+
     def __init__(self, path: str):
+        """Initialize a local workspace.
+
+        Args:
+        * `path`: Directory path where the workspace data will be stored
+        """
         self.path = path
         self.state = LocalState(self.path)
         from evidently.ui.service.datasets.metadata import FileDatasetMetadataStorage
@@ -444,11 +462,28 @@ class Workspace(WorkspaceBase):
         self.configs: ConfigAPI = LocalConfigAPI(artifact_storage)
 
     def add_project(self, project: ProjectModel, org_id: Optional[OrgID] = None) -> Project:
+        """Add a new project to the workspace.
+
+        Args:
+        * `project`: `ProjectModel` with project configuration
+        * `org_id`: Optional organization ID (not used for local workspace)
+
+        Returns:
+        * `Project` object for the newly created project
+        """
         project_model = self.state.write_project(project)
         dashboard = _RemoteProjectDashboard(project.id, self)
         return Project(project_model, dashboard, self)
 
     def get_project(self, project_id: STR_UUID) -> Optional[Project]:
+        """Get a project by ID.
+
+        Args:
+        * `project_id`: UUID of the project to retrieve
+
+        Returns:
+        * `Project` object if found, None otherwise
+        """
         try:
             project_model = self.state.read_project(project_id)
         except FileNotFoundError:
@@ -456,12 +491,30 @@ class Workspace(WorkspaceBase):
         return Project(project_model, _RemoteProjectDashboard(project_model.id, self), self)
 
     def delete_project(self, project_id: STR_UUID):
+        """Delete a project from the workspace.
+
+        Args:
+        * `project_id`: UUID of the project to delete
+        """
         self.state.delete_project(project_id)
 
     def list_projects(self, org_id: Optional[OrgID] = None) -> Sequence[Project]:
+        """List all projects in the workspace.
+
+        Args:
+        * `org_id`: Optional organization ID (not used for local workspace)
+
+        Returns:
+        * Sequence of `Project` objects
+        """
         return [self.get_project(project_id) for project_id in self.state.list_projects()]
 
     def update_project(self, project: ProjectModel):
+        """Update an existing project.
+
+        Args:
+        * `project`: `ProjectModel` with updated project configuration
+        """
         self.state.write_project(project)
 
     def _get_snapshot_url(self, project_id: STR_UUID, snapshot_id: STR_UUID) -> str:
@@ -473,15 +526,47 @@ class Workspace(WorkspaceBase):
         return snapshot_id
 
     def get_run(self, project_id: STR_UUID, snapshot_id: STR_UUID) -> Optional[SnapshotModel]:
+        """Get a snapshot (run) by ID.
+
+        Args:
+        * `project_id`: UUID of the project containing the snapshot
+        * `snapshot_id`: UUID of the snapshot to retrieve
+
+        Returns:
+        * `SnapshotModel` if found, None otherwise
+        """
         return self.state.read_snapshot(project_id, snapshot_id)
 
     def list_runs(self, project_id: STR_UUID) -> Sequence[SnapshotID]:
+        """List all snapshots (runs) for a project.
+
+        Args:
+        * `project_id`: UUID of the project
+
+        Returns:
+        * Sequence of snapshot IDs
+        """
         return self.state.list_snapshots(project_id)
 
     def delete_run(self, project_id: STR_UUID, snapshot_id: STR_UUID):
+        """Delete a snapshot (run) from a project.
+
+        Args:
+        * `project_id`: UUID of the project containing the snapshot
+        * `snapshot_id`: UUID of the snapshot to delete
+        """
         self.state.delete_snapshot(project_id, snapshot_id)
 
     def search_project(self, project_name: str, org_id: Optional[OrgID] = None) -> Sequence[Project]:
+        """Search for projects by name.
+
+        Args:
+        * `project_name`: Name to search for (exact match)
+        * `org_id`: Optional organization ID (not used for local workspace)
+
+        Returns:
+        * Sequence of `Project` objects matching the name
+        """
         return [p for p in self.list_projects(org_id) if p.name == project_name]
 
     def add_dataset(
@@ -577,21 +662,67 @@ class Workspace(WorkspaceBase):
         )
 
     def save_dashboard(self, project_id: ProjectID, dashboard: DashboardModel):
+        """Save a dashboard configuration for a project.
+
+        Args:
+        * `project_id`: UUID of the project
+        * `dashboard`: `DashboardModel` with dashboard configuration
+        """
         self.state.write_dashboard(project_id, dashboard)
 
     def get_dashboard(self, project_id: ProjectID) -> DashboardModel:
+        """Get the dashboard configuration for a project.
+
+        Args:
+        * `project_id`: UUID of the project
+
+        Returns:
+        * `DashboardModel` with dashboard configuration
+        """
         return self.state.read_dashboard(project_id)
 
     @classmethod
     def create(cls, path: str = "workspace"):
+        """Create a new workspace instance.
+
+        Args:
+        * `path`: Directory path where the workspace data will be stored (default: "workspace")
+
+        Returns:
+        * `Workspace` instance
+        """
         return Workspace(path)
 
 
 class RemoteWorkspace(RemoteBase, WorkspaceBase):  # todo: reuse cloud ws
+    """Remote workspace for connecting to an Evidently API server.
+
+    `RemoteWorkspace` provides a client interface to connect to a remote Evidently
+    API server. This allows you to store and manage projects, snapshots, and datasets
+    on a remote server instead of locally.
+
+    Example:
+    ```python
+    workspace = RemoteWorkspace("http://localhost:8000", secret="my-secret")
+    project = workspace.add_project(ProjectModel(name="My Project"))
+    workspace.add_run(project.id, snapshot)
+    ```
+    """
+
     def get_url(self):
+        """Get the base URL of the remote workspace.
+
+        Returns:
+        * Base URL string of the remote API server
+        """
         return self.base_url
 
     def verify(self):
+        """Verify that the remote server is running Evidently API.
+
+        Raises:
+        * ValueError if the server is not available or not running Evidently API
+        """
         try:
             response = self._request("/api/version", "GET")
             assert response.json()["application"] == EVIDENTLY_APPLICATION_NAME
@@ -599,6 +730,13 @@ class RemoteWorkspace(RemoteBase, WorkspaceBase):  # todo: reuse cloud ws
             raise ValueError(f"Evidently API not available at {self.base_url}") from e
 
     def __init__(self, base_url: str, secret: Optional[str] = None, verify: bool = True):
+        """Initialize a remote workspace connection.
+
+        Args:
+        * `base_url`: Base URL of the Evidently API server (e.g., "http://localhost:8000")
+        * `secret`: Optional secret key for authentication
+        * `verify`: If True, verify the server connection on initialization (default: True)
+        """
         self.base_url = base_url
         self.secret = secret
         if verify:
@@ -642,6 +780,18 @@ class RemoteWorkspace(RemoteBase, WorkspaceBase):  # todo: reuse cloud ws
         return r
 
     def add_project(self, project: ProjectModel, org_id: Optional[OrgID] = None) -> Project:
+        """Add a new project to the remote workspace.
+
+        Args:
+        * `project`: `ProjectModel` with project configuration
+        * `org_id`: Optional organization ID
+
+        Returns:
+        * `Project` object for the newly created project
+
+        Raises:
+        * `EvidentlyError` if project creation fails
+        """
         params = {}
         if org_id:
             params["org_id"] = str(org_id)
@@ -656,6 +806,14 @@ class RemoteWorkspace(RemoteBase, WorkspaceBase):  # todo: reuse cloud ws
         return p
 
     def get_project(self, project_id: STR_UUID) -> Optional["Project"]:
+        """Get a project by ID from the remote workspace.
+
+        Args:
+        * `project_id`: UUID of the project to retrieve
+
+        Returns:
+        * `Project` object if found, None otherwise
+        """
         try:
             _project = self._request(f"/api/projects/{project_id}/info", "GET", response_model=ProjectModel)
             return Project(
@@ -673,13 +831,31 @@ class RemoteWorkspace(RemoteBase, WorkspaceBase):  # todo: reuse cloud ws
                 raise e
 
     def delete_project(self, project_id: STR_UUID):
+        """Delete a project from the remote workspace.
+
+        Args:
+        * `project_id`: UUID of the project to delete
+        """
         return self._request(f"/api/v2/projects/{project_id}", "DELETE")
 
     def list_projects(self, org_id: Optional[OrgID] = None) -> Sequence[Project]:
+        """List all projects in the remote workspace.
+
+        Args:
+        * `org_id`: Optional organization ID
+
+        Returns:
+        * Sequence of `Project` objects
+        """
         projects = self._request("/api/v2/projects", "GET", response_model=List[ProjectModel])
         return [Project(p, _RemoteProjectDashboard(p.id, self), self) for p in projects]
 
     def update_project(self, project: ProjectModel):
+        """Update an existing project in the remote workspace.
+
+        Args:
+        * `project`: `ProjectModel` with updated project configuration
+        """
         self._request(
             f"/api/v2/projects/{project.id}",
             method="PATCH",
@@ -695,15 +871,56 @@ class RemoteWorkspace(RemoteBase, WorkspaceBase):  # todo: reuse cloud ws
         return uuid.UUID(resp.json()["snapshot_id"])
 
     def delete_run(self, project_id: STR_UUID, snapshot_id: STR_UUID):
+        """Delete a snapshot (run) from a project.
+
+        Args:
+        * `project_id`: UUID of the project containing the snapshot
+        * `snapshot_id`: UUID of the snapshot to delete
+
+        Raises:
+        * NotImplementedError (snapshot API not yet implemented)
+        """
         raise NotImplementedError  # todo: snapshot api
 
     def get_run(self, project_id: STR_UUID, snapshot_id: STR_UUID) -> Optional[SnapshotModel]:
+        """Get a snapshot (run) by ID.
+
+        Args:
+        * `project_id`: UUID of the project containing the snapshot
+        * `snapshot_id`: UUID of the snapshot to retrieve
+
+        Returns:
+        * `SnapshotModel` if found, None otherwise
+
+        Raises:
+        * NotImplementedError (snapshot API not yet implemented)
+        """
         raise NotImplementedError  # todo: snapshot api
 
     def list_runs(self, project_id: STR_UUID) -> Sequence[SnapshotID]:
+        """List all snapshots (runs) for a project.
+
+        Args:
+        * `project_id`: UUID of the project
+
+        Returns:
+        * Sequence of snapshot IDs
+
+        Raises:
+        * NotImplementedError (snapshot API not yet implemented)
+        """
         raise NotImplementedError  # todo: snapshot api
 
     def search_project(self, project_name: str, org_id: Optional[OrgID] = None) -> Sequence[Project]:
+        """Search for projects by name.
+
+        Args:
+        * `project_name`: Name to search for
+        * `org_id`: Optional organization ID
+
+        Returns:
+        * Sequence of `Project` objects matching the name
+        """
         projects = self._request(f"/api/projects/search/{project_name}", "GET", response_model=List[ProjectModel])
         return [Project(p, _RemoteProjectDashboard(p.id, self), self) for p in projects]
 
@@ -715,23 +932,79 @@ class RemoteWorkspace(RemoteBase, WorkspaceBase):  # todo: reuse cloud ws
         description: Optional[str] = None,
         link: Optional[SnapshotLink] = None,
     ) -> DatasetID:
+        """Add a dataset to a project.
+
+        Args:
+        * `project_id`: UUID of the project to add the dataset to
+        * `dataset`: `Dataset` object to store
+        * `name`: Name for the dataset
+        * `description`: Optional description of the dataset
+        * `link`: Optional link to associate the dataset with a snapshot
+
+        Returns:
+        * UUID of the created dataset
+        """
         return self.datasets.add(project_id=project_id, dataset=dataset, name=name, description=description, link=link)
 
     def load_dataset(self, dataset_id: DatasetID) -> Dataset:
+        """Load a dataset by ID.
+
+        Args:
+        * `dataset_id`: UUID of the dataset to load
+
+        Returns:
+        * `Dataset` object loaded from storage
+        """
         return self.datasets.load(dataset_id)
 
     def list_datasets(self, project: STR_UUID, origins: Optional[List[str]] = None) -> DatasetList:
+        """List all datasets in a project.
+
+        Args:
+        * `project`: UUID of the project
+        * `origins`: Optional list of origin types to filter by
+
+        Returns:
+        * `DatasetList` containing dataset information
+        """
         return self.datasets.list(project, origins=origins)
 
     def save_dashboard(self, project_id: ProjectID, dashboard: DashboardModel):
+        """Save a dashboard configuration for a project.
+
+        Args:
+        * `project_id`: UUID of the project
+        * `dashboard`: `DashboardModel` with dashboard configuration
+        """
         self._request(f"/api/v2/dashboards/{project_id}", method="POST", body=dashboard.dict())
 
     def get_dashboard(self, project_id: ProjectID) -> DashboardModel:
+        """Get the dashboard configuration for a project.
+
+        Args:
+        * `project_id`: UUID of the project
+
+        Returns:
+        * `DashboardModel` with dashboard configuration
+        """
         data = self._request(f"/api/v2/dashboards/{project_id}", method="GET", response_model=DashboardModel)
         return data
 
 
 class CloudWorkspace(RemoteWorkspace):
+    """Cloud workspace for connecting to Evidently Cloud service.
+
+    `CloudWorkspace` provides a client interface to connect to Evidently Cloud,
+    the hosted Evidently service. Requires an API key for authentication.
+
+    Example:
+    ```python
+    workspace = CloudWorkspace(token="sk_...")
+    project = workspace.add_project(ProjectModel(name="My Project"))
+    workspace.add_run(project.id, snapshot)
+    ```
+    """
+
     URL: str = "https://app.evidently.cloud"
 
     def __init__(
@@ -739,6 +1012,16 @@ class CloudWorkspace(RemoteWorkspace):
         token: Optional[str] = None,
         url: str = None,
     ):
+        """Initialize a cloud workspace connection.
+
+        Args:
+        * `token`: API key token for authentication. If not provided, will try to read
+          from `EVIDENTLY_API_KEY` environment variable
+        * `url`: Optional custom cloud URL (defaults to "https://app.evidently.cloud")
+
+        Raises:
+        * ValueError if token is not provided and not found in environment
+        """
         if token is None:
             token = os.environ.get("EVIDENTLY_API_KEY", default=None)
         if token is None:

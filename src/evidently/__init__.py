@@ -21,14 +21,13 @@ from evidently.core.report import Report
 from evidently.core.report import Run
 from evidently.legacy.core import ColumnType
 
-from . import _registry
+from . import _registry  # noqa: F401
 from ._version import __version__
 from ._version import version_info
 
 __all__ = [
     "__version__",
     "version_info",
-    "_registry",
     "Report",
     "Run",
     "Dataset",
