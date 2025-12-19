@@ -28,7 +28,15 @@
 
             <h2>Submodules</h2>
             <ul>
-                    <li><a href="evidently/_registry.html">_registry</a></li>
+                    <li><a href="evidently/metrics.html">metrics</a></li>
+                    <li><a href="evidently/presets.html">presets</a></li>
+                    <li><a href="evidently/tests.html">tests</a></li>
+                    <li><a href="evidently/generators.html">generators</a></li>
+                    <li><a href="evidently/llm.html">llm</a></li>
+                    <li><a href="evidently/guardrails.html">guardrails</a></li>
+                    <li><a href="evidently/descriptors.html">descriptors</a></li>
+                    <li><a href="evidently/sdk.html">sdk</a></li>
+                    <li><a href="evidently/ui.html">ui</a></li>
             </ul>
 
             <h2>API Documentation</h2>
@@ -38,9 +46,6 @@
             </li>
             <li>
                     <a class="variable" href="#version_info">version_info</a>
-            </li>
-            <li>
-                    <a class="function" href="#_jupyter_nbextension_paths">_jupyter_nbextension_paths</a>
             </li>
             <li>
                     <a class="class" href="#Report">Report</a>
@@ -419,19 +424,6 @@ evidently    </h1>
     
 
                 </section>
-                <section id="_jupyter_nbextension_paths">
-                    <div class="attr function">
-            
-        <span class="def">def</span>
-        <span class="name">_jupyter_nbextension_paths</span><span class="signature pdoc-code condensed">(<span class="return-annotation">):</span></span>
-
-        
-    </div>
-    <a class="headerlink" href="#_jupyter_nbextension_paths"></a>
-    
-    
-
-                </section>
                 <section id="Report">
                     <div class="attr class">
             
@@ -442,29 +434,74 @@ evidently    </h1>
     </div>
     <a class="headerlink" href="#Report"></a>
     
-    
+            <div class="docstring"><p>Report lets you structure and run evaluations on the dataset or column-level.</p>
+
+<p>You can generate <code><a href="#Report">Report</a></code> objects after you get descriptors, or for any existing dataset like a table with ML model logs.
+Use <code><a href="#Report">Report</a></code> to:</p>
+
+<ul>
+<li>Summarize computed text descriptors across all inputs</li>
+<li>Analyze any tabular dataset (descriptive stats, quality, drift)</li>
+<li>Evaluate AI system performance (regression, classification, ranking, etc.)</li>
+</ul>
+
+<p>Each <code><a href="#Report">Report</a></code> runs a computation and visualizes a set of Metrics and conditional Tests.
+If you pass two datasets, you get a side-by-side comparison.</p>
+
+<p>Using a preset:</p>
+
+<div class="pdoc-code codehilite">
+<pre><span></span><code><span class="n">report</span> <span class="o">=</span> <span class="n">Report</span><span class="p">([</span><span class="n">DataSummaryPreset</span><span class="p">()])</span>
+<span class="n">my_eval</span> <span class="o">=</span> <span class="n">report</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">eval_data_1</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+</code></pre>
+</div>
+
+<p>Using custom metrics:</p>
+
+<div class="pdoc-code codehilite">
+<pre><span></span><code><span class="n">report</span> <span class="o">=</span> <span class="n">Report</span><span class="p">([</span><span class="n">ColumnCount</span><span class="p">(),</span> <span class="n">ValueStats</span><span class="p">(</span><span class="n">column</span><span class="o">=</span><span class="s2">&quot;target&quot;</span><span class="p">)])</span>
+<span class="n">my_eval</span> <span class="o">=</span> <span class="n">report</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">eval_data_1</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+</code></pre>
+</div>
+
+<p>With reference data for drift detection:</p>
+
+<div class="pdoc-code codehilite">
+<pre><span></span><code><span class="n">report</span> <span class="o">=</span> <span class="n">Report</span><span class="p">([</span><span class="n">DataDriftPreset</span><span class="p">()])</span>
+<span class="n">my_eval</span> <span class="o">=</span> <span class="n">report</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">eval_data_1</span><span class="p">,</span> <span class="n">eval_data_2</span><span class="p">)</span>
+</code></pre>
+</div>
+</div>
+
 
                             <div id="Report.__init__" class="classattr">
                                 <div class="attr function">
             
-        <span class="name">Report</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="n">metrics</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">evidently</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">metric_types</span><span class="o">.</span><span class="n">Metric</span><span class="p">,</span> <span class="n">evidently</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">container</span><span class="o">.</span><span class="n">MetricContainer</span><span class="p">]]</span>,</span><span class="param">	<span class="n">metadata</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">tags</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">model_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">reference_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">batch_size</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">dataset_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">include_tests</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span></span>)</span>
+        <span class="name">Report</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="n">metrics</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n"><a href="evidently/core/metric_types.html#Metric">evidently.core.metric_types.Metric</a></span><span class="p">,</span> <span class="n"><a href="evidently/core/container.html#MetricContainer">evidently.core.container.MetricContainer</a></span><span class="p">]]</span>,</span><span class="param">	<span class="n">metadata</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">tags</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">model_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">reference_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">batch_size</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">dataset_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">include_tests</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span></span>)</span>
 
         
     </div>
     <a class="headerlink" href="#Report.__init__"></a>
     
-    
+            <div class="docstring"><p>Initialize a Report with metrics and optional metadata.</p>
+
+<p>The constructor maps parameters to class attributes. Additional convenience parameters
+(<code>model_id</code>, <code>reference_id</code>, <code>batch_size</code>, <code>dataset_id</code>) are stored in the <code><a href="#Report.metadata">metadata</a></code> dictionary.</p>
+</div>
+
 
                             </div>
                             <div id="Report.metrics" class="classattr">
                                 <div class="attr variable">
-            <span class="name">metrics</span><span class="annotation">: List[Union[evidently.core.metric_types.Metric, evidently.core.container.MetricContainer]]</span>
+            <span class="name">metrics</span><span class="annotation">: List[Union[<a href="evidently/core/metric_types.html#Metric">evidently.core.metric_types.Metric</a>, <a href="evidently/core/container.html#MetricContainer">evidently.core.container.MetricContainer</a>]]</span>
 
         
     </div>
     <a class="headerlink" href="#Report.metrics"></a>
     
-    
+            <div class="docstring"><p>List of metrics or metric containers to include in the report.</p>
+</div>
+
 
                             </div>
                             <div id="Report.metadata" class="classattr">
@@ -475,7 +512,9 @@ evidently    </h1>
     </div>
     <a class="headerlink" href="#Report.metadata"></a>
     
-    
+            <div class="docstring"><p>Dictionary of metadata key-value pairs.</p>
+</div>
+
 
                             </div>
                             <div id="Report.tags" class="classattr">
@@ -486,7 +525,9 @@ evidently    </h1>
     </div>
     <a class="headerlink" href="#Report.tags"></a>
     
-    
+            <div class="docstring"><p>List of tags for categorizing reports.</p>
+</div>
+
 
                             </div>
                             <div id="Report.include_tests" class="classattr">
@@ -497,33 +538,71 @@ evidently    </h1>
     </div>
     <a class="headerlink" href="#Report.include_tests"></a>
     
-    
+            <div class="docstring"><p>Whether to include automatic tests for metrics.</p>
+</div>
+
 
                             </div>
                             <div id="Report.run" class="classattr">
                                 <div class="attr function">
             
         <span class="def">def</span>
-        <span class="name">run</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="bp">self</span>,</span><span class="param">	<span class="n">current_data</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n"><a href="#Dataset">Dataset</a></span><span class="p">,</span> <span class="n">pandas</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]</span>,</span><span class="param">	<span class="n">reference_data</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n"><a href="#Dataset">Dataset</a></span><span class="p">,</span> <span class="n">pandas</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">additional_data</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="n"><a href="#Dataset">Dataset</a></span><span class="p">,</span> <span class="n">pandas</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">timestamp</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">metadata</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">tags</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span></span><span class="return-annotation">) -> <span class="n">evidently</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">report</span><span class="o">.</span><span class="n">Snapshot</span>:</span></span>
+        <span class="name">run</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="bp">self</span>,</span><span class="param">	<span class="n">current_data</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n"><a href="#Dataset">Dataset</a></span><span class="p">,</span> <span class="n">pandas</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]</span>,</span><span class="param">	<span class="n">reference_data</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n"><a href="#Dataset">Dataset</a></span><span class="p">,</span> <span class="n">pandas</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">additional_data</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="n"><a href="#Dataset">Dataset</a></span><span class="p">,</span> <span class="n">pandas</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">timestamp</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">metadata</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">tags</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span></span><span class="return-annotation">) -> <span class="n"><a href="evidently/core/report.html#Snapshot">evidently.core.report.Snapshot</a></span>:</span></span>
 
         
     </div>
     <a class="headerlink" href="#Report.run"></a>
     
-    
+            <div class="docstring"><p>Run the report on datasets and return a <code>Snapshot</code> with computed results.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>current_data</code>: Current dataset to evaluate (<code>pandas.DataFrame</code> or <code><a href="#Dataset">evidently.core.datasets.Dataset</a></code>)</li>
+<li><code>reference_data</code>: Optional reference dataset for comparison/drift detection</li>
+<li><code>additional_data</code>: Optional dictionary of additional datasets by name</li>
+<li><code>timestamp</code>: Optional timestamp for the snapshot (defaults to now)</li>
+<li><code><a href="#Report.metadata">metadata</a></code>: Optional metadata to merge with report metadata</li>
+<li><code><a href="#Report.tags">tags</a></code>: Optional tags to merge with report tags</li>
+<li><code>name</code>: Optional name for the snapshot</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li><code>Snapshot</code>: Object containing computed metric results, tests, and visualizations</li>
+</ul>
+
+<p>Example:</p>
+
+<div class="pdoc-code codehilite">
+<pre><span></span><code><span class="n">snapshot</span> <span class="o">=</span> <span class="n">report</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">current_data</span><span class="p">,</span> <span class="n">reference_data</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;daily_check&quot;</span><span class="p">)</span>
+<span class="n">snapshot</span><span class="o">.</span><span class="n">save_html</span><span class="p">(</span><span class="s2">&quot;report.html&quot;</span><span class="p">)</span>
+</code></pre>
+</div>
+</div>
+
 
                             </div>
                             <div id="Report.items" class="classattr">
                                 <div class="attr function">
             
         <span class="def">def</span>
-        <span class="name">items</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="bp">self</span></span><span class="return-annotation">) -> <span class="n">Sequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">evidently</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">metric_types</span><span class="o">.</span><span class="n">Metric</span><span class="p">,</span> <span class="n">evidently</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">container</span><span class="o">.</span><span class="n">MetricContainer</span><span class="p">]]</span>:</span></span>
+        <span class="name">items</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="bp">self</span></span><span class="return-annotation">) -> <span class="n">Sequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n"><a href="evidently/core/metric_types.html#Metric">evidently.core.metric_types.Metric</a></span><span class="p">,</span> <span class="n"><a href="evidently/core/container.html#MetricContainer">evidently.core.container.MetricContainer</a></span><span class="p">]]</span>:</span></span>
 
         
     </div>
     <a class="headerlink" href="#Report.items"></a>
     
-    
+            <div class="docstring"><p>Get the list of metrics and containers in this report.</p>
+
+<p>Returns:</p>
+
+<ul>
+<li>Sequence of metrics and metric containers configured in the report</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="Report.set_batch_size" class="classattr">
@@ -536,7 +615,21 @@ evidently    </h1>
     </div>
     <a class="headerlink" href="#Report.set_batch_size"></a>
     
-    
+            <div class="docstring"><p>Set the batch size identifier in report metadata.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>batch_size</code>: Batch size identifier string</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li>Self for method chaining</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="Report.set_model_id" class="classattr">
@@ -549,7 +642,21 @@ evidently    </h1>
     </div>
     <a class="headerlink" href="#Report.set_model_id"></a>
     
-    
+            <div class="docstring"><p>Set the model identifier in report metadata.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>model_id</code>: Model identifier string</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li>Self for method chaining</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="Report.set_reference_id" class="classattr">
@@ -562,7 +669,21 @@ evidently    </h1>
     </div>
     <a class="headerlink" href="#Report.set_reference_id"></a>
     
-    
+            <div class="docstring"><p>Set the reference dataset identifier in report metadata.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>reference_id</code>: Reference dataset identifier string</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li>Self for method chaining</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="Report.set_dataset_id" class="classattr">
@@ -575,14 +696,28 @@ evidently    </h1>
     </div>
     <a class="headerlink" href="#Report.set_dataset_id"></a>
     
-    
+            <div class="docstring"><p>Set the dataset identifier in report metadata.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>dataset_id</code>: Dataset identifier string</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li>Self for method chaining</li>
+</ul>
+</div>
+
 
                             </div>
                 </section>
                 <section id="Run">
                     <div class="attr variable">
             <span class="name">Run</span>        =
-<span class="default_value">&lt;class &#39;evidently.core.report.Snapshot&#39;&gt;</span>
+<span class="default_value">&lt;class &#39;<a href="evidently/core/report.html#Snapshot">evidently.core.report.Snapshot</a>&#39;&gt;</span>
 
         
     </div>
@@ -601,20 +736,84 @@ evidently    </h1>
     </div>
     <a class="headerlink" href="#Dataset"></a>
     
-    
+            <div class="docstring"><p>Dataset object that wraps your data with metadata and data definition.</p>
+
+<p><code><a href="#Dataset">Dataset</a></code> is the main data structure in Evidently. It wraps a <code>pandas.DataFrame</code>
+with additional metadata including:</p>
+
+<ul>
+<li><code><a href="#DataDefinition">DataDefinition</a></code>: column types and roles mapping</li>
+<li>Descriptors: computed row-level scores (for text/LLM data)</li>
+<li>Metadata and tags: additional information about the dataset</li>
+</ul>
+
+<p>You typically create a <code><a href="#Dataset">Dataset</a></code> from a <code>pandas.DataFrame</code> using <code><a href="#Dataset.from_pandas">Dataset.from_pandas()</a></code>.</p>
+
+<p>Create from pandas DataFrame:</p>
+
+<div class="pdoc-code codehilite">
+<pre><span></span><code><span class="n">dataset</span> <span class="o">=</span> <span class="n"><a href="#Dataset.from_pandas">Dataset.from_pandas</a></span><span class="p">(</span>
+    <span class="n">source_df</span><span class="p">,</span>
+    <span class="n">data_definition</span><span class="o">=</span><span class="n">DataDefinition</span><span class="p">()</span>
+<span class="p">)</span>
+</code></pre>
+</div>
+
+<p>Add descriptors for text evaluation:</p>
+
+<div class="pdoc-code codehilite">
+<pre><span></span><code><span class="n">dataset</span><span class="o">.</span><span class="n">add_descriptors</span><span class="p">([</span><span class="n">TextLength</span><span class="p">(</span><span class="n">column</span><span class="o">=</span><span class="s2">&quot;text&quot;</span><span class="p">)])</span>
+</code></pre>
+</div>
+
+<p>Use in a Report:</p>
+
+<div class="pdoc-code codehilite">
+<pre><span></span><code><span class="n">report</span> <span class="o">=</span> <span class="n">Report</span><span class="p">([</span><span class="n">DataSummaryPreset</span><span class="p">()])</span>
+<span class="n">snapshot</span> <span class="o">=</span> <span class="n">report</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+</code></pre>
+</div>
+</div>
+
 
                             <div id="Dataset.from_pandas" class="classattr">
                                 <div class="attr function">
                     <div class="decorator decorator-classmethod">@classmethod</div>
 
         <span class="def">def</span>
-        <span class="name">from_pandas</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="bp">cls</span>,</span><span class="param">	<span class="n">data</span><span class="p">:</span> <span class="n">pandas</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">DataFrame</span>,</span><span class="param">	<span class="n">data_definition</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n"><a href="#DataDefinition">DataDefinition</a></span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">descriptors</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">evidently</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">Descriptor</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">options</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">evidently</span><span class="o">.</span><span class="n">legacy</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">Options</span><span class="p">,</span> <span class="n">evidently</span><span class="o">.</span><span class="n">legacy</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">option</span><span class="o">.</span><span class="n">Option</span><span class="p">,</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">evidently</span><span class="o">.</span><span class="n">legacy</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">option</span><span class="o">.</span><span class="n">Option</span><span class="p">],</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">metadata</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">tags</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span></span><span class="return-annotation">) -> <span class="n"><a href="#Dataset">Dataset</a></span>:</span></span>
+        <span class="name">from_pandas</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="bp">cls</span>,</span><span class="param">	<span class="n">data</span><span class="p">:</span> <span class="n">pandas</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">DataFrame</span>,</span><span class="param">	<span class="n">data_definition</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n"><a href="#DataDefinition">DataDefinition</a></span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">descriptors</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n"><a href="evidently/core/datasets.html#Descriptor">evidently.core.datasets.Descriptor</a></span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">options</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">evidently</span><span class="o">.</span><span class="n">legacy</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">Options</span><span class="p">,</span> <span class="n">evidently</span><span class="o">.</span><span class="n">legacy</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">option</span><span class="o">.</span><span class="n">Option</span><span class="p">,</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">evidently</span><span class="o">.</span><span class="n">legacy</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">option</span><span class="o">.</span><span class="n">Option</span><span class="p">],</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">metadata</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">tags</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span></span><span class="return-annotation">) -> <span class="n"><a href="#Dataset">Dataset</a></span>:</span></span>
 
         
     </div>
     <a class="headerlink" href="#Dataset.from_pandas"></a>
     
-    
+            <div class="docstring"><p>Create a <code><a href="#Dataset">Dataset</a></code> from a <code>pandas.DataFrame</code>.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>data</code>: <code>pandas.DataFrame</code> with your data</li>
+<li><code><a href="#Dataset.data_definition">data_definition</a></code>: Optional <code><a href="#DataDefinition">DataDefinition</a></code> for column mapping (auto-inferred if None)</li>
+<li><code>descriptors</code>: Optional list of descriptors to compute and add to dataset</li>
+<li><code>options</code>: Optional options for descriptor computation</li>
+<li><code><a href="#Dataset.metadata">metadata</a></code>: Optional metadata dictionary</li>
+<li><code><a href="#Dataset.tags">tags</a></code>: Optional list of tags</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li><code><a href="#Dataset">Dataset</a></code> object ready for evaluation</li>
+</ul>
+
+<p>Example:</p>
+
+<div class="pdoc-code codehilite">
+<pre><span></span><code><span class="n">dataset</span> <span class="o">=</span> <span class="n"><a href="#Dataset.from_pandas">Dataset.from_pandas</a></span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">data_definition</span><span class="o">=</span><span class="n">DataDefinition</span><span class="p">())</span>
+</code></pre>
+</div>
+</div>
+
 
                             </div>
                             <div id="Dataset.from_any" class="classattr">
@@ -628,7 +827,27 @@ evidently    </h1>
     </div>
     <a class="headerlink" href="#Dataset.from_any"></a>
     
-    
+            <div class="docstring"><p>Convert various dataset types to a <code><a href="#Dataset">Dataset</a></code> object.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>dataset</code>: <code>pandas.DataFrame</code> or <code><a href="#Dataset">Dataset</a></code> object</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li><code><a href="#Dataset">Dataset</a></code> object (converts DataFrame if needed)</li>
+</ul>
+
+<p>Raises:</p>
+
+<ul>
+<li>ValueError if dataset type is not supported</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="Dataset.as_dataframe" class="classattr">
@@ -642,7 +861,15 @@ evidently    </h1>
     </div>
     <a class="headerlink" href="#Dataset.as_dataframe"></a>
     
-    
+            <div class="docstring"><p>Get the underlying <code>pandas.DataFrame</code>.</p>
+
+<p>Returns:</p>
+
+<ul>
+<li><code>pandas.DataFrame</code> with all data including computed descriptors</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="Dataset.column" class="classattr">
@@ -650,13 +877,27 @@ evidently    </h1>
                     <div class="decorator decorator-abstractmethod">@abstractmethod</div>
 
         <span class="def">def</span>
-        <span class="name">column</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span>, </span><span class="param"><span class="n">column_name</span><span class="p">:</span> <span class="nb">str</span></span><span class="return-annotation">) -> <span class="n">evidently</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">DatasetColumn</span>:</span></span>
+        <span class="name">column</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span>, </span><span class="param"><span class="n">column_name</span><span class="p">:</span> <span class="nb">str</span></span><span class="return-annotation">) -> <span class="n"><a href="evidently/core/datasets.html#DatasetColumn">evidently.core.datasets.DatasetColumn</a></span>:</span></span>
 
         
     </div>
     <a class="headerlink" href="#Dataset.column"></a>
     
-    
+            <div class="docstring"><p>Get a specific column from the dataset.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>column_name</code>: Name of the column to retrieve</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li><code>DatasetColumn</code> object with column data and type information</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="Dataset.subdataset" class="classattr">
@@ -670,7 +911,22 @@ evidently    </h1>
     </div>
     <a class="headerlink" href="#Dataset.subdataset"></a>
     
-    
+            <div class="docstring"><p>Create a filtered subdataset matching a column value.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>column_name</code>: Column to filter by</li>
+<li><code>label</code>: Value to filter for</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li>New <code><a href="#Dataset">Dataset</a></code> containing only rows where column equals label</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="Dataset.stats" class="classattr">
@@ -678,13 +934,21 @@ evidently    </h1>
                     <div class="decorator decorator-abstractmethod">@abstractmethod</div>
 
         <span class="def">def</span>
-        <span class="name">stats</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span></span><span class="return-annotation">) -> <span class="n">evidently</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">DatasetStats</span>:</span></span>
+        <span class="name">stats</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span></span><span class="return-annotation">) -> <span class="n"><a href="evidently/core/datasets.html#DatasetStats">evidently.core.datasets.DatasetStats</a></span>:</span></span>
 
         
     </div>
     <a class="headerlink" href="#Dataset.stats"></a>
     
-    
+            <div class="docstring"><p>Get statistical summary of the dataset.</p>
+
+<p>Returns:</p>
+
+<ul>
+<li><code>DatasetStats</code> object with row count, column count, and per-column statistics</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="Dataset.data_definition" class="classattr">
@@ -695,7 +959,15 @@ evidently    </h1>
     </div>
     <a class="headerlink" href="#Dataset.data_definition"></a>
     
-    
+            <div class="docstring"><p>Get the data definition mapping for this dataset.</p>
+
+<p>Returns:</p>
+
+<ul>
+<li><code><a href="#DataDefinition">DataDefinition</a></code> object with column types and roles</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="Dataset.metadata" class="classattr">
@@ -706,7 +978,15 @@ evidently    </h1>
     </div>
     <a class="headerlink" href="#Dataset.metadata"></a>
     
-    
+            <div class="docstring"><p>Get metadata associated with this dataset.</p>
+
+<p>Returns:</p>
+
+<ul>
+<li>Dictionary of metadata key-value pairs</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="Dataset.tags" class="classattr">
@@ -717,7 +997,15 @@ evidently    </h1>
     </div>
     <a class="headerlink" href="#Dataset.tags"></a>
     
-    
+            <div class="docstring"><p>Get tags associated with this dataset.</p>
+
+<p>Returns:</p>
+
+<ul>
+<li>List of tag strings</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="Dataset.add_descriptor" class="classattr">
@@ -725,26 +1013,44 @@ evidently    </h1>
                     <div class="decorator decorator-abstractmethod">@abstractmethod</div>
 
         <span class="def">def</span>
-        <span class="name">add_descriptor</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="bp">self</span>,</span><span class="param">	<span class="n">descriptor</span><span class="p">:</span> <span class="n">evidently</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">Descriptor</span>,</span><span class="param">	<span class="n">options</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">evidently</span><span class="o">.</span><span class="n">legacy</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">Options</span><span class="p">,</span> <span class="n">evidently</span><span class="o">.</span><span class="n">legacy</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">option</span><span class="o">.</span><span class="n">Option</span><span class="p">,</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">evidently</span><span class="o">.</span><span class="n">legacy</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">option</span><span class="o">.</span><span class="n">Option</span><span class="p">],</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span></span><span class="return-annotation">):</span></span>
+        <span class="name">add_descriptor</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="bp">self</span>,</span><span class="param">	<span class="n">descriptor</span><span class="p">:</span> <span class="n"><a href="evidently/core/datasets.html#Descriptor">evidently.core.datasets.Descriptor</a></span>,</span><span class="param">	<span class="n">options</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">evidently</span><span class="o">.</span><span class="n">legacy</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">Options</span><span class="p">,</span> <span class="n">evidently</span><span class="o">.</span><span class="n">legacy</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">option</span><span class="o">.</span><span class="n">Option</span><span class="p">,</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">evidently</span><span class="o">.</span><span class="n">legacy</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">option</span><span class="o">.</span><span class="n">Option</span><span class="p">],</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span></span><span class="return-annotation">):</span></span>
 
         
     </div>
     <a class="headerlink" href="#Dataset.add_descriptor"></a>
     
-    
+            <div class="docstring"><p>Add a descriptor to compute row-level scores.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>descriptor</code>: <code>Descriptor</code> object to compute</li>
+<li><code>options</code>: Optional options for descriptor computation</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="Dataset.add_descriptors" class="classattr">
                                 <div class="attr function">
             
         <span class="def">def</span>
-        <span class="name">add_descriptors</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="bp">self</span>,</span><span class="param">	<span class="n">descriptors</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">evidently</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">Descriptor</span><span class="p">]</span>,</span><span class="param">	<span class="n">options</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">evidently</span><span class="o">.</span><span class="n">legacy</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">Options</span><span class="p">,</span> <span class="n">evidently</span><span class="o">.</span><span class="n">legacy</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">option</span><span class="o">.</span><span class="n">Option</span><span class="p">,</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">evidently</span><span class="o">.</span><span class="n">legacy</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">option</span><span class="o">.</span><span class="n">Option</span><span class="p">],</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span></span><span class="return-annotation">):</span></span>
+        <span class="name">add_descriptors</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="bp">self</span>,</span><span class="param">	<span class="n">descriptors</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n"><a href="evidently/core/datasets.html#Descriptor">evidently.core.datasets.Descriptor</a></span><span class="p">]</span>,</span><span class="param">	<span class="n">options</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">evidently</span><span class="o">.</span><span class="n">legacy</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">Options</span><span class="p">,</span> <span class="n">evidently</span><span class="o">.</span><span class="n">legacy</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">option</span><span class="o">.</span><span class="n">Option</span><span class="p">,</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">evidently</span><span class="o">.</span><span class="n">legacy</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">option</span><span class="o">.</span><span class="n">Option</span><span class="p">],</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span></span><span class="return-annotation">):</span></span>
 
         
     </div>
     <a class="headerlink" href="#Dataset.add_descriptors"></a>
     
-    
+            <div class="docstring"><p>Add multiple descriptors to the dataset.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>descriptors</code>: List of <code>Descriptor</code> objects to compute</li>
+<li><code>options</code>: Optional options for descriptor computation</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="Dataset.save" class="classattr">
@@ -758,7 +1064,15 @@ evidently    </h1>
     </div>
     <a class="headerlink" href="#Dataset.save"></a>
     
-    
+            <div class="docstring"><p>Save the dataset to a file.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>uri</code>: File path to save the dataset (supports .evidently_dataset format)</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="Dataset.load" class="classattr">
@@ -772,7 +1086,27 @@ evidently    </h1>
     </div>
     <a class="headerlink" href="#Dataset.load"></a>
     
-    
+            <div class="docstring"><p>Load a dataset from a file.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>uri</code>: File path to load from (supports CSV, Parquet, and .evidently_dataset formats)</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li><code><a href="#Dataset">Dataset</a></code> object loaded from file</li>
+</ul>
+
+<p>Raises:</p>
+
+<ul>
+<li>Exception if dataset cannot be loaded</li>
+</ul>
+</div>
+
 
                             </div>
                 </section>
@@ -786,20 +1120,52 @@ evidently    </h1>
     </div>
     <a class="headerlink" href="#DataDefinition"></a>
     
-    
+            <div class="docstring"><p>Maps column types and roles in your dataset for correct evaluation processing.</p>
+
+<p><code><a href="#DataDefinition">DataDefinition</a></code> maps:</p>
+
+<ul>
+<li>Column types (e.g., categorical, numerical, text)</li>
+<li>Column roles (e.g., id, prediction, target, timestamp)</li>
+<li>Task-specific configurations (classification, regression, ranking, LLM)</li>
+</ul>
+
+<p>This allows Evidently to process the data correctly. Some evaluations need specific
+columns and will fail if they're missing.</p>
+
+<p>Auto-mapping (empty DataDefinition):</p>
+
+<div class="pdoc-code codehilite">
+<pre><span></span><code><span class="n">dataset</span> <span class="o">=</span> <span class="n"><a href="#Dataset.from_pandas">Dataset.from_pandas</a></span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">data_definition</span><span class="o">=</span><span class="n">DataDefinition</span><span class="p">())</span>
+</code></pre>
+</div>
+
+<p>Manual mapping:</p>
+
+<div class="pdoc-code codehilite">
+<pre><span></span><code><span class="n">definition</span> <span class="o">=</span> <span class="n">DataDefinition</span><span class="p">(</span>
+    <span class="n">numerical_columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Age&quot;</span><span class="p">,</span> <span class="s2">&quot;Salary&quot;</span><span class="p">],</span>
+    <span class="n">categorical_columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Department&quot;</span><span class="p">],</span>
+    <span class="n">classification</span><span class="o">=</span><span class="p">[</span><span class="n">BinaryClassification</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="s2">&quot;target&quot;</span><span class="p">,</span> <span class="n">prediction_labels</span><span class="o">=</span><span class="s2">&quot;prediction&quot;</span><span class="p">)]</span>
+<span class="p">)</span>
+</code></pre>
+</div>
+</div>
+
 
                             <div id="DataDefinition.__init__" class="classattr">
                                 <div class="attr function">
             
-        <span class="name">DataDefinition</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="n">id_column</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">timestamp</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">numerical_columns</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">categorical_columns</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">text_columns</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">datetime_columns</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">classification</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n"><a href="#BinaryClassification">BinaryClassification</a></span><span class="p">,</span> <span class="n"><a href="#MulticlassClassification">MulticlassClassification</a></span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">regression</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n"><a href="#Regression">Regression</a></span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">llm</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">evidently</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">Completion</span><span class="p">,</span> <span class="n">evidently</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">RAG</span><span class="p">,</span> <span class="n"><a href="#LLMClassification">LLMClassification</a></span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">numerical_descriptors</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">categorical_descriptors</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">unknown_columns</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">list_columns</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">test_descriptors</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">ranking</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n"><a href="#Recsys">Recsys</a></span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">service_columns</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">evidently</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">ServiceColumns</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">special_columns</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">evidently</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">SpecialColumnInfo</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span></span>)</span>
+        <span class="name">DataDefinition</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="n">id_column</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">timestamp</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">numerical_columns</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">categorical_columns</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">text_columns</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">datetime_columns</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">classification</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n"><a href="#BinaryClassification">BinaryClassification</a></span><span class="p">,</span> <span class="n"><a href="#MulticlassClassification">MulticlassClassification</a></span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">regression</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n"><a href="#Regression">Regression</a></span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">llm</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n"><a href="evidently/core/datasets.html#Completion">evidently.core.datasets.Completion</a></span><span class="p">,</span> <span class="n"><a href="evidently/core/datasets.html#RAG">evidently.core.datasets.RAG</a></span><span class="p">,</span> <span class="n"><a href="#LLMClassification">LLMClassification</a></span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">numerical_descriptors</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">categorical_descriptors</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">unknown_columns</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">list_columns</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">test_descriptors</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">ranking</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n"><a href="#Recsys">Recsys</a></span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">service_columns</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n"><a href="evidently/core/datasets.html#ServiceColumns">evidently.core.datasets.ServiceColumns</a></span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">special_columns</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n"><a href="evidently/core/datasets.html#SpecialColumnInfo">evidently.core.datasets.SpecialColumnInfo</a></span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span></span>)</span>
 
         
     </div>
     <a class="headerlink" href="#DataDefinition.__init__"></a>
     
-            <div class="docstring"><p>Create a new model by parsing and validating input data from keyword arguments.</p>
+            <div class="docstring"><p>Initialize DataDefinition with column mappings.</p>
 
-<p>Raises ValidationError if the input data cannot be parsed to form a valid model.</p>
+<p>The constructor maps all parameters directly to the corresponding model fields.
+If <code><a href="#DataDefinition.numerical_descriptors">numerical_descriptors</a></code> or <code><a href="#DataDefinition.categorical_descriptors">categorical_descriptors</a></code> are not provided, they default to empty lists.</p>
 </div>
 
 
@@ -812,7 +1178,9 @@ evidently    </h1>
     </div>
     <a class="headerlink" href="#DataDefinition.id_column"></a>
     
-    
+            <div class="docstring"><p>Column name with unique identifiers.</p>
+</div>
+
 
                             </div>
                             <div id="DataDefinition.timestamp" class="classattr">
@@ -823,18 +1191,22 @@ evidently    </h1>
     </div>
     <a class="headerlink" href="#DataDefinition.timestamp"></a>
     
-    
+            <div class="docstring"><p>Column name with timestamp values.</p>
+</div>
+
 
                             </div>
                             <div id="DataDefinition.service_columns" class="classattr">
                                 <div class="attr variable">
-            <span class="name">service_columns</span><span class="annotation">: Optional[evidently.core.datasets.ServiceColumns]</span>
+            <span class="name">service_columns</span><span class="annotation">: Optional[<a href="evidently/core/datasets.html#ServiceColumns">evidently.core.datasets.ServiceColumns</a>]</span>
 
         
     </div>
     <a class="headerlink" href="#DataDefinition.service_columns"></a>
     
-    
+            <div class="docstring"><p>Service columns like trace links.</p>
+</div>
+
 
                             </div>
                             <div id="DataDefinition.numerical_columns" class="classattr">
@@ -845,7 +1217,9 @@ evidently    </h1>
     </div>
     <a class="headerlink" href="#DataDefinition.numerical_columns"></a>
     
-    
+            <div class="docstring"><p>List of numerical column names.</p>
+</div>
+
 
                             </div>
                             <div id="DataDefinition.categorical_columns" class="classattr">
@@ -856,7 +1230,9 @@ evidently    </h1>
     </div>
     <a class="headerlink" href="#DataDefinition.categorical_columns"></a>
     
-    
+            <div class="docstring"><p>List of categorical column names.</p>
+</div>
+
 
                             </div>
                             <div id="DataDefinition.text_columns" class="classattr">
@@ -867,7 +1243,9 @@ evidently    </h1>
     </div>
     <a class="headerlink" href="#DataDefinition.text_columns"></a>
     
-    
+            <div class="docstring"><p>List of text column names.</p>
+</div>
+
 
                             </div>
                             <div id="DataDefinition.datetime_columns" class="classattr">
@@ -878,7 +1256,9 @@ evidently    </h1>
     </div>
     <a class="headerlink" href="#DataDefinition.datetime_columns"></a>
     
-    
+            <div class="docstring"><p>List of datetime column names.</p>
+</div>
+
 
                             </div>
                             <div id="DataDefinition.unknown_columns" class="classattr">
@@ -889,7 +1269,9 @@ evidently    </h1>
     </div>
     <a class="headerlink" href="#DataDefinition.unknown_columns"></a>
     
-    
+            <div class="docstring"><p>List of unknown/unclassified column names.</p>
+</div>
+
 
                             </div>
                             <div id="DataDefinition.list_columns" class="classattr">
@@ -900,7 +1282,9 @@ evidently    </h1>
     </div>
     <a class="headerlink" href="#DataDefinition.list_columns"></a>
     
-    
+            <div class="docstring"><p>List of list/array column names.</p>
+</div>
+
 
                             </div>
                             <div id="DataDefinition.classification" class="classattr">
@@ -911,7 +1295,9 @@ evidently    </h1>
     </div>
     <a class="headerlink" href="#DataDefinition.classification"></a>
     
-    
+            <div class="docstring"><p>List of classification task configurations (<code><a href="#BinaryClassification">BinaryClassification</a></code> or <code><a href="#MulticlassClassification">MulticlassClassification</a></code>).</p>
+</div>
+
 
                             </div>
                             <div id="DataDefinition.regression" class="classattr">
@@ -922,18 +1308,22 @@ evidently    </h1>
     </div>
     <a class="headerlink" href="#DataDefinition.regression"></a>
     
-    
+            <div class="docstring"><p>List of regression task configurations (<code><a href="#Regression">Regression</a></code>).</p>
+</div>
+
 
                             </div>
                             <div id="DataDefinition.llm" class="classattr">
                                 <div class="attr variable">
-            <span class="name">llm</span><span class="annotation">: Union[evidently.core.datasets.Completion, evidently.core.datasets.RAG, <a href="#LLMClassification">LLMClassification</a>, NoneType]</span>
+            <span class="name">llm</span><span class="annotation">: Union[<a href="evidently/core/datasets.html#Completion">evidently.core.datasets.Completion</a>, <a href="evidently/core/datasets.html#RAG">evidently.core.datasets.RAG</a>, <a href="#LLMClassification">LLMClassification</a>, NoneType]</span>
 
         
     </div>
     <a class="headerlink" href="#DataDefinition.llm"></a>
     
-    
+            <div class="docstring"><p>LLM task configuration (<code><a href="#LLMClassification">LLMClassification</a></code>).</p>
+</div>
+
 
                             </div>
                             <div id="DataDefinition.numerical_descriptors" class="classattr">
@@ -944,7 +1334,9 @@ evidently    </h1>
     </div>
     <a class="headerlink" href="#DataDefinition.numerical_descriptors"></a>
     
-    
+            <div class="docstring"><p>List of numerical descriptor column names.</p>
+</div>
+
 
                             </div>
                             <div id="DataDefinition.categorical_descriptors" class="classattr">
@@ -955,7 +1347,9 @@ evidently    </h1>
     </div>
     <a class="headerlink" href="#DataDefinition.categorical_descriptors"></a>
     
-    
+            <div class="docstring"><p>List of categorical descriptor column names.</p>
+</div>
+
 
                             </div>
                             <div id="DataDefinition.test_descriptors" class="classattr">
@@ -966,7 +1360,9 @@ evidently    </h1>
     </div>
     <a class="headerlink" href="#DataDefinition.test_descriptors"></a>
     
-    
+            <div class="docstring"><p>List of test descriptor column names.</p>
+</div>
+
 
                             </div>
                             <div id="DataDefinition.ranking" class="classattr">
@@ -977,18 +1373,22 @@ evidently    </h1>
     </div>
     <a class="headerlink" href="#DataDefinition.ranking"></a>
     
-    
+            <div class="docstring"><p>List of ranking/recsys task configurations (<code><a href="#Recsys">Recsys</a></code>).</p>
+</div>
+
 
                             </div>
                             <div id="DataDefinition.special_columns" class="classattr">
                                 <div class="attr variable">
-            <span class="name">special_columns</span><span class="annotation">: List[evidently.core.datasets.SpecialColumnInfo]</span>
+            <span class="name">special_columns</span><span class="annotation">: List[<a href="evidently/core/datasets.html#SpecialColumnInfo">evidently.core.datasets.SpecialColumnInfo</a>]</span>
 
         
     </div>
     <a class="headerlink" href="#DataDefinition.special_columns"></a>
     
-    
+            <div class="docstring"><p>Additional special column configurations.</p>
+</div>
+
 
                             </div>
                             <div id="DataDefinition.get_numerical_columns" class="classattr">
@@ -1001,7 +1401,15 @@ evidently    </h1>
     </div>
     <a class="headerlink" href="#DataDefinition.get_numerical_columns"></a>
     
-    
+            <div class="docstring"><p>Get all numerical columns including descriptors.</p>
+
+<p>Returns:</p>
+
+<ul>
+<li>List of numerical column names (includes both explicitly mapped and descriptor columns)</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="DataDefinition.get_categorical_columns" class="classattr">
@@ -1014,7 +1422,15 @@ evidently    </h1>
     </div>
     <a class="headerlink" href="#DataDefinition.get_categorical_columns"></a>
     
-    
+            <div class="docstring"><p>Get all categorical columns including descriptors.</p>
+
+<p>Returns:</p>
+
+<ul>
+<li>List of categorical column names (includes both explicitly mapped and descriptor columns)</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="DataDefinition.get_text_columns" class="classattr">
@@ -1027,7 +1443,15 @@ evidently    </h1>
     </div>
     <a class="headerlink" href="#DataDefinition.get_text_columns"></a>
     
-    
+            <div class="docstring"><p>Get all text columns.</p>
+
+<p>Returns:</p>
+
+<ul>
+<li>List of text column names</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="DataDefinition.get_datetime_columns" class="classattr">
@@ -1040,7 +1464,15 @@ evidently    </h1>
     </div>
     <a class="headerlink" href="#DataDefinition.get_datetime_columns"></a>
     
-    
+            <div class="docstring"><p>Get all datetime columns.</p>
+
+<p>Returns:</p>
+
+<ul>
+<li>List of datetime column names</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="DataDefinition.get_unknown_columns" class="classattr">
@@ -1053,7 +1485,15 @@ evidently    </h1>
     </div>
     <a class="headerlink" href="#DataDefinition.get_unknown_columns"></a>
     
-    
+            <div class="docstring"><p>Get all unknown/unclassified columns.</p>
+
+<p>Returns:</p>
+
+<ul>
+<li>List of unknown column names</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="DataDefinition.get_list_columns" class="classattr">
@@ -1066,7 +1506,15 @@ evidently    </h1>
     </div>
     <a class="headerlink" href="#DataDefinition.get_list_columns"></a>
     
-    
+            <div class="docstring"><p>Get all list/array columns.</p>
+
+<p>Returns:</p>
+
+<ul>
+<li>List of list column names</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="DataDefinition.get_column_type" class="classattr">
@@ -1079,7 +1527,21 @@ evidently    </h1>
     </div>
     <a class="headerlink" href="#DataDefinition.get_column_type"></a>
     
-    
+            <div class="docstring"><p>Get the column type for a specific column.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>column_name</code>: Name of the column to check</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li><code><a href="#ColumnType">evidently.legacy.core.ColumnType</a></code> enum value for the column</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="DataDefinition.get_classification" class="classattr">
@@ -1092,7 +1554,21 @@ evidently    </h1>
     </div>
     <a class="headerlink" href="#DataDefinition.get_classification"></a>
     
-    
+            <div class="docstring"><p>Get classification configuration by ID.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>classification_id</code>: Name/ID of the classification task</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li><code><a href="#BinaryClassification">BinaryClassification</a></code> or <code><a href="#MulticlassClassification">MulticlassClassification</a></code> configuration or None if not found</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="DataDefinition.get_ranking" class="classattr">
@@ -1105,7 +1581,21 @@ evidently    </h1>
     </div>
     <a class="headerlink" href="#DataDefinition.get_ranking"></a>
     
-    
+            <div class="docstring"><p>Get ranking/recsys configuration by ID.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>ranking_id</code>: Name/ID of the ranking task</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li><code><a href="#Recsys">Recsys</a></code> configuration or None if not found</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="DataDefinition.get_columns" class="classattr">
@@ -1118,7 +1608,21 @@ evidently    </h1>
     </div>
     <a class="headerlink" href="#DataDefinition.get_columns"></a>
     
-    
+            <div class="docstring"><p>Get column names of specified types.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>types</code>: List of <code><a href="#ColumnType">evidently.legacy.core.ColumnType</a></code> values to filter by</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li>Generator yielding column names matching the specified types</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="DataDefinition.get_regression" class="classattr">
@@ -1131,7 +1635,21 @@ evidently    </h1>
     </div>
     <a class="headerlink" href="#DataDefinition.get_regression"></a>
     
-    
+            <div class="docstring"><p>Get regression configuration by ID.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>regression_id</code>: Name/ID of the regression task</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li><code><a href="#Regression">Regression</a></code> configuration or None if not found</li>
+</ul>
+</div>
+
 
                             </div>
                 </section>
@@ -1146,7 +1664,24 @@ evidently    </h1>
     </div>
     <a class="headerlink" href="#BinaryClassification"></a>
     
-    
+            <div class="docstring"><p>Configuration for binary classification evaluation tasks.</p>
+
+<p>Maps columns containing target labels and predictions for binary classification.
+Used in <code><a href="#DataDefinition">DataDefinition</a></code> to specify which columns contain classification data.</p>
+
+<p>Example:</p>
+
+<div class="pdoc-code codehilite">
+<pre><span></span><code><span class="n">definition</span> <span class="o">=</span> <span class="n">DataDefinition</span><span class="p">(</span>
+    <span class="n">classification</span><span class="o">=</span><span class="p">[</span><span class="n">BinaryClassification</span><span class="p">(</span>
+        <span class="n">target</span><span class="o">=</span><span class="s2">&quot;target&quot;</span><span class="p">,</span>
+        <span class="n">prediction_labels</span><span class="o">=</span><span class="s2">&quot;prediction&quot;</span>
+    <span class="p">)]</span>
+<span class="p">)</span>
+</code></pre>
+</div>
+</div>
+
 
                             <div id="BinaryClassification.__init__" class="classattr">
                                 <div class="attr function">
@@ -1157,7 +1692,12 @@ evidently    </h1>
     </div>
     <a class="headerlink" href="#BinaryClassification.__init__"></a>
     
-    
+            <div class="docstring"><p>Initialize binary classification configuration.</p>
+
+<p>If no arguments are provided, defaults to <code>target="target"</code> and <code>prediction_probas="prediction"</code>.
+Otherwise, requires <code><a href="#BinaryClassification.target">target</a></code> and at least one of <code><a href="#BinaryClassification.prediction_labels">prediction_labels</a></code> or <code><a href="#BinaryClassification.prediction_probas">prediction_probas</a></code>.</p>
+</div>
+
 
                             </div>
                             <div id="BinaryClassification.name" class="classattr">
@@ -1168,7 +1708,9 @@ evidently    </h1>
     </div>
     <a class="headerlink" href="#BinaryClassification.name"></a>
     
-    
+            <div class="docstring"><p>Identifier for this classification task.</p>
+</div>
+
 
                             </div>
                             <div id="BinaryClassification.target" class="classattr">
@@ -1179,7 +1721,9 @@ evidently    </h1>
     </div>
     <a class="headerlink" href="#BinaryClassification.target"></a>
     
-    
+            <div class="docstring"><p>Column name with true binary labels.</p>
+</div>
+
 
                             </div>
                             <div id="BinaryClassification.prediction_labels" class="classattr">
@@ -1190,7 +1734,9 @@ evidently    </h1>
     </div>
     <a class="headerlink" href="#BinaryClassification.prediction_labels"></a>
     
-    
+            <div class="docstring"><p>Column name with predicted binary labels.</p>
+</div>
+
 
                             </div>
                             <div id="BinaryClassification.prediction_probas" class="classattr">
@@ -1201,7 +1747,9 @@ evidently    </h1>
     </div>
     <a class="headerlink" href="#BinaryClassification.prediction_probas"></a>
     
-    
+            <div class="docstring"><p>Column name with predicted probabilities.</p>
+</div>
+
 
                             </div>
                             <div id="BinaryClassification.pos_label" class="classattr">
@@ -1212,7 +1760,9 @@ evidently    </h1>
     </div>
     <a class="headerlink" href="#BinaryClassification.pos_label"></a>
     
-    
+            <div class="docstring"><p>Value representing the positive class.</p>
+</div>
+
 
                             </div>
                             <div id="BinaryClassification.labels" class="classattr">
@@ -1223,7 +1773,9 @@ evidently    </h1>
     </div>
     <a class="headerlink" href="#BinaryClassification.labels"></a>
     
-    
+            <div class="docstring"><p>Optional mapping of label values to display names.</p>
+</div>
+
 
                             </div>
                 </section>
@@ -1238,7 +1790,25 @@ evidently    </h1>
     </div>
     <a class="headerlink" href="#MulticlassClassification"></a>
     
-    
+            <div class="docstring"><p>Configuration for multiclass classification evaluation tasks.</p>
+
+<p>Maps columns containing target labels and predictions for multiclass classification.
+Used in <code><a href="#DataDefinition">DataDefinition</a></code> to specify which columns contain classification data.</p>
+
+<p>Example:</p>
+
+<div class="pdoc-code codehilite">
+<pre><span></span><code><span class="n">definition</span> <span class="o">=</span> <span class="n">DataDefinition</span><span class="p">(</span>
+    <span class="n">classification</span><span class="o">=</span><span class="p">[</span><span class="n">MulticlassClassification</span><span class="p">(</span>
+        <span class="n">target</span><span class="o">=</span><span class="s2">&quot;target&quot;</span><span class="p">,</span>
+        <span class="n">prediction_labels</span><span class="o">=</span><span class="s2">&quot;prediction&quot;</span><span class="p">,</span>
+        <span class="n">prediction_probas</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;0&quot;</span><span class="p">,</span> <span class="s2">&quot;1&quot;</span><span class="p">,</span> <span class="s2">&quot;2&quot;</span><span class="p">]</span>
+    <span class="p">)]</span>
+<span class="p">)</span>
+</code></pre>
+</div>
+</div>
+
 
                             <div id="MulticlassClassification.__init__" class="classattr">
                                 <div class="attr function">
@@ -1249,7 +1819,12 @@ evidently    </h1>
     </div>
     <a class="headerlink" href="#MulticlassClassification.__init__"></a>
     
-    
+            <div class="docstring"><p>Initialize multiclass classification configuration.</p>
+
+<p>If no arguments are provided, defaults to <code>target="target"</code> and <code>prediction_labels="prediction"</code>.
+Otherwise, requires <code><a href="#MulticlassClassification.target">target</a></code> and at least one of <code><a href="#MulticlassClassification.prediction_labels">prediction_labels</a></code> or <code><a href="#MulticlassClassification.prediction_probas">prediction_probas</a></code>.</p>
+</div>
+
 
                             </div>
                             <div id="MulticlassClassification.name" class="classattr">
@@ -1261,7 +1836,9 @@ evidently    </h1>
     </div>
     <a class="headerlink" href="#MulticlassClassification.name"></a>
     
-    
+            <div class="docstring"><p>Identifier for this classification task.</p>
+</div>
+
 
                             </div>
                             <div id="MulticlassClassification.target" class="classattr">
@@ -1273,7 +1850,9 @@ evidently    </h1>
     </div>
     <a class="headerlink" href="#MulticlassClassification.target"></a>
     
-    
+            <div class="docstring"><p>Column name with true class labels.</p>
+</div>
+
 
                             </div>
                             <div id="MulticlassClassification.prediction_labels" class="classattr">
@@ -1285,7 +1864,9 @@ evidently    </h1>
     </div>
     <a class="headerlink" href="#MulticlassClassification.prediction_labels"></a>
     
-    
+            <div class="docstring"><p>Column name with predicted class labels.</p>
+</div>
+
 
                             </div>
                             <div id="MulticlassClassification.prediction_probas" class="classattr">
@@ -1297,7 +1878,9 @@ evidently    </h1>
     </div>
     <a class="headerlink" href="#MulticlassClassification.prediction_probas"></a>
     
-    
+            <div class="docstring"><p>List of column names with predicted probabilities per class.</p>
+</div>
+
 
                             </div>
                             <div id="MulticlassClassification.labels" class="classattr">
@@ -1309,7 +1892,9 @@ evidently    </h1>
     </div>
     <a class="headerlink" href="#MulticlassClassification.labels"></a>
     
-    
+            <div class="docstring"><p>Optional mapping of label values to display names.</p>
+</div>
+
 
                             </div>
                 </section>
@@ -1324,7 +1909,21 @@ evidently    </h1>
     </div>
     <a class="headerlink" href="#Regression"></a>
     
-    
+            <div class="docstring"><p>Configuration for regression evaluation tasks.</p>
+
+<p>Maps columns containing target values and predictions for regression.
+Used in <code><a href="#DataDefinition">DataDefinition</a></code> to specify which columns contain regression data.</p>
+
+<p>Example:</p>
+
+<div class="pdoc-code codehilite">
+<pre><span></span><code><span class="n">definition</span> <span class="o">=</span> <span class="n">DataDefinition</span><span class="p">(</span>
+    <span class="n">regression</span><span class="o">=</span><span class="p">[</span><span class="n">Regression</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="s2">&quot;y_true&quot;</span><span class="p">,</span> <span class="n">prediction</span><span class="o">=</span><span class="s2">&quot;y_pred&quot;</span><span class="p">)]</span>
+<span class="p">)</span>
+</code></pre>
+</div>
+</div>
+
 
                             <div id="Regression.__init__" class="classattr">
                                 <div class="attr function">
@@ -1347,7 +1946,9 @@ evidently    </h1>
     </div>
     <a class="headerlink" href="#Regression.name"></a>
     
-    
+            <div class="docstring"><p>Identifier for this regression task.</p>
+</div>
+
 
                             </div>
                             <div id="Regression.target" class="classattr">
@@ -1359,7 +1960,9 @@ evidently    </h1>
     </div>
     <a class="headerlink" href="#Regression.target"></a>
     
-    
+            <div class="docstring"><p>Column name with actual/true values.</p>
+</div>
+
 
                             </div>
                             <div id="Regression.prediction" class="classattr">
@@ -1371,7 +1974,9 @@ evidently    </h1>
     </div>
     <a class="headerlink" href="#Regression.prediction"></a>
     
-    
+            <div class="docstring"><p>Column name with predicted values.</p>
+</div>
+
 
                             </div>
                 </section>
@@ -1386,7 +1991,21 @@ evidently    </h1>
     </div>
     <a class="headerlink" href="#Recsys"></a>
     
-    
+            <div class="docstring"><p>Configuration for recommender systems and ranking evaluation tasks.</p>
+
+<p>Maps columns for evaluating recommendation systems, including user-item interactions
+and relevance scores. Used in <code><a href="#DataDefinition">DataDefinition</a></code> to specify ranking/recsys data structure.</p>
+
+<p>Example:</p>
+
+<div class="pdoc-code codehilite">
+<pre><span></span><code><span class="n">definition</span> <span class="o">=</span> <span class="n">DataDefinition</span><span class="p">(</span>
+    <span class="n">ranking</span><span class="o">=</span><span class="p">[</span><span class="n">Recsys</span><span class="p">()]</span>
+<span class="p">)</span>
+</code></pre>
+</div>
+</div>
+
 
                             <div id="Recsys.__init__" class="classattr">
                                 <div class="attr function">
@@ -1409,7 +2028,9 @@ evidently    </h1>
     </div>
     <a class="headerlink" href="#Recsys.name"></a>
     
-    
+            <div class="docstring"><p>Identifier for this ranking task.</p>
+</div>
+
 
                             </div>
                             <div id="Recsys.user_id" class="classattr">
@@ -1421,7 +2042,9 @@ evidently    </h1>
     </div>
     <a class="headerlink" href="#Recsys.user_id"></a>
     
-    
+            <div class="docstring"><p>Column name with user identifiers.</p>
+</div>
+
 
                             </div>
                             <div id="Recsys.item_id" class="classattr">
@@ -1433,7 +2056,9 @@ evidently    </h1>
     </div>
     <a class="headerlink" href="#Recsys.item_id"></a>
     
-    
+            <div class="docstring"><p>Column name with item identifiers.</p>
+</div>
+
 
                             </div>
                             <div id="Recsys.target" class="classattr">
@@ -1445,7 +2070,9 @@ evidently    </h1>
     </div>
     <a class="headerlink" href="#Recsys.target"></a>
     
-    
+            <div class="docstring"><p>Column name with relevance labels/scores.</p>
+</div>
+
 
                             </div>
                             <div id="Recsys.prediction" class="classattr">
@@ -1457,7 +2084,9 @@ evidently    </h1>
     </div>
     <a class="headerlink" href="#Recsys.prediction"></a>
     
-    
+            <div class="docstring"><p>Column name with predicted scores or ranks.</p>
+</div>
+
 
                             </div>
                             <div id="Recsys.recommendations_type" class="classattr">
@@ -1469,7 +2098,9 @@ evidently    </h1>
     </div>
     <a class="headerlink" href="#Recsys.recommendations_type"></a>
     
-    
+            <div class="docstring"><p>Type of prediction - "score" or "rank".</p>
+</div>
+
 
                             </div>
                 </section>
@@ -1484,7 +2115,25 @@ evidently    </h1>
     </div>
     <a class="headerlink" href="#LLMClassification"></a>
     
-    
+            <div class="docstring"><p>Configuration for LLM classification evaluation tasks.</p>
+
+<p>Maps columns containing LLM inputs, outputs, and optional reasoning for LLM evaluation.
+Used in <code><a href="#DataDefinition">DataDefinition</a></code> to specify which columns contain LLM interaction data.</p>
+
+<p>Example:</p>
+
+<div class="pdoc-code codehilite">
+<pre><span></span><code><span class="n">definition</span> <span class="o">=</span> <span class="n">DataDefinition</span><span class="p">(</span>
+    <span class="n">llm</span><span class="o">=</span><span class="n">LLMClassification</span><span class="p">(</span>
+        <span class="nb">input</span><span class="o">=</span><span class="s2">&quot;question&quot;</span><span class="p">,</span>
+        <span class="n">target</span><span class="o">=</span><span class="s2">&quot;expected_answer&quot;</span><span class="p">,</span>
+        <span class="n">predictions</span><span class="o">=</span><span class="s2">&quot;model_answer&quot;</span>
+    <span class="p">)</span>
+<span class="p">)</span>
+</code></pre>
+</div>
+</div>
+
 
                             <div id="LLMClassification.__init__" class="classattr">
                                 <div class="attr function">
@@ -1506,7 +2155,9 @@ evidently    </h1>
     </div>
     <a class="headerlink" href="#LLMClassification.input"></a>
     
-    
+            <div class="docstring"><p>Column name with LLM input/prompt text.</p>
+</div>
+
 
                             </div>
                             <div id="LLMClassification.target" class="classattr">
@@ -1517,7 +2168,9 @@ evidently    </h1>
     </div>
     <a class="headerlink" href="#LLMClassification.target"></a>
     
-    
+            <div class="docstring"><p>Column name with expected/ground truth output.</p>
+</div>
+
 
                             </div>
                             <div id="LLMClassification.predictions" class="classattr">
@@ -1529,7 +2182,9 @@ evidently    </h1>
     </div>
     <a class="headerlink" href="#LLMClassification.predictions"></a>
     
-    
+            <div class="docstring"><p>Column name with LLM-generated output.</p>
+</div>
+
 
                             </div>
                             <div id="LLMClassification.reasoning" class="classattr">
@@ -1541,7 +2196,9 @@ evidently    </h1>
     </div>
     <a class="headerlink" href="#LLMClassification.reasoning"></a>
     
-    
+            <div class="docstring"><p>Column name with reasoning text.</p>
+</div>
+
 
                             </div>
                             <div id="LLMClassification.prediction_reasoning" class="classattr">
@@ -1553,7 +2210,9 @@ evidently    </h1>
     </div>
     <a class="headerlink" href="#LLMClassification.prediction_reasoning"></a>
     
-    
+            <div class="docstring"><p>Column name with reasoning for predictions.</p>
+</div>
+
 
                             </div>
                             <div id="LLMClassification.name" class="classattr">
@@ -1565,7 +2224,9 @@ evidently    </h1>
     </div>
     <a class="headerlink" href="#LLMClassification.name"></a>
     
-    
+            <div class="docstring"><p>Identifier for this LLM task.</p>
+</div>
+
 
                             </div>
                 </section>
@@ -1573,13 +2234,54 @@ evidently    </h1>
                     <div class="attr function">
             
         <span class="def">def</span>
-        <span class="name">compare</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="o">*</span><span class="n">runs</span><span class="p">:</span> <span class="n">evidently</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">report</span><span class="o">.</span><span class="n">Snapshot</span>,</span><span class="param">	<span class="n">index</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">evidently</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">report</span><span class="o">.</span><span class="n">Snapshot</span><span class="p">],</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="s1">&#39;timestamp&#39;</span>,</span><span class="param">	<span class="n">all_metrics</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>,</span><span class="param">	<span class="n">use_tests</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span></span><span class="return-annotation">) -> <span class="n">pandas</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">DataFrame</span>:</span></span>
+        <span class="name">compare</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="o">*</span><span class="n">runs</span><span class="p">:</span> <span class="n"><a href="evidently/core/report.html#Snapshot">evidently.core.report.Snapshot</a></span>,</span><span class="param">	<span class="n">index</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">Callable</span><span class="p">[[</span><span class="n"><a href="evidently/core/report.html#Snapshot">evidently.core.report.Snapshot</a></span><span class="p">],</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="s1">&#39;timestamp&#39;</span>,</span><span class="param">	<span class="n">all_metrics</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>,</span><span class="param">	<span class="n">use_tests</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span></span><span class="return-annotation">) -> <span class="n">pandas</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">DataFrame</span>:</span></span>
 
         
     </div>
     <a class="headerlink" href="#compare"></a>
     
-    
+            <div class="docstring"><p>Compare multiple <code><a href="#Report">Report</a></code> snapshots side-by-side in a <code>pandas.DataFrame</code>.</p>
+
+<p>If you computed multiple snapshots, you can quickly compare the resulting metrics
+side-by-side in a dataframe. This is useful for comparing:</p>
+
+<ul>
+<li>Different time periods</li>
+<li>Different model/prompt versions</li>
+<li>Different datasets</li>
+</ul>
+
+<p>Args:</p>
+
+<ul>
+<li><code>*runs</code>: One or more <code><a href="evidently/core/report.html#Snapshot">evidently.core.report.Snapshot</a></code> objects to compare</li>
+<li><code>index</code>: How to index the comparison. Can be:
+<ul>
+<li>"timestamp": Use snapshot timestamp (default)</li>
+<li>List of strings: Custom index values for each run</li>
+<li>Callable: Function that takes a <code>Snapshot</code> and returns index value</li>
+<li>"metadata.<key>": Use metadata value as index</li>
+</ul></li>
+<li><code>all_metrics</code>: If True, include all metrics from all runs. If False (default),
+only include metrics present in all runs.</li>
+<li><code>use_tests</code>: If True, include test results instead of metric values</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li><code>pandas.DataFrame</code> with metrics as rows and runs as columns, indexed by the specified index</li>
+</ul>
+
+<p>Example:</p>
+
+<div class="pdoc-code codehilite">
+<pre><span></span><code><span class="n">compare_dataframe</span> <span class="o">=</span> <span class="n">compare</span><span class="p">(</span><span class="n">my_eval_1</span><span class="p">,</span> <span class="n">my_eval_2</span><span class="p">,</span> <span class="n">my_eval_3</span><span class="p">)</span>
+<span class="n">compare_dataframe</span> <span class="o">=</span> <span class="n">compare</span><span class="p">(</span><span class="n">run1</span><span class="p">,</span> <span class="n">run2</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="s2">&quot;metadata.model_version&quot;</span><span class="p">)</span>
+</code></pre>
+</div>
+</div>
+
 
                 </section>
                 <section id="ColumnType">
@@ -1592,7 +2294,12 @@ evidently    </h1>
     </div>
     <a class="headerlink" href="#ColumnType"></a>
     
-    
+            <div class="docstring"><p>Column data type enumeration.</p>
+
+<p>Represents the type of data in a column. Used for automatic type inference
+and to determine which metrics and tests are applicable.</p>
+</div>
+
 
                             <div id="ColumnType.Numerical" class="classattr">
                                 <div class="attr variable">
@@ -1603,7 +2310,9 @@ evidently    </h1>
     </div>
     <a class="headerlink" href="#ColumnType.Numerical"></a>
     
-    
+            <div class="docstring"><p>Numeric columns (integers, floats).</p>
+</div>
+
 
                             </div>
                             <div id="ColumnType.Categorical" class="classattr">
@@ -1615,7 +2324,9 @@ evidently    </h1>
     </div>
     <a class="headerlink" href="#ColumnType.Categorical"></a>
     
-    
+            <div class="docstring"><p>Categorical columns with limited distinct values.</p>
+</div>
+
 
                             </div>
                             <div id="ColumnType.Text" class="classattr">
@@ -1627,7 +2338,9 @@ evidently    </h1>
     </div>
     <a class="headerlink" href="#ColumnType.Text"></a>
     
-    
+            <div class="docstring"><p>Text/string columns.</p>
+</div>
+
 
                             </div>
                             <div id="ColumnType.Datetime" class="classattr">
@@ -1639,7 +2352,9 @@ evidently    </h1>
     </div>
     <a class="headerlink" href="#ColumnType.Datetime"></a>
     
-    
+            <div class="docstring"><p>DateTime columns.</p>
+</div>
+
 
                             </div>
                             <div id="ColumnType.Date" class="classattr">
@@ -1651,7 +2366,9 @@ evidently    </h1>
     </div>
     <a class="headerlink" href="#ColumnType.Date"></a>
     
-    
+            <div class="docstring"><p>Date columns.</p>
+</div>
+
 
                             </div>
                             <div id="ColumnType.Id" class="classattr">
@@ -1663,7 +2380,9 @@ evidently    </h1>
     </div>
     <a class="headerlink" href="#ColumnType.Id"></a>
     
-    
+            <div class="docstring"><p>Identifier columns.</p>
+</div>
+
 
                             </div>
                             <div id="ColumnType.Unknown" class="classattr">
@@ -1675,7 +2394,9 @@ evidently    </h1>
     </div>
     <a class="headerlink" href="#ColumnType.Unknown"></a>
     
-    
+            <div class="docstring"><p>Columns with unknown or unclassified type.</p>
+</div>
+
 
                             </div>
                             <div id="ColumnType.List" class="classattr">
@@ -1687,7 +2408,9 @@ evidently    </h1>
     </div>
     <a class="headerlink" href="#ColumnType.List"></a>
     
-    
+            <div class="docstring"><p>Columns containing lists or arrays.</p>
+</div>
+
 
                             </div>
                 </section>
