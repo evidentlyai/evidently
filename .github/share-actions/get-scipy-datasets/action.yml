@@ -19,7 +19,7 @@ runs:
       if: ${{ steps.cache-scipy-data.outputs.cache-hit != 'true' }}
       env:
         SCIKIT_LEARN_DATA: scikit_learn_data
-      run: uv run --with scikit-learn --with pillow python .github/scripts/download_scipy_datasets
+      run: uv run --with scikit-learn --with pillow python .github/scripts/download_scipy_datasets.py
       shell: bash
     - name: Show cache folder
       run: ls scikit_learn_data
