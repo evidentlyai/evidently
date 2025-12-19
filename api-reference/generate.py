@@ -27,6 +27,7 @@ from typer import echo
 GITHUB_REPO_URL = "https://github.com/evidentlyai/evidently"
 THEME_DIR = "evidently-theme"
 OUTPUT_DIR = "dist"
+SQL_EXTRAS = "[sql]"
 
 # Get the script's directory (api-reference directory) to ensure paths are always correct
 SCRIPT_DIR = Path(__file__).parent.resolve()
@@ -35,7 +36,7 @@ OUTPUT_DIR_PATH = SCRIPT_DIR / OUTPUT_DIR
 
 
 # pdoc flags (will be set dynamically to use absolute paths)
-def get_pdoc_flags() -> list[str]:
+def get_pdoc_flags(github_blob_url: str, output_path: str) -> list[str]:
     """Get pdoc flags with correct theme path."""
     return [
         # "--no-include-undocumented",
@@ -46,6 +47,10 @@ def get_pdoc_flags() -> list[str]:
         # "https://demo.evidentlyai.com/static/img/evidently-ai-logo.png",
         "--favicon",
         "https://demo.evidentlyai.com/favicon.ico",
+        "-e",
+        f"evidently={github_blob_url}",
+        "-o",
+        output_path,
     ]
 
 
@@ -59,22 +64,11 @@ def yecho(message: str) -> None:
     print(f"\033[33m{message}\033[0m")
 
 
-def merge_modules_with_defaults(modules: list[str] | None = None) -> list[str]:
-    # Standart modules to document
-    DEFAULT_MODULES = [
-        "evidently",
-        "evidently.core",
-        # "evidently.guardrails",
-        # "evidently.sdk",
-        # "evidently.llm",
-        # "evidently.metrics",
-        # "evidently.ui.runner",
-    ]
+def merge_additional_modules_with_defaults(modules: list[str] | None = None) -> list[str]:
+    MAIN_MODULES = ["evidently", "evidently.core"]
+    modules = modules or []
 
-    if not modules:
-        return DEFAULT_MODULES
-
-    return modules
+    return list(set([*MAIN_MODULES, *modules]))
 
 
 def build_uv_run_flags(uv_run_flags: str = "", no_cache: bool = False) -> list[str]:
@@ -92,10 +86,23 @@ def build_uv_run_flags(uv_run_flags: str = "", no_cache: bool = False) -> list[s
     return flags
 
 
+def add_extras_to_ref(ref: str) -> str:
+    extras = SQL_EXTRAS
+
+    if extras in ref:
+        return ref
+    elif "==" in ref:
+        # Result: "evidently[sql]==v0.7.16"
+        package, version = ref.split("==", 1)
+        return f"{package}{extras}=={version}"
+    else:
+        # Result: "git+...@v0.7.16[sql]" or "/path/to/evidently[sql]"
+        return f"{ref}{extras}"
+
+
 def build_with_flag_for_evidently(evidently_ref: str) -> list[str]:
     """Build dependency flags list with the appropriate flag and ref pair."""
-    if not evidently_ref.endswith("[sql]"):
-        evidently_ref = f"{evidently_ref}[sql]"
+    evidently_ref = add_extras_to_ref(evidently_ref)
 
     is_local_path = evidently_ref.startswith("/")
     flag = "--with-editable" if is_local_path else "--with"
@@ -149,7 +156,7 @@ def generate_docs_by_git_revision(
     github_blob_url = f"{github_blob_prefix}/{revision}/src/evidently/"
     output_path = OUTPUT_DIR_PATH / format_revision_name(revision)
 
-    modules_to_use = merge_modules_with_defaults(modules)
+    modules_to_use = merge_additional_modules_with_defaults(modules)
 
     run_pdoc(
         version=version,
@@ -182,7 +189,7 @@ def generate_docs_by_pypi_version(
     github_blob_url = f"{github_blob_prefix}/v{version}/src/evidently/"
     output_path = OUTPUT_DIR_PATH / version
 
-    modules_to_use = merge_modules_with_defaults(modules)
+    modules_to_use = merge_additional_modules_with_defaults(modules)
 
     run_pdoc(
         version=version_label,
@@ -200,7 +207,6 @@ def generate_docs_from_local_source(
     no_cache: bool = False,
     uv_run_flags: str = "",
     modules: list[str] | None = None,
-    watch: bool = False,
     repo_url: str | None = None,
     api_reference_index_href: str = "/",
 ) -> None:
@@ -217,7 +223,7 @@ def generate_docs_from_local_source(
     github_blob_url = f"{github_blob_prefix}/main/src/evidently/"
     output_path = OUTPUT_DIR_PATH / format_local_path(path_to_evidently)
 
-    modules_to_use = merge_modules_with_defaults(modules)
+    modules_to_use = merge_additional_modules_with_defaults(modules)
 
     run_pdoc(
         version=version,
@@ -227,7 +233,6 @@ def generate_docs_from_local_source(
         no_cache=no_cache,
         uv_run_flags=uv_run_flags,
         modules=modules_to_use,
-        watch=watch,
         api_reference_index_href=api_reference_index_href,
     )
 
@@ -241,7 +246,6 @@ def run_pdoc(
     no_cache: bool = False,
     uv_run_flags: str = "",
     modules: list[str],
-    watch: bool = False,
     api_reference_index_href: str = "/",
 ) -> None:
     """Run pdoc command with the given parameters."""
@@ -257,10 +261,7 @@ def run_pdoc(
         *build_uv_run_flags(uv_run_flags, no_cache),
         *build_with_flag_for_evidently(evidently_ref),
         "pdoc",
-        *get_pdoc_flags(),
-        "-e",
-        f"evidently={github_blob_url}",
-        *(["-o", output_path] if not watch else []),
+        *get_pdoc_flags(github_blob_url, output_path),
         *modules,
     ]
 
@@ -289,15 +290,10 @@ def generate_docs(
         False, "--local-source-code", help="Generate documentation from local source code"
     ),
     # Additional flags
-    watch: bool = Option(
-        False,
-        "--watch",
-        help="Watch mode: run pdoc web server instead of generating output files (requires --local-source-code)",
-    ),
     no_cache: bool = Option(False, "--no-cache", help="Disable cache for uv run"),
     uv_run_flags: str = Option("", "--uv-run-flags", help="Additional flags to pass to uv run (space-separated)"),
-    modules: str = Option(
-        None, "--modules", help="Comma-separated list of modules to document (default: just top level 'evidently')"
+    additional_modules: str = Option(
+        None, "--additional-modules", help="Comma-separated list of additional modules to document"
     ),
     repo_url: str = Option(
         None, "--repo-url", help="Custom GitHub repository URL (default: https://github.com/evidentlyai/evidently)"
@@ -324,13 +320,9 @@ def generate_docs(
     if provided_count > 1:
         raise BadParameter("You can only specify one of: --git-revision, --pypi-version, or --local-source-code")
 
-    # Validate watch mode is only used with local source code
-    if watch and not local_source_code:
-        raise BadParameter("--watch mode can only be used with --local-source-code")
-
     modules_list = None
-    if modules:
-        modules_list = [m.strip() for m in modules.split(",") if m.strip()]
+    if additional_modules:
+        modules_list = [m.strip() for m in additional_modules.split(",") if m.strip()]
 
     if pypi_version:
         generate_docs_by_pypi_version(
@@ -355,7 +347,6 @@ def generate_docs(
             no_cache=no_cache,
             uv_run_flags=uv_run_flags,
             modules=modules_list,
-            watch=watch,
             repo_url=repo_url,
             api_reference_index_href=api_reference_index_href,
         )
