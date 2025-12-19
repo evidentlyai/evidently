@@ -11,14 +11,16 @@ switch (action) {
   case 'index:print':
     index.printIndex()
     break
-  case 'index:prepare-api-reference':
-    apiReferenceIndex.prepareApiReference()
+  case 'copy-new-api-references':
+    apiReferenceIndex.copyNewApiReferences()
+    break
+  case 'delete-old-branch-folders':
+    apiReferenceIndex.deleteOldBranchFolders()
     break
   case 'run-all':
-    apiReferenceIndex.prepareApiReference()
-
+    apiReferenceIndex.copyNewApiReferences()
+    apiReferenceIndex.deleteOldBranchFolders()
     apiReferenceIndex.writeApiReferenceIndex()
-
     index.writeIndex()
 
     consoleGroup('index')

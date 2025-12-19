@@ -1,56 +1,53 @@
 import fs from 'node:fs'
 
 import { produceApiReferenceIndex } from '@lib/produce-indexes/api-reference-index'
-import { getRootPath, join } from '@lib/utils'
+import {
+  API_REFERENCE_ARTIFACTS_PATH,
+  DOCS_API_REFERENCE_PATH,
+  consoleGroup,
+  consoleGroupEnd,
+  getApiReferenceDescriptors,
+  getFolderLastModificationTimestamp,
+  join
+} from '@lib/utils'
 
-const API_REFERENCE_ARTIFACTS_PATH = 'artifacts/api-reference'
-
-const prepareApiReference = (): void => {
-  const apiReferencePath = join(getRootPath(), API_REFERENCE_ARTIFACTS_PATH)
-
-  // Check if the directory exists
-  if (!fs.existsSync(apiReferencePath)) {
+const copyNewApiReferences = (): void => {
+  if (!fs.existsSync(API_REFERENCE_ARTIFACTS_PATH)) {
     console.log(`${API_REFERENCE_ARTIFACTS_PATH} folder does not exist`)
     return
   }
 
-  // Check if it's actually a directory
-  const stats = fs.statSync(apiReferencePath)
+  const stats = fs.statSync(API_REFERENCE_ARTIFACTS_PATH)
   if (!stats.isDirectory()) {
     console.log(`${API_REFERENCE_ARTIFACTS_PATH} is not a directory`)
     return
   }
 
-  // Read directory contents
-  const entries = fs.readdirSync(apiReferencePath, { withFileTypes: true })
+  const entries = fs.readdirSync(API_REFERENCE_ARTIFACTS_PATH, { withFileTypes: true })
 
-  // Filter for folders only
   const folders = entries.filter((entry) => entry.isDirectory()).map((entry) => entry.name)
 
   if (folders.length === 0) {
-    console.log('No folders found in artifacts/api-reference')
+    console.log(`No folders found in ${API_REFERENCE_ARTIFACTS_PATH}`)
     return
   }
 
-  // Copy folders to ./docs/api-reference
-
-  const docsApiReferencePath = join(getRootPath(), 'docs', 'api-reference')
-
-  // Create docs/api-reference directory if it doesn't exist
-  if (!fs.existsSync(docsApiReferencePath)) {
-    fs.mkdirSync(docsApiReferencePath, { recursive: true })
-    console.log(`Created directory: ${docsApiReferencePath}`)
+  if (!fs.existsSync(DOCS_API_REFERENCE_PATH)) {
+    fs.mkdirSync(DOCS_API_REFERENCE_PATH, { recursive: true })
+    console.log(`Created directory: ${DOCS_API_REFERENCE_PATH}`)
   }
 
-  console.log('Copying folders to docs/api-reference:')
+  console.log(`Copying folders to ${DOCS_API_REFERENCE_PATH}:`)
   for (const folder of folders) {
-    const sourceFolderPath = join(apiReferencePath, folder)
-    const destFolderPath = join(docsApiReferencePath, folder)
+    const sourceFolderPath = join(API_REFERENCE_ARTIFACTS_PATH, folder)
+    const destFolderPath = join(DOCS_API_REFERENCE_PATH, folder)
 
-    // Copy folder recursively with force overwrite
+    if (fs.existsSync(destFolderPath)) {
+      fs.rmSync(destFolderPath, { recursive: true, force: true })
+    }
+
     fs.cpSync(sourceFolderPath, destFolderPath, {
-      recursive: true,
-      force: true
+      recursive: true
     })
 
     console.log(`Copied: ${folder}`)
@@ -64,20 +61,55 @@ const printApiReferenceIndex = (): void => {
 }
 
 const writeApiReferenceIndex = (): void => {
-  const apiReferencePath = join(getRootPath(), 'docs', 'api-reference')
-  const apiReferencePathIndex = join(apiReferencePath, 'index.html')
+  const apiReferencePathIndex = join(DOCS_API_REFERENCE_PATH, 'index.html')
 
-  if (!fs.existsSync(apiReferencePath)) {
-    fs.mkdirSync(apiReferencePath, { recursive: true })
-    console.log(`Created directory: ${apiReferencePath}`)
+  if (!fs.existsSync(DOCS_API_REFERENCE_PATH)) {
+    fs.mkdirSync(DOCS_API_REFERENCE_PATH, { recursive: true })
+    console.log(`Created directory: ${DOCS_API_REFERENCE_PATH}`)
   }
 
   const result = produceApiReferenceIndex()
   fs.writeFileSync(apiReferencePathIndex, result)
 }
 
+const deleteOldBranchFolders = (): void => {
+  consoleGroup('Checking for old api-references to delete')
+  consoleGroupEnd()
+  const apiReferenceDescriptors = getApiReferenceDescriptors()
+  const branchDescriptors = apiReferenceDescriptors.filter(({ type }) => type === 'branch')
+
+  const TWO_WEEKS_AGO = Date.now() - 14 * 24 * 60 * 60 * 1000
+  let deletedCount = 0
+
+  for (const descriptor of branchDescriptors) {
+    const folderLastModTimestamp = getFolderLastModificationTimestamp(descriptor.fullPath)
+
+    if (!folderLastModTimestamp) {
+      console.log(`No last modification timestamp found for ${descriptor.relativePath}`)
+      continue
+    }
+
+    consoleGroup(descriptor.relativePath)
+    console.log(`Last modification: ${folderLastModTimestamp.lastModificationDateString}`)
+
+    if (folderLastModTimestamp.lastModificationTimestamp <= TWO_WEEKS_AGO) {
+      fs.rmSync(descriptor.fullPath, { recursive: true, force: true })
+      console.log(`Deleted: ${descriptor.relativePath}`)
+      deletedCount++
+    }
+
+    consoleGroupEnd()
+  }
+
+  if (deletedCount === 0) {
+    consoleGroup('No old branch folders to delete')
+    consoleGroupEnd()
+  }
+}
+
 export const apiReferenceIndex = {
-  prepareApiReference,
+  copyNewApiReferences,
   printApiReferenceIndex,
-  writeApiReferenceIndex
+  writeApiReferenceIndex,
+  deleteOldBranchFolders
 }

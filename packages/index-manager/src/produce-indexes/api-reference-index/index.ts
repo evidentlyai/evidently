@@ -1,13 +1,4 @@
-import fs from 'node:fs'
-
-import {
-  createHead,
-  getDisplayNameByApiReferenceFolderName,
-  getRootPath,
-  htmlToString,
-  join,
-  withHtmlFrame
-} from '@lib/utils'
+import { createHead, getApiReferenceDescriptors, htmlToString, withHtmlFrame } from '@lib/utils'
 import { html } from '@remix-run/html-template'
 
 export const produceApiReferenceIndex = (): string => {
@@ -20,25 +11,10 @@ export const produceApiReferenceIndex = (): string => {
 }
 
 export const createBody = () => {
-  const apiReferencePath = join(getRootPath(), 'docs', 'api-reference')
+  const apiReferenceDescriptors = getApiReferenceDescriptors()
 
-  const apiReferenceDescriptors: { path: string; displayName: string }[] = (() => {
-    if (!fs.existsSync(apiReferencePath) || !fs.statSync(apiReferencePath).isDirectory()) {
-      return []
-    }
-
-    const entries = fs.readdirSync(apiReferencePath, { withFileTypes: true })
-
-    return entries
-      .filter((entry) => entry.isDirectory())
-      .map(({ name }) => {
-        const displayName = getDisplayNameByApiReferenceFolderName(name)
-        return { path: name, displayName }
-      })
-  })()
-
-  const mainDescriptors = apiReferenceDescriptors.filter(({ path }) => path === 'main')
-  const otherDescriptors = apiReferenceDescriptors.filter(({ path }) => path !== 'main')
+  const mainDescriptors = apiReferenceDescriptors.filter(({ type }) => type === 'main')
+  const otherDescriptors = apiReferenceDescriptors.filter(({ type }) => type === 'branch')
 
   return html`
     <body>
@@ -55,7 +31,7 @@ export const createBody = () => {
               ${
                 mainDescriptors.length > 0
                   ? html`
-                    ${mainDescriptors.map(({ path, displayName }) => html`<p><a href="./${path}">${displayName}</a></p>`)}
+                    ${mainDescriptors.map(({ relativePath, displayName }) => html`<p><a href="./${relativePath}">${displayName}</a></p>`)}
                   `
                   : ''
               }
@@ -65,7 +41,7 @@ export const createBody = () => {
                     <details>
                       <summary>Other api references</summary>
                       <ul>
-                        ${otherDescriptors.map(({ path, displayName }) => html`<li><a href="./${path}">${displayName}</a></li>`)}
+                        ${otherDescriptors.map(({ relativePath, displayName }) => html`<li><a href="./${relativePath}">${displayName}</a></li>`)}
                       </ul>
                     </details>
                   `
