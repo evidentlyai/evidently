@@ -138,6 +138,7 @@ jobs:
     if: ${{ needs.changed_files.outputs.evidently_any_modified == 'true' }}
     env:
       EVIDENTLY_TEST_ENVIRONMENT: 1
+      SCIKIT_LEARN_DATA: scikit_learn_data
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -166,6 +167,7 @@ jobs:
     name: Test ${{ matrix.os }} with py${{ matrix.python }}
     env:
       EVIDENTLY_TEST_ENVIRONMENT: 1
+      SCIKIT_LEARN_DATA: scikit_learn_data
     needs:
       - linter
       - prepare-cache-data
