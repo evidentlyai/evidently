@@ -2,7 +2,7 @@ import { createHead, getApiReferenceDescriptors, htmlToString, withHtmlFrame } f
 import { html } from '@remix-run/html-template'
 
 export const produceApiReferenceIndex = (): string => {
-  const head = createHead({ title: 'Evidently API reference' })
+  const head = createHead({ title: 'evidently API documentation' })
   const body = createBody()
 
   const page = withHtmlFrame({ head, body })
@@ -11,10 +11,7 @@ export const produceApiReferenceIndex = (): string => {
 }
 
 export const createBody = () => {
-  const apiReferenceDescriptors = getApiReferenceDescriptors()
-
-  const mainDescriptors = apiReferenceDescriptors.filter(({ type }) => type === 'main')
-  const otherDescriptors = apiReferenceDescriptors.filter(({ type }) => type === 'branch')
+  const { main, others, semvers, all } = getApiReferenceDescriptors()
 
   return html`
     <body>
@@ -25,30 +22,50 @@ export const createBody = () => {
             <h1>Evidently API Reference</h1>
             <h5>Browse available API documentation</h5>
           </header>
+          ${all.length === 0 ? html`<p>No API reference found</p>` : ''}
           ${
-            apiReferenceDescriptors.length > 0
+            main
               ? html`
-              ${
-                mainDescriptors.length > 0
-                  ? html`
-                    ${mainDescriptors.map(({ relativePath, displayName }) => html`<p><a href="./${relativePath}">${displayName}</a></p>`)}
-                  `
-                  : ''
-              }
-              ${
-                otherDescriptors.length > 0
-                  ? html`
-                    <details>
-                      <summary>Other api references</summary>
-                      <ul>
-                        ${otherDescriptors.map(({ relativePath, displayName }) => html`<li><a href="./${relativePath}">${displayName}</a></li>`)}
-                      </ul>
-                    </details>
-                  `
-                  : ''
-              }
-            `
-              : html`<p>No API reference found</p>`
+                <h6>Latest Development</h6>
+                <ul>
+                  <li><a href="./${main.path}">${main.displayName}</a></li>
+                </ul>
+              `
+              : ''
+          }
+          ${
+            semvers.length > 0
+              ? html`
+                <hr />
+                <h6>Stable Releases</h6>
+                <ul>
+                  ${semvers.map(
+                    ({ path, displayName }) =>
+                      html`<li>
+                        <a href="./${path}">${displayName}</a>
+                      </li>`
+                  )}
+                </ul>
+              `
+              : ''
+          }
+          ${
+            others.length > 0
+              ? html`
+                <hr />
+                <details>
+                  <summary>Other API References</summary>
+                  <ul>
+                    ${others.map(
+                      ({ path, displayName }) =>
+                        html`<li>
+                          <a href="./${path}">${displayName}</a>
+                        </li>`
+                    )}
+                  </ul>
+                </details>
+              `
+              : ''
           }
         </article>
       </main>

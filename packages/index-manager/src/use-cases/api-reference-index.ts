@@ -75,26 +75,25 @@ const writeApiReferenceIndex = (): void => {
 const deleteOldBranchFolders = (): void => {
   consoleGroup('Checking for old api-references to delete')
   consoleGroupEnd()
-  const apiReferenceDescriptors = getApiReferenceDescriptors()
-  const branchDescriptors = apiReferenceDescriptors.filter(({ type }) => type === 'branch')
+  const { others } = getApiReferenceDescriptors()
 
   const TWO_WEEKS_AGO = Date.now() - 14 * 24 * 60 * 60 * 1000
   let deletedCount = 0
 
-  for (const descriptor of branchDescriptors) {
-    const folderLastModTimestamp = getFolderLastModificationTimestamp(descriptor.fullPath)
+  for (const otherApiRef of others) {
+    const folderLastModTimestamp = getFolderLastModificationTimestamp(otherApiRef.fullPath)
 
     if (!folderLastModTimestamp) {
-      console.log(`No last modification timestamp found for ${descriptor.relativePath}`)
+      console.log(`No last modification timestamp found for ${otherApiRef.path}`)
       continue
     }
 
-    consoleGroup(descriptor.relativePath)
+    consoleGroup(otherApiRef.path)
     console.log(`Last modification: ${folderLastModTimestamp.lastModificationDateString}`)
 
     if (folderLastModTimestamp.lastModificationTimestamp <= TWO_WEEKS_AGO) {
-      fs.rmSync(descriptor.fullPath, { recursive: true, force: true })
-      console.log(`Deleted: ${descriptor.relativePath}`)
+      fs.rmSync(otherApiRef.fullPath, { recursive: true, force: true })
+      console.log(`Deleted: ${otherApiRef.path}`)
       deletedCount++
     }
 

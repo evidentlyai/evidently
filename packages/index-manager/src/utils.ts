@@ -4,6 +4,7 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { type SafeHtml, html } from '@remix-run/html-template'
 import { prettify } from 'htmlfy'
+import semver from 'semver'
 
 export const getRootPath = (): string => {
   const __dirname = path.dirname(fileURLToPath(import.meta.url))
@@ -62,12 +63,30 @@ export const createHead = (args: CreateHeadArgs) => {
   return headTags
 }
 
-export const checkIsBranchFolder = (name: string) => {
-  return name.startsWith('branch-')
+const checkIsBranchFolder = (name: string) => name.startsWith('branch-')
+
+const trySemver = (name: string) => semver.clean(name) ?? ''
+
+export const getReferenceType = (name: string) => {
+  if (name === 'main') {
+    return 'main'
+  }
+
+  if (trySemver(name)) {
+    return 'semver'
+  }
+
+  if (checkIsBranchFolder(name)) {
+    return 'branch'
+  }
+
+  return 'unknown'
 }
 
 export const getDisplayNameByApiReferenceFolderName = (name: string) => {
-  if (checkIsBranchFolder(name)) {
+  const type = getReferenceType(name)
+
+  if (type === 'branch') {
     return `branch/${name.slice(7)}`
   }
 
@@ -81,31 +100,52 @@ export const consoleGroup = (message: string) => {
 export const consoleGroupEnd = () => console.groupEnd()
 
 type ApiReferenceDescriptor = {
-  relativePath: string
+  path: string
   displayName: string
-  type: 'branch' | 'main'
   fullPath: string
+  type: 'branch' | 'main' | 'unknown' | 'semver'
+  semver: string
 }
 
-export const getApiReferenceDescriptors = (): ApiReferenceDescriptor[] => {
+export const getApiReferenceDescriptors = (): {
+  all: ApiReferenceDescriptor[]
+  main: ApiReferenceDescriptor | null
+  others: ApiReferenceDescriptor[]
+  semvers: ApiReferenceDescriptor[]
+} => {
   if (
     !fs.existsSync(DOCS_API_REFERENCE_PATH) ||
     !fs.statSync(DOCS_API_REFERENCE_PATH).isDirectory()
   ) {
-    return []
+    return { all: [], main: null, others: [], semvers: [] }
   }
 
   const entries = fs.readdirSync(DOCS_API_REFERENCE_PATH, { withFileTypes: true })
 
-  return entries
+  const allEntries = entries
     .filter((entry) => entry.isDirectory())
     .map(({ name }) => {
-      const displayName = getDisplayNameByApiReferenceFolderName(name)
-      const type = checkIsBranchFolder(name) ? 'branch' : 'main'
       const fullPath = join(DOCS_API_REFERENCE_PATH, name)
+      const displayName = getDisplayNameByApiReferenceFolderName(name)
+      const type = getReferenceType(name)
 
-      return { relativePath: name, displayName, type, fullPath }
+      return { path: name, displayName, type, fullPath, semver: trySemver(name) } as const
     })
+
+  const mainDescriptor = allEntries.find(({ type }) => type === 'main') ?? null
+
+  const otherDescriptors = allEntries.filter(({ type }) => type === 'branch' || type === 'unknown')
+
+  const semverDescriptors = allEntries
+    .filter(({ type }) => type === 'semver')
+    .sort((a, b) => -semver.compare(a.semver, b.semver))
+
+  return {
+    main: mainDescriptor,
+    others: otherDescriptors,
+    semvers: semverDescriptors,
+    all: allEntries
+  }
 }
 
 type FolderLastModificationTimestamp = {

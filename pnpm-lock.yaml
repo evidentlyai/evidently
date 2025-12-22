@@ -20,9 +20,15 @@ importers:
       '@types/node':
         specifier: ^24.10.2
         version: 24.10.2
+      '@types/semver':
+        specifier: ^7.7.1
+        version: 7.7.1
       htmlfy:
         specifier: ^1.0.1
         version: 1.0.1
+      semver:
+        specifier: ^7.7.3
+        version: 7.7.3
       tsx:
         specifier: ^4.21.0
         version: 4.21.0
@@ -248,6 +254,9 @@ packages:
   '@types/node@24.10.2':
     resolution: {integrity: sha512-WOhQTZ4G8xZ1tjJTvKOpyEVSGgOTvJAfDK3FNFgELyaTpzhdgHVHeqW8V+UJvzF5BT+/B54T/1S2K6gd9c7bbA==}
 
+  '@types/semver@7.7.1':
+    resolution: {integrity: sha512-FmgJfu+MOcQ370SD0ev7EI8TlCAfKYU+B4m5T3yXc1CiRN94g/SZPtsCkk506aUDtlMnFZvasDwHHUcZUEaYuA==}
+
   esbuild@0.27.1:
     resolution: {integrity: sha512-yY35KZckJJuVVPXpvjgxiCuVEJT67F6zDeVTv4rizyPrfGBUpZQsvmxnN+C371c2esD/hNMjj4tpBhuueLN7aA==}
     engines: {node: '>=18'}
@@ -266,6 +275,11 @@ packages:
 
   resolve-pkg-maps@1.0.0:
     resolution: {integrity: sha512-seS2Tj26TBVOC2NIc2rOe2y2ZO7efxITtLZcGSOnHHNOQ7CkiUBfw0Iw2ck6xkIhPwLhKNLS8BO+hEpngQlqzw==}
+
+  semver@7.7.3:
+    resolution: {integrity: sha512-SdsKMrI9TdgjdweUSR9MweHA4EJ8YxHn8DFaDisvhVlUOe4BF1tLD7GAj0lIqWVl+dPb/rExr0Btby5loQm20Q==}
+    engines: {node: '>=10'}
+    hasBin: true
 
   tsx@4.21.0:
     resolution: {integrity: sha512-5C1sg4USs1lfG0GFb2RLXsdpXqBSEhAaA/0kPL01wxzpMqLILNxIxIOKiILz+cdg/pLnOUxFYOR5yhHU666wbw==}
@@ -401,6 +415,8 @@ snapshots:
     dependencies:
       undici-types: 7.16.0
 
+  '@types/semver@7.7.1': {}
+
   esbuild@0.27.1:
     optionalDependencies:
       '@esbuild/aix-ppc64': 0.27.1
@@ -440,6 +456,8 @@ snapshots:
   htmlfy@1.0.1: {}
 
   resolve-pkg-maps@1.0.0: {}
+
+  semver@7.7.3: {}
 
   tsx@4.21.0:
     dependencies:

@@ -13,7 +13,9 @@
   "dependencies": {
     "@remix-run/html-template": "^0.3.0",
     "@types/node": "^24.10.2",
+    "@types/semver": "^7.7.1",
     "htmlfy": "^1.0.1",
+    "semver": "^7.7.3",
     "tsx": "^4.21.0"
   },
   "devDependencies": {
