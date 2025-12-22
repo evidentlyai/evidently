@@ -37,7 +37,7 @@ export const createBody = () => {
             semvers.length > 0
               ? html`
                 <hr />
-                <h6>Stable Releases</h6>
+                <h6>Releases</h6>
                 <ul>
                   ${semvers.map(
                     ({ path, displayName }) =>
