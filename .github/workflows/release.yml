@@ -112,6 +112,7 @@ jobs:
   generate-and-save-api-reference:
     name: Generate API reference documentation from PyPI version
     runs-on: ubuntu-22.04
+    continue-on-error: true
     needs:
       - publish_to_pypi
 
@@ -120,11 +121,12 @@ jobs:
       - name: 📚 Generate and upload API reference
         uses: ./.github/share-actions/generate-and-save-api-reference
         with:
-          source-flag: --pypi-version ${{ github.ref_name }}
+          source-flag: --git-revision ${{ github.ref_name }}
 
   download-and-deploy-api-reference:
     name: Download and deploy API reference documentation
     runs-on: ubuntu-22.04
+    continue-on-error: true
     needs:
       - generate-and-save-api-reference
     permissions:
@@ -140,7 +142,7 @@ jobs:
 
   create_release:
     name: Create release for the Tag
-    runs-on: [ubuntu-22.04]
+    runs-on: ubuntu-22.04
     needs:
       - publish_to_pypi
 

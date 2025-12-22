@@ -186,7 +186,7 @@ def generate_docs_by_pypi_version(
     github_repo_url = repo_url or GITHUB_REPO_URL
     github_blob_prefix = f"{github_repo_url}/blob"
     version_label = f"Version: {version}"
-    github_blob_url = f"{github_blob_prefix}/v{version}/src/evidently/"
+    github_blob_url = f"{github_blob_prefix}/{version}/src/evidently/"
     output_path = OUTPUT_DIR_PATH / version
 
     modules_to_use = merge_additional_modules_with_defaults(modules)
