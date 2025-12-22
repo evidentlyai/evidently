@@ -4,12 +4,13 @@ import subprocess
 import time
 from typing import Callable
 from typing import List
+from typing import Literal
 from typing import Optional
 from typing import Union
 
 from evidently._pydantic_compat import BaseModel
 from evidently._pydantic_compat import PrivateAttr
-from evidently.ui.runner.utils import get_url_to_service
+from evidently.ui.runner.utils import get_url_to_service_by_port
 from evidently.ui.runner.utils import is_service_running
 from evidently.ui.runner.utils import terminate_process
 from evidently.ui.service.demo_projects import DemoProjectNamesForCliType
@@ -23,6 +24,62 @@ if not logger.handlers:
     formatter = logging.Formatter("%(asctime)s [%(levelname)s]: %(message)s")
     handler.setFormatter(formatter)
     logger.addHandler(handler)
+
+
+class ServicePage:
+    service_page_path: str
+
+    def __init__(
+        self,
+        *,
+        project_id: Optional[str] = None,
+        project_list: Optional[
+            Union[Literal["reports"], Literal["datasets"], Literal["traces"], Literal["prompts"]]
+        ] = None,
+        report_id: Optional[str] = None,
+        dataset_id: Optional[str] = None,
+        export_id: Optional[str] = None,
+        trace_view_mode: Optional[Union[Literal["trace"], Literal["dataset"], Literal["dialog"]]] = None,
+        trace_id: Optional[str] = None,
+        prompt_id: Optional[str] = None,
+    ):
+        """
+        Initialize the ServicePage to construct a URL path for navigating to specific pages in the Evidently UI service.
+
+        Args:
+        - `project_id`: Optional project identifier.
+        - `project_list`: Optional list view type ("reports", "datasets", "traces", or "prompts").
+          If provided, navigates to a list page.
+        - `report_id`: Optional report identifier.
+        - `dataset_id`: Optional dataset identifier.
+        - `export_id`: Optional trace identifier.
+        - `trace_view_mode`: Optional trace view mode ("trace", "dataset", or "dialog").
+        - `trace_id`: Optional trace identifier.
+        - `prompt_id`: Optional prompt identifier.
+        """
+        self.service_page_path = ""
+
+        if project_id:
+            self.service_page_path += f"projects/{project_id}"
+            if project_list:
+                self.service_page_path += f"/{project_list}"
+                return
+            if report_id:
+                self.service_page_path += f"/reports/{report_id}"
+            if dataset_id:
+                self.service_page_path += f"/datasets/{dataset_id}"
+                return
+            if export_id:
+                self.service_page_path += f"/traces/{export_id}"
+                if trace_view_mode:
+                    self.service_page_path += f"/{trace_view_mode}"
+                    return
+                if trace_id:
+                    self.service_page_path += f"?trace-id={trace_id}"
+                return
+            if prompt_id:
+                self.service_page_path += f"/prompts/{prompt_id}"
+                return
 
 
 class RunServiceInfo(BaseModel):
@@ -50,13 +107,13 @@ class RunServiceInfoVariants:
             arbitrary_types_allowed = True
 
         def __str__(self) -> str:
-            return f"Running on {get_url_to_service(port=self.port)}"
+            return f"Running on {get_url_to_service_by_port(port=self.port)}"
 
         def __repr__(self) -> str:
-            return f"Running on {get_url_to_service(port=self.port)}"
+            return f"Running on {get_url_to_service_by_port(port=self.port)}"
 
         def _repr_html_(self):
-            return get_html_link_to_running_service(url_to_service=get_url_to_service(port=self.port))
+            return get_html_link_to_running_service(url_to_service=get_url_to_service_by_port(port=self.port))
 
     class NotRunning(RunServiceInfo):
         def raise_on_error(self):
@@ -76,10 +133,10 @@ class RunServiceInfoVariants:
 
 
 class _ServiceIframeHandler:
-    port: int
+    service_url: str
 
-    def __init__(self, port: int):
-        self.port = port
+    def __init__(self, url: str):
+        self.service_url = url
 
     def _repr_html_(self):
         return f"""
@@ -87,7 +144,8 @@ class _ServiceIframeHandler:
                     class="evidently-ui-iframe"
                     frameborder="0"
                     style="width: 100%; height: 1300px; max-height: 80vh"
-                    src="{get_url_to_service(port=self.port)}"
+                    allow="clipboard-write"
+                    src="{self.service_url}"
                 />
             """
 
@@ -118,12 +176,25 @@ class _EvidentlyUIRunnerImpl(BaseModel):
         logger.info(self._run_info)
         return self._run_info
 
-    def show_service(self):
+    def show_service(self, *, page: ServicePage = None):
         if not isinstance(self._run_info, RunServiceInfoVariants.Success):
             self._run_info.raise_on_error()
             raise ServiceRunnerError(f"Unexpected status: {self._run_info}")
 
-        return _ServiceIframeHandler(self._run_info.port)
+        port = self._run_info.port
+        service_url = get_url_to_service_by_port(port=port)
+
+        page = page or ServicePage()
+        service_url = f"{service_url}/{page.service_page_path}"
+
+        return _ServiceIframeHandler(service_url)
+
+    def get_service_url(self) -> str:
+        if not isinstance(self._run_info, RunServiceInfoVariants.Success):
+            self._run_info.raise_on_error()
+            raise ServiceRunnerError(f"Unexpected status: {self._run_info}")
+
+        return get_url_to_service_by_port(port=self._run_info.port)
 
     def terminate(self):
         self._run_info.raise_on_error()
@@ -144,7 +215,7 @@ class _EvidentlyUIRunnerImpl(BaseModel):
             self._run_info.raise_on_error()
             raise ServiceRunnerError(f"Unexpected status: {self._run_info}")
 
-        return RemoteWorkspace(base_url=get_url_to_service(port=self._run_info.port))
+        return RemoteWorkspace(base_url=get_url_to_service_by_port(port=self._run_info.port))
 
     def _run_evidently_service_on_port(
         self, *, port: int, max_wait_time_in_seconds: int = 10, time_step: float = 0.5
@@ -256,11 +327,20 @@ class EvidentlyUIRunner:
         """
         return self._runner.run(force=force)
 
-    def show_service(self):
+    def show_service(self, page: ServicePage = None):
         """
         Show the Evidently UI service in an iframe. Useful for Jupyter notebooks.
+
+        Args:
+        * `page`: Service page. See `ServicePage` for available options.
         """
-        return self._runner.show_service()
+        return self._runner.show_service(page=page)
+
+    def get_service_url(self) -> str:
+        """
+        Get the URL of the running service.
+        """
+        return self._runner.get_service_url()
 
     def get_workspace(self) -> RemoteWorkspace:
         """
