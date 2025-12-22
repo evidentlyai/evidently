@@ -47,6 +47,9 @@
                                 <a class="function" href="#EvidentlyUIRunner.show_service">show_service</a>
                         </li>
                         <li>
+                                <a class="function" href="#EvidentlyUIRunner.get_service_url">get_service_url</a>
+                        </li>
+                        <li>
                                 <a class="function" href="#EvidentlyUIRunner.get_workspace">get_workspace</a>
                         </li>
                         <li>
@@ -99,6 +102,18 @@
                                     </li>
                             </ul>
 
+                        </li>
+                </ul>
+
+            </li>
+            <li>
+                    <a class="class" href="#ServicePage">ServicePage</a>
+                            <ul class="memberlist">
+                        <li>
+                                <a class="function" href="#ServicePage.__init__">ServicePage</a>
+                        </li>
+                        <li>
+                                <a class="variable" href="#ServicePage.service_page_path">service_page_path</a>
                         </li>
                 </ul>
 
@@ -188,13 +203,34 @@ and forces a fresh start, ignoring cached runs.</li>
                                 <div class="attr function">
             
         <span class="def">def</span>
-        <span class="name">show_service</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span></span><span class="return-annotation">):</span></span>
+        <span class="name">show_service</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span>, </span><span class="param"><span class="n">page</span><span class="p">:</span> <span class="n"><a href="#ServicePage">ServicePage</a></span> <span class="o">=</span> <span class="kc">None</span></span><span class="return-annotation">):</span></span>
 
         
     </div>
     <a class="headerlink" href="#EvidentlyUIRunner.show_service"></a>
     
             <div class="docstring"><p>Show the Evidently UI service in an iframe. Useful for Jupyter notebooks.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>page</code>: Service page. See <code><a href="#ServicePage">ServicePage</a></code> for available options.</li>
+</ul>
+</div>
+
+
+                            </div>
+                            <div id="EvidentlyUIRunner.get_service_url" class="classattr">
+                                <div class="attr function">
+            
+        <span class="def">def</span>
+        <span class="name">get_service_url</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span></span><span class="return-annotation">) -> <span class="nb">str</span>:</span></span>
+
+        
+    </div>
+    <a class="headerlink" href="#EvidentlyUIRunner.get_service_url"></a>
+    
+            <div class="docstring"><p>Get the URL of the running service.</p>
 </div>
 
 
@@ -374,6 +410,58 @@ and forces a fresh start, ignoring cached runs.</li>
         
     </div>
     <a class="headerlink" href="#RunServiceInfoVariants.Failed.raise_on_error"></a>
+    
+    
+
+                            </div>
+                </section>
+                <section id="ServicePage">
+                    <div class="attr class">
+            
+    <span class="def">class</span>
+    <span class="name">ServicePage</span>:
+
+        
+    </div>
+    <a class="headerlink" href="#ServicePage"></a>
+    
+    
+
+                            <div id="ServicePage.__init__" class="classattr">
+                                <div class="attr function">
+            
+        <span class="name">ServicePage</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="o">*</span>,</span><span class="param">	<span class="n">project_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">project_list</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;reports&#39;</span><span class="p">],</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;datasets&#39;</span><span class="p">],</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;traces&#39;</span><span class="p">],</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;prompts&#39;</span><span class="p">],</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">report_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">dataset_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">export_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">trace_view_mode</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;trace&#39;</span><span class="p">],</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;dataset&#39;</span><span class="p">],</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;dialog&#39;</span><span class="p">],</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">trace_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">prompt_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span></span>)</span>
+
+        
+    </div>
+    <a class="headerlink" href="#ServicePage.__init__"></a>
+    
+            <div class="docstring"><p>Initialize the ServicePage to construct a URL path for navigating to specific pages in the Evidently UI service.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>project_id</code>: Optional project identifier.</li>
+<li><code>project_list</code>: Optional list view type ("reports", "datasets", "traces", or "prompts").
+If provided, navigates to a list page.</li>
+<li><code>report_id</code>: Optional report identifier.</li>
+<li><code>dataset_id</code>: Optional dataset identifier.</li>
+<li><code>export_id</code>: Optional trace identifier.</li>
+<li><code>trace_view_mode</code>: Optional trace view mode ("trace", "dataset", or "dialog").</li>
+<li><code>trace_id</code>: Optional trace identifier.</li>
+<li><code>prompt_id</code>: Optional prompt identifier.</li>
+</ul>
+</div>
+
+
+                            </div>
+                            <div id="ServicePage.service_page_path" class="classattr">
+                                <div class="attr variable">
+            <span class="name">service_page_path</span><span class="annotation">: str</span>
+
+        
+    </div>
+    <a class="headerlink" href="#ServicePage.service_page_path"></a>
     
     
 
