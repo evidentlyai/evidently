@@ -141,14 +141,21 @@ class TextMatch(Descriptor):
     """
 
     column_name: str
+    """Name of the text column to match against."""
     match_items: Union[str, List[str]]
+    """Items to match: list of strings or column name."""
     match_type: Literal["contains", "not_contains", "exact", "regex"] = "contains"
+    """Type of matching to perform."""
     match_mode: Literal["any", "all"] = "any"
+    """Match any item or all items."""
 
     # Processing options with smart defaults
     case_sensitive: bool = True
+    """Whether matching is case-sensitive."""
     lemmatize: bool = False
+    """Whether to lemmatize words before matching."""
     word_boundaries: bool = False
+    """Whether to match whole words only."""
 
     def __init__(
         self,

@@ -18,8 +18,11 @@ class CustomColumnDescriptor(Descriptor):
     """Descriptor that applies a custom function to a single column."""
 
     column_name: str
+    """Name of the column to process."""
     func: str
+    """Function name or callable to apply to column data."""
     _func: Optional[CustomColumnCallable] = PrivateAttr(None)
+    """Internal cached callable."""
 
     def __init__(
         self,
@@ -56,7 +59,9 @@ class CustomDescriptor(Descriptor):
     """Descriptor that applies a custom function to the entire dataset."""
 
     func: str
+    """Function name or callable to apply to dataset."""
     _func: Optional[CustomDescriptorCallable] = PrivateAttr(None)
+    """Internal cached callable."""
 
     def __init__(
         self,

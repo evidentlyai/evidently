@@ -18,6 +18,7 @@ class TextLength(Descriptor):
     """Compute the length of text in each row of a column."""
 
     column_name: str
+    """Name of the text column to measure."""
 
     def __init__(self, column_name: str, alias: Optional[str] = None, tests: Optional[List[AnyDescriptorTest]] = None):
         self.column_name: str = column_name

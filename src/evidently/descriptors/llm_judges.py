@@ -33,11 +33,16 @@ class GenericLLMDescriptor(Descriptor):
     """Generic descriptor for LLM-based evaluations with custom prompts."""
 
     input_columns: Dict[str, str]
+    """Mapping of prompt variable names to dataset column names."""
     provider: str
+    """LLM provider name (e.g., "openai", "anthropic")."""
     model: str
+    """Model name to use (e.g., "gpt-4o-mini")."""
     prompt: PromptContent
+    """Prompt template or messages to send to LLM."""
 
     _llm_wrapper: Optional[LLMWrapper] = PrivateAttr(None)
+    """Internal cached LLM wrapper."""
 
     def __init__(
         self,
@@ -114,10 +119,15 @@ class LLMEval(Descriptor):
     """Evaluate text using LLM with a prompt template."""
 
     provider: str
+    """LLM provider name (e.g., "openai", "anthropic")."""
     model: str
+    """Model name to use (e.g., "gpt-4o-mini")."""
     input_column: Optional[str] = None
+    """Single input column name (if using single column)."""
     input_columns: Optional[Dict[str, str]] = None
+    """Mapping of prompt variables to column names (if using multiple columns)."""
     template: BaseLLMPromptTemplate
+    """Prompt template defining the evaluation task."""
 
     # _llm_wrapper: Optional[LLMWrapper] = PrivateAttr(None)
     @property

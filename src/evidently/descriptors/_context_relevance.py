@@ -133,6 +133,9 @@ class AggregationMethod(Generic[T]):
 class MeanAggregation(AggregationMethod[float]):
     """Aggregate scores by computing the mean."""
 
+    column_type: ColumnType
+    """Output column type (Numerical)."""
+
     def __init__(self):
         self.column_type = ColumnType.Numerical
 
@@ -143,6 +146,11 @@ class MeanAggregation(AggregationMethod[float]):
 
 class HitAggregation(AggregationMethod[int]):
     """Aggregate scores by checking if any score exceeds threshold."""
+
+    column_type: ColumnType
+    """Output column type (Categorical)."""
+    threshold: float
+    """Score threshold for hit detection."""
 
     def __init__(self, threshold: float = 0.8):
         self.column_type = ColumnType.Categorical
@@ -155,6 +163,11 @@ class HitAggregation(AggregationMethod[int]):
 
 class HitShareAggregation(AggregationMethod[float]):
     """Aggregate scores by computing the share of scores above threshold."""
+
+    column_type: ColumnType
+    """Output column type (Categorical)."""
+    threshold: float
+    """Score threshold for hit detection."""
 
     def __init__(self, threshold: float = 0.8):
         self.column_type = ColumnType.Categorical
@@ -193,12 +206,19 @@ class ContextRelevance(Descriptor):
     """Evaluate relevance of context to input using semantic similarity or LLM scoring."""
 
     input: str
+    """Column name containing input/question text."""
     contexts: str
+    """Column name containing context text (list of strings per row)."""
     method: str = "semantic_similarity"
+    """Scoring method: "semantic_similarity" or "llm"."""
     method_params: Optional[Dict[str, object]] = None
+    """Additional parameters for scoring method."""
     aggregation_method: Optional[str] = None
+    """How to aggregate scores: "mean", "hit", or "hit_share"."""
     aggregation_method_params: Optional[Dict[str, object]] = None
+    """Parameters for aggregation method."""
     output_scores: bool = False
+    """Whether to output individual scores in addition to aggregated score."""
 
     def __init__(
         self,
