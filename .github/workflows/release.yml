@@ -13,10 +13,10 @@ jobs:
     steps:
       - name: Checking out sources
         uses: actions/checkout@v4
-      - name: Set up Python 3.9
+      - name: Set up Python 3.11
         uses: actions/setup-python@v5
         with:
-          python-version: "3.9"
+          python-version: "3.11"
       - name: Check _version.py was updated
         env:
           PYTHONPATH: ./src
@@ -35,10 +35,10 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - name: Set up Python 3.9
+      - name: Set up Python 3.11
         uses: actions/setup-python@v5
         with:
-          python-version: "3.9"
+          python-version: "3.11"
       - name: Install dependencies
         run: pip install -r requirements.min.txt
       - name: Install wheel
@@ -110,6 +110,35 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: true
           tags: evidently/evidently-service:${{ steps.generate-tag.outputs.generated-tag }},evidently/evidently-service:latest
+
+  generate-and-save-api-reference:
+    name: Generate API reference documentation from PyPI version
+    runs-on: ubuntu-22.04
+    needs:
+      - publish_to_pypi
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: 📚 Generate and upload API reference
+        uses: ./.github/share-actions/generate-and-save-api-reference
+        with:
+          source-flag: --pypi-version ${{ github.ref_name }}
+
+  download-and-deploy-api-reference:
+    name: Download and deploy API reference documentation
+    runs-on: ubuntu-22.04
+    needs:
+      - generate-and-save-api-reference
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+
+      # this action exists in `gh-pages` branch
+      - name: 📚 Download and deploy API reference documentation
+        uses: ./.github/share-actions/deploy-just-saved-api-reference
 
   create_release:
     name: Create release for the Tag
