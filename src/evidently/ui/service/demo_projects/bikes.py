@@ -13,9 +13,9 @@ import requests
 from dateutil.relativedelta import relativedelta
 from sklearn import ensemble
 
-from evidently import Regression
 from evidently.core.datasets import DataDefinition
 from evidently.core.datasets import Dataset
+from evidently.core.datasets import Regression
 from evidently.core.report import Report
 from evidently.presets import DataDriftPreset
 from evidently.presets import DataSummaryPreset

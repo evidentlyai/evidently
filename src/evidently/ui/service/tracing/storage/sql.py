@@ -28,6 +28,7 @@ from evidently.ui.service.tracing.storage.base import ExportID
 from evidently.ui.service.tracing.storage.base import SpanModel
 from evidently.ui.service.tracing.storage.base import TraceModel
 from evidently.ui.service.tracing.storage.base import TracingStorage
+from evidently.ui.service.tracing.storage.base import _enrich_span_usage
 
 EVIDENTLY_TRACE_LINK_COLUMN_NAME = "_evidently_trace_link"
 
@@ -249,6 +250,7 @@ def _collect_trace(data: Sequence[TraceSpanModel]) -> List[TraceModel]:
             end_time=item.end_time,
             attributes={k: str(v) for (k, v) in item.span_attributes.items() if isinstance(v, (str, int, float, bool))},
         )
+        _enrich_span_usage(span)
         trace.spans.append(span)
     if trace is not None:
         trace.end_time = None if len(trace.spans) == 0 else trace.spans[-1].end_time

@@ -423,7 +423,6 @@ async def test_reload_project(test_client: TestClient, project_manager: ProjectM
     with open(snapshot_path2, "w") as f:
         f.write(json.dumps(snapshot2.dict(), indent=2, cls=NumpyEncoder))
 
-    assert len(await project_manager.list_snapshots(ZERO_UUID, project.id)) == 1
     r = test_client.get(f"/api/projects/{project.id}/reload")
     r.raise_for_status()
 

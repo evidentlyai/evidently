@@ -22,7 +22,7 @@ def create_engine_and_migrate(engine: Engine) -> Engine:
     # Run migrations on startup (fallback to create_all if migrations not initialized)
     try:
         logger.info("Running database migrations...")
-        migrate_database(str(engine.url))
+        migrate_database(engine.url.render_as_string(hide_password=False))
         logger.info("Database migrations completed successfully")
     except (FileNotFoundError, ImportError):
         # Migrations not available - use create_all

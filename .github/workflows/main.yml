@@ -138,6 +138,7 @@ jobs:
     if: ${{ needs.changed_files.outputs.evidently_any_modified == 'true' }}
     env:
       EVIDENTLY_TEST_ENVIRONMENT: 1
+      SCIKIT_LEARN_DATA: scikit_learn_data
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -164,6 +165,7 @@ jobs:
     name: Test ${{ matrix.os }} with py${{ matrix.python }}
     env:
       EVIDENTLY_TEST_ENVIRONMENT: 1
+      SCIKIT_LEARN_DATA: scikit_learn_data
     needs:
       - linter
       - prepare-cache-data
@@ -232,11 +234,19 @@ jobs:
     name: Generate API reference documentation
     runs-on: ubuntu-22.04
     needs: changed_files
-    if: ${{ needs.changed_files.outputs.api_reference_any_modified == 'true' || needs.changed_files.outputs.evidently_any_modified == 'true' }}
+    if: >-
+      ${{
+        (
+          needs.changed_files.outputs.api_reference_any_modified == 'true' ||
+          needs.changed_files.outputs.evidently_any_modified == 'true'
+        )
+      }}
     steps:
       - uses: actions/checkout@v4
       - name: 📚 Generate and upload API reference
         uses: ./.github/share-actions/generate-and-save-api-reference
+        with:
+          source-flag: --git-revision ${{ github.head_ref || github.ref_name }}
 
   download-and-deploy-api-reference:
     name: Download and deploy API reference documentation

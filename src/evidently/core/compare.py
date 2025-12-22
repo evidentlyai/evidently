@@ -28,6 +28,34 @@ def _get_index(index: CompareIndex, run: Snapshot, i: int) -> Any:
 def compare(
     *runs: Snapshot, index: CompareIndex = "timestamp", all_metrics: bool = False, use_tests: bool = False
 ) -> pd.DataFrame:
+    """Compare multiple `Report` snapshots side-by-side in a `pandas.DataFrame`.
+
+    If you computed multiple snapshots, you can quickly compare the resulting metrics
+    side-by-side in a dataframe. This is useful for comparing:
+    - Different time periods
+    - Different model/prompt versions
+    - Different datasets
+
+    Args:
+    * `*runs`: One or more `evidently.core.report.Snapshot` objects to compare
+    * `index`: How to index the comparison. Can be:
+        - "timestamp": Use snapshot timestamp (default)
+        - List of strings: Custom index values for each run
+        - Callable: Function that takes a `Snapshot` and returns index value
+        - "metadata.<key>": Use metadata value as index
+    * `all_metrics`: If True, include all metrics from all runs. If False (default),
+        only include metrics present in all runs.
+    * `use_tests`: If True, include test results instead of metric values
+
+    Returns:
+    * `pandas.DataFrame` with metrics as rows and runs as columns, indexed by the specified index
+
+    Example:
+    ```python
+    compare_dataframe = compare(my_eval_1, my_eval_2, my_eval_3)
+    compare_dataframe = compare(run1, run2, index="metadata.model_version")
+    ```
+    """
     if isinstance(index, list) and len(index) != len(runs):
         raise ValueError("Index and runs must have same length")
 

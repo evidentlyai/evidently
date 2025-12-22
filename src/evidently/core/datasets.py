@@ -63,12 +63,34 @@ class ColumnInfo:
 
 @dataclasses.dataclass
 class BinaryClassification:
+    """Configuration for binary classification evaluation tasks.
+
+    Maps columns containing target labels and predictions for binary classification.
+    Used in `DataDefinition` to specify which columns contain classification data.
+
+    Example:
+    ```python
+    definition = DataDefinition(
+        classification=[BinaryClassification(
+            target="target",
+            prediction_labels="prediction"
+        )]
+    )
+    ```
+    """
+
     name: str
+    """Identifier for this classification task."""
     target: str
+    """Column name with true binary labels."""
     prediction_labels: Optional[str]
+    """Column name with predicted binary labels."""
     prediction_probas: Optional[str]
+    """Column name with predicted probabilities."""
     pos_label: Label
+    """Value representing the positive class."""
     labels: Optional[Dict[Label, str]]
+    """Optional mapping of label values to display names."""
 
     def __init__(
         self,
@@ -80,6 +102,11 @@ class BinaryClassification:
         pos_label: Optional[str] = None,
         labels: Optional[Dict[Label, str]] = None,
     ):
+        """Initialize binary classification configuration.
+
+        If no arguments are provided, defaults to `target="target"` and `prediction_probas="prediction"`.
+        Otherwise, requires `target` and at least one of `prediction_labels` or `prediction_probas`.
+        """
         self.name = name
         if (
             target is None
@@ -107,11 +134,33 @@ class BinaryClassification:
 
 @dataclasses.dataclass
 class MulticlassClassification:
+    """Configuration for multiclass classification evaluation tasks.
+
+    Maps columns containing target labels and predictions for multiclass classification.
+    Used in `DataDefinition` to specify which columns contain classification data.
+
+    Example:
+    ```python
+    definition = DataDefinition(
+        classification=[MulticlassClassification(
+            target="target",
+            prediction_labels="prediction",
+            prediction_probas=["0", "1", "2"]
+        )]
+    )
+    ```
+    """
+
     name: str = "default"
+    """Identifier for this classification task."""
     target: str = "target"
+    """Column name with true class labels."""
     prediction_labels: Optional[str] = "prediction"
+    """Column name with predicted class labels."""
     prediction_probas: Optional[List[str]] = None
+    """List of column names with predicted probabilities per class."""
     labels: Optional[Dict[Label, str]] = None
+    """Optional mapping of label values to display names."""
 
     def __init__(
         self,
@@ -122,6 +171,11 @@ class MulticlassClassification:
         prediction_probas: Optional[List[str]] = None,
         labels: Optional[Dict[Label, str]] = None,
     ):
+        """Initialize multiclass classification configuration.
+
+        If no arguments are provided, defaults to `target="target"` and `prediction_labels="prediction"`.
+        Otherwise, requires `target` and at least one of `prediction_labels` or `prediction_probas`.
+        """
         self.name = name
         if target is None and prediction_labels is None and prediction_probas is None and labels is None:
             self.target = "target"
@@ -144,19 +198,54 @@ Classification = Union[BinaryClassification, MulticlassClassification]
 
 @dataclasses.dataclass
 class Regression:
+    """Configuration for regression evaluation tasks.
+
+    Maps columns containing target values and predictions for regression.
+    Used in `DataDefinition` to specify which columns contain regression data.
+
+    Example:
+    ```python
+    definition = DataDefinition(
+        regression=[Regression(target="y_true", prediction="y_pred")]
+    )
+    ```
+    """
+
     name: str = "default"
+    """Identifier for this regression task."""
     target: str = "target"
+    """Column name with actual/true values."""
     prediction: str = "prediction"
+    """Column name with predicted values."""
 
 
 @dataclasses.dataclass
 class Recsys:
+    """Configuration for recommender systems and ranking evaluation tasks.
+
+    Maps columns for evaluating recommendation systems, including user-item interactions
+    and relevance scores. Used in `DataDefinition` to specify ranking/recsys data structure.
+
+    Example:
+    ```python
+    definition = DataDefinition(
+        ranking=[Recsys()]
+    )
+    ```
+    """
+
     name: str = "default"
+    """Identifier for this ranking task."""
     user_id: str = "user_id"
+    """Column name with user identifiers."""
     item_id: str = "item_id"
+    """Column name with item identifiers."""
     target: str = "target"
+    """Column name with relevance labels/scores."""
     prediction: str = "prediction"
+    """Column name with predicted scores or ranks."""
     recommendations_type: str = "score"
+    """Type of prediction - "score" or "rank"."""
 
 
 @dataclasses.dataclass
@@ -171,12 +260,35 @@ class RAG:
 
 @dataclasses.dataclass
 class LLMClassification:
+    """Configuration for LLM classification evaluation tasks.
+
+    Maps columns containing LLM inputs, outputs, and optional reasoning for LLM evaluation.
+    Used in `DataDefinition` to specify which columns contain LLM interaction data.
+
+    Example:
+    ```python
+    definition = DataDefinition(
+        llm=LLMClassification(
+            input="question",
+            target="expected_answer",
+            predictions="model_answer"
+        )
+    )
+    ```
+    """
+
     input: str
+    """Column name with LLM input/prompt text."""
     target: str
+    """Column name with expected/ground truth output."""
     predictions: Optional[str] = None
+    """Column name with LLM-generated output."""
     reasoning: Optional[str] = None
+    """Column name with reasoning text."""
     prediction_reasoning: Optional[str] = None
+    """Column name with reasoning for predictions."""
     name: str = "llm_default"
+    """Identifier for this LLM task."""
 
 
 class SpecialColumnInfo(AutoAliasMixin, EvidentlyBaseModel):
@@ -205,23 +317,65 @@ class ServiceColumns(BaseModel):
 
 
 class DataDefinition(BaseModel):
+    """Maps column types and roles in your dataset for correct evaluation processing.
+
+    `DataDefinition` maps:
+    - Column types (e.g., categorical, numerical, text)
+    - Column roles (e.g., id, prediction, target, timestamp)
+    - Task-specific configurations (classification, regression, ranking, LLM)
+
+    This allows Evidently to process the data correctly. Some evaluations need specific
+    columns and will fail if they're missing.
+
+    Auto-mapping (empty DataDefinition):
+    ```python
+    dataset = Dataset.from_pandas(df, data_definition=DataDefinition())
+    ```
+
+    Manual mapping:
+    ```python
+    definition = DataDefinition(
+        numerical_columns=["Age", "Salary"],
+        categorical_columns=["Department"],
+        classification=[BinaryClassification(target="target", prediction_labels="prediction")]
+    )
+    ```
+    """
+
     id_column: Optional[str] = None
+    """Column name with unique identifiers."""
     timestamp: Optional[str] = None
+    """Column name with timestamp values."""
     service_columns: Optional[ServiceColumns] = None
+    """Service columns like trace links."""
     numerical_columns: Optional[List[str]] = None
+    """List of numerical column names."""
     categorical_columns: Optional[List[str]] = None
+    """List of categorical column names."""
     text_columns: Optional[List[str]] = None
+    """List of text column names."""
     datetime_columns: Optional[List[str]] = None
+    """List of datetime column names."""
     unknown_columns: Optional[List[str]] = None
+    """List of unknown/unclassified column names."""
     list_columns: Optional[List[str]] = None
+    """List of list/array column names."""
     classification: Optional[List[Classification]] = None
+    """List of classification task configurations (`BinaryClassification` or `MulticlassClassification`)."""
     regression: Optional[List[Regression]] = None
+    """List of regression task configurations (`Regression`)."""
     llm: Optional[LLMDefinition] = None
+    """LLM task configuration (`LLMClassification`)."""
     numerical_descriptors: List[str] = []
+    """List of numerical descriptor column names."""
     categorical_descriptors: List[str] = []
+    """List of categorical descriptor column names."""
     test_descriptors: Optional[List[str]] = None
+    """List of test descriptor column names."""
     ranking: Optional[List[Recsys]] = None
+    """List of ranking/recsys task configurations (`Recsys`)."""
     special_columns: List[SpecialColumnInfo] = []
+    """Additional special column configurations."""
 
     def __init__(
         self,
@@ -243,6 +397,11 @@ class DataDefinition(BaseModel):
         service_columns: Optional[ServiceColumns] = None,
         special_columns: Optional[List[SpecialColumnInfo]] = None,
     ):
+        """Initialize DataDefinition with column mappings.
+
+        The constructor maps all parameters directly to the corresponding model fields.
+        If `numerical_descriptors` or `categorical_descriptors` are not provided, they default to empty lists.
+        """
         super().__init__(
             id_column=id_column,
             timestamp=timestamp,
@@ -268,24 +427,62 @@ class DataDefinition(BaseModel):
         self.ranking = ranking
 
     def get_numerical_columns(self):
+        """Get all numerical columns including descriptors.
+
+        Returns:
+        * List of numerical column names (includes both explicitly mapped and descriptor columns)
+        """
         return (self.numerical_columns or []) + (self.numerical_descriptors or [])
 
     def get_categorical_columns(self):
+        """Get all categorical columns including descriptors.
+
+        Returns:
+        * List of categorical column names (includes both explicitly mapped and descriptor columns)
+        """
         return (self.categorical_columns or []) + (self.categorical_descriptors or [])
 
     def get_text_columns(self):
+        """Get all text columns.
+
+        Returns:
+        * List of text column names
+        """
         return self.text_columns or []
 
     def get_datetime_columns(self):
+        """Get all datetime columns.
+
+        Returns:
+        * List of datetime column names
+        """
         return self.datetime_columns or []
 
     def get_unknown_columns(self):
+        """Get all unknown/unclassified columns.
+
+        Returns:
+        * List of unknown column names
+        """
         return self.unknown_columns or []
 
     def get_list_columns(self):
+        """Get all list/array columns.
+
+        Returns:
+        * List of list column names
+        """
         return self.list_columns or []
 
     def get_column_type(self, column_name: str) -> ColumnType:
+        """Get the column type for a specific column.
+
+        Args:
+        * `column_name`: Name of the column to check
+
+        Returns:
+        * `evidently.legacy.core.ColumnType` enum value for the column
+        """
         if column_name in self.get_numerical_columns():
             return ColumnType.Numerical
         if column_name in self.get_categorical_columns():
@@ -309,6 +506,14 @@ class DataDefinition(BaseModel):
         return ColumnType.Unknown
 
     def get_classification(self, classification_id: str) -> Optional[Classification]:
+        """Get classification configuration by ID.
+
+        Args:
+        * `classification_id`: Name/ID of the classification task
+
+        Returns:
+        * `BinaryClassification` or `MulticlassClassification` configuration or None if not found
+        """
         item_list = list(filter(lambda x: x.name == classification_id, self.classification or []))
         if len(item_list) == 0:
             return None
@@ -317,6 +522,14 @@ class DataDefinition(BaseModel):
         return item_list[0]
 
     def get_ranking(self, ranking_id: str) -> Optional[Recsys]:
+        """Get ranking/recsys configuration by ID.
+
+        Args:
+        * `ranking_id`: Name/ID of the ranking task
+
+        Returns:
+        * `Recsys` configuration or None if not found
+        """
         item_list = list(filter(lambda x: x.name == ranking_id, self.ranking or []))
         if len(item_list) == 0:
             return None
@@ -325,6 +538,14 @@ class DataDefinition(BaseModel):
         return item_list[0]
 
     def get_columns(self, types: List[ColumnType]) -> Generator[str, None, None]:
+        """Get column names of specified types.
+
+        Args:
+        * `types`: List of `evidently.legacy.core.ColumnType` values to filter by
+
+        Returns:
+        * Generator yielding column names matching the specified types
+        """
         if ColumnType.Numerical in types:
             yield from self.get_numerical_columns()
         if ColumnType.Categorical in types:
@@ -339,6 +560,14 @@ class DataDefinition(BaseModel):
             yield from self.get_list_columns()
 
     def get_regression(self, regression_id: str) -> Optional[Regression]:
+        """Get regression configuration by ID.
+
+        Args:
+        * `regression_id`: Name/ID of the regression task
+
+        Returns:
+        * `Regression` configuration or None if not found
+        """
         item_list = list(filter(lambda x: x.name == regression_id, self.regression or []))
         if len(item_list) == 0:
             return None
@@ -724,6 +953,36 @@ PossibleDatasetTypes = Union["Dataset", pd.DataFrame]
 
 
 class Dataset:
+    """Dataset object that wraps your data with metadata and data definition.
+
+    `Dataset` is the main data structure in Evidently. It wraps a `pandas.DataFrame`
+    with additional metadata including:
+    - `DataDefinition`: column types and roles mapping
+    - Descriptors: computed row-level scores (for text/LLM data)
+    - Metadata and tags: additional information about the dataset
+
+    You typically create a `Dataset` from a `pandas.DataFrame` using `Dataset.from_pandas()`.
+
+    Create from pandas DataFrame:
+    ```python
+    dataset = Dataset.from_pandas(
+        source_df,
+        data_definition=DataDefinition()
+    )
+    ```
+
+    Add descriptors for text evaluation:
+    ```python
+    dataset.add_descriptors([TextLength(column="text")])
+    ```
+
+    Use in a Report:
+    ```python
+    report = Report([DataSummaryPreset()])
+    snapshot = report.run(dataset, None)
+    ```
+    """
+
     _data_definition: DataDefinition
     _metadata: Dict[str, MetadataValueType]
     _tags: List[str]
@@ -738,6 +997,24 @@ class Dataset:
         metadata: Dict[str, MetadataValueType] = None,
         tags: List[str] = None,
     ) -> "Dataset":
+        """Create a `Dataset` from a `pandas.DataFrame`.
+
+        Args:
+        * `data`: `pandas.DataFrame` with your data
+        * `data_definition`: Optional `DataDefinition` for column mapping (auto-inferred if None)
+        * `descriptors`: Optional list of descriptors to compute and add to dataset
+        * `options`: Optional options for descriptor computation
+        * `metadata`: Optional metadata dictionary
+        * `tags`: Optional list of tags
+
+        Returns:
+        * `Dataset` object ready for evaluation
+
+        Example:
+        ```python
+        dataset = Dataset.from_pandas(df, data_definition=DataDefinition())
+        ```
+        """
         dataset = PandasDataset(data, data_definition, metadata=metadata, tags=tags)
         if descriptors is not None:
             dataset.add_descriptors(descriptors, options)
@@ -745,6 +1022,17 @@ class Dataset:
 
     @staticmethod
     def from_any(dataset: PossibleDatasetTypes) -> "Dataset":
+        """Convert various dataset types to a `Dataset` object.
+
+        Args:
+        * `dataset`: `pandas.DataFrame` or `Dataset` object
+
+        Returns:
+        * `Dataset` object (converts DataFrame if needed)
+
+        Raises:
+        * ValueError if dataset type is not supported
+        """
         if isinstance(dataset, Dataset):
             return dataset
         if isinstance(dataset, pd.DataFrame):
@@ -753,42 +1041,101 @@ class Dataset:
 
     @abstractmethod
     def as_dataframe(self) -> pd.DataFrame:
+        """Get the underlying `pandas.DataFrame`.
+
+        Returns:
+        * `pandas.DataFrame` with all data including computed descriptors
+        """
         raise NotImplementedError()
 
     @abstractmethod
     def column(self, column_name: str) -> DatasetColumn:
+        """Get a specific column from the dataset.
+
+        Args:
+        * `column_name`: Name of the column to retrieve
+
+        Returns:
+        * `DatasetColumn` object with column data and type information
+        """
         raise NotImplementedError()
 
     @abstractmethod
     def subdataset(self, column_name: str, label: object) -> "Dataset":
+        """Create a filtered subdataset matching a column value.
+
+        Args:
+        * `column_name`: Column to filter by
+        * `label`: Value to filter for
+
+        Returns:
+        * New `Dataset` containing only rows where column equals label
+        """
         raise NotImplementedError()
 
     @abstractmethod
     def stats(self) -> DatasetStats:
+        """Get statistical summary of the dataset.
+
+        Returns:
+        * `DatasetStats` object with row count, column count, and per-column statistics
+        """
         raise NotImplementedError()
 
     @property
     def data_definition(self) -> DataDefinition:
+        """Get the data definition mapping for this dataset.
+
+        Returns:
+        * `DataDefinition` object with column types and roles
+        """
         return self._data_definition
 
     @property
     def metadata(self) -> Dict[str, MetadataValueType]:
+        """Get metadata associated with this dataset.
+
+        Returns:
+        * Dictionary of metadata key-value pairs
+        """
         return self._metadata
 
     @property
     def tags(self) -> List[str]:
+        """Get tags associated with this dataset.
+
+        Returns:
+        * List of tag strings
+        """
         return self._tags
 
     @abstractmethod
     def add_descriptor(self, descriptor: Descriptor, options: AnyOptions = None):
+        """Add a descriptor to compute row-level scores.
+
+        Args:
+        * `descriptor`: `Descriptor` object to compute
+        * `options`: Optional options for descriptor computation
+        """
         raise NotImplementedError
 
     def add_descriptors(self, descriptors: List[Descriptor], options: AnyOptions = None):
+        """Add multiple descriptors to the dataset.
+
+        Args:
+        * `descriptors`: List of `Descriptor` objects to compute
+        * `options`: Optional options for descriptor computation
+        """
         for descriptor in descriptors:
             self.add_descriptor(descriptor, options)
 
     @abstractmethod
     def save(self, uri: str):
+        """Save the dataset to a file.
+
+        Args:
+        * `uri`: File path to save the dataset (supports .evidently_dataset format)
+        """
         raise NotImplementedError
 
     @classmethod
@@ -803,6 +1150,17 @@ class Dataset:
 
     @classmethod
     def load(cls, uri: str) -> "Dataset":
+        """Load a dataset from a file.
+
+        Args:
+        * `uri`: File path to load from (supports CSV, Parquet, and .evidently_dataset formats)
+
+        Returns:
+        * `Dataset` object loaded from file
+
+        Raises:
+        * Exception if dataset cannot be loaded
+        """
         for subclass in cls.__subclasses__():
             if subclass._can_load(uri):
                 return subclass._load(uri)
