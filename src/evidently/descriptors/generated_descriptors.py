@@ -20,6 +20,7 @@ def BERTScore(
     alias: Optional[str] = None,
     tests: Optional[List[Union["DescriptorTest", "GenericTest"]]] = None,
 ):
+    """Compute BERTScore similarity between text columns."""
     from evidently.legacy.features.BERTScore_feature import BERTScoreFeature as BERTScoreFeatureV1
 
     feature = BERTScoreFeatureV1(columns=columns, model=model, tfidf_weighted=tfidf_weighted, display_name=alias)
@@ -33,6 +34,7 @@ def BeginsWith(
     alias: Optional[str] = None,
     tests: Optional[List[Union["DescriptorTest", "GenericTest"]]] = None,
 ):
+    """Check if text column values begin with the specified prefix."""
     from evidently.legacy.features.text_part_feature import BeginsWith as BeginsWithV1
 
     feature = BeginsWithV1(column_name=column_name, prefix=prefix, case_sensitive=case_sensitive, display_name=alias)
@@ -47,6 +49,7 @@ def Contains(
     alias: Optional[str] = None,
     tests: Optional[List[Union["DescriptorTest", "GenericTest"]]] = None,
 ):
+    """Check if text column contains any or all of the specified items."""
     from evidently.legacy.features.text_contains_feature import Contains as ContainsV1
 
     feature = ContainsV1(
@@ -58,6 +61,7 @@ def Contains(
 def ContainsLink(
     column_name: str, alias: Optional[str] = None, tests: Optional[List[Union["DescriptorTest", "GenericTest"]]] = None
 ):
+    """Check if text column contains URLs or links."""
     from evidently.legacy.features.contains_link_feature import ContainsLink as ContainsLinkV1
 
     feature = ContainsLinkV1(column_name=column_name, display_name=alias)
@@ -72,6 +76,7 @@ def DoesNotContain(
     alias: Optional[str] = None,
     tests: Optional[List[Union["DescriptorTest", "GenericTest"]]] = None,
 ):
+    """Check if text column does not contain specified items."""
     from evidently.legacy.features.text_contains_feature import DoesNotContain as DoesNotContainV1
 
     feature = DoesNotContainV1(
@@ -87,6 +92,7 @@ def EndsWith(
     alias: Optional[str] = None,
     tests: Optional[List[Union["DescriptorTest", "GenericTest"]]] = None,
 ):
+    """Check if text column values end with the specified suffix."""
     from evidently.legacy.features.text_part_feature import EndsWith as EndsWithV1
 
     feature = EndsWithV1(column_name=column_name, suffix=suffix, case_sensitive=case_sensitive, display_name=alias)
@@ -98,6 +104,7 @@ def ExactMatch(
     alias: Optional[str] = None,
     tests: Optional[List[Union["DescriptorTest", "GenericTest"]]] = None,
 ):
+    """Check if multiple columns have exactly matching values."""
     from evidently.legacy.features.exact_match_feature import ExactMatchFeature as ExactMatchFeatureV1
 
     feature = ExactMatchFeatureV1(columns=columns, display_name=alias)
@@ -112,6 +119,7 @@ def ExcludesWords(
     alias: Optional[str] = None,
     tests: Optional[List[Union["DescriptorTest", "GenericTest"]]] = None,
 ):
+    """Check if text column excludes specified words."""
     from evidently.legacy.features.words_feature import ExcludesWords as ExcludesWordsV1
 
     feature = ExcludesWordsV1(
@@ -127,6 +135,7 @@ def HuggingFace(
     alias: str,
     tests: Optional[List[Union["DescriptorTest", "GenericTest"]]] = None,
 ):
+    """Apply a HuggingFace model to text column."""
     from evidently.legacy.features.hf_feature import HuggingFaceFeature as HuggingFaceFeatureV1
 
     feature = HuggingFaceFeatureV1(column_name=column_name, model=model, params=params, display_name=alias)
@@ -140,6 +149,7 @@ def HuggingFaceToxicity(
     toxic_label: Optional[str] = None,
     tests: Optional[List[Union["DescriptorTest", "GenericTest"]]] = None,
 ):
+    """Detect toxicity in text using HuggingFace models."""
     from evidently.legacy.features.hf_feature import HuggingFaceToxicityFeature as HuggingFaceToxicityFeatureV1
 
     feature = HuggingFaceToxicityFeatureV1(
@@ -156,6 +166,7 @@ def IncludesWords(
     alias: Optional[str] = None,
     tests: Optional[List[Union["DescriptorTest", "GenericTest"]]] = None,
 ):
+    """Check if text column includes specified words."""
     from evidently.legacy.features.words_feature import IncludesWords as IncludesWordsV1
 
     feature = IncludesWordsV1(
@@ -167,6 +178,7 @@ def IncludesWords(
 def IsValidJSON(
     column_name: str, alias: Optional[str] = None, tests: Optional[List[Union["DescriptorTest", "GenericTest"]]] = None
 ):
+    """Check if text column contains valid JSON."""
     from evidently.legacy.features.is_valid_json_feature import IsValidJSON as IsValidJSONV1
 
     feature = IsValidJSONV1(column_name=column_name, display_name=alias)
@@ -176,6 +188,7 @@ def IsValidJSON(
 def IsValidPython(
     column_name: str, alias: Optional[str] = None, tests: Optional[List[Union["DescriptorTest", "GenericTest"]]] = None
 ):
+    """Check if text column contains valid Python code."""
     from evidently.legacy.features.is_valid_python_feature import IsValidPython as IsValidPythonV1
 
     feature = IsValidPythonV1(column_name=column_name, display_name=alias)
@@ -185,6 +198,7 @@ def IsValidPython(
 def IsValidSQL(
     column_name: str, alias: Optional[str] = None, tests: Optional[List[Union["DescriptorTest", "GenericTest"]]] = None
 ):
+    """Check if text column contains valid SQL."""
     from evidently.legacy.features.is_valid_sql_feature import IsValidSQL as IsValidSQLV1
 
     feature = IsValidSQLV1(column_name=column_name, display_name=alias)
@@ -198,6 +212,7 @@ def ItemMatch(
     alias: Optional[str] = None,
     tests: Optional[List[Union["DescriptorTest", "GenericTest"]]] = None,
 ):
+    """Check if items from one column match items in another column."""
     from evidently.legacy.features.text_contains_feature import ItemMatch as ItemMatchV1
 
     feature = ItemMatchV1(columns=columns, case_sensitive=case_sensitive, mode=mode, display_name=alias)
@@ -211,6 +226,7 @@ def ItemNoMatch(
     alias: Optional[str] = None,
     tests: Optional[List[Union["DescriptorTest", "GenericTest"]]] = None,
 ):
+    """Check if items from one column do not match items in another column."""
     from evidently.legacy.features.text_contains_feature import ItemNoMatch as ItemNoMatchV1
 
     feature = ItemNoMatchV1(columns=columns, case_sensitive=case_sensitive, mode=mode, display_name=alias)
@@ -224,6 +240,7 @@ def JSONMatch(
     alias: Optional[str] = None,
     tests: Optional[List[Union["DescriptorTest", "GenericTest"]]] = None,
 ):
+    """Check if JSON values in two columns match."""
     from evidently.legacy.features.json_match_feature import JSONMatch as JSONMatchV1
 
     feature = JSONMatchV1(
@@ -240,6 +257,7 @@ def JSONSchemaMatch(
     alias: Optional[str] = None,
     tests: Optional[List[Union["DescriptorTest", "GenericTest"]]] = None,
 ):
+    """Check if JSON values match the expected schema."""
     from evidently.legacy.features.json_schema_match_feature import JSONSchemaMatch as JSONSchemaMatchV1
 
     feature = JSONSchemaMatchV1(
@@ -261,6 +279,7 @@ def LLMJudge(
     alias: Optional[str] = None,
     tests: Optional[List[Union["DescriptorTest", "GenericTest"]]] = None,
 ):
+    """Evaluate text using LLM with a custom prompt template."""
     from evidently.legacy.features.llm_judge import LLMJudge as LLMJudgeV1
 
     feature = LLMJudgeV1(
@@ -277,6 +296,7 @@ def LLMJudge(
 def NonLetterCharacterPercentage(
     column_name: str, alias: Optional[str] = None, tests: Optional[List[Union["DescriptorTest", "GenericTest"]]] = None
 ):
+    """Compute percentage of non-letter characters in text."""
     from evidently.legacy.features.non_letter_character_percentage_feature import (
         NonLetterCharacterPercentage as NonLetterCharacterPercentageV1,
     )
@@ -291,6 +311,7 @@ def OOVWordsPercentage(
     alias: Optional[str] = None,
     tests: Optional[List[Union["DescriptorTest", "GenericTest"]]] = None,
 ):
+    """Compute percentage of out-of-vocabulary words in text."""
     from evidently.legacy.features.OOV_words_percentage_feature import OOVWordsPercentage as OOVWordsPercentageV1
 
     feature = OOVWordsPercentageV1(column_name=column_name, ignore_words=ignore_words, display_name=alias)
@@ -312,6 +333,7 @@ def OpenAI(
     alias: Optional[str] = None,
     tests: Optional[List[Union["DescriptorTest", "GenericTest"]]] = None,
 ):
+    """Evaluate text using OpenAI models with custom prompts."""
     from evidently.legacy.features.openai_feature import OpenAIFeature as OpenAIFeatureV1
 
     feature = OpenAIFeatureV1(
@@ -337,6 +359,7 @@ def RegExp(
     alias: Optional[str] = None,
     tests: Optional[List[Union["DescriptorTest", "GenericTest"]]] = None,
 ):
+    """Check if text matches a regular expression pattern."""
     from evidently.legacy.features.regexp_feature import RegExp as RegExpV1
 
     feature = RegExpV1(column_name=column_name, reg_exp=reg_exp, display_name=alias)
@@ -349,6 +372,7 @@ def SemanticSimilarity(
     alias: Optional[str] = None,
     tests: Optional[List[Union["DescriptorTest", "GenericTest"]]] = None,
 ):
+    """Compute semantic similarity between text columns."""
     from evidently.legacy.features.semantic_similarity_feature import (
         SemanticSimilarityFeature as SemanticSimilarityFeatureV1,
     )
@@ -360,6 +384,7 @@ def SemanticSimilarity(
 def SentenceCount(
     column_name: str, alias: Optional[str] = None, tests: Optional[List[Union["DescriptorTest", "GenericTest"]]] = None
 ):
+    """Count the number of sentences in text."""
     from evidently.legacy.features.sentence_count_feature import SentenceCount as SentenceCountV1
 
     feature = SentenceCountV1(column_name=column_name, display_name=alias)
@@ -369,6 +394,7 @@ def SentenceCount(
 def Sentiment(
     column_name: str, alias: Optional[str] = None, tests: Optional[List[Union["DescriptorTest", "GenericTest"]]] = None
 ):
+    """Compute sentiment score for text."""
     from evidently.legacy.features.sentiment_feature import Sentiment as SentimentV1
 
     feature = SentimentV1(column_name=column_name, display_name=alias)
@@ -382,6 +408,7 @@ def TriggerWordsPresent(
     alias: Optional[str] = None,
     tests: Optional[List[Union["DescriptorTest", "GenericTest"]]] = None,
 ):
+    """Check if trigger words are present in text."""
     from evidently.legacy.features.trigger_words_presence_feature import TriggerWordsPresent as TriggerWordsPresentV1
 
     feature = TriggerWordsPresentV1(
@@ -393,6 +420,7 @@ def TriggerWordsPresent(
 def WordCount(
     column_name: str, alias: Optional[str] = None, tests: Optional[List[Union["DescriptorTest", "GenericTest"]]] = None
 ):
+    """Count the number of words in text."""
     from evidently.legacy.features.word_count_feature import WordCount as WordCountV1
 
     feature = WordCountV1(column_name=column_name, display_name=alias)
@@ -406,6 +434,7 @@ def WordMatch(
     alias: Optional[str] = None,
     tests: Optional[List[Union["DescriptorTest", "GenericTest"]]] = None,
 ):
+    """Check if words from one column match words in another column."""
     from evidently.legacy.features.words_feature import WordMatch as WordMatchV1
 
     feature = WordMatchV1(columns=columns, mode=mode, lemmatize=lemmatize, display_name=alias)
@@ -419,6 +448,7 @@ def WordNoMatch(
     alias: Optional[str] = None,
     tests: Optional[List[Union["DescriptorTest", "GenericTest"]]] = None,
 ):
+    """Check if words from one column do not match words in another column."""
     from evidently.legacy.features.words_feature import WordNoMatch as WordNoMatchV1
 
     feature = WordNoMatchV1(columns=columns, mode=mode, lemmatize=lemmatize, display_name=alias)
@@ -433,6 +463,7 @@ def WordsPresence(
     alias: Optional[str] = None,
     tests: Optional[List[Union["DescriptorTest", "GenericTest"]]] = None,
 ):
+    """Check presence of words in text with various matching modes."""
     from evidently.legacy.features.words_feature import WordsPresence as WordsPresenceV1
 
     feature = WordsPresenceV1(
@@ -453,6 +484,7 @@ def BiasLLMEval(
     alias: Optional[str] = None,
     tests: Optional[List[Union["DescriptorTest", "GenericTest"]]] = None,
 ):
+    """Evaluate bias in text using LLM."""
     from evidently.legacy.descriptors.llm_judges import BiasLLMEval as BiasLLMEvalV1
 
     feature = BiasLLMEvalV1(
@@ -480,6 +512,7 @@ def BinaryClassificationLLMEval(
     alias: Optional[str] = None,
     tests: Optional[List[Union["DescriptorTest", "GenericTest"]]] = None,
 ):
+    """Perform binary classification evaluation using LLM."""
     from evidently.legacy.descriptors.llm_judges import BinaryClassificationLLMEval as BinaryClassificationLLMEvalV1
 
     feature = BinaryClassificationLLMEvalV1(
@@ -508,6 +541,7 @@ def CompletenessLLMEval(
     alias: Optional[str] = None,
     tests: Optional[List[Union["DescriptorTest", "GenericTest"]]] = None,
 ):
+    """Evaluate completeness of text against context using LLM."""
     from evidently.legacy.descriptors.llm_judges import CompletenessLLMEval as CompletenessLLMEvalV1
 
     feature = CompletenessLLMEvalV1(
@@ -537,6 +571,7 @@ def ContextQualityLLMEval(
     alias: Optional[str] = None,
     tests: Optional[List[Union["DescriptorTest", "GenericTest"]]] = None,
 ):
+    """Evaluate quality of context for answering a question using LLM."""
     from evidently.legacy.descriptors.llm_judges import ContextQualityLLMEval as ContextQualityLLMEvalV1
 
     feature = ContextQualityLLMEvalV1(
@@ -566,6 +601,7 @@ def CorrectnessLLMEval(
     alias: Optional[str] = None,
     tests: Optional[List[Union["DescriptorTest", "GenericTest"]]] = None,
 ):
+    """Evaluate correctness of text against target output using LLM."""
     from evidently.legacy.descriptors.llm_judges import CorrectnessLLMEval as CorrectnessLLMEvalV1
 
     feature = CorrectnessLLMEvalV1(
@@ -594,6 +630,7 @@ def DeclineLLMEval(
     alias: Optional[str] = None,
     tests: Optional[List[Union["DescriptorTest", "GenericTest"]]] = None,
 ):
+    """Detect if LLM declined to answer using LLM evaluation."""
     from evidently.legacy.descriptors.llm_judges import DeclineLLMEval as DeclineLLMEvalV1
 
     feature = DeclineLLMEvalV1(
@@ -622,6 +659,7 @@ def FaithfulnessLLMEval(
     alias: Optional[str] = None,
     tests: Optional[List[Union["DescriptorTest", "GenericTest"]]] = None,
 ):
+    """Evaluate faithfulness of text to context using LLM."""
     from evidently.legacy.descriptors.llm_judges import FaithfulnessLLMEval as FaithfulnessLLMEvalV1
 
     feature = FaithfulnessLLMEvalV1(
@@ -648,6 +686,7 @@ def LLMEval(
     alias: Optional[str] = None,
     tests: Optional[List[Union["DescriptorTest", "GenericTest"]]] = None,
 ):
+    """Evaluate text using LLM with a custom prompt template."""
     from evidently.legacy.descriptors.llm_judges import LLMEval as LLMEvalV1
 
     feature = LLMEvalV1(
@@ -673,6 +712,7 @@ def MulticlassClassificationLLMEval(
     alias: Optional[str] = None,
     tests: Optional[List[Union["DescriptorTest", "GenericTest"]]] = None,
 ):
+    """Perform multiclass classification evaluation using LLM."""
     from evidently.legacy.descriptors.llm_judges import (
         MulticlassClassificationLLMEval as MulticlassClassificationLLMEvalV1,
     )
@@ -702,6 +742,7 @@ def NegativityLLMEval(
     alias: Optional[str] = None,
     tests: Optional[List[Union["DescriptorTest", "GenericTest"]]] = None,
 ):
+    """Evaluate negativity in text using LLM."""
     from evidently.legacy.descriptors.llm_judges import NegativityLLMEval as NegativityLLMEvalV1
 
     feature = NegativityLLMEvalV1(
@@ -729,6 +770,7 @@ def PIILLMEval(
     alias: Optional[str] = None,
     tests: Optional[List[Union["DescriptorTest", "GenericTest"]]] = None,
 ):
+    """Detect personally identifiable information in text using LLM."""
     from evidently.legacy.descriptors.llm_judges import PIILLMEval as PIILLMEvalV1
 
     feature = PIILLMEvalV1(
@@ -756,6 +798,7 @@ def ToxicityLLMEval(
     alias: Optional[str] = None,
     tests: Optional[List[Union["DescriptorTest", "GenericTest"]]] = None,
 ):
+    """Evaluate toxicity in text using LLM."""
     from evidently.legacy.descriptors.llm_judges import ToxicityLLMEval as ToxicityLLMEvalV1
 
     feature = ToxicityLLMEvalV1(

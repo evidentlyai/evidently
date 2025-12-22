@@ -15,6 +15,8 @@ from evidently.legacy.options.base import Options
 
 
 class TextLength(Descriptor):
+    """Compute the length of text in each row of a column."""
+
     column_name: str
 
     def __init__(self, column_name: str, alias: Optional[str] = None, tests: Optional[List[AnyDescriptorTest]] = None):
@@ -22,14 +24,17 @@ class TextLength(Descriptor):
         super().__init__(alias=alias or "text_length", tests=tests)
 
     def generate_data(self, dataset: "Dataset", options: Options) -> Union[DatasetColumn, Dict[str, DatasetColumn]]:
+        """Compute text length for each row."""
         column_items_lengths = dataset.as_dataframe()[self.column_name].apply(_apply)
         return DatasetColumn(type=ColumnType.Numerical, data=column_items_lengths)
 
     def list_input_columns(self) -> Optional[List[str]]:
+        """Return list of required input column names."""
         return [self.column_name]
 
 
 def _apply(value: Any):
+    """Compute length of value, returning 0 for None or NaN."""
     if value is None or (isinstance(value, float) and np.isnan(value)):
         return 0
     return len(value)

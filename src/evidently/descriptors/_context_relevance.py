@@ -26,11 +26,13 @@ from evidently.legacy.utils.llm.wrapper import get_llm_wrapper
 
 
 def semantic_similarity_scoring(question: DatasetColumn, context: DatasetColumn, options: Options) -> DatasetColumn:
+    """Compute semantic similarity scores between question and context using sentence transformers."""
     from sentence_transformers import SentenceTransformer
 
     model_id: str = "all-MiniLM-L6-v2"
 
     def normalized_cosine_distance(left, right):
+        """Calculate normalized cosine distance between two vectors."""
         return 1 - ((1 - np.dot(left, right) / (np.linalg.norm(left) * np.linalg.norm(right))) / 2)
 
     model = SentenceTransformer(model_id)
@@ -60,6 +62,7 @@ def llm_scoring(
     model: str = "gpt-4o-mini",
     provider: str = "openai",
 ) -> DatasetColumn:
+    """Compute relevance scores between question and context using LLM."""
     # unwrap data to rows
     context_column = context.data.name
     no_index_context = context.data.reset_index()
@@ -117,40 +120,54 @@ T = TypeVar("T")
 
 
 class AggregationMethod(Generic[T]):
+    """Base class for aggregating relevance scores."""
+
     column_type: ColumnType
 
     @abc.abstractmethod
     def do(self, scores: List[float]) -> T:
+        """Aggregate a list of scores into a single value."""
         raise NotImplementedError
 
 
 class MeanAggregation(AggregationMethod[float]):
+    """Aggregate scores by computing the mean."""
+
     def __init__(self):
         self.column_type = ColumnType.Numerical
 
     def do(self, scores: List[float]) -> float:
+        """Return the average of scores."""
         return float(np.average(scores))
 
 
 class HitAggregation(AggregationMethod[int]):
+    """Aggregate scores by checking if any score exceeds threshold."""
+
     def __init__(self, threshold: float = 0.8):
         self.column_type = ColumnType.Categorical
         self.threshold = threshold
 
     def do(self, scores: List[float]) -> int:
+        """Return 1 if any score >= threshold, else 0."""
         return 1 if any([x >= self.threshold for x in scores]) else 0
 
 
 class HitShareAggregation(AggregationMethod[float]):
+    """Aggregate scores by computing the share of scores above threshold."""
+
     def __init__(self, threshold: float = 0.8):
         self.column_type = ColumnType.Categorical
         self.threshold = threshold
 
     def do(self, scores: List[float]) -> float:
+        """Return the fraction of scores >= threshold."""
         return float(sum([1 if x >= self.threshold else 0 for x in scores])) / len(scores)
 
 
 class ScoringMethod(Protocol):
+    """Protocol for scoring methods that compute relevance between question and context."""
+
     def __call__(
         self,
         question: DatasetColumn,
@@ -173,6 +190,8 @@ AGGREGATION_METHODS = {
 
 
 class ContextRelevance(Descriptor):
+    """Evaluate relevance of context to input using semantic similarity or LLM scoring."""
+
     input: str
     contexts: str
     method: str = "semantic_similarity"
@@ -207,6 +226,7 @@ class ContextRelevance(Descriptor):
         dataset: Dataset,
         options: Options,
     ) -> Union[DatasetColumn, Dict[DisplayName, DatasetColumn]]:
+        """Generate relevance scores for input-context pairs."""
         data = dataset.column(self.contexts)
 
         (method, aggregation_method) = METHODS.get(self.method)
@@ -228,4 +248,5 @@ class ContextRelevance(Descriptor):
         return result
 
     def list_input_columns(self) -> Optional[List[str]]:
+        """Return list of required input column names."""
         return [self.input, self.contexts]

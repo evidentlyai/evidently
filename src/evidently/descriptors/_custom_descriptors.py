@@ -15,6 +15,8 @@ CustomColumnCallable = Callable[[DatasetColumn], DatasetColumn]
 
 
 class CustomColumnDescriptor(Descriptor):
+    """Descriptor that applies a custom function to a single column."""
+
     column_name: str
     func: str
     _func: Optional[CustomColumnCallable] = PrivateAttr(None)
@@ -36,12 +38,14 @@ class CustomColumnDescriptor(Descriptor):
         super().__init__(alias=alias or f"custom_column_descriptor:{func}", tests=tests)
 
     def generate_data(self, dataset: Dataset, options: Options) -> Union[DatasetColumn, Dict[str, DatasetColumn]]:
+        """Apply custom function to column data."""
         if self._func is None:
             raise ValueError("CustomColumnDescriptor is not configured with callable func")
         column_data = dataset.column(self.column_name)
         return self._func(column_data)
 
     def list_input_columns(self) -> Optional[List[str]]:
+        """Return list of required input column names."""
         return [self.column_name]
 
 
@@ -49,6 +53,8 @@ CustomDescriptorCallable = Callable[[Dataset], Union[DatasetColumn, Dict[str, Da
 
 
 class CustomDescriptor(Descriptor):
+    """Descriptor that applies a custom function to the entire dataset."""
+
     func: str
     _func: Optional[CustomDescriptorCallable] = PrivateAttr(None)
 
@@ -67,6 +73,7 @@ class CustomDescriptor(Descriptor):
         super().__init__(alias=alias or f"custom_descriptor:{func}", tests=tests)
 
     def generate_data(self, dataset: "Dataset", options: Options) -> Union[DatasetColumn, Dict[str, DatasetColumn]]:
+        """Apply custom function to dataset."""
         if self._func is None:
             raise ValueError("CustomDescriptor is not configured with callable func")
         return self._func(dataset)
