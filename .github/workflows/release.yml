@@ -35,12 +35,10 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - name: Set up Python 3.9
+      - name: Set up Python 3.11
         uses: actions/setup-python@v5
         with:
-          python-version: "3.9"
-      - name: Install dependencies
-        run: pip install -r requirements.min.txt
+          python-version: "3.11"
       - name: Install wheel
         run: pip install wheel
       - name: Build a binary wheel and a source tarball
