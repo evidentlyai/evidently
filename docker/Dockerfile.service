@@ -16,8 +16,6 @@ LABEL maintainer="mike0sv@evidentlyai.com"
 WORKDIR /src
 COPY pyproject.toml .
 COPY README.md .
-COPY MANIFEST.in .
-COPY hatch_build_hook.py .
 COPY src ./src
 RUN apt-get update && \
     apt-get install -y \

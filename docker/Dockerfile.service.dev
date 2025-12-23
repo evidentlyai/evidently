@@ -21,8 +21,6 @@ RUN apt-get update && \
 WORKDIR /src
 COPY pyproject.toml .
 COPY README.md .
-COPY MANIFEST.in .
-COPY hatch_build_hook.py .
 COPY src ./src
 
 RUN curl -LsSf https://astral.sh/uv/install.sh | sh \
