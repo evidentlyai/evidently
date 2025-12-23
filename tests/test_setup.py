@@ -1,6 +1,9 @@
 from pathlib import Path
 
-from setup import setup_args
+try:
+    import tomllib
+except ImportError:
+    import tomli as tomllib
 
 
 def test_minimal_requirements():
@@ -14,8 +17,10 @@ def test_minimal_requirements():
             for k, v in (line.strip().split("=="),)
         }
 
+    with open(path / "pyproject.toml", "rb") as f:
+        config = tomllib.load(f)
     install_reqs = {
-        k.split("[")[0]: _get_min_version(v) for r in setup_args["install_requires"] for k, v in (r.split(">="),)
+        k.split("[")[0]: _get_min_version(v) for r in config["project"]["dependencies"] for k, v in (r.split(">="),)
     }
     extra = []
     wrong_version = []
@@ -29,7 +34,7 @@ def test_minimal_requirements():
 
     assert (
         len(extra) == 0 and len(wrong_version) == 0
-    ), f"install_requires has extra reqs {extra} and wrong versions of {wrong_version}"
+    ), f"project.dependencies has extra reqs {extra} and wrong versions of {wrong_version}"
 
 
 def _get_min_version(value):

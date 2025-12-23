@@ -187,7 +187,7 @@ jobs:
         with:
           python-version: ${{ matrix.python }}
           cache: "pip"
-          cache-dependency-path: setup.py
+          cache-dependency-path: pyproject.toml
       - name: Get scipy dataset cached
         uses: ./.github/share-actions/get-scipy-datasets
       - name: Install pytorch for linux
@@ -214,7 +214,7 @@ jobs:
           python-version: "3.9"
           architecture: "x64"
           cache: "pip"
-          cache-dependency-path: setup.py
+          cache-dependency-path: pyproject.toml
       - name: Install pytorch for linux
         if: runner.os == 'Linux' && runner.arch == 'X64'
         run: pip install torch --index-url https://download.pytorch.org/whl/cpu
@@ -222,8 +222,10 @@ jobs:
         run: pip install -e .
       - name: Install wheel
         run: pip install wheel
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
       - name: Build package
-        run: python setup.py sdist bdist_wheel
+        run: uv build
       - name: Archive built package
         uses: actions/upload-artifact@v4
         with:
@@ -395,7 +397,7 @@ jobs:
         with:
           python-version: "3.9"
           cache: "pip"
-          cache-dependency-path: setup.py
+          cache-dependency-path: pyproject.toml
 
       - name: Install package
         run: pip install -e .[dev]
