@@ -4,6 +4,7 @@ import { produceApiReferenceIndex } from '@lib/produce-indexes/api-reference-ind
 import {
   API_REFERENCE_ARTIFACTS_PATH,
   DOCS_API_REFERENCE_PATH,
+  colorize,
   consoleGroup,
   consoleGroupEnd,
   getApiReferenceDescriptors,
@@ -73,8 +74,7 @@ const writeApiReferenceIndex = (): void => {
 }
 
 const deleteOldBranchFolders = (): void => {
-  consoleGroup('Checking for old api-references to delete')
-  consoleGroupEnd()
+  console.log(colorize.branch('Checking for old api-references to delete'))
   const { others } = getApiReferenceDescriptors()
 
   const TWO_WEEKS_AGO = Date.now() - 14 * 24 * 60 * 60 * 1000
@@ -89,20 +89,38 @@ const deleteOldBranchFolders = (): void => {
     }
 
     consoleGroup(otherApiRef.path)
-    console.log(`Last modification: ${folderLastModTimestamp.lastModificationDateString}`)
+    const timeSpentMs = Date.now() - folderLastModTimestamp.lastModificationTimestamp
+    const timeSpentDays = Number.parseFloat((timeSpentMs / (1000 * 60 * 60 * 24)).toFixed(2))
 
-    if (folderLastModTimestamp.lastModificationTimestamp <= TWO_WEEKS_AGO) {
+    const willDelete = folderLastModTimestamp.lastModificationTimestamp <= TWO_WEEKS_AGO
+
+    console.log(
+      `${colorize.time('Time since last modification:')} ${colorize.age(timeSpentDays)} ${colorize.time('days ago')}`
+    )
+    console.log(
+      `${colorize.date('Last modification:')} ${colorize.date(folderLastModTimestamp.lastModificationDateString)}`
+    )
+
+    if (willDelete) {
       fs.rmSync(otherApiRef.fullPath, { recursive: true, force: true })
-      console.log(`Deleted: ${otherApiRef.path}`)
+      console.log(colorize.deleted(`Deleted: ${otherApiRef.path}`))
       deletedCount++
+    } else {
+      console.log(colorize.kept('Kept (less than 2 weeks old)'))
     }
 
     consoleGroupEnd()
   }
 
   if (deletedCount === 0) {
-    consoleGroup('No old branch folders to delete')
-    consoleGroupEnd()
+    console.log(colorize.branch('No old branch folders to delete'))
+    console.log(colorize.kept('All branch folders are recent'))
+  } else {
+    console.log(
+      colorize.branch(
+        `Successfully deleted ${deletedCount} old branch folder${deletedCount === 1 ? '' : 's'}`
+      )
+    )
   }
 }
 
