@@ -327,6 +327,8 @@ class DataDefinition(BaseModel):
     This allows Evidently to process the data correctly. Some evaluations need specific
     columns and will fail if they're missing.
 
+    **Documentation**: See [Data Definition Guide](https://docs.evidentlyai.com/docs/library/data_definition) for detailed mapping options.
+
     Auto-mapping (empty DataDefinition):
     ```python
     dataset = Dataset.from_pandas(df, data_definition=DataDefinition())
@@ -962,9 +964,14 @@ class Dataset:
     - Metadata and tags: additional information about the dataset
 
     You typically create a `Dataset` from a `pandas.DataFrame` using `Dataset.from_pandas()`.
+    Use `Dataset` objects with `Report.run()` to perform evaluations.
+
+    **Documentation**: See [Data Definition Guide](https://docs.evidentlyai.com/docs/library/data_definition) for column mapping.
 
     Create from pandas DataFrame:
     ```python
+    from evidently import Dataset, DataDefinition
+
     dataset = Dataset.from_pandas(
         source_df,
         data_definition=DataDefinition()
@@ -973,11 +980,16 @@ class Dataset:
 
     Add descriptors for text evaluation:
     ```python
+    from evidently.descriptors import TextLength
+
     dataset.add_descriptors([TextLength(column="text")])
     ```
 
     Use in a Report:
     ```python
+    from evidently import Report
+    from evidently.presets import DataSummaryPreset
+
     report = Report([DataSummaryPreset()])
     snapshot = report.run(dataset, None)
     ```
@@ -1001,17 +1013,20 @@ class Dataset:
 
         Args:
         * `data`: `pandas.DataFrame` with your data
-        * `data_definition`: Optional `DataDefinition` for column mapping (auto-inferred if None)
+        * `data_definition`: Optional `DataDefinition` for column mapping (auto-inferred if None).
+          Use `DataDefinition()` for automatic mapping or provide explicit column mappings.
         * `descriptors`: Optional list of descriptors to compute and add to dataset
         * `options`: Optional options for descriptor computation
         * `metadata`: Optional metadata dictionary
         * `tags`: Optional list of tags
 
         Returns:
-        * `Dataset` object ready for evaluation
+        * `Dataset` object ready for use with `Report.run()`
 
         Example:
         ```python
+        from evidently import Dataset, DataDefinition
+
         dataset = Dataset.from_pandas(df, data_definition=DataDefinition())
         ```
         """
@@ -1084,9 +1099,10 @@ class Dataset:
 
     @property
     def data_definition(self) -> DataDefinition:
-        """Get the data definition mapping for this dataset.
+        """Get the `DataDefinition` mapping for this dataset.
 
         Returns:
+        * `DataDefinition` object with column type and role mappings
         * `DataDefinition` object with column types and roles
         """
         return self._data_definition

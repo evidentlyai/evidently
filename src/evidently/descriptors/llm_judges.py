@@ -30,12 +30,19 @@ from evidently.llm.templates import BaseLLMPromptTemplate
 
 
 class GenericLLMDescriptor(Descriptor):
+    """Generic descriptor for LLM-based evaluations with custom prompts."""
+
     input_columns: Dict[str, str]
+    """Mapping of prompt variable names to dataset column names."""
     provider: str
+    """LLM provider name (e.g., "openai", "anthropic")."""
     model: str
+    """Model name to use (e.g., "gpt-4o-mini")."""
     prompt: PromptContent
+    """Prompt template or messages to send to LLM."""
 
     _llm_wrapper: Optional[LLMWrapper] = PrivateAttr(None)
+    """Internal cached LLM wrapper."""
 
     def __init__(
         self,
@@ -54,14 +61,17 @@ class GenericLLMDescriptor(Descriptor):
         super().__init__(alias, tests, **data)
 
     def get_llm_wrapper(self, options: Options) -> LLMWrapper:
+        """Get or create LLM wrapper instance."""
         if self._llm_wrapper is None:
             self._llm_wrapper = get_llm_wrapper(self.provider, self.model, options)
         return self._llm_wrapper
 
     def _fmt_messages(self, values: Dict[str, Any]) -> List[LegacyLLMMessage]:
+        """Format prompt messages with column values."""
         return [LegacyLLMMessage(role=m.role, content=m.content.format(**values)) for m in self.prompt.as_messages()]
 
     def iterate_messages(self, dataset: Dataset) -> Iterator[LLMRequest[str]]:
+        """Iterate over LLM requests for each row in the dataset."""
         for _, column_values in (
             dataset.as_dataframe()[list(self.input_columns)].rename(columns=self.input_columns).iterrows()
         ):
@@ -106,15 +116,23 @@ class GenericLLMDescriptor(Descriptor):
 
 
 class LLMEval(Descriptor):
+    """Evaluate text using LLM with a prompt template."""
+
     provider: str
+    """LLM provider name (e.g., "openai", "anthropic")."""
     model: str
+    """Model name to use (e.g., "gpt-4o-mini")."""
     input_column: Optional[str] = None
+    """Single input column name (if using single column)."""
     input_columns: Optional[Dict[str, str]] = None
+    """Mapping of prompt variables to column names (if using multiple columns)."""
     template: BaseLLMPromptTemplate
+    """Prompt template defining the evaluation task."""
 
     # _llm_wrapper: Optional[LLMWrapper] = PrivateAttr(None)
     @property
     def _judge(self):
+        """Get the underlying LLM judge instance."""
         from evidently.legacy.features.llm_judge import LLMJudge
 
         return LLMJudge(
@@ -127,6 +145,7 @@ class LLMEval(Descriptor):
         )
 
     def get_dataset_column(self, column_name: str, values: pd.Series) -> DatasetColumn:
+        """Convert pandas Series to DatasetColumn with appropriate type."""
         column_type = self._judge.get_type(column_name)
         if column_type == ColumnType.Numerical:
             values = pd.to_numeric(values, errors="coerce")
@@ -136,6 +155,7 @@ class LLMEval(Descriptor):
     def generate_data(
         self, dataset: "Dataset", options: Options
     ) -> Union[DatasetColumn, Dict[DisplayName, DatasetColumn]]:
+        """Generate evaluation results using LLM judge."""
         judge = self._judge
         feature = judge.generate_features_renamed(
             dataset.as_dataframe(),
@@ -145,4 +165,5 @@ class LLMEval(Descriptor):
         return {col.display_name: self.get_dataset_column(col.name, feature[col.name]) for col in judge.list_columns()}
 
     def list_output_columns(self) -> List[str]:
+        """Return list of output column names from the judge."""
         return [c.display_name for c in self._judge.list_columns()]

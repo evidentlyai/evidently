@@ -1,3 +1,32 @@
+"""Metrics for evaluating data quality, model performance, and data drift.
+
+This module provides individual metrics that can be used in `Report` objects.
+Metrics compute specific values from your data, such as:
+- Column statistics (mean, max, min, etc.)
+- Data quality metrics (missing values, duplicates, etc.)
+- Classification metrics (accuracy, precision, recall, etc.)
+- Regression metrics (MAE, RMSE, R2, etc.)
+- Ranking metrics (NDCG, MAP, MRR, etc.)
+- Data drift metrics (PSI, Wasserstein distance, etc.)
+
+Use metrics individually in a `Report`, or use `Preset` objects that combine
+multiple related metrics together.
+
+**Documentation**: See [All Metrics](https://docs.evidentlyai.com/metrics/all_metrics) for a complete reference.
+
+Example:
+```python
+from evidently import Report
+from evidently.metrics import MeanValue, ColumnCount
+
+report = Report([
+    ColumnCount(),
+    MeanValue(column="age")
+])
+snapshot = report.run(dataset, None)
+```
+"""
+
 from .classification import FNR
 from .classification import FPR
 from .classification import TNR
