@@ -73,7 +73,23 @@
                     <h1 class="modulename">
 <a href="./../evidently.html">evidently</a><wbr>.generators    </h1>
 
-                
+                        <div class="docstring"><p>Metric generators for creating multiple metrics programmatically.</p>
+
+<p>Generators help create multiple related metrics efficiently, such as generating
+the same metric for multiple columns or creating metric combinations.</p>
+
+<p>Example:</p>
+
+<div class="pdoc-code codehilite">
+<pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn"><a href="metrics.html">evidently.metrics</a></span><span class="w"> </span><span class="kn">import</span> <span class="n">MeanValue</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn"><a href="">evidently.generators</a></span><span class="w"> </span><span class="kn">import</span> <span class="n">ColumnMetricGenerator</span>
+
+<span class="c1"># Generate MeanValue for all numerical columns</span>
+<span class="n">metrics</span> <span class="o">=</span> <span class="n">ColumnMetricGenerator</span><span class="p">(</span><span class="n">MeanValue</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;age&quot;</span><span class="p">,</span> <span class="s2">&quot;salary&quot;</span><span class="p">,</span> <span class="s2">&quot;score&quot;</span><span class="p">])</span>
+</code></pre>
+</div>
+</div>
+
                 
                 
                 

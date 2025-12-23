@@ -448,27 +448,40 @@ Use <code><a href="#Report">Report</a></code> to:</p>
 <p>Each <code><a href="#Report">Report</a></code> runs a computation and visualizes a set of Metrics and conditional Tests.
 If you pass two datasets, you get a side-by-side comparison.</p>
 
+<p>Use <code><a href="#Dataset">Dataset</a></code> to prepare your data and <code><a href="#DataDefinition">DataDefinition</a></code> to map columns. The <code><a href="#Report.run">run()</a></code> method
+returns a <code>Snapshot</code> object with computed results.</p>
+
+<p><strong>Documentation</strong>: See <a href="https://docs.evidentlyai.com/docs/library/report">Report Guide</a> for detailed usage.</p>
+
 <p>Using a preset:</p>
 
 <div class="pdoc-code codehilite">
-<pre><span></span><code><span class="n">report</span> <span class="o">=</span> <span class="n">Report</span><span class="p">([</span><span class="n">DataSummaryPreset</span><span class="p">()])</span>
-<span class="n">my_eval</span> <span class="o">=</span> <span class="n">report</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">eval_data_1</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+<pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">evidently</span><span class="w"> </span><span class="kn">import</span> <span class="n">Report</span><span class="p">,</span> <span class="n">Dataset</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn"><a href="evidently/presets.html">evidently.presets</a></span><span class="w"> </span><span class="kn">import</span> <span class="n">DataSummaryPreset</span>
+
+<span class="n">report</span> <span class="o">=</span> <span class="n">Report</span><span class="p">([</span><span class="n">DataSummaryPreset</span><span class="p">()])</span>
+<span class="n">dataset</span> <span class="o">=</span> <span class="n"><a href="#Dataset.from_pandas">Dataset.from_pandas</a></span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">data_definition</span><span class="o">=</span><span class="n">DataDefinition</span><span class="p">())</span>
+<span class="n">snapshot</span> <span class="o">=</span> <span class="n">report</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
 </code></pre>
 </div>
 
 <p>Using custom metrics:</p>
 
 <div class="pdoc-code codehilite">
-<pre><span></span><code><span class="n">report</span> <span class="o">=</span> <span class="n">Report</span><span class="p">([</span><span class="n">ColumnCount</span><span class="p">(),</span> <span class="n">ValueStats</span><span class="p">(</span><span class="n">column</span><span class="o">=</span><span class="s2">&quot;target&quot;</span><span class="p">)])</span>
-<span class="n">my_eval</span> <span class="o">=</span> <span class="n">report</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">eval_data_1</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+<pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn"><a href="evidently/metrics.html">evidently.metrics</a></span><span class="w"> </span><span class="kn">import</span> <span class="n">ColumnCount</span><span class="p">,</span> <span class="n">ValueStats</span>
+
+<span class="n">report</span> <span class="o">=</span> <span class="n">Report</span><span class="p">([</span><span class="n">ColumnCount</span><span class="p">(),</span> <span class="n">ValueStats</span><span class="p">(</span><span class="n">column</span><span class="o">=</span><span class="s2">&quot;target&quot;</span><span class="p">)])</span>
+<span class="n">snapshot</span> <span class="o">=</span> <span class="n">report</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
 </code></pre>
 </div>
 
 <p>With reference data for drift detection:</p>
 
 <div class="pdoc-code codehilite">
-<pre><span></span><code><span class="n">report</span> <span class="o">=</span> <span class="n">Report</span><span class="p">([</span><span class="n">DataDriftPreset</span><span class="p">()])</span>
-<span class="n">my_eval</span> <span class="o">=</span> <span class="n">report</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">eval_data_1</span><span class="p">,</span> <span class="n">eval_data_2</span><span class="p">)</span>
+<pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn"><a href="evidently/presets.html">evidently.presets</a></span><span class="w"> </span><span class="kn">import</span> <span class="n">DataDriftPreset</span>
+
+<span class="n">report</span> <span class="o">=</span> <span class="n">Report</span><span class="p">([</span><span class="n">DataDriftPreset</span><span class="p">()])</span>
+<span class="n">snapshot</span> <span class="o">=</span> <span class="n">report</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">current_dataset</span><span class="p">,</span> <span class="n">reference_dataset</span><span class="p">)</span>
 </code></pre>
 </div>
 </div>
@@ -558,8 +571,8 @@ If you pass two datasets, you get a side-by-side comparison.</p>
 <p>Args:</p>
 
 <ul>
-<li><code>current_data</code>: Current dataset to evaluate (<code>pandas.DataFrame</code> or <code><a href="#Dataset">evidently.core.datasets.Dataset</a></code>)</li>
-<li><code>reference_data</code>: Optional reference dataset for comparison/drift detection</li>
+<li><code>current_data</code>: Current dataset to evaluate (<code>pandas.DataFrame</code> or <code><a href="#Dataset">Dataset</a></code>)</li>
+<li><code>reference_data</code>: Optional reference dataset for comparison/drift detection (<code>pandas.DataFrame</code> or <code><a href="#Dataset">Dataset</a></code>)</li>
 <li><code>additional_data</code>: Optional dictionary of additional datasets by name</li>
 <li><code>timestamp</code>: Optional timestamp for the snapshot (defaults to now)</li>
 <li><code><a href="#Report.metadata">metadata</a></code>: Optional metadata to merge with report metadata</li>
@@ -570,13 +583,19 @@ If you pass two datasets, you get a side-by-side comparison.</p>
 <p>Returns:</p>
 
 <ul>
-<li><code>Snapshot</code>: Object containing computed metric results, tests, and visualizations</li>
+<li><code>Snapshot</code>: Object containing computed metric results, tests, and visualizations.
+Use <code>Snapshot.save_html()</code>, <code>Snapshot.json()</code>, or <code>Snapshot.dict()</code> to export results.</li>
 </ul>
 
 <p>Example:</p>
 
 <div class="pdoc-code codehilite">
-<pre><span></span><code><span class="n">snapshot</span> <span class="o">=</span> <span class="n">report</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">current_data</span><span class="p">,</span> <span class="n">reference_data</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;daily_check&quot;</span><span class="p">)</span>
+<pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">evidently</span><span class="w"> </span><span class="kn">import</span> <span class="n">Report</span><span class="p">,</span> <span class="n">Dataset</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn"><a href="evidently/presets.html">evidently.presets</a></span><span class="w"> </span><span class="kn">import</span> <span class="n">DataSummaryPreset</span>
+
+<span class="n">report</span> <span class="o">=</span> <span class="n">Report</span><span class="p">([</span><span class="n">DataSummaryPreset</span><span class="p">()])</span>
+<span class="n">dataset</span> <span class="o">=</span> <span class="n"><a href="#Dataset.from_pandas">Dataset.from_pandas</a></span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">data_definition</span><span class="o">=</span><span class="n">DataDefinition</span><span class="p">())</span>
+<span class="n">snapshot</span> <span class="o">=</span> <span class="n">report</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;daily_check&quot;</span><span class="p">)</span>
 <span class="n">snapshot</span><span class="o">.</span><span class="n">save_html</span><span class="p">(</span><span class="s2">&quot;report.html&quot;</span><span class="p">)</span>
 </code></pre>
 </div>
@@ -747,12 +766,17 @@ with additional metadata including:</p>
 <li>Metadata and tags: additional information about the dataset</li>
 </ul>
 
-<p>You typically create a <code><a href="#Dataset">Dataset</a></code> from a <code>pandas.DataFrame</code> using <code><a href="#Dataset.from_pandas">Dataset.from_pandas()</a></code>.</p>
+<p>You typically create a <code><a href="#Dataset">Dataset</a></code> from a <code>pandas.DataFrame</code> using <code><a href="#Dataset.from_pandas">Dataset.from_pandas()</a></code>.
+Use <code><a href="#Dataset">Dataset</a></code> objects with <code><a href="#Report.run">Report.run()</a></code> to perform evaluations.</p>
+
+<p><strong>Documentation</strong>: See <a href="https://docs.evidentlyai.com/docs/library/data_definition">Data Definition Guide</a> for column mapping.</p>
 
 <p>Create from pandas DataFrame:</p>
 
 <div class="pdoc-code codehilite">
-<pre><span></span><code><span class="n">dataset</span> <span class="o">=</span> <span class="n"><a href="#Dataset.from_pandas">Dataset.from_pandas</a></span><span class="p">(</span>
+<pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">evidently</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dataset</span><span class="p">,</span> <span class="n">DataDefinition</span>
+
+<span class="n">dataset</span> <span class="o">=</span> <span class="n"><a href="#Dataset.from_pandas">Dataset.from_pandas</a></span><span class="p">(</span>
     <span class="n">source_df</span><span class="p">,</span>
     <span class="n">data_definition</span><span class="o">=</span><span class="n">DataDefinition</span><span class="p">()</span>
 <span class="p">)</span>
@@ -762,14 +786,19 @@ with additional metadata including:</p>
 <p>Add descriptors for text evaluation:</p>
 
 <div class="pdoc-code codehilite">
-<pre><span></span><code><span class="n">dataset</span><span class="o">.</span><span class="n">add_descriptors</span><span class="p">([</span><span class="n">TextLength</span><span class="p">(</span><span class="n">column</span><span class="o">=</span><span class="s2">&quot;text&quot;</span><span class="p">)])</span>
+<pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn"><a href="evidently/descriptors.html">evidently.descriptors</a></span><span class="w"> </span><span class="kn">import</span> <span class="n">TextLength</span>
+
+<span class="n">dataset</span><span class="o">.</span><span class="n">add_descriptors</span><span class="p">([</span><span class="n">TextLength</span><span class="p">(</span><span class="n">column</span><span class="o">=</span><span class="s2">&quot;text&quot;</span><span class="p">)])</span>
 </code></pre>
 </div>
 
 <p>Use in a Report:</p>
 
 <div class="pdoc-code codehilite">
-<pre><span></span><code><span class="n">report</span> <span class="o">=</span> <span class="n">Report</span><span class="p">([</span><span class="n">DataSummaryPreset</span><span class="p">()])</span>
+<pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">evidently</span><span class="w"> </span><span class="kn">import</span> <span class="n">Report</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn"><a href="evidently/presets.html">evidently.presets</a></span><span class="w"> </span><span class="kn">import</span> <span class="n">DataSummaryPreset</span>
+
+<span class="n">report</span> <span class="o">=</span> <span class="n">Report</span><span class="p">([</span><span class="n">DataSummaryPreset</span><span class="p">()])</span>
 <span class="n">snapshot</span> <span class="o">=</span> <span class="n">report</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
 </code></pre>
 </div>
@@ -793,7 +822,8 @@ with additional metadata including:</p>
 
 <ul>
 <li><code>data</code>: <code>pandas.DataFrame</code> with your data</li>
-<li><code><a href="#Dataset.data_definition">data_definition</a></code>: Optional <code><a href="#DataDefinition">DataDefinition</a></code> for column mapping (auto-inferred if None)</li>
+<li><code><a href="#Dataset.data_definition">data_definition</a></code>: Optional <code><a href="#DataDefinition">DataDefinition</a></code> for column mapping (auto-inferred if None).
+Use <code><a href="#DataDefinition">DataDefinition()</a></code> for automatic mapping or provide explicit column mappings.</li>
 <li><code>descriptors</code>: Optional list of descriptors to compute and add to dataset</li>
 <li><code>options</code>: Optional options for descriptor computation</li>
 <li><code><a href="#Dataset.metadata">metadata</a></code>: Optional metadata dictionary</li>
@@ -803,13 +833,15 @@ with additional metadata including:</p>
 <p>Returns:</p>
 
 <ul>
-<li><code><a href="#Dataset">Dataset</a></code> object ready for evaluation</li>
+<li><code><a href="#Dataset">Dataset</a></code> object ready for use with <code><a href="#Report.run">Report.run()</a></code></li>
 </ul>
 
 <p>Example:</p>
 
 <div class="pdoc-code codehilite">
-<pre><span></span><code><span class="n">dataset</span> <span class="o">=</span> <span class="n"><a href="#Dataset.from_pandas">Dataset.from_pandas</a></span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">data_definition</span><span class="o">=</span><span class="n">DataDefinition</span><span class="p">())</span>
+<pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">evidently</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dataset</span><span class="p">,</span> <span class="n">DataDefinition</span>
+
+<span class="n">dataset</span> <span class="o">=</span> <span class="n"><a href="#Dataset.from_pandas">Dataset.from_pandas</a></span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">data_definition</span><span class="o">=</span><span class="n">DataDefinition</span><span class="p">())</span>
 </code></pre>
 </div>
 </div>
@@ -959,11 +991,12 @@ with additional metadata including:</p>
     </div>
     <a class="headerlink" href="#Dataset.data_definition"></a>
     
-            <div class="docstring"><p>Get the data definition mapping for this dataset.</p>
+            <div class="docstring"><p>Get the <code><a href="#DataDefinition">DataDefinition</a></code> mapping for this dataset.</p>
 
 <p>Returns:</p>
 
 <ul>
+<li><code><a href="#DataDefinition">DataDefinition</a></code> object with column type and role mappings</li>
 <li><code><a href="#DataDefinition">DataDefinition</a></code> object with column types and roles</li>
 </ul>
 </div>
@@ -1132,6 +1165,8 @@ with additional metadata including:</p>
 
 <p>This allows Evidently to process the data correctly. Some evaluations need specific
 columns and will fail if they're missing.</p>
+
+<p><strong>Documentation</strong>: See <a href="https://docs.evidentlyai.com/docs/library/data_definition">Data Definition Guide</a> for detailed mapping options.</p>
 
 <p>Auto-mapping (empty DataDefinition):</p>
 

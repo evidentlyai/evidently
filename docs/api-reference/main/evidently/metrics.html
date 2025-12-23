@@ -856,7 +856,40 @@
                     <h1 class="modulename">
 <a href="./../evidently.html">evidently</a><wbr>.metrics    </h1>
 
-                
+                        <div class="docstring"><p>Metrics for evaluating data quality, model performance, and data drift.</p>
+
+<p>This module provides individual metrics that can be used in <code>Report</code> objects.
+Metrics compute specific values from your data, such as:</p>
+
+<ul>
+<li>Column statistics (mean, max, min, etc.)</li>
+<li>Data quality metrics (missing values, duplicates, etc.)</li>
+<li>Classification metrics (accuracy, precision, recall, etc.)</li>
+<li>Regression metrics (MAE, RMSE, R2, etc.)</li>
+<li>Ranking metrics (NDCG, MAP, MRR, etc.)</li>
+<li>Data drift metrics (PSI, Wasserstein distance, etc.)</li>
+</ul>
+
+<p>Use metrics individually in a <code>Report</code>, or use <code>Preset</code> objects that combine
+multiple related metrics together.</p>
+
+<p><strong>Documentation</strong>: See <a href="https://docs.evidentlyai.com/metrics/all_metrics">All Metrics</a> for a complete reference.</p>
+
+<p>Example:</p>
+
+<div class="pdoc-code codehilite">
+<pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">evidently</span><span class="w"> </span><span class="kn">import</span> <span class="n">Report</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn"><a href="">evidently.metrics</a></span><span class="w"> </span><span class="kn">import</span> <span class="n">MeanValue</span><span class="p">,</span> <span class="n">ColumnCount</span>
+
+<span class="n">report</span> <span class="o">=</span> <span class="n">Report</span><span class="p">([</span>
+    <span class="n">ColumnCount</span><span class="p">(),</span>
+    <span class="n">MeanValue</span><span class="p">(</span><span class="n">column</span><span class="o">=</span><span class="s2">&quot;age&quot;</span><span class="p">)</span>
+<span class="p">])</span>
+<span class="n">snapshot</span> <span class="o">=</span> <span class="n">report</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+</code></pre>
+</div>
+</div>
+
                 
                 
                 

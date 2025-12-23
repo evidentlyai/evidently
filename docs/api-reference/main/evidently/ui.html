@@ -47,7 +47,46 @@
                     <h1 class="modulename">
 <a href="./../evidently.html">evidently</a><wbr>.ui    </h1>
 
-                
+                        <div class="docstring"><p>UI and workspace management for storing and visualizing evaluations.</p>
+
+<p>This module provides interfaces for:</p>
+
+<ul>
+<li><code>Workspace</code>: Local file-based storage for projects and runs</li>
+<li><code>RemoteWorkspace</code>: Remote API-based storage</li>
+<li><code>CloudWorkspace</code>: Evidently Cloud storage</li>
+<li><code>EvidentlyUIRunner</code>: Run the Evidently UI service</li>
+</ul>
+
+<p>Workspaces allow you to persist evaluation results, organize them into projects,
+and visualize them over time. Use workspaces to:</p>
+
+<ul>
+<li>Store multiple evaluation runs</li>
+<li>Compare results across time or model versions</li>
+<li>Build dashboards with custom visualizations</li>
+<li>Share results with your team</li>
+</ul>
+
+<p><strong>Documentation</strong>:</p>
+
+<ul>
+<li><a href="https://docs.evidentlyai.com/docs/platform/overview">Platform Overview</a> for workspace concepts</li>
+<li><a href="https://docs.evidentlyai.com/docs/setup/self-hosting">Self-hosting Guide</a> for local setup</li>
+</ul>
+
+<p>Example:</p>
+
+<div class="pdoc-code codehilite">
+<pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn"><a href="">evidently.ui</a></span><span class="w"> </span><span class="kn">import</span> <span class="n">Workspace</span>
+
+<span class="n">workspace</span> <span class="o">=</span> <span class="n">Workspace</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="s2">&quot;my_workspace&quot;</span><span class="p">)</span>
+<span class="n">project</span> <span class="o">=</span> <span class="n">workspace</span><span class="o">.</span><span class="n">add_project</span><span class="p">(</span><span class="n">ProjectModel</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;My Project&quot;</span><span class="p">))</span>
+<span class="n">workspace</span><span class="o">.</span><span class="n">add_run</span><span class="p">(</span><span class="n">project</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">snapshot</span><span class="p">)</span>
+</code></pre>
+</div>
+</div>
+
                 
                 
                 

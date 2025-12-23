@@ -127,7 +127,36 @@
                     <h1 class="modulename">
 <a href="./../evidently.html">evidently</a><wbr>.guardrails    </h1>
 
-                
+                        <div class="docstring"><p>Guardrails for validating and filtering LLM outputs.</p>
+
+<p>Guardrails provide runtime checks to ensure LLM outputs meet specific criteria
+before they are used. They can block, filter, or transform outputs based on
+custom rules.</p>
+
+<p>Available guards:</p>
+
+<ul>
+<li><code><a href="#PIICheck">PIICheck</a></code>: Detect personally identifiable information</li>
+<li><code><a href="#IncludesWords">IncludesWords</a></code>: Check if output contains specific words</li>
+<li><code><a href="#WordsPresence">WordsPresence</a></code>: Check for presence/absence of word lists</li>
+<li><code><a href="#PythonFunction">PythonFunction</a></code>: Custom validation using Python functions</li>
+</ul>
+
+<p>Use the <code>@guard</code> decorator to apply guards to LLM functions.</p>
+
+<p>Example:</p>
+
+<div class="pdoc-code codehilite">
+<pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn"><a href="">evidently.guardrails</a></span><span class="w"> </span><span class="kn">import</span> <span class="n">guard</span><span class="p">,</span> <span class="n">PIICheck</span>
+
+<span class="nd">@guard</span><span class="p">(</span><span class="n">PIICheck</span><span class="p">())</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">generate_response</span><span class="p">(</span><span class="n">prompt</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="c1"># LLM generation code</span>
+    <span class="k">pass</span>
+</code></pre>
+</div>
+</div>
+
                 
                 
                 

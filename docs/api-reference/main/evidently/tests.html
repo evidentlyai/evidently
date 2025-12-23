@@ -82,7 +82,39 @@
                     <h1 class="modulename">
 <a href="./../evidently.html">evidently</a><wbr>.tests    </h1>
 
-                
+                        <div class="docstring"><p>Test conditions for validating metric results.</p>
+
+<p>Tests add pass/fail conditions to metrics. They check if metric values meet
+specific criteria and return test status (pass, fail, warning, error).</p>
+
+<p>Use test condition functions to create tests:</p>
+
+<ul>
+<li>Comparison: <code><a href="#gt">gt()</a></code>, <code><a href="#lt">lt()</a></code>, <code><a href="#gte">gte()</a></code>, <code><a href="#lte">lte()</a></code>, <code><a href="#eq">eq()</a></code>, <code><a href="#not_eq">not_eq()</a></code></li>
+<li>Membership: <code><a href="#is_in">is_in()</a></code>, <code><a href="#not_in">not_in()</a></code></li>
+<li>Reference-based: <code><a href="#Reference">Reference()</a></code> for relative comparisons</li>
+</ul>
+
+<p>Tests can be added to metrics when creating a <code>Report</code>, or automatically
+generated when using presets with <code>include_tests=True</code>.</p>
+
+<p><strong>Documentation</strong>: See <a href="https://docs.evidentlyai.com/docs/library/tests">Tests Guide</a> for detailed usage.</p>
+
+<p>Example:</p>
+
+<div class="pdoc-code codehilite">
+<pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">evidently</span><span class="w"> </span><span class="kn">import</span> <span class="n">Report</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn"><a href="metrics.html">evidently.metrics</a></span><span class="w"> </span><span class="kn">import</span> <span class="n">MeanValue</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn"><a href="">evidently.tests</a></span><span class="w"> </span><span class="kn">import</span> <span class="n">gt</span>
+
+<span class="n">report</span> <span class="o">=</span> <span class="n">Report</span><span class="p">([</span>
+    <span class="n">MeanValue</span><span class="p">(</span><span class="n">column</span><span class="o">=</span><span class="s2">&quot;age&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">add_test</span><span class="p">(</span><span class="n">gt</span><span class="p">(</span><span class="mi">25</span><span class="p">))</span>
+<span class="p">])</span>
+<span class="n">snapshot</span> <span class="o">=</span> <span class="n">report</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+</code></pre>
+</div>
+</div>
+
                 
                 
                 

@@ -53,7 +53,35 @@
                     <h1 class="modulename">
 <a href="./../evidently.html">evidently</a><wbr>.sdk    </h1>
 
-                
+                        <div class="docstring"><p>SDK for programmatic access to Evidently artifacts and configurations.</p>
+
+<p>The SDK provides APIs for managing:</p>
+
+<ul>
+<li>Artifacts: Stored evaluation results and data</li>
+<li>Prompts: LLM prompt templates and versions</li>
+<li>Configs: Reusable evaluation configurations</li>
+<li>Datasets: Dataset metadata and storage</li>
+<li>Panels: Dashboard panel configurations</li>
+</ul>
+
+<p>SDK classes work with both local (<code>Workspace</code>) and remote (<code>RemoteWorkspace</code>,
+<code>CloudWorkspace</code>) storage backends.</p>
+
+<p>Example:</p>
+
+<div class="pdoc-code codehilite">
+<pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn"><a href="ui.html">evidently.ui</a></span><span class="w"> </span><span class="kn">import</span> <span class="n">Workspace</span>
+
+<span class="n">workspace</span> <span class="o">=</span> <span class="n">Workspace</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="s2">&quot;my_workspace&quot;</span><span class="p">)</span>
+<span class="c1"># Access SDK via workspace properties</span>
+<span class="n">artifacts</span> <span class="o">=</span> <span class="n">workspace</span><span class="o">.</span><span class="n">artifacts</span>
+<span class="n">prompts</span> <span class="o">=</span> <span class="n">workspace</span><span class="o">.</span><span class="n">prompts</span>
+<span class="n">configs</span> <span class="o">=</span> <span class="n">workspace</span><span class="o">.</span><span class="n">configs</span>
+</code></pre>
+</div>
+</div>
+
                 
                 
                 

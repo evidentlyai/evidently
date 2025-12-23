@@ -361,7 +361,43 @@
                     <h1 class="modulename">
 <a href="./../evidently.html">evidently</a><wbr>.descriptors    </h1>
 
-                
+                        <div class="docstring"><p>Row-level descriptors for evaluating text and LLM outputs.</p>
+
+<p>Descriptors compute scores or labels for individual rows in your dataset.
+They are used to assess text quality, LLM output characteristics, and other
+row-level properties. After computing descriptors, you can:</p>
+
+<ul>
+<li>View them as columns in your dataset</li>
+<li>Use them in <code>TextEvals</code> preset to summarize across the dataset</li>
+<li>Add conditions to create descriptor tests</li>
+</ul>
+
+<p>Descriptors range from simple (e.g., <code><a href="#TextLength">TextLength</a></code>) to complex LLM-based
+evaluations (e.g., <code><a href="#LLMEval">LLMEval</a></code>, <code><a href="#LLMJudge">LLMJudge</a></code>).</p>
+
+<p><strong>Documentation</strong>:</p>
+
+<ul>
+<li><a href="https://docs.evidentlyai.com/metrics/all_descriptors">All Descriptors</a> for a complete reference</li>
+<li><a href="https://docs.evidentlyai.com/docs/library/descriptors">Descriptors Guide</a> for usage instructions</li>
+</ul>
+
+<p>Example:</p>
+
+<div class="pdoc-code codehilite">
+<pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">evidently</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dataset</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn"><a href="">evidently.descriptors</a></span><span class="w"> </span><span class="kn">import</span> <span class="n">TextLength</span><span class="p">,</span> <span class="n">LLMEval</span>
+
+<span class="n">dataset</span> <span class="o">=</span> <span class="n">Dataset</span><span class="o">.</span><span class="n">from_pandas</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+<span class="n">dataset</span><span class="o">.</span><span class="n">add_descriptors</span><span class="p">([</span>
+    <span class="n">TextLength</span><span class="p">(</span><span class="n">column</span><span class="o">=</span><span class="s2">&quot;response&quot;</span><span class="p">),</span>
+    <span class="n">LLMEval</span><span class="p">(</span><span class="n">column</span><span class="o">=</span><span class="s2">&quot;response&quot;</span><span class="p">,</span> <span class="n">prompt</span><span class="o">=</span><span class="s2">&quot;Is this response helpful?&quot;</span><span class="p">)</span>
+<span class="p">])</span>
+</code></pre>
+</div>
+</div>
+
                 
                 
                 
@@ -376,7 +412,19 @@
     </div>
     <a class="headerlink" href="#BERTScore"></a>
     
-    
+            <div class="docstring"><p>Compute BERTScore similarity between text columns.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>columns</code>: List of column names to compare.</li>
+<li><code>model</code>: Pretrained BERT model name.</li>
+<li><code>tfidf_weighted</code>: Whether to weight embeddings with IDF.</li>
+<li><code>alias</code>: Optional alias for the descriptor.</li>
+<li><code>tests</code>: Optional list of tests to apply.</li>
+</ul>
+</div>
+
 
                 </section>
                 <section id="BeginsWith">
@@ -389,7 +437,19 @@
     </div>
     <a class="headerlink" href="#BeginsWith"></a>
     
-    
+            <div class="docstring"><p>Check if text column values begin with the specified prefix.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>column_name</code>: Name of the text column to check.</li>
+<li><code>prefix</code>: Prefix string to match.</li>
+<li><code>case_sensitive</code>: Whether matching is case-sensitive.</li>
+<li><code>alias</code>: Optional alias for the descriptor.</li>
+<li><code>tests</code>: Optional list of tests to apply.</li>
+</ul>
+</div>
+
 
                 </section>
                 <section id="BiasLLMEval">
@@ -402,7 +462,24 @@
     </div>
     <a class="headerlink" href="#BiasLLMEval"></a>
     
-    
+            <div class="docstring"><p>Evaluate bias in text using LLM.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>column_name</code>: Name of the text column to evaluate.</li>
+<li><code>provider</code>: LLM provider name (e.g., "openai", "anthropic").</li>
+<li><code>model</code>: Model name to use (e.g., "gpt-4o-mini").</li>
+<li><code>additional_columns</code>: Optional mapping of prompt variables to column names.</li>
+<li><code>include_category</code>: Whether to include category in output.</li>
+<li><code>include_score</code>: Whether to include score in output.</li>
+<li><code>include_reasoning</code>: Whether to include reasoning in output.</li>
+<li><code>uncertainty</code>: Optional uncertainty handling strategy.</li>
+<li><code>alias</code>: Optional alias for the descriptor.</li>
+<li><code>tests</code>: Optional list of tests to apply.</li>
+</ul>
+</div>
+
 
                 </section>
                 <section id="BinaryClassificationLLMEval">
@@ -415,7 +492,24 @@
     </div>
     <a class="headerlink" href="#BinaryClassificationLLMEval"></a>
     
-    
+            <div class="docstring"><p>Perform binary classification evaluation using LLM.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>column_name</code>: Name of the text column to evaluate.</li>
+<li><code>provider</code>: LLM provider name (e.g., "openai", "anthropic").</li>
+<li><code>model</code>: Model name to use (e.g., "gpt-4o-mini").</li>
+<li><code>additional_columns</code>: Optional mapping of prompt variables to column names.</li>
+<li><code>include_category</code>: Whether to include category in output.</li>
+<li><code>include_score</code>: Whether to include score in output.</li>
+<li><code>include_reasoning</code>: Whether to include reasoning in output.</li>
+<li><code>uncertainty</code>: Optional uncertainty handling strategy.</li>
+<li><code>alias</code>: Optional alias for the descriptor.</li>
+<li><code>tests</code>: Optional list of tests to apply.</li>
+</ul>
+</div>
+
 
                 </section>
                 <section id="ColumnTest">
@@ -512,7 +606,25 @@
     </div>
     <a class="headerlink" href="#CompletenessLLMEval"></a>
     
-    
+            <div class="docstring"><p>Evaluate completeness of text against context using LLM.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>column_name</code>: Name of the text column to evaluate.</li>
+<li><code>context</code>: Column name containing context for evaluation.</li>
+<li><code>provider</code>: LLM provider name (e.g., "openai", "anthropic").</li>
+<li><code>model</code>: Model name to use (e.g., "gpt-4o-mini").</li>
+<li><code>additional_columns</code>: Optional mapping of prompt variables to column names.</li>
+<li><code>include_category</code>: Whether to include category in output.</li>
+<li><code>include_score</code>: Whether to include score in output.</li>
+<li><code>include_reasoning</code>: Whether to include reasoning in output.</li>
+<li><code>uncertainty</code>: Optional uncertainty handling strategy.</li>
+<li><code>alias</code>: Optional alias for the descriptor.</li>
+<li><code>tests</code>: Optional list of tests to apply.</li>
+</ul>
+</div>
+
 
                 </section>
                 <section id="Contains">
@@ -540,7 +652,17 @@
     </div>
     <a class="headerlink" href="#ContainsLink"></a>
     
-    
+            <div class="docstring"><p>Check if text column contains URLs or links.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>column_name</code>: Name of the text column to check.</li>
+<li><code>alias</code>: Optional alias for the descriptor.</li>
+<li><code>tests</code>: Optional list of tests to apply.</li>
+</ul>
+</div>
+
 
                 </section>
                 <section id="ContextQualityLLMEval">
@@ -553,7 +675,25 @@
     </div>
     <a class="headerlink" href="#ContextQualityLLMEval"></a>
     
-    
+            <div class="docstring"><p>Evaluate quality of context for answering a question using LLM.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>column_name</code>: Name of the text column to evaluate.</li>
+<li><code>question</code>: Column name containing question for evaluation.</li>
+<li><code>provider</code>: LLM provider name (e.g., "openai", "anthropic").</li>
+<li><code>model</code>: Model name to use (e.g., "gpt-4o-mini").</li>
+<li><code>additional_columns</code>: Optional mapping of prompt variables to column names.</li>
+<li><code>include_category</code>: Whether to include category in output.</li>
+<li><code>include_score</code>: Whether to include score in output.</li>
+<li><code>include_reasoning</code>: Whether to include reasoning in output.</li>
+<li><code>uncertainty</code>: Optional uncertainty handling strategy.</li>
+<li><code>alias</code>: Optional alias for the descriptor.</li>
+<li><code>tests</code>: Optional list of tests to apply.</li>
+</ul>
+</div>
+
 
                 </section>
                 <section id="ContextRelevance">
@@ -566,7 +706,9 @@
     </div>
     <a class="headerlink" href="#ContextRelevance"></a>
     
-    
+            <div class="docstring"><p>Evaluate relevance of context to input using semantic similarity or LLM scoring.</p>
+</div>
+
 
                             <div id="ContextRelevance.__init__" class="classattr">
                                 <div class="attr function">
@@ -592,7 +734,9 @@
     </div>
     <a class="headerlink" href="#ContextRelevance.input"></a>
     
-    
+            <div class="docstring"><p>Column name containing input/question text.</p>
+</div>
+
 
                             </div>
                             <div id="ContextRelevance.contexts" class="classattr">
@@ -603,7 +747,9 @@
     </div>
     <a class="headerlink" href="#ContextRelevance.contexts"></a>
     
-    
+            <div class="docstring"><p>Column name containing context text (list of strings per row).</p>
+</div>
+
 
                             </div>
                             <div id="ContextRelevance.method" class="classattr">
@@ -614,7 +760,9 @@
     </div>
     <a class="headerlink" href="#ContextRelevance.method"></a>
     
-    
+            <div class="docstring"><p>Scoring method: "semantic_similarity" or "llm".</p>
+</div>
+
 
                             </div>
                             <div id="ContextRelevance.method_params" class="classattr">
@@ -625,7 +773,9 @@
     </div>
     <a class="headerlink" href="#ContextRelevance.method_params"></a>
     
-    
+            <div class="docstring"><p>Additional parameters for scoring method.</p>
+</div>
+
 
                             </div>
                             <div id="ContextRelevance.aggregation_method" class="classattr">
@@ -636,7 +786,9 @@
     </div>
     <a class="headerlink" href="#ContextRelevance.aggregation_method"></a>
     
-    
+            <div class="docstring"><p>How to aggregate scores: "mean", "hit", or "hit_share".</p>
+</div>
+
 
                             </div>
                             <div id="ContextRelevance.aggregation_method_params" class="classattr">
@@ -647,7 +799,9 @@
     </div>
     <a class="headerlink" href="#ContextRelevance.aggregation_method_params"></a>
     
-    
+            <div class="docstring"><p>Parameters for aggregation method.</p>
+</div>
+
 
                             </div>
                             <div id="ContextRelevance.output_scores" class="classattr">
@@ -658,7 +812,9 @@
     </div>
     <a class="headerlink" href="#ContextRelevance.output_scores"></a>
     
-    
+            <div class="docstring"><p>Whether to output individual scores in addition to aggregated score.</p>
+</div>
+
 
                             </div>
                             <div id="ContextRelevance.generate_data" class="classattr">
@@ -671,7 +827,9 @@
     </div>
     <a class="headerlink" href="#ContextRelevance.generate_data"></a>
     
-    
+            <div class="docstring"><p>Generate relevance scores for input-context pairs.</p>
+</div>
+
 
                             </div>
                             <div id="ContextRelevance.list_input_columns" class="classattr">
@@ -684,7 +842,9 @@
     </div>
     <a class="headerlink" href="#ContextRelevance.list_input_columns"></a>
     
-    
+            <div class="docstring"><p>Return list of required input column names.</p>
+</div>
+
 
                             </div>
                             <div class="inherited">
@@ -714,7 +874,25 @@
     </div>
     <a class="headerlink" href="#CorrectnessLLMEval"></a>
     
-    
+            <div class="docstring"><p>Evaluate correctness of text against target output using LLM.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>column_name</code>: Name of the text column to evaluate.</li>
+<li><code>target_output</code>: Column name containing target output for comparison.</li>
+<li><code>provider</code>: LLM provider name (e.g., "openai", "anthropic").</li>
+<li><code>model</code>: Model name to use (e.g., "gpt-4o-mini").</li>
+<li><code>additional_columns</code>: Optional mapping of prompt variables to column names.</li>
+<li><code>include_category</code>: Whether to include category in output.</li>
+<li><code>include_score</code>: Whether to include score in output.</li>
+<li><code>include_reasoning</code>: Whether to include reasoning in output.</li>
+<li><code>uncertainty</code>: Optional uncertainty handling strategy.</li>
+<li><code>alias</code>: Optional alias for the descriptor.</li>
+<li><code>tests</code>: Optional list of tests to apply.</li>
+</ul>
+</div>
+
 
                 </section>
                 <section id="CustomColumnDescriptor">
@@ -727,7 +905,9 @@
     </div>
     <a class="headerlink" href="#CustomColumnDescriptor"></a>
     
-    
+            <div class="docstring"><p>Descriptor that applies a custom function to a single column.</p>
+</div>
+
 
                             <div id="CustomColumnDescriptor.__init__" class="classattr">
                                 <div class="attr function">
@@ -753,7 +933,9 @@
     </div>
     <a class="headerlink" href="#CustomColumnDescriptor.column_name"></a>
     
-    
+            <div class="docstring"><p>Name of the column to process.</p>
+</div>
+
 
                             </div>
                             <div id="CustomColumnDescriptor.func" class="classattr">
@@ -764,7 +946,9 @@
     </div>
     <a class="headerlink" href="#CustomColumnDescriptor.func"></a>
     
-    
+            <div class="docstring"><p>Function name or callable to apply to column data.</p>
+</div>
+
 
                             </div>
                             <div id="CustomColumnDescriptor.generate_data" class="classattr">
@@ -777,7 +961,9 @@
     </div>
     <a class="headerlink" href="#CustomColumnDescriptor.generate_data"></a>
     
-    
+            <div class="docstring"><p>Apply custom function to column data.</p>
+</div>
+
 
                             </div>
                             <div id="CustomColumnDescriptor.list_input_columns" class="classattr">
@@ -790,7 +976,9 @@
     </div>
     <a class="headerlink" href="#CustomColumnDescriptor.list_input_columns"></a>
     
-    
+            <div class="docstring"><p>Return list of required input column names.</p>
+</div>
+
 
                             </div>
                             <div class="inherited">
@@ -820,7 +1008,9 @@
     </div>
     <a class="headerlink" href="#CustomDescriptor"></a>
     
-    
+            <div class="docstring"><p>Descriptor that applies a custom function to the entire dataset.</p>
+</div>
+
 
                             <div id="CustomDescriptor.__init__" class="classattr">
                                 <div class="attr function">
@@ -846,7 +1036,9 @@
     </div>
     <a class="headerlink" href="#CustomDescriptor.func"></a>
     
-    
+            <div class="docstring"><p>Function name or callable to apply to dataset.</p>
+</div>
+
 
                             </div>
                             <div id="CustomDescriptor.generate_data" class="classattr">
@@ -859,7 +1051,9 @@
     </div>
     <a class="headerlink" href="#CustomDescriptor.generate_data"></a>
     
-    
+            <div class="docstring"><p>Apply custom function to dataset.</p>
+</div>
+
 
                             </div>
                             <div class="inherited">
@@ -890,7 +1084,24 @@
     </div>
     <a class="headerlink" href="#DeclineLLMEval"></a>
     
-    
+            <div class="docstring"><p>Detect if LLM declined to answer using LLM evaluation.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>column_name</code>: Name of the text column to evaluate.</li>
+<li><code>provider</code>: LLM provider name (e.g., "openai", "anthropic").</li>
+<li><code>model</code>: Model name to use (e.g., "gpt-4o-mini").</li>
+<li><code>additional_columns</code>: Optional mapping of prompt variables to column names.</li>
+<li><code>include_category</code>: Whether to include category in output.</li>
+<li><code>include_score</code>: Whether to include score in output.</li>
+<li><code>include_reasoning</code>: Whether to include reasoning in output.</li>
+<li><code>uncertainty</code>: Optional uncertainty handling strategy.</li>
+<li><code>alias</code>: Optional alias for the descriptor.</li>
+<li><code>tests</code>: Optional list of tests to apply.</li>
+</ul>
+</div>
+
 
                 </section>
                 <section id="DoesNotContain">
@@ -918,7 +1129,19 @@
     </div>
     <a class="headerlink" href="#EndsWith"></a>
     
-    
+            <div class="docstring"><p>Check if text column values end with the specified suffix.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>column_name</code>: Name of the text column to check.</li>
+<li><code>suffix</code>: Suffix string to match.</li>
+<li><code>case_sensitive</code>: Whether matching is case-sensitive.</li>
+<li><code>alias</code>: Optional alias for the descriptor.</li>
+<li><code>tests</code>: Optional list of tests to apply.</li>
+</ul>
+</div>
+
 
                 </section>
                 <section id="ExactMatch">
@@ -931,7 +1154,17 @@
     </div>
     <a class="headerlink" href="#ExactMatch"></a>
     
-    
+            <div class="docstring"><p>Check if multiple columns have exactly matching values.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>columns</code>: List of column names to compare.</li>
+<li><code>alias</code>: Optional alias for the descriptor.</li>
+<li><code>tests</code>: Optional list of tests to apply.</li>
+</ul>
+</div>
+
 
                 </section>
                 <section id="ExcludesWords">
@@ -959,7 +1192,25 @@
     </div>
     <a class="headerlink" href="#FaithfulnessLLMEval"></a>
     
-    
+            <div class="docstring"><p>Evaluate faithfulness of text to context using LLM.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>column_name</code>: Name of the text column to evaluate.</li>
+<li><code>context</code>: Column name containing context for evaluation.</li>
+<li><code>provider</code>: LLM provider name (e.g., "openai", "anthropic").</li>
+<li><code>model</code>: Model name to use (e.g., "gpt-4o-mini").</li>
+<li><code>additional_columns</code>: Optional mapping of prompt variables to column names.</li>
+<li><code>include_category</code>: Whether to include category in output.</li>
+<li><code>include_score</code>: Whether to include score in output.</li>
+<li><code>include_reasoning</code>: Whether to include reasoning in output.</li>
+<li><code>uncertainty</code>: Optional uncertainty handling strategy.</li>
+<li><code>alias</code>: Optional alias for the descriptor.</li>
+<li><code>tests</code>: Optional list of tests to apply.</li>
+</ul>
+</div>
+
 
                 </section>
                 <section id="HuggingFace">
@@ -972,7 +1223,19 @@
     </div>
     <a class="headerlink" href="#HuggingFace"></a>
     
-    
+            <div class="docstring"><p>Apply a HuggingFace model to text column.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>column_name</code>: Name of the text column to process.</li>
+<li><code>model</code>: HuggingFace model name or path.</li>
+<li><code>params</code>: Additional parameters for the model.</li>
+<li><code>alias</code>: Alias for the descriptor.</li>
+<li><code>tests</code>: Optional list of tests to apply.</li>
+</ul>
+</div>
+
 
                 </section>
                 <section id="HuggingFaceToxicity">
@@ -985,7 +1248,19 @@
     </div>
     <a class="headerlink" href="#HuggingFaceToxicity"></a>
     
-    
+            <div class="docstring"><p>Detect toxicity in text using HuggingFace models.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>column_name</code>: Name of the text column to check.</li>
+<li><code>alias</code>: Alias for the descriptor.</li>
+<li><code>model</code>: HuggingFace model name or path. If None, uses default.</li>
+<li><code>toxic_label</code>: Label to use for toxic predictions.</li>
+<li><code>tests</code>: Optional list of tests to apply.</li>
+</ul>
+</div>
+
 
                 </section>
                 <section id="IncludesWords">
@@ -1013,7 +1288,17 @@
     </div>
     <a class="headerlink" href="#IsValidJSON"></a>
     
-    
+            <div class="docstring"><p>Check if text column contains valid JSON.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>column_name</code>: Name of the text column to validate.</li>
+<li><code>alias</code>: Optional alias for the descriptor.</li>
+<li><code>tests</code>: Optional list of tests to apply.</li>
+</ul>
+</div>
+
 
                 </section>
                 <section id="IsValidPython">
@@ -1026,7 +1311,17 @@
     </div>
     <a class="headerlink" href="#IsValidPython"></a>
     
-    
+            <div class="docstring"><p>Check if text column contains valid Python code.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>column_name</code>: Name of the text column to validate.</li>
+<li><code>alias</code>: Optional alias for the descriptor.</li>
+<li><code>tests</code>: Optional list of tests to apply.</li>
+</ul>
+</div>
+
 
                 </section>
                 <section id="IsValidSQL">
@@ -1039,7 +1334,17 @@
     </div>
     <a class="headerlink" href="#IsValidSQL"></a>
     
-    
+            <div class="docstring"><p>Check if text column contains valid SQL.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>column_name</code>: Name of the text column to validate.</li>
+<li><code>alias</code>: Optional alias for the descriptor.</li>
+<li><code>tests</code>: Optional list of tests to apply.</li>
+</ul>
+</div>
+
 
                 </section>
                 <section id="ItemMatch">
@@ -1082,7 +1387,19 @@
     </div>
     <a class="headerlink" href="#JSONMatch"></a>
     
-    
+            <div class="docstring"><p>Check if JSON values in two columns match.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>first_column</code>: Name of the first JSON column.</li>
+<li><code>second_column</code>: Name of the second JSON column.</li>
+<li><code>feature_type</code>: Type of the output feature.</li>
+<li><code>alias</code>: Optional alias for the descriptor.</li>
+<li><code>tests</code>: Optional list of tests to apply.</li>
+</ul>
+</div>
+
 
                 </section>
                 <section id="JSONSchemaMatch">
@@ -1095,7 +1412,20 @@
     </div>
     <a class="headerlink" href="#JSONSchemaMatch"></a>
     
-    
+            <div class="docstring"><p>Check if JSON values match the expected schema.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>column_name</code>: Name of the JSON column to validate.</li>
+<li><code>expected_schema</code>: Dictionary mapping field names to expected types.</li>
+<li><code>validate_types</code>: Whether to validate field types.</li>
+<li><code>exact_match</code>: Whether schema must match exactly.</li>
+<li><code>alias</code>: Optional alias for the descriptor.</li>
+<li><code>tests</code>: Optional list of tests to apply.</li>
+</ul>
+</div>
+
 
                 </section>
                 <section id="LLMEval">
@@ -1108,7 +1438,22 @@
     </div>
     <a class="headerlink" href="#LLMEval"></a>
     
-    
+            <div class="docstring"><p>Evaluate text using LLM with a custom prompt template.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>column_name</code>: Name of the text column to evaluate.</li>
+<li><code>provider</code>: LLM provider name (e.g., "openai", "anthropic").</li>
+<li><code>model</code>: Model name to use (e.g., "gpt-4o-mini").</li>
+<li><code>template</code>: Prompt template defining the evaluation task.</li>
+<li><code>additional_columns</code>: Optional mapping of prompt variables to column names.</li>
+<li><code>subcolumn</code>: Optional subcolumn name for nested data.</li>
+<li><code>alias</code>: Optional alias for the descriptor.</li>
+<li><code>tests</code>: Optional list of tests to apply.</li>
+</ul>
+</div>
+
 
                 </section>
                 <section id="LLMJudge">
@@ -1121,7 +1466,21 @@
     </div>
     <a class="headerlink" href="#LLMJudge"></a>
     
-    
+            <div class="docstring"><p>Evaluate text using LLM with a custom prompt template.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>provider</code>: LLM provider name (e.g., "openai", "anthropic").</li>
+<li><code>model</code>: Model name to use (e.g., "gpt-4o-mini").</li>
+<li><code>template</code>: Prompt template defining the evaluation task.</li>
+<li><code>input_column</code>: Single input column name (if using single column).</li>
+<li><code>input_columns</code>: Mapping of prompt variables to column names (if using multiple columns).</li>
+<li><code>alias</code>: Optional alias for the descriptor.</li>
+<li><code>tests</code>: Optional list of tests to apply.</li>
+</ul>
+</div>
+
 
                 </section>
                 <section id="MulticlassClassificationLLMEval">
@@ -1134,7 +1493,24 @@
     </div>
     <a class="headerlink" href="#MulticlassClassificationLLMEval"></a>
     
-    
+            <div class="docstring"><p>Perform multiclass classification evaluation using LLM.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>column_name</code>: Name of the text column to evaluate.</li>
+<li><code>provider</code>: LLM provider name (e.g., "openai", "anthropic").</li>
+<li><code>model</code>: Model name to use (e.g., "gpt-4o-mini").</li>
+<li><code>additional_columns</code>: Optional mapping of prompt variables to column names.</li>
+<li><code>include_category</code>: Whether to include category in output.</li>
+<li><code>include_score</code>: Whether to include score in output.</li>
+<li><code>include_reasoning</code>: Whether to include reasoning in output.</li>
+<li><code>uncertainty</code>: Optional uncertainty handling strategy.</li>
+<li><code>alias</code>: Optional alias for the descriptor.</li>
+<li><code>tests</code>: Optional list of tests to apply.</li>
+</ul>
+</div>
+
 
                 </section>
                 <section id="NegativityLLMEval">
@@ -1147,7 +1523,24 @@
     </div>
     <a class="headerlink" href="#NegativityLLMEval"></a>
     
-    
+            <div class="docstring"><p>Evaluate negativity in text using LLM.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>column_name</code>: Name of the text column to evaluate.</li>
+<li><code>provider</code>: LLM provider name (e.g., "openai", "anthropic").</li>
+<li><code>model</code>: Model name to use (e.g., "gpt-4o-mini").</li>
+<li><code>additional_columns</code>: Optional mapping of prompt variables to column names.</li>
+<li><code>include_category</code>: Whether to include category in output.</li>
+<li><code>include_score</code>: Whether to include score in output.</li>
+<li><code>include_reasoning</code>: Whether to include reasoning in output.</li>
+<li><code>uncertainty</code>: Optional uncertainty handling strategy.</li>
+<li><code>alias</code>: Optional alias for the descriptor.</li>
+<li><code>tests</code>: Optional list of tests to apply.</li>
+</ul>
+</div>
+
 
                 </section>
                 <section id="NonLetterCharacterPercentage">
@@ -1160,7 +1553,17 @@
     </div>
     <a class="headerlink" href="#NonLetterCharacterPercentage"></a>
     
-    
+            <div class="docstring"><p>Compute percentage of non-letter characters in text.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>column_name</code>: Name of the text column to analyze.</li>
+<li><code>alias</code>: Optional alias for the descriptor.</li>
+<li><code>tests</code>: Optional list of tests to apply.</li>
+</ul>
+</div>
+
 
                 </section>
                 <section id="OOVWordsPercentage">
@@ -1173,7 +1576,18 @@
     </div>
     <a class="headerlink" href="#OOVWordsPercentage"></a>
     
-    
+            <div class="docstring"><p>Compute percentage of out-of-vocabulary words in text.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>column_name</code>: Name of the text column to analyze.</li>
+<li><code>ignore_words</code>: Words to ignore when computing OOV percentage.</li>
+<li><code>alias</code>: Optional alias for the descriptor.</li>
+<li><code>tests</code>: Optional list of tests to apply.</li>
+</ul>
+</div>
+
 
                 </section>
                 <section id="OpenAI">
@@ -1186,7 +1600,27 @@
     </div>
     <a class="headerlink" href="#OpenAI"></a>
     
-    
+            <div class="docstring"><p>Evaluate text using OpenAI models with custom prompts.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>column_name</code>: Name of the text column to evaluate.</li>
+<li><code>model</code>: OpenAI model name to use.</li>
+<li><code>prompt</code>: Prompt template string.</li>
+<li><code>feature_type</code>: Type of output feature.</li>
+<li><code>context</code>: Optional context string.</li>
+<li><code>context_column</code>: Optional column name containing context.</li>
+<li><code>prompt_replace_string</code>: String to replace in prompt with column value.</li>
+<li><code>context_replace_string</code>: String to replace in prompt with context.</li>
+<li><code>check_mode</code>: Mode for checking results: "any_line" or other modes.</li>
+<li><code>possible_values</code>: Optional list of possible output values.</li>
+<li><code>openai_params</code>: Optional dictionary of additional OpenAI API parameters.</li>
+<li><code>alias</code>: Optional alias for the descriptor.</li>
+<li><code>tests</code>: Optional list of tests to apply.</li>
+</ul>
+</div>
+
 
                 </section>
                 <section id="PIILLMEval">
@@ -1199,7 +1633,24 @@
     </div>
     <a class="headerlink" href="#PIILLMEval"></a>
     
-    
+            <div class="docstring"><p>Detect personally identifiable information in text using LLM.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>column_name</code>: Name of the text column to evaluate.</li>
+<li><code>provider</code>: LLM provider name (e.g., "openai", "anthropic").</li>
+<li><code>model</code>: Model name to use (e.g., "gpt-4o-mini").</li>
+<li><code>additional_columns</code>: Optional mapping of prompt variables to column names.</li>
+<li><code>include_category</code>: Whether to include category in output.</li>
+<li><code>include_score</code>: Whether to include score in output.</li>
+<li><code>include_reasoning</code>: Whether to include reasoning in output.</li>
+<li><code>uncertainty</code>: Optional uncertainty handling strategy.</li>
+<li><code>alias</code>: Optional alias for the descriptor.</li>
+<li><code>tests</code>: Optional list of tests to apply.</li>
+</ul>
+</div>
+
 
                 </section>
                 <section id="RegExp">
@@ -1227,7 +1678,18 @@
     </div>
     <a class="headerlink" href="#SemanticSimilarity"></a>
     
-    
+            <div class="docstring"><p>Compute semantic similarity between text columns.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>columns</code>: List of column names to compare.</li>
+<li><code>model</code>: Sentence transformer model name.</li>
+<li><code>alias</code>: Optional alias for the descriptor.</li>
+<li><code>tests</code>: Optional list of tests to apply.</li>
+</ul>
+</div>
+
 
                 </section>
                 <section id="SentenceCount">
@@ -1240,7 +1702,17 @@
     </div>
     <a class="headerlink" href="#SentenceCount"></a>
     
-    
+            <div class="docstring"><p>Count the number of sentences in text.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>column_name</code>: Name of the text column to analyze.</li>
+<li><code>alias</code>: Optional alias for the descriptor.</li>
+<li><code>tests</code>: Optional list of tests to apply.</li>
+</ul>
+</div>
+
 
                 </section>
                 <section id="Sentiment">
@@ -1253,7 +1725,17 @@
     </div>
     <a class="headerlink" href="#Sentiment"></a>
     
-    
+            <div class="docstring"><p>Compute sentiment score for text.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>column_name</code>: Name of the text column to analyze.</li>
+<li><code>alias</code>: Optional alias for the descriptor.</li>
+<li><code>tests</code>: Optional list of tests to apply.</li>
+</ul>
+</div>
+
 
                 </section>
                 <section id="TestSummary">
@@ -1438,7 +1920,9 @@
     </div>
     <a class="headerlink" href="#TextLength"></a>
     
-    
+            <div class="docstring"><p>Compute the length of text in each row of a column.</p>
+</div>
+
 
                             <div id="TextLength.__init__" class="classattr">
                                 <div class="attr function">
@@ -1464,7 +1948,9 @@
     </div>
     <a class="headerlink" href="#TextLength.column_name"></a>
     
-    
+            <div class="docstring"><p>Name of the text column to measure.</p>
+</div>
+
 
                             </div>
                             <div id="TextLength.generate_data" class="classattr">
@@ -1477,7 +1963,9 @@
     </div>
     <a class="headerlink" href="#TextLength.generate_data"></a>
     
-    
+            <div class="docstring"><p>Compute text length for each row.</p>
+</div>
+
 
                             </div>
                             <div id="TextLength.list_input_columns" class="classattr">
@@ -1490,7 +1978,9 @@
     </div>
     <a class="headerlink" href="#TextLength.list_input_columns"></a>
     
-    
+            <div class="docstring"><p>Return list of required input column names.</p>
+</div>
+
 
                             </div>
                             <div class="inherited">
@@ -1570,7 +2060,9 @@ TextMatch(text_column="description", match_items=r"\d{3}-\d{3}-\d{4}", match_t
     </div>
     <a class="headerlink" href="#TextMatch.column_name"></a>
     
-    
+            <div class="docstring"><p>Name of the text column to match against.</p>
+</div>
+
 
                             </div>
                             <div id="TextMatch.match_items" class="classattr">
@@ -1581,7 +2073,9 @@ TextMatch(text_column="description", match_items=r"\d{3}-\d{3}-\d{4}", match_t
     </div>
     <a class="headerlink" href="#TextMatch.match_items"></a>
     
-    
+            <div class="docstring"><p>Items to match: list of strings or column name.</p>
+</div>
+
 
                             </div>
                             <div id="TextMatch.match_type" class="classattr">
@@ -1592,7 +2086,9 @@ TextMatch(text_column="description", match_items=r"\d{3}-\d{3}-\d{4}", match_t
     </div>
     <a class="headerlink" href="#TextMatch.match_type"></a>
     
-    
+            <div class="docstring"><p>Type of matching to perform.</p>
+</div>
+
 
                             </div>
                             <div id="TextMatch.match_mode" class="classattr">
@@ -1603,7 +2099,9 @@ TextMatch(text_column="description", match_items=r"\d{3}-\d{3}-\d{4}", match_t
     </div>
     <a class="headerlink" href="#TextMatch.match_mode"></a>
     
-    
+            <div class="docstring"><p>Match any item or all items.</p>
+</div>
+
 
                             </div>
                             <div id="TextMatch.case_sensitive" class="classattr">
@@ -1614,7 +2112,9 @@ TextMatch(text_column="description", match_items=r"\d{3}-\d{3}-\d{4}", match_t
     </div>
     <a class="headerlink" href="#TextMatch.case_sensitive"></a>
     
-    
+            <div class="docstring"><p>Whether matching is case-sensitive.</p>
+</div>
+
 
                             </div>
                             <div id="TextMatch.lemmatize" class="classattr">
@@ -1625,7 +2125,9 @@ TextMatch(text_column="description", match_items=r"\d{3}-\d{3}-\d{4}", match_t
     </div>
     <a class="headerlink" href="#TextMatch.lemmatize"></a>
     
-    
+            <div class="docstring"><p>Whether to lemmatize words before matching.</p>
+</div>
+
 
                             </div>
                             <div id="TextMatch.word_boundaries" class="classattr">
@@ -1636,7 +2138,9 @@ TextMatch(text_column="description", match_items=r"\d{3}-\d{3}-\d{4}", match_t
     </div>
     <a class="headerlink" href="#TextMatch.word_boundaries"></a>
     
-    
+            <div class="docstring"><p>Whether to match whole words only.</p>
+</div>
+
 
                             </div>
                             <div id="TextMatch.generate_data" class="classattr">
@@ -1756,7 +2260,24 @@ TextMatch(text_column="description", match_items=r"\d{3}-\d{3}-\d{4}", match_t
     </div>
     <a class="headerlink" href="#ToxicityLLMEval"></a>
     
-    
+            <div class="docstring"><p>Evaluate toxicity in text using LLM.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>column_name</code>: Name of the text column to evaluate.</li>
+<li><code>provider</code>: LLM provider name (e.g., "openai", "anthropic").</li>
+<li><code>model</code>: Model name to use (e.g., "gpt-4o-mini").</li>
+<li><code>additional_columns</code>: Optional mapping of prompt variables to column names.</li>
+<li><code>include_category</code>: Whether to include category in output.</li>
+<li><code>include_score</code>: Whether to include score in output.</li>
+<li><code>include_reasoning</code>: Whether to include reasoning in output.</li>
+<li><code>uncertainty</code>: Optional uncertainty handling strategy.</li>
+<li><code>alias</code>: Optional alias for the descriptor.</li>
+<li><code>tests</code>: Optional list of tests to apply.</li>
+</ul>
+</div>
+
 
                 </section>
                 <section id="WordCount">
@@ -1769,7 +2290,17 @@ TextMatch(text_column="description", match_items=r"\d{3}-\d{3}-\d{4}", match_t
     </div>
     <a class="headerlink" href="#WordCount"></a>
     
-    
+            <div class="docstring"><p>Count the number of words in text.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>column_name</code>: Name of the text column to analyze.</li>
+<li><code>alias</code>: Optional alias for the descriptor.</li>
+<li><code>tests</code>: Optional list of tests to apply.</li>
+</ul>
+</div>
+
 
                 </section>
     </main>
