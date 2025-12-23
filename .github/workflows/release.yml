@@ -135,6 +135,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: gh-pages
+          fetch-depth: 0
 
       # this action exists in `gh-pages` branch
       - name: 📚 Download and deploy API reference documentation
