@@ -221,6 +221,7 @@ class DatasetSQLModel(Base):
     tags: Mapped[List[str]]
 
     tracing_params: Mapped[JSON_FIELD] = mapped_column(nullable=True, default=None)
+    human_feedback_custom_shortcut_labels: Mapped[Optional[List[str]]] = mapped_column(nullable=True, default=None)
 
     def to_dataset_metadata(self):
         """Convert model to DatasetMetadataFull."""
@@ -278,6 +279,7 @@ class DatasetSQLModel(Base):
             metadata_json=dataset.metadata,
             tags=dataset.tags,
             tracing_params=json.loads(dataset.tracing_params.json()) if dataset.tracing_params else None,
+            human_feedback_custom_shortcut_labels=dataset.human_feedback_custom_shortcut_labels,
         )
 
 

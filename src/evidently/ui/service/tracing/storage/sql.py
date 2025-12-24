@@ -1,3 +1,4 @@
+import logging
 import uuid
 from datetime import datetime
 from typing import Any
@@ -25,6 +26,7 @@ from evidently.core.datasets import Dataset
 from evidently.ui.service.storage.sql.base import BaseSQLStorage
 from evidently.ui.service.storage.sql.models import Base
 from evidently.ui.service.tracing.storage.base import ExportID
+from evidently.ui.service.tracing.storage.base import HumanFeedbackModel
 from evidently.ui.service.tracing.storage.base import SpanModel
 from evidently.ui.service.tracing.storage.base import TraceModel
 from evidently.ui.service.tracing.storage.base import TracingStorage
@@ -220,6 +222,23 @@ class SQLTracingStorage(BaseSQLStorage, TracingStorage):
                 .where(TraceSpanModel.trace_id == uuid.UUID(trace_id))
                 .where(TraceSpanModel.export_id == export_id)
             )
+            session.commit()
+
+    async def add_feedback(self, export_id: ExportID, trace_id: str, feedback: HumanFeedbackModel) -> None:
+        with self.session as session:
+            stmt = select(TraceSpanModel).where(
+                TraceSpanModel.trace_id == uuid.UUID(trace_id),
+                TraceSpanModel.export_id == export_id,
+                TraceSpanModel.parent_span_id == "",
+            )
+            data = session.scalar(stmt)
+            logging.info(repr(data.span_attributes))
+            new_attributes = data.span_attributes.copy()
+
+            new_attributes["human_feedback_label"] = feedback.label
+            new_attributes["human_feedback_comment"] = feedback.comment
+            data.span_attributes = new_attributes
+            logging.info(repr(data.span_attributes))
             session.commit()
 
 
