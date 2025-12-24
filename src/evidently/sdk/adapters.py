@@ -44,14 +44,29 @@ class PromptArtifactAdapter(PromptAPI):
     """Adapter that implements PromptAPI interface but uses RemoteArtifactAPI.
 
     Allows using prompts SDK interface with OSS artifacts API.
+
+    Args:
+    * `workspace`: `RemoteWorkspace` to use for API calls.
     """
 
     def __init__(self, workspace: "RemoteWorkspace"):
+        """Initialize the adapter.
+
+        Args:
+        * `workspace`: `RemoteWorkspace` to use for API calls.
+        """
         self._api = RemoteArtifactAPI(workspace)
         self._ws = workspace
 
     def _artifact_to_prompt(self, artifact: RemoteArtifact) -> RemotePrompt:
-        """Convert artifact to prompt."""
+        """Convert artifact to prompt.
+
+        Args:
+        * `artifact`: `RemoteArtifact` to convert.
+
+        Returns:
+        * `RemotePrompt` with data from the artifact.
+        """
         prompt = Prompt(
             id=artifact.id,
             project_id=artifact.project_id,
@@ -165,14 +180,29 @@ class ConfigArtifactAdapter(ConfigAPI):
     """Adapter that implements ConfigAPI interface but uses RemoteArtifactAPI.
 
     Allows using configs SDK interface with OSS artifacts API.
+
+    Args:
+    * `workspace`: `RemoteWorkspace` to use for API calls.
     """
 
     def __init__(self, workspace: "RemoteWorkspace"):
+        """Initialize the adapter.
+
+        Args:
+        * `workspace`: `RemoteWorkspace` to use for API calls.
+        """
         self._api = RemoteArtifactAPI(workspace)
         self._ws = workspace
 
     def _artifact_to_config(self, artifact: RemoteArtifact) -> RemoteGenericConfig:
-        """Convert artifact to config."""
+        """Convert artifact to config.
+
+        Args:
+        * `artifact`: `RemoteArtifact` to convert.
+
+        Returns:
+        * `RemoteGenericConfig` with data from the artifact.
+        """
         config = GenericConfig(
             id=artifact.id,
             project_id=artifact.project_id,
@@ -275,9 +305,29 @@ class ConfigArtifactAdapter(ConfigAPI):
         return value
 
     def add_descriptor(self, project_id: STR_UUID, name: str, descriptor):
+        """Add or update a descriptor config.
+
+        Args:
+        * `project_id`: Project ID.
+        * `name`: Name of the descriptor config.
+        * `descriptor`: `Descriptor` object to store.
+
+        Returns:
+        * `ConfigVersion` containing the descriptor.
+        """
         return self._add_typed_version(project_id, name, descriptor)
 
     def get_descriptor(self, project_id: STR_UUID, name: str, version: VersionOrLatest = "latest"):
+        """Get a descriptor config.
+
+        Args:
+        * `project_id`: Project ID.
+        * `name`: Name of the descriptor config.
+        * `version`: Version number or "latest".
+
+        Returns:
+        * `Descriptor` object from the config.
+        """
         from evidently.core.datasets import Descriptor
 
         return self._get_typed_version(project_id, name, version, Descriptor)
@@ -287,14 +337,29 @@ class ArtifactConfigAdapter(ArtifactAPI):
     """Adapter that implements ArtifactAPI interface but uses CloudConfigAPI.
 
     Allows using artifacts SDK interface with cloud configs API.
+
+    Args:
+    * `workspace`: `CloudWorkspace` to use for API calls.
     """
 
     def __init__(self, workspace: "CloudWorkspace"):
+        """Initialize the adapter.
+
+        Args:
+        * `workspace`: `CloudWorkspace` to use for API calls.
+        """
         self._api = CloudConfigAPI(workspace)
         self._ws = workspace
 
     def _config_to_artifact(self, config: RemoteGenericConfig) -> RemoteArtifact:
-        """Convert config to artifact."""
+        """Convert config to artifact.
+
+        Args:
+        * `config`: `RemoteGenericConfig` to convert.
+
+        Returns:
+        * `RemoteArtifact` with data from the config.
+        """
         artifact = Artifact(
             id=config.id,
             project_id=config.project_id,

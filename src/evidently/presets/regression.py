@@ -34,16 +34,46 @@ from evidently.metrics.regression import _gen_regression_input_data
 
 
 class RegressionQuality(MetricContainer):
+    """Small preset summarizing regression quality metrics.
+
+    Generates aggregated regression metrics including mean error, MAPE, RMSE, MAE,
+    R² score, and absolute max error. Optionally includes visualizations like
+    predicted vs actual plots, error plots, and error distributions.
+
+    Args:
+    * `regression_name`: Name of the regression task (default: "default").
+    * `pred_actual_plot`: Whether to show predicted vs actual plot (default: False).
+    * `error_plot`: Whether to show error plot (default: False).
+    * `error_distr`: Whether to show error distribution (default: False).
+    * `mean_error_tests`: Optional test conditions for mean error (mean and std).
+    * `mape_tests`: Optional test conditions for MAPE (mean and std).
+    * `rmse_tests`: Optional test conditions for RMSE.
+    * `mae_tests`: Optional test conditions for MAE (mean and std).
+    * `r2score_tests`: Optional test conditions for R² score.
+    * `abs_max_error_tests`: Optional test conditions for absolute max error.
+    * `include_tests`: Whether to include automatic tests (default: True).
+    """
+
     pred_actual_plot: bool = False
+    """Whether to show predicted vs actual plot."""
     error_plot: bool = False
+    """Whether to show error plot."""
     error_distr: bool = False
+    """Whether to show error distribution."""
     mean_error_tests: MeanStdMetricTests
+    """Optional test conditions for mean error (mean and std)."""
     mape_tests: MeanStdMetricTests
+    """Optional test conditions for MAPE (mean and std)."""
     rmse_tests: SingleValueMetricTests = None
+    """Optional test conditions for RMSE."""
     mae_tests: MeanStdMetricTests
+    """Optional test conditions for MAE (mean and std)."""
     r2score_tests: SingleValueMetricTests = None
+    """Optional test conditions for R² score."""
     abs_max_error_tests: SingleValueMetricTests = None
+    """Optional test conditions for absolute max error."""
     regression_name: str = "default"
+    """Name of the regression task."""
 
     def __init__(
         self,
@@ -127,10 +157,27 @@ class RegressionQuality(MetricContainer):
 
 
 class RegressionDummyQuality(MetricContainer):
+    """Small preset summarizing quality of a dummy/baseline regression model.
+
+    Generates metrics for a simple baseline model (e.g., always predict the mean).
+    Useful as a baseline to compare your model against.
+
+    Args:
+    * `regression_name`: Name of the regression task (default: "default").
+    * `mae_tests`: Optional test conditions for dummy MAE.
+    * `mape_tests`: Optional test conditions for dummy MAPE.
+    * `rmse_tests`: Optional test conditions for dummy RMSE.
+    * `include_tests`: Whether to include automatic tests (default: True).
+    """
+
     mae_tests: SingleValueMetricTests = None
+    """Optional test conditions for dummy MAE."""
     mape_tests: SingleValueMetricTests = None
+    """Optional test conditions for dummy MAPE."""
     rmse_tests: SingleValueMetricTests = None
+    """Optional test conditions for dummy RMSE."""
     regression_name: str = "default"
+    """Name of the regression task."""
 
     def __init__(
         self,
@@ -170,15 +217,40 @@ class RegressionDummyQuality(MetricContainer):
 
 
 class RegressionPreset(MetricContainer):
+    """Large preset with comprehensive regression quality metrics and visualizations.
+
+    Combines `RegressionQuality` with all visualizations enabled to provide a complete
+    regression evaluation including mean error, MAPE, RMSE, MAE, R² score, absolute
+    max error, and visualizations (predicted vs actual, error plots, error distributions).
+
+    Args:
+    * `regression_name`: Name of the regression task (default: "default").
+    * `mean_error_tests`: Optional test conditions for mean error (mean and std).
+    * `mape_tests`: Optional test conditions for MAPE (mean and std).
+    * `rmse_tests`: Optional test conditions for RMSE.
+    * `mae_tests`: Optional test conditions for MAE (mean and std).
+    * `r2score_tests`: Optional test conditions for R² score.
+    * `abs_max_error_tests`: Optional test conditions for absolute max error.
+    * `include_tests`: Whether to include automatic tests (default: True).
+    """
+
     mean_error_tests: MeanStdMetricTests
+    """Optional test conditions for mean error (mean and std)."""
     mape_tests: MeanStdMetricTests
+    """Optional test conditions for MAPE (mean and std)."""
     rmse_tests: SingleValueMetricTests = None
+    """Optional test conditions for RMSE."""
     mae_tests: MeanStdMetricTests
+    """Optional test conditions for MAE (mean and std)."""
     r2score_tests: SingleValueMetricTests = None
+    """Optional test conditions for R² score."""
     abs_max_error_tests: SingleValueMetricTests = None
+    """Optional test conditions for absolute max error."""
 
     _quality: Optional[RegressionQuality] = PrivateAttr(None)
+    """Internal regression quality preset."""
     regression_name: str = "default"
+    """Name of the regression task."""
 
     def __init__(
         self,

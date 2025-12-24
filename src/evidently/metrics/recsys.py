@@ -138,6 +138,19 @@ class LegacyTopKCalculation(
 
 
 class NDCG(TopKBase):
+    """Calculate Normalized Discounted Cumulative Gain (NDCG@k) for ranking/recsys.
+
+    NDCG measures ranking quality by considering position and relevance. Higher values
+    indicate better ranking quality. Values range from 0 to 1.
+
+    Args:
+    * `k`: Number of top items to consider in the ranking.
+    * `ranking_name`: Name of the ranking task (default: "default").
+    * `min_rel_score`: Minimum relevance score threshold (optional).
+    * `no_feedback_users`: Whether to exclude users with no feedback (default: False).
+    * `tests`: Optional list of test conditions.
+    """
+
     pass
 
 
@@ -149,6 +162,19 @@ class NDCGCalculation(LegacyTopKCalculation[NDCG]):
 
 
 class MRR(TopKBase):
+    """Calculate Mean Reciprocal Rank (MRR@k) for ranking/recsys.
+
+    MRR measures the average reciprocal rank of the first relevant item.
+    Higher values indicate better ranking quality.
+
+    Args:
+    * `k`: Number of top items to consider in the ranking.
+    * `ranking_name`: Name of the ranking task (default: "default").
+    * `min_rel_score`: Minimum relevance score threshold (optional).
+    * `no_feedback_users`: Whether to exclude users with no feedback (default: False).
+    * `tests`: Optional list of test conditions.
+    """
+
     pass
 
 
@@ -160,6 +186,19 @@ class MRRCalculation(LegacyTopKCalculation[MRR]):
 
 
 class HitRate(TopKBase):
+    """Calculate Hit Rate@k for ranking/recsys.
+
+    Hit Rate measures the proportion of users who have at least one relevant item
+    in their top-k recommendations. Higher values indicate better coverage.
+
+    Args:
+    * `k`: Number of top items to consider in the ranking.
+    * `ranking_name`: Name of the ranking task (default: "default").
+    * `min_rel_score`: Minimum relevance score threshold (optional).
+    * `no_feedback_users`: Whether to exclude users with no feedback (default: False).
+    * `tests`: Optional list of test conditions.
+    """
+
     pass
 
 
@@ -171,6 +210,19 @@ class HitRateCalculation(LegacyTopKCalculation[HitRate]):
 
 
 class MAP(TopKBase):
+    """Calculate Mean Average Precision (MAP@k) for ranking/recsys.
+
+    MAP measures the average precision across all users. Higher values indicate
+    better ranking quality.
+
+    Args:
+    * `k`: Number of top items to consider in the ranking.
+    * `ranking_name`: Name of the ranking task (default: "default").
+    * `min_rel_score`: Minimum relevance score threshold (optional).
+    * `no_feedback_users`: Whether to exclude users with no feedback (default: False).
+    * `tests`: Optional list of test conditions.
+    """
+
     pass
 
 
@@ -182,6 +234,19 @@ class MAPCalculation(LegacyTopKCalculation[MAP]):
 
 
 class RecallTopK(TopKBase):
+    """Calculate Recall@k for ranking/recsys.
+
+    Recall measures the proportion of relevant items found in the top-k recommendations.
+    Higher values indicate better coverage of relevant items.
+
+    Args:
+    * `k`: Number of top items to consider in the ranking.
+    * `ranking_name`: Name of the ranking task (default: "default").
+    * `min_rel_score`: Minimum relevance score threshold (optional).
+    * `no_feedback_users`: Whether to exclude users with no feedback (default: False).
+    * `tests`: Optional list of test conditions.
+    """
+
     pass
 
 
@@ -193,6 +258,19 @@ class RecallTopKCalculation(LegacyTopKCalculation[RecallTopK]):
 
 
 class PrecisionTopK(TopKBase):
+    """Calculate Precision@k for ranking/recsys.
+
+    Precision measures the proportion of relevant items in the top-k recommendations.
+    Higher values indicate better precision.
+
+    Args:
+    * `k`: Number of top items to consider in the ranking.
+    * `ranking_name`: Name of the ranking task (default: "default").
+    * `min_rel_score`: Minimum relevance score threshold (optional).
+    * `no_feedback_users`: Whether to exclude users with no feedback (default: False).
+    * `tests`: Optional list of test conditions.
+    """
+
     pass
 
 
@@ -204,7 +282,22 @@ class PrecisionTopKCalculation(LegacyTopKCalculation[PrecisionTopK]):
 
 
 class FBetaTopK(TopKBase):
+    """Calculate F-beta score@k for ranking/recsys.
+
+    F-beta is a weighted harmonic mean of precision and recall. Beta controls
+    the weight: beta > 1 favors recall, beta < 1 favors precision.
+
+    Args:
+    * `k`: Number of top items to consider in the ranking.
+    * `beta`: Weight factor for recall vs precision (default: 1.0, balanced F1).
+    * `ranking_name`: Name of the ranking task (default: "default").
+    * `min_rel_score`: Minimum relevance score threshold (optional).
+    * `no_feedback_users`: Whether to exclude users with no feedback (default: False).
+    * `tests`: Optional list of test conditions.
+    """
+
     beta: Optional[float] = 1.0
+    """Weight factor for recall vs precision (1.0 = balanced F1)."""
 
 
 class FBetaTopKCalculation(LegacyTopKCalculation[FBetaTopK]):
@@ -221,8 +314,21 @@ class FBetaTopKCalculation(LegacyTopKCalculation[FBetaTopK]):
 
 
 class ScoreDistribution(SingleValueMetric):
+    """Calculate score distribution entropy for ranking/recsys.
+
+    Measures the diversity of recommendation scores using entropy. Higher entropy
+    indicates more diverse score distribution.
+
+    Args:
+    * `k`: Number of top items to consider in the ranking.
+    * `ranking_name`: Name of the ranking task (default: "default").
+    * `tests`: Optional list of test conditions.
+    """
+
     k: int
+    """Number of top items to consider."""
     ranking_name: str = "default"
+    """Name of the ranking task."""
 
     def _default_tests_with_reference(self, context: Context) -> List[BoundTest]:
         return [
@@ -257,10 +363,27 @@ class ScoreDistributionCalculation(
 
 
 class PopularityBiasMetric(SingleValueMetric):
+    """Measure popularity bias in recommendations.
+
+    Evaluates how much recommendations favor popular items. Can measure using
+    Average Recommendation Popularity (ARP), coverage, or Gini coefficient.
+
+    Args:
+    * `k`: Number of top items to consider in the ranking.
+    * `metric`: Metric type to use: "arp", "coverage", or "gini" (default: "arp").
+    * `normalize_arp`: Whether to normalize ARP (default: False).
+    * `ranking_name`: Name of the ranking task (default: "default").
+    * `tests`: Optional list of test conditions.
+    """
+
     k: int
+    """Number of top items to consider."""
     normalize_arp: bool = False
+    """Whether to normalize ARP."""
     ranking_name: str = "default"
+    """Name of the ranking task."""
     metric: Literal["arp", "coverage", "gini"] = "arp"
+    """Metric type: ARP, coverage, or Gini coefficient."""
 
     def _default_tests_with_reference(self, context: Context) -> List[BoundTest]:
         return [
@@ -309,8 +432,21 @@ class PopularityBiasCalculation(
 
 
 class Personalization(SingleValueMetric):
+    """Measure personalization (diversity between users' recommendations).
+
+    Calculates how different recommendations are across users. Higher values
+    indicate more personalized (diverse) recommendations per user.
+
+    Args:
+    * `k`: Number of top items to consider in the ranking.
+    * `ranking_name`: Name of the ranking task (default: "default").
+    * `tests`: Optional list of test conditions.
+    """
+
     k: int
+    """Number of top items to consider."""
     ranking_name: str = "default"
+    """Name of the ranking task."""
 
     def _default_tests_with_reference(self, context: Context) -> List[BoundTest]:
         return [
@@ -345,9 +481,24 @@ class PersonalizationCalculation(
 
 
 class Diversity(SingleValueMetric):
+    """Measure diversity of recommended items within each user's list.
+
+    Calculates how diverse items are within a user's top-k recommendations
+    based on item features. Higher values indicate more diverse recommendations.
+
+    Args:
+    * `k`: Number of top items to consider in the ranking.
+    * `item_features`: List of feature column names to use for diversity calculation.
+    * `ranking_name`: Name of the ranking task (default: "default").
+    * `tests`: Optional list of test conditions.
+    """
+
     k: int
+    """Number of top items to consider."""
     item_features: List[str]
+    """List of feature column names for diversity calculation."""
     ranking_name: str = "default"
+    """Name of the ranking task."""
 
     def _default_tests_with_reference(self, context: Context) -> List[BoundTest]:
         return [
@@ -382,9 +533,24 @@ class DiversityCalculation(
 
 
 class Serendipity(SingleValueMetric):
+    """Measure serendipity (unexpected but relevant recommendations).
+
+    Evaluates how surprising yet relevant recommendations are. Higher values
+    indicate more serendipitous recommendations.
+
+    Args:
+    * `k`: Number of top items to consider in the ranking.
+    * `item_features`: List of feature column names to use for serendipity calculation.
+    * `ranking_name`: Name of the ranking task (default: "default").
+    * `tests`: Optional list of test conditions.
+    """
+
     k: int
+    """Number of top items to consider."""
     item_features: List[str]
+    """List of feature column names for serendipity calculation."""
     ranking_name: str = "default"
+    """Name of the ranking task."""
 
     def _default_tests_with_reference(self, context: Context) -> List[BoundTest]:
         return [
@@ -419,8 +585,21 @@ class SerendipityCalculation(
 
 
 class Novelty(SingleValueMetric):
+    """Measure novelty (how new/unpopular recommended items are).
+
+    Evaluates how novel (less popular) the recommended items are. Higher values
+    indicate recommendations of less popular items.
+
+    Args:
+    * `k`: Number of top items to consider in the ranking.
+    * `ranking_name`: Name of the ranking task (default: "default").
+    * `tests`: Optional list of test conditions.
+    """
+
     k: int
+    """Number of top items to consider."""
     ranking_name: str = "default"
+    """Name of the ranking task."""
 
     def _default_tests_with_reference(self, context: Context) -> List[BoundTest]:
         return [
@@ -455,10 +634,26 @@ class NoveltyCalculation(
 
 
 class ItemBias(Metric):
+    """Measure bias in recommendations towards specific item groups.
+
+    Evaluates whether recommendations are biased towards certain item categories
+    or groups. Returns a dataframe showing bias distribution across item groups.
+
+    Args:
+    * `k`: Number of top items to consider in the ranking.
+    * `column_name`: Name of the column containing item group/category information.
+    * `distribution`: Distribution to use: "default" or "train" (default: "default").
+    * `ranking_name`: Name of the ranking task (default: "default").
+    """
+
     k: int
+    """Number of top items to consider."""
     column_name: str
+    """Name of the column containing item group/category information."""
     distribution: Literal["default", "train"] = "default"
+    """Distribution to use: "default" or "train"."""
     ranking_name: str = "default"
+    """Name of the ranking task."""
 
     def get_bound_tests(self, context: "Context") -> List[BoundTest]:
         return []
@@ -486,9 +681,23 @@ class ItemBiasCalculation(
 
 
 class UserBias(Metric):
+    """Measure bias in recommendations towards specific user groups.
+
+    Evaluates whether recommendations are biased towards certain user categories
+    or groups. Returns a dataframe showing bias distribution across user groups.
+
+    Args:
+    * `column_name`: Name of the column containing user group/category information.
+    * `distribution`: Distribution to use: "default" or "train" (default: "default").
+    * `ranking_name`: Name of the ranking task (default: "default").
+    """
+
     column_name: str
+    """Name of the column containing user group/category information."""
     distribution: Literal["default", "train"] = "default"
+    """Distribution to use: "default" or "train"."""
     ranking_name: str = "default"
+    """Name of the ranking task."""
 
     def get_bound_tests(self, context: "Context") -> List[BoundTest]:
         return []
@@ -565,9 +774,24 @@ def _bias_result(
 
 
 class RecCasesTable(DataframeMetric):
+    """Display recommendation cases as a table for specific users.
+
+    Shows detailed recommendation examples for specified users, including
+    recommended items, scores, and optional features. Useful for debugging
+    and understanding recommendation behavior.
+
+    Args:
+    * `user_ids`: Optional list of user IDs to display. If None, shows all users.
+    * `display_features`: Optional list of feature columns to display.
+    * `ranking_name`: Name of the ranking task (default: "default").
+    """
+
     user_ids: Optional[List[Union[int, str]]] = None
+    """Optional list of user IDs to display (None = all users)."""
     display_features: Optional[List[str]] = None
+    """Optional list of feature columns to display."""
     ranking_name: str = "default"
+    """Name of the ranking task."""
 
 
 class RecCasesTableCalculation(

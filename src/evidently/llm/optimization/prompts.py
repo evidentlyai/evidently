@@ -59,16 +59,37 @@ logger = logging.getLogger(__name__)
 
 
 class PromptOptimizationLog(LLMCallOptimizerLog):
-    """Log entry for a single prompt optimization step."""
+    """Log entry for a single prompt optimization step.
+
+    Tracks the optimization process, showing the original prompt, optimizer
+    instructions, and the resulting optimized prompt.
+
+    Args:
+    * `input_prompt`: Original prompt before optimization.
+    * `optimizer_prompt`: Instructions given to the optimizer LLM.
+    * `new_prompt`: Optimized prompt produced by the optimizer.
+    * `stop`: Whether optimization should stop after this step.
+    * `input_tokens`: Number of input tokens used.
+    * `output_tokens`: Number of output tokens used.
+    """
 
     __is_step__: ClassVar[bool] = True
 
     input_prompt: str
+    """Original prompt before optimization."""
     optimizer_prompt: str
+    """Instructions given to the optimizer LLM."""
     new_prompt: str
+    """Optimized prompt produced by the optimizer."""
     stop: bool
+    """Whether optimization should stop after this step."""
 
     def message(self) -> str:
+        """Get a human-readable message for this optimization step.
+
+        Returns:
+        * String describing the optimization step.
+        """
         return f"Prompt '{trunc(self.input_prompt)}' optimized to '{trunc(self.new_prompt)}'"
 
 
@@ -76,7 +97,15 @@ DatasetSplitShares = Dict[str, Optional[float]]
 
 
 class PromptOptimizerStrategy(BaseArgTypeRegistry, AutoAliasMixin, EvidentlyBaseModel, ABC):
-    """Abstract base class for prompt optimization strategies."""
+    """Abstract base class for prompt optimization strategies.
+
+    Defines the interface for different approaches to prompt optimization,
+    such as iterative refinement, A/B testing, or gradient-based methods.
+
+    Args:
+    * `prompt`: Initial prompt to optimize.
+    * `run`: `OptimizerRun` to log optimization steps.
+    """
 
     __alias_type__: ClassVar = "prompt_optimizer_strategy"
 
@@ -85,23 +114,51 @@ class PromptOptimizerStrategy(BaseArgTypeRegistry, AutoAliasMixin, EvidentlyBase
 
     @abstractmethod
     def get_default_scorer(self) -> "OptimizationScorer":
+        """Get the default scorer for this strategy.
+
+        Returns:
+        * `OptimizationScorer` to use for evaluating prompts.
+        """
         raise NotImplementedError()
 
     def get_default_data_split_shares(self) -> DatasetSplitShares:
-        """Shares of train, val and test splits. None means same as train"""
+        """Get default data split shares for this strategy.
+
+        Returns:
+        * Dictionary mapping split names to proportions (None means same as train).
+        """
         return {}
 
     @abstractmethod
     async def run(self, prompt: str, run: OptimizerRun) -> PromptOptimizationLog:
-        """Run the optimization strategy for a given prompt and context."""
+        """Run the optimization strategy for a given prompt and context.
+
+        Args:
+        * `prompt`: Initial prompt to optimize.
+        * `run`: `OptimizerRun` to log optimization steps.
+
+        Returns:
+        * `PromptOptimizationLog` with the optimization result.
+        """
         raise NotImplementedError()
 
 
 class PromptOptimizerConfig(OptimizerConfig):
-    """Configuration for prompt optimizers, including the strategy."""
+    """Configuration for prompt optimizers, including the strategy.
+
+    Args:
+    * `provider`: LLM provider name (default: "openai").
+    * `model`: LLM model name (default: "gpt-4o-mini").
+    * `verbose`: If `True`, print optimization progress.
+    * `seed`: Optional random seed for reproducibility.
+    * `strategy`: `PromptOptimizerStrategy` to use for optimization.
+    * `data_split_shares`: Optional data split configuration.
+    """
 
     strategy: PromptOptimizerStrategy
+    """Optimization strategy to use."""
     data_split_shares: Optional[DatasetSplitShares] = None
+    """Optional data split configuration (train/val/test proportions)."""
 
 
 def trunc(msg: str, max_len: int = 40):
@@ -111,10 +168,22 @@ def trunc(msg: str, max_len: int = 40):
 
 
 class PromptExecutionLog(OptimizerLog):
-    """Log entry for prompt execution results."""
+    """Log entry for prompt execution results.
+
+    Tracks the execution of a prompt, including the prompt text and
+    the resulting predictions, reasoning, and scores.
+
+    Args:
+    * `prompt`: The prompt that was executed.
+    * `result`: `LLMResultDataset` with execution results.
+    * `input_tokens`: Number of input tokens used.
+    * `output_tokens`: Number of output tokens used.
+    """
 
     prompt: str
+    """The prompt that was executed."""
     result: LLMResultDataset
+    """Execution results (predictions, reasoning, scores)."""
 
     def __init__(
         self,
@@ -122,13 +191,29 @@ class PromptExecutionLog(OptimizerLog):
         result: LLMResultDataset,
         **kwargs: Any,
     ) -> None:
+        """Initialize a prompt execution log.
+
+        Args:
+        * `prompt`: The prompt that was executed.
+        * `result`: `LLMResultDataset` with execution results.
+        """
         super().__init__(prompt=prompt, result=result, **kwargs)
 
     def message(self) -> str:
+        """Get a human-readable message for this execution.
+
+        Returns:
+        * String describing the execution with result counts.
+        """
         lens = " ".join(f"{k}({len(v)})" for k, v in self.result.items() if v is not None)
         return f"Executed prompt '{trunc(self.prompt)}', got {lens}"
 
     def full_message(self):
+        """Get the full message for this execution.
+
+        Returns:
+        * String with the full prompt text.
+        """
         return f"Executed prompt '{self.prompt}'"
 
 
@@ -150,7 +235,11 @@ def get_classification_dataset(context: OptimizerContext) -> Dataset:
 
 
 class PromptExecutor(AutoAliasMixin, EvidentlyBaseModel, InitContextMixin, ABC):
-    """Abstract base class for prompt executors."""
+    """Abstract base class for prompt executors.
+
+    Executors run prompts on datasets and return execution results.
+    Different executors can use different methods (LLM judges, custom functions, etc.).
+    """
 
     __alias_type__: ClassVar = "prompt_executor"
 
@@ -159,30 +248,75 @@ class PromptExecutor(AutoAliasMixin, EvidentlyBaseModel, InitContextMixin, ABC):
 
     @abstractmethod
     def execute(self, prompt: str, run: OptimizerRun) -> PromptExecutionLog:
+        """Execute a prompt and return results.
+
+        Args:
+        * `prompt`: Prompt string to execute.
+        * `run`: `OptimizerRun` to log execution.
+
+        Returns:
+        * `PromptExecutionLog` with execution results.
+        """
         raise NotImplementedError()
 
     @abstractmethod
     def get_base_prompt(self) -> Optional[str]:
+        """Get the base/initial prompt for this executor.
+
+        Returns:
+        * Base prompt string, or `None` if not applicable.
+        """
         raise NotImplementedError()
 
     @abstractmethod
     def get_task(self) -> str:
+        """Get a description of the task this executor performs.
+
+        Returns:
+        * Task description string.
+        """
         raise NotImplementedError()
 
     def get_optimizer_instructions(self) -> Optional[str]:
+        """Get optional instructions for the optimizer.
+
+        Returns:
+        * Instructions string, or `None` if not applicable.
+        """
         return None
 
     def on_param_set(self, context: OptimizerContext):
+        """Called when this executor is set as a context parameter.
+
+        Sets task and optimizer instructions in the context.
+
+        Args:
+        * `context`: `OptimizerContext` to update.
+        """
         context.set_param(Params.Task, self.get_task())
         instructions = self.get_optimizer_instructions()
         if instructions is not None:
             context.set_param(Params.OptimizerPromptInstructions, instructions)
 
     async def start(self, run: OptimizerRun):
+        """Initialize the executor (called before optimization starts).
+
+        Args:
+        * `run`: `OptimizerRun` to use for initialization.
+        """
         pass
 
     @abstractmethod
     def get_best_result(self, prompt: str, context: OptimizerContext):
+        """Get a function that returns the best result for a prompt.
+
+        Args:
+        * `prompt`: Prompt to get result for.
+        * `context`: `OptimizerContext`.
+
+        Returns:
+        * Callable that returns the best result when called.
+        """
         raise NotImplementedError()
 
 
@@ -348,40 +482,110 @@ class InitGenerationLog(LLMCallOptimizerLog):
 
 
 class BlankLLMJudge(PromptExecutor):
+    """Prompt executor that builds an LLM judge on-the-fly.
+
+    Automatically creates a binary or multiclass classification judge
+    based on the target labels in the dataset, then uses it to execute prompts.
+
+    Args:
+    * `kind`: Optional kind identifier for the judge.
+    """
+
     kind: str = ""
+    """Optional kind identifier for the judge."""
 
     def execute(self, prompt: str, run: OptimizerRun) -> PromptExecutionLog:
+        """Execute a prompt using the built judge.
+
+        Args:
+        * `prompt`: Prompt to execute (uses base prompt if empty).
+        * `run`: `OptimizerRun` to log execution.
+
+        Returns:
+        * `PromptExecutionLog` with execution results.
+        """
         if prompt == "":
             prompt = self.sub_executor.get_base_prompt()
         result = self.sub_executor.execute(prompt, run)
         return result.update(prompt=prompt)
 
     def get_base_prompt(self) -> Optional[str]:
+        """Get the base prompt (empty for blank judge).
+
+        Returns:
+        * Empty string (base prompt comes from sub-executor).
+        """
         return ""
 
     def get_task(self) -> str:
+        """Get task description (empty for blank judge).
+
+        Returns:
+        * Empty string.
+        """
         return ""
 
     def get_best_result(self, prompt: str, context: OptimizerContext):
+        """Get the best result function from the sub-executor.
+
+        Args:
+        * `prompt`: Prompt to get result for.
+        * `context`: `OptimizerContext`.
+
+        Returns:
+        * Best result function from sub-executor.
+        """
         return self.sub_executor.get_best_result(prompt, context)
 
     _sub_executor: LLMJudgePromptExecutor = PrivateAttr(None)
 
     @property
     def sub_executor(self) -> LLMJudgePromptExecutor:
+        """Get the sub-executor (judge-based executor).
+
+        Returns:
+        * `LLMJudgePromptExecutor` instance.
+
+        Raises:
+        * `OptimizationRuntimeError`: If sub-executor hasn't been initialized.
+        """
         if self._sub_executor is None:
             raise OptimizationRuntimeError("Sub executor is not set for BlankLLMJudge")
         return self._sub_executor
 
     async def start(self, run: OptimizerRun):
+        """Initialize the sub-executor by building the judge.
+
+        Args:
+        * `run`: `OptimizerRun` to use for building the judge.
+        """
         await self._ensure_sub_executor(run)
 
     async def _ensure_sub_executor(self, run: OptimizerRun):
+        """Ensure the sub-executor is initialized.
+
+        Args:
+        * `run`: `OptimizerRun` to use for building the judge.
+        """
         if self._sub_executor is None:
             judge = await self._build_judge(run)
             self._sub_executor = LLMJudgePromptExecutor(judge=judge)
 
     async def _build_judge(self, run: OptimizerRun) -> LLMJudge:
+        """Build an LLM judge based on the dataset labels.
+
+        Creates a binary or multiclass classification judge depending on
+        the number of unique labels in the target column.
+
+        Args:
+        * `run`: `OptimizerRun` to get context from.
+
+        Returns:
+        * `LLMJudge` instance configured for the dataset.
+
+        Raises:
+        * `OptimizationConfigurationError`: If target is missing or has invalid number of labels.
+        """
         context = run.context
         dataset = context.get_param(Params.Dataset, LLMDataset)
         target = dataset.target
@@ -490,18 +694,44 @@ def get_prompt_executor(value: AnyPromptExecutor) -> PromptExecutor:
 
 
 class PromptScoringLog(OptimizerLog):
-    """Log entry for prompt scoring results."""
+    """Log entry for prompt scoring results.
+
+    Tracks scores computed by an `OptimizationScorer` for a prompt execution,
+    organized by scorer name and dataset split.
+
+    Args:
+    * `execution_log_id`: ID of the `PromptExecutionLog` that was scored.
+    * `scores`: Dictionary mapping scorer names to split-to-score dictionaries.
+    * `input_tokens`: Number of input tokens used (if applicable).
+    * `output_tokens`: Number of output tokens used (if applicable).
+    """
 
     execution_log_id: LogID
+    """ID of the `PromptExecutionLog` that was scored."""
     scores: Dict[str, Dict[str, float]]
+    """Dictionary mapping scorer names to split-to-score dictionaries."""
 
     def get_score(self, score_name: str, split: str) -> float:
+        """Get a score for a specific scorer and split.
+
+        Args:
+        * `score_name`: Name of the scorer.
+        * `split`: Dataset split name (e.g., "train", "val", "test").
+
+        Returns:
+        * Score value for the split, or "all" split if specific split not found.
+        """
         score = self.scores[score_name]
         if split in score:
             return score[split]
         return score[LLMDatasetSplit.All]
 
     def message(self) -> str:
+        """Get a human-readable message for this scoring.
+
+        Returns:
+        * String describing the scores.
+        """
         return "Prompt scored: " + ", ".join(f"{k}: {v}" for k, v in self.scores.items())
 
 
@@ -601,18 +831,45 @@ class BinaryJudgeScorer(OptimizationScorer, InitContextMixin):
 
 
 class EarlyStopConfig(BaseModel):
-    """Configuration for early stopping during optimization."""
+    """Configuration for early stopping during optimization.
+
+    Defines conditions for stopping optimization early, such as reaching
+    a target score, insufficient improvement, or maximum iterations.
+
+    Args:
+    * `bigger_score_better`: If `True`, higher scores are better (default: `True`).
+    * `max_iterations`: Maximum number of optimization steps (default: 5).
+    * `min_score_gain`: Minimum score improvement required to continue (default: 0.01).
+    * `target_score`: Target score to reach (stops when achieved, default: 1.0).
+    """
 
     bigger_score_better: bool = True
+    """Whether higher scores are better."""
     max_iterations: int = 5
+    """Maximum number of optimization steps."""
     min_score_gain: float = 0.01
+    """Minimum score improvement required to continue."""
     target_score: float = 1.0
+    """Target score to reach (stops when achieved)."""
 
     @property
     def score_sign(self):
+        """Get the sign multiplier for score comparisons.
+
+        Returns:
+        * 1 if bigger scores are better, -1 otherwise.
+        """
         return 1 if self.bigger_score_better else -1
 
     def should_stop(self, run: OptimizerRun) -> bool:
+        """Check if optimization should stop based on configured conditions.
+
+        Args:
+        * `run`: `OptimizerRun` to check stopping conditions for.
+
+        Returns:
+        * `True` if optimization should stop, `False` otherwise.
+        """
         if len(run.get_logs(PromptOptimizationLog)) > self.max_iterations:
             return True
         scores_log = run.get_logs(PromptScoringLog)
@@ -641,18 +898,52 @@ async def _evaluate_prompt(run: OptimizerRun, prompt: str, executor: PromptExecu
 
 
 class PromptOptimizationResultLog(OptimizerLog):
+    """Log entry for final optimization results.
+
+    Summarizes the optimization run with the best prompt found, scores achieved,
+    and number of steps taken.
+
+    Args:
+    * `score_log_id`: ID of the `PromptScoringLog` with best scores.
+    * `best_scores`: Dictionary mapping scorer names to best scores achieved.
+    * `step_count`: Number of optimization steps taken.
+    * `execution_log_id`: ID of the `PromptExecutionLog` with best results.
+    * `best_prompt`: The best prompt found during optimization.
+    """
+
     score_log_id: LogID
+    """ID of the `PromptScoringLog` with best scores."""
     best_scores: Dict[str, float]
+    """Dictionary mapping scorer names to best scores achieved."""
     step_count: int
+    """Number of optimization steps taken."""
     execution_log_id: LogID
+    """ID of the `PromptExecutionLog` with best results."""
     best_prompt: str
+    """The best prompt found during optimization."""
 
     def message(self) -> str:
+        """Get a human-readable message for this result.
+
+        Returns:
+        * String summarizing the optimization run.
+        """
         return f"Optimization run finished in {self.step_count} steps with best scores {self.best_scores}."
 
 
 class PromptOptimizer(BaseOptimizer[PromptOptimizerConfig]):
-    """Main class for running prompt optimization using a given strategy."""
+    """Main class for running prompt optimization using a given strategy.
+
+    Optimizes prompts iteratively by evaluating them on a dataset and
+    using an optimization strategy to generate improved versions.
+
+    Args:
+    * `name`: Name of the optimizer instance.
+    * `strategy`: `PromptOptimizerStrategy` or strategy name/alias.
+    * `checkpoint_path`: Optional path for saving/loading checkpoints.
+    * `verbose`: If `True`, print optimization progress.
+    * `**config_kwargs`: Additional configuration options.
+    """
 
     def __init__(
         self,
@@ -679,6 +970,19 @@ class PromptOptimizer(BaseOptimizer[PromptOptimizerConfig]):
         repetitions: int = 1,
         **params,
     ):
+        """Run the optimizer synchronously.
+
+        Wrapper around `arun()` that handles async execution.
+
+        Args:
+        * `executor`: `PromptExecutor` to execute prompts (uses strategy default if not provided).
+        * `scorer`: `OptimizationScorer` to evaluate prompts (uses strategy default if not provided).
+        * `dataset`: `Dataset` to evaluate on.
+        * `options`: Processing options.
+        * `early_stop`: Optional early stopping configuration.
+        * `repetitions`: Number of optimization runs to perform.
+        * `**params`: Additional parameters to set in context.
+        """
         async_to_sync(
             self.arun(
                 executor=executor,
@@ -701,7 +1005,20 @@ class PromptOptimizer(BaseOptimizer[PromptOptimizerConfig]):
         repetitions: int = 1,
         **params,
     ):
-        """Run the optimizer"""
+        """Run the optimizer asynchronously.
+
+        Executes the optimization strategy, iteratively improving prompts
+        based on evaluation scores until early stopping conditions are met.
+
+        Args:
+        * `executor`: `PromptExecutor` to execute prompts (uses strategy default if not provided).
+        * `scorer`: `OptimizationScorer` to evaluate prompts (uses strategy default if not provided).
+        * `dataset`: `Dataset` to evaluate on.
+        * `options`: Processing options.
+        * `early_stop`: Optional early stopping configuration.
+        * `repetitions`: Number of optimization runs to perform.
+        * `**params`: Additional parameters to set in context.
+        """
         if dataset is not None:
             self.set_input_dataset(dataset)
         executor = get_prompt_executor(executor)

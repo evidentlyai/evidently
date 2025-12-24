@@ -57,14 +57,36 @@ T = TypeVar("T", bound=LegacyMetricResult)
 
 
 class ContextColumnData:
+    """Wrapper for column data in a `Context` for metric calculations.
+
+    Provides access to column information and categorical labels during metric computation.
+    Used internally by metrics to access column data and type information.
+
+    Args:
+    * `column`: The `DatasetColumn` to wrap.
+    """
+
     _column: DatasetColumn
     _labels: Optional[List[object]]
 
     def __init__(self, column: DatasetColumn):
+        """Initialize with a dataset column.
+
+        Args:
+        * `column`: The `DatasetColumn` to wrap.
+        """
         self._column = column
         self._labels = None
 
     def labels(self):
+        """Get unique labels for a categorical column.
+
+        Returns:
+        * List of unique label values in the column.
+
+        Raises:
+        * `AttributeError`: If the column is not categorical.
+        """
         if self.column_type != ColumnType.Categorical:
             raise AttributeError("labels() is not supported for non-categorical columns")
         if self._labels is None:
@@ -73,11 +95,30 @@ class ContextColumnData:
 
     @property
     def column_type(self) -> ColumnType:
+        """Get the type of the column.
+
+        Returns:
+        * `ColumnType`: The type of the column (e.g., Numerical, Categorical, Text).
+        """
         return self._column.type
 
 
 class ReferenceMetricNotFound(BaseException):
+    """Exception raised when reference metric result is requested but not available.
+
+    This exception is raised when trying to access a reference metric result
+    that was not computed (e.g., when no reference dataset was provided).
+
+    Args:
+    * `metric_id`: The ID of the metric that was not found in reference results.
+    """
+
     def __init__(self, metric_id: MetricId):
+        """Initialize the exception.
+
+        Args:
+        * `metric_id`: The ID of the metric that was not found.
+        """
         self.metric_id = metric_id
 
     def __str__(self):
@@ -85,6 +126,21 @@ class ReferenceMetricNotFound(BaseException):
 
 
 class Context:
+    """Execution context for metric calculations during report runs.
+
+    The `Context` manages the state and data during metric computation. It provides:
+    - Access to current and reference datasets
+    - Caching of computed metric results
+    - Access to column data and data definitions
+    - Support for metric dependencies and containers
+
+    The `Context` is created automatically when you call `Report.run()` and is passed
+    to metrics during calculation. You typically don't create `Context` objects directly.
+
+    Args:
+    * `report`: The `Report` configuration that defines which metrics to compute.
+    """
+
     _configuration: "Report"
     _metrics: Dict[MetricId, MetricResult]
     _reference_metrics: Dict[MetricId, MetricResult]
@@ -97,6 +153,11 @@ class Context:
     _labels: Optional[List[Label]]
 
     def __init__(self, report: "Report"):
+        """Initialize the context with a report configuration.
+
+        Args:
+        * `report`: The `Report` configuration.
+        """
         self._metrics = {}
         # self._metric_defs = {}
         self._configuration = report
@@ -114,13 +175,39 @@ class Context:
         reference_data: Optional[Dataset],
         additional_data: Optional[Dict[str, Dataset]] = None,
     ):
+        """Initialize the context with datasets for metric computation.
+
+        Args:
+        * `current_data`: The current dataset to evaluate.
+        * `reference_data`: Optional reference dataset for comparison.
+        * `additional_data`: Optional dictionary of additional datasets by name.
+        """
         self._input_data = (current_data, reference_data)
         self._additional_data = additional_data or {}
 
     def column(self, column_name: str) -> ContextColumnData:
+        """Get column data wrapper for a specific column.
+
+        Args:
+        * `column_name`: Name of the column to access.
+
+        Returns:
+        * `ContextColumnData`: Wrapper object providing column data and type information.
+        """
         return ContextColumnData(self._input_data[0].column(column_name))
 
     def calculate_metric(self, calc: MetricCalculationBase[TResultType]) -> TResultType:
+        """Calculate a metric and cache the result.
+
+        Computes the metric if not already cached, handles dependencies,
+        runs associated tests, and returns the result.
+
+        Args:
+        * `calc`: The metric calculation to execute.
+
+        Returns:
+        * `TResultType`: The computed metric result.
+        """
         if calc.id not in self._current_graph_level:
             self._current_graph_level[calc.id] = {"_self": calc}
         prev_level = self._current_graph_level
@@ -144,6 +231,16 @@ class Context:
         return typing.cast(TResultType, self._metrics[calc.id])
 
     def get_metric_result(self, metric: Union[MetricId, Metric, MetricCalculationBase[TResultType]]) -> MetricResult:
+        """Get the result of a metric computation.
+
+        Returns cached result if available, otherwise calculates the metric.
+
+        Args:
+        * `metric`: The metric identifier, metric object, or calculation to get results for.
+
+        Returns:
+        * `MetricResult`: The computed metric result.
+        """
         if isinstance(metric, MetricId):
             return self._metrics[metric]
         if isinstance(metric, Metric):
@@ -151,9 +248,28 @@ class Context:
         return self.calculate_metric(metric)
 
     def get_metric(self, metric: MetricId) -> MetricCalculationBase[TResultType]:
+        """Get the metric calculation object for a metric ID.
+
+        Args:
+        * `metric`: The metric ID to look up.
+
+        Returns:
+        * `MetricCalculationBase`: The metric calculation object.
+        """
         return self._metrics_graph[metric]["_self"]
 
     def get_reference_metric_result(self, metric_id: MetricId) -> MetricResult:
+        """Get the reference metric result for a metric.
+
+        Args:
+        * `metric_id`: The metric ID to get reference results for.
+
+        Returns:
+        * `MetricResult`: The reference metric result.
+
+        Raises:
+        * `ReferenceMetricNotFound`: If reference data was not provided or metric was not computed.
+        """
         if metric_id not in self._reference_metrics:
             raise ReferenceMetricNotFound(metric_id)
         return self._reference_metrics[metric_id]
@@ -164,6 +280,19 @@ class Context:
         input_data_generator: Optional[Callable[["Context", Optional[str]], InputData]],
         task_name: Optional[str],
     ) -> Tuple[T, List[BaseWidgetInfo]]:
+        """Calculate a legacy metric and return result with widgets.
+
+        Supports legacy (v1) metrics for backward compatibility. Handles dependencies
+        and caches results.
+
+        Args:
+        * `metric`: The legacy metric to calculate.
+        * `input_data_generator`: Optional function to generate input data. Uses default if None.
+        * `task_name`: Optional task name for classification/ranking metrics.
+
+        Returns:
+        * Tuple of (metric result, list of HTML widgets).
+        """
         if input_data_generator is None:
             input_data_generator = _default_input_data_generator
         input_data = input_data_generator(self, task_name)
@@ -184,29 +313,74 @@ class Context:
 
     @property
     def data_definition(self) -> DataDefinition:
+        """Get the data definition for the current dataset.
+
+        Returns:
+        * `DataDefinition`: The column mapping and type information.
+        """
         return self._input_data[0]._data_definition
 
     @property
     def configuration(self) -> "Report":
+        """Get the report configuration.
+
+        Returns:
+        * `Report`: The report that created this context.
+        """
         return self._configuration
 
     @property
     def has_reference(self) -> bool:
+        """Check if reference data is available.
+
+        Returns:
+        * `bool`: True if reference dataset was provided, False otherwise.
+        """
         return self._input_data[1] is not None
 
     @property
     def additional_data(self) -> Dict[str, Dataset]:
+        """Get additional datasets by name.
+
+        Returns:
+        * Dictionary mapping dataset names to `Dataset` objects.
+        """
         return self._additional_data or {}
 
     def metrics_container(self, metric_container_fingerprint: Fingerprint) -> Optional[List[MetricOrContainer]]:
+        """Get metrics for a container by fingerprint.
+
+        Args:
+        * `metric_container_fingerprint`: The fingerprint of the container.
+
+        Returns:
+        * Optional list of metrics/containers, or None if not found.
+        """
         return self._metrics_container.get(metric_container_fingerprint)
 
     def set_metric_container_data(
         self, metric_container_fingerprint: Fingerprint, items: List[MetricOrContainer]
     ) -> None:
+        """Store metrics for a container.
+
+        Args:
+        * `metric_container_fingerprint`: The fingerprint of the container.
+        * `items`: List of metrics or containers to store.
+        """
         self._metrics_container[metric_container_fingerprint] = items
 
     def get_labels(self, target: str, prediction: Optional[str]) -> List[Label]:
+        """Get all unique labels from target and prediction columns.
+
+        Collects labels from both current and reference datasets if available.
+
+        Args:
+        * `target`: Name of the target column.
+        * `prediction`: Optional name of the prediction column.
+
+        Returns:
+        * List of unique label values across both datasets.
+        """
         if self._labels is not None:
             return self._labels
         current_labels = (
@@ -306,8 +480,20 @@ def metric_tests_stats(tests: List[MetricTestResult]) -> BaseWidgetInfo:
 
 @dataclasses.dataclass
 class SnapshotItem:
+    """Represents a single metric result item in a snapshot.
+
+    Contains the metric identifier and associated visualization widgets.
+    Used internally to organize metric results in a `Snapshot`.
+
+    Args:
+    * `metric_id`: Optional identifier of the metric.
+    * `widgets`: List of HTML widgets for visualizing the metric results.
+    """
+
     metric_id: Optional[MetricId]
+    """Optional identifier of the metric."""
     widgets: List[BaseWidgetInfo]
+    """List of HTML widgets for visualizing the metric results."""
 
 
 class Snapshot:
@@ -430,6 +616,17 @@ class Snapshot:
         return self.get_html_str(as_iframe=True)
 
     def render_only_fingerprint(self, fingerprint: str):
+        """Render HTML for a specific metric by fingerprint in Jupyter notebook.
+
+        Displays only the metric matching the given fingerprint, useful for
+        selectively showing specific metrics in notebooks.
+
+        Args:
+        * `fingerprint`: The fingerprint identifier of the metric to render.
+
+        Returns:
+        * IPython HTML display object for the metric widgets.
+        """
         from IPython.display import HTML
 
         from evidently.legacy.renderers.html_widgets import group_widget

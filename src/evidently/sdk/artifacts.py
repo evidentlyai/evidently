@@ -40,16 +40,34 @@ ArtifactVersionIDInput = STR_UUID
 
 
 class ArtifactContentType(str, Enum):
+    """Type of content stored in an artifact.
+
+    Determines how the artifact content is interpreted and used.
+    """
+
     Prompt = "prompt"
+    """Prompt template content."""
     Config = "config"
+    """Configuration content."""
     Descriptor = "descriptor"
+    """Descriptor definition content."""
     RunDescriptorsConfig = "run-descriptors-config"
+    """Run descriptors configuration content."""
 
 
 TArtifactValue = TypeVar("TArtifactValue")
 
 
 class ArtifactContent(AutoAliasMixin, EvidentlyBaseModel, Generic[TArtifactValue], ABC):
+    """Base class for artifact content wrappers.
+
+    Artifact content wraps typed values (e.g., prompts, configs) for storage
+    and versioning in the artifact system.
+
+    Args:
+    * `data`: Raw data to wrap.
+    """
+
     __alias_type__: ClassVar = "artifact_content"
     __value_class__: ClassVar[Type[TArtifactValue]]
     __value_type__: ClassVar[ArtifactContentType]
@@ -58,16 +76,35 @@ class ArtifactContent(AutoAliasMixin, EvidentlyBaseModel, Generic[TArtifactValue
         is_base_type = True
 
     data: Any
+    """Raw data stored in the artifact."""
 
     def get_value(self) -> TArtifactValue:
+        """Extract the typed value from the content.
+
+        Returns:
+        * Typed value parsed from the stored data.
+        """
         return parse_obj_as(self.__value_class__, self.data)
 
     def get_type(self) -> ArtifactContentType:
+        """Get the content type.
+
+        Returns:
+        * `ArtifactContentType` indicating what kind of content this is.
+        """
         return self.__value_type__
 
     @classmethod
     @abstractmethod
     def from_value(cls, value: TArtifactValue) -> "ArtifactContent":
+        """Create content wrapper from a typed value.
+
+        Args:
+        * `value`: Typed value to wrap.
+
+        Returns:
+        * `ArtifactContent` instance wrapping the value.
+        """
         raise NotImplementedError()
 
     def __init_subclass__(cls):
@@ -86,33 +123,95 @@ def _parse_any_to_content(value: Any) -> ArtifactContent:
 
 
 class ArtifactMetadata(BaseModel):
+    """Metadata for an artifact.
+
+    Args:
+    * `created_at`: Creation timestamp.
+    * `updated_at`: Last update timestamp.
+    * `author`: Optional user ID of the creator.
+    * `description`: Optional description of the artifact.
+    """
+
     created_at: datetime = Field(default_factory=datetime.now)
+    """Creation timestamp."""
     updated_at: datetime = Field(default_factory=datetime.now)
+    """Last update timestamp."""
     author: Optional[UserID] = None
+    """Optional user ID of the creator."""
     description: Optional[str] = None
+    """Optional description of the artifact."""
 
 
 class Artifact(BaseModel):
+    """An artifact in the Evidently system.
+
+    Artifacts are versioned objects that can store prompts, configs, descriptors,
+    or other structured data. Each artifact has a name, metadata, and multiple versions.
+
+    Args:
+    * `id`: Unique artifact identifier.
+    * `project_id`: Project this artifact belongs to.
+    * `name`: Name of the artifact.
+    * `metadata`: Metadata about the artifact.
+    """
+
     id: ArtifactID = ZERO_UUID
+    """Unique artifact identifier."""
     project_id: ProjectID = ZERO_UUID
+    """Project this artifact belongs to."""
     name: str
+    """Name of the artifact."""
     metadata: ArtifactMetadata = Field(default_factory=ArtifactMetadata)
+    """Metadata about the artifact."""
 
 
 class ArtifactVersionMetadata(BaseModel):
+    """Metadata for an artifact version.
+
+    Args:
+    * `created_at`: Creation timestamp.
+    * `updated_at`: Last update timestamp.
+    * `author`: Optional user ID of the creator.
+    * `comment`: Optional comment describing this version.
+    """
+
     created_at: datetime = Field(default_factory=datetime.now)
+    """Creation timestamp."""
     updated_at: datetime = Field(default_factory=datetime.now)
+    """Last update timestamp."""
     author: Optional[UserID] = None
+    """Optional user ID of the creator."""
     comment: Optional[str] = None
+    """Optional comment describing this version."""
 
 
 class ArtifactVersion(BaseModel):
+    """A version of an artifact.
+
+    Each artifact can have multiple versions, allowing you to track changes
+    over time and roll back if needed.
+
+    Args:
+    * `id`: Unique version identifier.
+    * `artifact_id`: ID of the parent artifact.
+    * `version`: Version number (1, 2, 3, ...).
+    * `metadata`: Metadata about this version.
+    * `content`: The artifact content for this version.
+    * `content_type`: Type of content stored.
+    """
+
     id: ArtifactVersionID = ZERO_UUID
+    """Unique version identifier."""
     artifact_id: ArtifactID = ZERO_UUID
+    """ID of the parent artifact."""
     version: int
+    """Version number (1, 2, 3, ...)."""
     metadata: ArtifactVersionMetadata = Field(default_factory=ArtifactVersionMetadata)
+    """Metadata about this version."""
     content: ArtifactContent
+    """The artifact content for this version."""
     content_type: ArtifactContentType
+    """Type of content stored."""
 
     def __init__(
         self,
@@ -151,28 +250,85 @@ T = TypeVar("T")
 
 
 class RemoteArtifact(Artifact):
+    """Remote artifact with API access.
+
+    Provides methods to interact with a remote artifact through the API,
+    including version management and updates.
+
+    Args:
+    * `id`: Unique artifact identifier.
+    * `project_id`: Project this artifact belongs to.
+    * `name`: Name of the artifact.
+    * `metadata`: Metadata about the artifact.
+    """
+
     _api: "ArtifactAPI" = PrivateAttr()
 
+    id: ArtifactID = ZERO_UUID
+    """Unique artifact identifier."""
+    project_id: ProjectID = ZERO_UUID
+    """Project this artifact belongs to."""
+    name: str
+    """Name of the artifact."""
+    metadata: ArtifactMetadata = Field(default_factory=ArtifactMetadata)
+    """Metadata about the artifact."""
+
     def bind(self, api: "ArtifactAPI") -> "RemoteArtifact":
+        """Bind this artifact to an API instance.
+
+        Args:
+        * `api`: `ArtifactAPI` to use for operations.
+
+        Returns:
+        * Self for method chaining.
+        """
         self._api = api
         return self
 
     def list_versions(self) -> List[ArtifactVersion]:
+        """List all versions of this artifact.
+
+        Returns:
+        * List of `ArtifactVersion` objects.
+        """
         return self._api.list_versions(self.id)
 
     def get_version(self, version: VersionOrLatest = "latest") -> ArtifactVersion:
+        """Get a specific version of this artifact.
+
+        Args:
+        * `version`: Version number or "latest".
+
+        Returns:
+        * `ArtifactVersion` for the specified version.
+        """
         return self._api.get_version(self.id, version)
 
     def bump_version(self, content: Any):
+        """Create a new version with the given content.
+
+        Args:
+        * `content`: Content to store in the new version.
+
+        Returns:
+        * New `ArtifactVersion` with incremented version number.
+        """
         return self._api.bump_artifact_version(self.id, content)
 
     def delete(self):
+        """Delete this artifact and all its versions."""
         return self._api.delete_artifact(self.id)
 
     def delete_version(self, version_id: ArtifactVersionID):
+        """Delete a specific version.
+
+        Args:
+        * `version_id`: ID of the version to delete.
+        """
         return self._api.delete_version(version_id)
 
     def save(self):
+        """Save changes to this artifact's metadata."""
         self._api.update_artifact(self)
 
 

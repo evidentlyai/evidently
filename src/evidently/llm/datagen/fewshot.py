@@ -39,10 +39,36 @@ class FewShotPromptTemplate(StrPromptTemplate):
 
 
 class FewShotDatasetGenerator(BaseLLMDatasetGenerator):
+    """Dataset generator using few-shot learning approach.
+
+    Generates synthetic data by providing examples to an LLM and asking
+    it to generate similar content. Useful for creating training or
+    evaluation datasets when you have limited examples.
+
+    Args:
+    * `template`: Optional prompt template (string or `FewShotPromptTemplate`).
+    * `examples`: Optional list of example strings.
+    * `example`: Optional single example string (alternative to `examples`).
+    * `count`: Number of samples to generate (default: 10).
+    * `kind`: Type of content to generate (e.g., "texts", "questions").
+    * `complexity`: Complexity level ("low", "medium", "high").
+    * `user`: Optional user profile for persona-based generation.
+    * `sample_spec`: Optional `GenerationSpec` (alternative to `kind`/`complexity`/`examples`).
+    * `service`: Optional service specification.
+    * `additional_prompt_blocks`: Optional additional prompt blocks.
+    * `model`: LLM model name (default: "gpt-4o-mini").
+    * `provider`: LLM provider (default: "openai").
+    * `options`: Processing options.
+    """
+
     template: FewShotPromptTemplate
+    """Prompt template for generation."""
     sample_spec: GenerationSpec = GenerationSpec(kind="texts")
+    """Specification for what to generate."""
     additional_prompt_blocks: List[PromptBlock] = []
+    """Additional prompt blocks to include."""
     count: int = 10
+    """Number of samples to generate."""
 
     def __init__(
         self,
@@ -95,6 +121,14 @@ class FewShotDatasetGenerator(BaseLLMDatasetGenerator):
             raise ValueError("At least one example must be provided")
 
     async def agenerate(self) -> DatasetGeneratorResult:
+        """Generate dataset asynchronously.
+
+        Uses the LLM to generate samples based on examples, with retry
+        logic to ensure enough unique samples are generated.
+
+        Returns:
+        * `pd.DataFrame` with generated samples in a "texts" column.
+        """
         max_attempt_count = 3
         attempt_count = 0
         inputs_set: Set[str] = set()
@@ -114,6 +148,11 @@ class FewShotDatasetGenerator(BaseLLMDatasetGenerator):
 
     @property
     def prepared_sample_template(self) -> PreparedTemplate:
+        """Get the prepared prompt template with all context applied.
+
+        Returns:
+        * `PreparedTemplate` ready for use with the LLM.
+        """
         return self.template.prepare(
             sample_spec=self.sample_spec, additional_prompt_blocks=self.additional_prompt_blocks
         )

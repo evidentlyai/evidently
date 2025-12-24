@@ -128,6 +128,15 @@ class StatisticsCalculation(SingleValueCalculation[TStatisticsMetric]):
 
 
 class MinValue(StatisticsMetric):
+    """Calculate the minimum value of a numerical column.
+
+    Returns the smallest value in the specified column. Useful for understanding
+    the lower bound of your data distribution.
+
+    Args:
+    * `column`: Name of the numerical column to analyze.
+    """
+
     pass
 
 
@@ -140,6 +149,15 @@ class MinValueCalculation(StatisticsCalculation[MinValue]):
 
 
 class MeanValue(StatisticsMetric):
+    """Calculate the mean (average) value of a numerical column.
+
+    Computes the arithmetic mean of all values in the specified column.
+    Useful for understanding the central tendency of your data.
+
+    Args:
+    * `column`: Name of the numerical column to analyze.
+    """
+
     pass
 
 
@@ -152,6 +170,15 @@ class MeanValueCalculation(StatisticsCalculation[MeanValue]):
 
 
 class MaxValue(StatisticsMetric):
+    """Calculate the maximum value of a numerical column.
+
+    Returns the largest value in the specified column. Useful for understanding
+    the upper bound of your data distribution.
+
+    Args:
+    * `column`: Name of the numerical column to analyze.
+    """
+
     pass
 
 
@@ -164,6 +191,15 @@ class MaxValueCalculation(StatisticsCalculation[MaxValue]):
 
 
 class StdValue(StatisticsMetric):
+    """Calculate the standard deviation of a numerical column.
+
+    Computes the standard deviation, measuring the spread or variability of values
+    around the mean. Higher values indicate more variability.
+
+    Args:
+    * `column`: Name of the numerical column to analyze.
+    """
+
     pass
 
 
@@ -176,6 +212,15 @@ class StdValueCalculation(StatisticsCalculation[StdValue]):
 
 
 class MedianValue(StatisticsMetric):
+    """Calculate the median value of a numerical column.
+
+    Returns the middle value when all values are sorted. More robust to outliers
+    than the mean. Useful for understanding the central tendency of skewed data.
+
+    Args:
+    * `column`: Name of the numerical column to analyze.
+    """
+
     pass
 
 
@@ -188,7 +233,18 @@ class MedianValueCalculation(StatisticsCalculation[MedianValue]):
 
 
 class QuantileValue(StatisticsMetric):
+    """Calculate a quantile value of a numerical column.
+
+    Returns the value at a specific quantile (e.g., 0.25 for first quartile,
+    0.5 for median, 0.75 for third quartile). Defaults to 0.5 (median).
+
+    Args:
+    * `column`: Name of the numerical column to analyze.
+    * `quantile`: Quantile to compute (0.0 to 1.0). Default: 0.5.
+    """
+
     quantile: float = 0.5
+    """Quantile value to compute (0.0 to 1.0)."""
 
 
 class QuantileValueCalculation(StatisticsCalculation[QuantileValue]):
@@ -200,6 +256,15 @@ class QuantileValueCalculation(StatisticsCalculation[QuantileValue]):
 
 
 class SumValue(StatisticsMetric):
+    """Calculate the sum of all values in a numerical column.
+
+    Returns the total of all values in the specified column. Useful for
+    aggregating numerical data.
+
+    Args:
+    * `column`: Name of the numerical column to analyze.
+    """
+
     pass
 
 
@@ -212,11 +277,32 @@ class SumValueCalculation(StatisticsCalculation[SumValue]):
 
 
 class CategoryCount(ColumnMetric, CountMetric):
+    """Count occurrences of specified category or categories in a categorical column.
+
+    Counts how many times specific category values appear in the column.
+    Can count a single category or multiple categories (for joint share).
+
+    Args:
+    * `column`: Name of the categorical column to analyze.
+    * `category`: Single category value to count (optional).
+    * `categories`: List of category values to count (optional).
+    * `tests`: Optional list of test conditions.
+    * `share_tests`: Optional list of tests for the share (percentage).
+
+    Example:
+    ```python
+    CategoryCount(column="city", category="NY")
+    CategoryCount(column="city", categories=["NY", "LA"])
+    ```
+    """
+
     class Config:
         smart_union = True
 
     category: Optional[Label] = None
+    """Single category value to count."""
     categories: List[Label] = []
+    """List of category values to count (for joint share)."""
 
     def __init__(
         self,
@@ -269,8 +355,28 @@ class CategoryCountCalculation(CountCalculation[CategoryCount]):
 
 
 class InRangeValueCount(ColumnMetric, CountMetric):
+    """Count values within a specified range in a numerical column.
+
+    Counts how many values fall within the range [left, right] (inclusive).
+    Returns both count and share (percentage) of values in range.
+
+    Args:
+    * `column`: Name of the numerical column to analyze.
+    * `left`: Lower bound of the range (inclusive).
+    * `right`: Upper bound of the range (inclusive).
+    * `tests`: Optional list of test conditions.
+    * `share_tests`: Optional list of tests for the share (percentage).
+
+    Example:
+    ```python
+    InRangeValueCount(column="age", left=18, right=65)
+    ```
+    """
+
     left: Union[int, float]
+    """Lower bound of the range (inclusive)."""
     right: Union[int, float]
+    """Upper bound of the range (inclusive)."""
 
     def _default_tests_with_reference(self, context: Context) -> List[BoundTest]:
         return [
@@ -297,8 +403,23 @@ class InRangeValueCountCalculation(CountCalculation[InRangeValueCount]):
 
 
 class OutRangeValueCount(ColumnMetric, CountMetric):
+    """Count values outside a specified range in a numerical column.
+
+    Counts how many values fall outside the range [left, right].
+    Returns both count and share (percentage) of values out of range.
+
+    Args:
+    * `column`: Name of the numerical column to analyze.
+    * `left`: Lower bound of the range.
+    * `right`: Upper bound of the range.
+    * `tests`: Optional list of test conditions.
+    * `share_tests`: Optional list of tests for the share (percentage).
+    """
+
     left: Union[int, float]
+    """Lower bound of the range."""
     right: Union[int, float]
+    """Upper bound of the range."""
 
     def _default_tests_with_reference(self, context: Context) -> List[BoundTest]:
         return [
@@ -325,7 +446,20 @@ class OutRangeValueCountCalculation(CountCalculation[OutRangeValueCount]):
 
 
 class InListValueCount(ColumnMetric, CountMetric):
+    """Count values that match any value in a specified list.
+
+    Counts how many values in the column appear in the provided list.
+    Returns both count and share (percentage) of matching values.
+
+    Args:
+    * `column`: Name of the column to analyze.
+    * `values`: List of values to match against.
+    * `tests`: Optional list of test conditions.
+    * `share_tests`: Optional list of tests for the share (percentage).
+    """
+
     values: List[Label]
+    """List of values to match against."""
 
     def _default_tests_with_reference(self, context: Context) -> List[BoundTest]:
         return [
@@ -352,7 +486,25 @@ class InListValueCountCalculation(CountCalculation[InListValueCount]):
 
 
 class OutListValueCount(ColumnMetric, CountMetric):
+    """Count values that do not match any value in a specified list.
+
+    Counts how many values in the column do not appear in the provided list.
+    Returns both count and share (percentage) of non-matching values.
+
+    Args:
+    * `column`: Name of the column to analyze.
+    * `values`: List of values to check against.
+    * `tests`: Optional list of test conditions.
+    * `share_tests`: Optional list of tests for the share (percentage).
+
+    Example:
+    ```python
+    OutListValueCount(column="city", values=["NY", "LA"])
+    ```
+    """
+
     values: List[Label]
+    """List of values to check against."""
 
     def _default_tests_with_reference(self, context: Context) -> List[BoundTest]:
         return [
@@ -379,6 +531,17 @@ class OutListValueCountCalculation(CountCalculation[OutListValueCount]):
 
 
 class MissingValueCount(ColumnMetric, CountMetric):
+    """Count the number and share of missing (null/NaN) values in a column.
+
+    Identifies and counts missing values (NaN, None, etc.) in the specified column.
+    Returns both count and share (percentage) of missing values.
+
+    Args:
+    * `column`: Name of the column to analyze.
+    * `tests`: Optional list of test conditions.
+    * `share_tests`: Optional list of tests for the share (percentage).
+    """
+
     def _default_tests(self, context: Context) -> List[BoundTest]:
         return [eq(0).bind_count(self.get_fingerprint(), is_count=True)]
 
@@ -407,8 +570,26 @@ class MissingValueCountCalculation(CountCalculation[MissingValueCount]):
 
 
 class ValueDrift(ColumnMetric, SingleValueMetric):
+    """Detect data drift for a specific column by comparing distributions.
+
+    Calculates drift score between current and reference datasets for a single column.
+    Supports numerical, categorical, and text columns with various drift detection methods.
+    Requires reference data to compute drift.
+
+    Args:
+    * `column`: Name of the column to analyze for drift.
+    * `method`: Optional drift detection method. Auto-selected based on column type if not specified.
+    * `threshold`: Optional drift threshold. Uses default for the selected method if not specified.
+    * `tests`: Optional list of test conditions.
+
+    See Also:
+    * [Drift Methods Documentation](https://docs.evidentlyai.com/metrics/customize_data_drift) for available methods.
+    """
+
     method: Optional[str] = None
+    """Drift detection method (auto-selected if None)."""
     threshold: Optional[float] = None
+    """Drift threshold (uses method default if None)."""
 
 
 class ValueDriftBoundTest(BoundTest[SingleValue]):
@@ -602,20 +783,61 @@ class ValueDriftCalculation(SingleValueCalculation[ValueDrift]):
 
 
 class DriftedColumnsCount(CountMetric):
+    """Count the number and share of columns with detected data drift.
+
+    Calculates how many columns show significant drift between current and reference datasets.
+    Each column is tested for drift using the specified method. Requires reference data.
+
+    Args:
+    * `columns`: Optional list of column names to analyze. If None, analyzes all columns.
+    * `embeddings`: Optional list of embedding column names.
+    * `drift_share`: Threshold for drift share (default: 0.5, i.e., 50% of columns).
+    * `method`: Optional drift detection method (auto-selected if None).
+    * `cat_method`: Optional method for categorical columns.
+    * `num_method`: Optional method for numerical columns.
+    * `text_method`: Optional method for text columns.
+    * `per_column_method`: Optional dictionary mapping column names to methods.
+    * `threshold`: Optional drift threshold (uses method default if None).
+    * `cat_threshold`: Optional threshold for categorical columns.
+    * `num_threshold`: Optional threshold for numerical columns.
+    * `text_threshold`: Optional threshold for text columns.
+    * `per_column_threshold`: Optional dictionary mapping column names to thresholds.
+    * `embeddings_drift_method`: Optional dictionary mapping embedding columns to drift methods.
+    * `tests`: Optional list of test conditions.
+    * `share_tests`: Optional list of tests for the share (percentage).
+
+    See Also:
+    * [Drift Methods Documentation](https://docs.evidentlyai.com/metrics/customize_data_drift) for available methods.
+    """
+
     columns: Optional[List[str]] = None
+    """Optional list of column names to analyze (None = all columns)."""
     embeddings: Optional[List[str]] = None
+    """Optional list of embedding column names."""
     embeddings_drift_method: Optional[Dict[str, DriftMethod]] = None
+    """Optional dictionary mapping embedding columns to drift methods."""
     drift_share: float = 0.5
+    """Threshold for drift share (0.5 = 50% of columns)."""
     method: Optional[PossibleStatTestType] = None
+    """Optional drift detection method (auto-selected if None)."""
     cat_method: Optional[PossibleStatTestType] = None
+    """Optional method for categorical columns."""
     num_method: Optional[PossibleStatTestType] = None
+    """Optional method for numerical columns."""
     text_method: Optional[PossibleStatTestType] = None
+    """Optional method for text columns."""
     per_column_method: Optional[Dict[str, PossibleStatTestType]] = None
+    """Optional dictionary mapping column names to methods."""
     threshold: Optional[float] = None
+    """Optional drift threshold (uses method default if None)."""
     cat_threshold: Optional[float] = None
+    """Optional threshold for categorical columns."""
     num_threshold: Optional[float] = None
+    """Optional threshold for numerical columns."""
     text_threshold: Optional[float] = None
+    """Optional threshold for text columns."""
     per_column_threshold: Optional[Dict[str, float]] = None
+    """Optional dictionary mapping column names to thresholds."""
 
     def _default_tests_with_reference(self, context: Context) -> List[BoundTest]:
         return [lt(self.drift_share).bind_count(self.get_fingerprint(), is_count=False)]
@@ -663,6 +885,16 @@ class DriftedColumnCalculation(CountCalculation[DriftedColumnsCount], LegacyDrif
 
 
 class UniqueValueCount(ColumnMetric, ByLabelCountMetric):
+    """Count the number and share of unique values in a column.
+
+    Calculates how many distinct values appear in the column and what percentage
+    of the total values they represent. Useful for understanding data cardinality.
+
+    Args:
+    * `column`: Name of the column to analyze.
+    * `tests`: Optional list of test conditions.
+    """
+
     pass
 
 

@@ -43,22 +43,47 @@ if TYPE_CHECKING:
 
 
 class ColumnRole(Enum):
+    """Role of a column in the dataset.
+
+    Defines the semantic role of a column (e.g., target, prediction, feature).
+    Used in `DataDefinition` to specify column purposes.
+    """
+
     Unset = "Unset"
+    """Column role is not set."""
     Target = "target"
+    """Column contains target/ground truth values."""
     Output = "output"
+    """Column contains model output/predictions."""
     Feature = "feature"
+    """Column is a feature used for prediction."""
     Descriptor = "descriptor"
+    """Column is a computed descriptor (e.g., from text)."""
     UserId = "user_id"
+    """Column contains user IDs (for ranking/recsys)."""
     ItemId = "item_id"
+    """Column contains item IDs (for ranking/recsys)."""
     Input = "input"
+    """Column is an input to the model."""
     Context = "context"
+    """Column contains context information."""
     Example = "example"
+    """Column contains example data."""
 
 
 @dataclasses.dataclass
 class ColumnInfo:
+    """Information about a column's type and role.
+
+    Args:
+    * `type`: `ColumnType` of the column (numerical, categorical, text, etc.).
+    * `role`: `ColumnRole` of the column (target, feature, etc.).
+    """
+
     type: ColumnType
+    """Column type (numerical, categorical, text, etc.)."""
     role: ColumnRole = ColumnRole.Unset
+    """Column role (target, feature, etc.)."""
 
 
 @dataclasses.dataclass
@@ -292,15 +317,38 @@ class LLMClassification:
 
 
 class SpecialColumnInfo(AutoAliasMixin, EvidentlyBaseModel):
+    """Base class for special column information.
+
+    Used to define special columns that require custom handling or metrics.
+    Subclasses can provide custom metrics and column type information.
+
+    Args:
+    * Base class - subclasses define specific fields.
+    """
+
     __alias_type__: ClassVar = "special_column_info"
+    """Alias type for serialization."""
 
     class Config:
         is_base_type = True
 
     def get_metrics(self) -> List["MetricOrContainer"]:
+        """Get metrics associated with this special column.
+
+        Returns:
+        * List of metrics or metric containers.
+        """
         return []
 
     def get_column_type(self, column_name: str) -> Optional[ColumnType]:
+        """Get the column type for a column name.
+
+        Args:
+        * `column_name`: Name of the column.
+
+        Returns:
+        * `ColumnType` if known, `None` otherwise.
+        """
         return None
 
 
@@ -311,9 +359,22 @@ DEFAULT_TRACE_LINK_COLUMN = "_evidently_trace_link"
 
 
 class ServiceColumns(BaseModel):
+    """Service columns for special functionality.
+
+    Defines columns used for special features like trace linking and human feedback.
+
+    Args:
+    * `trace_link`: Optional column name for trace links.
+    * `human_feedback_label`: Optional column name for human feedback labels.
+    * `human_feedback_comment`: Optional column name for human feedback comments.
+    """
+
     trace_link: Optional[str] = None
+    """Optional column name for trace links."""
     human_feedback_label: Optional[str] = None
+    """Optional column name for human feedback labels."""
     human_feedback_comment: Optional[str] = None
+    """Optional column name for human feedback comments."""
 
 
 class DataDefinition(BaseModel):
@@ -579,33 +640,91 @@ class DataDefinition(BaseModel):
 
 
 class DatasetColumn:
+    """Wrapper for a single column in a dataset.
+
+    Contains the column type and the actual data as a pandas Series.
+    Used internally to access column data with type information.
+
+    Args:
+    * `type`: `ColumnType` or string name of the column type.
+    * `data`: `pandas.Series` containing the column data.
+    """
+
     type: ColumnType
+    """Column type (numerical, categorical, text, etc.)."""
     data: pd.Series
+    """Pandas Series containing the column data."""
 
     def __init__(self, type: Union[str, ColumnType], data: pd.Series) -> None:
+        """Initialize a dataset column.
+
+        Args:
+        * `type`: `ColumnType` or string name of the column type.
+        * `data`: `pandas.Series` containing the column data.
+        """
         self.type = ColumnType(type)
         self.data = data
 
 
 class ColumnCondition(AutoAliasMixin, EvidentlyBaseModel, abc.ABC):
+    """Base class for column value conditions.
+
+    Used to define conditions that check values in a column (e.g., greater than,
+    in range, matches pattern). Used in descriptor tests and column filters.
+
+    Args:
+    * Base class - subclasses define specific condition logic.
+    """
+
     __alias_type__: ClassVar[str] = "column_condition"
+    """Alias type for serialization."""
 
     class Config:
         is_base_type = True
 
     @abstractmethod
     def check(self, value: Any) -> bool:
+        """Check if a value satisfies the condition.
+
+        Args:
+        * `value`: Value to check.
+
+        Returns:
+        * `True` if condition is satisfied, `False` otherwise.
+        """
         raise NotImplementedError
 
     @abstractmethod
     def get_default_alias(self, column: str) -> str:
+        """Get default alias name for this condition.
+
+        Args:
+        * `column`: Column name this condition applies to.
+
+        Returns:
+        * Default alias string.
+        """
         raise NotImplementedError
 
 
 class DescriptorTest(BaseModel):
+    """Test condition for a descriptor column.
+
+    Defines a condition to test values in a descriptor column. Can be used
+    to create derived descriptors based on test results.
+
+    Args:
+    * `condition`: `ColumnCondition` or `GenericTest` to apply.
+    * `column`: Optional column name (uses parent descriptor column if None).
+    * `alias`: Optional alias name for the test result.
+    """
+
     condition: ColumnCondition
+    """Column condition to apply."""
     column: Optional[str] = None
+    """Optional column name (uses parent descriptor column if None)."""
     alias: Optional[str] = None
+    """Optional alias name for the test result."""
 
     def __init__(
         self,
@@ -637,13 +756,27 @@ AnyDescriptorTest = Union["DescriptorTest", "GenericTest"]
 
 
 class Descriptor(AutoAliasMixin, EvidentlyBaseModel, abc.ABC):
+    """Base class for descriptors that compute row-level features.
+
+    Descriptors compute additional columns from existing data (e.g., text length,
+    sentiment score, custom transformations). Used to enrich datasets with
+    computed features for evaluation.
+
+    Args:
+    * `alias`: Name for the descriptor output column.
+    * `tests`: Optional list of test conditions to apply to descriptor values.
+    """
+
     class Config:
         is_base_type = True
 
     __alias_type__: ClassVar = "descriptor_v2"
+    """Alias type for serialization."""
 
     alias: str
+    """Name for the descriptor output column."""
     tests: List[DescriptorTest] = []
+    """List of test conditions to apply to descriptor values."""
 
     def __init__(self, alias: str, tests: Optional[List[AnyDescriptorTest]] = None, **data: Any) -> None:
         self.alias = alias
@@ -683,15 +816,45 @@ class Descriptor(AutoAliasMixin, EvidentlyBaseModel, abc.ABC):
 
 
 class SingleInputDescriptor(Descriptor, abc.ABC):
+    """Base class for descriptors that operate on a single input column.
+
+    Simplifies descriptor implementation for descriptors that only need one
+    input column. Subclasses only need to implement `generate_data()`.
+
+    Args:
+    * `column`: Name of the input column to process.
+    * `alias`: Name for the descriptor output column.
+    * `tests`: Optional list of test conditions.
+    """
+
     column: str
+    """Name of the input column to process."""
 
     def list_input_columns(self) -> List[str]:
+        """Get the list of input columns.
+
+        Returns:
+        * List containing the single input column name.
+        """
         return [self.column]
 
 
 class ColumnTest(SingleInputDescriptor):
+    """Descriptor that tests values in a column against a condition.
+
+    Creates a boolean descriptor column indicating whether each value in the
+    input column satisfies the condition. Useful for filtering or flagging rows.
+
+    Args:
+    * `column`: Name of the input column to test.
+    * `condition`: `ColumnCondition` or `GenericTest` to apply.
+    * `alias`: Optional alias name (defaults to condition's default alias).
+    """
+
     column: str
+    """Name of the input column to test."""
     condition: ColumnCondition
+    """Column condition to apply."""
 
     def __init__(
         self, column: str, condition: Union[ColumnCondition, GenericTest], alias: Optional[str] = None, **data: Any
@@ -708,45 +871,112 @@ class ColumnTest(SingleInputDescriptor):
     def generate_data(
         self, dataset: "Dataset", options: Options
     ) -> Union[DatasetColumn, Dict[DisplayName, DatasetColumn]]:
+        """Generate a boolean column indicating which rows satisfy the condition.
+
+        Args:
+        * `dataset`: `Dataset` to process.
+        * `options`: Processing options.
+
+        Returns:
+        * `DatasetColumn` with boolean values (True if condition passes, False otherwise).
+        """
         data = dataset.column(self.column)
         res = data.data.apply(self.condition.check)
         return DatasetColumn(ColumnType.Categorical, res)
 
 
 class TestSummaryInfo(SpecialColumnInfo):
+    """Special column information for test summary aggregation.
+
+    Defines columns that aggregate test results across multiple descriptors,
+    providing summary statistics like "all tests pass", "any test fails", etc.
+
+    Args:
+    * `all_column`: Optional column name for "all tests pass" indicator.
+    * `any_column`: Optional column name for "any test fails" indicator.
+    * `count_column`: Optional column name for test failure count.
+    * `rate_column`: Optional column name for test failure rate.
+    * `score_column`: Optional column name for weighted test score.
+    * `score_weights`: Optional dictionary mapping test names to weights.
+    """
+
     all_column: Optional[str] = None
+    """Optional column name for 'all tests pass' indicator."""
     any_column: Optional[str] = None
+    """Optional column name for 'any test fails' indicator."""
     count_column: Optional[str] = None
+    """Optional column name for test failure count."""
     rate_column: Optional[str] = None
+    """Optional column name for test failure rate."""
     score_column: Optional[str] = None
+    """Optional column name for weighted test score."""
     score_weights: Optional[Dict[str, float]] = None
+    """Optional dictionary mapping test names to weights."""
 
     @property
     def has_all(self):
+        """Check if 'all' column is configured.
+
+        Returns:
+        * `True` if `any_column` is set, `False` otherwise.
+        """
         return self.any_column is not None
 
     @property
     def has_any(self):
+        """Check if 'any' column is configured.
+
+        Returns:
+        * `True` if `any_column` is set, `False` otherwise.
+        """
         return self.any_column is not None
 
     @property
     def has_count(self):
+        """Check if 'count' column is configured.
+
+        Returns:
+        * `True` if `count_column` is set, `False` otherwise.
+        """
         return self.count_column is not None
 
     @property
     def has_rate(self):
+        """Check if 'rate' column is configured.
+
+        Returns:
+        * `True` if `rate_column` is set, `False` otherwise.
+        """
         return self.rate_column is not None
 
     @property
     def has_score(self):
+        """Check if 'score' column is configured.
+
+        Returns:
+        * `True` if `score_column` is set, `False` otherwise.
+        """
         return self.score_column is not None
 
     def get_metrics(self) -> List["MetricOrContainer"]:
+        """Get metrics for aggregating test summary columns.
+
+        Returns:
+        * List containing a `TestSummaryInfoPreset` metric.
+        """
         from evidently.presets.special import TestSummaryInfoPreset
 
         return [TestSummaryInfoPreset(column_info=self)]
 
     def get_column_type(self, column_name: str) -> Optional[ColumnType]:
+        """Get the column type for a summary column name.
+
+        Args:
+        * `column_name`: Name of the column to check.
+
+        Returns:
+        * `ColumnType.Categorical` for all/any columns, `ColumnType.Numerical` for count/rate/score columns, or `None` if not found.
+        """
         if column_name in (self.all_column, self.any_column):
             return ColumnType.Categorical
         if column_name in (self.count_column, self.rate_column, self.score_column):
@@ -755,13 +985,39 @@ class TestSummaryInfo(SpecialColumnInfo):
 
 
 class TestSummary(Descriptor):
+    """Descriptor that aggregates test results across multiple test descriptors.
+
+    Computes summary statistics from boolean test result columns, such as:
+    - Whether all tests pass for each row
+    - Whether any test fails for each row
+    - Count and rate of passing tests
+    - Weighted score across tests
+
+    Args:
+    * `success_all`: If `True`, compute "all tests pass" indicator.
+    * `success_any`: If `True`, compute "any test fails" indicator.
+    * `success_count`: If `True`, compute count of passing tests.
+    * `success_rate`: If `True`, compute proportion of passing tests.
+    * `score`: If `True`, compute weighted score across tests.
+    * `score_weights`: Optional dictionary mapping test names to weights.
+    * `alias`: Optional alias name for output columns (defaults to "summary").
+    * `normalize_scores`: If `True`, normalize scores by total weight.
+    """
+
     success_all: bool = True
+    """Whether to compute 'all tests pass' indicator."""
     success_any: bool = False
+    """Whether to compute 'any test fails' indicator."""
     success_count: bool = False
+    """Whether to compute count of passing tests."""
     success_rate: bool = False
+    """Whether to compute proportion of passing tests."""
     score: bool = False
+    """Whether to compute weighted score across tests."""
     score_weights: Optional[Dict[str, float]] = None
+    """Optional dictionary mapping test names to weights for scoring."""
     normalize_scores: bool = True
+    """Whether to normalize scores by total weight."""
 
     def __init__(
         self,
@@ -787,6 +1043,21 @@ class TestSummary(Descriptor):
     def generate_data(
         self, dataset: "Dataset", options: Options
     ) -> Union[DatasetColumn, Dict[DisplayName, DatasetColumn]]:
+        """Generate summary columns from test result columns.
+
+        Aggregates boolean test results into summary statistics based on
+        configured flags (success_all, success_any, success_count, etc.).
+
+        Args:
+        * `dataset`: `Dataset` containing test result columns.
+        * `options`: Processing options.
+
+        Returns:
+        * Dictionary of summary columns, or single column if only one is generated.
+
+        Raises:
+        * `ValueError`: If no tests are specified or no summary columns are configured.
+        """
         tests = dataset.data_definition.test_descriptors or []
         if len(tests) == 0:
             raise ValueError("No tests specified")
@@ -816,11 +1087,24 @@ class TestSummary(Descriptor):
         return result
 
     def list_input_columns(self) -> Optional[List[str]]:
+        """Get list of input columns needed for this descriptor.
+
+        Returns:
+        * List of test column names if score weights are specified, `None` otherwise.
+        """
         if self.score and self.score_weights is not None:
             return list(self.score_weights.keys())
         return None
 
     def get_special_columns_info(self, rename: Dict[str, str]) -> List[SpecialColumnInfo]:
+        """Get special column information for test summary aggregation.
+
+        Args:
+        * `rename`: Dictionary mapping internal column names to final names.
+
+        Returns:
+        * List of `TestSummaryInfo` objects describing the summary columns.
+        """
         alias = self.alias or "summary"
         if len(rename) == 1:
             return [
@@ -946,9 +1230,23 @@ class ColumnStats:
 
 @dataclasses.dataclass
 class DatasetStats:
+    """Statistics summary for a dataset.
+
+    Contains overall dataset statistics including row count, column count,
+    and per-column statistics.
+
+    Args:
+    * `row_count`: Total number of rows in the dataset.
+    * `column_count`: Total number of columns in the dataset.
+    * `column_stats`: Dictionary mapping column names to their `ColumnStats`.
+    """
+
     row_count: int
+    """Total number of rows in the dataset."""
     column_count: int
+    """Total number of columns in the dataset."""
     column_stats: Dict[str, ColumnStats]
+    """Dictionary mapping column names to their ColumnStats."""
 
 
 PossibleDatasetTypes = Union["Dataset", pd.DataFrame]

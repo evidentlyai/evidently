@@ -65,12 +65,33 @@ class LLMDatasetColumns:
 
 
 class LLMDatasetSplitView:
+    """View of a specific split in an LLM dataset.
+
+    Provides filtered access to dataset columns for a specific split
+    (train, val, test, or all).
+
+    Args:
+    * `dataset`: `LLMDataset` to view.
+    * `split_name`: Name of the split to view.
+    """
+
     def __init__(self, dataset: "LLMDataset", split_name: str):
+        """Initialize a split view.
+
+        Args:
+        * `dataset`: `LLMDataset` to view.
+        * `split_name`: Name of the split to view.
+        """
         self.split_name = split_name
         self.dataset = dataset
 
     @property
     def input_values(self) -> Optional[pd.Series]:
+        """Get input values for this split.
+
+        Returns:
+        * `pd.Series` with input values, or `None` if not available.
+        """
         if (
             self.split_name == LLMDatasetSplit.All
             or self.split_name not in self.dataset.split_masks
@@ -81,6 +102,11 @@ class LLMDatasetSplitView:
 
     @property
     def target(self) -> Optional[pd.Series]:
+        """Get target values for this split.
+
+        Returns:
+        * `pd.Series` with target values, or `None` if not available.
+        """
         if (
             self.split_name == LLMDatasetSplit.All
             or self.split_name not in self.dataset.split_masks
@@ -91,6 +117,11 @@ class LLMDatasetSplitView:
 
     @property
     def reasoning(self) -> Optional[pd.Series]:
+        """Get reasoning for this split.
+
+        Returns:
+        * `pd.Series` with reasoning, or `None` if not available.
+        """
         if (
             self.split_name == LLMDatasetSplit.All
             or self.split_name not in self.dataset.split_masks
@@ -101,6 +132,11 @@ class LLMDatasetSplitView:
 
     @property
     def predictions(self) -> Optional[pd.Series]:
+        """Get predictions for this split.
+
+        Returns:
+        * `pd.Series` with predictions, or `None` if not available.
+        """
         if (
             self.split_name == LLMDatasetSplit.All
             or self.split_name not in self.dataset.split_masks
@@ -111,6 +147,11 @@ class LLMDatasetSplitView:
 
     @property
     def prediction_reasoning(self) -> Optional[pd.Series]:
+        """Get prediction reasoning for this split.
+
+        Returns:
+        * `pd.Series` with prediction reasoning, or `None` if not available.
+        """
         if (
             self.split_name == LLMDatasetSplit.All
             or self.split_name not in self.dataset.split_masks
@@ -121,23 +162,70 @@ class LLMDatasetSplitView:
 
 
 class LLMDataset(BaseModel):
-    input_values: pd.Series
-    target: Optional[pd.Series] = None
-    reasoning: Optional[pd.Series] = None
-    predictions: Optional[pd.Series] = None
-    prediction_reasoning: Optional[pd.Series] = None
+    """Dataset for LLM optimization tasks.
 
+    Contains input values, targets, reasoning, predictions, and split masks
+    for train/val/test splits.
+
+    Args:
+    * `input_values`: Input values (e.g., prompts).
+    * `target`: Optional target values (e.g., expected outputs).
+    * `reasoning`: Optional reasoning for targets.
+    * `predictions`: Optional model predictions.
+    * `prediction_reasoning`: Optional reasoning for predictions.
+    * `split_masks`: Dictionary mapping split names to boolean masks.
+    """
+
+    input_values: pd.Series
+    """Input values (e.g., prompts)."""
+    target: Optional[pd.Series] = None
+    """Optional target values (e.g., expected outputs)."""
+    reasoning: Optional[pd.Series] = None
+    """Optional reasoning for targets."""
+    predictions: Optional[pd.Series] = None
+    """Optional model predictions."""
+    prediction_reasoning: Optional[pd.Series] = None
+    """Optional reasoning for predictions."""
     split_masks: Dict[str, pd.Series] = Field(default_factory=dict)
+    """Dictionary mapping split names to boolean masks."""
 
     def __getitem__(self, split_name: str) -> LLMDatasetSplitView:
+        """Get a view of a specific split.
+
+        Args:
+        * `split_name`: Name of the split to view.
+
+        Returns:
+        * `LLMDatasetSplitView` for the specified split.
+        """
         return LLMDatasetSplitView(self, split_name)
 
     def get_mask(self, split_name: str) -> pd.Series:
+        """Get the boolean mask for a split.
+
+        Args:
+        * `split_name`: Name of the split.
+
+        Returns:
+        * `pd.Series` with boolean values indicating which rows belong to this split.
+        """
         if split_name not in self.split_masks or split_name == LLMDatasetSplit.All:
             return pd.Series(True, index=np.arange(len(self.input_values)))
         return self.split_masks[split_name]
 
     def split(self, shares: Dict[str, Optional[float]], seed: Optional[int]) -> None:
+        """Split the dataset into train/val/test splits.
+
+        Creates boolean masks for each split based on the specified shares.
+        Uses stratified splitting if target values are available.
+
+        Args:
+        * `shares`: Dictionary mapping split names to proportions (must sum to 1.0).
+        * `seed`: Optional random seed for reproducibility.
+
+        Raises:
+        * `ValueError`: If shares don't sum to 1.0.
+        """
         n = len(self.input_values)
         indices = np.arange(n)
 
@@ -175,23 +263,62 @@ class LLMDataset(BaseModel):
 
 
 class LLMResultDataset(BaseModel):
+    """Dataset containing LLM optimization results.
+
+    Stores predictions, reasoning, and scores from optimization runs.
+
+    Args:
+    * `predictions`: Optional model predictions.
+    * `reasoning`: Optional reasoning for predictions.
+    * `scores`: Optional scores for predictions.
+    """
+
     predictions: Optional[pd.Series] = None
+    """Optional model predictions."""
     reasoning: Optional[pd.Series] = None
+    """Optional reasoning for predictions."""
     scores: Optional[pd.Series] = None
+    """Optional scores for predictions."""
 
     @property
     def has_predictions(self) -> bool:
+        """Check if predictions are available.
+
+        Returns:
+        * `True` if predictions exist, `False` otherwise.
+        """
         return self.predictions is not None
 
     @property
     def has_reasoning(self) -> bool:
+        """Check if reasoning is available.
+
+        Returns:
+        * `True` if reasoning exists, `False` otherwise.
+        """
         return self.reasoning is not None
 
     @property
     def has_scores(self) -> bool:
+        """Check if scores are available.
+
+        Returns:
+        * `True` if scores exist, `False` otherwise.
+        """
         return self.scores is not None
 
     def get_predictions(self, mask: Optional[pd.Series] = None) -> pd.Series:
+        """Get predictions, optionally filtered by mask.
+
+        Args:
+        * `mask`: Optional boolean mask to filter predictions.
+
+        Returns:
+        * `pd.Series` with predictions.
+
+        Raises:
+        * `KeyError`: If predictions are not available.
+        """
         if self.predictions is None:
             raise KeyError("Dataset has no predictions")
         if mask is not None:
@@ -199,6 +326,17 @@ class LLMResultDataset(BaseModel):
         return self.predictions
 
     def get_reasoning(self, mask: Optional[pd.Series] = None) -> pd.Series:
+        """Get reasoning, optionally filtered by mask.
+
+        Args:
+        * `mask`: Optional boolean mask to filter reasoning.
+
+        Returns:
+        * `pd.Series` with reasoning.
+
+        Raises:
+        * `KeyError`: If reasoning is not available.
+        """
         if self.reasoning is None:
             raise KeyError("Dataset has no reasoning")
         if mask is not None:
@@ -206,6 +344,17 @@ class LLMResultDataset(BaseModel):
         return self.reasoning
 
     def get_scores(self, mask: Optional[pd.Series] = None) -> pd.Series:
+        """Get scores, optionally filtered by mask.
+
+        Args:
+        * `mask`: Optional boolean mask to filter scores.
+
+        Returns:
+        * `pd.Series` with scores.
+
+        Raises:
+        * `KeyError`: If scores are not available.
+        """
         if self.scores is None:
             raise KeyError("Dataset has no scores")
         if mask is not None:
@@ -213,6 +362,11 @@ class LLMResultDataset(BaseModel):
         return self.scores
 
     def items(self) -> Iterable[Tuple[str, pd.Series]]:
+        """Iterate over all Series fields.
+
+        Yields:
+        * Tuples of (field_name, pd.Series) for each Series field.
+        """
         for field_name in self.__fields__:
             value = getattr(self, field_name)
             if isinstance(value, pd.Series):
@@ -220,7 +374,14 @@ class LLMResultDataset(BaseModel):
 
 
 class OptimizerConfig(AutoAliasMixin, EvidentlyBaseModel):
-    """Configuration for the optimizer, including provider and model."""
+    """Configuration for the optimizer, including provider and model.
+
+    Args:
+    * `provider`: LLM provider name (default: "openai").
+    * `model`: LLM model name (default: "gpt-4o-mini").
+    * `verbose`: If `True`, print optimization progress.
+    * `seed`: Optional random seed for reproducibility.
+    """
 
     __alias_type__: ClassVar = "optimizer_config"
 
@@ -228,9 +389,13 @@ class OptimizerConfig(AutoAliasMixin, EvidentlyBaseModel):
         is_base_type = True
 
     provider: str = "openai"
+    """LLM provider name."""
     model: str = "gpt-4o-mini"
+    """LLM model name."""
     verbose: bool = False
+    """Whether to print optimization progress."""
     seed: Optional[int] = None
+    """Optional random seed for reproducibility."""
 
 
 LogID = uuid.UUID
@@ -238,7 +403,14 @@ T = TypeVar("T")
 
 
 class OptimizerLog(AutoAliasMixin, EvidentlyBaseModel, ABC):
-    """Base class for all optimizer logs."""
+    """Base class for all optimizer logs.
+
+    Logs track events and steps during optimization runs.
+
+    Args:
+    * `id`: Unique log identifier.
+    * `timestamp`: Timestamp when the log was created.
+    """
 
     __alias_type__: ClassVar = "optimizer_log"
     __is_step__: ClassVar[bool] = False
@@ -247,19 +419,42 @@ class OptimizerLog(AutoAliasMixin, EvidentlyBaseModel, ABC):
         is_base_type = True
 
     id: LogID = Field(default_factory=new_id)
+    """Unique log identifier."""
     timestamp: datetime.datetime = Field(default_factory=datetime.datetime.now)
+    """Timestamp when the log was created."""
 
     @abstractmethod
     def message(self) -> str:
+        """Get a human-readable message for this log.
+
+        Returns:
+        * String message describing the log event.
+        """
         raise NotImplementedError()
 
     def full_message(self):
+        """Get the full message for this log.
+
+        Returns:
+        * String message (may be overridden by subclasses for additional context).
+        """
         return self.message()
 
 
 class LLMCallOptimizerLog(OptimizerLog, ABC):
+    """Log entry for an LLM API call during optimization.
+
+    Tracks token usage for cost monitoring and rate limiting.
+
+    Args:
+    * `input_tokens`: Number of input tokens used.
+    * `output_tokens`: Number of output tokens used.
+    """
+
     input_tokens: int
+    """Number of input tokens used."""
     output_tokens: int
+    """Number of output tokens used."""
 
 
 TLog = TypeVar("TLog", bound=OptimizerLog)
@@ -268,44 +463,105 @@ RunID = int
 
 
 class OptimizerRun(BaseModel):
+    """A single optimization run with logs and statistics.
+
+    Tracks all events, steps, and LLM calls during an optimization run.
+
+    Args:
+    * `run_id`: Unique identifier for this run.
+    * `logs`: Dictionary of log entries by log ID.
+    * `seed`: Random seed used for this run.
+    * `start_time`: Timestamp when the run started.
+    """
+
     run_id: RunID
+    """Unique identifier for this run."""
     logs: LogsDict = {}
+    """Dictionary of log entries by log ID."""
     seed: Optional[int]
+    """Random seed used for this run."""
     start_time: datetime.datetime = Field(default_factory=datetime.datetime.now)
+    """Timestamp when the run started."""
     _context: "OptimizerContext" = PrivateAttr()
 
     def bind(self, context: "OptimizerContext") -> "OptimizerRun":
+        """Bind this run to an optimizer context.
+
+        Args:
+        * `context`: `OptimizerContext` to bind to.
+
+        Returns:
+        * Self for method chaining.
+        """
         self._context = context
         return self
 
     @property
     def context(self) -> "OptimizerContext":
+        """Get the optimizer context.
+
+        Returns:
+        * `OptimizerContext` associated with this run.
+        """
         return self._context
 
     def add_log(self, log: OptimizerLog):
-        """Add a log entry to the context and log its message."""
+        """Add a log entry to the context and log its message.
+
+        Args:
+        * `log`: `OptimizerLog` to add.
+        """
         if self._context.config.verbose:
             print(f"[{self.run_id}]", log.message())
         self.logs[log.id] = log
 
     def get_log(self, log_id: LogID) -> OptimizerLog:
-        """Retrieve a log entry by its ID."""
+        """Retrieve a log entry by its ID.
+
+        Args:
+        * `log_id`: ID of the log to retrieve.
+
+        Returns:
+        * `OptimizerLog` with the specified ID.
+
+        Raises:
+        * `KeyError`: If log ID not found.
+        """
         if log_id not in self.logs:
             raise KeyError(f"Log with id {log_id} not found")
         return self.logs[log_id]
 
     def get_logs(self, log_type: Type[TLog]) -> List[TLog]:
-        """Get all logs of a specific type."""
+        """Get all logs of a specific type.
+
+        Args:
+        * `log_type`: Type of logs to retrieve.
+
+        Returns:
+        * List of logs of the specified type.
+        """
         return [log for log in self.logs.values() if isinstance(log, log_type)]
 
     def get_last_log(self, log_type: Type[TLog]) -> Optional[TLog]:
-        """Get the most recent log of a specific type, or None if not found."""
+        """Get the most recent log of a specific type, or None if not found.
+
+        Args:
+        * `log_type`: Type of log to retrieve.
+
+        Returns:
+        * Most recent log of the specified type, or `None` if not found.
+        """
         for log in reversed(self.logs.values()):
             if isinstance(log, log_type):
                 return log
         return None
 
     def print_stats(self):
+        """Print statistics about this optimization run.
+
+        Displays run ID, seed, number of steps, elapsed time, token usage,
+        and a timeline of all log events.
+        """
         print(f"Optimizer Run [{self.run_id}], seed [{self.seed}]")
         log_list = list(self.logs.values())
         last_log = log_list[-1]
@@ -332,12 +588,26 @@ _run_lock = Lock()
 
 
 class OptimizerContext(BaseModel):
-    """Holds the state, parameters, and logs for an optimization run."""
+    """Holds the state, parameters, and logs for an optimization run.
+
+    Manages configuration, parameters, and multiple optimization runs.
+    Can be locked to prevent parameter changes during optimization.
+
+    Args:
+    * `config`: `OptimizerConfig` with optimizer settings.
+    * `params`: Dictionary of optimization parameters.
+    * `runs`: List of completed optimization runs.
+    * `locked`: Whether the context is locked (prevents parameter changes).
+    """
 
     config: OptimizerConfig
+    """Optimizer configuration."""
     params: Dict[str, Any]
+    """Dictionary of optimization parameters."""
     runs: List[OptimizerRun]
+    """List of completed optimization runs."""
     locked: bool = False
+    """Whether the context is locked (prevents parameter changes)."""
 
     # @classmethod
     # def load(cls: Type[Self], path: str) -> Self:
@@ -347,6 +617,13 @@ class OptimizerContext(BaseModel):
     #     raise NotImplementedError()
 
     async def new_run(self) -> OptimizerRun:
+        """Create a new optimization run.
+
+        Generates a new run with a unique ID and seed (if configured).
+
+        Returns:
+        * New `OptimizerRun` bound to this context.
+        """
         async with _run_lock:
             seed = None if self.config.seed is None else get_seeded_nth_int(self.config.seed, len(self.runs))
             run = OptimizerRun(run_id=len(self.runs), seed=seed).bind(self)
@@ -355,14 +632,32 @@ class OptimizerContext(BaseModel):
 
     @property
     def llm_wrapper(self) -> LLMWrapper:
+        """Get the LLM wrapper for this context.
+
+        Returns:
+        * `LLMWrapper` configured with the context's provider and model.
+        """
         return get_llm_wrapper(self.config.provider, self.config.model, self.params[Params.Options])
 
     @property
     def options(self) -> Options:
+        """Get the processing options.
+
+        Returns:
+        * `Options` from the context parameters.
+        """
         return self.params[Params.Options]
 
     def set_param(self, name: str, value: Any):
-        """Set a parameter in the context. Raises if context is locked."""
+        """Set a parameter in the context. Raises if context is locked.
+
+        Args:
+        * `name`: Parameter name.
+        * `value`: Parameter value.
+
+        Raises:
+        * `OptimizationConfigurationError`: If context is locked.
+        """
         if self.locked:
             raise OptimizationConfigurationError("OptimizerContext is locked")
         self.params[name] = value
@@ -370,7 +665,19 @@ class OptimizerContext(BaseModel):
             value.on_param_set(self)
 
     def get_param(self, name: str, cls: Optional[Type[T]] = None, missing_error_message: Optional[str] = None) -> T:
-        """Get a parameter, optionally checking type and raising with a custom message if missing."""
+        """Get a parameter, optionally checking type and raising with a custom message if missing.
+
+        Args:
+        * `name`: Parameter name.
+        * `cls`: Optional type to validate against.
+        * `missing_error_message`: Optional custom error message if parameter is missing.
+
+        Returns:
+        * Parameter value.
+
+        Raises:
+        * `OptimizationConfigurationError`: If context is not locked, parameter is missing, or type mismatch.
+        """
         if not self.locked:
             raise OptimizationConfigurationError("Attempted to get param from unlocked OptimizerContext")
         value = self.params.get(name, None)
@@ -381,22 +688,48 @@ class OptimizerContext(BaseModel):
         return value
 
     def lock(self):
+        """Lock the context to prevent further parameter changes.
+
+        After locking, parameters can only be read, not modified.
+        """
         self.locked = True
         for value in self.params.values():
             if isinstance(value, InitContextMixin):
                 value.on_context_lock(self)
 
     def has_param(self, name: str):
+        """Check if a parameter exists.
+
+        Args:
+        * `name`: Parameter name to check.
+
+        Returns:
+        * `True` if parameter exists, `False` otherwise.
+        """
         return name in self.params
 
 
 class InitContextMixin(ABC):
-    """Mixin for objects that need to alter OptimizerContext on init."""
+    """Mixin for objects that need to alter OptimizerContext on init.
+
+    Provides hooks for objects to react to context parameter changes
+    and context locking.
+    """
 
     def on_param_set(self, context: OptimizerContext):
+        """Called when this object is set as a context parameter.
+
+        Args:
+        * `context`: `OptimizerContext` that this parameter was set in.
+        """
         pass
 
     def on_context_lock(self, context: OptimizerContext):
+        """Called when the context is locked.
+
+        Args:
+        * `context`: `OptimizerContext` that was locked.
+        """
         pass
 
 
@@ -404,9 +737,25 @@ TOptimizerConfig = TypeVar("TOptimizerConfig", bound=OptimizerConfig)
 
 
 class BaseOptimizer(ABC, Generic[TOptimizerConfig]):
-    """Base class for all optimizers, handling context and parameter management."""
+    """Base class for all optimizers, handling context and parameter management.
+
+    Provides common functionality for managing optimizer configuration,
+    parameters, and runs.
+
+    Args:
+    * `name`: Name of the optimizer.
+    * `config`: `OptimizerConfig` with optimizer settings.
+    * `checkpoint_path`: Optional path for saving/loading checkpoints.
+    """
 
     def __init__(self, name: str, config: TOptimizerConfig, checkpoint_path: Optional[str] = None):
+        """Initialize the optimizer.
+
+        Args:
+        * `name`: Name of the optimizer.
+        * `config`: `OptimizerConfig` with optimizer settings.
+        * `checkpoint_path`: Optional path for saving/loading checkpoints.
+        """
         self.name = name
         self.checkpoint_path = checkpoint_path or f".optimizer_checkpoint_{name}"
         # if os.path.exists(self.checkpoint_path):
@@ -422,12 +771,34 @@ class BaseOptimizer(ABC, Generic[TOptimizerConfig]):
         self.context.lock()
 
     def set_param(self, name: str, value: Any):
-        """Set a parameter in the optimizer context."""
+        """Set a parameter in the optimizer context.
+
+        Args:
+        * `name`: Parameter name.
+        * `value`: Parameter value.
+        """
         self.context.set_param(name, value)
 
     def get_param(self, name: str, cls: Optional[Type[T]] = None, missing_error_message: Optional[str] = None) -> T:
-        """Get a parameter from the optimizer context."""
+        """Get a parameter from the optimizer context.
+
+        Args:
+        * `name`: Parameter name.
+        * `cls`: Optional type to validate against.
+        * `missing_error_message`: Optional custom error message if parameter is missing.
+
+        Returns:
+        * Parameter value.
+        """
         return self.context.get_param(name, cls, missing_error_message)
 
     def has_param(self, name: str) -> bool:
+        """Check if a parameter exists.
+
+        Args:
+        * `name`: Parameter name to check.
+
+        Returns:
+        * `True` if parameter exists, `False` otherwise.
+        """
         return self.context.has_param(name)

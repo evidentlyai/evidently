@@ -32,6 +32,15 @@ if typing.TYPE_CHECKING:
 
 
 class RowCount(SingleValueMetric):
+    """Count the total number of rows in the dataset.
+
+    Returns the number of rows (records) in the dataset. Useful for understanding
+    dataset size and monitoring changes in data volume.
+
+    Args:
+    * `tests`: Optional list of test conditions.
+    """
+
     def _default_tests(self, context: "Context") -> List[BoundTest]:
         return [gt(0).bind_single(self.get_fingerprint())]
 
@@ -53,7 +62,18 @@ class RowCountCalculation(SingleValueCalculation[RowCount]):
 
 
 class ColumnCount(SingleValueMetric):
+    """Count the total number of columns in the dataset.
+
+    Can count all columns or filter by column type (numerical, categorical, text, datetime).
+    Useful for monitoring schema changes and data structure.
+
+    Args:
+    * `column_type`: Optional column type to filter by. If None, counts all columns.
+    * `tests`: Optional list of test conditions.
+    """
+
     column_type: Optional[ColumnType] = None
+    """Optional column type to filter by (None = all columns)."""
 
     def _default_tests(self, context: "Context") -> List[BoundTest]:
         return [gt(0).bind_single(self.get_fingerprint())]
@@ -130,6 +150,15 @@ class DatasetSummaryCountValueCalculation(
 
 
 class DuplicatedRowCount(SingleValueMetric):
+    """Count the number of duplicate rows in the dataset.
+
+    Identifies and counts rows that are completely identical to other rows.
+    Useful for data quality checks.
+
+    Args:
+    * `tests`: Optional list of test conditions.
+    """
+
     def _default_tests(self, context: "Context") -> List[BoundTest]:
         return [eq(0).bind_single(self.get_fingerprint())]
 
@@ -157,6 +186,15 @@ class DuplicatedRowCountCalculation(DatasetSummarySingleValueCalculation[SingleV
 
 
 class DuplicatedColumnsCount(SingleValueMetric):
+    """Count the number of duplicate columns in the dataset.
+
+    Identifies columns that are completely identical to other columns.
+    Useful for detecting redundant features.
+
+    Args:
+    * `tests`: Optional list of test conditions.
+    """
+
     def _default_tests(self, context: "Context") -> List[BoundTest]:
         return [eq(0).bind_single(self.get_fingerprint())]
 
@@ -186,6 +224,15 @@ class DuplicatedColumnsCountCalculation(DatasetSummarySingleValueCalculation[Sin
 
 
 class AlmostDuplicatedColumnsCount(SingleValueMetric):
+    """Count the number of almost duplicate columns in the dataset.
+
+    Identifies columns that are nearly identical (within a small epsilon threshold).
+    Useful for detecting highly correlated or redundant features.
+
+    Args:
+    * `tests`: Optional list of test conditions.
+    """
+
     pass
 
 
@@ -211,6 +258,15 @@ class AlmostDuplicatedColumnsCountCalculation(
 
 
 class AlmostConstantColumnsCount(SingleValueMetric):
+    """Count the number of almost constant columns (95% identical values).
+
+    Identifies columns where 95% or more of the values are the same.
+    These columns provide little information and may indicate data quality issues.
+
+    Args:
+    * `tests`: Optional list of test conditions.
+    """
+
     def _default_tests(self, context: "Context") -> List[BoundTest]:
         return [eq(0).bind_single(self.get_fingerprint())]
 
@@ -242,6 +298,15 @@ class AlmostConstantColumnsCountCalculation(
 
 
 class EmptyRowsCount(SingleValueMetric):
+    """Count the number of completely empty rows in the dataset.
+
+    Identifies rows where all values are missing or empty.
+    Useful for data quality monitoring.
+
+    Args:
+    * `tests`: Optional list of test conditions.
+    """
+
     def _default_tests(self, context: "Context") -> List[BoundTest]:
         return [eq(0).bind_single(self.get_fingerprint())]
 
@@ -269,6 +334,15 @@ class EmptyRowsCountCalculation(DatasetSummarySingleValueCalculation[SingleValue
 
 
 class EmptyColumnsCount(SingleValueMetric):
+    """Count the number of completely empty columns in the dataset.
+
+    Identifies columns where all values are missing or empty.
+    Useful for detecting unused or broken data sources.
+
+    Args:
+    * `tests`: Optional list of test conditions.
+    """
+
     def _default_tests(self, context: "Context") -> List[BoundTest]:
         return [eq(0).bind_single(self.get_fingerprint())]
 
@@ -296,6 +370,15 @@ class EmptyColumnsCountCalculation(DatasetSummarySingleValueCalculation[SingleVa
 
 
 class ConstantColumnsCount(SingleValueMetric):
+    """Count the number of constant columns (all values identical).
+
+    Identifies columns where every value is exactly the same.
+    These columns provide no information and should typically be removed.
+
+    Args:
+    * `tests`: Optional list of test conditions.
+    """
+
     def _default_tests(self, context: "Context") -> List[BoundTest]:
         return [eq(0).bind_single(self.get_fingerprint())]
 
@@ -325,6 +408,18 @@ class ConstantColumnsCountCalculation(DatasetSummarySingleValueCalculation[Singl
 
 
 class DatasetMissingValueCount(CountMetric):
+    """Count the total number and share of missing values across specified columns.
+
+    Calculates missing values (NaN, None, etc.) across multiple columns in the dataset.
+    Returns both total count and share (percentage) of missing values.
+    Displays missing value counts per column.
+
+    Args:
+    * `columns`: List of column names to analyze. Required.
+    * `tests`: Optional list of test conditions.
+    * `share_tests`: Optional list of tests for the share (percentage).
+    """
+
     def _default_tests(self, context: "Context") -> List[BoundTest]:
         return [eq(0).bind_count(self.get_fingerprint(), is_count=True)]
 

@@ -255,6 +255,11 @@ Project Description: {self.description}
         """
 
     def dict(self):
+        """Get the project as a dictionary.
+
+        Returns:
+        * Dictionary representation of the project model.
+        """
         return self._project.dict()
 
     @property
@@ -275,6 +280,14 @@ class _RemoteProjectDashboard(ProjectDashboard):
         return self._project_id
 
     def add_tab(self, tab: str):
+        """Add a new tab to the dashboard.
+
+        Args:
+        * `tab`: Name of the tab to add.
+
+        Raises:
+        * `EvidentlyError`: If a tab with the same name already exists.
+        """
         _dashboard_model = self.model()
         if any([t.title == tab for t in _dashboard_model.tabs]):
             raise EvidentlyError(f"Tab {tab} already exists in project {self._project_id} dashboard")
@@ -282,12 +295,27 @@ class _RemoteProjectDashboard(ProjectDashboard):
         self._workspace.save_dashboard(self.project_id, _dashboard_model)
 
     def delete_tab(self, tab: str):
+        """Delete a tab from the dashboard.
+
+        Args:
+        * `tab`: Name of the tab to delete.
+        """
         _dashboard_model = self.model()
         new_tabs = [t for t in _dashboard_model.tabs if t.title != tab]
         _dashboard_model.tabs = new_tabs
         self._workspace.save_dashboard(self.project_id, _dashboard_model)
 
     def add_panel(self, panel: DashboardPanelPlot, tab: Optional[str] = None, create_if_not_exists: bool = True):
+        """Add a panel to the dashboard.
+
+        Args:
+        * `panel`: `DashboardPanelPlot` to add.
+        * `tab`: Optional tab name to add the panel to. If `None`, adds to the first tab (or creates "General" tab if none exist).
+        * `create_if_not_exists`: If `True`, creates the tab if it doesn't exist. If `False`, raises an error.
+
+        Raises:
+        * `EvidentlyError`: If `create_if_not_exists` is `False` and the tab doesn't exist.
+        """
         _dashboard_model = self.model()
         _dashboard_model.panels.append(panel)
         _tab_id = None
@@ -318,6 +346,15 @@ class _RemoteProjectDashboard(ProjectDashboard):
         self._workspace.save_dashboard(self.project_id, _dashboard_model)
 
     def delete_panel(self, panel: str, tab: str):
+        """Delete a panel from a tab.
+
+        Args:
+        * `panel`: Title of the panel to delete.
+        * `tab`: Name of the tab containing the panel.
+
+        Raises:
+        * `EvidentlyError`: If the tab doesn't exist.
+        """
         _dashboard_model = self.model()
         _tab = None
         for t in _dashboard_model.tabs:
@@ -334,9 +371,22 @@ class _RemoteProjectDashboard(ProjectDashboard):
         self._workspace.save_dashboard(self.project_id, _dashboard_model)
 
     def model(self):
+        """Get the dashboard model.
+
+        Returns:
+        * `DashboardModel` with current dashboard configuration.
+        """
         return self._workspace.get_dashboard(self.project_id)
 
     def clear_tab(self, tab: str):
+        """Remove all panels from a tab.
+
+        Args:
+        * `tab`: Name of the tab to clear.
+
+        Raises:
+        * `EvidentlyError`: If the tab doesn't exist.
+        """
         _dashboard_model = self.model()
         _tab = None
         for t in _dashboard_model.tabs:
@@ -353,6 +403,7 @@ class _RemoteProjectDashboard(ProjectDashboard):
         self._workspace.save_dashboard(self.project_id, _dashboard_model)
 
     def clear_dashboard(self):
+        """Remove all panels and tabs from the dashboard."""
         _dashboard_model = self.model()
         _dashboard_model.panels = []
         _dashboard_model.tabs = []
@@ -360,9 +411,23 @@ class _RemoteProjectDashboard(ProjectDashboard):
 
 
 class SnapshotRef(BaseModel):
+    """Reference to a snapshot (run) with its URL and IDs.
+
+    Returned by `WorkspaceBase.add_run()` to provide access to the uploaded snapshot.
+    Contains the snapshot ID, project ID, and URL for viewing the snapshot.
+
+    Args:
+    * `id`: Snapshot ID.
+    * `project_id`: Project ID this snapshot belongs to.
+    * `url`: URL to view the snapshot.
+    """
+
     id: SnapshotID
+    """Snapshot ID."""
     project_id: ProjectID
+    """Project ID this snapshot belongs to."""
     url: str
+    """URL to view the snapshot."""
 
     def __repr__(self):
         return f"Report ID: {self.id}\nLink: {self.url}"
@@ -377,12 +442,30 @@ class SnapshotRef(BaseModel):
 
 
 class WorkspaceBase(ABC):
+    """Base class for workspace implementations.
+
+    Provides the interface for managing Evidently projects, runs (snapshots),
+    datasets, and dashboards. Implemented by `Workspace`, `RemoteWorkspace`, and `CloudWorkspace`.
+    """
+
     def create_project(
         self,
         name: str,
         description: Optional[str] = None,
         org_id: Optional[OrgID] = None,
     ) -> Project:
+        """Create a new project with the given name and description.
+
+        Convenience method that creates a `ProjectModel` and calls `add_project()`.
+
+        Args:
+        * `name`: Name of the project to create.
+        * `description`: Optional description for the project.
+        * `org_id`: Optional organization ID.
+
+        Returns:
+        * `Project`: The newly created project.
+        """
         project = self.add_project(
             ProjectModel(
                 name=name,
@@ -395,30 +478,83 @@ class WorkspaceBase(ABC):
 
     @abstractmethod
     def add_project(self, project: ProjectModel, org_id: Optional[OrgID] = None) -> Project:
+        """Add a new project to the workspace.
+
+        Args:
+        * `project`: `ProjectModel` with project data.
+        * `org_id`: Optional organization ID.
+
+        Returns:
+        * `Project`: The newly created project.
+        """
         raise NotImplementedError
 
     @abstractmethod
     def get_project(self, project_id: STR_UUID) -> Optional[Project]:
+        """Get a project by ID.
+
+        Args:
+        * `project_id`: UUID of the project to retrieve.
+
+        Returns:
+        * `Project` if found, `None` otherwise.
+        """
         raise NotImplementedError
 
     @abstractmethod
     def delete_project(self, project_id: STR_UUID):
+        """Delete a project from the workspace.
+
+        Args:
+        * `project_id`: UUID of the project to delete.
+        """
         raise NotImplementedError
 
     @abstractmethod
     def list_projects(self, org_id: Optional[OrgID] = None) -> Sequence[Project]:
+        """List all projects in the workspace.
+
+        Args:
+        * `org_id`: Optional organization ID to filter by.
+
+        Returns:
+        * Sequence of `Project` objects.
+        """
         raise NotImplementedError
 
     @abstractmethod
     def update_project(self, project: ProjectModel):
+        """Update an existing project.
+
+        Args:
+        * `project`: `ProjectModel` with updated data.
+        """
         raise NotImplementedError
 
     @abstractmethod
     def _add_run(self, project_id: STR_UUID, snapshot: Snapshot) -> SnapshotID:
+        """Internal method to add a snapshot to a project.
+
+        Args:
+        * `project_id`: UUID of the project.
+        * `snapshot`: `Snapshot` to add.
+
+        Returns:
+        * `SnapshotID` of the added snapshot.
+        """
         raise NotImplementedError
 
     @abstractmethod
     def _get_snapshot_url(self, project_id: STR_UUID, snapshot_id: STR_UUID) -> str:
+        """Get the URL for viewing a snapshot.
+
+        Args:
+        * `project_id`: UUID of the project.
+        * `snapshot_id`: UUID of the snapshot.
+
+        Returns:
+        * URL string for viewing the snapshot.
+        """
         raise NotImplementedError
 
     def add_run(
@@ -428,14 +564,19 @@ class WorkspaceBase(ABC):
         include_data: bool = False,
         name: Optional[str] = None,
     ) -> SnapshotRef:
-        """
+        """Add a snapshot (run) to a project.
+
+        Uploads a `Snapshot` to the specified project. Optionally includes
+        the input datasets if `include_data=True`.
+
         Args:
-            project_id: project ID
-            run: Run object for upload
-            include_data: if set to True - input data will be uploaded to server (if supported)
-            name: new name for run
+        * `project_id`: UUID of the project to add the run to.
+        * `run`: `Snapshot` object to upload.
+        * `include_data`: If `True`, uploads input datasets to the server (if supported).
+        * `name`: Optional name for the run (overrides snapshot name if provided).
+
         Returns:
-            snapshot reference object with ID of uploaded snapshot
+        * `SnapshotRef`: Reference object with snapshot ID, project ID, and URL.
         """
         if name is not None:
             run.set_name(name)
@@ -475,18 +616,50 @@ class WorkspaceBase(ABC):
 
     @abstractmethod
     def delete_run(self, project_id: STR_UUID, snapshot_id: STR_UUID):
+        """Delete a snapshot (run) from a project.
+
+        Args:
+        * `project_id`: UUID of the project.
+        * `snapshot_id`: UUID of the snapshot to delete.
+        """
         raise NotImplementedError
 
     @abstractmethod
     def get_run(self, project_id: STR_UUID, snapshot_id: STR_UUID) -> Optional[SnapshotModel]:
+        """Get a snapshot (run) by ID.
+
+        Args:
+        * `project_id`: UUID of the project.
+        * `snapshot_id`: UUID of the snapshot to retrieve.
+
+        Returns:
+        * `SnapshotModel` if found, `None` otherwise.
+        """
         raise NotImplementedError
 
     @abstractmethod
     def list_runs(self, project_id: STR_UUID) -> Sequence[SnapshotID]:
+        """List all snapshots (runs) for a project.
+
+        Args:
+        * `project_id`: UUID of the project.
+
+        Returns:
+        * Sequence of `SnapshotID` objects.
+        """
         raise NotImplementedError
 
     @abstractmethod
     def search_project(self, project_name: str, org_id: Optional[OrgID] = None) -> Sequence[Project]:
+        """Search for projects by name.
+
+        Args:
+        * `project_name`: Name or partial name to search for.
+        * `org_id`: Optional organization ID to filter by.
+
+        Returns:
+        * Sequence of matching `Project` objects.
+        """
         raise NotImplementedError
 
     @abstractmethod
@@ -498,20 +671,63 @@ class WorkspaceBase(ABC):
         description: Optional[str] = None,
         link: Optional[SnapshotLink] = None,
     ) -> DatasetID:
+        """Add a dataset to a project.
+
+        Args:
+        * `project_id`: UUID of the project.
+        * `dataset`: `Dataset` object to add.
+        * `name`: Name for the dataset.
+        * `description`: Optional description for the dataset.
+        * `link`: Optional `SnapshotLink` to associate dataset with a snapshot.
+
+        Returns:
+        * `DatasetID` of the added dataset.
+        """
         raise NotImplementedError
 
     def load_dataset(self, dataset_id: DatasetID) -> Dataset:
+        """Load a dataset by ID.
+
+        Args:
+        * `dataset_id`: UUID of the dataset to load.
+
+        Returns:
+        * `Dataset` object.
+        """
         raise NotImplementedError
 
     def list_datasets(self, project: STR_UUID, origins: Optional[List[str]] = None) -> DatasetList:
+        """List all datasets in a project.
+
+        Args:
+        * `project`: UUID of the project.
+        * `origins`: Optional list of origin types to filter by.
+
+        Returns:
+        * `DatasetList` containing dataset information.
+        """
         raise NotImplementedError
 
     @abc.abstractmethod
     def save_dashboard(self, project_id: ProjectID, dashboard: DashboardModel):
+        """Save dashboard configuration for a project.
+
+        Args:
+        * `project_id`: UUID of the project.
+        * `dashboard`: `DashboardModel` with dashboard configuration.
+        """
         raise NotImplementedError
 
     @abc.abstractmethod
     def get_dashboard(self, project_id: ProjectID) -> DashboardModel:
+        """Get dashboard configuration for a project.
+
+        Args:
+        * `project_id`: UUID of the project.
+
+        Returns:
+        * `DashboardModel` with current dashboard configuration.
+        """
         raise NotImplementedError
 
 
@@ -1278,9 +1494,22 @@ class CloudWorkspace(RemoteWorkspace):
             raise
 
     def create_org(self, name: str) -> Org:
+        """Create a new organization.
+
+        Args:
+        * `name`: Name of the organization.
+
+        Returns:
+        * `Org` object representing the created organization.
+        """
         return self._request("/api/orgs", "POST", body=Org(name=name).dict(), response_model=OrgModel).to_org()
 
     def list_orgs(self) -> List[Org]:
+        """List all organizations accessible to the current user.
+
+        Returns:
+        * List of `Org` objects.
+        """
         return [o.to_org() for o in self._request("/api/orgs", "GET", response_model=List[OrgModel])]
 
     def _get_snapshot_url(self, project_id: STR_UUID, snapshot_id: STR_UUID) -> str:

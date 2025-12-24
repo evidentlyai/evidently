@@ -126,9 +126,26 @@ class LegacyRegressionSingleValueMetric(
 
 
 class MeanError(MeanStdRegressionMetric):
+    """Calculate mean error and standard deviation of errors for regression.
+
+    Computes the average prediction error (prediction - target) and its standard deviation.
+    Positive values indicate over-prediction, negative values indicate under-prediction.
+
+    Args:
+    * `regression_name`: Name of the regression task (default: "default").
+    * `error_plot`: Whether to show error plot visualization (default: True).
+    * `error_distr`: Whether to show error distribution (default: False).
+    * `error_normality`: Whether to show error normality test (default: False).
+    * `mean_tests`: Optional list of test conditions for mean error.
+    * `std_tests`: Optional list of test conditions for standard deviation.
+    """
+
     error_plot: bool = True
+    """Whether to show error plot visualization."""
     error_distr: bool = False
+    """Whether to show error distribution."""
     error_normality: bool = False
+    """Whether to show error normality test."""
 
     def __init__(self, **kwargs):
         if "tests" in kwargs:
@@ -167,9 +184,26 @@ class MeanErrorCalculation(LegacyRegressionMeanStdMetric[MeanError]):
 
 
 class MAE(MeanStdRegressionMetric):
+    """Calculate Mean Absolute Error (MAE) for regression.
+
+    MAE measures the average magnitude of errors without considering direction.
+    Lower values indicate better performance. Returns both mean and standard deviation.
+
+    Args:
+    * `regression_name`: Name of the regression task (default: "default").
+    * `error_plot`: Whether to show error plot visualization (default: False).
+    * `error_distr`: Whether to show error distribution (default: True).
+    * `error_normality`: Whether to show error normality test (default: False).
+    * `mean_tests`: Optional list of test conditions for mean MAE.
+    * `std_tests`: Optional list of test conditions for standard deviation.
+    """
+
     error_plot: bool = False
+    """Whether to show error plot visualization."""
     error_distr: bool = True
+    """Whether to show error distribution."""
     error_normality: bool = False
+    """Whether to show error normality test."""
 
     def __init__(self, **kwargs):
         if "tests" in kwargs:
@@ -215,9 +249,25 @@ class MAECalculation(LegacyRegressionMeanStdMetric[MAE]):
 
 
 class RMSE(SingleValueRegressionMetric):
+    """Calculate Root Mean Squared Error (RMSE) for regression.
+
+    RMSE measures the square root of the average squared errors. It penalizes
+    large errors more than MAE. Lower values indicate better performance.
+
+    Args:
+    * `regression_name`: Name of the regression task (default: "default").
+    * `error_plot`: Whether to show error plot visualization (default: False).
+    * `error_distr`: Whether to show error distribution (default: True).
+    * `error_normality`: Whether to show error normality test (default: False).
+    * `tests`: Optional list of test conditions.
+    """
+
     error_plot: bool = False
+    """Whether to show error plot visualization."""
     error_distr: bool = True
+    """Whether to show error distribution."""
     error_normality: bool = False
+    """Whether to show error normality test."""
 
     def _default_tests_with_reference(self, context: Context) -> List[BoundTest]:
         return [eq(Reference(relative=0.1)).bind_single(self.get_fingerprint())]
@@ -241,8 +291,23 @@ class RMSECalculation(LegacyRegressionSingleValueMetric[RMSE]):
 
 
 class MAPE(MeanStdRegressionMetric):
+    """Calculate Mean Absolute Percentage Error (MAPE) for regression.
+
+    MAPE expresses errors as a percentage of the actual values, making it
+    scale-independent. Returns both mean and standard deviation. Lower values are better.
+
+    Args:
+    * `regression_name`: Name of the regression task (default: "default").
+    * `perc_error_plot`: Whether to show percentage error plot (default: True).
+    * `error_distr`: Whether to show error distribution (default: False).
+    * `mean_tests`: Optional list of test conditions for mean MAPE.
+    * `std_tests`: Optional list of test conditions for standard deviation.
+    """
+
     perc_error_plot: bool = True
+    """Whether to show percentage error plot."""
     error_distr: bool = False
+    """Whether to show error distribution."""
 
     def __init__(self, **kwargs):
         if "tests" in kwargs:
@@ -279,8 +344,23 @@ class MAPECalculation(LegacyRegressionMeanStdMetric[MAPE]):
 
 
 class R2Score(SingleValueRegressionMetric):
+    """Calculate R² (coefficient of determination) score for regression.
+
+    R² measures how well the model explains the variance in the target variable.
+    Values range from negative infinity to 1.0, with 1.0 being perfect fit.
+    Higher values indicate better performance.
+
+    Args:
+    * `regression_name`: Name of the regression task (default: "default").
+    * `error_distr`: Whether to show error distribution (default: False).
+    * `error_normality`: Whether to show error normality test (default: False).
+    * `tests`: Optional list of test conditions.
+    """
+
     error_distr: bool = False
+    """Whether to show error distribution."""
     error_normality: bool = False
+    """Whether to show error normality test."""
 
     def _default_tests(self, context: Context) -> List[BoundTest]:
         return [gt(0).bind_single(self.get_fingerprint())]
@@ -303,8 +383,22 @@ class R2ScoreCalculation(LegacyRegressionSingleValueMetric[R2Score]):
 
 
 class AbsMaxError(SingleValueRegressionMetric):
+    """Calculate the maximum absolute error for regression.
+
+    Returns the largest absolute error across all predictions. Useful for
+    identifying worst-case prediction errors.
+
+    Args:
+    * `regression_name`: Name of the regression task (default: "default").
+    * `error_distr`: Whether to show error distribution (default: False).
+    * `error_normality`: Whether to show error normality test (default: False).
+    * `tests`: Optional list of test conditions.
+    """
+
     error_distr: bool = False
+    """Whether to show error distribution."""
     error_normality: bool = False
+    """Whether to show error normality test."""
 
     def _default_tests_with_reference(self, context: Context) -> List[BoundTest]:
         return [eq(Reference(relative=0.1)).bind_single(self.get_fingerprint())]
@@ -360,6 +454,15 @@ class LegacyRegressionDummyValueMetric(
 
 
 class DummyMAE(SingleValueRegressionMetric):
+    """Calculate Mean Absolute Error for a dummy/baseline regression model.
+
+    Computes MAE using a simple baseline (e.g., always predict the mean).
+    Useful as a baseline to compare your model against.
+
+    Args:
+    * `regression_name`: Name of the regression task (default: "default").
+    """
+
     pass
 
 
@@ -379,6 +482,14 @@ class DummyMAECalculation(LegacyRegressionDummyValueMetric[DummyMAE]):
 
 
 class DummyMAPE(SingleValueRegressionMetric):
+    """Calculate Mean Absolute Percentage Error for a dummy/baseline regression model.
+
+    Computes MAPE using a simple baseline. Useful as a baseline to compare your model against.
+
+    Args:
+    * `regression_name`: Name of the regression task (default: "default").
+    """
+
     pass
 
 
@@ -398,6 +509,14 @@ class DummyMAPECalculation(LegacyRegressionDummyValueMetric[DummyMAPE]):
 
 
 class DummyRMSE(SingleValueRegressionMetric):
+    """Calculate Root Mean Squared Error for a dummy/baseline regression model.
+
+    Computes RMSE using a simple baseline. Useful as a baseline to compare your model against.
+
+    Args:
+    * `regression_name`: Name of the regression task (default: "default").
+    """
+
     pass
 
 

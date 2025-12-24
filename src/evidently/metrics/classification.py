@@ -142,6 +142,18 @@ class LegacyClassificationQualityByClass(
 
 
 class F1ByLabel(ClassificationQualityByLabel):
+    """Calculate F1 score separately for each class label in multiclass classification.
+
+    Returns a dictionary mapping each label to its F1 score. Useful for understanding
+    per-class performance in multiclass problems.
+
+    Args:
+    * `classification_name`: Name of the classification task (default: "default").
+    * `probas_threshold`: Optional probability threshold for binary classification.
+    * `k`: Optional top-k value for multiclass classification.
+    * `tests`: Optional list of test conditions.
+    """
+
     pass
 
 
@@ -164,6 +176,18 @@ class F1ByLabelCalculation(LegacyClassificationQualityByClass[F1ByLabel]):
 
 
 class PrecisionByLabel(ClassificationQualityByLabel):
+    """Calculate precision separately for each class label in multiclass classification.
+
+    Returns a dictionary mapping each label to its precision score. Useful for
+    understanding per-class precision in multiclass problems.
+
+    Args:
+    * `classification_name`: Name of the classification task (default: "default").
+    * `probas_threshold`: Optional probability threshold for binary classification.
+    * `k`: Optional top-k value for multiclass classification.
+    * `tests`: Optional list of test conditions.
+    """
+
     pass
 
 
@@ -186,6 +210,18 @@ class PrecisionByLabelCalculation(LegacyClassificationQualityByClass[PrecisionBy
 
 
 class RecallByLabel(ClassificationQualityByLabel):
+    """Calculate recall separately for each class label in multiclass classification.
+
+    Returns a dictionary mapping each label to its recall score. Useful for
+    understanding per-class recall in multiclass problems.
+
+    Args:
+    * `classification_name`: Name of the classification task (default: "default").
+    * `probas_threshold`: Optional probability threshold for binary classification.
+    * `k`: Optional top-k value for multiclass classification.
+    * `tests`: Optional list of test conditions.
+    """
+
     pass
 
 
@@ -208,6 +244,18 @@ class RecallByLabelCalculation(LegacyClassificationQualityByClass[RecallByLabel]
 
 
 class RocAucByLabel(ClassificationQualityByLabel):
+    """Calculate ROC AUC separately for each class label in multiclass classification.
+
+    Returns a dictionary mapping each label to its ROC AUC score. Useful for
+    understanding per-class ROC AUC in multiclass problems.
+
+    Args:
+    * `classification_name`: Name of the classification task (default: "default").
+    * `probas_threshold`: Optional probability threshold for binary classification.
+    * `k`: Optional top-k value for multiclass classification.
+    * `tests`: Optional list of test conditions.
+    """
+
     pass
 
 
@@ -277,7 +325,21 @@ class LegacyClassificationQuality(
 
 
 class F1Score(ClassificationQuality):
+    """Calculate F1 score (harmonic mean of precision and recall).
+
+    F1 score balances precision and recall, providing a single metric for
+    classification performance. Higher values indicate better performance.
+
+    Args:
+    * `classification_name`: Name of the classification task (default: "default").
+    * `probas_threshold`: Optional probability threshold for binary classification.
+    * `k`: Optional top-k value for multiclass classification.
+    * `conf_matrix`: Whether to show confusion matrix visualization (default: True).
+    * `tests`: Optional list of test conditions.
+    """
+
     conf_matrix: bool = True
+    """Whether to show confusion matrix visualization."""
 
     def _default_tests(self, context: Context) -> List[BoundTest]:
         dummy_value = self._get_dummy_value(context, DummyF1Score)
@@ -304,6 +366,18 @@ class F1ScoreCalculation(LegacyClassificationQuality[F1Score]):
 
 
 class Accuracy(ClassificationQuality):
+    """Calculate classification accuracy (proportion of correct predictions).
+
+    Accuracy measures the fraction of predictions that match the true labels.
+    Simple and intuitive, but can be misleading for imbalanced datasets.
+
+    Args:
+    * `classification_name`: Name of the classification task (default: "default").
+    * `probas_threshold`: Optional probability threshold for binary classification.
+    * `k`: Optional top-k value for multiclass classification.
+    * `tests`: Optional list of test conditions.
+    """
+
     def _default_tests(self, context: Context) -> List[BoundTest]:
         dummy_value = self._get_dummy_value(context, DummyAccuracy)
         return [gt(dummy_value.value).bind_single(self.get_fingerprint())]
@@ -329,9 +403,29 @@ class AccuracyCalculation(LegacyClassificationQuality[Accuracy]):
 
 
 class Precision(ClassificationQuality):
+    """Calculate precision (proportion of positive predictions that are correct).
+
+    Precision measures how many of the predicted positive cases are actually positive.
+    Useful when false positives are costly.
+
+    Args:
+    * `classification_name`: Name of the classification task (default: "default").
+    * `probas_threshold`: Optional probability threshold (default: 0.5 for probabilistic).
+    * `k`: Optional top-k value for multiclass classification.
+    * `conf_matrix`: Whether to show confusion matrix (default: True).
+    * `pr_curve`: Whether to show precision-recall curve (default: False).
+    * `pr_table`: Whether to show precision-recall table (default: False).
+    * `tests`: Optional list of test conditions.
+
+    Note: At least one visualization (`conf_matrix`, `pr_curve`, or `pr_table`) must be enabled.
+    """
+
     conf_matrix: bool = True
+    """Whether to show confusion matrix visualization."""
     pr_curve: bool = False
+    """Whether to show precision-recall curve."""
     pr_table: bool = False
+    """Whether to show precision-recall table."""
 
     def _default_tests(self, context: Context) -> List[BoundTest]:
         dummy_value = self._get_dummy_value(context, DummyPrecision)
@@ -358,9 +452,29 @@ class PrecisionCalculation(LegacyClassificationQuality[Precision]):
 
 
 class Recall(ClassificationQuality):
+    """Calculate recall (proportion of actual positives that are correctly identified).
+
+    Recall measures how many of the actual positive cases are correctly predicted.
+    Useful when false negatives are costly.
+
+    Args:
+    * `classification_name`: Name of the classification task (default: "default").
+    * `probas_threshold`: Optional probability threshold (default: 0.5 for probabilistic).
+    * `k`: Optional top-k value for multiclass classification.
+    * `conf_matrix`: Whether to show confusion matrix (default: True).
+    * `pr_curve`: Whether to show precision-recall curve (default: False).
+    * `pr_table`: Whether to show precision-recall table (default: False).
+    * `tests`: Optional list of test conditions.
+
+    Note: At least one visualization (`conf_matrix`, `pr_curve`, or `pr_table`) must be enabled.
+    """
+
     conf_matrix: bool = True
+    """Whether to show confusion matrix visualization."""
     pr_curve: bool = False
+    """Whether to show precision-recall curve."""
     pr_table: bool = False
+    """Whether to show precision-recall table."""
 
     def _default_tests(self, context: Context) -> List[BoundTest]:
         dummy_value = self._get_dummy_value(context, DummyRecall)
@@ -387,7 +501,23 @@ class RecallCalculation(LegacyClassificationQuality[Recall]):
 
 
 class TPR(ClassificationQuality):
+    """Calculate True Positive Rate (TPR), also known as recall or sensitivity.
+
+    TPR measures the proportion of actual positives correctly identified.
+    Equivalent to recall. Higher values indicate better detection of positive cases.
+
+    Args:
+    * `classification_name`: Name of the classification task (default: "default").
+    * `probas_threshold`: Optional probability threshold.
+    * `k`: Optional top-k value for multiclass classification.
+    * `pr_table`: Whether to show precision-recall table (default: False).
+    * `tests`: Optional list of test conditions.
+
+    Note: `pr_table` visualization must be enabled.
+    """
+
     pr_table: bool = False
+    """Whether to show precision-recall table."""
 
     def _default_tests(self, context: Context) -> List[BoundTest]:
         dummy_value = self._get_dummy_value(context, DummyTPR)
@@ -421,7 +551,23 @@ class TPRCalculation(LegacyClassificationQuality[TPR]):
 
 
 class TNR(ClassificationQuality):
+    """Calculate True Negative Rate (TNR), also known as specificity.
+
+    TNR measures the proportion of actual negatives correctly identified.
+    Higher values indicate better detection of negative cases.
+
+    Args:
+    * `classification_name`: Name of the classification task (default: "default").
+    * `probas_threshold`: Optional probability threshold.
+    * `k`: Optional top-k value for multiclass classification.
+    * `pr_table`: Whether to show precision-recall table (default: False).
+    * `tests`: Optional list of test conditions.
+
+    Note: `pr_table` visualization must be enabled.
+    """
+
     pr_table: bool = False
+    """Whether to show precision-recall table."""
 
     def _default_tests(self, context: Context) -> List[BoundTest]:
         dummy_value = self._get_dummy_value(context, DummyTNR)
@@ -455,7 +601,23 @@ class TNRCalculation(LegacyClassificationQuality[TNR]):
 
 
 class FPR(ClassificationQuality):
+    """Calculate False Positive Rate (FPR).
+
+    FPR measures the proportion of actual negatives incorrectly classified as positive.
+    Lower values are better. FPR = 1 - TNR.
+
+    Args:
+    * `classification_name`: Name of the classification task (default: "default").
+    * `probas_threshold`: Optional probability threshold.
+    * `k`: Optional top-k value for multiclass classification.
+    * `pr_table`: Whether to show precision-recall table (default: False).
+    * `tests`: Optional list of test conditions.
+
+    Note: `pr_table` visualization must be enabled.
+    """
+
     pr_table: bool = False
+    """Whether to show precision-recall table."""
 
     def _default_tests(self, context: Context) -> List[BoundTest]:
         dummy_value = self._get_dummy_value(context, DummyFPR)
@@ -489,7 +651,23 @@ class FPRCalculation(LegacyClassificationQuality[FPR]):
 
 
 class FNR(ClassificationQuality):
+    """Calculate False Negative Rate (FNR).
+
+    FNR measures the proportion of actual positives incorrectly classified as negative.
+    Lower values are better. FNR = 1 - TPR.
+
+    Args:
+    * `classification_name`: Name of the classification task (default: "default").
+    * `probas_threshold`: Optional probability threshold.
+    * `k`: Optional top-k value for multiclass classification.
+    * `pr_table`: Whether to show precision-recall table (default: False).
+    * `tests`: Optional list of test conditions.
+
+    Note: `pr_table` visualization must be enabled.
+    """
+
     pr_table: bool = False
+    """Whether to show precision-recall table."""
 
     def _default_tests(self, context: Context) -> List[BoundTest]:
         dummy_value = self._get_dummy_value(context, DummyFNR)
@@ -523,8 +701,26 @@ class FNRCalculation(LegacyClassificationQuality[FNR]):
 
 
 class RocAuc(ClassificationQuality):
+    """Calculate ROC AUC (Area Under the Receiver Operating Characteristic Curve).
+
+    ROC AUC measures the model's ability to distinguish between classes across
+    all possible thresholds. Values range from 0 to 1, with 0.5 being random and 1.0 perfect.
+
+    Args:
+    * `classification_name`: Name of the classification task (default: "default").
+    * `probas_threshold`: Optional probability threshold.
+    * `k`: Optional top-k value for multiclass classification.
+    * `roc_curve`: Whether to show ROC curve (default: True).
+    * `pr_table`: Whether to show precision-recall table (default: False).
+    * `tests`: Optional list of test conditions.
+
+    Note: At least one visualization (`roc_curve` or `pr_table`) must be enabled.
+    """
+
     roc_curve: bool = True
+    """Whether to show ROC curve."""
     pr_table: bool = False
+    """Whether to show precision-recall table."""
 
     def _default_tests(self, context: Context) -> List[BoundTest]:
         dummy_value = self._get_dummy_value(context, DummyRocAuc)
@@ -558,7 +754,23 @@ class RocAucCalculation(LegacyClassificationQuality[RocAuc]):
 
 
 class LogLoss(ClassificationQuality):
+    """Calculate logarithmic loss (cross-entropy loss).
+
+    Log loss penalizes confident wrong predictions more heavily. Lower values
+    indicate better calibrated probability predictions. Requires probability predictions.
+
+    Args:
+    * `classification_name`: Name of the classification task (default: "default").
+    * `probas_threshold`: Optional probability threshold.
+    * `k`: Optional top-k value for multiclass classification.
+    * `pr_table`: Whether to show precision-recall table (default: False).
+    * `tests`: Optional list of test conditions.
+
+    Note: `pr_table` visualization must be enabled. Requires probability predictions.
+    """
+
     pr_table: bool = False
+    """Whether to show precision-recall table."""
 
     def _default_tests(self, context: Context) -> List[BoundTest]:
         dummy_value = self._get_dummy_value(context, DummyLogLoss)
@@ -637,6 +849,17 @@ class DummyClassificationQuality(ClassificationQualityBase):
 
 
 class DummyPrecision(DummyClassificationQuality):
+    """Calculate precision for a dummy/baseline model.
+
+    Computes precision using a simple heuristic-based model (e.g., always predict
+    the most common class). Useful as a baseline to compare your model against.
+
+    Args:
+    * `classification_name`: Name of the classification task (default: "default").
+    * `probas_threshold`: Optional probability threshold.
+    * `k`: Optional top-k value for multiclass classification.
+    """
+
     pass
 
 
@@ -651,6 +874,17 @@ class DummyPrecisionCalculation(LegacyClassificationDummy[DummyPrecision]):
 
 
 class DummyRecall(DummyClassificationQuality):
+    """Calculate recall for a dummy/baseline model.
+
+    Computes recall using a simple heuristic-based model. Useful as a baseline
+    to compare your model against.
+
+    Args:
+    * `classification_name`: Name of the classification task (default: "default").
+    * `probas_threshold`: Optional probability threshold.
+    * `k`: Optional top-k value for multiclass classification.
+    """
+
     pass
 
 
@@ -662,6 +896,17 @@ class DummyRecallCalculation(LegacyClassificationDummy[DummyRecall]):
 
 
 class DummyF1Score(DummyClassificationQuality):
+    """Calculate F1 score for a dummy/baseline model.
+
+    Computes F1 score using a simple heuristic-based model. Useful as a baseline
+    to compare your model against.
+
+    Args:
+    * `classification_name`: Name of the classification task (default: "default").
+    * `probas_threshold`: Optional probability threshold.
+    * `k`: Optional top-k value for multiclass classification.
+    """
+
     pass
 
 
@@ -676,6 +921,17 @@ class DummyF1ScoreCalculation(LegacyClassificationDummy[DummyF1Score]):
 
 
 class DummyAccuracy(DummyClassificationQuality):
+    """Calculate accuracy for a dummy/baseline model.
+
+    Computes accuracy using a simple heuristic-based model (e.g., always predict
+    the most common class). Useful as a baseline to compare your model against.
+
+    Args:
+    * `classification_name`: Name of the classification task (default: "default").
+    * `probas_threshold`: Optional probability threshold.
+    * `k`: Optional top-k value for multiclass classification.
+    """
+
     pass
 
 
@@ -690,6 +946,17 @@ class DummyAccuracyCalculation(LegacyClassificationDummy[DummyAccuracy]):
 
 
 class DummyTPR(DummyClassificationQuality):
+    """Calculate True Positive Rate for a dummy/baseline model.
+
+    Computes TPR using a simple heuristic-based model. Useful as a baseline
+    to compare your model against.
+
+    Args:
+    * `classification_name`: Name of the classification task (default: "default").
+    * `probas_threshold`: Optional probability threshold.
+    * `k`: Optional top-k value for multiclass classification.
+    """
+
     pass
 
 
@@ -704,6 +971,17 @@ class DummyTPRCalculation(LegacyClassificationDummy[DummyTPR]):
 
 
 class DummyTNR(DummyClassificationQuality):
+    """Calculate True Negative Rate for a dummy/baseline model.
+
+    Computes TNR using a simple heuristic-based model. Useful as a baseline
+    to compare your model against.
+
+    Args:
+    * `classification_name`: Name of the classification task (default: "default").
+    * `probas_threshold`: Optional probability threshold.
+    * `k`: Optional top-k value for multiclass classification.
+    """
+
     pass
 
 
@@ -718,6 +996,17 @@ class DummyTNRCalculation(LegacyClassificationDummy[DummyTNR]):
 
 
 class DummyFPR(DummyClassificationQuality):
+    """Calculate False Positive Rate for a dummy/baseline model.
+
+    Computes FPR using a simple heuristic-based model. Useful as a baseline
+    to compare your model against.
+
+    Args:
+    * `classification_name`: Name of the classification task (default: "default").
+    * `probas_threshold`: Optional probability threshold.
+    * `k`: Optional top-k value for multiclass classification.
+    """
+
     pass
 
 
@@ -732,6 +1021,17 @@ class DummyFPRCalculation(LegacyClassificationDummy[DummyFPR]):
 
 
 class DummyFNR(DummyClassificationQuality):
+    """Calculate False Negative Rate for a dummy/baseline model.
+
+    Computes FNR using a simple heuristic-based model. Useful as a baseline
+    to compare your model against.
+
+    Args:
+    * `classification_name`: Name of the classification task (default: "default").
+    * `probas_threshold`: Optional probability threshold.
+    * `k`: Optional top-k value for multiclass classification.
+    """
+
     pass
 
 
@@ -746,6 +1046,17 @@ class DummyFNRCalculation(LegacyClassificationDummy[DummyFNR]):
 
 
 class DummyLogLoss(DummyClassificationQuality):
+    """Calculate logarithmic loss for a dummy/baseline model.
+
+    Computes log loss using a simple heuristic-based model (equals 0.5 for a
+    constant model). Useful as a baseline to compare your model against.
+
+    Args:
+    * `classification_name`: Name of the classification task (default: "default").
+    * `probas_threshold`: Optional probability threshold.
+    * `k`: Optional top-k value for multiclass classification.
+    """
+
     pass
 
 
@@ -760,6 +1071,17 @@ class DummyLogLossCalculation(LegacyClassificationDummy[DummyLogLoss]):
 
 
 class DummyRocAuc(DummyClassificationQuality):
+    """Calculate ROC AUC for a dummy/baseline model.
+
+    Computes ROC AUC using a simple heuristic-based model. Useful as a baseline
+    to compare your model against (typically 0.5 for random).
+
+    Args:
+    * `classification_name`: Name of the classification task (default: "default").
+    * `probas_threshold`: Optional probability threshold.
+    * `k`: Optional top-k value for multiclass classification.
+    """
+
     pass
 
 
