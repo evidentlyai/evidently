@@ -16,6 +16,7 @@ from evidently._pydantic_compat import BaseModel
 from evidently.legacy.ui.type_aliases import UserID
 from evidently.ui.service.datasets.metadata import DatasetTracingParams
 from evidently.ui.service.managers.datasets import DatasetManager
+from evidently.ui.service.tracing.storage.base import HumanFeedbackModel
 from evidently.ui.service.tracing.storage.base import SpanModel
 from evidently.ui.service.tracing.storage.base import TraceModel
 from evidently.ui.service.tracing.storage.base import TracingStorage
@@ -153,6 +154,23 @@ async def trace_sessions(
     return TraceSessionsResponse(sessions={"undefined": traces}, metadata=metadata)
 
 
+class AddHumanFeedbackRequest(BaseModel):
+    trace_id: str
+    feedback: HumanFeedbackModel
+
+
+@litestar.post("/human_feedback")
+async def add_human_feedback(
+    tracing_storage: TracingStorage,
+    dataset_manager: Annotated[DatasetManager, Dependency(skip_validation=True)],
+    user_id: UserID,
+    export_id: uuid.UUID,
+    data: AddHumanFeedbackRequest,
+) -> None:
+    await dataset_manager.get_dataset_metadata(user_id, export_id)
+    await tracing_storage.add_feedback(export_id, data.trace_id, data.feedback)
+
+
 async def _determine_session_info(traces: List[TraceModel]) -> DatasetTracingParams:
     sample = traces[:10]
     params = DatasetTracingParams()
@@ -226,5 +244,6 @@ def tracing_api() -> Router:
             trace_sessions,
             delete_trace,
             update_metadata,
+            add_human_feedback,
         ],
     )

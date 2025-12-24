@@ -32,6 +32,11 @@ class TraceModel(BaseModel):
     spans: List[SpanModel]
 
 
+class HumanFeedbackModel(BaseModel):
+    label: str
+    comment: Optional[str]
+
+
 ExportID: TypeAlias = uuid.UUID
 
 
@@ -81,6 +86,10 @@ class TracingStorage(abc.ABC):
     async def delete_trace(self, export_id: ExportID, trace_id: str) -> None:
         raise NotImplementedError()
 
+    @abc.abstractmethod
+    async def add_feedback(self, export_id: ExportID, trace_id: str, feedback: HumanFeedbackModel) -> None:
+        raise NotImplementedError()
+
 
 def _enrich_span_usage(span: SpanModel) -> None:
     if "openinference.span.kind" in span.attributes:  # assume this span is from openinference instrumentor
@@ -127,6 +136,9 @@ class NoopTracingStorage(TracingStorage):
 
     async def delete_trace(self, export_id: ExportID, trace_id: str) -> None:
         return
+
+    async def add_feedback(self, export_id: ExportID, trace_id: str, feedback: HumanFeedbackModel) -> None:
+        raise NotImplementedError()
 
     @classmethod
     def provide(cls) -> "TracingStorage":
