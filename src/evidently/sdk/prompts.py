@@ -35,31 +35,69 @@ PromptVersionIDInput = STR_UUID
 
 
 class PromptMetadata(BaseModel):
+    """Metadata for a prompt.
+
+    Stores creation/update timestamps and author information.
+    """
+
     created_at: datetime = Field(default_factory=datetime.now)
+    """Creation timestamp."""
     updated_at: datetime = Field(default_factory=datetime.now)
+    """Last update timestamp."""
     author: Optional[UserID] = None
+    """Optional user ID of the creator."""
 
 
 class Prompt(BaseModel):
+    """A prompt in the Evidently system.
+
+    Prompts are versioned objects that store prompt templates for LLM interactions.
+    Each prompt can have multiple versions to track changes over time.
+    """
+
     id: PromptID = ZERO_UUID
+    """Unique prompt identifier."""
     project_id: ProjectID = ZERO_UUID
+    """Project this prompt belongs to."""
     name: str
+    """Name of the prompt."""
     metadata: PromptMetadata = Field(default_factory=PromptMetadata)
+    """Metadata about the prompt."""
 
 
 class PromptVersionMetadata(BaseModel):
+    """Metadata for a prompt version.
+
+    Stores creation/update timestamps and author information for a specific version.
+    """
+
     created_at: datetime = Field(default_factory=datetime.now)
+    """Creation timestamp."""
     updated_at: datetime = Field(default_factory=datetime.now)
+    """Last update timestamp."""
     author: Optional[UserID] = None
+    """Optional user ID of the creator."""
 
 
 class PromptVersion(BaseModel):
+    """A version of a prompt.
+
+    Each prompt can have multiple versions, allowing you to track changes
+    over time and roll back if needed. Versions are numbered sequentially starting from 1.
+    """
+
     id: PromptVersionID = ZERO_UUID
+    """Unique version identifier."""
     prompt_id: PromptID = ZERO_UUID
+    """ID of the parent prompt."""
     version: int
+    """Version number (1, 2, 3, ...)."""
     metadata: PromptVersionMetadata = Field(default_factory=PromptVersionMetadata)
+    """Metadata about this version."""
     content: PromptContent
+    """The prompt content for this version."""
     content_type: PromptContentType
+    """Type of prompt content."""
 
     def __init__(
         self,
@@ -96,28 +134,89 @@ VersionOrLatest = Union[int, Literal["latest"]]
 
 
 class RemotePrompt(Prompt):
+    """Remote prompt with API access.
+
+    Provides methods to interact with a remote prompt through the API,
+    including version management and updates. Use `PromptAPI` to create
+    and manage remote prompts.
+    """
+
     _api: "PromptAPI" = PrivateAttr()
 
+    id: PromptID = ZERO_UUID
+    """Unique prompt identifier."""
+    project_id: ProjectID = ZERO_UUID
+    """Project this prompt belongs to."""
+    name: str
+    """Name of the prompt."""
+    metadata: PromptMetadata = Field(default_factory=PromptMetadata)
+    """Metadata about the prompt."""
+
     def bind(self, api: "PromptAPI") -> "RemotePrompt":
+        """Bind this prompt to an API instance.
+
+        Args:
+        * `api`: `PromptAPI` to use for operations.
+
+        Returns:
+        * Self for method chaining.
+        """
         self._api = api
         return self
 
     def list_versions(self) -> List[PromptVersion]:
+        """List all versions of this prompt.
+
+        Returns:
+        * List of `PromptVersion` objects.
+        """
         return self._api.list_versions(self.id)
 
     def get_version(self, version: VersionOrLatest = "latest") -> PromptVersion:
+        """Get a specific version of this prompt.
+
+        Args:
+        * `version`: Version number or `"latest"`.
+
+        Returns:
+        * `PromptVersion` for the specified version.
+        """
         return self._api.get_version(self.id, version)
 
     def bump_version(self, content: Any):
+        """Create a new version with the given content.
+
+        Args:
+        * `content`: Content to store in the new version.
+
+        Returns:
+        * New `PromptVersion` with incremented version number.
+        """
         return self._api.bump_prompt_version(self.id, content)
 
     def delete(self):
+        """Delete this prompt and all its versions.
+
+        This operation is irreversible and will permanently remove the prompt
+        and all associated versions from the workspace.
+        """
         return self._api.delete_prompt(self.id)
 
     def delete_version(self, version_id: PromptVersionID):
+        """Delete a specific version.
+
+        This operation is irreversible and will permanently remove the version.
+
+        Args:
+        * `version_id`: ID of the version to delete.
+        """
         return self._api.delete_version(version_id)
 
     def save(self):
+        """Save changes to this prompt's metadata to the remote workspace.
+
+        Updates the prompt's name and metadata fields. Does not affect versions.
+        """
         self._api.update_prompt(self)
 
 

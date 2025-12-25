@@ -20,6 +20,16 @@ DatasetGeneratorResult: TypeAlias = pd.DataFrame
 
 
 class BaseDatasetGenerator(AutoAliasMixin, EvidentlyBaseModel, ABC):
+    """Base class for dataset generators.
+
+    Dataset generators create synthetic datasets using various methods
+    (LLM-based, rule-based, etc.). Subclasses implement `agenerate()` to
+    produce a pandas DataFrame.
+
+    Args:
+    * `options`: Processing options.
+    """
+
     __alias_type__: ClassVar = "dataset_generator"
 
     class Config:
@@ -27,27 +37,66 @@ class BaseDatasetGenerator(AutoAliasMixin, EvidentlyBaseModel, ABC):
         extra = "forbid"
 
     options: Options
+    """Processing options."""
 
     @abstractmethod
     async def agenerate(self) -> DatasetGeneratorResult:
+        """Generate dataset asynchronously.
+
+        Returns:
+        * `pd.DataFrame` with generated data.
+        """
         raise NotImplementedError
 
     def generate(self) -> DatasetGeneratorResult:
+        """Generate dataset synchronously.
+
+        Wrapper around `agenerate()` that handles async execution.
+
+        Returns:
+        * `pd.DataFrame` with generated data.
+        """
         return async_to_sync(self.agenerate())
 
 
 class BaseLLMDatasetGenerator(BaseDatasetGenerator, ABC):
+    """Base class for LLM-based dataset generators.
+
+    Provides LLM wrapper management for generators that use language models
+    to create synthetic data.
+
+    Args:
+    * `provider`: LLM provider name (e.g., "openai", "anthropic").
+    * `model`: LLM model name (e.g., "gpt-4o-mini", "claude-3-sonnet").
+    * `options`: Processing options.
+    """
+
     provider: str
+    """LLM provider name."""
     model: str
+    """LLM model name."""
     _llm_wrapper: Optional[LLMWrapper] = PrivateAttr(None)
 
     def get_llm_wrapper(self, options: Options) -> LLMWrapper:
+        """Get or create the LLM wrapper for this generator.
+
+        Args:
+        * `options`: Processing options.
+
+        Returns:
+        * `LLMWrapper` instance for the configured provider/model.
+        """
         if self._llm_wrapper is None:
             self._llm_wrapper = get_llm_wrapper(self.provider, self.model, options)
         return self._llm_wrapper
 
     @property
     def wrapper(self):
+        """Get the LLM wrapper using the generator's options.
+
+        Returns:
+        * `LLMWrapper` instance.
+        """
         return self.get_llm_wrapper(self.options)
 
 

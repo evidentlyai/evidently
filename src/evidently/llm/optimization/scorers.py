@@ -34,7 +34,15 @@ if TYPE_CHECKING:
 
 
 class OptimizationScorer(BaseArgTypeRegistry, AutoAliasMixin, EvidentlyBaseModel, ABC):
-    """Abstract base class for optimization scorers."""
+    """Abstract base class for optimization scorers.
+
+    Scorers evaluate the quality of LLM outputs during prompt optimization,
+    computing metrics like accuracy, precision, F1, etc. across dataset splits.
+
+    Args:
+    * `context`: `OptimizerContext` containing datasets and configuration.
+    * `execution_log`: `PromptExecutionLog` with predictions to score.
+    """
 
     __alias_type__: ClassVar = "optimizer_scorer"
 
@@ -42,13 +50,43 @@ class OptimizationScorer(BaseArgTypeRegistry, AutoAliasMixin, EvidentlyBaseModel
         is_base_type = True
 
     def get_name(self) -> str:
+        """Get the name of this scorer.
+
+        Returns:
+        * Class name as string.
+        """
         return self.__class__.__name__
 
     @abstractmethod
     async def _score(self, predictions: pd.Series, target: pd.Series, options: Options) -> Optional[float]:
+        """Compute the score for predictions against targets.
+
+        Args:
+        * `predictions`: `pd.Series` with model predictions.
+        * `target`: `pd.Series` with target values.
+        * `options`: Processing options.
+
+        Returns:
+        * Score value, or `None` if score cannot be computed.
+        """
         raise NotImplementedError()
 
     async def score(self, context: OptimizerContext, execution_log: "PromptExecutionLog") -> Optional[Dict[str, float]]:
+        """Score predictions across dataset splits.
+
+        Computes scores for each split (train, val, test) if available,
+        or for all data if no splits are defined.
+
+        Args:
+        * `context`: `OptimizerContext` containing datasets and configuration.
+        * `execution_log`: `PromptExecutionLog` with predictions to score.
+
+        Returns:
+        * Dictionary mapping split names to scores.
+
+        Raises:
+        * `OptimizationConfigurationError`: If target values are missing.
+        """
         predictions = execution_log.result.get_predictions()
         if context.has_param(Params.Dataset):
             dataset = context.get_param(Params.Dataset, LLMDataset)
