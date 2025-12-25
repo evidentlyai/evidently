@@ -37,10 +37,7 @@ PromptVersionIDInput = STR_UUID
 class PromptMetadata(BaseModel):
     """Metadata for a prompt.
 
-    Args:
-    * `created_at`: Creation timestamp.
-    * `updated_at`: Last update timestamp.
-    * `author`: Optional user ID of the creator.
+    Stores creation/update timestamps and author information.
     """
 
     created_at: datetime = Field(default_factory=datetime.now)
@@ -55,12 +52,7 @@ class Prompt(BaseModel):
     """A prompt in the Evidently system.
 
     Prompts are versioned objects that store prompt templates for LLM interactions.
-
-    Args:
-    * `id`: Unique prompt identifier.
-    * `project_id`: Project this prompt belongs to.
-    * `name`: Name of the prompt.
-    * `metadata`: Metadata about the prompt.
+    Each prompt can have multiple versions to track changes over time.
     """
 
     id: PromptID = ZERO_UUID
@@ -76,10 +68,7 @@ class Prompt(BaseModel):
 class PromptVersionMetadata(BaseModel):
     """Metadata for a prompt version.
 
-    Args:
-    * `created_at`: Creation timestamp.
-    * `updated_at`: Last update timestamp.
-    * `author`: Optional user ID of the creator.
+    Stores creation/update timestamps and author information for a specific version.
     """
 
     created_at: datetime = Field(default_factory=datetime.now)
@@ -94,15 +83,7 @@ class PromptVersion(BaseModel):
     """A version of a prompt.
 
     Each prompt can have multiple versions, allowing you to track changes
-    over time and roll back if needed.
-
-    Args:
-    * `id`: Unique version identifier.
-    * `prompt_id`: ID of the parent prompt.
-    * `version`: Version number (1, 2, 3, ...).
-    * `metadata`: Metadata about this version.
-    * `content`: The prompt content for this version.
-    * `content_type`: Type of prompt content.
+    over time and roll back if needed. Versions are numbered sequentially starting from 1.
     """
 
     id: PromptVersionID = ZERO_UUID
@@ -156,13 +137,8 @@ class RemotePrompt(Prompt):
     """Remote prompt with API access.
 
     Provides methods to interact with a remote prompt through the API,
-    including version management and updates.
-
-    Args:
-    * `id`: Unique prompt identifier.
-    * `project_id`: Project this prompt belongs to.
-    * `name`: Name of the prompt.
-    * `metadata`: Metadata about the prompt.
+    including version management and updates. Use `PromptAPI` to create
+    and manage remote prompts.
     """
 
     _api: "PromptAPI" = PrivateAttr()
@@ -200,7 +176,7 @@ class RemotePrompt(Prompt):
         """Get a specific version of this prompt.
 
         Args:
-        * `version`: Version number or "latest".
+        * `version`: Version number or `"latest"`.
 
         Returns:
         * `PromptVersion` for the specified version.
@@ -219,11 +195,17 @@ class RemotePrompt(Prompt):
         return self._api.bump_prompt_version(self.id, content)
 
     def delete(self):
-        """Delete this prompt and all its versions."""
+        """Delete this prompt and all its versions.
+
+        This operation is irreversible and will permanently remove the prompt
+        and all associated versions from the workspace.
+        """
         return self._api.delete_prompt(self.id)
 
     def delete_version(self, version_id: PromptVersionID):
         """Delete a specific version.
+
+        This operation is irreversible and will permanently remove the version.
 
         Args:
         * `version_id`: ID of the version to delete.
@@ -231,7 +213,10 @@ class RemotePrompt(Prompt):
         return self._api.delete_version(version_id)
 
     def save(self):
-        """Save changes to this prompt's metadata."""
+        """Save changes to this prompt's metadata to the remote workspace.
+
+        Updates the prompt's name and metadata fields. Does not affect versions.
+        """
         self._api.update_prompt(self)
 
 

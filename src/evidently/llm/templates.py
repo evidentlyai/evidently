@@ -23,8 +23,9 @@ from evidently.pydantic_utils import EnumValueMixin
 class BaseLLMPromptTemplate(BlockPromptTemplate):
     """Base class for LLM prompt templates.
 
-    Provides common functionality for building prompts from data and extracting
-    structured outputs. Subclasses implement specific classification or generation tasks.
+    Abstract base class that provides common functionality for building prompts from data
+    and extracting structured outputs. Subclasses implement specific classification
+    or generation tasks.
     """
 
     class Config:
@@ -110,7 +111,7 @@ class BinaryClassificationPromptTemplate(BaseLLMPromptTemplate, EnumValueMixin):
     """Marker indicating where input text ends."""
 
     placeholders: Dict[str, str] = {}
-    """Additional placeholder values for template substitution."""
+    """Additional placeholder values for template substitution. Maps placeholder names to their values."""
     target_category: str
     """Name of the target/positive category."""
     non_target_category: str
@@ -126,7 +127,7 @@ class BinaryClassificationPromptTemplate(BaseLLMPromptTemplate, EnumValueMixin):
     include_score: bool = False
     """Whether to output confidence scores."""
     score_range: Tuple[float, float] = (0.0, 1.0)
-    """Min and max values for scores."""
+    """Min and max values for scores (default: (0.0, 1.0))."""
 
     output_column: str = "category"
     """Name of the category output column."""
@@ -222,22 +223,6 @@ class MulticlassClassificationPromptTemplate(BaseLLMPromptTemplate, EnumValueMix
 
     Generates prompts that classify text into multiple categories.
     Supports per-category scoring and optional reasoning outputs.
-
-    Args:
-    * `criteria`: Classification criteria or instructions.
-    * `instructions_template`: Template for classification instructions.
-    * `anchor_start`: Marker indicating where input text starts.
-    * `anchor_end`: Marker indicating where input text ends.
-    * `uncertainty`: Category name to use for uncertain classifications, or "UNKNOWN".
-    * `category_criteria`: Mapping from category names to their criteria descriptions.
-    * `include_category`: Whether to output category classification.
-    * `include_reasoning`: Whether to output reasoning text.
-    * `include_score`: Whether to output confidence scores per category.
-    * `score_range`: Min and max values for scores.
-    * `output_column`: Name of the category output column.
-    * `output_reasoning_column`: Name of the reasoning output column.
-    * `output_score_column_prefix`: Prefix for per-category score columns.
-    * `pre_messages`: Additional messages to prepend to the prompt.
     """
 
     criteria: str = ""
@@ -255,7 +240,7 @@ class MulticlassClassificationPromptTemplate(BaseLLMPromptTemplate, EnumValueMix
     """Category name to use for uncertain classifications, or "UNKNOWN"."""
 
     category_criteria: Dict[str, str] = {}
-    """Mapping from category names to their criteria descriptions."""
+    """Mapping from category names to their criteria descriptions. Each key is a category name, value is its description."""
 
     include_category: bool = True
     """Whether to output category classification."""
@@ -264,14 +249,14 @@ class MulticlassClassificationPromptTemplate(BaseLLMPromptTemplate, EnumValueMix
     include_score: bool = False
     """Whether to output confidence scores per category."""
     score_range: Tuple[float, float] = (0.0, 1.0)
-    """Min and max values for scores."""
+    """Min and max values for scores (default: (0.0, 1.0))."""
 
     output_column: str = "category"
     """Name of the category output column."""
     output_reasoning_column: str = "reasoning"
     """Name of the reasoning output column."""
     output_score_column_prefix: str = "score"
-    """Prefix for per-category score columns."""
+    """Prefix for per-category score columns. Final column names will be like "score_category1"."""
 
     pre_messages: List[LLMMessage] = Field(default_factory=list)
     """Additional messages to prepend to the prompt."""

@@ -323,7 +323,7 @@ class ConfigArtifactAdapter(ConfigAPI):
         Args:
         * `project_id`: Project ID.
         * `name`: Name of the descriptor config.
-        * `version`: Version number or "latest".
+        * `version`: Version number or `"latest"`.
 
         Returns:
         * `Descriptor` object from the config.

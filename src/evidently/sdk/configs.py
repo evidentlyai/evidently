@@ -44,13 +44,8 @@ class RemoteGenericConfig(GenericConfig):
     """Remote config that binds to ConfigAPI.
 
     Provides methods to interact with a remote config through the API,
-    including version management and updates.
-
-    Args:
-    * `id`: Unique config identifier.
-    * `project_id`: Project this config belongs to.
-    * `name`: Name of the config.
-    * `metadata`: Metadata about the config.
+    including version management and updates. Use `ConfigAPI` to create
+    and manage remote configs.
     """
 
     _api: "ConfigAPI" = PrivateAttr()
@@ -88,7 +83,7 @@ class RemoteGenericConfig(GenericConfig):
         """Get a specific version of this config.
 
         Args:
-        * `version`: Version number or "latest".
+        * `version`: Version number or `"latest"`.
 
         Returns:
         * `ConfigVersion` for the specified version.
@@ -107,11 +102,17 @@ class RemoteGenericConfig(GenericConfig):
         return self._api.bump_config_version(self.id, content)
 
     def delete(self):
-        """Delete this config and all its versions."""
+        """Delete this config and all its versions.
+
+        This operation is irreversible and will permanently remove the config
+        and all associated versions from the workspace.
+        """
         return self._api.delete_config(self.id)
 
     def delete_version(self, version_id: ConfigVersionID):
         """Delete a specific version.
+
+        This operation is irreversible and will permanently remove the version.
 
         Args:
         * `version_id`: ID of the version to delete.
@@ -119,7 +120,10 @@ class RemoteGenericConfig(GenericConfig):
         return self._api.delete_version(version_id)
 
     def save(self):
-        """Save changes to this config's metadata."""
+        """Save changes to this config's metadata to the remote workspace.
+
+        Updates the config's name and metadata fields. Does not affect versions.
+        """
         self._api.update_config(self)
 
 
@@ -207,9 +211,7 @@ class CloudConfigAPI(ConfigAPI):
     """Cloud-only config API that works with /api/configs endpoint.
 
     Uses backported Config models (which are actually Artifact models).
-
-    Args:
-    * `workspace`: `CloudWorkspace` to use for API calls.
+    Requires a `CloudWorkspace` instance.
     """
 
     def __init__(self, workspace: "CloudWorkspace"):
@@ -332,7 +334,7 @@ class CloudConfigAPI(ConfigAPI):
         Args:
         * `project_id`: Project ID.
         * `name`: Name of the descriptor config.
-        * `version`: Version number or "latest".
+        * `version`: Version number or `"latest"`.
 
         Returns:
         * `Descriptor` object from the config.

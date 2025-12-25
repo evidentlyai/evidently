@@ -125,11 +125,7 @@ def _parse_any_to_content(value: Any) -> ArtifactContent:
 class ArtifactMetadata(BaseModel):
     """Metadata for an artifact.
 
-    Args:
-    * `created_at`: Creation timestamp.
-    * `updated_at`: Last update timestamp.
-    * `author`: Optional user ID of the creator.
-    * `description`: Optional description of the artifact.
+    Stores creation/update timestamps, author information, and optional description.
     """
 
     created_at: datetime = Field(default_factory=datetime.now)
@@ -147,12 +143,6 @@ class Artifact(BaseModel):
 
     Artifacts are versioned objects that can store prompts, configs, descriptors,
     or other structured data. Each artifact has a name, metadata, and multiple versions.
-
-    Args:
-    * `id`: Unique artifact identifier.
-    * `project_id`: Project this artifact belongs to.
-    * `name`: Name of the artifact.
-    * `metadata`: Metadata about the artifact.
     """
 
     id: ArtifactID = ZERO_UUID
@@ -168,11 +158,8 @@ class Artifact(BaseModel):
 class ArtifactVersionMetadata(BaseModel):
     """Metadata for an artifact version.
 
-    Args:
-    * `created_at`: Creation timestamp.
-    * `updated_at`: Last update timestamp.
-    * `author`: Optional user ID of the creator.
-    * `comment`: Optional comment describing this version.
+    Stores creation/update timestamps, author information, and optional comment
+    describing the changes in this version.
     """
 
     created_at: datetime = Field(default_factory=datetime.now)
@@ -189,15 +176,7 @@ class ArtifactVersion(BaseModel):
     """A version of an artifact.
 
     Each artifact can have multiple versions, allowing you to track changes
-    over time and roll back if needed.
-
-    Args:
-    * `id`: Unique version identifier.
-    * `artifact_id`: ID of the parent artifact.
-    * `version`: Version number (1, 2, 3, ...).
-    * `metadata`: Metadata about this version.
-    * `content`: The artifact content for this version.
-    * `content_type`: Type of content stored.
+    over time and roll back if needed. Versions are numbered sequentially starting from 1.
     """
 
     id: ArtifactVersionID = ZERO_UUID
@@ -253,13 +232,8 @@ class RemoteArtifact(Artifact):
     """Remote artifact with API access.
 
     Provides methods to interact with a remote artifact through the API,
-    including version management and updates.
-
-    Args:
-    * `id`: Unique artifact identifier.
-    * `project_id`: Project this artifact belongs to.
-    * `name`: Name of the artifact.
-    * `metadata`: Metadata about the artifact.
+    including version management and updates. Use `ArtifactAPI` to create
+    and manage remote artifacts.
     """
 
     _api: "ArtifactAPI" = PrivateAttr()
@@ -297,7 +271,7 @@ class RemoteArtifact(Artifact):
         """Get a specific version of this artifact.
 
         Args:
-        * `version`: Version number or "latest".
+        * `version`: Version number or `"latest"`.
 
         Returns:
         * `ArtifactVersion` for the specified version.
@@ -316,11 +290,17 @@ class RemoteArtifact(Artifact):
         return self._api.bump_artifact_version(self.id, content)
 
     def delete(self):
-        """Delete this artifact and all its versions."""
+        """Delete this artifact and all its versions.
+
+        This operation is irreversible and will permanently remove the artifact
+        and all associated versions from the workspace.
+        """
         return self._api.delete_artifact(self.id)
 
     def delete_version(self, version_id: ArtifactVersionID):
         """Delete a specific version.
+
+        This operation is irreversible and will permanently remove the version.
 
         Args:
         * `version_id`: ID of the version to delete.
@@ -328,7 +308,10 @@ class RemoteArtifact(Artifact):
         return self._api.delete_version(version_id)
 
     def save(self):
-        """Save changes to this artifact's metadata."""
+        """Save changes to this artifact's metadata to the remote workspace.
+
+        Updates the artifact's name and metadata fields. Does not affect versions.
+        """
         self._api.update_artifact(self)
 
 

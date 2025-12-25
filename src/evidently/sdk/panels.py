@@ -15,7 +15,7 @@ def text_panel(
     Args:
     * `title`: Panel title.
     * `description`: Optional panel description/subtitle.
-    * `size`: Panel size (e.g., "full", "half").
+    * `size`: Panel size (e.g., `"full"`, `"half"`).
 
     Returns:
     * `DashboardPanelPlot` configured as a text panel.
@@ -44,8 +44,8 @@ def counter_panel(
     * `title`: Panel title.
     * `values`: List of `PanelMetric` objects to display.
     * `description`: Optional panel description/subtitle.
-    * `size`: Panel size (e.g., "full", "half").
-    * `aggregation`: Aggregation method for time series data (e.g., "last", "sum", "mean").
+    * `size`: Panel size (e.g., `"full"`, `"half"`).
+    * `aggregation`: Aggregation method for time series data (e.g., `"last"`, `"sum"`, `"mean"`).
 
     Returns:
     * `DashboardPanelPlot` configured as a counter panel.
@@ -74,7 +74,7 @@ def line_plot_panel(
     * `title`: Panel title.
     * `values`: List of `PanelMetric` objects to display.
     * `description`: Optional panel description/subtitle.
-    * `size`: Panel size (e.g., "full", "half").
+    * `size`: Panel size (e.g., `"full"`, `"half"`).
 
     Returns:
     * `DashboardPanelPlot` configured as a line plot panel.
@@ -103,7 +103,7 @@ def bar_plot_panel(
     * `title`: Panel title.
     * `values`: List of `PanelMetric` objects to display.
     * `description`: Optional panel description/subtitle.
-    * `size`: Panel size (e.g., "full", "half").
+    * `size`: Panel size (e.g., `"full"`, `"half"`).
     * `stacked`: Whether to stack bars on top of each other.
 
     Returns:
@@ -134,8 +134,8 @@ def pie_plot_panel(
     * `title`: Panel title.
     * `values`: List of `PanelMetric` objects to display.
     * `description`: Optional panel description/subtitle.
-    * `size`: Panel size (e.g., "full", "half").
-    * `aggregation`: Aggregation method for time series data (e.g., "last", "sum", "mean").
+    * `size`: Panel size (e.g., `"full"`, `"half"`).
+    * `aggregation`: Aggregation method for time series data (e.g., `"last"`, `"sum"`, `"mean"`).
 
     Returns:
     * `DashboardPanelPlot` configured as a pie chart panel.

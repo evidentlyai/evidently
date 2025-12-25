@@ -257,6 +257,8 @@ Project Description: {self.description}
     def dict(self):
         """Get the project as a dictionary.
 
+        Returns a dictionary representation suitable for serialization (JSON/YAML).
+
         Returns:
         * Dictionary representation of the project model.
         """

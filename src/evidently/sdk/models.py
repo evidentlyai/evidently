@@ -21,10 +21,8 @@ from evidently.legacy.ui.type_aliases import TabID
 class DashboardTabModel(BaseModel):
     """Model for a dashboard tab.
 
-    Args:
-    * `id`: Unique tab identifier.
-    * `title`: Optional tab title.
-    * `panels`: List of panel IDs in this tab.
+    Represents a single tab in a dashboard configuration. Tabs organize panels
+    into logical groups for better visualization organization.
     """
 
     id: TabID = Field(default_factory=uuid6.uuid7)
@@ -38,13 +36,8 @@ class DashboardTabModel(BaseModel):
 class PanelMetric(BaseModel):
     """Configuration for a metric displayed in a dashboard panel.
 
-    Args:
-    * `legend`: Optional legend text for the metric.
-    * `tags`: List of tags associated with the metric.
-    * `metadata`: Additional metadata as key-value pairs.
-    * `metric`: Metric identifier (e.g., "evidently:metric_v2:ColumnSummary").
-    * `metric_labels`: Labels for metric values.
-    * `view_params`: Parameters for customizing the metric view.
+    Specifies which metric to display and how it should be rendered. Used in
+    `DashboardPanelPlot.values` to configure what metrics appear in a panel.
     """
 
     legend: Optional[str] = None
@@ -54,11 +47,11 @@ class PanelMetric(BaseModel):
     metadata: Dict[str, str] = Field(default_factory=dict)
     """Additional metadata as key-value pairs."""
     metric: str
-    """Metric identifier (e.g., "evidently:metric_v2:ColumnSummary")."""
+    """Metric identifier (e.g., `"evidently:metric_v2:ColumnSummary"`)."""
     metric_labels: Dict[str, str] = Field(default_factory=dict)
-    """Labels for metric values."""
+    """Labels for metric values. Maps metric value keys to display labels."""
     view_params: Dict[str, Any] = Field(default_factory=dict)
-    """Parameters for customizing the metric view."""
+    """Parameters for customizing the metric view. Format depends on the metric type."""
 
     @validator("metric")
     def metric_is_alias(cls, v):
@@ -70,13 +63,9 @@ class PanelMetric(BaseModel):
 class DashboardPanelPlot(BaseModel):
     """Model for a dashboard panel displaying metrics.
 
-    Args:
-    * `id`: Unique panel identifier.
-    * `title`: Panel title.
-    * `subtitle`: Optional panel subtitle.
-    * `size`: Optional panel size specification.
-    * `values`: List of metrics to display in this panel.
-    * `plot_params`: Parameters for customizing the plot visualization.
+    Represents a single visualization panel in a dashboard. Panels can display
+    one or more metrics using various visualization types (text, counter, line plot, etc.).
+    Use panel factory functions like `text_panel` or `bar_plot_panel` to create instances.
     """
 
     id: PanelID = Field(default_factory=uuid6.uuid7)
@@ -88,34 +77,29 @@ class DashboardPanelPlot(BaseModel):
     size: Optional[str]
     """Optional panel size specification."""
     values: List[PanelMetric]
-    """List of metrics to display in this panel."""
+    """List of `PanelMetric` objects to display in this panel."""
     plot_params: Dict[str, Any] = Field(default_factory=dict)
-    """Parameters for customizing the plot visualization."""
+    """Parameters for customizing the plot visualization. Format depends on plot type (e.g., `plot_type`, `aggregation`, `is_stacked`)."""
 
 
 class DashboardModel(BaseModel):
     """Complete dashboard configuration.
 
-    Args:
-    * `tabs`: List of dashboard tabs.
-    * `panels`: List of dashboard panels.
+    Contains all tabs and panels that make up a project's dashboard. Used to
+    configure how metrics are organized and displayed in the UI.
     """
 
     tabs: List[DashboardTabModel]
-    """List of dashboard tabs."""
+    """List of `DashboardTabModel` objects representing dashboard tabs."""
     panels: List[DashboardPanelPlot]
-    """List of dashboard panels."""
+    """List of `DashboardPanelPlot` objects representing dashboard panels."""
 
 
 class ProjectModel(BaseModel):
     """Model for an Evidently project.
 
-    Args:
-    * `id`: Unique project identifier.
-    * `name`: Project name.
-    * `description`: Optional project description.
-    * `org_id`: Optional organization ID (for cloud workspaces).
-    * `version`: Project version string.
+    Represents a project that organizes evaluations, snapshots, and datasets.
+    Projects are the top-level organizational unit in Evidently workspaces.
     """
 
     id: ProjectID = Field(default_factory=new_id)
@@ -133,30 +117,23 @@ class ProjectModel(BaseModel):
 class SnapshotLink(BaseModel):
     """Link between a snapshot and a dataset.
 
-    Args:
-    * `snapshot_id`: ID of the snapshot.
-    * `dataset_type`: Type of dataset (e.g., "reference", "current").
-    * `dataset_subtype`: Subtype of dataset (e.g., "production", "training").
+    Associates a snapshot (evaluation run) with a dataset, specifying the dataset's
+    role (reference vs current) and subtype (e.g., production, training).
     """
 
     snapshot_id: SnapshotID
     """ID of the snapshot."""
     dataset_type: str
-    """Type of dataset (e.g., "reference", "current")."""
+    """Type of dataset (e.g., `"reference"`, `"current"`)."""
     dataset_subtype: str
-    """Subtype of dataset (e.g., "production", "training")."""
+    """Subtype of dataset (e.g., `"production"`, `"training"`)."""
 
 
 class SnapshotMetadataModel(BaseModel):
     """Metadata for a snapshot (evaluation run).
 
-    Args:
-    * `id`: Unique snapshot identifier.
-    * `name`: Optional snapshot name.
-    * `metadata`: Additional metadata as key-value pairs.
-    * `tags`: List of tags associated with the snapshot.
-    * `timestamp`: Timestamp when the snapshot was created.
-    * `links`: Links to datasets associated with this snapshot.
+    Contains information about a snapshot including its ID, name, tags, timestamp,
+    and links to associated datasets. Returned when listing or querying snapshots.
     """
 
     id: SnapshotID
@@ -170,4 +147,4 @@ class SnapshotMetadataModel(BaseModel):
     timestamp: datetime
     """Timestamp when the snapshot was created."""
     links: SnapshotLinks
-    """Links to datasets associated with this snapshot."""
+    """Links to datasets associated with this snapshot. Maps dataset types to `SnapshotLink` objects."""

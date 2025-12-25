@@ -28,19 +28,9 @@ if typing.TYPE_CHECKING:
 class DatasetInfo(BaseModel):
     """Information about a dataset stored in the workspace.
 
-    Args:
-    * `id`: Unique dataset identifier.
-    * `project_id`: Project this dataset belongs to.
-    * `name`: Name of the dataset.
-    * `size_bytes`: Size of the dataset in bytes.
-    * `row_count`: Number of rows in the dataset.
-    * `column_count`: Number of columns in the dataset.
-    * `description`: Description of the dataset.
-    * `created_at`: Creation timestamp.
-    * `author_name`: Optional name of the creator.
-    * `origin`: Origin/source of the dataset.
-    * `tags`: List of tags associated with the dataset.
-    * `metadata`: Additional metadata as key-value pairs.
+    Contains metadata about a dataset including its size, dimensions, origin,
+    and associated tags. Returned by `RemoteDatasetsManager.list` and used
+    to identify datasets before loading them.
     """
 
     id: DatasetID
@@ -72,8 +62,8 @@ class DatasetInfo(BaseModel):
 class DatasetList(BaseModel):
     """List of datasets with metadata.
 
-    Args:
-    * `datasets`: List of `DatasetInfo` objects.
+    Returned by `RemoteDatasetsManager.list` to provide information about
+    all datasets in a project, optionally filtered by origin.
     """
 
     datasets: List[DatasetInfo]
@@ -98,10 +88,7 @@ class RemoteDatasetsManager:
     """Manager for remote datasets stored in a workspace.
 
     Provides methods to list, load, and upload datasets to/from a remote workspace.
-
-    Args:
-    * `workspace`: `RemoteWorkspace` to use for API calls.
-    * `base_dataset_url`: Base URL path for dataset API endpoints.
+    Access via `RemoteWorkspace.datasets` property.
     """
 
     def __init__(self, workspace: "RemoteWorkspace", base_dataset_url: str):
@@ -109,7 +96,7 @@ class RemoteDatasetsManager:
 
         Args:
         * `workspace`: `RemoteWorkspace` to use for API calls.
-        * `base_dataset_url`: Base URL path for dataset API endpoints.
+        * `base_dataset_url`: Base URL path for dataset API endpoints (e.g., `"/api/datasets"`).
         """
         self._ws = workspace
         self._base_path = base_dataset_url
@@ -119,7 +106,7 @@ class RemoteDatasetsManager:
 
         Args:
         * `project`: Project ID.
-        * `origins`: Optional list of origin filters.
+        * `origins`: Optional list of origin filters (e.g., `["upload", "snapshot"]`).
 
         Returns:
         * `DatasetList` containing all matching datasets.
@@ -163,7 +150,7 @@ class RemoteDatasetsManager:
         * `dataset`: `Dataset` object to upload.
         * `name`: Name for the dataset.
         * `description`: Optional description.
-        * `link`: Optional link to associate with a snapshot.
+        * `link`: Optional `SnapshotLink` to associate with a snapshot.
 
         Returns:
         * `DatasetID` of the uploaded dataset.

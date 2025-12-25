@@ -9,10 +9,6 @@ class LLMMessage(FrozenBaseModel):
 
     Represents a single message with a role (e.g., "user", "system") and content.
     Used to build conversation histories for LLM interactions.
-
-    Args:
-    * `role`: Role of the message sender (e.g., "user", "system", "assistant").
-    * `content`: Text content of the message.
     """
 
     role: str
