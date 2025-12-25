@@ -270,16 +270,8 @@ All config classes are now aliases to artifact classes.</p>
             <div class="docstring"><p>Remote config that binds to ConfigAPI.</p>
 
 <p>Provides methods to interact with a remote config through the API,
-including version management and updates.</p>
-
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#RemoteGenericConfig.id">id</a></code>: Unique config identifier.</li>
-<li><code><a href="#RemoteGenericConfig.project_id">project_id</a></code>: Project this config belongs to.</li>
-<li><code><a href="#RemoteGenericConfig.name">name</a></code>: Name of the config.</li>
-<li><code><a href="#RemoteGenericConfig.metadata">metadata</a></code>: Metadata about the config.</li>
-</ul>
+including version management and updates. Use <code><a href="#ConfigAPI">ConfigAPI</a></code> to create
+and manage remote configs.</p>
 </div>
 
 
@@ -398,7 +390,7 @@ including version management and updates.</p>
 <p>Args:</p>
 
 <ul>
-<li><code>version</code>: Version number or "latest".</li>
+<li><code>version</code>: Version number or <code>"latest"</code>.</li>
 </ul>
 
 <p>Returns:</p>
@@ -448,6 +440,9 @@ including version management and updates.</p>
     <a class="headerlink" href="#RemoteGenericConfig.delete"></a>
     
             <div class="docstring"><p>Delete this config and all its versions.</p>
+
+<p>This operation is irreversible and will permanently remove the config
+and all associated versions from the workspace.</p>
 </div>
 
 
@@ -463,6 +458,8 @@ including version management and updates.</p>
     <a class="headerlink" href="#RemoteGenericConfig.delete_version"></a>
     
             <div class="docstring"><p>Delete a specific version.</p>
+
+<p>This operation is irreversible and will permanently remove the version.</p>
 
 <p>Args:</p>
 
@@ -483,7 +480,9 @@ including version management and updates.</p>
     </div>
     <a class="headerlink" href="#RemoteGenericConfig.save"></a>
     
-            <div class="docstring"><p>Save changes to this config's metadata.</p>
+            <div class="docstring"><p>Save changes to this config's metadata to the remote workspace.</p>
+
+<p>Updates the config's name and metadata fields. Does not affect versions.</p>
 </div>
 
 
@@ -501,13 +500,8 @@ including version management and updates.</p>
     
             <div class="docstring"><p>Cloud-only config API that works with /api/configs endpoint.</p>
 
-<p>Uses backported Config models (which are actually Artifact models).</p>
-
-<p>Args:</p>
-
-<ul>
-<li><code>workspace</code>: <code>CloudWorkspace</code> to use for API calls.</li>
-</ul>
+<p>Uses backported Config models (which are actually Artifact models).
+Requires a <code>CloudWorkspace</code> instance.</p>
 </div>
 
 
@@ -772,7 +766,7 @@ including version management and updates.</p>
 <ul>
 <li><code>project_id</code>: Project ID.</li>
 <li><code>name</code>: Name of the descriptor config.</li>
-<li><code>version</code>: Version number or "latest".</li>
+<li><code>version</code>: Version number or <code>"latest"</code>.</li>
 </ul>
 
 <p>Returns:</p>

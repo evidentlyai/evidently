@@ -333,13 +333,7 @@
     
             <div class="docstring"><p>Metadata for a prompt.</p>
 
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#PromptMetadata.created_at">created_at</a></code>: Creation timestamp.</li>
-<li><code><a href="#PromptMetadata.updated_at">updated_at</a></code>: Last update timestamp.</li>
-<li><code><a href="#PromptMetadata.author">author</a></code>: Optional user ID of the creator.</li>
-</ul>
+<p>Stores creation/update timestamps and author information.</p>
 </div>
 
 
@@ -395,16 +389,8 @@
     
             <div class="docstring"><p>A prompt in the Evidently system.</p>
 
-<p>Prompts are versioned objects that store prompt templates for LLM interactions.</p>
-
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#Prompt.id">id</a></code>: Unique prompt identifier.</li>
-<li><code><a href="#Prompt.project_id">project_id</a></code>: Project this prompt belongs to.</li>
-<li><code><a href="#Prompt.name">name</a></code>: Name of the prompt.</li>
-<li><code><a href="#Prompt.metadata">metadata</a></code>: Metadata about the prompt.</li>
-</ul>
+<p>Prompts are versioned objects that store prompt templates for LLM interactions.
+Each prompt can have multiple versions to track changes over time.</p>
 </div>
 
 
@@ -473,13 +459,7 @@
     
             <div class="docstring"><p>Metadata for a prompt version.</p>
 
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#PromptVersionMetadata.created_at">created_at</a></code>: Creation timestamp.</li>
-<li><code><a href="#PromptVersionMetadata.updated_at">updated_at</a></code>: Last update timestamp.</li>
-<li><code><a href="#PromptVersionMetadata.author">author</a></code>: Optional user ID of the creator.</li>
-</ul>
+<p>Stores creation/update timestamps and author information for a specific version.</p>
 </div>
 
 
@@ -536,18 +516,7 @@
             <div class="docstring"><p>A version of a prompt.</p>
 
 <p>Each prompt can have multiple versions, allowing you to track changes
-over time and roll back if needed.</p>
-
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#PromptVersion.id">id</a></code>: Unique version identifier.</li>
-<li><code><a href="#PromptVersion.prompt_id">prompt_id</a></code>: ID of the parent prompt.</li>
-<li><code><a href="#PromptVersion.version">version</a></code>: Version number (1, 2, 3, ...).</li>
-<li><code><a href="#PromptVersion.metadata">metadata</a></code>: Metadata about this version.</li>
-<li><code><a href="#PromptVersion.content">content</a></code>: The prompt content for this version.</li>
-<li><code><a href="#PromptVersion.content_type">content_type</a></code>: Type of prompt content.</li>
-</ul>
+over time and roll back if needed. Versions are numbered sequentially starting from 1.</p>
 </div>
 
 
@@ -671,16 +640,8 @@ over time and roll back if needed.</p>
             <div class="docstring"><p>Remote prompt with API access.</p>
 
 <p>Provides methods to interact with a remote prompt through the API,
-including version management and updates.</p>
-
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#RemotePrompt.id">id</a></code>: Unique prompt identifier.</li>
-<li><code><a href="#RemotePrompt.project_id">project_id</a></code>: Project this prompt belongs to.</li>
-<li><code><a href="#RemotePrompt.name">name</a></code>: Name of the prompt.</li>
-<li><code><a href="#RemotePrompt.metadata">metadata</a></code>: Metadata about the prompt.</li>
-</ul>
+including version management and updates. Use <code><a href="#PromptAPI">PromptAPI</a></code> to create
+and manage remote prompts.</p>
 </div>
 
 
@@ -799,7 +760,7 @@ including version management and updates.</p>
 <p>Args:</p>
 
 <ul>
-<li><code>version</code>: Version number or "latest".</li>
+<li><code>version</code>: Version number or <code>"latest"</code>.</li>
 </ul>
 
 <p>Returns:</p>
@@ -849,6 +810,9 @@ including version management and updates.</p>
     <a class="headerlink" href="#RemotePrompt.delete"></a>
     
             <div class="docstring"><p>Delete this prompt and all its versions.</p>
+
+<p>This operation is irreversible and will permanently remove the prompt
+and all associated versions from the workspace.</p>
 </div>
 
 
@@ -864,6 +828,8 @@ including version management and updates.</p>
     <a class="headerlink" href="#RemotePrompt.delete_version"></a>
     
             <div class="docstring"><p>Delete a specific version.</p>
+
+<p>This operation is irreversible and will permanently remove the version.</p>
 
 <p>Args:</p>
 
@@ -884,7 +850,9 @@ including version management and updates.</p>
     </div>
     <a class="headerlink" href="#RemotePrompt.save"></a>
     
-            <div class="docstring"><p>Save changes to this prompt's metadata.</p>
+            <div class="docstring"><p>Save changes to this prompt's metadata to the remote workspace.</p>
+
+<p>Updates the prompt's name and metadata fields. Does not affect versions.</p>
 </div>
 
 

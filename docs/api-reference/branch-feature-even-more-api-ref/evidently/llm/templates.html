@@ -240,8 +240,9 @@
     
             <div class="docstring"><p>Base class for LLM prompt templates.</p>
 
-<p>Provides common functionality for building prompts from data and extracting
-structured outputs. Subclasses implement specific classification or generation tasks.</p>
+<p>Abstract base class that provides common functionality for building prompts from data
+and extracting structured outputs. Subclasses implement specific classification
+or generation tasks.</p>
 </div>
 
 
@@ -530,7 +531,7 @@ Supports optional reasoning and scoring outputs.</p>
     </div>
     <a class="headerlink" href="#BinaryClassificationPromptTemplate.placeholders"></a>
     
-            <div class="docstring"><p>Additional placeholder values for template substitution.</p>
+            <div class="docstring"><p>Additional placeholder values for template substitution. Maps placeholder names to their values.</p>
 </div>
 
 
@@ -621,7 +622,7 @@ Supports optional reasoning and scoring outputs.</p>
     </div>
     <a class="headerlink" href="#BinaryClassificationPromptTemplate.score_range"></a>
     
-            <div class="docstring"><p>Min and max values for scores.</p>
+            <div class="docstring"><p>Min and max values for scores (default: (0.0, 1.0)).</p>
 </div>
 
 
@@ -813,25 +814,6 @@ Supports optional reasoning and scoring outputs.</p>
 
 <p>Generates prompts that classify text into multiple categories.
 Supports per-category scoring and optional reasoning outputs.</p>
-
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#MulticlassClassificationPromptTemplate.criteria">criteria</a></code>: Classification criteria or instructions.</li>
-<li><code><a href="#MulticlassClassificationPromptTemplate.instructions_template">instructions_template</a></code>: Template for classification instructions.</li>
-<li><code><a href="#MulticlassClassificationPromptTemplate.anchor_start">anchor_start</a></code>: Marker indicating where input text starts.</li>
-<li><code><a href="#MulticlassClassificationPromptTemplate.anchor_end">anchor_end</a></code>: Marker indicating where input text ends.</li>
-<li><code><a href="#MulticlassClassificationPromptTemplate.uncertainty">uncertainty</a></code>: Category name to use for uncertain classifications, or "UNKNOWN".</li>
-<li><code><a href="#MulticlassClassificationPromptTemplate.category_criteria">category_criteria</a></code>: Mapping from category names to their criteria descriptions.</li>
-<li><code><a href="#MulticlassClassificationPromptTemplate.include_category">include_category</a></code>: Whether to output category classification.</li>
-<li><code><a href="#MulticlassClassificationPromptTemplate.include_reasoning">include_reasoning</a></code>: Whether to output reasoning text.</li>
-<li><code><a href="#MulticlassClassificationPromptTemplate.include_score">include_score</a></code>: Whether to output confidence scores per category.</li>
-<li><code><a href="#MulticlassClassificationPromptTemplate.score_range">score_range</a></code>: Min and max values for scores.</li>
-<li><code><a href="#MulticlassClassificationPromptTemplate.output_column">output_column</a></code>: Name of the category output column.</li>
-<li><code><a href="#MulticlassClassificationPromptTemplate.output_reasoning_column">output_reasoning_column</a></code>: Name of the reasoning output column.</li>
-<li><code><a href="#MulticlassClassificationPromptTemplate.output_score_column_prefix">output_score_column_prefix</a></code>: Prefix for per-category score columns.</li>
-<li><code><a href="#MulticlassClassificationPromptTemplate.pre_messages">pre_messages</a></code>: Additional messages to prepend to the prompt.</li>
-</ul>
 </div>
 
 
@@ -908,7 +890,7 @@ Supports per-category scoring and optional reasoning outputs.</p>
     </div>
     <a class="headerlink" href="#MulticlassClassificationPromptTemplate.category_criteria"></a>
     
-            <div class="docstring"><p>Mapping from category names to their criteria descriptions.</p>
+            <div class="docstring"><p>Mapping from category names to their criteria descriptions. Each key is a category name, value is its description.</p>
 </div>
 
 
@@ -960,7 +942,7 @@ Supports per-category scoring and optional reasoning outputs.</p>
     </div>
     <a class="headerlink" href="#MulticlassClassificationPromptTemplate.score_range"></a>
     
-            <div class="docstring"><p>Min and max values for scores.</p>
+            <div class="docstring"><p>Min and max values for scores (default: (0.0, 1.0)).</p>
 </div>
 
 
@@ -999,7 +981,7 @@ Supports per-category scoring and optional reasoning outputs.</p>
     </div>
     <a class="headerlink" href="#MulticlassClassificationPromptTemplate.output_score_column_prefix"></a>
     
-            <div class="docstring"><p>Prefix for per-category score columns.</p>
+            <div class="docstring"><p>Prefix for per-category score columns. Final column names will be like "score_category1".</p>
 </div>
 
 

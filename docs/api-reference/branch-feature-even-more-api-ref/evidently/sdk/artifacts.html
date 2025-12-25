@@ -556,14 +556,7 @@ and versioning in the artifact system.</p>
     
             <div class="docstring"><p>Metadata for an artifact.</p>
 
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#ArtifactMetadata.created_at">created_at</a></code>: Creation timestamp.</li>
-<li><code><a href="#ArtifactMetadata.updated_at">updated_at</a></code>: Last update timestamp.</li>
-<li><code><a href="#ArtifactMetadata.author">author</a></code>: Optional user ID of the creator.</li>
-<li><code><a href="#ArtifactMetadata.description">description</a></code>: Optional description of the artifact.</li>
-</ul>
+<p>Stores creation/update timestamps, author information, and optional description.</p>
 </div>
 
 
@@ -634,15 +627,6 @@ and versioning in the artifact system.</p>
 
 <p>Artifacts are versioned objects that can store prompts, configs, descriptors,
 or other structured data. Each artifact has a name, metadata, and multiple versions.</p>
-
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#Artifact.id">id</a></code>: Unique artifact identifier.</li>
-<li><code><a href="#Artifact.project_id">project_id</a></code>: Project this artifact belongs to.</li>
-<li><code><a href="#Artifact.name">name</a></code>: Name of the artifact.</li>
-<li><code><a href="#Artifact.metadata">metadata</a></code>: Metadata about the artifact.</li>
-</ul>
 </div>
 
 
@@ -711,14 +695,8 @@ or other structured data. Each artifact has a name, metadata, and multiple versi
     
             <div class="docstring"><p>Metadata for an artifact version.</p>
 
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#ArtifactVersionMetadata.created_at">created_at</a></code>: Creation timestamp.</li>
-<li><code><a href="#ArtifactVersionMetadata.updated_at">updated_at</a></code>: Last update timestamp.</li>
-<li><code><a href="#ArtifactVersionMetadata.author">author</a></code>: Optional user ID of the creator.</li>
-<li><code><a href="#ArtifactVersionMetadata.comment">comment</a></code>: Optional comment describing this version.</li>
-</ul>
+<p>Stores creation/update timestamps, author information, and optional comment
+describing the changes in this version.</p>
 </div>
 
 
@@ -788,18 +766,7 @@ or other structured data. Each artifact has a name, metadata, and multiple versi
             <div class="docstring"><p>A version of an artifact.</p>
 
 <p>Each artifact can have multiple versions, allowing you to track changes
-over time and roll back if needed.</p>
-
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#ArtifactVersion.id">id</a></code>: Unique version identifier.</li>
-<li><code><a href="#ArtifactVersion.artifact_id">artifact_id</a></code>: ID of the parent artifact.</li>
-<li><code><a href="#ArtifactVersion.version">version</a></code>: Version number (1, 2, 3, ...).</li>
-<li><code><a href="#ArtifactVersion.metadata">metadata</a></code>: Metadata about this version.</li>
-<li><code><a href="#ArtifactVersion.content">content</a></code>: The artifact content for this version.</li>
-<li><code><a href="#ArtifactVersion.content_type">content_type</a></code>: Type of content stored.</li>
-</ul>
+over time and roll back if needed. Versions are numbered sequentially starting from 1.</p>
 </div>
 
 
@@ -923,16 +890,8 @@ over time and roll back if needed.</p>
             <div class="docstring"><p>Remote artifact with API access.</p>
 
 <p>Provides methods to interact with a remote artifact through the API,
-including version management and updates.</p>
-
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#RemoteArtifact.id">id</a></code>: Unique artifact identifier.</li>
-<li><code><a href="#RemoteArtifact.project_id">project_id</a></code>: Project this artifact belongs to.</li>
-<li><code><a href="#RemoteArtifact.name">name</a></code>: Name of the artifact.</li>
-<li><code><a href="#RemoteArtifact.metadata">metadata</a></code>: Metadata about the artifact.</li>
-</ul>
+including version management and updates. Use <code><a href="#ArtifactAPI">ArtifactAPI</a></code> to create
+and manage remote artifacts.</p>
 </div>
 
 
@@ -1051,7 +1010,7 @@ including version management and updates.</p>
 <p>Args:</p>
 
 <ul>
-<li><code>version</code>: Version number or "latest".</li>
+<li><code>version</code>: Version number or <code>"latest"</code>.</li>
 </ul>
 
 <p>Returns:</p>
@@ -1101,6 +1060,9 @@ including version management and updates.</p>
     <a class="headerlink" href="#RemoteArtifact.delete"></a>
     
             <div class="docstring"><p>Delete this artifact and all its versions.</p>
+
+<p>This operation is irreversible and will permanently remove the artifact
+and all associated versions from the workspace.</p>
 </div>
 
 
@@ -1116,6 +1078,8 @@ including version management and updates.</p>
     <a class="headerlink" href="#RemoteArtifact.delete_version"></a>
     
             <div class="docstring"><p>Delete a specific version.</p>
+
+<p>This operation is irreversible and will permanently remove the version.</p>
 
 <p>Args:</p>
 
@@ -1136,7 +1100,9 @@ including version management and updates.</p>
     </div>
     <a class="headerlink" href="#RemoteArtifact.save"></a>
     
-            <div class="docstring"><p>Save changes to this artifact's metadata.</p>
+            <div class="docstring"><p>Save changes to this artifact's metadata to the remote workspace.</p>
+
+<p>Updates the artifact's name and metadata fields. Does not affect versions.</p>
 </div>
 
 

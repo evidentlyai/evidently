@@ -201,13 +201,8 @@
     
             <div class="docstring"><p>Model for a dashboard tab.</p>
 
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#DashboardTabModel.id">id</a></code>: Unique tab identifier.</li>
-<li><code><a href="#DashboardTabModel.title">title</a></code>: Optional tab title.</li>
-<li><code><a href="#DashboardTabModel.panels">panels</a></code>: List of panel IDs in this tab.</li>
-</ul>
+<p>Represents a single tab in a dashboard configuration. Tabs organize panels
+into logical groups for better visualization organization.</p>
 </div>
 
 
@@ -263,16 +258,8 @@
     
             <div class="docstring"><p>Configuration for a metric displayed in a dashboard panel.</p>
 
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#PanelMetric.legend">legend</a></code>: Optional legend text for the metric.</li>
-<li><code><a href="#PanelMetric.tags">tags</a></code>: List of tags associated with the metric.</li>
-<li><code><a href="#PanelMetric.metadata">metadata</a></code>: Additional metadata as key-value pairs.</li>
-<li><code><a href="#PanelMetric.metric">metric</a></code>: Metric identifier (e.g., "evidently:metric_v2:ColumnSummary").</li>
-<li><code><a href="#PanelMetric.metric_labels">metric_labels</a></code>: Labels for metric values.</li>
-<li><code><a href="#PanelMetric.view_params">view_params</a></code>: Parameters for customizing the metric view.</li>
-</ul>
+<p>Specifies which metric to display and how it should be rendered. Used in
+<code><a href="#DashboardPanelPlot.values">DashboardPanelPlot.values</a></code> to configure what metrics appear in a panel.</p>
 </div>
 
 
@@ -323,7 +310,7 @@
     </div>
     <a class="headerlink" href="#PanelMetric.metric"></a>
     
-            <div class="docstring"><p>Metric identifier (e.g., "evidently:metric_v2:ColumnSummary").</p>
+            <div class="docstring"><p>Metric identifier (e.g., <code>"evidently:metric_v2:ColumnSummary"</code>).</p>
 </div>
 
 
@@ -336,7 +323,7 @@
     </div>
     <a class="headerlink" href="#PanelMetric.metric_labels"></a>
     
-            <div class="docstring"><p>Labels for metric values.</p>
+            <div class="docstring"><p>Labels for metric values. Maps metric value keys to display labels.</p>
 </div>
 
 
@@ -349,7 +336,7 @@
     </div>
     <a class="headerlink" href="#PanelMetric.view_params"></a>
     
-            <div class="docstring"><p>Parameters for customizing the metric view.</p>
+            <div class="docstring"><p>Parameters for customizing the metric view. Format depends on the metric type.</p>
 </div>
 
 
@@ -381,16 +368,9 @@
     
             <div class="docstring"><p>Model for a dashboard panel displaying metrics.</p>
 
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#DashboardPanelPlot.id">id</a></code>: Unique panel identifier.</li>
-<li><code><a href="#DashboardPanelPlot.title">title</a></code>: Panel title.</li>
-<li><code><a href="#DashboardPanelPlot.subtitle">subtitle</a></code>: Optional panel subtitle.</li>
-<li><code><a href="#DashboardPanelPlot.size">size</a></code>: Optional panel size specification.</li>
-<li><code><a href="#DashboardPanelPlot.values">values</a></code>: List of metrics to display in this panel.</li>
-<li><code><a href="#DashboardPanelPlot.plot_params">plot_params</a></code>: Parameters for customizing the plot visualization.</li>
-</ul>
+<p>Represents a single visualization panel in a dashboard. Panels can display
+one or more metrics using various visualization types (text, counter, line plot, etc.).
+Use panel factory functions like <code>text_panel</code> or <code>bar_plot_panel</code> to create instances.</p>
 </div>
 
 
@@ -454,7 +434,7 @@
     </div>
     <a class="headerlink" href="#DashboardPanelPlot.values"></a>
     
-            <div class="docstring"><p>List of metrics to display in this panel.</p>
+            <div class="docstring"><p>List of <code><a href="#PanelMetric">PanelMetric</a></code> objects to display in this panel.</p>
 </div>
 
 
@@ -467,7 +447,7 @@
     </div>
     <a class="headerlink" href="#DashboardPanelPlot.plot_params"></a>
     
-            <div class="docstring"><p>Parameters for customizing the plot visualization.</p>
+            <div class="docstring"><p>Parameters for customizing the plot visualization. Format depends on plot type (e.g., <code>plot_type</code>, <code>aggregation</code>, <code>is_stacked</code>).</p>
 </div>
 
 
@@ -485,12 +465,8 @@
     
             <div class="docstring"><p>Complete dashboard configuration.</p>
 
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#DashboardModel.tabs">tabs</a></code>: List of dashboard tabs.</li>
-<li><code><a href="#DashboardModel.panels">panels</a></code>: List of dashboard panels.</li>
-</ul>
+<p>Contains all tabs and panels that make up a project's dashboard. Used to
+configure how metrics are organized and displayed in the UI.</p>
 </div>
 
 
@@ -502,7 +478,7 @@
     </div>
     <a class="headerlink" href="#DashboardModel.tabs"></a>
     
-            <div class="docstring"><p>List of dashboard tabs.</p>
+            <div class="docstring"><p>List of <code><a href="#DashboardTabModel">DashboardTabModel</a></code> objects representing dashboard tabs.</p>
 </div>
 
 
@@ -515,7 +491,7 @@
     </div>
     <a class="headerlink" href="#DashboardModel.panels"></a>
     
-            <div class="docstring"><p>List of dashboard panels.</p>
+            <div class="docstring"><p>List of <code><a href="#DashboardPanelPlot">DashboardPanelPlot</a></code> objects representing dashboard panels.</p>
 </div>
 
 
@@ -533,15 +509,8 @@
     
             <div class="docstring"><p>Model for an Evidently project.</p>
 
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#ProjectModel.id">id</a></code>: Unique project identifier.</li>
-<li><code><a href="#ProjectModel.name">name</a></code>: Project name.</li>
-<li><code><a href="#ProjectModel.description">description</a></code>: Optional project description.</li>
-<li><code><a href="#ProjectModel.org_id">org_id</a></code>: Optional organization ID (for cloud workspaces).</li>
-<li><code><a href="#ProjectModel.version">version</a></code>: Project version string.</li>
-</ul>
+<p>Represents a project that organizes evaluations, snapshots, and datasets.
+Projects are the top-level organizational unit in Evidently workspaces.</p>
 </div>
 
 
@@ -623,13 +592,8 @@
     
             <div class="docstring"><p>Link between a snapshot and a dataset.</p>
 
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#SnapshotLink.snapshot_id">snapshot_id</a></code>: ID of the snapshot.</li>
-<li><code><a href="#SnapshotLink.dataset_type">dataset_type</a></code>: Type of dataset (e.g., "reference", "current").</li>
-<li><code><a href="#SnapshotLink.dataset_subtype">dataset_subtype</a></code>: Subtype of dataset (e.g., "production", "training").</li>
-</ul>
+<p>Associates a snapshot (evaluation run) with a dataset, specifying the dataset's
+role (reference vs current) and subtype (e.g., production, training).</p>
 </div>
 
 
@@ -654,7 +618,7 @@
     </div>
     <a class="headerlink" href="#SnapshotLink.dataset_type"></a>
     
-            <div class="docstring"><p>Type of dataset (e.g., "reference", "current").</p>
+            <div class="docstring"><p>Type of dataset (e.g., <code>"reference"</code>, <code>"current"</code>).</p>
 </div>
 
 
@@ -667,7 +631,7 @@
     </div>
     <a class="headerlink" href="#SnapshotLink.dataset_subtype"></a>
     
-            <div class="docstring"><p>Subtype of dataset (e.g., "production", "training").</p>
+            <div class="docstring"><p>Subtype of dataset (e.g., <code>"production"</code>, <code>"training"</code>).</p>
 </div>
 
 
@@ -685,16 +649,8 @@
     
             <div class="docstring"><p>Metadata for a snapshot (evaluation run).</p>
 
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#SnapshotMetadataModel.id">id</a></code>: Unique snapshot identifier.</li>
-<li><code><a href="#SnapshotMetadataModel.name">name</a></code>: Optional snapshot name.</li>
-<li><code><a href="#SnapshotMetadataModel.metadata">metadata</a></code>: Additional metadata as key-value pairs.</li>
-<li><code><a href="#SnapshotMetadataModel.tags">tags</a></code>: List of tags associated with the snapshot.</li>
-<li><code><a href="#SnapshotMetadataModel.timestamp">timestamp</a></code>: Timestamp when the snapshot was created.</li>
-<li><code><a href="#SnapshotMetadataModel.links">links</a></code>: Links to datasets associated with this snapshot.</li>
-</ul>
+<p>Contains information about a snapshot including its ID, name, tags, timestamp,
+and links to associated datasets. Returned when listing or querying snapshots.</p>
 </div>
 
 
@@ -771,7 +727,7 @@
     </div>
     <a class="headerlink" href="#SnapshotMetadataModel.links"></a>
     
-            <div class="docstring"><p>Links to datasets associated with this snapshot.</p>
+            <div class="docstring"><p>Links to datasets associated with this snapshot. Maps dataset types to <code><a href="#SnapshotLink">SnapshotLink</a></code> objects.</p>
 </div>
 
 

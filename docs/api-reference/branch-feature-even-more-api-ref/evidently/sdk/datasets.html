@@ -132,22 +132,9 @@
     
             <div class="docstring"><p>Information about a dataset stored in the workspace.</p>
 
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#DatasetInfo.id">id</a></code>: Unique dataset identifier.</li>
-<li><code><a href="#DatasetInfo.project_id">project_id</a></code>: Project this dataset belongs to.</li>
-<li><code><a href="#DatasetInfo.name">name</a></code>: Name of the dataset.</li>
-<li><code><a href="#DatasetInfo.size_bytes">size_bytes</a></code>: Size of the dataset in bytes.</li>
-<li><code><a href="#DatasetInfo.row_count">row_count</a></code>: Number of rows in the dataset.</li>
-<li><code><a href="#DatasetInfo.column_count">column_count</a></code>: Number of columns in the dataset.</li>
-<li><code><a href="#DatasetInfo.description">description</a></code>: Description of the dataset.</li>
-<li><code><a href="#DatasetInfo.created_at">created_at</a></code>: Creation timestamp.</li>
-<li><code><a href="#DatasetInfo.author_name">author_name</a></code>: Optional name of the creator.</li>
-<li><code><a href="#DatasetInfo.origin">origin</a></code>: Origin/source of the dataset.</li>
-<li><code><a href="#DatasetInfo.tags">tags</a></code>: List of tags associated with the dataset.</li>
-<li><code><a href="#DatasetInfo.metadata">metadata</a></code>: Additional metadata as key-value pairs.</li>
-</ul>
+<p>Contains metadata about a dataset including its size, dimensions, origin,
+and associated tags. Returned by <code><a href="#RemoteDatasetsManager.list">RemoteDatasetsManager.list</a></code> and used
+to identify datasets before loading them.</p>
 </div>
 
 
@@ -320,11 +307,8 @@
     
             <div class="docstring"><p>List of datasets with metadata.</p>
 
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#DatasetList.datasets">datasets</a></code>: List of <code><a href="#DatasetInfo">DatasetInfo</a></code> objects.</li>
-</ul>
+<p>Returned by <code><a href="#RemoteDatasetsManager.list">RemoteDatasetsManager.list</a></code> to provide information about
+all datasets in a project, optionally filtered by origin.</p>
 </div>
 
 
@@ -354,14 +338,8 @@
     
             <div class="docstring"><p>Manager for remote datasets stored in a workspace.</p>
 
-<p>Provides methods to list, load, and upload datasets to/from a remote workspace.</p>
-
-<p>Args:</p>
-
-<ul>
-<li><code>workspace</code>: <code>RemoteWorkspace</code> to use for API calls.</li>
-<li><code>base_dataset_url</code>: Base URL path for dataset API endpoints.</li>
-</ul>
+<p>Provides methods to list, load, and upload datasets to/from a remote workspace.
+Access via <code>RemoteWorkspace.datasets</code> property.</p>
 </div>
 
 
@@ -380,7 +358,7 @@
 
 <ul>
 <li><code>workspace</code>: <code>RemoteWorkspace</code> to use for API calls.</li>
-<li><code>base_dataset_url</code>: Base URL path for dataset API endpoints.</li>
+<li><code>base_dataset_url</code>: Base URL path for dataset API endpoints (e.g., <code>"/api/datasets"</code>).</li>
 </ul>
 </div>
 
@@ -402,7 +380,7 @@
 
 <ul>
 <li><code>project</code>: Project ID.</li>
-<li><code>origins</code>: Optional list of origin filters.</li>
+<li><code>origins</code>: Optional list of origin filters (e.g., <code>["upload", "snapshot"]</code>).</li>
 </ul>
 
 <p>Returns:</p>
@@ -460,7 +438,7 @@
 <li><code>dataset</code>: <code>Dataset</code> object to upload.</li>
 <li><code>name</code>: Name for the dataset.</li>
 <li><code>description</code>: Optional description.</li>
-<li><code>link</code>: Optional link to associate with a snapshot.</li>
+<li><code>link</code>: Optional <code>SnapshotLink</code> to associate with a snapshot.</li>
 </ul>
 
 <p>Returns:</p>
