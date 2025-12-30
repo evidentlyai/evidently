@@ -1,4 +1,3 @@
-import logging
 import uuid
 from datetime import datetime
 from typing import Any
@@ -224,7 +223,7 @@ class SQLTracingStorage(BaseSQLStorage, TracingStorage):
             )
             session.commit()
 
-    async def add_feedback(self, export_id: ExportID, trace_id: str, feedback: HumanFeedbackModel) -> None:
+    async def add_feedback(self, export_id: ExportID, trace_id: str, feedback: HumanFeedbackModel) -> str:
         with self.session as session:
             stmt = select(TraceSpanModel).where(
                 TraceSpanModel.trace_id == uuid.UUID(trace_id),
@@ -232,14 +231,13 @@ class SQLTracingStorage(BaseSQLStorage, TracingStorage):
                 TraceSpanModel.parent_span_id == "",
             )
             data = session.scalar(stmt)
-            logging.info(repr(data.span_attributes))
             new_attributes = data.span_attributes.copy()
 
             new_attributes["human_feedback_label"] = feedback.label
             new_attributes["human_feedback_comment"] = feedback.comment
             data.span_attributes = new_attributes
-            logging.info(repr(data.span_attributes))
             session.commit()
+            return data.span_name
 
 
 def _collect_trace(data: Sequence[TraceSpanModel]) -> List[TraceModel]:

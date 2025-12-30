@@ -87,7 +87,17 @@ class TracingStorage(abc.ABC):
         raise NotImplementedError()
 
     @abc.abstractmethod
-    async def add_feedback(self, export_id: ExportID, trace_id: str, feedback: HumanFeedbackModel) -> None:
+    async def add_feedback(self, export_id: ExportID, trace_id: str, feedback: HumanFeedbackModel) -> str:
+        """
+        adds a feedback to the trace for given export_id
+        Args:
+            export_id:
+            trace_id:
+            feedback:
+
+        Returns:
+            span name where the feedback was added
+        """
         raise NotImplementedError()
 
 
@@ -137,7 +147,7 @@ class NoopTracingStorage(TracingStorage):
     async def delete_trace(self, export_id: ExportID, trace_id: str) -> None:
         return
 
-    async def add_feedback(self, export_id: ExportID, trace_id: str, feedback: HumanFeedbackModel) -> None:
+    async def add_feedback(self, export_id: ExportID, trace_id: str, feedback: HumanFeedbackModel) -> str:
         raise NotImplementedError()
 
     @classmethod

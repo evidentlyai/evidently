@@ -1,3 +1,4 @@
+import logging
 import uuid
 from collections import defaultdict
 from enum import Enum
@@ -13,6 +14,7 @@ from litestar.params import Dependency
 from opentelemetry.proto.collector.trace.v1 import trace_service_pb2
 
 from evidently._pydantic_compat import BaseModel
+from evidently.core.datasets import ServiceColumns
 from evidently.legacy.ui.type_aliases import UserID
 from evidently.ui.service.datasets.metadata import DatasetTracingParams
 from evidently.ui.service.managers.datasets import DatasetManager
@@ -167,8 +169,27 @@ async def add_human_feedback(
     export_id: uuid.UUID,
     data: AddHumanFeedbackRequest,
 ) -> None:
-    await dataset_manager.get_dataset_metadata(user_id, export_id)
-    await tracing_storage.add_feedback(export_id, data.trace_id, data.feedback)
+    metadata = await dataset_manager.get_dataset_metadata(user_id, export_id)
+    span_name = await tracing_storage.add_feedback(export_id, data.trace_id, data.feedback)
+    data_definition = metadata.data_definition
+    if data_definition.service_columns is None:
+        data_definition.service_columns = ServiceColumns()
+    if (
+        data_definition.service_columns.human_feedback_label is None
+        or not data_definition.service_columns.human_feedback_label.startswith(span_name)
+    ):
+        if (
+            data_definition.service_columns.human_feedback_label
+            and data_definition.service_columns.human_feedback_label.startswith(span_name)
+        ):
+            logging.warning(
+                f"{metadata.name} dataset has different human feedback label:"
+                f" was: {data_definition.service_columns.human_feedback_label}, but expected:"
+                f" {span_name}.human_feedback_label. Replacing it with a new one..."
+            )
+        data_definition.service_columns.human_feedback_label = f"{span_name}.human_feedback_label"
+        data_definition.service_columns.human_feedback_comment = f"{span_name}.human_feedback_comment"
+        await dataset_manager.update_dataset(user_id, export_id, None, None, data_definition, None, None)
 
 
 async def _determine_session_info(traces: List[TraceModel]) -> DatasetTracingParams:

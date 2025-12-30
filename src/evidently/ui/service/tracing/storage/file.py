@@ -471,7 +471,7 @@ class FileTracingStorage(TracingStorage):
                     f_out.write(line)
             self.location.rmtree(temp_file_path)
 
-    async def add_feedback(self, export_id: ExportID, trace_id: str, feedback: HumanFeedbackModel) -> None:
+    async def add_feedback(self, export_id: ExportID, trace_id: str, feedback: HumanFeedbackModel) -> str:
         """Add a feedback to the trace."""
         raise NotImplementedError()
 
