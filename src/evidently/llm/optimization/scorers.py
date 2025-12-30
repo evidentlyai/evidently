@@ -38,10 +38,6 @@ class OptimizationScorer(BaseArgTypeRegistry, AutoAliasMixin, EvidentlyBaseModel
 
     Scorers evaluate the quality of LLM outputs during prompt optimization,
     computing metrics like accuracy, precision, F1, etc. across dataset splits.
-
-    Args:
-    * `context`: `OptimizerContext` containing datasets and configuration.
-    * `execution_log`: `PromptExecutionLog` with predictions to score.
     """
 
     __alias_type__: ClassVar = "optimizer_scorer"

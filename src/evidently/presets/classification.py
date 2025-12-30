@@ -50,23 +50,6 @@ class ClassificationQuality(MetricContainer):
     F1 score, ROC AUC, log loss, and binary classification rates (TPR, TNR, FPR, FNR).
     Optionally includes visualizations like confusion matrix, PR curve, and PR table.
 
-    Args:
-    * `classification_name`: Name of the classification task (default: "default").
-    * `probas_threshold`: Optional probability threshold for binary classification.
-    * `conf_matrix`: Whether to show confusion matrix visualization (default: False).
-    * `pr_curve`: Whether to show precision-recall curve (default: False).
-    * `pr_table`: Whether to show precision-recall table (default: False).
-    * `accuracy_tests`: Optional test conditions for accuracy.
-    * `precision_tests`: Optional test conditions for precision.
-    * `recall_tests`: Optional test conditions for recall.
-    * `f1score_tests`: Optional test conditions for F1 score.
-    * `rocauc_tests`: Optional test conditions for ROC AUC.
-    * `logloss_tests`: Optional test conditions for log loss.
-    * `tpr_tests`: Optional test conditions for TPR.
-    * `tnr_tests`: Optional test conditions for TNR.
-    * `fpr_tests`: Optional test conditions for FPR.
-    * `fnr_tests`: Optional test conditions for FNR.
-    * `include_tests`: Whether to include automatic tests (default: True).
     """
 
     classification_name: str = "default"
@@ -249,15 +232,6 @@ class ClassificationQualityByLabel(MetricContainer):
     Generates per-class metrics for multiclass classification including F1, precision,
     recall, and ROC AUC for each label. Useful for understanding per-class performance.
 
-    Args:
-    * `classification_name`: Name of the classification task (default: "default").
-    * `probas_threshold`: Optional probability threshold for binary classification.
-    * `k`: Optional top-k value for multiclass classification.
-    * `f1score_tests`: Optional test conditions for F1 score by label.
-    * `precision_tests`: Optional test conditions for precision by label.
-    * `recall_tests`: Optional test conditions for recall by label.
-    * `rocauc_tests`: Optional test conditions for ROC AUC by label.
-    * `include_tests`: Whether to include automatic tests (default: True).
     """
 
     probas_threshold: Optional[float] = None
@@ -354,11 +328,6 @@ class ClassificationDummyQuality(MetricContainer):
     Generates metrics for a simple heuristic-based baseline model (e.g., always predict
     the most common class). Useful as a baseline to compare your model against.
 
-    Args:
-    * `classification_name`: Name of the classification task (default: "default").
-    * `probas_threshold`: Optional probability threshold.
-    * `k`: Optional top-k value for multiclass classification.
-    * `include_tests`: Whether to include automatic tests (default: True).
     """
 
     probas_threshold: Optional[float] = None
@@ -409,24 +378,6 @@ class ClassificationPreset(MetricContainer):
     a complete classification evaluation including aggregated metrics, per-label metrics,
     and optional visualizations (confusion matrix, PR curves, ROC curves).
 
-    Args:
-    * `classification_name`: Name of the classification task (default: "default").
-    * `probas_threshold`: Optional probability threshold for binary classification.
-    * `accuracy_tests`: Optional test conditions for accuracy.
-    * `precision_tests`: Optional test conditions for precision.
-    * `recall_tests`: Optional test conditions for recall.
-    * `f1score_tests`: Optional test conditions for F1 score.
-    * `rocauc_tests`: Optional test conditions for ROC AUC.
-    * `logloss_tests`: Optional test conditions for log loss.
-    * `tpr_tests`: Optional test conditions for TPR.
-    * `tnr_tests`: Optional test conditions for TNR.
-    * `fpr_tests`: Optional test conditions for FPR.
-    * `fnr_tests`: Optional test conditions for FNR.
-    * `f1score_by_label_tests`: Optional test conditions for F1 score by label.
-    * `precision_by_label_tests`: Optional test conditions for precision by label.
-    * `recall_by_label_tests`: Optional test conditions for recall by label.
-    * `rocauc_by_label_tests`: Optional test conditions for ROC AUC by label.
-    * `include_tests`: Whether to include automatic tests (default: True).
     """
 
     probas_threshold: Optional[float] = None

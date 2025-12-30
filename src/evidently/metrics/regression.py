@@ -131,13 +131,6 @@ class MeanError(MeanStdRegressionMetric):
     Computes the average prediction error (prediction - target) and its standard deviation.
     Positive values indicate over-prediction, negative values indicate under-prediction.
 
-    Args:
-    * `regression_name`: Name of the regression task (default: "default").
-    * `error_plot`: Whether to show error plot visualization (default: True).
-    * `error_distr`: Whether to show error distribution (default: False).
-    * `error_normality`: Whether to show error normality test (default: False).
-    * `mean_tests`: Optional list of test conditions for mean error.
-    * `std_tests`: Optional list of test conditions for standard deviation.
     """
 
     error_plot: bool = True
@@ -189,13 +182,6 @@ class MAE(MeanStdRegressionMetric):
     MAE measures the average magnitude of errors without considering direction.
     Lower values indicate better performance. Returns both mean and standard deviation.
 
-    Args:
-    * `regression_name`: Name of the regression task (default: "default").
-    * `error_plot`: Whether to show error plot visualization (default: False).
-    * `error_distr`: Whether to show error distribution (default: True).
-    * `error_normality`: Whether to show error normality test (default: False).
-    * `mean_tests`: Optional list of test conditions for mean MAE.
-    * `std_tests`: Optional list of test conditions for standard deviation.
     """
 
     error_plot: bool = False
@@ -254,12 +240,6 @@ class RMSE(SingleValueRegressionMetric):
     RMSE measures the square root of the average squared errors. It penalizes
     large errors more than MAE. Lower values indicate better performance.
 
-    Args:
-    * `regression_name`: Name of the regression task (default: "default").
-    * `error_plot`: Whether to show error plot visualization (default: False).
-    * `error_distr`: Whether to show error distribution (default: True).
-    * `error_normality`: Whether to show error normality test (default: False).
-    * `tests`: Optional list of test conditions.
     """
 
     error_plot: bool = False
@@ -296,12 +276,6 @@ class MAPE(MeanStdRegressionMetric):
     MAPE expresses errors as a percentage of the actual values, making it
     scale-independent. Returns both mean and standard deviation. Lower values are better.
 
-    Args:
-    * `regression_name`: Name of the regression task (default: "default").
-    * `perc_error_plot`: Whether to show percentage error plot (default: True).
-    * `error_distr`: Whether to show error distribution (default: False).
-    * `mean_tests`: Optional list of test conditions for mean MAPE.
-    * `std_tests`: Optional list of test conditions for standard deviation.
     """
 
     perc_error_plot: bool = True
@@ -350,11 +324,6 @@ class R2Score(SingleValueRegressionMetric):
     Values range from negative infinity to 1.0, with 1.0 being perfect fit.
     Higher values indicate better performance.
 
-    Args:
-    * `regression_name`: Name of the regression task (default: "default").
-    * `error_distr`: Whether to show error distribution (default: False).
-    * `error_normality`: Whether to show error normality test (default: False).
-    * `tests`: Optional list of test conditions.
     """
 
     error_distr: bool = False
@@ -388,11 +357,6 @@ class AbsMaxError(SingleValueRegressionMetric):
     Returns the largest absolute error across all predictions. Useful for
     identifying worst-case prediction errors.
 
-    Args:
-    * `regression_name`: Name of the regression task (default: "default").
-    * `error_distr`: Whether to show error distribution (default: False).
-    * `error_normality`: Whether to show error normality test (default: False).
-    * `tests`: Optional list of test conditions.
     """
 
     error_distr: bool = False
@@ -459,8 +423,6 @@ class DummyMAE(SingleValueRegressionMetric):
     Computes MAE using a simple baseline (e.g., always predict the mean).
     Useful as a baseline to compare your model against.
 
-    Args:
-    * `regression_name`: Name of the regression task (default: "default").
     """
 
     pass
@@ -486,8 +448,6 @@ class DummyMAPE(SingleValueRegressionMetric):
 
     Computes MAPE using a simple baseline. Useful as a baseline to compare your model against.
 
-    Args:
-    * `regression_name`: Name of the regression task (default: "default").
     """
 
     pass

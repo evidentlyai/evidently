@@ -99,20 +99,6 @@ class RagQueryDatasetGenerator(BaseRagDatasetGenerator):
 
     Generates questions/queries that are relevant to provided document chunks,
     useful for creating evaluation datasets for RAG systems.
-
-    Args:
-    * `data_collection`: `DataCollectionProvider` containing documents to generate queries from.
-    * `count`: Number of queries to generate (default: 10).
-    * `model`: LLM model name (default: "gpt-4o-mini").
-    * `provider`: LLM provider (default: "openai").
-    * `options`: Processing options.
-    * `complexity`: Complexity level for generated queries.
-    * `query_spec`: `GenerationSpec` for query generation.
-    * `user`: Optional user profile.
-    * `service`: Optional service specification.
-    * `chunks_per_query`: Number of document chunks to use per query (default: 5).
-    * `additional_prompt_blocks`: Optional additional prompt blocks.
-    * `query_template`: Optional query prompt template (string or `RagQueryPromptTemplate`).
     """
 
     query_template: RagQueryPromptTemplate = RagQueryPromptTemplate()
@@ -242,21 +228,6 @@ class RagResponseDatasetGenerator(BaseRagDatasetGenerator):
 
     Generates responses to queries using relevant document chunks as context,
     useful for creating evaluation datasets for RAG systems.
-
-    Args:
-    * `data_collection`: `DataCollectionProvider` containing documents.
-    * `queries`: List of queries to generate responses for.
-    * `model`: LLM model name (default: "gpt-4o-mini").
-    * `provider`: LLM provider (default: "openai").
-    * `options`: Processing options.
-    * `include_context`: If `True`, include context chunks in output DataFrame.
-    * `complexity`: Complexity level for generated responses.
-    * `query_spec`: `GenerationSpec` for query type.
-    * `response_spec`: `GenerationSpec` for response type.
-    * `user`: Optional user profile.
-    * `service`: Optional service specification.
-    * `additional_prompt_blocks`: Optional additional prompt blocks.
-    * `response_template`: Optional response prompt template (string or `RagResponsePromptTemplate`).
     """
 
     response_template: RagResponsePromptTemplate = RagResponsePromptTemplate()
@@ -372,22 +343,6 @@ class RagDatasetGenerator(BaseRagDatasetGenerator):
 
     Generates both queries and responses using document chunks, creating
     a complete evaluation dataset for RAG systems.
-
-    Args:
-    * `data_collection`: `DataCollectionProvider` containing documents.
-    * `count`: Number of query-response pairs to generate.
-    * `model`: LLM model name (default: "gpt-4o-mini").
-    * `provider`: LLM provider (default: "openai").
-    * `options`: Processing options.
-    * `include_context`: If `True`, include context chunks in output DataFrame.
-    * `complexity`: Complexity level for generated content.
-    * `query_spec`: `GenerationSpec` for query generation.
-    * `response_spec`: `GenerationSpec` for response generation.
-    * `user`: Optional user profile.
-    * `service`: Optional service specification.
-    * `additional_prompt_blocks`: Optional additional prompt blocks.
-    * `query_template`: Optional query prompt template.
-    * `response_template`: Optional response prompt template.
     """
 
     query_template: RagQueryPromptTemplate = RagQueryPromptTemplate()

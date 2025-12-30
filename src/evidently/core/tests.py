@@ -22,10 +22,6 @@ class Reference(BaseModel):
 
     Used in tests to compare metric values against reference data. Can specify
     either a relative change (percentage) or absolute difference, or both.
-
-    Args:
-    * `relative`: Optional relative change threshold (e.g., 0.1 for 10% change).
-    * `absolute`: Optional absolute difference threshold.
     """
 
     relative: Optional[float] = None
@@ -62,11 +58,6 @@ class GenericTest(BaseModel):
     `GenericTest` provides a single interface for tests that can work with both
     metric results and descriptor values. It contains both metric and descriptor
     test implementations and automatically selects the appropriate one.
-
-    Args:
-    * `test_name`: Name of the test (e.g., "gt", "lt", "between").
-    * `metric`: Optional `MetricTest` implementation for metric results.
-    * `descriptor`: Optional `DescriptorTest` implementation for descriptor values.
     """
 
     test_name: str

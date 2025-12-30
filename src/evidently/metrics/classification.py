@@ -329,13 +329,6 @@ class F1Score(ClassificationQuality):
 
     F1 score balances precision and recall, providing a single metric for
     classification performance. Higher values indicate better performance.
-
-    Args:
-    * `classification_name`: Name of the classification task (default: "default").
-    * `probas_threshold`: Optional probability threshold for binary classification.
-    * `k`: Optional top-k value for multiclass classification.
-    * `conf_matrix`: Whether to show confusion matrix visualization (default: True).
-    * `tests`: Optional list of test conditions.
     """
 
     conf_matrix: bool = True
@@ -370,12 +363,6 @@ class Accuracy(ClassificationQuality):
 
     Accuracy measures the fraction of predictions that match the true labels.
     Simple and intuitive, but can be misleading for imbalanced datasets.
-
-    Args:
-    * `classification_name`: Name of the classification task (default: "default").
-    * `probas_threshold`: Optional probability threshold for binary classification.
-    * `k`: Optional top-k value for multiclass classification.
-    * `tests`: Optional list of test conditions.
     """
 
     def _default_tests(self, context: Context) -> List[BoundTest]:
@@ -408,20 +395,12 @@ class Precision(ClassificationQuality):
     Precision measures how many of the predicted positive cases are actually positive.
     Useful when false positives are costly.
 
-    Args:
-    * `classification_name`: Name of the classification task (default: "default").
-    * `probas_threshold`: Optional probability threshold (default: 0.5 for probabilistic).
-    * `k`: Optional top-k value for multiclass classification.
-    * `conf_matrix`: Whether to show confusion matrix (default: True).
-    * `pr_curve`: Whether to show precision-recall curve (default: False).
-    * `pr_table`: Whether to show precision-recall table (default: False).
-    * `tests`: Optional list of test conditions.
-
     Note: At least one visualization (`conf_matrix`, `pr_curve`, or `pr_table`) must be enabled.
     """
 
     conf_matrix: bool = True
     """Whether to show confusion matrix visualization."""
+
     pr_curve: bool = False
     """Whether to show precision-recall curve."""
     pr_table: bool = False
@@ -457,20 +436,12 @@ class Recall(ClassificationQuality):
     Recall measures how many of the actual positive cases are correctly predicted.
     Useful when false negatives are costly.
 
-    Args:
-    * `classification_name`: Name of the classification task (default: "default").
-    * `probas_threshold`: Optional probability threshold (default: 0.5 for probabilistic).
-    * `k`: Optional top-k value for multiclass classification.
-    * `conf_matrix`: Whether to show confusion matrix (default: True).
-    * `pr_curve`: Whether to show precision-recall curve (default: False).
-    * `pr_table`: Whether to show precision-recall table (default: False).
-    * `tests`: Optional list of test conditions.
-
     Note: At least one visualization (`conf_matrix`, `pr_curve`, or `pr_table`) must be enabled.
     """
 
     conf_matrix: bool = True
     """Whether to show confusion matrix visualization."""
+
     pr_curve: bool = False
     """Whether to show precision-recall curve."""
     pr_table: bool = False
@@ -505,13 +476,6 @@ class TPR(ClassificationQuality):
 
     TPR measures the proportion of actual positives correctly identified.
     Equivalent to recall. Higher values indicate better detection of positive cases.
-
-    Args:
-    * `classification_name`: Name of the classification task (default: "default").
-    * `probas_threshold`: Optional probability threshold.
-    * `k`: Optional top-k value for multiclass classification.
-    * `pr_table`: Whether to show precision-recall table (default: False).
-    * `tests`: Optional list of test conditions.
 
     Note: `pr_table` visualization must be enabled.
     """
@@ -556,13 +520,6 @@ class TNR(ClassificationQuality):
     TNR measures the proportion of actual negatives correctly identified.
     Higher values indicate better detection of negative cases.
 
-    Args:
-    * `classification_name`: Name of the classification task (default: "default").
-    * `probas_threshold`: Optional probability threshold.
-    * `k`: Optional top-k value for multiclass classification.
-    * `pr_table`: Whether to show precision-recall table (default: False).
-    * `tests`: Optional list of test conditions.
-
     Note: `pr_table` visualization must be enabled.
     """
 
@@ -605,13 +562,6 @@ class FPR(ClassificationQuality):
 
     FPR measures the proportion of actual negatives incorrectly classified as positive.
     Lower values are better. FPR = 1 - TNR.
-
-    Args:
-    * `classification_name`: Name of the classification task (default: "default").
-    * `probas_threshold`: Optional probability threshold.
-    * `k`: Optional top-k value for multiclass classification.
-    * `pr_table`: Whether to show precision-recall table (default: False).
-    * `tests`: Optional list of test conditions.
 
     Note: `pr_table` visualization must be enabled.
     """
@@ -656,13 +606,6 @@ class FNR(ClassificationQuality):
     FNR measures the proportion of actual positives incorrectly classified as negative.
     Lower values are better. FNR = 1 - TPR.
 
-    Args:
-    * `classification_name`: Name of the classification task (default: "default").
-    * `probas_threshold`: Optional probability threshold.
-    * `k`: Optional top-k value for multiclass classification.
-    * `pr_table`: Whether to show precision-recall table (default: False).
-    * `tests`: Optional list of test conditions.
-
     Note: `pr_table` visualization must be enabled.
     """
 
@@ -706,19 +649,12 @@ class RocAuc(ClassificationQuality):
     ROC AUC measures the model's ability to distinguish between classes across
     all possible thresholds. Values range from 0 to 1, with 0.5 being random and 1.0 perfect.
 
-    Args:
-    * `classification_name`: Name of the classification task (default: "default").
-    * `probas_threshold`: Optional probability threshold.
-    * `k`: Optional top-k value for multiclass classification.
-    * `roc_curve`: Whether to show ROC curve (default: True).
-    * `pr_table`: Whether to show precision-recall table (default: False).
-    * `tests`: Optional list of test conditions.
-
     Note: At least one visualization (`roc_curve` or `pr_table`) must be enabled.
     """
 
     roc_curve: bool = True
     """Whether to show ROC curve."""
+
     pr_table: bool = False
     """Whether to show precision-recall table."""
 
@@ -758,13 +694,6 @@ class LogLoss(ClassificationQuality):
 
     Log loss penalizes confident wrong predictions more heavily. Lower values
     indicate better calibrated probability predictions. Requires probability predictions.
-
-    Args:
-    * `classification_name`: Name of the classification task (default: "default").
-    * `probas_threshold`: Optional probability threshold.
-    * `k`: Optional top-k value for multiclass classification.
-    * `pr_table`: Whether to show precision-recall table (default: False).
-    * `tests`: Optional list of test conditions.
 
     Note: `pr_table` visualization must be enabled. Requires probability predictions.
     """

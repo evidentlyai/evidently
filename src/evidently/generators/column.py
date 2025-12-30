@@ -31,15 +31,6 @@ class ColumnMetricGenerator(MetricContainer):
     criteria (column names or types). Useful for applying the same metric to many
     columns without manually creating each instance.
 
-    Args:
-    * `metric_type`: `ColumnMetric` or `ColumnMetricContainer` class to generate.
-    * `columns`: Optional list of specific column names to generate metrics for.
-    * `column_types`: Column types to match ("all", single type, or list of types).
-    * `metric_kwargs`: Optional dictionary of additional arguments to pass to each metric.
-    * `metric_type_alias`: Optional alias string for the metric type (alternative to `metric_type`).
-    * `include_tests`: If `True`, generated metrics will include default tests.
-    * `**kwargs`: Additional arguments to pass to each metric (alternative to `metric_kwargs`).
-
     Example:
     ```python
     from evidently.metrics import MeanValue

@@ -38,13 +38,6 @@ class RateLimits(BaseModel):
 
     Defines limits for requests per minute (RPM) and tokens per minute (TPM)
     to avoid exceeding API rate limits.
-
-    Args:
-    * `rpm`: Optional requests per minute limit.
-    * `itpm`: Optional input tokens per minute limit.
-    * `otpm`: Optional output tokens per minute limit.
-    * `tpm`: Optional total tokens per minute limit.
-    * `interval`: Time window for rate limiting (default: 1 minute).
     """
 
     rpm: Optional[int] = None
@@ -153,10 +146,6 @@ class RateLimiter:
 
     Enforces rate limits on requests and tokens to avoid exceeding API quotas.
     Tracks usage over time windows and blocks requests when limits would be exceeded.
-
-    Args:
-    * `limits`: `RateLimits` configuration.
-    * `initial_output_estimation`: Initial estimate for output token size.
     """
 
     def __init__(self, limits: RateLimits, initial_output_estimation: int = 100000):
@@ -201,14 +190,7 @@ class RateLimiter:
 
 @dataclasses.dataclass
 class LLMRequest(Generic[TResult]):
-    """Request to an LLM with messages and response parsing.
-
-    Args:
-    * `messages`: List of `LLMMessage` objects for the conversation.
-    * `response_parser`: Function to parse the raw string response into `TResult`.
-    * `response_type`: Type of the expected result.
-    * `retries`: Number of retry attempts on failure (default: 1).
-    """
+    """Request to an LLM with messages and response parsing."""
 
     messages: List[LLMMessage]
     """List of `LLMMessage` objects for the conversation."""
@@ -222,13 +204,7 @@ class LLMRequest(Generic[TResult]):
 
 @dataclasses.dataclass
 class LLMResult(Generic[TResult]):
-    """Result from an LLM API call.
-
-    Args:
-    * `result`: Parsed result value.
-    * `input_tokens`: Number of input tokens used.
-    * `output_tokens`: Number of output tokens used.
-    """
+    """Result from an LLM API call."""
 
     result: TResult
     """Parsed result value."""
@@ -470,12 +446,6 @@ class LLMOptions(Option):
     """Base class for LLM provider options.
 
     Provides common configuration for API keys, rate limits, and custom API URLs.
-
-    Args:
-    * `api_key`: Optional API key for the provider.
-    * `rpm_limit`: Optional requests per minute limit (backward compatibility).
-    * `limits`: `RateLimits` configuration.
-    * `api_url`: Optional custom API URL (for self-hosted providers).
     """
 
     __provider_name__: ClassVar[str]
@@ -524,14 +494,7 @@ class LLMOptions(Option):
 
 
 class OpenAIKey(LLMOptions):
-    """Options for OpenAI provider.
-
-    Args:
-    * `api_key`: Optional OpenAI API key.
-    * `rpm_limit`: Optional requests per minute limit.
-    * `limits`: `RateLimits` configuration (default: 500 RPM).
-    * `api_url`: Optional custom API URL.
-    """
+    """Options for OpenAI provider."""
 
     __provider_name__: ClassVar[str] = "openai"
     limits: RateLimits = RateLimits(rpm=500)
@@ -547,10 +510,6 @@ class OpenAIWrapper(LLMWrapper):
 
     Provides async access to OpenAI's chat completion API with rate limiting
     and token tracking.
-
-    Args:
-    * `model`: OpenAI model name (e.g., "gpt-4o-mini", "gpt-4").
-    * `options`: Processing options containing `OpenAIKey`.
     """
 
     __used_options__: ClassVar = [OpenAIKey]

@@ -25,9 +25,6 @@ class BaseDatasetGenerator(AutoAliasMixin, EvidentlyBaseModel, ABC):
     Dataset generators create synthetic datasets using various methods
     (LLM-based, rule-based, etc.). Subclasses implement `agenerate()` to
     produce a pandas DataFrame.
-
-    Args:
-    * `options`: Processing options.
     """
 
     __alias_type__: ClassVar = "dataset_generator"
@@ -64,11 +61,6 @@ class BaseLLMDatasetGenerator(BaseDatasetGenerator, ABC):
 
     Provides LLM wrapper management for generators that use language models
     to create synthetic data.
-
-    Args:
-    * `provider`: LLM provider name (e.g., "openai", "anthropic").
-    * `model`: LLM model name (e.g., "gpt-4o-mini", "claude-3-sonnet").
-    * `options`: Processing options.
     """
 
     provider: str

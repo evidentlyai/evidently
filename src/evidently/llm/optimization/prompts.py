@@ -63,14 +63,6 @@ class PromptOptimizationLog(LLMCallOptimizerLog):
 
     Tracks the optimization process, showing the original prompt, optimizer
     instructions, and the resulting optimized prompt.
-
-    Args:
-    * `input_prompt`: Original prompt before optimization.
-    * `optimizer_prompt`: Instructions given to the optimizer LLM.
-    * `new_prompt`: Optimized prompt produced by the optimizer.
-    * `stop`: Whether optimization should stop after this step.
-    * `input_tokens`: Number of input tokens used.
-    * `output_tokens`: Number of output tokens used.
     """
 
     __is_step__: ClassVar[bool] = True
@@ -101,10 +93,6 @@ class PromptOptimizerStrategy(BaseArgTypeRegistry, AutoAliasMixin, EvidentlyBase
 
     Defines the interface for different approaches to prompt optimization,
     such as iterative refinement, A/B testing, or gradient-based methods.
-
-    Args:
-    * `prompt`: Initial prompt to optimize.
-    * `run`: `OptimizerRun` to log optimization steps.
     """
 
     __alias_type__: ClassVar = "prompt_optimizer_strategy"
@@ -144,16 +132,7 @@ class PromptOptimizerStrategy(BaseArgTypeRegistry, AutoAliasMixin, EvidentlyBase
 
 
 class PromptOptimizerConfig(OptimizerConfig):
-    """Configuration for prompt optimizers, including the strategy.
-
-    Args:
-    * `provider`: LLM provider name (default: "openai").
-    * `model`: LLM model name (default: "gpt-4o-mini").
-    * `verbose`: If `True`, print optimization progress.
-    * `seed`: Optional random seed for reproducibility.
-    * `strategy`: `PromptOptimizerStrategy` to use for optimization.
-    * `data_split_shares`: Optional data split configuration.
-    """
+    """Configuration for prompt optimizers, including the strategy."""
 
     strategy: PromptOptimizerStrategy
     """Optimization strategy to use."""
@@ -172,12 +151,6 @@ class PromptExecutionLog(OptimizerLog):
 
     Tracks the execution of a prompt, including the prompt text and
     the resulting predictions, reasoning, and scores.
-
-    Args:
-    * `prompt`: The prompt that was executed.
-    * `result`: `LLMResultDataset` with execution results.
-    * `input_tokens`: Number of input tokens used.
-    * `output_tokens`: Number of output tokens used.
     """
 
     prompt: str
@@ -486,9 +459,6 @@ class BlankLLMJudge(PromptExecutor):
 
     Automatically creates a binary or multiclass classification judge
     based on the target labels in the dataset, then uses it to execute prompts.
-
-    Args:
-    * `kind`: Optional kind identifier for the judge.
     """
 
     kind: str = ""
@@ -698,12 +668,6 @@ class PromptScoringLog(OptimizerLog):
 
     Tracks scores computed by an `OptimizationScorer` for a prompt execution,
     organized by scorer name and dataset split.
-
-    Args:
-    * `execution_log_id`: ID of the `PromptExecutionLog` that was scored.
-    * `scores`: Dictionary mapping scorer names to split-to-score dictionaries.
-    * `input_tokens`: Number of input tokens used (if applicable).
-    * `output_tokens`: Number of output tokens used (if applicable).
     """
 
     execution_log_id: LogID
@@ -835,12 +799,6 @@ class EarlyStopConfig(BaseModel):
 
     Defines conditions for stopping optimization early, such as reaching
     a target score, insufficient improvement, or maximum iterations.
-
-    Args:
-    * `bigger_score_better`: If `True`, higher scores are better (default: `True`).
-    * `max_iterations`: Maximum number of optimization steps (default: 5).
-    * `min_score_gain`: Minimum score improvement required to continue (default: 0.01).
-    * `target_score`: Target score to reach (stops when achieved, default: 1.0).
     """
 
     bigger_score_better: bool = True
@@ -902,13 +860,6 @@ class PromptOptimizationResultLog(OptimizerLog):
 
     Summarizes the optimization run with the best prompt found, scores achieved,
     and number of steps taken.
-
-    Args:
-    * `score_log_id`: ID of the `PromptScoringLog` with best scores.
-    * `best_scores`: Dictionary mapping scorer names to best scores achieved.
-    * `step_count`: Number of optimization steps taken.
-    * `execution_log_id`: ID of the `PromptExecutionLog` with best results.
-    * `best_prompt`: The best prompt found during optimization.
     """
 
     score_log_id: LogID
@@ -936,13 +887,6 @@ class PromptOptimizer(BaseOptimizer[PromptOptimizerConfig]):
 
     Optimizes prompts iteratively by evaluating them on a dataset and
     using an optimization strategy to generate improved versions.
-
-    Args:
-    * `name`: Name of the optimizer instance.
-    * `strategy`: `PromptOptimizerStrategy` or strategy name/alias.
-    * `checkpoint_path`: Optional path for saving/loading checkpoints.
-    * `verbose`: If `True`, print optimization progress.
-    * `**config_kwargs`: Additional configuration options.
     """
 
     def __init__(

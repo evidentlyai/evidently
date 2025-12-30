@@ -417,11 +417,6 @@ class SnapshotRef(BaseModel):
 
     Returned by `WorkspaceBase.add_run()` to provide access to the uploaded snapshot.
     Contains the snapshot ID, project ID, and URL for viewing the snapshot.
-
-    Args:
-    * `id`: Snapshot ID.
-    * `project_id`: Project ID this snapshot belongs to.
-    * `url`: URL to view the snapshot.
     """
 
     id: SnapshotID

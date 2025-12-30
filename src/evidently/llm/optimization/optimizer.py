@@ -69,10 +69,6 @@ class LLMDatasetSplitView:
 
     Provides filtered access to dataset columns for a specific split
     (train, val, test, or all).
-
-    Args:
-    * `dataset`: `LLMDataset` to view.
-    * `split_name`: Name of the split to view.
     """
 
     def __init__(self, dataset: "LLMDataset", split_name: str):
@@ -166,14 +162,6 @@ class LLMDataset(BaseModel):
 
     Contains input values, targets, reasoning, predictions, and split masks
     for train/val/test splits.
-
-    Args:
-    * `input_values`: Input values (e.g., prompts).
-    * `target`: Optional target values (e.g., expected outputs).
-    * `reasoning`: Optional reasoning for targets.
-    * `predictions`: Optional model predictions.
-    * `prediction_reasoning`: Optional reasoning for predictions.
-    * `split_masks`: Dictionary mapping split names to boolean masks.
     """
 
     input_values: pd.Series
@@ -266,11 +254,6 @@ class LLMResultDataset(BaseModel):
     """Dataset containing LLM optimization results.
 
     Stores predictions, reasoning, and scores from optimization runs.
-
-    Args:
-    * `predictions`: Optional model predictions.
-    * `reasoning`: Optional reasoning for predictions.
-    * `scores`: Optional scores for predictions.
     """
 
     predictions: Optional[pd.Series] = None
@@ -374,14 +357,7 @@ class LLMResultDataset(BaseModel):
 
 
 class OptimizerConfig(AutoAliasMixin, EvidentlyBaseModel):
-    """Configuration for the optimizer, including provider and model.
-
-    Args:
-    * `provider`: LLM provider name (default: "openai").
-    * `model`: LLM model name (default: "gpt-4o-mini").
-    * `verbose`: If `True`, print optimization progress.
-    * `seed`: Optional random seed for reproducibility.
-    """
+    """Configuration for the optimizer, including provider and model."""
 
     __alias_type__: ClassVar = "optimizer_config"
 
@@ -406,10 +382,6 @@ class OptimizerLog(AutoAliasMixin, EvidentlyBaseModel, ABC):
     """Base class for all optimizer logs.
 
     Logs track events and steps during optimization runs.
-
-    Args:
-    * `id`: Unique log identifier.
-    * `timestamp`: Timestamp when the log was created.
     """
 
     __alias_type__: ClassVar = "optimizer_log"
@@ -445,10 +417,6 @@ class LLMCallOptimizerLog(OptimizerLog, ABC):
     """Log entry for an LLM API call during optimization.
 
     Tracks token usage for cost monitoring and rate limiting.
-
-    Args:
-    * `input_tokens`: Number of input tokens used.
-    * `output_tokens`: Number of output tokens used.
     """
 
     input_tokens: int
@@ -466,12 +434,6 @@ class OptimizerRun(BaseModel):
     """A single optimization run with logs and statistics.
 
     Tracks all events, steps, and LLM calls during an optimization run.
-
-    Args:
-    * `run_id`: Unique identifier for this run.
-    * `logs`: Dictionary of log entries by log ID.
-    * `seed`: Random seed used for this run.
-    * `start_time`: Timestamp when the run started.
     """
 
     run_id: RunID
@@ -592,12 +554,6 @@ class OptimizerContext(BaseModel):
 
     Manages configuration, parameters, and multiple optimization runs.
     Can be locked to prevent parameter changes during optimization.
-
-    Args:
-    * `config`: `OptimizerConfig` with optimizer settings.
-    * `params`: Dictionary of optimization parameters.
-    * `runs`: List of completed optimization runs.
-    * `locked`: Whether the context is locked (prevents parameter changes).
     """
 
     config: OptimizerConfig
@@ -741,11 +697,6 @@ class BaseOptimizer(ABC, Generic[TOptimizerConfig]):
 
     Provides common functionality for managing optimizer configuration,
     parameters, and runs.
-
-    Args:
-    * `name`: Name of the optimizer.
-    * `config`: `OptimizerConfig` with optimizer settings.
-    * `checkpoint_path`: Optional path for saving/loading checkpoints.
     """
 
     def __init__(self, name: str, config: TOptimizerConfig, checkpoint_path: Optional[str] = None):

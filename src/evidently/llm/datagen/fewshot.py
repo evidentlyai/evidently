@@ -44,21 +44,6 @@ class FewShotDatasetGenerator(BaseLLMDatasetGenerator):
     Generates synthetic data by providing examples to an LLM and asking
     it to generate similar content. Useful for creating training or
     evaluation datasets when you have limited examples.
-
-    Args:
-    * `template`: Optional prompt template (string or `FewShotPromptTemplate`).
-    * `examples`: Optional list of example strings.
-    * `example`: Optional single example string (alternative to `examples`).
-    * `count`: Number of samples to generate (default: 10).
-    * `kind`: Type of content to generate (e.g., "texts", "questions").
-    * `complexity`: Complexity level ("low", "medium", "high").
-    * `user`: Optional user profile for persona-based generation.
-    * `sample_spec`: Optional `GenerationSpec` (alternative to `kind`/`complexity`/`examples`).
-    * `service`: Optional service specification.
-    * `additional_prompt_blocks`: Optional additional prompt blocks.
-    * `model`: LLM model name (default: "gpt-4o-mini").
-    * `provider`: LLM provider (default: "openai").
-    * `options`: Processing options.
     """
 
     template: FewShotPromptTemplate

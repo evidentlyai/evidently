@@ -44,9 +44,6 @@ class PromptArtifactAdapter(PromptAPI):
     """Adapter that implements PromptAPI interface but uses RemoteArtifactAPI.
 
     Allows using prompts SDK interface with OSS artifacts API.
-
-    Args:
-    * `workspace`: `RemoteWorkspace` to use for API calls.
     """
 
     def __init__(self, workspace: "RemoteWorkspace"):
@@ -180,9 +177,6 @@ class ConfigArtifactAdapter(ConfigAPI):
     """Adapter that implements ConfigAPI interface but uses RemoteArtifactAPI.
 
     Allows using configs SDK interface with OSS artifacts API.
-
-    Args:
-    * `workspace`: `RemoteWorkspace` to use for API calls.
     """
 
     def __init__(self, workspace: "RemoteWorkspace"):
@@ -337,9 +331,6 @@ class ArtifactConfigAdapter(ArtifactAPI):
     """Adapter that implements ArtifactAPI interface but uses CloudConfigAPI.
 
     Allows using artifacts SDK interface with cloud configs API.
-
-    Args:
-    * `workspace`: `CloudWorkspace` to use for API calls.
     """
 
     def __init__(self, workspace: "CloudWorkspace"):

@@ -63,9 +63,6 @@ class ArtifactContent(AutoAliasMixin, EvidentlyBaseModel, Generic[TArtifactValue
 
     Artifact content wraps typed values (e.g., prompts, configs) for storage
     and versioning in the artifact system.
-
-    Args:
-    * `data`: Raw data to wrap.
     """
 
     __alias_type__: ClassVar = "artifact_content"

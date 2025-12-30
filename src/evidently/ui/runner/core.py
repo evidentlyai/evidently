@@ -111,12 +111,7 @@ class RunServiceInfoVariants:
     """Variants of `RunServiceInfo` representing different service states."""
 
     class Success(RunServiceInfo):
-        """Service is running successfully.
-
-        Args:
-        * `port`: Port number the service is running on.
-        * `process`: Subprocess handle for the running service.
-        """
+        """Service is running successfully."""
 
         port: int
         """Port number the service is running on."""
@@ -149,11 +144,7 @@ class RunServiceInfoVariants:
             raise ServiceRunnerError("Service is not running. Please run it first using `run()` method.")
 
     class Failed(RunServiceInfo):
-        """Service failed to start.
-
-        Args:
-        * `error_message`: Error message describing why the service failed.
-        """
+        """Service failed to start."""
 
         error_message: str
         """Error message describing why the service failed."""

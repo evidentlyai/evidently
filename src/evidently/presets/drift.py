@@ -27,22 +27,6 @@ class DataDriftPreset(MetricContainer):
     Calculates data drift for all or specified columns using various drift detection methods.
     Generates `DriftedColumnsCount` and `ValueDrift` metrics for each column. Requires reference data.
 
-    Args:
-    * `columns`: Optional list of column names to analyze. If None, analyzes all columns.
-    * `embeddings`: Optional list of embedding column names.
-    * `embeddings_drift_method`: Optional dictionary mapping embedding columns to drift methods.
-    * `drift_share`: Threshold for drift share (default: 0.5, i.e., 50% of columns).
-    * `method`: Optional drift detection method for all columns (auto-selected if None).
-    * `cat_method`: Optional method for categorical columns.
-    * `num_method`: Optional method for numerical columns.
-    * `text_method`: Optional method for text columns.
-    * `per_column_method`: Optional dictionary mapping column names to methods.
-    * `threshold`: Optional drift threshold for all columns (uses method default if None).
-    * `cat_threshold`: Optional threshold for categorical columns.
-    * `num_threshold`: Optional threshold for numerical columns.
-    * `text_threshold`: Optional threshold for text columns.
-    * `per_column_threshold`: Optional dictionary mapping column names to thresholds.
-    * `include_tests`: Whether to include automatic tests (default: True).
 
     See Also:
     * [Drift Methods Documentation](https://docs.evidentlyai.com/metrics/customize_data_drift) for available methods.

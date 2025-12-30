@@ -37,8 +37,6 @@ class RowCount(SingleValueMetric):
     Returns the number of rows (records) in the dataset. Useful for understanding
     dataset size and monitoring changes in data volume.
 
-    Args:
-    * `tests`: Optional list of test conditions.
     """
 
     def _default_tests(self, context: "Context") -> List[BoundTest]:
@@ -67,9 +65,6 @@ class ColumnCount(SingleValueMetric):
     Can count all columns or filter by column type (numerical, categorical, text, datetime).
     Useful for monitoring schema changes and data structure.
 
-    Args:
-    * `column_type`: Optional column type to filter by. If None, counts all columns.
-    * `tests`: Optional list of test conditions.
     """
 
     column_type: Optional[ColumnType] = None
@@ -155,8 +150,6 @@ class DuplicatedRowCount(SingleValueMetric):
     Identifies and counts rows that are completely identical to other rows.
     Useful for data quality checks.
 
-    Args:
-    * `tests`: Optional list of test conditions.
     """
 
     def _default_tests(self, context: "Context") -> List[BoundTest]:
@@ -191,8 +184,6 @@ class DuplicatedColumnsCount(SingleValueMetric):
     Identifies columns that are completely identical to other columns.
     Useful for detecting redundant features.
 
-    Args:
-    * `tests`: Optional list of test conditions.
     """
 
     def _default_tests(self, context: "Context") -> List[BoundTest]:
@@ -229,8 +220,6 @@ class AlmostDuplicatedColumnsCount(SingleValueMetric):
     Identifies columns that are nearly identical (within a small epsilon threshold).
     Useful for detecting highly correlated or redundant features.
 
-    Args:
-    * `tests`: Optional list of test conditions.
     """
 
     pass
@@ -263,8 +252,6 @@ class AlmostConstantColumnsCount(SingleValueMetric):
     Identifies columns where 95% or more of the values are the same.
     These columns provide little information and may indicate data quality issues.
 
-    Args:
-    * `tests`: Optional list of test conditions.
     """
 
     def _default_tests(self, context: "Context") -> List[BoundTest]:
@@ -303,8 +290,6 @@ class EmptyRowsCount(SingleValueMetric):
     Identifies rows where all values are missing or empty.
     Useful for data quality monitoring.
 
-    Args:
-    * `tests`: Optional list of test conditions.
     """
 
     def _default_tests(self, context: "Context") -> List[BoundTest]:
@@ -339,8 +324,6 @@ class EmptyColumnsCount(SingleValueMetric):
     Identifies columns where all values are missing or empty.
     Useful for detecting unused or broken data sources.
 
-    Args:
-    * `tests`: Optional list of test conditions.
     """
 
     def _default_tests(self, context: "Context") -> List[BoundTest]:

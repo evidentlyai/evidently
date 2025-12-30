@@ -263,12 +263,6 @@ class PrecisionTopK(TopKBase):
     Precision measures the proportion of relevant items in the top-k recommendations.
     Higher values indicate better precision.
 
-    Args:
-    * `k`: Number of top items to consider in the ranking.
-    * `ranking_name`: Name of the ranking task (default: "default").
-    * `min_rel_score`: Minimum relevance score threshold (optional).
-    * `no_feedback_users`: Whether to exclude users with no feedback (default: False).
-    * `tests`: Optional list of test conditions.
     """
 
     pass
@@ -287,13 +281,6 @@ class FBetaTopK(TopKBase):
     F-beta is a weighted harmonic mean of precision and recall. Beta controls
     the weight: beta > 1 favors recall, beta < 1 favors precision.
 
-    Args:
-    * `k`: Number of top items to consider in the ranking.
-    * `beta`: Weight factor for recall vs precision (default: 1.0, balanced F1).
-    * `ranking_name`: Name of the ranking task (default: "default").
-    * `min_rel_score`: Minimum relevance score threshold (optional).
-    * `no_feedback_users`: Whether to exclude users with no feedback (default: False).
-    * `tests`: Optional list of test conditions.
     """
 
     beta: Optional[float] = 1.0
@@ -319,10 +306,6 @@ class ScoreDistribution(SingleValueMetric):
     Measures the diversity of recommendation scores using entropy. Higher entropy
     indicates more diverse score distribution.
 
-    Args:
-    * `k`: Number of top items to consider in the ranking.
-    * `ranking_name`: Name of the ranking task (default: "default").
-    * `tests`: Optional list of test conditions.
     """
 
     k: int
@@ -368,12 +351,6 @@ class PopularityBiasMetric(SingleValueMetric):
     Evaluates how much recommendations favor popular items. Can measure using
     Average Recommendation Popularity (ARP), coverage, or Gini coefficient.
 
-    Args:
-    * `k`: Number of top items to consider in the ranking.
-    * `metric`: Metric type to use: "arp", "coverage", or "gini" (default: "arp").
-    * `normalize_arp`: Whether to normalize ARP (default: False).
-    * `ranking_name`: Name of the ranking task (default: "default").
-    * `tests`: Optional list of test conditions.
     """
 
     k: int
@@ -437,10 +414,6 @@ class Personalization(SingleValueMetric):
     Calculates how different recommendations are across users. Higher values
     indicate more personalized (diverse) recommendations per user.
 
-    Args:
-    * `k`: Number of top items to consider in the ranking.
-    * `ranking_name`: Name of the ranking task (default: "default").
-    * `tests`: Optional list of test conditions.
     """
 
     k: int
@@ -486,11 +459,6 @@ class Diversity(SingleValueMetric):
     Calculates how diverse items are within a user's top-k recommendations
     based on item features. Higher values indicate more diverse recommendations.
 
-    Args:
-    * `k`: Number of top items to consider in the ranking.
-    * `item_features`: List of feature column names to use for diversity calculation.
-    * `ranking_name`: Name of the ranking task (default: "default").
-    * `tests`: Optional list of test conditions.
     """
 
     k: int
@@ -538,11 +506,6 @@ class Serendipity(SingleValueMetric):
     Evaluates how surprising yet relevant recommendations are. Higher values
     indicate more serendipitous recommendations.
 
-    Args:
-    * `k`: Number of top items to consider in the ranking.
-    * `item_features`: List of feature column names to use for serendipity calculation.
-    * `ranking_name`: Name of the ranking task (default: "default").
-    * `tests`: Optional list of test conditions.
     """
 
     k: int
@@ -590,10 +553,6 @@ class Novelty(SingleValueMetric):
     Evaluates how novel (less popular) the recommended items are. Higher values
     indicate recommendations of less popular items.
 
-    Args:
-    * `k`: Number of top items to consider in the ranking.
-    * `ranking_name`: Name of the ranking task (default: "default").
-    * `tests`: Optional list of test conditions.
     """
 
     k: int
@@ -639,11 +598,6 @@ class ItemBias(Metric):
     Evaluates whether recommendations are biased towards certain item categories
     or groups. Returns a dataframe showing bias distribution across item groups.
 
-    Args:
-    * `k`: Number of top items to consider in the ranking.
-    * `column_name`: Name of the column containing item group/category information.
-    * `distribution`: Distribution to use: "default" or "train" (default: "default").
-    * `ranking_name`: Name of the ranking task (default: "default").
     """
 
     k: int
@@ -686,10 +640,6 @@ class UserBias(Metric):
     Evaluates whether recommendations are biased towards certain user categories
     or groups. Returns a dataframe showing bias distribution across user groups.
 
-    Args:
-    * `column_name`: Name of the column containing user group/category information.
-    * `distribution`: Distribution to use: "default" or "train" (default: "default").
-    * `ranking_name`: Name of the ranking task (default: "default").
     """
 
     column_name: str
@@ -780,10 +730,6 @@ class RecCasesTable(DataframeMetric):
     recommended items, scores, and optional features. Useful for debugging
     and understanding recommendation behavior.
 
-    Args:
-    * `user_ids`: Optional list of user IDs to display. If None, shows all users.
-    * `display_features`: Optional list of feature columns to display.
-    * `ranking_name`: Name of the ranking task (default: "default").
     """
 
     user_ids: Optional[List[Union[int, str]]] = None

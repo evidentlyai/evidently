@@ -73,12 +73,7 @@ class ColumnRole(Enum):
 
 @dataclasses.dataclass
 class ColumnInfo:
-    """Information about a column's type and role.
-
-    Args:
-    * `type`: `ColumnType` of the column (numerical, categorical, text, etc.).
-    * `role`: `ColumnRole` of the column (target, feature, etc.).
-    """
+    """Information about a column's type and role."""
 
     type: ColumnType
     """Column type (numerical, categorical, text, etc.)."""
@@ -321,9 +316,6 @@ class SpecialColumnInfo(AutoAliasMixin, EvidentlyBaseModel):
 
     Used to define special columns that require custom handling or metrics.
     Subclasses can provide custom metrics and column type information.
-
-    Args:
-    * Base class - subclasses define specific fields.
     """
 
     __alias_type__: ClassVar = "special_column_info"
@@ -362,11 +354,6 @@ class ServiceColumns(BaseModel):
     """Service columns for special functionality.
 
     Defines columns used for special features like trace linking and human feedback.
-
-    Args:
-    * `trace_link`: Optional column name for trace links.
-    * `human_feedback_label`: Optional column name for human feedback labels.
-    * `human_feedback_comment`: Optional column name for human feedback comments.
     """
 
     trace_link: Optional[str] = None
@@ -644,10 +631,6 @@ class DatasetColumn:
 
     Contains the column type and the actual data as a pandas Series.
     Used internally to access column data with type information.
-
-    Args:
-    * `type`: `ColumnType` or string name of the column type.
-    * `data`: `pandas.Series` containing the column data.
     """
 
     type: ColumnType
@@ -671,9 +654,6 @@ class ColumnCondition(AutoAliasMixin, EvidentlyBaseModel, abc.ABC):
 
     Used to define conditions that check values in a column (e.g., greater than,
     in range, matches pattern). Used in descriptor tests and column filters.
-
-    Args:
-    * Base class - subclasses define specific condition logic.
     """
 
     __alias_type__: ClassVar[str] = "column_condition"
@@ -712,11 +692,6 @@ class DescriptorTest(BaseModel):
 
     Defines a condition to test values in a descriptor column. Can be used
     to create derived descriptors based on test results.
-
-    Args:
-    * `condition`: `ColumnCondition` or `GenericTest` to apply.
-    * `column`: Optional column name (uses parent descriptor column if None).
-    * `alias`: Optional alias name for the test result.
     """
 
     condition: ColumnCondition
@@ -761,10 +736,6 @@ class Descriptor(AutoAliasMixin, EvidentlyBaseModel, abc.ABC):
     Descriptors compute additional columns from existing data (e.g., text length,
     sentiment score, custom transformations). Used to enrich datasets with
     computed features for evaluation.
-
-    Args:
-    * `alias`: Name for the descriptor output column.
-    * `tests`: Optional list of test conditions to apply to descriptor values.
     """
 
     class Config:
@@ -820,11 +791,6 @@ class SingleInputDescriptor(Descriptor, abc.ABC):
 
     Simplifies descriptor implementation for descriptors that only need one
     input column. Subclasses only need to implement `generate_data()`.
-
-    Args:
-    * `column`: Name of the input column to process.
-    * `alias`: Name for the descriptor output column.
-    * `tests`: Optional list of test conditions.
     """
 
     column: str
@@ -844,11 +810,6 @@ class ColumnTest(SingleInputDescriptor):
 
     Creates a boolean descriptor column indicating whether each value in the
     input column satisfies the condition. Useful for filtering or flagging rows.
-
-    Args:
-    * `column`: Name of the input column to test.
-    * `condition`: `ColumnCondition` or `GenericTest` to apply.
-    * `alias`: Optional alias name (defaults to condition's default alias).
     """
 
     column: str
@@ -890,14 +851,6 @@ class TestSummaryInfo(SpecialColumnInfo):
 
     Defines columns that aggregate test results across multiple descriptors,
     providing summary statistics like "all tests pass", "any test fails", etc.
-
-    Args:
-    * `all_column`: Optional column name for "all tests pass" indicator.
-    * `any_column`: Optional column name for "any test fails" indicator.
-    * `count_column`: Optional column name for test failure count.
-    * `rate_column`: Optional column name for test failure rate.
-    * `score_column`: Optional column name for weighted test score.
-    * `score_weights`: Optional dictionary mapping test names to weights.
     """
 
     all_column: Optional[str] = None
@@ -992,16 +945,6 @@ class TestSummary(Descriptor):
     - Whether any test fails for each row
     - Count and rate of passing tests
     - Weighted score across tests
-
-    Args:
-    * `success_all`: If `True`, compute "all tests pass" indicator.
-    * `success_any`: If `True`, compute "any test fails" indicator.
-    * `success_count`: If `True`, compute count of passing tests.
-    * `success_rate`: If `True`, compute proportion of passing tests.
-    * `score`: If `True`, compute weighted score across tests.
-    * `score_weights`: Optional dictionary mapping test names to weights.
-    * `alias`: Optional alias name for output columns (defaults to "summary").
-    * `normalize_scores`: If `True`, normalize scores by total weight.
     """
 
     success_all: bool = True
@@ -1234,11 +1177,6 @@ class DatasetStats:
 
     Contains overall dataset statistics including row count, column count,
     and per-column statistics.
-
-    Args:
-    * `row_count`: Total number of rows in the dataset.
-    * `column_count`: Total number of columns in the dataset.
-    * `column_stats`: Dictionary mapping column names to their `ColumnStats`.
     """
 
     row_count: int

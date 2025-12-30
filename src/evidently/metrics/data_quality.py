@@ -28,8 +28,6 @@ class ColumnCorrelations(MetricContainer):
     - Numerical columns: Pearson, Spearman, Kendall
     - Categorical columns: Cramer's V
 
-    Args:
-    * `column_name`: Name of the column to analyze correlations for.
     """
 
     column_name: str
@@ -65,9 +63,6 @@ class ColumnCorrelationMatrix(DataframeMetric):
     Computes correlations between the specified column and all other columns using
     the specified method. Returns a dataframe with correlation values.
 
-    Args:
-    * `column_name`: Name of the column to analyze correlations for.
-    * `kind`: Correlation method: "auto", "pearson", "spearman", "kendall", or "cramer_v" (default: "auto").
     """
 
     column_name: str
@@ -116,8 +111,7 @@ class DatasetCorrelations(MetricContainer):
     Generates correlation matrices using multiple methods (Pearson, Spearman, Kendall, Cramer's V)
     to analyze relationships between all columns in the dataset.
 
-    Args:
-    * No parameters required.
+
     """
 
     def generate_metrics(self, context: "Context") -> Sequence[MetricOrContainer]:
@@ -144,8 +138,6 @@ class CorrelationMatrix(DataframeMetric):
     Computes pairwise correlations between all columns using the specified method.
     Returns a dataframe with correlation values for all column pairs.
 
-    Args:
-    * `kind`: Correlation method: "auto", "pearson", "spearman", "kendall", or "cramer_v" (default: "auto").
     """
 
     kind: Literal["auto", "pearson", "spearman", "kendall", "cramer_v"] = "auto"

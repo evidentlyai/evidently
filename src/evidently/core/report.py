@@ -61,9 +61,6 @@ class ContextColumnData:
 
     Provides access to column information and categorical labels during metric computation.
     Used internally by metrics to access column data and type information.
-
-    Args:
-    * `column`: The `DatasetColumn` to wrap.
     """
 
     _column: DatasetColumn
@@ -108,9 +105,6 @@ class ReferenceMetricNotFound(BaseException):
 
     This exception is raised when trying to access a reference metric result
     that was not computed (e.g., when no reference dataset was provided).
-
-    Args:
-    * `metric_id`: The ID of the metric that was not found in reference results.
     """
 
     def __init__(self, metric_id: MetricId):
@@ -136,9 +130,6 @@ class Context:
 
     The `Context` is created automatically when you call `Report.run()` and is passed
     to metrics during calculation. You typically don't create `Context` objects directly.
-
-    Args:
-    * `report`: The `Report` configuration that defines which metrics to compute.
     """
 
     _configuration: "Report"
@@ -484,10 +475,6 @@ class SnapshotItem:
 
     Contains the metric identifier and associated visualization widgets.
     Used internally to organize metric results in a `Snapshot`.
-
-    Args:
-    * `metric_id`: Optional identifier of the metric.
-    * `widgets`: List of HTML widgets for visualizing the metric results.
     """
 
     metric_id: Optional[MetricId]

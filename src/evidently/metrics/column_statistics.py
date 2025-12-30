@@ -133,8 +133,6 @@ class MinValue(StatisticsMetric):
     Returns the smallest value in the specified column. Useful for understanding
     the lower bound of your data distribution.
 
-    Args:
-    * `column`: Name of the numerical column to analyze.
     """
 
     pass
@@ -154,8 +152,6 @@ class MeanValue(StatisticsMetric):
     Computes the arithmetic mean of all values in the specified column.
     Useful for understanding the central tendency of your data.
 
-    Args:
-    * `column`: Name of the numerical column to analyze.
     """
 
     pass
@@ -175,8 +171,6 @@ class MaxValue(StatisticsMetric):
     Returns the largest value in the specified column. Useful for understanding
     the upper bound of your data distribution.
 
-    Args:
-    * `column`: Name of the numerical column to analyze.
     """
 
     pass
@@ -196,8 +190,6 @@ class StdValue(StatisticsMetric):
     Computes the standard deviation, measuring the spread or variability of values
     around the mean. Higher values indicate more variability.
 
-    Args:
-    * `column`: Name of the numerical column to analyze.
     """
 
     pass
@@ -217,8 +209,6 @@ class MedianValue(StatisticsMetric):
     Returns the middle value when all values are sorted. More robust to outliers
     than the mean. Useful for understanding the central tendency of skewed data.
 
-    Args:
-    * `column`: Name of the numerical column to analyze.
     """
 
     pass
@@ -238,9 +228,6 @@ class QuantileValue(StatisticsMetric):
     Returns the value at a specific quantile (e.g., 0.25 for first quartile,
     0.5 for median, 0.75 for third quartile). Defaults to 0.5 (median).
 
-    Args:
-    * `column`: Name of the numerical column to analyze.
-    * `quantile`: Quantile to compute (0.0 to 1.0). Default: 0.5.
     """
 
     quantile: float = 0.5
@@ -261,8 +248,6 @@ class SumValue(StatisticsMetric):
     Returns the total of all values in the specified column. Useful for
     aggregating numerical data.
 
-    Args:
-    * `column`: Name of the numerical column to analyze.
     """
 
     pass
@@ -282,12 +267,6 @@ class CategoryCount(ColumnMetric, CountMetric):
     Counts how many times specific category values appear in the column.
     Can count a single category or multiple categories (for joint share).
 
-    Args:
-    * `column`: Name of the categorical column to analyze.
-    * `category`: Single category value to count (optional).
-    * `categories`: List of category values to count (optional).
-    * `tests`: Optional list of test conditions.
-    * `share_tests`: Optional list of tests for the share (percentage).
 
     Example:
     ```python
@@ -360,12 +339,6 @@ class InRangeValueCount(ColumnMetric, CountMetric):
     Counts how many values fall within the range [left, right] (inclusive).
     Returns both count and share (percentage) of values in range.
 
-    Args:
-    * `column`: Name of the numerical column to analyze.
-    * `left`: Lower bound of the range (inclusive).
-    * `right`: Upper bound of the range (inclusive).
-    * `tests`: Optional list of test conditions.
-    * `share_tests`: Optional list of tests for the share (percentage).
 
     Example:
     ```python
@@ -408,12 +381,6 @@ class OutRangeValueCount(ColumnMetric, CountMetric):
     Counts how many values fall outside the range [left, right].
     Returns both count and share (percentage) of values out of range.
 
-    Args:
-    * `column`: Name of the numerical column to analyze.
-    * `left`: Lower bound of the range.
-    * `right`: Upper bound of the range.
-    * `tests`: Optional list of test conditions.
-    * `share_tests`: Optional list of tests for the share (percentage).
     """
 
     left: Union[int, float]
@@ -451,11 +418,6 @@ class InListValueCount(ColumnMetric, CountMetric):
     Counts how many values in the column appear in the provided list.
     Returns both count and share (percentage) of matching values.
 
-    Args:
-    * `column`: Name of the column to analyze.
-    * `values`: List of values to match against.
-    * `tests`: Optional list of test conditions.
-    * `share_tests`: Optional list of tests for the share (percentage).
     """
 
     values: List[Label]
@@ -491,11 +453,6 @@ class OutListValueCount(ColumnMetric, CountMetric):
     Counts how many values in the column do not appear in the provided list.
     Returns both count and share (percentage) of non-matching values.
 
-    Args:
-    * `column`: Name of the column to analyze.
-    * `values`: List of values to check against.
-    * `tests`: Optional list of test conditions.
-    * `share_tests`: Optional list of tests for the share (percentage).
 
     Example:
     ```python
@@ -536,10 +493,6 @@ class MissingValueCount(ColumnMetric, CountMetric):
     Identifies and counts missing values (NaN, None, etc.) in the specified column.
     Returns both count and share (percentage) of missing values.
 
-    Args:
-    * `column`: Name of the column to analyze.
-    * `tests`: Optional list of test conditions.
-    * `share_tests`: Optional list of tests for the share (percentage).
     """
 
     def _default_tests(self, context: Context) -> List[BoundTest]:
@@ -576,11 +529,6 @@ class ValueDrift(ColumnMetric, SingleValueMetric):
     Supports numerical, categorical, and text columns with various drift detection methods.
     Requires reference data to compute drift.
 
-    Args:
-    * `column`: Name of the column to analyze for drift.
-    * `method`: Optional drift detection method. Auto-selected based on column type if not specified.
-    * `threshold`: Optional drift threshold. Uses default for the selected method if not specified.
-    * `tests`: Optional list of test conditions.
 
     See Also:
     * [Drift Methods Documentation](https://docs.evidentlyai.com/metrics/customize_data_drift) for available methods.
@@ -788,23 +736,6 @@ class DriftedColumnsCount(CountMetric):
     Calculates how many columns show significant drift between current and reference datasets.
     Each column is tested for drift using the specified method. Requires reference data.
 
-    Args:
-    * `columns`: Optional list of column names to analyze. If None, analyzes all columns.
-    * `embeddings`: Optional list of embedding column names.
-    * `drift_share`: Threshold for drift share (default: 0.5, i.e., 50% of columns).
-    * `method`: Optional drift detection method (auto-selected if None).
-    * `cat_method`: Optional method for categorical columns.
-    * `num_method`: Optional method for numerical columns.
-    * `text_method`: Optional method for text columns.
-    * `per_column_method`: Optional dictionary mapping column names to methods.
-    * `threshold`: Optional drift threshold (uses method default if None).
-    * `cat_threshold`: Optional threshold for categorical columns.
-    * `num_threshold`: Optional threshold for numerical columns.
-    * `text_threshold`: Optional threshold for text columns.
-    * `per_column_threshold`: Optional dictionary mapping column names to thresholds.
-    * `embeddings_drift_method`: Optional dictionary mapping embedding columns to drift methods.
-    * `tests`: Optional list of test conditions.
-    * `share_tests`: Optional list of tests for the share (percentage).
 
     See Also:
     * [Drift Methods Documentation](https://docs.evidentlyai.com/metrics/customize_data_drift) for available methods.
