@@ -526,14 +526,6 @@ evaluations (e.g., <code><a href="#LLMEval">LLMEval</a></code>, <code><a href="#
 
 <p>Creates a boolean descriptor column indicating whether each value in the
 input column satisfies the condition. Useful for filtering or flagging rows.</p>
-
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#ColumnTest.column">column</a></code>: Name of the input column to test.</li>
-<li><code><a href="#ColumnTest.condition">condition</a></code>: <code>ColumnCondition</code> or <code>GenericTest</code> to apply.</li>
-<li><code><a href="#ColumnTest.alias">alias</a></code>: Optional alias name (defaults to condition's default alias).</li>
-</ul>
 </div>
 
 
@@ -1789,19 +1781,6 @@ input column satisfies the condition. Useful for filtering or flagging rows.</p>
 <li>Whether any test fails for each row</li>
 <li>Count and rate of passing tests</li>
 <li>Weighted score across tests</li>
-</ul>
-
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#TestSummary.success_all">success_all</a></code>: If <code>True</code>, compute "all tests pass" indicator.</li>
-<li><code><a href="#TestSummary.success_any">success_any</a></code>: If <code>True</code>, compute "any test fails" indicator.</li>
-<li><code><a href="#TestSummary.success_count">success_count</a></code>: If <code>True</code>, compute count of passing tests.</li>
-<li><code><a href="#TestSummary.success_rate">success_rate</a></code>: If <code>True</code>, compute proportion of passing tests.</li>
-<li><code><a href="#TestSummary.score">score</a></code>: If <code>True</code>, compute weighted score across tests.</li>
-<li><code><a href="#TestSummary.score_weights">score_weights</a></code>: Optional dictionary mapping test names to weights.</li>
-<li><code><a href="#TestSummary.alias">alias</a></code>: Optional alias name for output columns (defaults to "summary").</li>
-<li><code><a href="#TestSummary.normalize_scores">normalize_scores</a></code>: If <code>True</code>, normalize scores by total weight.</li>
 </ul>
 </div>
 

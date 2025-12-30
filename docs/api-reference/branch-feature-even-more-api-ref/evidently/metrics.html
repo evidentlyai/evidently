@@ -1173,16 +1173,6 @@ Examples include <code>ColumnMetricGenerator</code> and preset classes like <cod
 <p>Counts how many times specific category values appear in the column.
 Can count a single category or multiple categories (for joint share).</p>
 
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#CategoryCount.column">column</a></code>: Name of the categorical column to analyze.</li>
-<li><code><a href="#CategoryCount.category">category</a></code>: Single category value to count (optional).</li>
-<li><code><a href="#CategoryCount.categories">categories</a></code>: List of category values to count (optional).</li>
-<li><code><a href="#CategoryCount.tests">tests</a></code>: Optional list of test conditions.</li>
-<li><code><a href="#CategoryCount.share_tests">share_tests</a></code>: Optional list of tests for the share (percentage).</li>
-</ul>
-
 <p>Example:</p>
 
 <div class="pdoc-code codehilite">
@@ -1276,15 +1266,6 @@ Can count a single category or multiple categories (for joint share).</p>
 Supports numerical, categorical, and text columns with various drift detection methods.
 Requires reference data to compute drift.</p>
 
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#ValueDrift.column">column</a></code>: Name of the column to analyze for drift.</li>
-<li><code><a href="#ValueDrift.method">method</a></code>: Optional drift detection method. Auto-selected based on column type if not specified.</li>
-<li><code><a href="#ValueDrift.threshold">threshold</a></code>: Optional drift threshold. Uses default for the selected method if not specified.</li>
-<li><code><a href="#ValueDrift.tests">tests</a></code>: Optional list of test conditions.</li>
-</ul>
-
 <p>See Also:</p>
 
 <ul>
@@ -1356,27 +1337,6 @@ Requires reference data to compute drift.</p>
 
 <p>Calculates how many columns show significant drift between current and reference datasets.
 Each column is tested for drift using the specified method. Requires reference data.</p>
-
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#DriftedColumnsCount.columns">columns</a></code>: Optional list of column names to analyze. If None, analyzes all columns.</li>
-<li><code><a href="#DriftedColumnsCount.embeddings">embeddings</a></code>: Optional list of embedding column names.</li>
-<li><code><a href="#DriftedColumnsCount.drift_share">drift_share</a></code>: Threshold for drift share (default: 0.5, i.e., 50% of columns).</li>
-<li><code><a href="#DriftedColumnsCount.method">method</a></code>: Optional drift detection method (auto-selected if None).</li>
-<li><code><a href="#DriftedColumnsCount.cat_method">cat_method</a></code>: Optional method for categorical columns.</li>
-<li><code><a href="#DriftedColumnsCount.num_method">num_method</a></code>: Optional method for numerical columns.</li>
-<li><code><a href="#DriftedColumnsCount.text_method">text_method</a></code>: Optional method for text columns.</li>
-<li><code><a href="#DriftedColumnsCount.per_column_method">per_column_method</a></code>: Optional dictionary mapping column names to methods.</li>
-<li><code><a href="#DriftedColumnsCount.threshold">threshold</a></code>: Optional drift threshold (uses method default if None).</li>
-<li><code><a href="#DriftedColumnsCount.cat_threshold">cat_threshold</a></code>: Optional threshold for categorical columns.</li>
-<li><code><a href="#DriftedColumnsCount.num_threshold">num_threshold</a></code>: Optional threshold for numerical columns.</li>
-<li><code><a href="#DriftedColumnsCount.text_threshold">text_threshold</a></code>: Optional threshold for text columns.</li>
-<li><code><a href="#DriftedColumnsCount.per_column_threshold">per_column_threshold</a></code>: Optional dictionary mapping column names to thresholds.</li>
-<li><code><a href="#DriftedColumnsCount.embeddings_drift_method">embeddings_drift_method</a></code>: Optional dictionary mapping embedding columns to drift methods.</li>
-<li><code><a href="#DriftedColumnsCount.tests">tests</a></code>: Optional list of test conditions.</li>
-<li><code><a href="#DriftedColumnsCount.share_tests">share_tests</a></code>: Optional list of tests for the share (percentage).</li>
-</ul>
 
 <p>See Also:</p>
 
@@ -1603,12 +1563,6 @@ Each column is tested for drift using the specified method. Requires reference d
 
 <p>Returns the largest value in the specified column. Useful for understanding
 the upper bound of your data distribution.</p>
-
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#MaxValue.column">column</a></code>: Name of the numerical column to analyze.</li>
-</ul>
 </div>
 
 
@@ -1649,12 +1603,6 @@ the upper bound of your data distribution.</p>
 
 <p>Computes the arithmetic mean of all values in the specified column.
 Useful for understanding the central tendency of your data.</p>
-
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#MeanValue.column">column</a></code>: Name of the numerical column to analyze.</li>
-</ul>
 </div>
 
 
@@ -1695,12 +1643,6 @@ Useful for understanding the central tendency of your data.</p>
 
 <p>Returns the middle value when all values are sorted. More robust to outliers
 than the mean. Useful for understanding the central tendency of skewed data.</p>
-
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#MedianValue.column">column</a></code>: Name of the numerical column to analyze.</li>
-</ul>
 </div>
 
 
@@ -1741,12 +1683,6 @@ than the mean. Useful for understanding the central tendency of skewed data.</p>
 
 <p>Returns the smallest value in the specified column. Useful for understanding
 the lower bound of your data distribution.</p>
-
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#MinValue.column">column</a></code>: Name of the numerical column to analyze.</li>
-</ul>
 </div>
 
 
@@ -1787,14 +1723,6 @@ the lower bound of your data distribution.</p>
 
 <p>Identifies and counts missing values (NaN, None, etc.) in the specified column.
 Returns both count and share (percentage) of missing values.</p>
-
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#MissingValueCount.column">column</a></code>: Name of the column to analyze.</li>
-<li><code><a href="#MissingValueCount.tests">tests</a></code>: Optional list of test conditions.</li>
-<li><code><a href="#MissingValueCount.share_tests">share_tests</a></code>: Optional list of tests for the share (percentage).</li>
-</ul>
 </div>
 
 
@@ -1837,15 +1765,6 @@ Returns both count and share (percentage) of missing values.</p>
 
 <p>Counts how many values in the column appear in the provided list.
 Returns both count and share (percentage) of matching values.</p>
-
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#InListValueCount.column">column</a></code>: Name of the column to analyze.</li>
-<li><code><a href="#InListValueCount.values">values</a></code>: List of values to match against.</li>
-<li><code><a href="#InListValueCount.tests">tests</a></code>: Optional list of test conditions.</li>
-<li><code><a href="#InListValueCount.share_tests">share_tests</a></code>: Optional list of tests for the share (percentage).</li>
-</ul>
 </div>
 
 
@@ -1901,16 +1820,6 @@ Returns both count and share (percentage) of matching values.</p>
 
 <p>Counts how many values fall within the range [left, right] (inclusive).
 Returns both count and share (percentage) of values in range.</p>
-
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#InRangeValueCount.column">column</a></code>: Name of the numerical column to analyze.</li>
-<li><code><a href="#InRangeValueCount.left">left</a></code>: Lower bound of the range (inclusive).</li>
-<li><code><a href="#InRangeValueCount.right">right</a></code>: Upper bound of the range (inclusive).</li>
-<li><code><a href="#InRangeValueCount.tests">tests</a></code>: Optional list of test conditions.</li>
-<li><code><a href="#InRangeValueCount.share_tests">share_tests</a></code>: Optional list of tests for the share (percentage).</li>
-</ul>
 
 <p>Example:</p>
 
@@ -1987,15 +1896,6 @@ Returns both count and share (percentage) of values in range.</p>
 <p>Counts how many values in the column do not appear in the provided list.
 Returns both count and share (percentage) of non-matching values.</p>
 
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#OutListValueCount.column">column</a></code>: Name of the column to analyze.</li>
-<li><code><a href="#OutListValueCount.values">values</a></code>: List of values to check against.</li>
-<li><code><a href="#OutListValueCount.tests">tests</a></code>: Optional list of test conditions.</li>
-<li><code><a href="#OutListValueCount.share_tests">share_tests</a></code>: Optional list of tests for the share (percentage).</li>
-</ul>
-
 <p>Example:</p>
 
 <div class="pdoc-code codehilite">
@@ -2057,16 +1957,6 @@ Returns both count and share (percentage) of non-matching values.</p>
 
 <p>Counts how many values fall outside the range [left, right].
 Returns both count and share (percentage) of values out of range.</p>
-
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#OutRangeValueCount.column">column</a></code>: Name of the numerical column to analyze.</li>
-<li><code><a href="#OutRangeValueCount.left">left</a></code>: Lower bound of the range.</li>
-<li><code><a href="#OutRangeValueCount.right">right</a></code>: Upper bound of the range.</li>
-<li><code><a href="#OutRangeValueCount.tests">tests</a></code>: Optional list of test conditions.</li>
-<li><code><a href="#OutRangeValueCount.share_tests">share_tests</a></code>: Optional list of tests for the share (percentage).</li>
-</ul>
 </div>
 
 
@@ -2135,13 +2025,6 @@ Returns both count and share (percentage) of values out of range.</p>
 
 <p>Returns the value at a specific quantile (e.g., 0.25 for first quartile,
 0.5 for median, 0.75 for third quartile). Defaults to 0.5 (median).</p>
-
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#QuantileValue.column">column</a></code>: Name of the numerical column to analyze.</li>
-<li><code><a href="#QuantileValue.quantile">quantile</a></code>: Quantile to compute (0.0 to 1.0). Default: 0.5.</li>
-</ul>
 </div>
 
 
@@ -2195,12 +2078,6 @@ Returns both count and share (percentage) of values out of range.</p>
 
 <p>Computes the standard deviation, measuring the spread or variability of values
 around the mean. Higher values indicate more variability.</p>
-
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#StdValue.column">column</a></code>: Name of the numerical column to analyze.</li>
-</ul>
 </div>
 
 
@@ -2241,12 +2118,6 @@ around the mean. Higher values indicate more variability.</p>
 
 <p>Returns the total of all values in the specified column. Useful for
 aggregating numerical data.</p>
-
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#SumValue.column">column</a></code>: Name of the numerical column to analyze.</li>
-</ul>
 </div>
 
 
@@ -2336,13 +2207,6 @@ of the total values they represent. Useful for understanding data cardinality.</
 
 <p>Can count all columns or filter by column type (numerical, categorical, text, datetime).
 Useful for monitoring schema changes and data structure.</p>
-
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#ColumnCount.column_type">column_type</a></code>: Optional column type to filter by. If None, counts all columns.</li>
-<li><code><a href="#ColumnCount.tests">tests</a></code>: Optional list of test conditions.</li>
-</ul>
 </div>
 
 
@@ -2392,12 +2256,6 @@ Useful for monitoring schema changes and data structure.</p>
 
 <p>Returns the number of rows (records) in the dataset. Useful for understanding
 dataset size and monitoring changes in data volume.</p>
-
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#RowCount.tests">tests</a></code>: Optional list of test conditions.</li>
-</ul>
 </div>
 
 
@@ -2434,12 +2292,6 @@ dataset size and monitoring changes in data volume.</p>
 
 <p>Identifies and counts rows that are completely identical to other rows.
 Useful for data quality checks.</p>
-
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#DuplicatedRowCount.tests">tests</a></code>: Optional list of test conditions.</li>
-</ul>
 </div>
 
 
@@ -2476,12 +2328,6 @@ Useful for data quality checks.</p>
 
 <p>Identifies columns that are completely identical to other columns.
 Useful for detecting redundant features.</p>
-
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#DuplicatedColumnsCount.tests">tests</a></code>: Optional list of test conditions.</li>
-</ul>
 </div>
 
 
@@ -2565,12 +2411,6 @@ Displays missing value counts per column.</p>
 
 <p>Identifies columns where 95% or more of the values are the same.
 These columns provide little information and may indicate data quality issues.</p>
-
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#AlmostConstantColumnsCount.tests">tests</a></code>: Optional list of test conditions.</li>
-</ul>
 </div>
 
 
@@ -2607,12 +2447,6 @@ These columns provide little information and may indicate data quality issues.</
 
 <p>Identifies columns that are nearly identical (within a small epsilon threshold).
 Useful for detecting highly correlated or redundant features.</p>
-
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#AlmostDuplicatedColumnsCount.tests">tests</a></code>: Optional list of test conditions.</li>
-</ul>
 </div>
 
 
@@ -2691,12 +2525,6 @@ These columns provide no information and should typically be removed.</p>
 
 <p>Identifies rows where all values are missing or empty.
 Useful for data quality monitoring.</p>
-
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#EmptyRowsCount.tests">tests</a></code>: Optional list of test conditions.</li>
-</ul>
 </div>
 
 
@@ -2733,12 +2561,6 @@ Useful for data quality monitoring.</p>
 
 <p>Identifies columns where all values are missing or empty.
 Useful for detecting unused or broken data sources.</p>
-
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#EmptyColumnsCount.tests">tests</a></code>: Optional list of test conditions.</li>
-</ul>
 </div>
 
 
@@ -2907,16 +2729,6 @@ to compare your model against.</p>
 
 <p>F1 score balances precision and recall, providing a single metric for
 classification performance. Higher values indicate better performance.</p>
-
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#F1Score.classification_name">classification_name</a></code>: Name of the classification task (default: "default").</li>
-<li><code><a href="#F1Score.probas_threshold">probas_threshold</a></code>: Optional probability threshold for binary classification.</li>
-<li><code><a href="#F1Score.k">k</a></code>: Optional top-k value for multiclass classification.</li>
-<li><code><a href="#F1Score.conf_matrix">conf_matrix</a></code>: Whether to show confusion matrix visualization (default: True).</li>
-<li><code><a href="#F1Score.tests">tests</a></code>: Optional list of test conditions.</li>
-</ul>
 </div>
 
 
@@ -2966,15 +2778,6 @@ classification performance. Higher values indicate better performance.</p>
 
 <p>Accuracy measures the fraction of predictions that match the true labels.
 Simple and intuitive, but can be misleading for imbalanced datasets.</p>
-
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#Accuracy.classification_name">classification_name</a></code>: Name of the classification task (default: "default").</li>
-<li><code><a href="#Accuracy.probas_threshold">probas_threshold</a></code>: Optional probability threshold for binary classification.</li>
-<li><code><a href="#Accuracy.k">k</a></code>: Optional top-k value for multiclass classification.</li>
-<li><code><a href="#Accuracy.tests">tests</a></code>: Optional list of test conditions.</li>
-</ul>
 </div>
 
 
@@ -3011,18 +2814,6 @@ Simple and intuitive, but can be misleading for imbalanced datasets.</p>
 
 <p>Precision measures how many of the predicted positive cases are actually positive.
 Useful when false positives are costly.</p>
-
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#Precision.classification_name">classification_name</a></code>: Name of the classification task (default: "default").</li>
-<li><code><a href="#Precision.probas_threshold">probas_threshold</a></code>: Optional probability threshold (default: 0.5 for probabilistic).</li>
-<li><code><a href="#Precision.k">k</a></code>: Optional top-k value for multiclass classification.</li>
-<li><code><a href="#Precision.conf_matrix">conf_matrix</a></code>: Whether to show confusion matrix (default: True).</li>
-<li><code><a href="#Precision.pr_curve">pr_curve</a></code>: Whether to show precision-recall curve (default: False).</li>
-<li><code><a href="#Precision.pr_table">pr_table</a></code>: Whether to show precision-recall table (default: False).</li>
-<li><code><a href="#Precision.tests">tests</a></code>: Optional list of test conditions.</li>
-</ul>
 
 <p>Note: At least one visualization (<code><a href="#Precision.conf_matrix">conf_matrix</a></code>, <code><a href="#Precision.pr_curve">pr_curve</a></code>, or <code><a href="#Precision.pr_table">pr_table</a></code>) must be enabled.</p>
 </div>
@@ -3101,18 +2892,6 @@ Useful when false positives are costly.</p>
 <p>Recall measures how many of the actual positive cases are correctly predicted.
 Useful when false negatives are costly.</p>
 
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#Recall.classification_name">classification_name</a></code>: Name of the classification task (default: "default").</li>
-<li><code><a href="#Recall.probas_threshold">probas_threshold</a></code>: Optional probability threshold (default: 0.5 for probabilistic).</li>
-<li><code><a href="#Recall.k">k</a></code>: Optional top-k value for multiclass classification.</li>
-<li><code><a href="#Recall.conf_matrix">conf_matrix</a></code>: Whether to show confusion matrix (default: True).</li>
-<li><code><a href="#Recall.pr_curve">pr_curve</a></code>: Whether to show precision-recall curve (default: False).</li>
-<li><code><a href="#Recall.pr_table">pr_table</a></code>: Whether to show precision-recall table (default: False).</li>
-<li><code><a href="#Recall.tests">tests</a></code>: Optional list of test conditions.</li>
-</ul>
-
 <p>Note: At least one visualization (<code><a href="#Recall.conf_matrix">conf_matrix</a></code>, <code><a href="#Recall.pr_curve">pr_curve</a></code>, or <code><a href="#Recall.pr_table">pr_table</a></code>) must be enabled.</p>
 </div>
 
@@ -3190,16 +2969,6 @@ Useful when false negatives are costly.</p>
 <p>TPR measures the proportion of actual positives correctly identified.
 Equivalent to recall. Higher values indicate better detection of positive cases.</p>
 
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#TPR.classification_name">classification_name</a></code>: Name of the classification task (default: "default").</li>
-<li><code><a href="#TPR.probas_threshold">probas_threshold</a></code>: Optional probability threshold.</li>
-<li><code><a href="#TPR.k">k</a></code>: Optional top-k value for multiclass classification.</li>
-<li><code><a href="#TPR.pr_table">pr_table</a></code>: Whether to show precision-recall table (default: False).</li>
-<li><code><a href="#TPR.tests">tests</a></code>: Optional list of test conditions.</li>
-</ul>
-
 <p>Note: <code><a href="#TPR.pr_table">pr_table</a></code> visualization must be enabled.</p>
 </div>
 
@@ -3250,16 +3019,6 @@ Equivalent to recall. Higher values indicate better detection of positive cases.
 
 <p>TNR measures the proportion of actual negatives correctly identified.
 Higher values indicate better detection of negative cases.</p>
-
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#TNR.classification_name">classification_name</a></code>: Name of the classification task (default: "default").</li>
-<li><code><a href="#TNR.probas_threshold">probas_threshold</a></code>: Optional probability threshold.</li>
-<li><code><a href="#TNR.k">k</a></code>: Optional top-k value for multiclass classification.</li>
-<li><code><a href="#TNR.pr_table">pr_table</a></code>: Whether to show precision-recall table (default: False).</li>
-<li><code><a href="#TNR.tests">tests</a></code>: Optional list of test conditions.</li>
-</ul>
 
 <p>Note: <code><a href="#TNR.pr_table">pr_table</a></code> visualization must be enabled.</p>
 </div>
@@ -3312,16 +3071,6 @@ Higher values indicate better detection of negative cases.</p>
 <p>FPR measures the proportion of actual negatives incorrectly classified as positive.
 Lower values are better. FPR = 1 - TNR.</p>
 
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#FPR.classification_name">classification_name</a></code>: Name of the classification task (default: "default").</li>
-<li><code><a href="#FPR.probas_threshold">probas_threshold</a></code>: Optional probability threshold.</li>
-<li><code><a href="#FPR.k">k</a></code>: Optional top-k value for multiclass classification.</li>
-<li><code><a href="#FPR.pr_table">pr_table</a></code>: Whether to show precision-recall table (default: False).</li>
-<li><code><a href="#FPR.tests">tests</a></code>: Optional list of test conditions.</li>
-</ul>
-
 <p>Note: <code><a href="#FPR.pr_table">pr_table</a></code> visualization must be enabled.</p>
 </div>
 
@@ -3372,16 +3121,6 @@ Lower values are better. FPR = 1 - TNR.</p>
 
 <p>FNR measures the proportion of actual positives incorrectly classified as negative.
 Lower values are better. FNR = 1 - TPR.</p>
-
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#FNR.classification_name">classification_name</a></code>: Name of the classification task (default: "default").</li>
-<li><code><a href="#FNR.probas_threshold">probas_threshold</a></code>: Optional probability threshold.</li>
-<li><code><a href="#FNR.k">k</a></code>: Optional top-k value for multiclass classification.</li>
-<li><code><a href="#FNR.pr_table">pr_table</a></code>: Whether to show precision-recall table (default: False).</li>
-<li><code><a href="#FNR.tests">tests</a></code>: Optional list of test conditions.</li>
-</ul>
 
 <p>Note: <code><a href="#FNR.pr_table">pr_table</a></code> visualization must be enabled.</p>
 </div>
@@ -3434,16 +3173,6 @@ Lower values are better. FNR = 1 - TPR.</p>
 <p>Log loss penalizes confident wrong predictions more heavily. Lower values
 indicate better calibrated probability predictions. Requires probability predictions.</p>
 
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#LogLoss.classification_name">classification_name</a></code>: Name of the classification task (default: "default").</li>
-<li><code><a href="#LogLoss.probas_threshold">probas_threshold</a></code>: Optional probability threshold.</li>
-<li><code><a href="#LogLoss.k">k</a></code>: Optional top-k value for multiclass classification.</li>
-<li><code><a href="#LogLoss.pr_table">pr_table</a></code>: Whether to show precision-recall table (default: False).</li>
-<li><code><a href="#LogLoss.tests">tests</a></code>: Optional list of test conditions.</li>
-</ul>
-
 <p>Note: <code><a href="#LogLoss.pr_table">pr_table</a></code> visualization must be enabled. Requires probability predictions.</p>
 </div>
 
@@ -3494,17 +3223,6 @@ indicate better calibrated probability predictions. Requires probability predict
 
 <p>ROC AUC measures the model's ability to distinguish between classes across
 all possible thresholds. Values range from 0 to 1, with 0.5 being random and 1.0 perfect.</p>
-
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#RocAuc.classification_name">classification_name</a></code>: Name of the classification task (default: "default").</li>
-<li><code><a href="#RocAuc.probas_threshold">probas_threshold</a></code>: Optional probability threshold.</li>
-<li><code><a href="#RocAuc.k">k</a></code>: Optional top-k value for multiclass classification.</li>
-<li><code><a href="#RocAuc.roc_curve">roc_curve</a></code>: Whether to show ROC curve (default: True).</li>
-<li><code><a href="#RocAuc.pr_table">pr_table</a></code>: Whether to show precision-recall table (default: False).</li>
-<li><code><a href="#RocAuc.tests">tests</a></code>: Optional list of test conditions.</li>
-</ul>
 
 <p>Note: At least one visualization (<code><a href="#RocAuc.roc_curve">roc_curve</a></code> or <code><a href="#RocAuc.pr_table">pr_table</a></code>) must be enabled.</p>
 </div>
@@ -3749,17 +3467,6 @@ understanding per-class ROC AUC in multiclass problems.</p>
 
 <p>Computes the average prediction error (prediction - target) and its standard deviation.
 Positive values indicate over-prediction, negative values indicate under-prediction.</p>
-
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#MeanError.regression_name">regression_name</a></code>: Name of the regression task (default: "default").</li>
-<li><code><a href="#MeanError.error_plot">error_plot</a></code>: Whether to show error plot visualization (default: True).</li>
-<li><code><a href="#MeanError.error_distr">error_distr</a></code>: Whether to show error distribution (default: False).</li>
-<li><code><a href="#MeanError.error_normality">error_normality</a></code>: Whether to show error normality test (default: False).</li>
-<li><code><a href="#MeanError.mean_tests">mean_tests</a></code>: Optional list of test conditions for mean error.</li>
-<li><code><a href="#MeanError.std_tests">std_tests</a></code>: Optional list of test conditions for standard deviation.</li>
-</ul>
 </div>
 
 
@@ -3853,17 +3560,6 @@ Positive values indicate over-prediction, negative values indicate under-predict
 
 <p>MAE measures the average magnitude of errors without considering direction.
 Lower values indicate better performance. Returns both mean and standard deviation.</p>
-
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#MAE.regression_name">regression_name</a></code>: Name of the regression task (default: "default").</li>
-<li><code><a href="#MAE.error_plot">error_plot</a></code>: Whether to show error plot visualization (default: False).</li>
-<li><code><a href="#MAE.error_distr">error_distr</a></code>: Whether to show error distribution (default: True).</li>
-<li><code><a href="#MAE.error_normality">error_normality</a></code>: Whether to show error normality test (default: False).</li>
-<li><code><a href="#MAE.mean_tests">mean_tests</a></code>: Optional list of test conditions for mean MAE.</li>
-<li><code><a href="#MAE.std_tests">std_tests</a></code>: Optional list of test conditions for standard deviation.</li>
-</ul>
 </div>
 
 
@@ -3957,16 +3653,6 @@ Lower values indicate better performance. Returns both mean and standard deviati
 
 <p>MAPE expresses errors as a percentage of the actual values, making it
 scale-independent. Returns both mean and standard deviation. Lower values are better.</p>
-
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#MAPE.regression_name">regression_name</a></code>: Name of the regression task (default: "default").</li>
-<li><code><a href="#MAPE.perc_error_plot">perc_error_plot</a></code>: Whether to show percentage error plot (default: True).</li>
-<li><code><a href="#MAPE.error_distr">error_distr</a></code>: Whether to show error distribution (default: False).</li>
-<li><code><a href="#MAPE.mean_tests">mean_tests</a></code>: Optional list of test conditions for mean MAPE.</li>
-<li><code><a href="#MAPE.std_tests">std_tests</a></code>: Optional list of test conditions for standard deviation.</li>
-</ul>
 </div>
 
 
@@ -4047,16 +3733,6 @@ scale-independent. Returns both mean and standard deviation. Lower values are be
 
 <p>RMSE measures the square root of the average squared errors. It penalizes
 large errors more than MAE. Lower values indicate better performance.</p>
-
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#RMSE.regression_name">regression_name</a></code>: Name of the regression task (default: "default").</li>
-<li><code><a href="#RMSE.error_plot">error_plot</a></code>: Whether to show error plot visualization (default: False).</li>
-<li><code><a href="#RMSE.error_distr">error_distr</a></code>: Whether to show error distribution (default: True).</li>
-<li><code><a href="#RMSE.error_normality">error_normality</a></code>: Whether to show error normality test (default: False).</li>
-<li><code><a href="#RMSE.tests">tests</a></code>: Optional list of test conditions.</li>
-</ul>
 </div>
 
 
@@ -4133,15 +3809,6 @@ large errors more than MAE. Lower values indicate better performance.</p>
 <p>R² measures how well the model explains the variance in the target variable.
 Values range from negative infinity to 1.0, with 1.0 being perfect fit.
 Higher values indicate better performance.</p>
-
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#R2Score.regression_name">regression_name</a></code>: Name of the regression task (default: "default").</li>
-<li><code><a href="#R2Score.error_distr">error_distr</a></code>: Whether to show error distribution (default: False).</li>
-<li><code><a href="#R2Score.error_normality">error_normality</a></code>: Whether to show error normality test (default: False).</li>
-<li><code><a href="#R2Score.tests">tests</a></code>: Optional list of test conditions.</li>
-</ul>
 </div>
 
 
@@ -4204,15 +3871,6 @@ Higher values indicate better performance.</p>
 
 <p>Returns the largest absolute error across all predictions. Useful for
 identifying worst-case prediction errors.</p>
-
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#AbsMaxError.regression_name">regression_name</a></code>: Name of the regression task (default: "default").</li>
-<li><code><a href="#AbsMaxError.error_distr">error_distr</a></code>: Whether to show error distribution (default: False).</li>
-<li><code><a href="#AbsMaxError.error_normality">error_normality</a></code>: Whether to show error normality test (default: False).</li>
-<li><code><a href="#AbsMaxError.tests">tests</a></code>: Optional list of test conditions.</li>
-</ul>
 </div>
 
 
@@ -4275,12 +3933,6 @@ identifying worst-case prediction errors.</p>
 
 <p>Computes MAE using a simple baseline (e.g., always predict the mean).
 Useful as a baseline to compare your model against.</p>
-
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#DummyMAE.regression_name">regression_name</a></code>: Name of the regression task (default: "default").</li>
-</ul>
 </div>
 
 
@@ -4316,12 +3968,6 @@ Useful as a baseline to compare your model against.</p>
             <div class="docstring"><p>Calculate Mean Absolute Percentage Error for a dummy/baseline regression model.</p>
 
 <p>Computes MAPE using a simple baseline. Useful as a baseline to compare your model against.</p>
-
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#DummyMAPE.regression_name">regression_name</a></code>: Name of the regression task (default: "default").</li>
-</ul>
 </div>
 
 
@@ -4399,14 +4045,6 @@ Useful as a baseline to compare your model against.</p>
 
 <p>Measures the diversity of recommendation scores using entropy. Higher entropy
 indicates more diverse score distribution.</p>
-
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#ScoreDistribution.k">k</a></code>: Number of top items to consider in the ranking.</li>
-<li><code><a href="#ScoreDistribution.ranking_name">ranking_name</a></code>: Name of the ranking task (default: "default").</li>
-<li><code><a href="#ScoreDistribution.tests">tests</a></code>: Optional list of test conditions.</li>
-</ul>
 </div>
 
 
@@ -4515,17 +4153,6 @@ indicate better ranking quality. Values range from 0 to 1.</p>
 
 <p>F-beta is a weighted harmonic mean of precision and recall. Beta controls
 the weight: beta &gt; 1 favors recall, beta &lt; 1 favors precision.</p>
-
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#FBetaTopK.k">k</a></code>: Number of top items to consider in the ranking.</li>
-<li><code><a href="#FBetaTopK.beta">beta</a></code>: Weight factor for recall vs precision (default: 1.0, balanced F1).</li>
-<li><code><a href="#FBetaTopK.ranking_name">ranking_name</a></code>: Name of the ranking task (default: "default").</li>
-<li><code><a href="#FBetaTopK.min_rel_score">min_rel_score</a></code>: Minimum relevance score threshold (optional).</li>
-<li><code><a href="#FBetaTopK.no_feedback_users">no_feedback_users</a></code>: Whether to exclude users with no feedback (default: False).</li>
-<li><code><a href="#FBetaTopK.tests">tests</a></code>: Optional list of test conditions.</li>
-</ul>
 </div>
 
 
@@ -4713,16 +4340,6 @@ Higher values indicate better ranking quality.</p>
 
 <p>Precision measures the proportion of relevant items in the top-k recommendations.
 Higher values indicate better precision.</p>
-
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#PrecisionTopK.k">k</a></code>: Number of top items to consider in the ranking.</li>
-<li><code><a href="#PrecisionTopK.ranking_name">ranking_name</a></code>: Name of the ranking task (default: "default").</li>
-<li><code><a href="#PrecisionTopK.min_rel_score">min_rel_score</a></code>: Minimum relevance score threshold (optional).</li>
-<li><code><a href="#PrecisionTopK.no_feedback_users">no_feedback_users</a></code>: Whether to exclude users with no feedback (default: False).</li>
-<li><code><a href="#PrecisionTopK.tests">tests</a></code>: Optional list of test conditions.</li>
-</ul>
 </div>
 
 
@@ -4805,16 +4422,6 @@ Higher values indicate better coverage of relevant items.</p>
 
 <p>Evaluates how much recommendations favor popular items. Can measure using
 Average Recommendation Popularity (ARP), coverage, or Gini coefficient.</p>
-
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#PopularityBiasMetric.k">k</a></code>: Number of top items to consider in the ranking.</li>
-<li><code><a href="#PopularityBiasMetric.metric">metric</a></code>: Metric type to use: "arp", "coverage", or "gini" (default: "arp").</li>
-<li><code><a href="#PopularityBiasMetric.normalize_arp">normalize_arp</a></code>: Whether to normalize ARP (default: False).</li>
-<li><code><a href="#PopularityBiasMetric.ranking_name">ranking_name</a></code>: Name of the ranking task (default: "default").</li>
-<li><code><a href="#PopularityBiasMetric.tests">tests</a></code>: Optional list of test conditions.</li>
-</ul>
 </div>
 
 
@@ -4903,14 +4510,6 @@ Average Recommendation Popularity (ARP), coverage, or Gini coefficient.</p>
 
 <p>Calculates how different recommendations are across users. Higher values
 indicate more personalized (diverse) recommendations per user.</p>
-
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#Personalization.k">k</a></code>: Number of top items to consider in the ranking.</li>
-<li><code><a href="#Personalization.ranking_name">ranking_name</a></code>: Name of the ranking task (default: "default").</li>
-<li><code><a href="#Personalization.tests">tests</a></code>: Optional list of test conditions.</li>
-</ul>
 </div>
 
 
@@ -4973,15 +4572,6 @@ indicate more personalized (diverse) recommendations per user.</p>
 
 <p>Calculates how diverse items are within a user's top-k recommendations
 based on item features. Higher values indicate more diverse recommendations.</p>
-
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#Diversity.k">k</a></code>: Number of top items to consider in the ranking.</li>
-<li><code><a href="#Diversity.item_features">item_features</a></code>: List of feature column names to use for diversity calculation.</li>
-<li><code><a href="#Diversity.ranking_name">ranking_name</a></code>: Name of the ranking task (default: "default").</li>
-<li><code><a href="#Diversity.tests">tests</a></code>: Optional list of test conditions.</li>
-</ul>
 </div>
 
 
@@ -5057,15 +4647,6 @@ based on item features. Higher values indicate more diverse recommendations.</p>
 
 <p>Evaluates how surprising yet relevant recommendations are. Higher values
 indicate more serendipitous recommendations.</p>
-
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#Serendipity.k">k</a></code>: Number of top items to consider in the ranking.</li>
-<li><code><a href="#Serendipity.item_features">item_features</a></code>: List of feature column names to use for serendipity calculation.</li>
-<li><code><a href="#Serendipity.ranking_name">ranking_name</a></code>: Name of the ranking task (default: "default").</li>
-<li><code><a href="#Serendipity.tests">tests</a></code>: Optional list of test conditions.</li>
-</ul>
 </div>
 
 
@@ -5141,14 +4722,6 @@ indicate more serendipitous recommendations.</p>
 
 <p>Evaluates how novel (less popular) the recommended items are. Higher values
 indicate recommendations of less popular items.</p>
-
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#Novelty.k">k</a></code>: Number of top items to consider in the ranking.</li>
-<li><code><a href="#Novelty.ranking_name">ranking_name</a></code>: Name of the ranking task (default: "default").</li>
-<li><code><a href="#Novelty.tests">tests</a></code>: Optional list of test conditions.</li>
-</ul>
 </div>
 
 
@@ -5211,15 +4784,6 @@ indicate recommendations of less popular items.</p>
 
 <p>Evaluates whether recommendations are biased towards certain item categories
 or groups. Returns a dataframe showing bias distribution across item groups.</p>
-
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#ItemBias.k">k</a></code>: Number of top items to consider in the ranking.</li>
-<li><code><a href="#ItemBias.column_name">column_name</a></code>: Name of the column containing item group/category information.</li>
-<li><code><a href="#ItemBias.distribution">distribution</a></code>: Distribution to use: "default" or "train" (default: "default").</li>
-<li><code><a href="#ItemBias.ranking_name">ranking_name</a></code>: Name of the ranking task (default: "default").</li>
-</ul>
 </div>
 
 
@@ -5329,14 +4893,6 @@ or groups. Returns a dataframe showing bias distribution across item groups.</p>
 
 <p>Evaluates whether recommendations are biased towards certain user categories
 or groups. Returns a dataframe showing bias distribution across user groups.</p>
-
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#UserBias.column_name">column_name</a></code>: Name of the column containing user group/category information.</li>
-<li><code><a href="#UserBias.distribution">distribution</a></code>: Distribution to use: "default" or "train" (default: "default").</li>
-<li><code><a href="#UserBias.ranking_name">ranking_name</a></code>: Name of the ranking task (default: "default").</li>
-</ul>
 </div>
 
 
@@ -5434,14 +4990,6 @@ or groups. Returns a dataframe showing bias distribution across user groups.</p>
 <p>Shows detailed recommendation examples for specified users, including
 recommended items, scores, and optional features. Useful for debugging
 and understanding recommendation behavior.</p>
-
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#RecCasesTable.user_ids">user_ids</a></code>: Optional list of user IDs to display. If None, shows all users.</li>
-<li><code><a href="#RecCasesTable.display_features">display_features</a></code>: Optional list of feature columns to display.</li>
-<li><code><a href="#RecCasesTable.ranking_name">ranking_name</a></code>: Name of the ranking task (default: "default").</li>
-</ul>
 </div>
 
 
@@ -5830,12 +5378,6 @@ Automatically selects appropriate correlation methods based on column types:</p>
 <li>Numerical columns: Pearson, Spearman, Kendall</li>
 <li>Categorical columns: Cramer's V</li>
 </ul>
-
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#ColumnCorrelations.column_name">column_name</a></code>: Name of the column to analyze correlations for.</li>
-</ul>
 </div>
 
 
@@ -5937,12 +5479,6 @@ Automatically selects appropriate correlation methods based on column types:</p>
 
 <p>Computes pairwise correlations between all columns using the specified method.
 Returns a dataframe with correlation values for all column pairs.</p>
-
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#CorrelationMatrix.kind">kind</a></code>: Correlation method: "auto", "pearson", "spearman", "kendall", or "cramer_v" (default: "auto").</li>
-</ul>
 </div>
 
 
@@ -5992,12 +5528,6 @@ Returns a dataframe with correlation values for all column pairs.</p>
 
 <p>Generates correlation matrices using multiple methods (Pearson, Spearman, Kendall, Cramer's V)
 to analyze relationships between all columns in the dataset.</p>
-
-<p>Args:</p>
-
-<ul>
-<li>No parameters required.</li>
-</ul>
 </div>
 
 
@@ -6086,13 +5616,6 @@ to analyze relationships between all columns in the dataset.</p>
 
 <p>Computes correlations between the specified column and all other columns using
 the specified method. Returns a dataframe with correlation values.</p>
-
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#ColumnCorrelationMatrix.column_name">column_name</a></code>: Name of the column to analyze correlations for.</li>
-<li><code><a href="#ColumnCorrelationMatrix.kind">kind</a></code>: Correlation method: "auto", "pearson", "spearman", "kendall", or "cramer_v" (default: "auto").</li>
-</ul>
 </div>
 
 

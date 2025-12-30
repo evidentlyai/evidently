@@ -1019,13 +1019,6 @@ Used in <code><a href="#DataDefinition">DataDefinition</a></code> to specify col
     <a class="headerlink" href="#ColumnInfo"></a>
     
             <div class="docstring"><p>Information about a column's type and role.</p>
-
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#ColumnInfo.type">type</a></code>: <code>ColumnType</code> of the column (numerical, categorical, text, etc.).</li>
-<li><code><a href="#ColumnInfo.role">role</a></code>: <code><a href="#ColumnRole">ColumnRole</a></code> of the column (target, feature, etc.).</li>
-</ul>
 </div>
 
 
@@ -1701,12 +1694,6 @@ Used in <code><a href="#DataDefinition">DataDefinition</a></code> to specify whi
 
 <p>Used to define special columns that require custom handling or metrics.
 Subclasses can provide custom metrics and column type information.</p>
-
-<p>Args:</p>
-
-<ul>
-<li>Base class - subclasses define specific fields.</li>
-</ul>
 </div>
 
 
@@ -1822,14 +1809,6 @@ Subclasses can provide custom metrics and column type information.</p>
             <div class="docstring"><p>Service columns for special functionality.</p>
 
 <p>Defines columns used for special features like trace linking and human feedback.</p>
-
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#ServiceColumns.trace_link">trace_link</a></code>: Optional column name for trace links.</li>
-<li><code><a href="#ServiceColumns.human_feedback_label">human_feedback_label</a></code>: Optional column name for human feedback labels.</li>
-<li><code><a href="#ServiceColumns.human_feedback_comment">human_feedback_comment</a></code>: Optional column name for human feedback comments.</li>
-</ul>
 </div>
 
 
@@ -2432,13 +2411,6 @@ If <code><a href="#DataDefinition.numerical_descriptors">numerical_descriptors</
 
 <p>Contains the column type and the actual data as a pandas Series.
 Used internally to access column data with type information.</p>
-
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#DatasetColumn.type">type</a></code>: <code>ColumnType</code> or string name of the column type.</li>
-<li><code><a href="#DatasetColumn.data">data</a></code>: <code>pandas.Series</code> containing the column data.</li>
-</ul>
 </div>
 
 
@@ -2504,12 +2476,6 @@ Used internally to access column data with type information.</p>
 
 <p>Used to define conditions that check values in a column (e.g., greater than,
 in range, matches pattern). Used in descriptor tests and column filters.</p>
-
-<p>Args:</p>
-
-<ul>
-<li>Base class - subclasses define specific condition logic.</li>
-</ul>
 </div>
 
 
@@ -2609,14 +2575,6 @@ in range, matches pattern). Used in descriptor tests and column filters.</p>
 
 <p>Defines a condition to test values in a descriptor column. Can be used
 to create derived descriptors based on test results.</p>
-
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#DescriptorTest.condition">condition</a></code>: <code><a href="#ColumnCondition">ColumnCondition</a></code> or <code>GenericTest</code> to apply.</li>
-<li><code><a href="#DescriptorTest.column">column</a></code>: Optional column name (uses parent descriptor column if None).</li>
-<li><code><a href="#DescriptorTest.alias">alias</a></code>: Optional alias name for the test result.</li>
-</ul>
 </div>
 
 
@@ -2716,13 +2674,6 @@ to create derived descriptors based on test results.</p>
 <p>Descriptors compute additional columns from existing data (e.g., text length,
 sentiment score, custom transformations). Used to enrich datasets with
 computed features for evaluation.</p>
-
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#Descriptor.alias">alias</a></code>: Name for the descriptor output column.</li>
-<li><code><a href="#Descriptor.tests">tests</a></code>: Optional list of test conditions to apply to descriptor values.</li>
-</ul>
 </div>
 
 
@@ -2884,14 +2835,6 @@ computed features for evaluation.</p>
 
 <p>Simplifies descriptor implementation for descriptors that only need one
 input column. Subclasses only need to implement <code><a href="#SingleInputDescriptor.generate_data">generate_data()</a></code>.</p>
-
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#SingleInputDescriptor.column">column</a></code>: Name of the input column to process.</li>
-<li><code><a href="#SingleInputDescriptor.alias">alias</a></code>: Name for the descriptor output column.</li>
-<li><code><a href="#SingleInputDescriptor.tests">tests</a></code>: Optional list of test conditions.</li>
-</ul>
 </div>
 
 
@@ -2961,14 +2904,6 @@ input column. Subclasses only need to implement <code><a href="#SingleInputDescr
 
 <p>Creates a boolean descriptor column indicating whether each value in the
 input column satisfies the condition. Useful for filtering or flagging rows.</p>
-
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#ColumnTest.column">column</a></code>: Name of the input column to test.</li>
-<li><code><a href="#ColumnTest.condition">condition</a></code>: <code><a href="#ColumnCondition">ColumnCondition</a></code> or <code>GenericTest</code> to apply.</li>
-<li><code><a href="#ColumnTest.alias">alias</a></code>: Optional alias name (defaults to condition's default alias).</li>
-</ul>
 </div>
 
 
@@ -3077,17 +3012,6 @@ input column satisfies the condition. Useful for filtering or flagging rows.</p>
 
 <p>Defines columns that aggregate test results across multiple descriptors,
 providing summary statistics like "all tests pass", "any test fails", etc.</p>
-
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#TestSummaryInfo.all_column">all_column</a></code>: Optional column name for "all tests pass" indicator.</li>
-<li><code><a href="#TestSummaryInfo.any_column">any_column</a></code>: Optional column name for "any test fails" indicator.</li>
-<li><code><a href="#TestSummaryInfo.count_column">count_column</a></code>: Optional column name for test failure count.</li>
-<li><code><a href="#TestSummaryInfo.rate_column">rate_column</a></code>: Optional column name for test failure rate.</li>
-<li><code><a href="#TestSummaryInfo.score_column">score_column</a></code>: Optional column name for weighted test score.</li>
-<li><code><a href="#TestSummaryInfo.score_weights">score_weights</a></code>: Optional dictionary mapping test names to weights.</li>
-</ul>
 </div>
 
 
@@ -3342,19 +3266,6 @@ providing summary statistics like "all tests pass", "any test fails", etc.</p>
 <li>Count and rate of passing tests</li>
 <li>Weighted score across tests</li>
 </ul>
-
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#TestSummary.success_all">success_all</a></code>: If <code>True</code>, compute "all tests pass" indicator.</li>
-<li><code><a href="#TestSummary.success_any">success_any</a></code>: If <code>True</code>, compute "any test fails" indicator.</li>
-<li><code><a href="#TestSummary.success_count">success_count</a></code>: If <code>True</code>, compute count of passing tests.</li>
-<li><code><a href="#TestSummary.success_rate">success_rate</a></code>: If <code>True</code>, compute proportion of passing tests.</li>
-<li><code><a href="#TestSummary.score">score</a></code>: If <code>True</code>, compute weighted score across tests.</li>
-<li><code><a href="#TestSummary.score_weights">score_weights</a></code>: Optional dictionary mapping test names to weights.</li>
-<li><code><a href="#TestSummary.alias">alias</a></code>: Optional alias name for output columns (defaults to "summary").</li>
-<li><code><a href="#TestSummary.normalize_scores">normalize_scores</a></code>: If <code>True</code>, normalize scores by total weight.</li>
-</ul>
 </div>
 
 
@@ -3593,13 +3504,6 @@ configured flags (success_all, success_any, success_count, etc.).</p>
 <p>Descriptors compute additional columns from existing data (e.g., text length,
 sentiment score, custom transformations). Used to enrich datasets with
 computed features for evaluation.</p>
-
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#FeatureDescriptor.alias">alias</a></code>: Name for the descriptor output column.</li>
-<li><code><a href="#FeatureDescriptor.tests">tests</a></code>: Optional list of test conditions to apply to descriptor values.</li>
-</ul>
 </div>
 
 
@@ -4033,14 +3937,6 @@ computed features for evaluation.</p>
 
 <p>Contains overall dataset statistics including row count, column count,
 and per-column statistics.</p>
-
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#DatasetStats.row_count">row_count</a></code>: Total number of rows in the dataset.</li>
-<li><code><a href="#DatasetStats.column_count">column_count</a></code>: Total number of columns in the dataset.</li>
-<li><code><a href="#DatasetStats.column_stats">column_stats</a></code>: Dictionary mapping column names to their <code><a href="#ColumnStats">ColumnStats</a></code>.</li>
-</ul>
 </div>
 
 

@@ -338,16 +338,6 @@
 
 <p>Optimizes prompts iteratively by evaluating them on a dataset and
 using an optimization strategy to generate improved versions.</p>
-
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#PromptOptimizer.name">name</a></code>: Name of the optimizer instance.</li>
-<li><code>strategy</code>: <code>PromptOptimizerStrategy</code> or strategy name/alias.</li>
-<li><code><a href="#PromptOptimizer.checkpoint_path">checkpoint_path</a></code>: Optional path for saving/loading checkpoints.</li>
-<li><code>verbose</code>: If <code>True</code>, print optimization progress.</li>
-<li><code>**config_kwargs</code>: Additional configuration options.</li>
-</ul>
 </div>
 
 
@@ -553,15 +543,6 @@ based on evaluation scores until early stopping conditions are met.</p>
 
 <p>Tracks the execution of a prompt, including the prompt text and
 the resulting predictions, reasoning, and scores.</p>
-
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#PromptExecutionLog.prompt">prompt</a></code>: The prompt that was executed.</li>
-<li><code><a href="#PromptExecutionLog.result">result</a></code>: <code>LLMResultDataset</code> with execution results.</li>
-<li><code>input_tokens</code>: Number of input tokens used.</li>
-<li><code>output_tokens</code>: Number of output tokens used.</li>
-</ul>
 </div>
 
 
@@ -669,12 +650,6 @@ the resulting predictions, reasoning, and scores.</p>
 
 <p>Automatically creates a binary or multiclass classification judge
 based on the target labels in the dataset, then uses it to execute prompts.</p>
-
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#BlankLLMJudge.kind">kind</a></code>: Optional kind identifier for the judge.</li>
-</ul>
 </div>
 
 

@@ -668,15 +668,6 @@ evaluations without manually selecting individual metrics.</p>
 
 <p>Generates metrics for a simple heuristic-based baseline model (e.g., always predict
 the most common class). Useful as a baseline to compare your model against.</p>
-
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#ClassificationDummyQuality.classification_name">classification_name</a></code>: Name of the classification task (default: "default").</li>
-<li><code><a href="#ClassificationDummyQuality.probas_threshold">probas_threshold</a></code>: Optional probability threshold.</li>
-<li><code><a href="#ClassificationDummyQuality.k">k</a></code>: Optional top-k value for multiclass classification.</li>
-<li><code><a href="#ClassificationDummyQuality.include_tests">include_tests</a></code>: Whether to include automatic tests (default: True).</li>
-</ul>
 </div>
 
 
@@ -824,28 +815,6 @@ the most common class). Useful as a baseline to compare your model against.</p>
 <p>Combines <code><a href="#ClassificationQuality">ClassificationQuality</a></code> and <code><a href="#ClassificationQualityByLabel">ClassificationQualityByLabel</a></code> to provide
 a complete classification evaluation including aggregated metrics, per-label metrics,
 and optional visualizations (confusion matrix, PR curves, ROC curves).</p>
-
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#ClassificationPreset.classification_name">classification_name</a></code>: Name of the classification task (default: "default").</li>
-<li><code><a href="#ClassificationPreset.probas_threshold">probas_threshold</a></code>: Optional probability threshold for binary classification.</li>
-<li><code><a href="#ClassificationPreset.accuracy_tests">accuracy_tests</a></code>: Optional test conditions for accuracy.</li>
-<li><code><a href="#ClassificationPreset.precision_tests">precision_tests</a></code>: Optional test conditions for precision.</li>
-<li><code><a href="#ClassificationPreset.recall_tests">recall_tests</a></code>: Optional test conditions for recall.</li>
-<li><code><a href="#ClassificationPreset.f1score_tests">f1score_tests</a></code>: Optional test conditions for F1 score.</li>
-<li><code><a href="#ClassificationPreset.rocauc_tests">rocauc_tests</a></code>: Optional test conditions for ROC AUC.</li>
-<li><code><a href="#ClassificationPreset.logloss_tests">logloss_tests</a></code>: Optional test conditions for log loss.</li>
-<li><code><a href="#ClassificationPreset.tpr_tests">tpr_tests</a></code>: Optional test conditions for TPR.</li>
-<li><code><a href="#ClassificationPreset.tnr_tests">tnr_tests</a></code>: Optional test conditions for TNR.</li>
-<li><code><a href="#ClassificationPreset.fpr_tests">fpr_tests</a></code>: Optional test conditions for FPR.</li>
-<li><code><a href="#ClassificationPreset.fnr_tests">fnr_tests</a></code>: Optional test conditions for FNR.</li>
-<li><code><a href="#ClassificationPreset.f1score_by_label_tests">f1score_by_label_tests</a></code>: Optional test conditions for F1 score by label.</li>
-<li><code><a href="#ClassificationPreset.precision_by_label_tests">precision_by_label_tests</a></code>: Optional test conditions for precision by label.</li>
-<li><code><a href="#ClassificationPreset.recall_by_label_tests">recall_by_label_tests</a></code>: Optional test conditions for recall by label.</li>
-<li><code><a href="#ClassificationPreset.rocauc_by_label_tests">rocauc_by_label_tests</a></code>: Optional test conditions for ROC AUC by label.</li>
-<li><code><a href="#ClassificationPreset.include_tests">include_tests</a></code>: Whether to include automatic tests (default: True).</li>
-</ul>
 </div>
 
 
@@ -1162,27 +1131,6 @@ and optional visualizations (confusion matrix, PR curves, ROC curves).</p>
 <p>Generates aggregated classification metrics including accuracy, precision, recall,
 F1 score, ROC AUC, log loss, and binary classification rates (TPR, TNR, FPR, FNR).
 Optionally includes visualizations like confusion matrix, PR curve, and PR table.</p>
-
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#ClassificationQuality.classification_name">classification_name</a></code>: Name of the classification task (default: "default").</li>
-<li><code><a href="#ClassificationQuality.probas_threshold">probas_threshold</a></code>: Optional probability threshold for binary classification.</li>
-<li><code><a href="#ClassificationQuality.conf_matrix">conf_matrix</a></code>: Whether to show confusion matrix visualization (default: False).</li>
-<li><code><a href="#ClassificationQuality.pr_curve">pr_curve</a></code>: Whether to show precision-recall curve (default: False).</li>
-<li><code><a href="#ClassificationQuality.pr_table">pr_table</a></code>: Whether to show precision-recall table (default: False).</li>
-<li><code><a href="#ClassificationQuality.accuracy_tests">accuracy_tests</a></code>: Optional test conditions for accuracy.</li>
-<li><code><a href="#ClassificationQuality.precision_tests">precision_tests</a></code>: Optional test conditions for precision.</li>
-<li><code><a href="#ClassificationQuality.recall_tests">recall_tests</a></code>: Optional test conditions for recall.</li>
-<li><code><a href="#ClassificationQuality.f1score_tests">f1score_tests</a></code>: Optional test conditions for F1 score.</li>
-<li><code><a href="#ClassificationQuality.rocauc_tests">rocauc_tests</a></code>: Optional test conditions for ROC AUC.</li>
-<li><code><a href="#ClassificationQuality.logloss_tests">logloss_tests</a></code>: Optional test conditions for log loss.</li>
-<li><code><a href="#ClassificationQuality.tpr_tests">tpr_tests</a></code>: Optional test conditions for TPR.</li>
-<li><code><a href="#ClassificationQuality.tnr_tests">tnr_tests</a></code>: Optional test conditions for TNR.</li>
-<li><code><a href="#ClassificationQuality.fpr_tests">fpr_tests</a></code>: Optional test conditions for FPR.</li>
-<li><code><a href="#ClassificationQuality.fnr_tests">fnr_tests</a></code>: Optional test conditions for FNR.</li>
-<li><code><a href="#ClassificationQuality.include_tests">include_tests</a></code>: Whether to include automatic tests (default: True).</li>
-</ul>
 </div>
 
 
@@ -1485,19 +1433,6 @@ Optionally includes visualizations like confusion matrix, PR curve, and PR table
 
 <p>Generates per-class metrics for multiclass classification including F1, precision,
 recall, and ROC AUC for each label. Useful for understanding per-class performance.</p>
-
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#ClassificationQualityByLabel.classification_name">classification_name</a></code>: Name of the classification task (default: "default").</li>
-<li><code><a href="#ClassificationQualityByLabel.probas_threshold">probas_threshold</a></code>: Optional probability threshold for binary classification.</li>
-<li><code><a href="#ClassificationQualityByLabel.k">k</a></code>: Optional top-k value for multiclass classification.</li>
-<li><code><a href="#ClassificationQualityByLabel.f1score_tests">f1score_tests</a></code>: Optional test conditions for F1 score by label.</li>
-<li><code><a href="#ClassificationQualityByLabel.precision_tests">precision_tests</a></code>: Optional test conditions for precision by label.</li>
-<li><code><a href="#ClassificationQualityByLabel.recall_tests">recall_tests</a></code>: Optional test conditions for recall by label.</li>
-<li><code><a href="#ClassificationQualityByLabel.rocauc_tests">rocauc_tests</a></code>: Optional test conditions for ROC AUC by label.</li>
-<li><code><a href="#ClassificationQualityByLabel.include_tests">include_tests</a></code>: Whether to include automatic tests (default: True).</li>
-</ul>
 </div>
 
 
@@ -1697,24 +1632,6 @@ recall, and ROC AUC for each label. Useful for understanding per-class performan
 <p>Generates multiple metrics for a column including row count, missing values,
 min, max, mean, std, quantiles (0.25, 0.5, 0.75), and unique value counts.
 Metrics vary based on column type (numerical, categorical, datetime, text).</p>
-
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#ValueStats.column">column</a></code>: Name of the column to analyze.</li>
-<li><code><a href="#ValueStats.row_count_tests">row_count_tests</a></code>: Optional test conditions for row count.</li>
-<li><code><a href="#ValueStats.missing_values_count_tests">missing_values_count_tests</a></code>: Optional test conditions for missing values count.</li>
-<li><code><a href="#ValueStats.min_tests">min_tests</a></code>: Optional test conditions for minimum value.</li>
-<li><code><a href="#ValueStats.max_tests">max_tests</a></code>: Optional test conditions for maximum value.</li>
-<li><code><a href="#ValueStats.mean_tests">mean_tests</a></code>: Optional test conditions for mean value.</li>
-<li><code><a href="#ValueStats.std_tests">std_tests</a></code>: Optional test conditions for standard deviation.</li>
-<li><code><a href="#ValueStats.q25_tests">q25_tests</a></code>: Optional test conditions for 25th quantile.</li>
-<li><code><a href="#ValueStats.q50_tests">q50_tests</a></code>: Optional test conditions for 50th quantile (median).</li>
-<li><code><a href="#ValueStats.q75_tests">q75_tests</a></code>: Optional test conditions for 75th quantile.</li>
-<li><code><a href="#ValueStats.unique_values_count_tests">unique_values_count_tests</a></code>: Optional test conditions for unique value counts.</li>
-<li><code><a href="#ValueStats.replace_nan">replace_nan</a></code>: Optional value to replace NaN with for unique value counting.</li>
-<li><code><a href="#ValueStats.include_tests">include_tests</a></code>: Whether to include automatic tests (default: True).</li>
-</ul>
 </div>
 
 
@@ -1985,15 +1902,6 @@ Metrics vary based on column type (numerical, categorical, datetime, text).</p>
 <p>Generates statistics for text descriptors (numerical and categorical descriptors
 computed from text data). Includes row-level test summaries and value statistics
 for descriptor columns.</p>
-
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#TextEvals.columns">columns</a></code>: Optional list of descriptor column names to analyze. If None, uses all descriptors.</li>
-<li><code><a href="#TextEvals.row_count_tests">row_count_tests</a></code>: Optional test conditions for row count.</li>
-<li><code><a href="#TextEvals.column_tests">column_tests</a></code>: Optional dictionary mapping column names to <code>ValueStatsTests</code> configurations.</li>
-<li><code><a href="#TextEvals.include_tests">include_tests</a></code>: Whether to include automatic tests (default: True).</li>
-</ul>
 </div>
 
 
@@ -2167,23 +2075,6 @@ for descriptor columns.</p>
 <p>Generates metrics for overall dataset characteristics including row/column counts,
 duplicated rows/columns, constant columns, empty rows/columns, and missing values.
 Provides a comprehensive overview of dataset structure and quality.</p>
-
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#DatasetStats.row_count_tests">row_count_tests</a></code>: Optional test conditions for row count.</li>
-<li><code><a href="#DatasetStats.column_count_tests">column_count_tests</a></code>: Optional test conditions for column count.</li>
-<li><code><a href="#DatasetStats.duplicated_row_count_tests">duplicated_row_count_tests</a></code>: Optional test conditions for duplicated row count.</li>
-<li><code><a href="#DatasetStats.duplicated_column_count_tests">duplicated_column_count_tests</a></code>: Optional test conditions for duplicated column count.</li>
-<li><code><a href="#DatasetStats.almost_duplicated_column_count_tests">almost_duplicated_column_count_tests</a></code>: Optional test conditions for almost duplicated columns.</li>
-<li><code><a href="#DatasetStats.almost_constant_column_count_tests">almost_constant_column_count_tests</a></code>: Optional test conditions for almost constant columns.</li>
-<li><code><a href="#DatasetStats.empty_row_count_tests">empty_row_count_tests</a></code>: Optional test conditions for empty row count.</li>
-<li><code><a href="#DatasetStats.empty_column_count_tests">empty_column_count_tests</a></code>: Optional test conditions for empty column count.</li>
-<li><code><a href="#DatasetStats.constant_columns_count_tests">constant_columns_count_tests</a></code>: Optional test conditions for constant column count.</li>
-<li><code><a href="#DatasetStats.dataset_missing_value_count_tests">dataset_missing_value_count_tests</a></code>: Optional test conditions for dataset missing value count.</li>
-<li><code><a href="#DatasetStats.dataset_missing_value_share_tests">dataset_missing_value_share_tests</a></code>: Optional test conditions for dataset missing value share.</li>
-<li><code><a href="#DatasetStats.include_tests">include_tests</a></code>: Whether to include automatic tests (default: True).</li>
-</ul>
 </div>
 
 
@@ -2435,24 +2326,6 @@ Provides a comprehensive overview of dataset structure and quality.</p>
 <p>Combines <code><a href="#DatasetStats">DatasetStats</a></code> and <code><a href="#ValueStats">ValueStats</a></code> for all or specified columns to provide
 a comprehensive overview of dataset structure, quality, and column-level statistics.
 This is the most comprehensive preset for exploratory data analysis.</p>
-
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#DataSummaryPreset.columns">columns</a></code>: Optional list of column names to analyze. If None, analyzes all columns.</li>
-<li><code><a href="#DataSummaryPreset.row_count_tests">row_count_tests</a></code>: Optional test conditions for row count.</li>
-<li><code><a href="#DataSummaryPreset.column_count_tests">column_count_tests</a></code>: Optional test conditions for column count.</li>
-<li><code><a href="#DataSummaryPreset.duplicated_row_count_tests">duplicated_row_count_tests</a></code>: Optional test conditions for duplicated row count.</li>
-<li><code><a href="#DataSummaryPreset.duplicated_column_count_tests">duplicated_column_count_tests</a></code>: Optional test conditions for duplicated column count.</li>
-<li><code><a href="#DataSummaryPreset.almost_duplicated_column_count_tests">almost_duplicated_column_count_tests</a></code>: Optional test conditions for almost duplicated columns.</li>
-<li><code><a href="#DataSummaryPreset.almost_constant_column_count_tests">almost_constant_column_count_tests</a></code>: Optional test conditions for almost constant columns.</li>
-<li><code><a href="#DataSummaryPreset.empty_row_count_tests">empty_row_count_tests</a></code>: Optional test conditions for empty row count.</li>
-<li><code><a href="#DataSummaryPreset.empty_column_count_tests">empty_column_count_tests</a></code>: Optional test conditions for empty column count.</li>
-<li><code><a href="#DataSummaryPreset.constant_columns_count_tests">constant_columns_count_tests</a></code>: Optional test conditions for constant column count.</li>
-<li><code><a href="#DataSummaryPreset.dataset_missing_value_count_tests">dataset_missing_value_count_tests</a></code>: Optional test conditions for dataset missing value count.</li>
-<li><code><a href="#DataSummaryPreset.column_tests">column_tests</a></code>: Optional dictionary mapping column names to <code>ValueStatsTests</code> configurations.</li>
-<li><code><a href="#DataSummaryPreset.include_tests">include_tests</a></code>: Whether to include automatic tests (default: True).</li>
-</ul>
 </div>
 
 
@@ -2716,16 +2589,6 @@ This is the most comprehensive preset for exploratory data analysis.</p>
 
 <p>Generates metrics for a simple baseline model (e.g., always predict the mean).
 Useful as a baseline to compare your model against.</p>
-
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#RegressionDummyQuality.regression_name">regression_name</a></code>: Name of the regression task (default: "default").</li>
-<li><code><a href="#RegressionDummyQuality.mae_tests">mae_tests</a></code>: Optional test conditions for dummy MAE.</li>
-<li><code><a href="#RegressionDummyQuality.mape_tests">mape_tests</a></code>: Optional test conditions for dummy MAPE.</li>
-<li><code><a href="#RegressionDummyQuality.rmse_tests">rmse_tests</a></code>: Optional test conditions for dummy RMSE.</li>
-<li><code><a href="#RegressionDummyQuality.include_tests">include_tests</a></code>: Whether to include automatic tests (default: True).</li>
-</ul>
 </div>
 
 
@@ -2886,22 +2749,6 @@ Useful as a baseline to compare your model against.</p>
 <p>Generates aggregated regression metrics including mean error, MAPE, RMSE, MAE,
 R² score, and absolute max error. Optionally includes visualizations like
 predicted vs actual plots, error plots, and error distributions.</p>
-
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#RegressionQuality.regression_name">regression_name</a></code>: Name of the regression task (default: "default").</li>
-<li><code><a href="#RegressionQuality.pred_actual_plot">pred_actual_plot</a></code>: Whether to show predicted vs actual plot (default: False).</li>
-<li><code><a href="#RegressionQuality.error_plot">error_plot</a></code>: Whether to show error plot (default: False).</li>
-<li><code><a href="#RegressionQuality.error_distr">error_distr</a></code>: Whether to show error distribution (default: False).</li>
-<li><code><a href="#RegressionQuality.mean_error_tests">mean_error_tests</a></code>: Optional test conditions for mean error (mean and std).</li>
-<li><code><a href="#RegressionQuality.mape_tests">mape_tests</a></code>: Optional test conditions for MAPE (mean and std).</li>
-<li><code><a href="#RegressionQuality.rmse_tests">rmse_tests</a></code>: Optional test conditions for RMSE.</li>
-<li><code><a href="#RegressionQuality.mae_tests">mae_tests</a></code>: Optional test conditions for MAE (mean and std).</li>
-<li><code><a href="#RegressionQuality.r2score_tests">r2score_tests</a></code>: Optional test conditions for R² score.</li>
-<li><code><a href="#RegressionQuality.abs_max_error_tests">abs_max_error_tests</a></code>: Optional test conditions for absolute max error.</li>
-<li><code><a href="#RegressionQuality.include_tests">include_tests</a></code>: Whether to include automatic tests (default: True).</li>
-</ul>
 </div>
 
 
@@ -3140,19 +2987,6 @@ predicted vs actual plots, error plots, and error distributions.</p>
 <p>Combines <code><a href="#RegressionQuality">RegressionQuality</a></code> with all visualizations enabled to provide a complete
 regression evaluation including mean error, MAPE, RMSE, MAE, R² score, absolute
 max error, and visualizations (predicted vs actual, error plots, error distributions).</p>
-
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#RegressionPreset.regression_name">regression_name</a></code>: Name of the regression task (default: "default").</li>
-<li><code><a href="#RegressionPreset.mean_error_tests">mean_error_tests</a></code>: Optional test conditions for mean error (mean and std).</li>
-<li><code><a href="#RegressionPreset.mape_tests">mape_tests</a></code>: Optional test conditions for MAPE (mean and std).</li>
-<li><code><a href="#RegressionPreset.rmse_tests">rmse_tests</a></code>: Optional test conditions for RMSE.</li>
-<li><code><a href="#RegressionPreset.mae_tests">mae_tests</a></code>: Optional test conditions for MAE (mean and std).</li>
-<li><code><a href="#RegressionPreset.r2score_tests">r2score_tests</a></code>: Optional test conditions for R² score.</li>
-<li><code><a href="#RegressionPreset.abs_max_error_tests">abs_max_error_tests</a></code>: Optional test conditions for absolute max error.</li>
-<li><code><a href="#RegressionPreset.include_tests">include_tests</a></code>: Whether to include automatic tests (default: True).</li>
-</ul>
 </div>
 
 
@@ -3351,26 +3185,6 @@ max error, and visualizations (predicted vs actual, error plots, error distribut
 
 <p>Calculates data drift for all or specified columns using various drift detection methods.
 Generates <code>DriftedColumnsCount</code> and <code>ValueDrift</code> metrics for each column. Requires reference data.</p>
-
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#DataDriftPreset.columns">columns</a></code>: Optional list of column names to analyze. If None, analyzes all columns.</li>
-<li><code><a href="#DataDriftPreset.embeddings">embeddings</a></code>: Optional list of embedding column names.</li>
-<li><code><a href="#DataDriftPreset.embeddings_drift_method">embeddings_drift_method</a></code>: Optional dictionary mapping embedding columns to drift methods.</li>
-<li><code><a href="#DataDriftPreset.drift_share">drift_share</a></code>: Threshold for drift share (default: 0.5, i.e., 50% of columns).</li>
-<li><code><a href="#DataDriftPreset.method">method</a></code>: Optional drift detection method for all columns (auto-selected if None).</li>
-<li><code><a href="#DataDriftPreset.cat_method">cat_method</a></code>: Optional method for categorical columns.</li>
-<li><code><a href="#DataDriftPreset.num_method">num_method</a></code>: Optional method for numerical columns.</li>
-<li><code><a href="#DataDriftPreset.text_method">text_method</a></code>: Optional method for text columns.</li>
-<li><code><a href="#DataDriftPreset.per_column_method">per_column_method</a></code>: Optional dictionary mapping column names to methods.</li>
-<li><code><a href="#DataDriftPreset.threshold">threshold</a></code>: Optional drift threshold for all columns (uses method default if None).</li>
-<li><code><a href="#DataDriftPreset.cat_threshold">cat_threshold</a></code>: Optional threshold for categorical columns.</li>
-<li><code><a href="#DataDriftPreset.num_threshold">num_threshold</a></code>: Optional threshold for numerical columns.</li>
-<li><code><a href="#DataDriftPreset.text_threshold">text_threshold</a></code>: Optional threshold for text columns.</li>
-<li><code><a href="#DataDriftPreset.per_column_threshold">per_column_threshold</a></code>: Optional dictionary mapping column names to thresholds.</li>
-<li><code><a href="#DataDriftPreset.include_tests">include_tests</a></code>: Whether to include automatic tests (default: True).</li>
-</ul>
 
 <p>See Also:</p>
 

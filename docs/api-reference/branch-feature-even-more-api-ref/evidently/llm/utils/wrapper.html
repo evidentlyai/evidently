@@ -452,16 +452,6 @@
 
 <p>Defines limits for requests per minute (RPM) and tokens per minute (TPM)
 to avoid exceeding API rate limits.</p>
-
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#RateLimits.rpm">rpm</a></code>: Optional requests per minute limit.</li>
-<li><code><a href="#RateLimits.itpm">itpm</a></code>: Optional input tokens per minute limit.</li>
-<li><code><a href="#RateLimits.otpm">otpm</a></code>: Optional output tokens per minute limit.</li>
-<li><code><a href="#RateLimits.tpm">tpm</a></code>: Optional total tokens per minute limit.</li>
-<li><code><a href="#RateLimits.interval">interval</a></code>: Time window for rate limiting (default: 1 minute).</li>
-</ul>
 </div>
 
 
@@ -615,13 +605,6 @@ to avoid exceeding API rate limits.</p>
 
 <p>Enforces rate limits on requests and tokens to avoid exceeding API quotas.
 Tracks usage over time windows and blocks requests when limits would be exceeded.</p>
-
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#RateLimiter.limits">limits</a></code>: <code><a href="#RateLimits">RateLimits</a></code> configuration.</li>
-<li><code><a href="#RateLimiter.initial_output_estimation">initial_output_estimation</a></code>: Initial estimate for output token size.</li>
-</ul>
 </div>
 
 
@@ -777,15 +760,6 @@ Tracks usage over time windows and blocks requests when limits would be exceeded
     <a class="headerlink" href="#LLMRequest"></a>
     
             <div class="docstring"><p>Request to an LLM with messages and response parsing.</p>
-
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#LLMRequest.messages">messages</a></code>: List of <code>LLMMessage</code> objects for the conversation.</li>
-<li><code><a href="#LLMRequest.response_parser">response_parser</a></code>: Function to parse the raw string response into <code>TResult</code>.</li>
-<li><code><a href="#LLMRequest.response_type">response_type</a></code>: Type of the expected result.</li>
-<li><code><a href="#LLMRequest.retries">retries</a></code>: Number of retry attempts on failure (default: 1).</li>
-</ul>
 </div>
 
 
@@ -867,14 +841,6 @@ Tracks usage over time windows and blocks requests when limits would be exceeded
     <a class="headerlink" href="#LLMResult"></a>
     
             <div class="docstring"><p>Result from an LLM API call.</p>
-
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#LLMResult.result">result</a></code>: Parsed result value.</li>
-<li><code><a href="#LLMResult.input_tokens">input_tokens</a></code>: Number of input tokens used.</li>
-<li><code><a href="#LLMResult.output_tokens">output_tokens</a></code>: Number of output tokens used.</li>
-</ul>
 </div>
 
 
@@ -1399,15 +1365,6 @@ with rate limiting, batching, and retry logic.</p>
             <div class="docstring"><p>Base class for LLM provider options.</p>
 
 <p>Provides common configuration for API keys, rate limits, and custom API URLs.</p>
-
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#LLMOptions.api_key">api_key</a></code>: Optional API key for the provider.</li>
-<li><code>rpm_limit</code>: Optional requests per minute limit (backward compatibility).</li>
-<li><code><a href="#LLMOptions.limits">limits</a></code>: <code><a href="#RateLimits">RateLimits</a></code> configuration.</li>
-<li><code><a href="#LLMOptions.api_url">api_url</a></code>: Optional custom API URL (for self-hosted providers).</li>
-</ul>
 </div>
 
 
@@ -1550,15 +1507,6 @@ with rate limiting, batching, and retry logic.</p>
     <a class="headerlink" href="#OpenAIKey"></a>
     
             <div class="docstring"><p>Options for OpenAI provider.</p>
-
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#OpenAIKey.api_key">api_key</a></code>: Optional OpenAI API key.</li>
-<li><code>rpm_limit</code>: Optional requests per minute limit.</li>
-<li><code><a href="#OpenAIKey.limits">limits</a></code>: <code><a href="#RateLimits">RateLimits</a></code> configuration (default: 500 RPM).</li>
-<li><code><a href="#OpenAIKey.api_url">api_url</a></code>: Optional custom API URL.</li>
-</ul>
 </div>
 
 
@@ -1617,13 +1565,6 @@ with rate limiting, batching, and retry logic.</p>
 
 <p>Provides async access to OpenAI's chat completion API with rate limiting
 and token tracking.</p>
-
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#OpenAIWrapper.model">model</a></code>: OpenAI model name (e.g., "gpt-4o-mini", "gpt-4").</li>
-<li><code><a href="#OpenAIWrapper.options">options</a></code>: Processing options containing <code><a href="#OpenAIKey">OpenAIKey</a></code>.</li>
-</ul>
 </div>
 
 
@@ -1917,15 +1858,6 @@ with rate limiting, batching, and retry logic.</p>
             <div class="docstring"><p>Base class for LLM provider options.</p>
 
 <p>Provides common configuration for API keys, rate limits, and custom API URLs.</p>
-
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#AnthropicOptions.api_key">api_key</a></code>: Optional API key for the provider.</li>
-<li><code>rpm_limit</code>: Optional requests per minute limit (backward compatibility).</li>
-<li><code><a href="#AnthropicOptions.limits">limits</a></code>: <code><a href="#RateLimits">RateLimits</a></code> configuration.</li>
-<li><code><a href="#AnthropicOptions.api_url">api_url</a></code>: Optional custom API URL (for self-hosted providers).</li>
-</ul>
 </div>
 
 
@@ -2017,15 +1949,6 @@ with rate limiting, batching, and retry logic.</p>
             <div class="docstring"><p>Base class for LLM provider options.</p>
 
 <p>Provides common configuration for API keys, rate limits, and custom API URLs.</p>
-
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#GeminiOptions.api_key">api_key</a></code>: Optional API key for the provider.</li>
-<li><code>rpm_limit</code>: Optional requests per minute limit (backward compatibility).</li>
-<li><code><a href="#GeminiOptions.limits">limits</a></code>: <code><a href="#RateLimits">RateLimits</a></code> configuration.</li>
-<li><code><a href="#GeminiOptions.api_url">api_url</a></code>: Optional custom API URL (for self-hosted providers).</li>
-</ul>
 </div>
 
 
@@ -2105,15 +2028,6 @@ with rate limiting, batching, and retry logic.</p>
             <div class="docstring"><p>Base class for LLM provider options.</p>
 
 <p>Provides common configuration for API keys, rate limits, and custom API URLs.</p>
-
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#VertexAIOptions.api_key">api_key</a></code>: Optional API key for the provider.</li>
-<li><code>rpm_limit</code>: Optional requests per minute limit (backward compatibility).</li>
-<li><code><a href="#VertexAIOptions.limits">limits</a></code>: <code><a href="#RateLimits">RateLimits</a></code> configuration.</li>
-<li><code><a href="#VertexAIOptions.api_url">api_url</a></code>: Optional custom API URL (for self-hosted providers).</li>
-</ul>
 </div>
 
 
@@ -2213,15 +2127,6 @@ with rate limiting, batching, and retry logic.</p>
             <div class="docstring"><p>Base class for LLM provider options.</p>
 
 <p>Provides common configuration for API keys, rate limits, and custom API URLs.</p>
-
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#DeepSeekOptions.api_key">api_key</a></code>: Optional API key for the provider.</li>
-<li><code>rpm_limit</code>: Optional requests per minute limit (backward compatibility).</li>
-<li><code><a href="#DeepSeekOptions.limits">limits</a></code>: <code><a href="#RateLimits">RateLimits</a></code> configuration.</li>
-<li><code><a href="#DeepSeekOptions.api_url">api_url</a></code>: Optional custom API URL (for self-hosted providers).</li>
-</ul>
 </div>
 
 
@@ -2301,15 +2206,6 @@ with rate limiting, batching, and retry logic.</p>
             <div class="docstring"><p>Base class for LLM provider options.</p>
 
 <p>Provides common configuration for API keys, rate limits, and custom API URLs.</p>
-
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#MistralOptions.api_key">api_key</a></code>: Optional API key for the provider.</li>
-<li><code>rpm_limit</code>: Optional requests per minute limit (backward compatibility).</li>
-<li><code><a href="#MistralOptions.limits">limits</a></code>: <code><a href="#RateLimits">RateLimits</a></code> configuration.</li>
-<li><code><a href="#MistralOptions.api_url">api_url</a></code>: Optional custom API URL (for self-hosted providers).</li>
-</ul>
 </div>
 
 
@@ -2401,15 +2297,6 @@ with rate limiting, batching, and retry logic.</p>
             <div class="docstring"><p>Base class for LLM provider options.</p>
 
 <p>Provides common configuration for API keys, rate limits, and custom API URLs.</p>
-
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#OllamaOptions.api_key">api_key</a></code>: Optional API key for the provider.</li>
-<li><code>rpm_limit</code>: Optional requests per minute limit (backward compatibility).</li>
-<li><code><a href="#OllamaOptions.limits">limits</a></code>: <code><a href="#RateLimits">RateLimits</a></code> configuration.</li>
-<li><code><a href="#OllamaOptions.api_url">api_url</a></code>: Optional custom API URL (for self-hosted providers).</li>
-</ul>
 </div>
 
 
@@ -2501,15 +2388,6 @@ with rate limiting, batching, and retry logic.</p>
             <div class="docstring"><p>Base class for LLM provider options.</p>
 
 <p>Provides common configuration for API keys, rate limits, and custom API URLs.</p>
-
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#NebiusOptions.api_key">api_key</a></code>: Optional API key for the provider.</li>
-<li><code>rpm_limit</code>: Optional requests per minute limit (backward compatibility).</li>
-<li><code><a href="#NebiusOptions.limits">limits</a></code>: <code><a href="#RateLimits">RateLimits</a></code> configuration.</li>
-<li><code><a href="#NebiusOptions.api_url">api_url</a></code>: Optional custom API URL (for self-hosted providers).</li>
-</ul>
 </div>
 
 

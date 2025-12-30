@@ -327,24 +327,6 @@
 <p>Generates synthetic data by providing examples to an LLM and asking
 it to generate similar content. Useful for creating training or
 evaluation datasets when you have limited examples.</p>
-
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#FewShotDatasetGenerator.template">template</a></code>: Optional prompt template (string or <code>FewShotPromptTemplate</code>).</li>
-<li><code>examples</code>: Optional list of example strings.</li>
-<li><code>example</code>: Optional single example string (alternative to <code>examples</code>).</li>
-<li><code><a href="#FewShotDatasetGenerator.count">count</a></code>: Number of samples to generate (default: 10).</li>
-<li><code>kind</code>: Type of content to generate (e.g., "texts", "questions").</li>
-<li><code>complexity</code>: Complexity level ("low", "medium", "high").</li>
-<li><code>user</code>: Optional user profile for persona-based generation.</li>
-<li><code><a href="#FewShotDatasetGenerator.sample_spec">sample_spec</a></code>: Optional <code><a href="#GenerationSpec">GenerationSpec</a></code> (alternative to <code>kind</code>/<code>complexity</code>/<code>examples</code>).</li>
-<li><code>service</code>: Optional service specification.</li>
-<li><code><a href="#FewShotDatasetGenerator.additional_prompt_blocks">additional_prompt_blocks</a></code>: Optional additional prompt blocks.</li>
-<li><code><a href="#FewShotDatasetGenerator.model">model</a></code>: LLM model name (default: "gpt-4o-mini").</li>
-<li><code><a href="#FewShotDatasetGenerator.provider">provider</a></code>: LLM provider (default: "openai").</li>
-<li><code><a href="#FewShotDatasetGenerator.options">options</a></code>: Processing options.</li>
-</ul>
 </div>
 
 
@@ -513,25 +495,6 @@ logic to ensure enough unique samples are generated.</p>
 
 <p>Generates both queries and responses using document chunks, creating
 a complete evaluation dataset for RAG systems.</p>
-
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#RagDatasetGenerator.data_collection">data_collection</a></code>: <code>DataCollectionProvider</code> containing documents.</li>
-<li><code><a href="#RagDatasetGenerator.count">count</a></code>: Number of query-response pairs to generate.</li>
-<li><code><a href="#RagDatasetGenerator.model">model</a></code>: LLM model name (default: "gpt-4o-mini").</li>
-<li><code><a href="#RagDatasetGenerator.provider">provider</a></code>: LLM provider (default: "openai").</li>
-<li><code><a href="#RagDatasetGenerator.options">options</a></code>: Processing options.</li>
-<li><code><a href="#RagDatasetGenerator.include_context">include_context</a></code>: If <code>True</code>, include context chunks in output DataFrame.</li>
-<li><code>complexity</code>: Complexity level for generated content.</li>
-<li><code><a href="#RagDatasetGenerator.query_spec">query_spec</a></code>: <code><a href="#GenerationSpec">GenerationSpec</a></code> for query generation.</li>
-<li><code><a href="#RagDatasetGenerator.response_spec">response_spec</a></code>: <code><a href="#GenerationSpec">GenerationSpec</a></code> for response generation.</li>
-<li><code>user</code>: Optional user profile.</li>
-<li><code>service</code>: Optional service specification.</li>
-<li><code><a href="#RagDatasetGenerator.additional_prompt_blocks">additional_prompt_blocks</a></code>: Optional additional prompt blocks.</li>
-<li><code><a href="#RagDatasetGenerator.query_template">query_template</a></code>: Optional query prompt template.</li>
-<li><code><a href="#RagDatasetGenerator.response_template">response_template</a></code>: Optional response prompt template.</li>
-</ul>
 </div>
 
 
@@ -812,23 +775,6 @@ a complete evaluation dataset for RAG systems.</p>
 
 <p>Generates questions/queries that are relevant to provided document chunks,
 useful for creating evaluation datasets for RAG systems.</p>
-
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#RagQueryDatasetGenerator.data_collection">data_collection</a></code>: <code>DataCollectionProvider</code> containing documents to generate queries from.</li>
-<li><code><a href="#RagQueryDatasetGenerator.count">count</a></code>: Number of queries to generate (default: 10).</li>
-<li><code><a href="#RagQueryDatasetGenerator.model">model</a></code>: LLM model name (default: "gpt-4o-mini").</li>
-<li><code><a href="#RagQueryDatasetGenerator.provider">provider</a></code>: LLM provider (default: "openai").</li>
-<li><code><a href="#RagQueryDatasetGenerator.options">options</a></code>: Processing options.</li>
-<li><code>complexity</code>: Complexity level for generated queries.</li>
-<li><code><a href="#RagQueryDatasetGenerator.query_spec">query_spec</a></code>: <code><a href="#GenerationSpec">GenerationSpec</a></code> for query generation.</li>
-<li><code>user</code>: Optional user profile.</li>
-<li><code>service</code>: Optional service specification.</li>
-<li><code><a href="#RagQueryDatasetGenerator.chunks_per_query">chunks_per_query</a></code>: Number of document chunks to use per query (default: 5).</li>
-<li><code><a href="#RagQueryDatasetGenerator.additional_prompt_blocks">additional_prompt_blocks</a></code>: Optional additional prompt blocks.</li>
-<li><code><a href="#RagQueryDatasetGenerator.query_template">query_template</a></code>: Optional query prompt template (string or <code>RagQueryPromptTemplate</code>).</li>
-</ul>
 </div>
 
 
@@ -1094,24 +1040,6 @@ useful for creating evaluation datasets for RAG systems.</p>
 
 <p>Generates responses to queries using relevant document chunks as context,
 useful for creating evaluation datasets for RAG systems.</p>
-
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#RagResponseDatasetGenerator.data_collection">data_collection</a></code>: <code>DataCollectionProvider</code> containing documents.</li>
-<li><code><a href="#RagResponseDatasetGenerator.queries">queries</a></code>: List of queries to generate responses for.</li>
-<li><code><a href="#RagResponseDatasetGenerator.model">model</a></code>: LLM model name (default: "gpt-4o-mini").</li>
-<li><code><a href="#RagResponseDatasetGenerator.provider">provider</a></code>: LLM provider (default: "openai").</li>
-<li><code><a href="#RagResponseDatasetGenerator.options">options</a></code>: Processing options.</li>
-<li><code><a href="#RagResponseDatasetGenerator.include_context">include_context</a></code>: If <code>True</code>, include context chunks in output DataFrame.</li>
-<li><code>complexity</code>: Complexity level for generated responses.</li>
-<li><code><a href="#RagResponseDatasetGenerator.query_spec">query_spec</a></code>: <code><a href="#GenerationSpec">GenerationSpec</a></code> for query type.</li>
-<li><code><a href="#RagResponseDatasetGenerator.response_spec">response_spec</a></code>: <code><a href="#GenerationSpec">GenerationSpec</a></code> for response type.</li>
-<li><code>user</code>: Optional user profile.</li>
-<li><code>service</code>: Optional service specification.</li>
-<li><code><a href="#RagResponseDatasetGenerator.additional_prompt_blocks">additional_prompt_blocks</a></code>: Optional additional prompt blocks.</li>
-<li><code><a href="#RagResponseDatasetGenerator.response_template">response_template</a></code>: Optional response prompt template (string or <code>RagResponsePromptTemplate</code>).</li>
-</ul>
 </div>
 
 
@@ -1338,17 +1266,12 @@ useful for creating evaluation datasets for RAG systems.</p>
     </div>
     <a class="headerlink" href="#UserProfile"></a>
     
-            <div class="docstring"><p>User profile block for dataset generation prompts.</p>
-
-<p>Defines the characteristics of the user persona for generating
-contextually appropriate examples (e.g., intent, role, tone).</p>
-
-<p>Args:</p>
+            <div class="docstring"><p>Assume the user profile is:</p>
 
 <ul>
-<li><code><a href="#UserProfile.intent">intent</a></code>: Optional user intent or goal.</li>
-<li><code><a href="#UserProfile.role">role</a></code>: Optional user role or persona.</li>
-<li><code><a href="#UserProfile.tone">tone</a></code>: Communication tone (default: "neutral").</li>
+<li>Intent: {intent}</li>
+<li>Role: {role}</li>
+<li>Tone: {tone}</li>
 </ul>
 </div>
 
@@ -1387,7 +1310,7 @@ contextually appropriate examples (e.g., intent, role, tone).</p>
     </div>
     <a class="headerlink" href="#UserProfile.tone"></a>
     
-            <div class="docstring"><p>Communication tone.</p>
+            <div class="docstring"><p>Communication tone (default: "neutral").</p>
 </div>
 
 
@@ -1402,15 +1325,7 @@ contextually appropriate examples (e.g., intent, role, tone).</p>
     </div>
     <a class="headerlink" href="#UserProfile.render"></a>
     
-            <div class="docstring"><p>Render the user profile as a formatted string.</p>
-
-<p>Returns:</p>
-
-<ul>
-<li>Formatted string describing the user profile.</li>
-</ul>
-</div>
-
+    
 
                             </div>
                             <div class="inherited">
@@ -1440,16 +1355,8 @@ contextually appropriate examples (e.g., intent, role, tone).</p>
     </div>
     <a class="headerlink" href="#Examples"></a>
     
-            <div class="docstring"><p>Examples block for providing stylistic guidance in prompts.</p>
-
-<p>Contains example strings that guide the LLM to generate similar
-content in style, format, or structure.</p>
-
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#Examples.examples">examples</a></code>: List of example strings to use as guidance.</li>
-</ul>
+            <div class="docstring"><p>Use these examples as stylistic guidance:
+{examples}</p>
 </div>
 
 
@@ -1461,7 +1368,7 @@ content in style, format, or structure.</p>
     </div>
     <a class="headerlink" href="#Examples.examples"></a>
     
-            <div class="docstring"><p>List of example strings to use as guidance.</p>
+            <div class="docstring"><p>List of example strings to use as stylistic guidance.</p>
 </div>
 
 
@@ -1476,15 +1383,7 @@ content in style, format, or structure.</p>
     </div>
     <a class="headerlink" href="#Examples.render"></a>
     
-            <div class="docstring"><p>Render examples as a formatted string.</p>
-
-<p>Returns:</p>
-
-<ul>
-<li>Formatted string listing all examples.</li>
-</ul>
-</div>
-
+    
 
                             </div>
                             <div id="Examples.choice" class="classattr">
@@ -1497,15 +1396,7 @@ content in style, format, or structure.</p>
     </div>
     <a class="headerlink" href="#Examples.choice"></a>
     
-            <div class="docstring"><p>Get a random example from the list.</p>
-
-<p>Returns:</p>
-
-<ul>
-<li>Randomly selected example string.</li>
-</ul>
-</div>
-
+    
 
                             </div>
                             <div class="inherited">
@@ -1535,17 +1426,8 @@ content in style, format, or structure.</p>
     </div>
     <a class="headerlink" href="#ServiceSpec"></a>
     
-            <div class="docstring"><p>Service specification block for describing the system context.</p>
-
-<p>Provides context about the service or system being evaluated,
-helping the LLM generate more relevant examples.</p>
-
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#ServiceSpec.kind">kind</a></code>: Type of service (e.g., "RAG", "chatbot").</li>
-<li><code><a href="#ServiceSpec.purpose">purpose</a></code>: Description of the service's purpose.</li>
-</ul>
+            <div class="docstring"><p>Service: {kind}
+Purpose: {purpose}</p>
 </div>
 
 
@@ -1619,18 +1501,8 @@ helping the LLM generate more relevant examples.</p>
     </div>
     <a class="headerlink" href="#GenerationSpec"></a>
     
-            <div class="docstring"><p>Generation specification block for defining what to generate.</p>
-
-<p>Specifies the type, complexity, and examples for content generation.
-Used in dataset generation prompts to guide the LLM.</p>
-
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#GenerationSpec.kind">kind</a></code>: Type of content to generate (e.g., "questions", "responses").</li>
-<li><code><a href="#GenerationSpec.complexity">complexity</a></code>: Complexity level ("low", "medium", "high").</li>
-<li><code><a href="#GenerationSpec.examples">examples</a></code>: Optional examples to guide generation (can be <code><a href="#Examples">Examples</a></code> object, list of strings, or single string).</li>
-</ul>
+            <div class="docstring"><p>Generate {kind} with {complexity} complexity.
+{examples}</p>
 </div>
 
 
@@ -1697,15 +1569,7 @@ Used in dataset generation prompts to guide the LLM.</p>
     </div>
     <a class="headerlink" href="#GenerationSpec.has_examples"></a>
     
-            <div class="docstring"><p>Check if examples are available.</p>
-
-<p>Returns:</p>
-
-<ul>
-<li><code>True</code> if examples are set and non-empty, <code>False</code> otherwise.</li>
-</ul>
-</div>
-
+    
 
                             </div>
                             <div class="inherited">

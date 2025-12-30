@@ -110,18 +110,6 @@ the same metric for multiple columns or creating metric combinations.</p>
 criteria (column names or types). Useful for applying the same metric to many
 columns without manually creating each instance.</p>
 
-<p>Args:</p>
-
-<ul>
-<li><code>metric_type</code>: <code>ColumnMetric</code> or <code>ColumnMetricContainer</code> class to generate.</li>
-<li><code><a href="#ColumnMetricGenerator.columns">columns</a></code>: Optional list of specific column names to generate metrics for.</li>
-<li><code><a href="#ColumnMetricGenerator.column_types">column_types</a></code>: Column types to match ("all", single type, or list of types).</li>
-<li><code><a href="#ColumnMetricGenerator.metric_kwargs">metric_kwargs</a></code>: Optional dictionary of additional arguments to pass to each metric.</li>
-<li><code><a href="#ColumnMetricGenerator.metric_type_alias">metric_type_alias</a></code>: Optional alias string for the metric type (alternative to <code>metric_type</code>).</li>
-<li><code><a href="#ColumnMetricGenerator.include_tests">include_tests</a></code>: If <code>True</code>, generated metrics will include default tests.</li>
-<li><code>**kwargs</code>: Additional arguments to pass to each metric (alternative to <code><a href="#ColumnMetricGenerator.metric_kwargs">metric_kwargs</a></code>).</li>
-</ul>
-
 <p>Example:</p>
 
 <div class="pdoc-code codehilite">

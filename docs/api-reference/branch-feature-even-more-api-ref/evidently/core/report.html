@@ -272,12 +272,6 @@
 
 <p>Provides access to column information and categorical labels during metric computation.
 Used internally by metrics to access column data and type information.</p>
-
-<p>Args:</p>
-
-<ul>
-<li><code>column</code>: The <code>DatasetColumn</code> to wrap.</li>
-</ul>
 </div>
 
 
@@ -362,12 +356,6 @@ Used internally by metrics to access column data and type information.</p>
 
 <p>This exception is raised when trying to access a reference metric result
 that was not computed (e.g., when no reference dataset was provided).</p>
-
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#ReferenceMetricNotFound.metric_id">metric_id</a></code>: The ID of the metric that was not found in reference results.</li>
-</ul>
 </div>
 
 
@@ -426,12 +414,6 @@ that was not computed (e.g., when no reference dataset was provided).</p>
 
 <p>The <code><a href="#Context">Context</a></code> is created automatically when you call <code><a href="#Report.run">Report.run()</a></code> and is passed
 to metrics during calculation. You typically don't create <code><a href="#Context">Context</a></code> objects directly.</p>
-
-<p>Args:</p>
-
-<ul>
-<li><code>report</code>: The <code><a href="#Report">Report</a></code> configuration that defines which metrics to compute.</li>
-</ul>
 </div>
 
 
@@ -840,13 +822,6 @@ and caches results.</p>
 
 <p>Contains the metric identifier and associated visualization widgets.
 Used internally to organize metric results in a <code><a href="#Snapshot">Snapshot</a></code>.</p>
-
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#SnapshotItem.metric_id">metric_id</a></code>: Optional identifier of the metric.</li>
-<li><code><a href="#SnapshotItem.widgets">widgets</a></code>: List of HTML widgets for visualizing the metric results.</li>
-</ul>
 </div>
 
 

@@ -125,13 +125,6 @@
 
 <p>Used in tests to compare metric values against reference data. Can specify
 either a relative change (percentage) or absolute difference, or both.</p>
-
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#Reference.relative">relative</a></code>: Optional relative change threshold (e.g., 0.1 for 10% change).</li>
-<li><code><a href="#Reference.absolute">absolute</a></code>: Optional absolute difference threshold.</li>
-</ul>
 </div>
 
 
@@ -232,14 +225,6 @@ either a relative change (percentage) or absolute difference, or both.</p>
 <p><code><a href="#GenericTest">GenericTest</a></code> provides a single interface for tests that can work with both
 metric results and descriptor values. It contains both metric and descriptor
 test implementations and automatically selects the appropriate one.</p>
-
-<p>Args:</p>
-
-<ul>
-<li><code><a href="#GenericTest.test_name">test_name</a></code>: Name of the test (e.g., "gt", "lt", "between").</li>
-<li><code><a href="#GenericTest.metric">metric</a></code>: Optional <code>MetricTest</code> implementation for metric results.</li>
-<li><code><a href="#GenericTest.descriptor">descriptor</a></code>: Optional <code>DescriptorTest</code> implementation for descriptor values.</li>
-</ul>
 </div>
 
 
