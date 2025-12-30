@@ -139,7 +139,12 @@ class _ServiceIframeHandler:
         self.service_url = url
 
     def _repr_html_(self):
+        link_html = get_html_link_to_running_service(
+            url_to_service=self.service_url, title="Go to page", service_label="Page"
+        )
+
         return f"""
+                {link_html}
                 <iframe
                     class="evidently-ui-iframe"
                     frameborder="0"

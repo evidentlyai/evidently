@@ -81,7 +81,7 @@ RUNNING_SERVICE_LINK_TEMPLATE = (
 <div class="evidently-links container">\
     <a target="_blank" href="{url_to_service}">{title}</a>
     <p>
-        <b>Service running on:</b> <a target="_blank" href="{url_to_service}">{url_to_service}</a>
+        <b>{service_label}:</b> <a target="_blank" href="{url_to_service}">{url_to_service}</a>
     </p>
 </div>
 """
@@ -99,10 +99,11 @@ def _html_link_to_report_template(*, id: str, button_url: str, button_title: str
     return HTML_LINK_WITH_ID_TEMPLATE.format(**params)
 
 
-def _running_service_link_template(*, url_to_service: str):
+def _running_service_link_template(*, url_to_service: str, title: str, service_label: str):
     params = dict(
         url_to_service=url_to_service,
-        title="Go to Service",
+        title=title,
+        service_label=service_label,
     )
 
     return RUNNING_SERVICE_LINK_TEMPLATE.format(**params)
@@ -127,8 +128,10 @@ def get_html_link_to_report(*, url_to_report: str, report_id: str):
     )
 
 
-def get_html_link_to_running_service(*, url_to_service: str):
-    return _running_service_link_template(url_to_service=url_to_service)
+def get_html_link_to_running_service(
+    *, url_to_service: str, title: str = "Go to Service", service_label: str = "Service running on"
+):
+    return _running_service_link_template(url_to_service=url_to_service, title=title, service_label=service_label)
 
 
 def get_file_link_to_report(*, url_to_report: str, report_id: str):
