@@ -33,7 +33,7 @@ class TraceModel(BaseModel):
 
 
 class HumanFeedbackModel(BaseModel):
-    label: str
+    label: Optional[str]
     comment: Optional[str]
 
 
