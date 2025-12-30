@@ -373,7 +373,15 @@
     </div>
     <a class="headerlink" href="#ProjectDashboard"></a>
     
-    
+            <div class="docstring"><p>Dashboard interface for configuring project visualizations.</p>
+
+<p><code><a href="#ProjectDashboard">ProjectDashboard</a></code> provides methods to manage dashboard tabs and panels
+for a project. Use it to customize which metrics are displayed and how
+they are organized.</p>
+
+<p>Access via <code><a href="#Project.dashboard">Project.dashboard</a></code> property.</p>
+</div>
+
 
                             <div id="ProjectDashboard.project_id" class="classattr">
                                 <div class="attr variable">
@@ -383,7 +391,15 @@
     </div>
     <a class="headerlink" href="#ProjectDashboard.project_id"></a>
     
-    
+            <div class="docstring"><p>Get the project ID this dashboard belongs to.</p>
+
+<p>Returns:</p>
+
+<ul>
+<li><code>ProjectID</code> of the associated project</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="ProjectDashboard.add_tab" class="classattr">
@@ -397,7 +413,15 @@
     </div>
     <a class="headerlink" href="#ProjectDashboard.add_tab"></a>
     
-    
+            <div class="docstring"><p>Add a new tab to the dashboard.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>tab</code>: Name of the tab to add</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="ProjectDashboard.delete_tab" class="classattr">
@@ -411,7 +435,15 @@
     </div>
     <a class="headerlink" href="#ProjectDashboard.delete_tab"></a>
     
-    
+            <div class="docstring"><p>Delete a tab from the dashboard.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>tab</code>: Name of the tab to delete</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="ProjectDashboard.add_panel" class="classattr">
@@ -425,7 +457,17 @@
     </div>
     <a class="headerlink" href="#ProjectDashboard.add_panel"></a>
     
-    
+            <div class="docstring"><p>Add a panel to a dashboard tab.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>panel</code>: <code>DashboardPanelPlot</code> to add</li>
+<li><code>tab</code>: Optional tab name (creates tab if it doesn't exist and <code>create_if_not_exists=True</code>)</li>
+<li><code>create_if_not_exists</code>: If True, create the tab if it doesn't exist</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="ProjectDashboard.delete_panel" class="classattr">
@@ -439,7 +481,16 @@
     </div>
     <a class="headerlink" href="#ProjectDashboard.delete_panel"></a>
     
-    
+            <div class="docstring"><p>Delete a panel from a dashboard tab.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>panel</code>: ID of the panel to delete</li>
+<li><code>tab</code>: Name of the tab containing the panel</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="ProjectDashboard.model" class="classattr">
@@ -453,7 +504,15 @@
     </div>
     <a class="headerlink" href="#ProjectDashboard.model"></a>
     
-    
+            <div class="docstring"><p>Get the dashboard model configuration.</p>
+
+<p>Returns:</p>
+
+<ul>
+<li><code>DashboardModel</code> with current dashboard configuration</li>
+</ul>
+</div>
+
 
                             </div>
                 </section>
@@ -467,7 +526,25 @@
     </div>
     <a class="headerlink" href="#Project"></a>
     
-    
+            <div class="docstring"><p>Represents an Evidently project for organizing evaluations.</p>
+
+<p>A <code><a href="#Project">Project</a></code> groups related evaluations (snapshots) together. You can manage
+project metadata, configure dashboards, and access all runs associated
+with the project.</p>
+
+<p>Example:</p>
+
+<div class="pdoc-code codehilite">
+<pre><span></span><code><span class="n">workspace</span> <span class="o">=</span> <span class="n"><a href="#Workspace.create">Workspace.create</a></span><span class="p">(</span><span class="s2">&quot;my_workspace&quot;</span><span class="p">)</span>
+<span class="n">project</span> <span class="o">=</span> <span class="n">workspace</span><span class="o">.</span><span class="n">add_project</span><span class="p">(</span><span class="n">ProjectModel</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;My Project&quot;</span><span class="p">))</span>
+<span class="n">project</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;Updated Name&quot;</span>
+<span class="n">project</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+</code></pre>
+</div>
+
+<p>Access projects via <code><a href="#Workspace.get_project">Workspace.get_project()</a></code> or <code><a href="#Workspace.list_projects">Workspace.list_projects()</a></code>.</p>
+</div>
+
 
                             <div id="Project.__init__" class="classattr">
                                 <div class="attr function">
@@ -478,7 +555,17 @@
     </div>
     <a class="headerlink" href="#Project.__init__"></a>
     
-    
+            <div class="docstring"><p>Initialize a Project instance.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>project</code>: <code>ProjectModel</code> with project data</li>
+<li><code><a href="#Project.dashboard">dashboard</a></code>: <code><a href="#ProjectDashboard">ProjectDashboard</a></code> for managing visualizations</li>
+<li><code>workspace</code>: <code><a href="#WorkspaceBase">WorkspaceBase</a></code> for persistence operations</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="Project.id" class="classattr">
@@ -489,7 +576,15 @@
     </div>
     <a class="headerlink" href="#Project.id"></a>
     
-    
+            <div class="docstring"><p>Get the project ID.</p>
+
+<p>Returns:</p>
+
+<ul>
+<li><code>ProjectID</code> unique identifier for this project</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="Project.name" class="classattr">
@@ -500,7 +595,15 @@
     </div>
     <a class="headerlink" href="#Project.name"></a>
     
-    
+            <div class="docstring"><p>Get the project name.</p>
+
+<p>Returns:</p>
+
+<ul>
+<li>Project name string</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="Project.description" class="classattr">
@@ -511,7 +614,15 @@
     </div>
     <a class="headerlink" href="#Project.description"></a>
     
-    
+            <div class="docstring"><p>Get the project description.</p>
+
+<p>Returns:</p>
+
+<ul>
+<li>Project description string, or None if not set</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="Project.save" class="classattr">
@@ -524,7 +635,12 @@
     </div>
     <a class="headerlink" href="#Project.save"></a>
     
-    
+            <div class="docstring"><p>Save project changes to the workspace.</p>
+
+<p>Persists any modifications to project name, description, or other
+metadata to the underlying <code><a href="#Workspace">Workspace</a></code>.</p>
+</div>
+
 
                             </div>
                             <div id="Project.dashboard" class="classattr">
@@ -535,7 +651,15 @@
     </div>
     <a class="headerlink" href="#Project.dashboard"></a>
     
-    
+            <div class="docstring"><p>Get the dashboard interface for this project.</p>
+
+<p>Returns:</p>
+
+<ul>
+<li><code><a href="#ProjectDashboard">ProjectDashboard</a></code> for configuring visualizations</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="Project.dict" class="classattr">
