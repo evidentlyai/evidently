@@ -1,4 +1,4 @@
-import type { SpanModel } from 'api/types'
+import type { SpanModel, TraceModel } from 'api/types'
 
 export type GuardRailData = {
   spanId: string
@@ -48,3 +48,20 @@ export const removeGuardRailsDataFromSpan = (span: SpanModel): SpanModel => ({
     Object.entries(span.attributes).filter(([key]) => !key.startsWith(GUARD_RAIL_PREFIX))
   )
 })
+
+export const extractFeedbackData = (trace: TraceModel | null | undefined) => {
+  if (!trace) {
+    return { label: '', comment: '' }
+  }
+
+  const rootSpan = trace?.spans.find((s) => s.parent_span_id === '')
+
+  if (!rootSpan) {
+    return { label: '', comment: '' }
+  }
+
+  return {
+    label: String(rootSpan.attributes?.human_feedback_label ?? ''),
+    comment: String(rootSpan?.attributes?.human_feedback_comment ?? '')
+  }
+}

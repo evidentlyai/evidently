@@ -1,12 +1,12 @@
-import { expectJsonRequest } from '~/api/utils'
-import { GenericErrorBoundary, handleFetchersActionErrors } from '~/router-utils/components/error'
-import type { ActionArgs, RouteExtended, loadDataArgs } from '~/router-utils/types'
 import type {
   ActionFunction,
   LazyRouteFunction,
   LoaderFunction,
   RouteObject
-} from '~/shared-dependencies/react-router-dom'
+} from 'react-router-dom'
+import { expectJsonRequest } from '~/api/utils'
+import { GenericErrorBoundary, handleFetchersActionErrors } from '~/router-utils/components/error'
+import type { ActionArgs, RouteExtended, loadDataArgs } from '~/router-utils/types'
 import { assertNeverActionVariant } from '~/utils'
 
 export type CrumbDefinition = { title?: string; param?: string; keyFromLoaderData?: string }

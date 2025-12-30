@@ -69,19 +69,14 @@ const SnapshotNameAndID = (params: { name?: string | null; id: string }) => {
   )
 }
 
-export const SnapshotsListTemplate = ({
-  query,
-  slots,
-  snapshots,
-  disabled,
-  projectId,
-  LinkToSnapshot,
-  onReloadSnapshots,
-  onDeleteSnapshot,
-  downloadLink,
-  ActionsWrapper = ({ children }) => <>{children}</>,
-  snapshotSelection
-}: {
+type EmptyActionWrapperProps = {
+  children: React.ReactNode
+  snapshot: ReportModel
+}
+
+const EmptyActionWrapper = ({ children }: EmptyActionWrapperProps) => <>{children}</>
+
+type SnapshotActionsWrapperProps = {
   query: Partial<Record<string, string>>
   projectId: string
   disabled?: boolean
@@ -99,7 +94,23 @@ export const SnapshotsListTemplate = ({
   onDeleteSnapshot: ({ snapshotId }: { snapshotId: string }) => void
   downloadLink: DownloadSnapshotURL
   snapshotSelection?: { title: string; action: (snapshots: string[]) => void }
-}) => {
+}
+
+export const SnapshotsListTemplate = (props: SnapshotActionsWrapperProps) => {
+  const {
+    query,
+    slots,
+    snapshots,
+    disabled,
+    projectId,
+    LinkToSnapshot,
+    onReloadSnapshots,
+    onDeleteSnapshot,
+    downloadLink,
+    snapshotSelection,
+    ActionsWrapper = EmptyActionWrapper
+  } = props
+
   const [sortByTimestamp, setSortByTimestamp] = useState<undefined | 'desc' | 'asc'>('desc')
   const [isCollapsedJson, setIsCollapsedJson] = useLocalStorage('show-full-json-metadata', false)
   const [selectedTags, setTags] = useState(() => query.tags?.split(',') || [])
