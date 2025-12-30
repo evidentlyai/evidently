@@ -1,0 +1,5 @@
+outs:
+- md5: 795cc33db0b25fdf479a34c9bb776b3e
+  size: 15302062
+  hash: md5
+  path: 20news-bydate_py3.pkz

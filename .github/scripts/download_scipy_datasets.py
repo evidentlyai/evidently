@@ -1,4 +1,5 @@
 import os
+import shutil
 import zipfile
 from pathlib import Path
 
@@ -20,7 +21,8 @@ if not lfw_home_path.exists():
 
 
 datasets.fetch_lfw_people()
-print("Download 20 news group dataset...")
+print("Copying 20 news group dataset...")
+shutil.copy(root_dir / "test_data" / "20news-bydate_py3.pkz", data_home)
 datasets.fetch_20newsgroups()
 print("Download completed.")
 print(f"Content of datasets cache: {os.listdir(data_home)}")
