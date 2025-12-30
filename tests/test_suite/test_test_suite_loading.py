@@ -34,12 +34,11 @@ def adult():
 
 @pytest.fixture
 def housing():
-    housing = pd.read_csv(
-        pathlib.Path(__file__).parent.joinpath("../../test_data/housing.csv.zip"),
-    )
+    housing_data = datasets.fetch_california_housing(as_frame=True)
+    housing = housing_data.frame
 
     housing.rename(columns={"MedHouseVal": "target"}, inplace=True)
-    housing["prediction"] = housing["target"].values + np.random.normal(0, 3, housing.shape[0])
+    housing["prediction"] = housing_data["target"].values + np.random.normal(0, 3, housing.shape[0])
 
     housing_ref = housing.sample(n=5000, replace=False)
     housing_cur = housing.sample(n=5000, replace=False)
