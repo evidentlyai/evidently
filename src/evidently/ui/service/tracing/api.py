@@ -2,6 +2,7 @@ import uuid
 from collections import defaultdict
 from enum import Enum
 from typing import Annotated
+from typing import Callable
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -218,13 +219,26 @@ async def _split_by_user(
     return result
 
 
-def tracing_api() -> Router:
+def tracing_api(guard: Callable) -> Router:
     return Router(
         "/v1/traces",
         route_handlers=[
-            export,
-            trace_sessions,
-            delete_trace,
-            update_metadata,
+            # read
+            Router(
+                "",
+                route_handlers=[
+                    trace_sessions,
+                ],
+            ),
+            # write
+            Router(
+                "",
+                route_handlers=[
+                    export,
+                    delete_trace,
+                    update_metadata,
+                ],
+                guards=[guard],
+            ),
         ],
     )
