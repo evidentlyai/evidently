@@ -1,4 +1,6 @@
 import os
+import zipfile
+from pathlib import Path
 
 from sklearn import datasets
 
@@ -7,7 +9,16 @@ print("Path of download datasets to: ", data_home)
 
 # print("Download California Housing dataset...")
 # datasets.fetch_california_housing()
-print("Download LFW people dataset...")
+print("Unzip LFW people dataset...")
+
+root_dir = Path(__file__).resolve().parents[2]
+lfw_zip_path = root_dir / "test_data" / "lfw-dataset.zip"
+lfw_home_path = Path(data_home) / "lfw_home"
+if not lfw_home_path.exists():
+    with zipfile.ZipFile(lfw_zip_path, "r") as zip_ref:
+        zip_ref.extractall(data_home)
+
+
 datasets.fetch_lfw_people()
 print("Download 20 news group dataset...")
 datasets.fetch_20newsgroups()

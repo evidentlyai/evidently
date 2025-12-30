@@ -1,0 +1,5 @@
+outs:
+- md5: 658ceabf5ff1545c5ee12cbcfbd8f82b
+  size: 318271483
+  hash: md5
+  path: lfw-dataset.zip
