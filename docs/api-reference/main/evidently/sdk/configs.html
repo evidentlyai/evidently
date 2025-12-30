@@ -50,6 +50,18 @@
                     <a class="class" href="#RemoteGenericConfig">RemoteGenericConfig</a>
                             <ul class="memberlist">
                         <li>
+                                <a class="variable" href="#RemoteGenericConfig.id">id</a>
+                        </li>
+                        <li>
+                                <a class="variable" href="#RemoteGenericConfig.project_id">project_id</a>
+                        </li>
+                        <li>
+                                <a class="variable" href="#RemoteGenericConfig.name">name</a>
+                        </li>
+                        <li>
+                                <a class="variable" href="#RemoteGenericConfig.metadata">metadata</a>
+                        </li>
+                        <li>
                                 <a class="function" href="#RemoteGenericConfig.bind">bind</a>
                         </li>
                         <li>
@@ -256,9 +268,65 @@ All config classes are now aliases to artifact classes.</p>
     <a class="headerlink" href="#RemoteGenericConfig"></a>
     
             <div class="docstring"><p>Remote config that binds to ConfigAPI.</p>
+
+<p>Provides methods to interact with a remote config through the API,
+including version management and updates. Use <code><a href="#ConfigAPI">ConfigAPI</a></code> to create
+and manage remote configs.</p>
 </div>
 
 
+                            <div id="RemoteGenericConfig.id" class="classattr">
+                                <div class="attr variable">
+            <span class="name">id</span><span class="annotation">: uuid.UUID</span>
+
+        
+    </div>
+    <a class="headerlink" href="#RemoteGenericConfig.id"></a>
+    
+            <div class="docstring"><p>Unique config identifier.</p>
+</div>
+
+
+                            </div>
+                            <div id="RemoteGenericConfig.project_id" class="classattr">
+                                <div class="attr variable">
+            <span class="name">project_id</span><span class="annotation">: uuid.UUID</span>
+
+        
+    </div>
+    <a class="headerlink" href="#RemoteGenericConfig.project_id"></a>
+    
+            <div class="docstring"><p>Project this config belongs to.</p>
+</div>
+
+
+                            </div>
+                            <div id="RemoteGenericConfig.name" class="classattr">
+                                <div class="attr variable">
+            <span class="name">name</span><span class="annotation">: str</span>
+
+        
+    </div>
+    <a class="headerlink" href="#RemoteGenericConfig.name"></a>
+    
+            <div class="docstring"><p>Name of the config.</p>
+</div>
+
+
+                            </div>
+                            <div id="RemoteGenericConfig.metadata" class="classattr">
+                                <div class="attr variable">
+            <span class="name">metadata</span><span class="annotation">: <a href="artifacts.html#ArtifactMetadata">evidently.sdk.artifacts.ArtifactMetadata</a></span>
+
+        
+    </div>
+    <a class="headerlink" href="#RemoteGenericConfig.metadata"></a>
+    
+            <div class="docstring"><p>Metadata about the config.</p>
+</div>
+
+
+                            </div>
                             <div id="RemoteGenericConfig.bind" class="classattr">
                                 <div class="attr function">
             
@@ -269,7 +337,21 @@ All config classes are now aliases to artifact classes.</p>
     </div>
     <a class="headerlink" href="#RemoteGenericConfig.bind"></a>
     
-    
+            <div class="docstring"><p>Bind this config to an API instance.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>api</code>: <code><a href="#ConfigAPI">ConfigAPI</a></code> to use for operations.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li>Self for method chaining.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="RemoteGenericConfig.list_versions" class="classattr">
@@ -282,7 +364,15 @@ All config classes are now aliases to artifact classes.</p>
     </div>
     <a class="headerlink" href="#RemoteGenericConfig.list_versions"></a>
     
-    
+            <div class="docstring"><p>List all versions of this config.</p>
+
+<p>Returns:</p>
+
+<ul>
+<li>List of <code><a href="#ConfigVersion">ConfigVersion</a></code> objects.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="RemoteGenericConfig.get_version" class="classattr">
@@ -295,7 +385,21 @@ All config classes are now aliases to artifact classes.</p>
     </div>
     <a class="headerlink" href="#RemoteGenericConfig.get_version"></a>
     
-    
+            <div class="docstring"><p>Get a specific version of this config.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>version</code>: Version number or <code>"latest"</code>.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li><code><a href="#ConfigVersion">ConfigVersion</a></code> for the specified version.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="RemoteGenericConfig.bump_version" class="classattr">
@@ -308,7 +412,21 @@ All config classes are now aliases to artifact classes.</p>
     </div>
     <a class="headerlink" href="#RemoteGenericConfig.bump_version"></a>
     
-    
+            <div class="docstring"><p>Create a new version with the given content.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>content</code>: Content to store in the new version.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li>New <code><a href="#ConfigVersion">ConfigVersion</a></code> with incremented version number.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="RemoteGenericConfig.delete" class="classattr">
@@ -321,7 +439,12 @@ All config classes are now aliases to artifact classes.</p>
     </div>
     <a class="headerlink" href="#RemoteGenericConfig.delete"></a>
     
-    
+            <div class="docstring"><p>Delete this config and all its versions.</p>
+
+<p>This operation is irreversible and will permanently remove the config
+and all associated versions from the workspace.</p>
+</div>
+
 
                             </div>
                             <div id="RemoteGenericConfig.delete_version" class="classattr">
@@ -334,7 +457,17 @@ All config classes are now aliases to artifact classes.</p>
     </div>
     <a class="headerlink" href="#RemoteGenericConfig.delete_version"></a>
     
-    
+            <div class="docstring"><p>Delete a specific version.</p>
+
+<p>This operation is irreversible and will permanently remove the version.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>version_id</code>: ID of the version to delete.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="RemoteGenericConfig.save" class="classattr">
@@ -347,20 +480,12 @@ All config classes are now aliases to artifact classes.</p>
     </div>
     <a class="headerlink" href="#RemoteGenericConfig.save"></a>
     
-    
+            <div class="docstring"><p>Save changes to this config's metadata to the remote workspace.</p>
 
-                            </div>
-                            <div class="inherited">
-                                <h5>Inherited Members</h5>
-                                <dl>
-                                    <div><dt><a href="artifacts.html#Artifact">evidently.sdk.artifacts.Artifact</a></dt>
-                                <dd id="RemoteGenericConfig.id" class="variable"><a href="artifacts.html#Artifact.id">id</a></dd>
-                <dd id="RemoteGenericConfig.project_id" class="variable"><a href="artifacts.html#Artifact.project_id">project_id</a></dd>
-                <dd id="RemoteGenericConfig.name" class="variable"><a href="artifacts.html#Artifact.name">name</a></dd>
-                <dd id="RemoteGenericConfig.metadata" class="variable"><a href="artifacts.html#Artifact.metadata">metadata</a></dd>
+<p>Updates the config's name and metadata fields. Does not affect versions.</p>
+</div>
 
-            </div>
-                                </dl>
+
                             </div>
                 </section>
                 <section id="CloudConfigAPI">
@@ -375,7 +500,8 @@ All config classes are now aliases to artifact classes.</p>
     
             <div class="docstring"><p>Cloud-only config API that works with /api/configs endpoint.</p>
 
-<p>Uses backported Config models (which are actually Artifact models).</p>
+<p>Uses backported Config models (which are actually Artifact models).
+Requires a <code>CloudWorkspace</code> instance.</p>
 </div>
 
 
@@ -388,7 +514,15 @@ All config classes are now aliases to artifact classes.</p>
     </div>
     <a class="headerlink" href="#CloudConfigAPI.__init__"></a>
     
-    
+            <div class="docstring"><p>Initialize the API.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>workspace</code>: <code>CloudWorkspace</code> to use for API calls.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="CloudConfigAPI.list_configs" class="classattr">
@@ -596,7 +730,23 @@ All config classes are now aliases to artifact classes.</p>
     </div>
     <a class="headerlink" href="#CloudConfigAPI.add_descriptor"></a>
     
-    
+            <div class="docstring"><p>Add or update a descriptor config.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>project_id</code>: Project ID.</li>
+<li><code>name</code>: Name of the descriptor config.</li>
+<li><code>descriptor</code>: <code>Descriptor</code> object to store.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li><code><a href="#ConfigVersion">ConfigVersion</a></code> containing the descriptor.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="CloudConfigAPI.get_descriptor" class="classattr">
@@ -609,7 +759,23 @@ All config classes are now aliases to artifact classes.</p>
     </div>
     <a class="headerlink" href="#CloudConfigAPI.get_descriptor"></a>
     
-    
+            <div class="docstring"><p>Get a descriptor config.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>project_id</code>: Project ID.</li>
+<li><code>name</code>: Name of the descriptor config.</li>
+<li><code>version</code>: Version number or <code>"latest"</code>.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li><code>Descriptor</code> object from the config.</li>
+</ul>
+</div>
+
 
                             </div>
                 </section>

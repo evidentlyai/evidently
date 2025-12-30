@@ -859,7 +859,12 @@
     </div>
     <a class="headerlink" href="#ColumnRole"></a>
     
-    
+            <div class="docstring"><p>Role of a column in the dataset.</p>
+
+<p>Defines the semantic role of a column (e.g., target, prediction, feature).
+Used in <code><a href="#DataDefinition">DataDefinition</a></code> to specify column purposes.</p>
+</div>
+
 
                             <div id="ColumnRole.Unset" class="classattr">
                                 <div class="attr variable">
@@ -870,7 +875,9 @@
     </div>
     <a class="headerlink" href="#ColumnRole.Unset"></a>
     
-    
+            <div class="docstring"><p>Column role is not set.</p>
+</div>
+
 
                             </div>
                             <div id="ColumnRole.Target" class="classattr">
@@ -882,7 +889,9 @@
     </div>
     <a class="headerlink" href="#ColumnRole.Target"></a>
     
-    
+            <div class="docstring"><p>Column contains target/ground truth values.</p>
+</div>
+
 
                             </div>
                             <div id="ColumnRole.Output" class="classattr">
@@ -894,7 +903,9 @@
     </div>
     <a class="headerlink" href="#ColumnRole.Output"></a>
     
-    
+            <div class="docstring"><p>Column contains model output/predictions.</p>
+</div>
+
 
                             </div>
                             <div id="ColumnRole.Feature" class="classattr">
@@ -906,7 +917,9 @@
     </div>
     <a class="headerlink" href="#ColumnRole.Feature"></a>
     
-    
+            <div class="docstring"><p>Column is a feature used for prediction.</p>
+</div>
+
 
                             </div>
                             <div id="ColumnRole.Descriptor" class="classattr">
@@ -918,7 +931,9 @@
     </div>
     <a class="headerlink" href="#ColumnRole.Descriptor"></a>
     
-    
+            <div class="docstring"><p>Column is a computed descriptor (e.g., from text).</p>
+</div>
+
 
                             </div>
                             <div id="ColumnRole.UserId" class="classattr">
@@ -930,7 +945,9 @@
     </div>
     <a class="headerlink" href="#ColumnRole.UserId"></a>
     
-    
+            <div class="docstring"><p>Column contains user IDs (for ranking/recsys).</p>
+</div>
+
 
                             </div>
                             <div id="ColumnRole.ItemId" class="classattr">
@@ -942,7 +959,9 @@
     </div>
     <a class="headerlink" href="#ColumnRole.ItemId"></a>
     
-    
+            <div class="docstring"><p>Column contains item IDs (for ranking/recsys).</p>
+</div>
+
 
                             </div>
                             <div id="ColumnRole.Input" class="classattr">
@@ -954,7 +973,9 @@
     </div>
     <a class="headerlink" href="#ColumnRole.Input"></a>
     
-    
+            <div class="docstring"><p>Column is an input to the model.</p>
+</div>
+
 
                             </div>
                             <div id="ColumnRole.Context" class="classattr">
@@ -966,7 +987,9 @@
     </div>
     <a class="headerlink" href="#ColumnRole.Context"></a>
     
-    
+            <div class="docstring"><p>Column contains context information.</p>
+</div>
+
 
                             </div>
                             <div id="ColumnRole.Example" class="classattr">
@@ -978,7 +1001,9 @@
     </div>
     <a class="headerlink" href="#ColumnRole.Example"></a>
     
-    
+            <div class="docstring"><p>Column contains example data.</p>
+</div>
+
 
                             </div>
                 </section>
@@ -993,7 +1018,9 @@
     </div>
     <a class="headerlink" href="#ColumnInfo"></a>
     
-    
+            <div class="docstring"><p>Information about a column's type and role.</p>
+</div>
+
 
                             <div id="ColumnInfo.__init__" class="classattr">
                                 <div class="attr function">
@@ -1015,7 +1042,9 @@
     </div>
     <a class="headerlink" href="#ColumnInfo.type"></a>
     
-    
+            <div class="docstring"><p>Column type (numerical, categorical, text, etc.).</p>
+</div>
+
 
                             </div>
                             <div id="ColumnInfo.role" class="classattr">
@@ -1027,7 +1056,9 @@
     </div>
     <a class="headerlink" href="#ColumnInfo.role"></a>
     
-    
+            <div class="docstring"><p>Column role (target, feature, etc.).</p>
+</div>
+
 
                             </div>
                 </section>
@@ -1659,7 +1690,12 @@ Used in <code><a href="#DataDefinition">DataDefinition</a></code> to specify whi
     </div>
     <a class="headerlink" href="#SpecialColumnInfo"></a>
     
-    
+            <div class="docstring"><p>Base class for special column information.</p>
+
+<p>Used to define special columns that require custom handling or metrics.
+Subclasses can provide custom metrics and column type information.</p>
+</div>
+
 
                             <div id="SpecialColumnInfo.get_metrics" class="classattr">
                                 <div class="attr function">
@@ -1671,7 +1707,15 @@ Used in <code><a href="#DataDefinition">DataDefinition</a></code> to specify whi
     </div>
     <a class="headerlink" href="#SpecialColumnInfo.get_metrics"></a>
     
-    
+            <div class="docstring"><p>Get metrics associated with this special column.</p>
+
+<p>Returns:</p>
+
+<ul>
+<li>List of metrics or metric containers.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="SpecialColumnInfo.get_column_type" class="classattr">
@@ -1684,7 +1728,21 @@ Used in <code><a href="#DataDefinition">DataDefinition</a></code> to specify whi
     </div>
     <a class="headerlink" href="#SpecialColumnInfo.get_column_type"></a>
     
-    
+            <div class="docstring"><p>Get the column type for a column name.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>column_name</code>: Name of the column.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li><code>ColumnType</code> if known, <code>None</code> otherwise.</li>
+</ul>
+</div>
+
 
                             </div>
                 </section>
@@ -1748,7 +1806,11 @@ Used in <code><a href="#DataDefinition">DataDefinition</a></code> to specify whi
     </div>
     <a class="headerlink" href="#ServiceColumns"></a>
     
-    
+            <div class="docstring"><p>Service columns for special functionality.</p>
+
+<p>Defines columns used for special features like trace linking and human feedback.</p>
+</div>
+
 
                             <div id="ServiceColumns.trace_link" class="classattr">
                                 <div class="attr variable">
@@ -1758,7 +1820,9 @@ Used in <code><a href="#DataDefinition">DataDefinition</a></code> to specify whi
     </div>
     <a class="headerlink" href="#ServiceColumns.trace_link"></a>
     
-    
+            <div class="docstring"><p>Optional column name for trace links.</p>
+</div>
+
 
                             </div>
                             <div id="ServiceColumns.human_feedback_label" class="classattr">
@@ -1769,7 +1833,9 @@ Used in <code><a href="#DataDefinition">DataDefinition</a></code> to specify whi
     </div>
     <a class="headerlink" href="#ServiceColumns.human_feedback_label"></a>
     
-    
+            <div class="docstring"><p>Optional column name for human feedback labels.</p>
+</div>
+
 
                             </div>
                             <div id="ServiceColumns.human_feedback_comment" class="classattr">
@@ -1780,7 +1846,9 @@ Used in <code><a href="#DataDefinition">DataDefinition</a></code> to specify whi
     </div>
     <a class="headerlink" href="#ServiceColumns.human_feedback_comment"></a>
     
-    
+            <div class="docstring"><p>Optional column name for human feedback comments.</p>
+</div>
+
 
                             </div>
                 </section>
@@ -2339,7 +2407,12 @@ If <code><a href="#DataDefinition.numerical_descriptors">numerical_descriptors</
     </div>
     <a class="headerlink" href="#DatasetColumn"></a>
     
-    
+            <div class="docstring"><p>Wrapper for a single column in a dataset.</p>
+
+<p>Contains the column type and the actual data as a pandas Series.
+Used internally to access column data with type information.</p>
+</div>
+
 
                             <div id="DatasetColumn.__init__" class="classattr">
                                 <div class="attr function">
@@ -2350,7 +2423,16 @@ If <code><a href="#DataDefinition.numerical_descriptors">numerical_descriptors</
     </div>
     <a class="headerlink" href="#DatasetColumn.__init__"></a>
     
-    
+            <div class="docstring"><p>Initialize a dataset column.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code><a href="#DatasetColumn.type">type</a></code>: <code>ColumnType</code> or string name of the column type.</li>
+<li><code><a href="#DatasetColumn.data">data</a></code>: <code>pandas.Series</code> containing the column data.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="DatasetColumn.type" class="classattr">
@@ -2361,7 +2443,9 @@ If <code><a href="#DataDefinition.numerical_descriptors">numerical_descriptors</
     </div>
     <a class="headerlink" href="#DatasetColumn.type"></a>
     
-    
+            <div class="docstring"><p>Column type (numerical, categorical, text, etc.).</p>
+</div>
+
 
                             </div>
                             <div id="DatasetColumn.data" class="classattr">
@@ -2372,7 +2456,9 @@ If <code><a href="#DataDefinition.numerical_descriptors">numerical_descriptors</
     </div>
     <a class="headerlink" href="#DatasetColumn.data"></a>
     
-    
+            <div class="docstring"><p>Pandas Series containing the column data.</p>
+</div>
+
 
                             </div>
                 </section>
@@ -2386,7 +2472,12 @@ If <code><a href="#DataDefinition.numerical_descriptors">numerical_descriptors</
     </div>
     <a class="headerlink" href="#ColumnCondition"></a>
     
-    
+            <div class="docstring"><p>Base class for column value conditions.</p>
+
+<p>Used to define conditions that check values in a column (e.g., greater than,
+in range, matches pattern). Used in descriptor tests and column filters.</p>
+</div>
+
 
                             <div id="ColumnCondition.check" class="classattr">
                                 <div class="attr function">
@@ -2399,7 +2490,21 @@ If <code><a href="#DataDefinition.numerical_descriptors">numerical_descriptors</
     </div>
     <a class="headerlink" href="#ColumnCondition.check"></a>
     
-    
+            <div class="docstring"><p>Check if a value satisfies the condition.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>value</code>: Value to check.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li><code>True</code> if condition is satisfied, <code>False</code> otherwise.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="ColumnCondition.get_default_alias" class="classattr">
@@ -2413,7 +2518,21 @@ If <code><a href="#DataDefinition.numerical_descriptors">numerical_descriptors</
     </div>
     <a class="headerlink" href="#ColumnCondition.get_default_alias"></a>
     
-    
+            <div class="docstring"><p>Get default alias name for this condition.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>column</code>: Column name this condition applies to.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li>Default alias string.</li>
+</ul>
+</div>
+
 
                             </div>
                 </section>
@@ -2452,7 +2571,12 @@ If <code><a href="#DataDefinition.numerical_descriptors">numerical_descriptors</
     </div>
     <a class="headerlink" href="#DescriptorTest"></a>
     
-    
+            <div class="docstring"><p>Test condition for a descriptor column.</p>
+
+<p>Defines a condition to test values in a descriptor column. Can be used
+to create derived descriptors based on test results.</p>
+</div>
+
 
                             <div id="DescriptorTest.__init__" class="classattr">
                                 <div class="attr function">
@@ -2478,7 +2602,9 @@ If <code><a href="#DataDefinition.numerical_descriptors">numerical_descriptors</
     </div>
     <a class="headerlink" href="#DescriptorTest.condition"></a>
     
-    
+            <div class="docstring"><p>Column condition to apply.</p>
+</div>
+
 
                             </div>
                             <div id="DescriptorTest.column" class="classattr">
@@ -2489,7 +2615,9 @@ If <code><a href="#DataDefinition.numerical_descriptors">numerical_descriptors</
     </div>
     <a class="headerlink" href="#DescriptorTest.column"></a>
     
-    
+            <div class="docstring"><p>Optional column name (uses parent descriptor column if None).</p>
+</div>
+
 
                             </div>
                             <div id="DescriptorTest.alias" class="classattr">
@@ -2500,7 +2628,9 @@ If <code><a href="#DataDefinition.numerical_descriptors">numerical_descriptors</
     </div>
     <a class="headerlink" href="#DescriptorTest.alias"></a>
     
-    
+            <div class="docstring"><p>Optional alias name for the test result.</p>
+</div>
+
 
                             </div>
                             <div id="DescriptorTest.to_descriptor" class="classattr">
@@ -2539,7 +2669,13 @@ If <code><a href="#DataDefinition.numerical_descriptors">numerical_descriptors</
     </div>
     <a class="headerlink" href="#Descriptor"></a>
     
-    
+            <div class="docstring"><p>Base class for descriptors that compute row-level features.</p>
+
+<p>Descriptors compute additional columns from existing data (e.g., text length,
+sentiment score, custom transformations). Used to enrich datasets with
+computed features for evaluation.</p>
+</div>
+
 
                             <div id="Descriptor.alias" class="classattr">
                                 <div class="attr variable">
@@ -2549,7 +2685,9 @@ If <code><a href="#DataDefinition.numerical_descriptors">numerical_descriptors</
     </div>
     <a class="headerlink" href="#Descriptor.alias"></a>
     
-    
+            <div class="docstring"><p>Name for the descriptor output column.</p>
+</div>
+
 
                             </div>
                             <div id="Descriptor.tests" class="classattr">
@@ -2560,7 +2698,9 @@ If <code><a href="#DataDefinition.numerical_descriptors">numerical_descriptors</
     </div>
     <a class="headerlink" href="#Descriptor.tests"></a>
     
-    
+            <div class="docstring"><p>List of test conditions to apply to descriptor values.</p>
+</div>
+
 
                             </div>
                             <div id="Descriptor.generate_data" class="classattr">
@@ -2691,7 +2831,12 @@ If <code><a href="#DataDefinition.numerical_descriptors">numerical_descriptors</
     </div>
     <a class="headerlink" href="#SingleInputDescriptor"></a>
     
-    
+            <div class="docstring"><p>Base class for descriptors that operate on a single input column.</p>
+
+<p>Simplifies descriptor implementation for descriptors that only need one
+input column. Subclasses only need to implement <code><a href="#SingleInputDescriptor.generate_data">generate_data()</a></code>.</p>
+</div>
+
 
                             <div id="SingleInputDescriptor.column" class="classattr">
                                 <div class="attr variable">
@@ -2701,7 +2846,9 @@ If <code><a href="#DataDefinition.numerical_descriptors">numerical_descriptors</
     </div>
     <a class="headerlink" href="#SingleInputDescriptor.column"></a>
     
-    
+            <div class="docstring"><p>Name of the input column to process.</p>
+</div>
+
 
                             </div>
                             <div id="SingleInputDescriptor.list_input_columns" class="classattr">
@@ -2714,7 +2861,15 @@ If <code><a href="#DataDefinition.numerical_descriptors">numerical_descriptors</
     </div>
     <a class="headerlink" href="#SingleInputDescriptor.list_input_columns"></a>
     
-    
+            <div class="docstring"><p>Get the list of input columns.</p>
+
+<p>Returns:</p>
+
+<ul>
+<li>List containing the single input column name.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div class="inherited">
@@ -2745,7 +2900,12 @@ If <code><a href="#DataDefinition.numerical_descriptors">numerical_descriptors</
     </div>
     <a class="headerlink" href="#ColumnTest"></a>
     
-    
+            <div class="docstring"><p>Descriptor that tests values in a column against a condition.</p>
+
+<p>Creates a boolean descriptor column indicating whether each value in the
+input column satisfies the condition. Useful for filtering or flagging rows.</p>
+</div>
+
 
                             <div id="ColumnTest.__init__" class="classattr">
                                 <div class="attr function">
@@ -2771,7 +2931,9 @@ If <code><a href="#DataDefinition.numerical_descriptors">numerical_descriptors</
     </div>
     <a class="headerlink" href="#ColumnTest.column"></a>
     
-    
+            <div class="docstring"><p>Name of the input column to test.</p>
+</div>
+
 
                             </div>
                             <div id="ColumnTest.condition" class="classattr">
@@ -2782,7 +2944,9 @@ If <code><a href="#DataDefinition.numerical_descriptors">numerical_descriptors</
     </div>
     <a class="headerlink" href="#ColumnTest.condition"></a>
     
-    
+            <div class="docstring"><p>Column condition to apply.</p>
+</div>
+
 
                             </div>
                             <div id="ColumnTest.generate_data" class="classattr">
@@ -2795,7 +2959,22 @@ If <code><a href="#DataDefinition.numerical_descriptors">numerical_descriptors</
     </div>
     <a class="headerlink" href="#ColumnTest.generate_data"></a>
     
-    
+            <div class="docstring"><p>Generate a boolean column indicating which rows satisfy the condition.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>dataset</code>: <code><a href="#Dataset">Dataset</a></code> to process.</li>
+<li><code>options</code>: Processing options.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li><code><a href="#DatasetColumn">DatasetColumn</a></code> with boolean values (True if condition passes, False otherwise).</li>
+</ul>
+</div>
+
 
                             </div>
                             <div class="inherited">
@@ -2829,7 +3008,12 @@ If <code><a href="#DataDefinition.numerical_descriptors">numerical_descriptors</
     </div>
     <a class="headerlink" href="#TestSummaryInfo"></a>
     
-    
+            <div class="docstring"><p>Special column information for test summary aggregation.</p>
+
+<p>Defines columns that aggregate test results across multiple descriptors,
+providing summary statistics like "all tests pass", "any test fails", etc.</p>
+</div>
+
 
                             <div id="TestSummaryInfo.all_column" class="classattr">
                                 <div class="attr variable">
@@ -2839,7 +3023,9 @@ If <code><a href="#DataDefinition.numerical_descriptors">numerical_descriptors</
     </div>
     <a class="headerlink" href="#TestSummaryInfo.all_column"></a>
     
-    
+            <div class="docstring"><p>Optional column name for 'all tests pass' indicator.</p>
+</div>
+
 
                             </div>
                             <div id="TestSummaryInfo.any_column" class="classattr">
@@ -2850,7 +3036,9 @@ If <code><a href="#DataDefinition.numerical_descriptors">numerical_descriptors</
     </div>
     <a class="headerlink" href="#TestSummaryInfo.any_column"></a>
     
-    
+            <div class="docstring"><p>Optional column name for 'any test fails' indicator.</p>
+</div>
+
 
                             </div>
                             <div id="TestSummaryInfo.count_column" class="classattr">
@@ -2861,7 +3049,9 @@ If <code><a href="#DataDefinition.numerical_descriptors">numerical_descriptors</
     </div>
     <a class="headerlink" href="#TestSummaryInfo.count_column"></a>
     
-    
+            <div class="docstring"><p>Optional column name for test failure count.</p>
+</div>
+
 
                             </div>
                             <div id="TestSummaryInfo.rate_column" class="classattr">
@@ -2872,7 +3062,9 @@ If <code><a href="#DataDefinition.numerical_descriptors">numerical_descriptors</
     </div>
     <a class="headerlink" href="#TestSummaryInfo.rate_column"></a>
     
-    
+            <div class="docstring"><p>Optional column name for test failure rate.</p>
+</div>
+
 
                             </div>
                             <div id="TestSummaryInfo.score_column" class="classattr">
@@ -2883,7 +3075,9 @@ If <code><a href="#DataDefinition.numerical_descriptors">numerical_descriptors</
     </div>
     <a class="headerlink" href="#TestSummaryInfo.score_column"></a>
     
-    
+            <div class="docstring"><p>Optional column name for weighted test score.</p>
+</div>
+
 
                             </div>
                             <div id="TestSummaryInfo.score_weights" class="classattr">
@@ -2894,7 +3088,9 @@ If <code><a href="#DataDefinition.numerical_descriptors">numerical_descriptors</
     </div>
     <a class="headerlink" href="#TestSummaryInfo.score_weights"></a>
     
-    
+            <div class="docstring"><p>Optional dictionary mapping test names to weights.</p>
+</div>
+
 
                             </div>
                             <div id="TestSummaryInfo.has_all" class="classattr">
@@ -2905,7 +3101,15 @@ If <code><a href="#DataDefinition.numerical_descriptors">numerical_descriptors</
     </div>
     <a class="headerlink" href="#TestSummaryInfo.has_all"></a>
     
-    
+            <div class="docstring"><p>Check if 'all' column is configured.</p>
+
+<p>Returns:</p>
+
+<ul>
+<li><code>True</code> if <code><a href="#TestSummaryInfo.any_column">any_column</a></code> is set, <code>False</code> otherwise.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="TestSummaryInfo.has_any" class="classattr">
@@ -2916,7 +3120,15 @@ If <code><a href="#DataDefinition.numerical_descriptors">numerical_descriptors</
     </div>
     <a class="headerlink" href="#TestSummaryInfo.has_any"></a>
     
-    
+            <div class="docstring"><p>Check if 'any' column is configured.</p>
+
+<p>Returns:</p>
+
+<ul>
+<li><code>True</code> if <code><a href="#TestSummaryInfo.any_column">any_column</a></code> is set, <code>False</code> otherwise.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="TestSummaryInfo.has_count" class="classattr">
@@ -2927,7 +3139,15 @@ If <code><a href="#DataDefinition.numerical_descriptors">numerical_descriptors</
     </div>
     <a class="headerlink" href="#TestSummaryInfo.has_count"></a>
     
-    
+            <div class="docstring"><p>Check if 'count' column is configured.</p>
+
+<p>Returns:</p>
+
+<ul>
+<li><code>True</code> if <code><a href="#TestSummaryInfo.count_column">count_column</a></code> is set, <code>False</code> otherwise.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="TestSummaryInfo.has_rate" class="classattr">
@@ -2938,7 +3158,15 @@ If <code><a href="#DataDefinition.numerical_descriptors">numerical_descriptors</
     </div>
     <a class="headerlink" href="#TestSummaryInfo.has_rate"></a>
     
-    
+            <div class="docstring"><p>Check if 'rate' column is configured.</p>
+
+<p>Returns:</p>
+
+<ul>
+<li><code>True</code> if <code><a href="#TestSummaryInfo.rate_column">rate_column</a></code> is set, <code>False</code> otherwise.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="TestSummaryInfo.has_score" class="classattr">
@@ -2949,7 +3177,15 @@ If <code><a href="#DataDefinition.numerical_descriptors">numerical_descriptors</
     </div>
     <a class="headerlink" href="#TestSummaryInfo.has_score"></a>
     
-    
+            <div class="docstring"><p>Check if 'score' column is configured.</p>
+
+<p>Returns:</p>
+
+<ul>
+<li><code>True</code> if <code><a href="#TestSummaryInfo.score_column">score_column</a></code> is set, <code>False</code> otherwise.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="TestSummaryInfo.get_metrics" class="classattr">
@@ -2962,7 +3198,15 @@ If <code><a href="#DataDefinition.numerical_descriptors">numerical_descriptors</
     </div>
     <a class="headerlink" href="#TestSummaryInfo.get_metrics"></a>
     
-    
+            <div class="docstring"><p>Get metrics for aggregating test summary columns.</p>
+
+<p>Returns:</p>
+
+<ul>
+<li>List containing a <code>TestSummaryInfoPreset</code> metric.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="TestSummaryInfo.get_column_type" class="classattr">
@@ -2975,7 +3219,21 @@ If <code><a href="#DataDefinition.numerical_descriptors">numerical_descriptors</
     </div>
     <a class="headerlink" href="#TestSummaryInfo.get_column_type"></a>
     
-    
+            <div class="docstring"><p>Get the column type for a summary column name.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>column_name</code>: Name of the column to check.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li><code>ColumnType.Categorical</code> for all/any columns, <code>ColumnType.Numerical</code> for count/rate/score columns, or <code>None</code> if not found.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div class="inherited">
@@ -2998,7 +3256,18 @@ If <code><a href="#DataDefinition.numerical_descriptors">numerical_descriptors</
     </div>
     <a class="headerlink" href="#TestSummary"></a>
     
-    
+            <div class="docstring"><p>Descriptor that aggregates test results across multiple test descriptors.</p>
+
+<p>Computes summary statistics from boolean test result columns, such as:</p>
+
+<ul>
+<li>Whether all tests pass for each row</li>
+<li>Whether any test fails for each row</li>
+<li>Count and rate of passing tests</li>
+<li>Weighted score across tests</li>
+</ul>
+</div>
+
 
                             <div id="TestSummary.__init__" class="classattr">
                                 <div class="attr function">
@@ -3024,7 +3293,9 @@ If <code><a href="#DataDefinition.numerical_descriptors">numerical_descriptors</
     </div>
     <a class="headerlink" href="#TestSummary.success_all"></a>
     
-    
+            <div class="docstring"><p>Whether to compute 'all tests pass' indicator.</p>
+</div>
+
 
                             </div>
                             <div id="TestSummary.success_any" class="classattr">
@@ -3035,7 +3306,9 @@ If <code><a href="#DataDefinition.numerical_descriptors">numerical_descriptors</
     </div>
     <a class="headerlink" href="#TestSummary.success_any"></a>
     
-    
+            <div class="docstring"><p>Whether to compute 'any test fails' indicator.</p>
+</div>
+
 
                             </div>
                             <div id="TestSummary.success_count" class="classattr">
@@ -3046,7 +3319,9 @@ If <code><a href="#DataDefinition.numerical_descriptors">numerical_descriptors</
     </div>
     <a class="headerlink" href="#TestSummary.success_count"></a>
     
-    
+            <div class="docstring"><p>Whether to compute count of passing tests.</p>
+</div>
+
 
                             </div>
                             <div id="TestSummary.success_rate" class="classattr">
@@ -3057,7 +3332,9 @@ If <code><a href="#DataDefinition.numerical_descriptors">numerical_descriptors</
     </div>
     <a class="headerlink" href="#TestSummary.success_rate"></a>
     
-    
+            <div class="docstring"><p>Whether to compute proportion of passing tests.</p>
+</div>
+
 
                             </div>
                             <div id="TestSummary.score" class="classattr">
@@ -3068,7 +3345,9 @@ If <code><a href="#DataDefinition.numerical_descriptors">numerical_descriptors</
     </div>
     <a class="headerlink" href="#TestSummary.score"></a>
     
-    
+            <div class="docstring"><p>Whether to compute weighted score across tests.</p>
+</div>
+
 
                             </div>
                             <div id="TestSummary.score_weights" class="classattr">
@@ -3079,7 +3358,9 @@ If <code><a href="#DataDefinition.numerical_descriptors">numerical_descriptors</
     </div>
     <a class="headerlink" href="#TestSummary.score_weights"></a>
     
-    
+            <div class="docstring"><p>Optional dictionary mapping test names to weights for scoring.</p>
+</div>
+
 
                             </div>
                             <div id="TestSummary.normalize_scores" class="classattr">
@@ -3090,7 +3371,9 @@ If <code><a href="#DataDefinition.numerical_descriptors">numerical_descriptors</
     </div>
     <a class="headerlink" href="#TestSummary.normalize_scores"></a>
     
-    
+            <div class="docstring"><p>Whether to normalize scores by total weight.</p>
+</div>
+
 
                             </div>
                             <div id="TestSummary.generate_data" class="classattr">
@@ -3103,7 +3386,31 @@ If <code><a href="#DataDefinition.numerical_descriptors">numerical_descriptors</
     </div>
     <a class="headerlink" href="#TestSummary.generate_data"></a>
     
-    
+            <div class="docstring"><p>Generate summary columns from test result columns.</p>
+
+<p>Aggregates boolean test results into summary statistics based on
+configured flags (success_all, success_any, success_count, etc.).</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>dataset</code>: <code><a href="#Dataset">Dataset</a></code> containing test result columns.</li>
+<li><code>options</code>: Processing options.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li>Dictionary of summary columns, or single column if only one is generated.</li>
+</ul>
+
+<p>Raises:</p>
+
+<ul>
+<li><code>ValueError</code>: If no tests are specified or no summary columns are configured.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="TestSummary.list_input_columns" class="classattr">
@@ -3116,7 +3423,15 @@ If <code><a href="#DataDefinition.numerical_descriptors">numerical_descriptors</
     </div>
     <a class="headerlink" href="#TestSummary.list_input_columns"></a>
     
-    
+            <div class="docstring"><p>Get list of input columns needed for this descriptor.</p>
+
+<p>Returns:</p>
+
+<ul>
+<li>List of test column names if score weights are specified, <code>None</code> otherwise.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="TestSummary.get_special_columns_info" class="classattr">
@@ -3129,7 +3444,21 @@ If <code><a href="#DataDefinition.numerical_descriptors">numerical_descriptors</
     </div>
     <a class="headerlink" href="#TestSummary.get_special_columns_info"></a>
     
-    
+            <div class="docstring"><p>Get special column information for test summary aggregation.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>rename</code>: Dictionary mapping internal column names to final names.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li>List of <code><a href="#TestSummaryInfo">TestSummaryInfo</a></code> objects describing the summary columns.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="TestSummary.add_to_descriptors_list" class="classattr">
@@ -3170,7 +3499,13 @@ If <code><a href="#DataDefinition.numerical_descriptors">numerical_descriptors</
     </div>
     <a class="headerlink" href="#FeatureDescriptor"></a>
     
-    
+            <div class="docstring"><p>Base class for descriptors that compute row-level features.</p>
+
+<p>Descriptors compute additional columns from existing data (e.g., text length,
+sentiment score, custom transformations). Used to enrich datasets with
+computed features for evaluation.</p>
+</div>
+
 
                             <div id="FeatureDescriptor.__init__" class="classattr">
                                 <div class="attr function">
@@ -3598,7 +3933,12 @@ If <code><a href="#DataDefinition.numerical_descriptors">numerical_descriptors</
     </div>
     <a class="headerlink" href="#DatasetStats"></a>
     
-    
+            <div class="docstring"><p>Statistics summary for a dataset.</p>
+
+<p>Contains overall dataset statistics including row count, column count,
+and per-column statistics.</p>
+</div>
+
 
                             <div id="DatasetStats.__init__" class="classattr">
                                 <div class="attr function">
@@ -3620,7 +3960,9 @@ If <code><a href="#DataDefinition.numerical_descriptors">numerical_descriptors</
     </div>
     <a class="headerlink" href="#DatasetStats.row_count"></a>
     
-    
+            <div class="docstring"><p>Total number of rows in the dataset.</p>
+</div>
+
 
                             </div>
                             <div id="DatasetStats.column_count" class="classattr">
@@ -3631,7 +3973,9 @@ If <code><a href="#DataDefinition.numerical_descriptors">numerical_descriptors</
     </div>
     <a class="headerlink" href="#DatasetStats.column_count"></a>
     
-    
+            <div class="docstring"><p>Total number of columns in the dataset.</p>
+</div>
+
 
                             </div>
                             <div id="DatasetStats.column_stats" class="classattr">
@@ -3642,7 +3986,9 @@ If <code><a href="#DataDefinition.numerical_descriptors">numerical_descriptors</
     </div>
     <a class="headerlink" href="#DatasetStats.column_stats"></a>
     
-    
+            <div class="docstring"><p>Dictionary mapping column names to their ColumnStats.</p>
+</div>
+
 
                             </div>
                 </section>

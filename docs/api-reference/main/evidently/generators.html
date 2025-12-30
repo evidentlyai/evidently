@@ -104,7 +104,24 @@ the same metric for multiple columns or creating metric combinations.</p>
     </div>
     <a class="headerlink" href="#ColumnMetricGenerator"></a>
     
-    
+            <div class="docstring"><p>Generator for creating the same metric for multiple columns.</p>
+
+<p>Automatically generates a metric instance for each column matching the specified
+criteria (column names or types). Useful for applying the same metric to many
+columns without manually creating each instance.</p>
+
+<p>Example:</p>
+
+<div class="pdoc-code codehilite">
+<pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn"><a href="metrics.html">evidently.metrics</a></span><span class="w"> </span><span class="kn">import</span> <span class="n">MeanValue</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn"><a href="">evidently.generators</a></span><span class="w"> </span><span class="kn">import</span> <span class="n">ColumnMetricGenerator</span>
+
+<span class="c1"># Generate MeanValue for all numerical columns</span>
+<span class="n">generator</span> <span class="o">=</span> <span class="n">ColumnMetricGenerator</span><span class="p">(</span><span class="n">MeanValue</span><span class="p">,</span> <span class="n">column_types</span><span class="o">=</span><span class="s2">&quot;numerical&quot;</span><span class="p">)</span>
+</code></pre>
+</div>
+</div>
+
 
                             <div id="ColumnMetricGenerator.__init__" class="classattr">
                                 <div class="attr function">
@@ -115,9 +132,13 @@ the same metric for multiple columns or creating metric combinations.</p>
     </div>
     <a class="headerlink" href="#ColumnMetricGenerator.__init__"></a>
     
-            <div class="docstring"><p>Create a new model by parsing and validating input data from keyword arguments.</p>
+            <div class="docstring"><p>Initialize a metric container.</p>
 
-<p>Raises ValidationError if the input data cannot be parsed to form a valid model.</p>
+<p>Args:</p>
+
+<ul>
+<li><code><a href="#ColumnMetricGenerator.include_tests">include_tests</a></code>: If <code>True</code>, generated metrics will include default tests.</li>
+</ul>
 </div>
 
 
@@ -130,7 +151,9 @@ the same metric for multiple columns or creating metric combinations.</p>
     </div>
     <a class="headerlink" href="#ColumnMetricGenerator.metric_type_alias"></a>
     
-    
+            <div class="docstring"><p>Alias string identifying the metric type.</p>
+</div>
+
 
                             </div>
                             <div id="ColumnMetricGenerator.columns" class="classattr">
@@ -141,7 +164,9 @@ the same metric for multiple columns or creating metric combinations.</p>
     </div>
     <a class="headerlink" href="#ColumnMetricGenerator.columns"></a>
     
-    
+            <div class="docstring"><p>Optional list of specific column names to generate metrics for.</p>
+</div>
+
 
                             </div>
                             <div id="ColumnMetricGenerator.column_types" class="classattr">
@@ -152,7 +177,9 @@ the same metric for multiple columns or creating metric combinations.</p>
     </div>
     <a class="headerlink" href="#ColumnMetricGenerator.column_types"></a>
     
-    
+            <div class="docstring"><p>Column types to match ("all", single type, or list of types).</p>
+</div>
+
 
                             </div>
                             <div id="ColumnMetricGenerator.metric_kwargs" class="classattr">
@@ -163,7 +190,9 @@ the same metric for multiple columns or creating metric combinations.</p>
     </div>
     <a class="headerlink" href="#ColumnMetricGenerator.metric_kwargs"></a>
     
-    
+            <div class="docstring"><p>Dictionary of additional arguments to pass to each metric instance.</p>
+</div>
+
 
                             </div>
                             <div id="ColumnMetricGenerator.generate_metrics" class="classattr">
@@ -176,7 +205,24 @@ the same metric for multiple columns or creating metric combinations.</p>
     </div>
     <a class="headerlink" href="#ColumnMetricGenerator.generate_metrics"></a>
     
-    
+            <div class="docstring"><p>Generate metric instances for matching columns.</p>
+
+<p>Creates a metric instance for each column that matches the specified
+criteria (column names or types).</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>context</code>: <code>Context</code> containing datasets and data definition.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li>Sequence of <code>Metric</code> or <code>MetricContainer</code> instances, one per matching column.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="ColumnMetricGenerator.render" class="classattr">
@@ -189,7 +235,22 @@ the same metric for multiple columns or creating metric combinations.</p>
     </div>
     <a class="headerlink" href="#ColumnMetricGenerator.render"></a>
     
-    
+            <div class="docstring"><p>Render visualization widgets from all generated metrics.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>context</code>: <code>Context</code> containing datasets and configuration.</li>
+<li><code>child_widgets</code>: Optional list of (metric_id, widgets) tuples from generated metrics.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li>List of <code>BaseWidgetInfo</code> objects for visualization.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div class="inherited">

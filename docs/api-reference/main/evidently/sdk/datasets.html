@@ -130,7 +130,13 @@
     </div>
     <a class="headerlink" href="#DatasetInfo"></a>
     
-    
+            <div class="docstring"><p>Information about a dataset stored in the workspace.</p>
+
+<p>Contains metadata about a dataset including its size, dimensions, origin,
+and associated tags. Returned by <code><a href="#RemoteDatasetsManager.list">RemoteDatasetsManager.list</a></code> and used
+to identify datasets before loading them.</p>
+</div>
+
 
                             <div id="DatasetInfo.id" class="classattr">
                                 <div class="attr variable">
@@ -140,7 +146,9 @@
     </div>
     <a class="headerlink" href="#DatasetInfo.id"></a>
     
-    
+            <div class="docstring"><p>Unique dataset identifier.</p>
+</div>
+
 
                             </div>
                             <div id="DatasetInfo.project_id" class="classattr">
@@ -151,7 +159,9 @@
     </div>
     <a class="headerlink" href="#DatasetInfo.project_id"></a>
     
-    
+            <div class="docstring"><p>Project this dataset belongs to.</p>
+</div>
+
 
                             </div>
                             <div id="DatasetInfo.name" class="classattr">
@@ -162,7 +172,9 @@
     </div>
     <a class="headerlink" href="#DatasetInfo.name"></a>
     
-    
+            <div class="docstring"><p>Name of the dataset.</p>
+</div>
+
 
                             </div>
                             <div id="DatasetInfo.size_bytes" class="classattr">
@@ -173,7 +185,9 @@
     </div>
     <a class="headerlink" href="#DatasetInfo.size_bytes"></a>
     
-    
+            <div class="docstring"><p>Size of the dataset in bytes.</p>
+</div>
+
 
                             </div>
                             <div id="DatasetInfo.row_count" class="classattr">
@@ -184,7 +198,9 @@
     </div>
     <a class="headerlink" href="#DatasetInfo.row_count"></a>
     
-    
+            <div class="docstring"><p>Number of rows in the dataset.</p>
+</div>
+
 
                             </div>
                             <div id="DatasetInfo.column_count" class="classattr">
@@ -195,7 +211,9 @@
     </div>
     <a class="headerlink" href="#DatasetInfo.column_count"></a>
     
-    
+            <div class="docstring"><p>Number of columns in the dataset.</p>
+</div>
+
 
                             </div>
                             <div id="DatasetInfo.description" class="classattr">
@@ -206,7 +224,9 @@
     </div>
     <a class="headerlink" href="#DatasetInfo.description"></a>
     
-    
+            <div class="docstring"><p>Description of the dataset.</p>
+</div>
+
 
                             </div>
                             <div id="DatasetInfo.created_at" class="classattr">
@@ -217,7 +237,9 @@
     </div>
     <a class="headerlink" href="#DatasetInfo.created_at"></a>
     
-    
+            <div class="docstring"><p>Creation timestamp.</p>
+</div>
+
 
                             </div>
                             <div id="DatasetInfo.author_name" class="classattr">
@@ -228,7 +250,9 @@
     </div>
     <a class="headerlink" href="#DatasetInfo.author_name"></a>
     
-    
+            <div class="docstring"><p>Optional name of the creator.</p>
+</div>
+
 
                             </div>
                             <div id="DatasetInfo.origin" class="classattr">
@@ -239,7 +263,9 @@
     </div>
     <a class="headerlink" href="#DatasetInfo.origin"></a>
     
-    
+            <div class="docstring"><p>Origin/source of the dataset.</p>
+</div>
+
 
                             </div>
                             <div id="DatasetInfo.tags" class="classattr">
@@ -250,7 +276,9 @@
     </div>
     <a class="headerlink" href="#DatasetInfo.tags"></a>
     
-    
+            <div class="docstring"><p>List of tags associated with the dataset.</p>
+</div>
+
 
                             </div>
                             <div id="DatasetInfo.metadata" class="classattr">
@@ -261,7 +289,9 @@
     </div>
     <a class="headerlink" href="#DatasetInfo.metadata"></a>
     
-    
+            <div class="docstring"><p>Additional metadata as key-value pairs.</p>
+</div>
+
 
                             </div>
                 </section>
@@ -275,7 +305,12 @@
     </div>
     <a class="headerlink" href="#DatasetList"></a>
     
-    
+            <div class="docstring"><p>List of datasets with metadata.</p>
+
+<p>Returned by <code><a href="#RemoteDatasetsManager.list">RemoteDatasetsManager.list</a></code> to provide information about
+all datasets in a project, optionally filtered by origin.</p>
+</div>
+
 
                             <div id="DatasetList.datasets" class="classattr">
                                 <div class="attr variable">
@@ -285,7 +320,9 @@
     </div>
     <a class="headerlink" href="#DatasetList.datasets"></a>
     
-    
+            <div class="docstring"><p>List of <code><a href="#DatasetInfo">DatasetInfo</a></code> objects.</p>
+</div>
+
 
                             </div>
                 </section>
@@ -299,7 +336,12 @@
     </div>
     <a class="headerlink" href="#RemoteDatasetsManager"></a>
     
-    
+            <div class="docstring"><p>Manager for remote datasets stored in a workspace.</p>
+
+<p>Provides methods to list, load, and upload datasets to/from a remote workspace.
+Access via <code>RemoteWorkspace.datasets</code> property.</p>
+</div>
+
 
                             <div id="RemoteDatasetsManager.__init__" class="classattr">
                                 <div class="attr function">
@@ -310,7 +352,16 @@
     </div>
     <a class="headerlink" href="#RemoteDatasetsManager.__init__"></a>
     
-    
+            <div class="docstring"><p>Initialize the manager.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>workspace</code>: <code>RemoteWorkspace</code> to use for API calls.</li>
+<li><code>base_dataset_url</code>: Base URL path for dataset API endpoints (e.g., <code>"/api/datasets"</code>).</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="RemoteDatasetsManager.list" class="classattr">
@@ -323,7 +374,22 @@
     </div>
     <a class="headerlink" href="#RemoteDatasetsManager.list"></a>
     
-    
+            <div class="docstring"><p>List all datasets in a project.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>project</code>: Project ID.</li>
+<li><code>origins</code>: Optional list of origin filters (e.g., <code>["upload", "snapshot"]</code>).</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li><code><a href="#DatasetList">DatasetList</a></code> containing all matching datasets.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="RemoteDatasetsManager.load" class="classattr">
@@ -336,7 +402,21 @@
     </div>
     <a class="headerlink" href="#RemoteDatasetsManager.load"></a>
     
-    
+            <div class="docstring"><p>Load a dataset by ID.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>dataset_id</code>: ID of the dataset to load.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li><code>Dataset</code> object with data and data definition.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="RemoteDatasetsManager.add" class="classattr">
@@ -349,7 +429,25 @@
     </div>
     <a class="headerlink" href="#RemoteDatasetsManager.add"></a>
     
-    
+            <div class="docstring"><p>Upload a dataset to the workspace.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>project_id</code>: Project ID.</li>
+<li><code>dataset</code>: <code>Dataset</code> object to upload.</li>
+<li><code>name</code>: Name for the dataset.</li>
+<li><code>description</code>: Optional description.</li>
+<li><code>link</code>: Optional <code>SnapshotLink</code> to associate with a snapshot.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li><code>DatasetID</code> of the uploaded dataset.</li>
+</ul>
+</div>
+
 
                             </div>
                 </section>

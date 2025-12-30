@@ -238,7 +238,13 @@
     </div>
     <a class="headerlink" href="#BaseLLMPromptTemplate"></a>
     
-    
+            <div class="docstring"><p>Base class for LLM prompt templates.</p>
+
+<p>Abstract base class that provides common functionality for building prompts from data
+and extracting structured outputs. Subclasses implement specific classification
+or generation tasks.</p>
+</div>
+
 
                             <div id="BaseLLMPromptTemplate.iterate_messages" class="classattr">
                                 <div class="attr function">
@@ -250,7 +256,22 @@
     </div>
     <a class="headerlink" href="#BaseLLMPromptTemplate.iterate_messages"></a>
     
-    
+            <div class="docstring"><p>Generate LLM requests for each row in the data.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>data</code>: DataFrame containing input data.</li>
+<li><code>input_columns</code>: Mapping from template placeholder names to DataFrame column names.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li>Iterator of <code>LLMRequest</code> objects, one per row.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="BaseLLMPromptTemplate.list_output_columns" class="classattr">
@@ -264,7 +285,15 @@
     </div>
     <a class="headerlink" href="#BaseLLMPromptTemplate.list_output_columns"></a>
     
-    
+            <div class="docstring"><p>List all output column names this template produces.</p>
+
+<p>Returns:</p>
+
+<ul>
+<li>List of column names that will be created by this template.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="BaseLLMPromptTemplate.get_type" class="classattr">
@@ -278,7 +307,21 @@
     </div>
     <a class="headerlink" href="#BaseLLMPromptTemplate.get_type"></a>
     
-    
+            <div class="docstring"><p>Get the column type for an output column.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>subcolumn</code>: Name of the output column, or <code>None</code> for the main output column.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li><code>ColumnType</code> for the specified column.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="BaseLLMPromptTemplate.get_main_output_column" class="classattr">
@@ -292,7 +335,15 @@
     </div>
     <a class="headerlink" href="#BaseLLMPromptTemplate.get_main_output_column"></a>
     
-    
+            <div class="docstring"><p>Get the name of the primary output column.</p>
+
+<p>Returns:</p>
+
+<ul>
+<li>Name of the main output column (e.g., "category" for classification).</li>
+</ul>
+</div>
+
 
                             </div>
                             <div class="inherited">
@@ -353,16 +404,10 @@
     </div>
     <a class="headerlink" href="#Uncertainty"></a>
     
-            <div class="docstring"><p>str(object='') -> str
-str(bytes_or_buffer[, encoding[, errors]]) -> str</p>
+            <div class="docstring"><p>Uncertainty handling strategy for classification.</p>
 
-<p>Create a new string object from the given object. If encoding or
-errors is specified, then the object must expose a data buffer
-that will be decoded using the given encoding and error handler.
-Otherwise, returns the result of object.__str__() (if defined)
-or repr(object).
-encoding defaults to sys.getdefaultencoding().
-errors defaults to 'strict'.</p>
+<p>Determines how to handle cases where the model cannot confidently classify
+the input into one of the target categories.</p>
 </div>
 
 
@@ -375,7 +420,9 @@ errors defaults to 'strict'.</p>
     </div>
     <a class="headerlink" href="#Uncertainty.UNKNOWN"></a>
     
-    
+            <div class="docstring"><p>Use a separate "UNKNOWN" category for uncertain classifications.</p>
+</div>
+
 
                             </div>
                             <div id="Uncertainty.TARGET" class="classattr">
@@ -387,7 +434,9 @@ errors defaults to 'strict'.</p>
     </div>
     <a class="headerlink" href="#Uncertainty.TARGET"></a>
     
-    
+            <div class="docstring"><p>Treat uncertain cases as the target category.</p>
+</div>
+
 
                             </div>
                             <div id="Uncertainty.NON_TARGET" class="classattr">
@@ -399,7 +448,9 @@ errors defaults to 'strict'.</p>
     </div>
     <a class="headerlink" href="#Uncertainty.NON_TARGET"></a>
     
-    
+            <div class="docstring"><p>Treat uncertain cases as the non-target category.</p>
+</div>
+
 
                             </div>
                 </section>
@@ -413,7 +464,12 @@ errors defaults to 'strict'.</p>
     </div>
     <a class="headerlink" href="#BinaryClassificationPromptTemplate"></a>
     
-    
+            <div class="docstring"><p>Template for binary classification prompts.</p>
+
+<p>Generates prompts that classify text into two categories (target vs non-target).
+Supports optional reasoning and scoring outputs.</p>
+</div>
+
 
                             <div id="BinaryClassificationPromptTemplate.criteria" class="classattr">
                                 <div class="attr variable">
@@ -423,7 +479,9 @@ errors defaults to 'strict'.</p>
     </div>
     <a class="headerlink" href="#BinaryClassificationPromptTemplate.criteria"></a>
     
-    
+            <div class="docstring"><p>Classification criteria or instructions.</p>
+</div>
+
 
                             </div>
                             <div id="BinaryClassificationPromptTemplate.instructions_template" class="classattr">
@@ -434,7 +492,9 @@ errors defaults to 'strict'.</p>
     </div>
     <a class="headerlink" href="#BinaryClassificationPromptTemplate.instructions_template"></a>
     
-    
+            <div class="docstring"><p>Template for classification instructions.</p>
+</div>
+
 
                             </div>
                             <div id="BinaryClassificationPromptTemplate.anchor_start" class="classattr">
@@ -445,7 +505,9 @@ errors defaults to 'strict'.</p>
     </div>
     <a class="headerlink" href="#BinaryClassificationPromptTemplate.anchor_start"></a>
     
-    
+            <div class="docstring"><p>Marker indicating where input text starts.</p>
+</div>
+
 
                             </div>
                             <div id="BinaryClassificationPromptTemplate.anchor_end" class="classattr">
@@ -456,7 +518,9 @@ errors defaults to 'strict'.</p>
     </div>
     <a class="headerlink" href="#BinaryClassificationPromptTemplate.anchor_end"></a>
     
-    
+            <div class="docstring"><p>Marker indicating where input text ends.</p>
+</div>
+
 
                             </div>
                             <div id="BinaryClassificationPromptTemplate.placeholders" class="classattr">
@@ -467,7 +531,9 @@ errors defaults to 'strict'.</p>
     </div>
     <a class="headerlink" href="#BinaryClassificationPromptTemplate.placeholders"></a>
     
-    
+            <div class="docstring"><p>Additional placeholder values for template substitution. Maps placeholder names to their values.</p>
+</div>
+
 
                             </div>
                             <div id="BinaryClassificationPromptTemplate.target_category" class="classattr">
@@ -478,7 +544,9 @@ errors defaults to 'strict'.</p>
     </div>
     <a class="headerlink" href="#BinaryClassificationPromptTemplate.target_category"></a>
     
-    
+            <div class="docstring"><p>Name of the target/positive category.</p>
+</div>
+
 
                             </div>
                             <div id="BinaryClassificationPromptTemplate.non_target_category" class="classattr">
@@ -489,7 +557,9 @@ errors defaults to 'strict'.</p>
     </div>
     <a class="headerlink" href="#BinaryClassificationPromptTemplate.non_target_category"></a>
     
-    
+            <div class="docstring"><p>Name of the non-target/negative category.</p>
+</div>
+
 
                             </div>
                             <div id="BinaryClassificationPromptTemplate.uncertainty" class="classattr">
@@ -500,7 +570,9 @@ errors defaults to 'strict'.</p>
     </div>
     <a class="headerlink" href="#BinaryClassificationPromptTemplate.uncertainty"></a>
     
-    
+            <div class="docstring"><p>How to handle uncertain classifications.</p>
+</div>
+
 
                             </div>
                             <div id="BinaryClassificationPromptTemplate.include_category" class="classattr">
@@ -511,7 +583,9 @@ errors defaults to 'strict'.</p>
     </div>
     <a class="headerlink" href="#BinaryClassificationPromptTemplate.include_category"></a>
     
-    
+            <div class="docstring"><p>Whether to output category classification.</p>
+</div>
+
 
                             </div>
                             <div id="BinaryClassificationPromptTemplate.include_reasoning" class="classattr">
@@ -522,7 +596,9 @@ errors defaults to 'strict'.</p>
     </div>
     <a class="headerlink" href="#BinaryClassificationPromptTemplate.include_reasoning"></a>
     
-    
+            <div class="docstring"><p>Whether to output reasoning text.</p>
+</div>
+
 
                             </div>
                             <div id="BinaryClassificationPromptTemplate.include_score" class="classattr">
@@ -533,7 +609,9 @@ errors defaults to 'strict'.</p>
     </div>
     <a class="headerlink" href="#BinaryClassificationPromptTemplate.include_score"></a>
     
-    
+            <div class="docstring"><p>Whether to output confidence scores.</p>
+</div>
+
 
                             </div>
                             <div id="BinaryClassificationPromptTemplate.score_range" class="classattr">
@@ -544,7 +622,9 @@ errors defaults to 'strict'.</p>
     </div>
     <a class="headerlink" href="#BinaryClassificationPromptTemplate.score_range"></a>
     
-    
+            <div class="docstring"><p>Min and max values for scores (default: (0.0, 1.0)).</p>
+</div>
+
 
                             </div>
                             <div id="BinaryClassificationPromptTemplate.output_column" class="classattr">
@@ -555,7 +635,9 @@ errors defaults to 'strict'.</p>
     </div>
     <a class="headerlink" href="#BinaryClassificationPromptTemplate.output_column"></a>
     
-    
+            <div class="docstring"><p>Name of the category output column.</p>
+</div>
+
 
                             </div>
                             <div id="BinaryClassificationPromptTemplate.output_reasoning_column" class="classattr">
@@ -566,7 +648,9 @@ errors defaults to 'strict'.</p>
     </div>
     <a class="headerlink" href="#BinaryClassificationPromptTemplate.output_reasoning_column"></a>
     
-    
+            <div class="docstring"><p>Name of the reasoning output column.</p>
+</div>
+
 
                             </div>
                             <div id="BinaryClassificationPromptTemplate.output_score_column" class="classattr">
@@ -577,7 +661,9 @@ errors defaults to 'strict'.</p>
     </div>
     <a class="headerlink" href="#BinaryClassificationPromptTemplate.output_score_column"></a>
     
-    
+            <div class="docstring"><p>Name of the score output column.</p>
+</div>
+
 
                             </div>
                             <div id="BinaryClassificationPromptTemplate.pre_messages" class="classattr">
@@ -588,7 +674,9 @@ errors defaults to 'strict'.</p>
     </div>
     <a class="headerlink" href="#BinaryClassificationPromptTemplate.pre_messages"></a>
     
-    
+            <div class="docstring"><p>Additional messages to prepend to the prompt.</p>
+</div>
+
 
                             </div>
                             <div id="BinaryClassificationPromptTemplate.get_blocks" class="classattr">
@@ -627,7 +715,15 @@ errors defaults to 'strict'.</p>
     </div>
     <a class="headerlink" href="#BinaryClassificationPromptTemplate.list_output_columns"></a>
     
-    
+            <div class="docstring"><p>List all output column names this template produces.</p>
+
+<p>Returns:</p>
+
+<ul>
+<li>List of column names that will be created by this template.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="BinaryClassificationPromptTemplate.get_main_output_column" class="classattr">
@@ -640,7 +736,15 @@ errors defaults to 'strict'.</p>
     </div>
     <a class="headerlink" href="#BinaryClassificationPromptTemplate.get_main_output_column"></a>
     
-    
+            <div class="docstring"><p>Get the name of the primary output column.</p>
+
+<p>Returns:</p>
+
+<ul>
+<li>Name of the main output column (e.g., "category" for classification).</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="BinaryClassificationPromptTemplate.get_type" class="classattr">
@@ -653,7 +757,21 @@ errors defaults to 'strict'.</p>
     </div>
     <a class="headerlink" href="#BinaryClassificationPromptTemplate.get_type"></a>
     
-    
+            <div class="docstring"><p>Get the column type for an output column.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>subcolumn</code>: Name of the output column, or <code>None</code> for the main output column.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li><code>ColumnType</code> for the specified column.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div class="inherited">
@@ -692,7 +810,12 @@ errors defaults to 'strict'.</p>
     </div>
     <a class="headerlink" href="#MulticlassClassificationPromptTemplate"></a>
     
-    
+            <div class="docstring"><p>Template for multiclass classification prompts.</p>
+
+<p>Generates prompts that classify text into multiple categories.
+Supports per-category scoring and optional reasoning outputs.</p>
+</div>
+
 
                             <div id="MulticlassClassificationPromptTemplate.criteria" class="classattr">
                                 <div class="attr variable">
@@ -702,7 +825,9 @@ errors defaults to 'strict'.</p>
     </div>
     <a class="headerlink" href="#MulticlassClassificationPromptTemplate.criteria"></a>
     
-    
+            <div class="docstring"><p>Classification criteria or instructions.</p>
+</div>
+
 
                             </div>
                             <div id="MulticlassClassificationPromptTemplate.instructions_template" class="classattr">
@@ -713,7 +838,9 @@ errors defaults to 'strict'.</p>
     </div>
     <a class="headerlink" href="#MulticlassClassificationPromptTemplate.instructions_template"></a>
     
-    
+            <div class="docstring"><p>Template for classification instructions.</p>
+</div>
+
 
                             </div>
                             <div id="MulticlassClassificationPromptTemplate.anchor_start" class="classattr">
@@ -724,7 +851,9 @@ errors defaults to 'strict'.</p>
     </div>
     <a class="headerlink" href="#MulticlassClassificationPromptTemplate.anchor_start"></a>
     
-    
+            <div class="docstring"><p>Marker indicating where input text starts.</p>
+</div>
+
 
                             </div>
                             <div id="MulticlassClassificationPromptTemplate.anchor_end" class="classattr">
@@ -735,7 +864,9 @@ errors defaults to 'strict'.</p>
     </div>
     <a class="headerlink" href="#MulticlassClassificationPromptTemplate.anchor_end"></a>
     
-    
+            <div class="docstring"><p>Marker indicating where input text ends.</p>
+</div>
+
 
                             </div>
                             <div id="MulticlassClassificationPromptTemplate.uncertainty" class="classattr">
@@ -746,7 +877,9 @@ errors defaults to 'strict'.</p>
     </div>
     <a class="headerlink" href="#MulticlassClassificationPromptTemplate.uncertainty"></a>
     
-    
+            <div class="docstring"><p>Category name to use for uncertain classifications, or "UNKNOWN".</p>
+</div>
+
 
                             </div>
                             <div id="MulticlassClassificationPromptTemplate.category_criteria" class="classattr">
@@ -757,7 +890,9 @@ errors defaults to 'strict'.</p>
     </div>
     <a class="headerlink" href="#MulticlassClassificationPromptTemplate.category_criteria"></a>
     
-    
+            <div class="docstring"><p>Mapping from category names to their criteria descriptions. Each key is a category name, value is its description.</p>
+</div>
+
 
                             </div>
                             <div id="MulticlassClassificationPromptTemplate.include_category" class="classattr">
@@ -768,7 +903,9 @@ errors defaults to 'strict'.</p>
     </div>
     <a class="headerlink" href="#MulticlassClassificationPromptTemplate.include_category"></a>
     
-    
+            <div class="docstring"><p>Whether to output category classification.</p>
+</div>
+
 
                             </div>
                             <div id="MulticlassClassificationPromptTemplate.include_reasoning" class="classattr">
@@ -779,7 +916,9 @@ errors defaults to 'strict'.</p>
     </div>
     <a class="headerlink" href="#MulticlassClassificationPromptTemplate.include_reasoning"></a>
     
-    
+            <div class="docstring"><p>Whether to output reasoning text.</p>
+</div>
+
 
                             </div>
                             <div id="MulticlassClassificationPromptTemplate.include_score" class="classattr">
@@ -790,7 +929,9 @@ errors defaults to 'strict'.</p>
     </div>
     <a class="headerlink" href="#MulticlassClassificationPromptTemplate.include_score"></a>
     
-    
+            <div class="docstring"><p>Whether to output confidence scores per category.</p>
+</div>
+
 
                             </div>
                             <div id="MulticlassClassificationPromptTemplate.score_range" class="classattr">
@@ -801,7 +942,9 @@ errors defaults to 'strict'.</p>
     </div>
     <a class="headerlink" href="#MulticlassClassificationPromptTemplate.score_range"></a>
     
-    
+            <div class="docstring"><p>Min and max values for scores (default: (0.0, 1.0)).</p>
+</div>
+
 
                             </div>
                             <div id="MulticlassClassificationPromptTemplate.output_column" class="classattr">
@@ -812,7 +955,9 @@ errors defaults to 'strict'.</p>
     </div>
     <a class="headerlink" href="#MulticlassClassificationPromptTemplate.output_column"></a>
     
-    
+            <div class="docstring"><p>Name of the category output column.</p>
+</div>
+
 
                             </div>
                             <div id="MulticlassClassificationPromptTemplate.output_reasoning_column" class="classattr">
@@ -823,7 +968,9 @@ errors defaults to 'strict'.</p>
     </div>
     <a class="headerlink" href="#MulticlassClassificationPromptTemplate.output_reasoning_column"></a>
     
-    
+            <div class="docstring"><p>Name of the reasoning output column.</p>
+</div>
+
 
                             </div>
                             <div id="MulticlassClassificationPromptTemplate.output_score_column_prefix" class="classattr">
@@ -834,7 +981,9 @@ errors defaults to 'strict'.</p>
     </div>
     <a class="headerlink" href="#MulticlassClassificationPromptTemplate.output_score_column_prefix"></a>
     
-    
+            <div class="docstring"><p>Prefix for per-category score columns. Final column names will be like "score_category1".</p>
+</div>
+
 
                             </div>
                             <div id="MulticlassClassificationPromptTemplate.pre_messages" class="classattr">
@@ -845,7 +994,9 @@ errors defaults to 'strict'.</p>
     </div>
     <a class="headerlink" href="#MulticlassClassificationPromptTemplate.pre_messages"></a>
     
-    
+            <div class="docstring"><p>Additional messages to prepend to the prompt.</p>
+</div>
+
 
                             </div>
                             <div id="MulticlassClassificationPromptTemplate.get_blocks" class="classattr">
@@ -871,7 +1022,21 @@ errors defaults to 'strict'.</p>
     </div>
     <a class="headerlink" href="#MulticlassClassificationPromptTemplate.get_score_column"></a>
     
-    
+            <div class="docstring"><p>Get the output column name for a category's score.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>category</code>: Name of the category.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li>Column name for the category's score (e.g., "score_category1").</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="MulticlassClassificationPromptTemplate.list_output_columns" class="classattr">
@@ -884,7 +1049,15 @@ errors defaults to 'strict'.</p>
     </div>
     <a class="headerlink" href="#MulticlassClassificationPromptTemplate.list_output_columns"></a>
     
-    
+            <div class="docstring"><p>List all output column names this template produces.</p>
+
+<p>Returns:</p>
+
+<ul>
+<li>List of column names that will be created by this template.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="MulticlassClassificationPromptTemplate.get_main_output_column" class="classattr">
@@ -897,7 +1070,15 @@ errors defaults to 'strict'.</p>
     </div>
     <a class="headerlink" href="#MulticlassClassificationPromptTemplate.get_main_output_column"></a>
     
-    
+            <div class="docstring"><p>Get the name of the primary output column.</p>
+
+<p>Returns:</p>
+
+<ul>
+<li>Name of the main output column (e.g., "category" for classification).</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="MulticlassClassificationPromptTemplate.get_type" class="classattr">
@@ -910,7 +1091,21 @@ errors defaults to 'strict'.</p>
     </div>
     <a class="headerlink" href="#MulticlassClassificationPromptTemplate.get_type"></a>
     
-    
+            <div class="docstring"><p>Get the column type for an output column.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>subcolumn</code>: Name of the output column, or <code>None</code> for the main output column.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li><code>ColumnType</code> for the specified column.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="MulticlassClassificationPromptTemplate.get_messages" class="classattr">

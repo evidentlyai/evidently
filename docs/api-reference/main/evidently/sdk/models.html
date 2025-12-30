@@ -199,7 +199,12 @@
     </div>
     <a class="headerlink" href="#DashboardTabModel"></a>
     
-    
+            <div class="docstring"><p>Model for a dashboard tab.</p>
+
+<p>Represents a single tab in a dashboard configuration. Tabs organize panels
+into logical groups for better visualization organization.</p>
+</div>
+
 
                             <div id="DashboardTabModel.id" class="classattr">
                                 <div class="attr variable">
@@ -209,7 +214,9 @@
     </div>
     <a class="headerlink" href="#DashboardTabModel.id"></a>
     
-    
+            <div class="docstring"><p>Unique tab identifier.</p>
+</div>
+
 
                             </div>
                             <div id="DashboardTabModel.title" class="classattr">
@@ -220,7 +227,9 @@
     </div>
     <a class="headerlink" href="#DashboardTabModel.title"></a>
     
-    
+            <div class="docstring"><p>Optional tab title.</p>
+</div>
+
 
                             </div>
                             <div id="DashboardTabModel.panels" class="classattr">
@@ -231,7 +240,9 @@
     </div>
     <a class="headerlink" href="#DashboardTabModel.panels"></a>
     
-    
+            <div class="docstring"><p>List of panel IDs in this tab.</p>
+</div>
+
 
                             </div>
                 </section>
@@ -245,7 +256,12 @@
     </div>
     <a class="headerlink" href="#PanelMetric"></a>
     
-    
+            <div class="docstring"><p>Configuration for a metric displayed in a dashboard panel.</p>
+
+<p>Specifies which metric to display and how it should be rendered. Used in
+<code><a href="#DashboardPanelPlot.values">DashboardPanelPlot.values</a></code> to configure what metrics appear in a panel.</p>
+</div>
+
 
                             <div id="PanelMetric.legend" class="classattr">
                                 <div class="attr variable">
@@ -255,7 +271,9 @@
     </div>
     <a class="headerlink" href="#PanelMetric.legend"></a>
     
-    
+            <div class="docstring"><p>Optional legend text for the metric.</p>
+</div>
+
 
                             </div>
                             <div id="PanelMetric.tags" class="classattr">
@@ -266,7 +284,9 @@
     </div>
     <a class="headerlink" href="#PanelMetric.tags"></a>
     
-    
+            <div class="docstring"><p>List of tags associated with the metric.</p>
+</div>
+
 
                             </div>
                             <div id="PanelMetric.metadata" class="classattr">
@@ -277,7 +297,9 @@
     </div>
     <a class="headerlink" href="#PanelMetric.metadata"></a>
     
-    
+            <div class="docstring"><p>Additional metadata as key-value pairs.</p>
+</div>
+
 
                             </div>
                             <div id="PanelMetric.metric" class="classattr">
@@ -288,7 +310,9 @@
     </div>
     <a class="headerlink" href="#PanelMetric.metric"></a>
     
-    
+            <div class="docstring"><p>Metric identifier (e.g., <code>"evidently:metric_v2:ColumnSummary"</code>).</p>
+</div>
+
 
                             </div>
                             <div id="PanelMetric.metric_labels" class="classattr">
@@ -299,7 +323,9 @@
     </div>
     <a class="headerlink" href="#PanelMetric.metric_labels"></a>
     
-    
+            <div class="docstring"><p>Labels for metric values. Maps metric value keys to display labels.</p>
+</div>
+
 
                             </div>
                             <div id="PanelMetric.view_params" class="classattr">
@@ -310,7 +336,9 @@
     </div>
     <a class="headerlink" href="#PanelMetric.view_params"></a>
     
-    
+            <div class="docstring"><p>Parameters for customizing the metric view. Format depends on the metric type.</p>
+</div>
+
 
                             </div>
                             <div id="PanelMetric.metric_is_alias" class="classattr">
@@ -338,7 +366,13 @@
     </div>
     <a class="headerlink" href="#DashboardPanelPlot"></a>
     
-    
+            <div class="docstring"><p>Model for a dashboard panel displaying metrics.</p>
+
+<p>Represents a single visualization panel in a dashboard. Panels can display
+one or more metrics using various visualization types (text, counter, line plot, etc.).
+Use panel factory functions like <code>text_panel</code> or <code>bar_plot_panel</code> to create instances.</p>
+</div>
+
 
                             <div id="DashboardPanelPlot.id" class="classattr">
                                 <div class="attr variable">
@@ -348,7 +382,9 @@
     </div>
     <a class="headerlink" href="#DashboardPanelPlot.id"></a>
     
-    
+            <div class="docstring"><p>Unique panel identifier.</p>
+</div>
+
 
                             </div>
                             <div id="DashboardPanelPlot.title" class="classattr">
@@ -359,7 +395,9 @@
     </div>
     <a class="headerlink" href="#DashboardPanelPlot.title"></a>
     
-    
+            <div class="docstring"><p>Panel title.</p>
+</div>
+
 
                             </div>
                             <div id="DashboardPanelPlot.subtitle" class="classattr">
@@ -370,7 +408,9 @@
     </div>
     <a class="headerlink" href="#DashboardPanelPlot.subtitle"></a>
     
-    
+            <div class="docstring"><p>Optional panel subtitle.</p>
+</div>
+
 
                             </div>
                             <div id="DashboardPanelPlot.size" class="classattr">
@@ -381,7 +421,9 @@
     </div>
     <a class="headerlink" href="#DashboardPanelPlot.size"></a>
     
-    
+            <div class="docstring"><p>Optional panel size specification.</p>
+</div>
+
 
                             </div>
                             <div id="DashboardPanelPlot.values" class="classattr">
@@ -392,7 +434,9 @@
     </div>
     <a class="headerlink" href="#DashboardPanelPlot.values"></a>
     
-    
+            <div class="docstring"><p>List of <code><a href="#PanelMetric">PanelMetric</a></code> objects to display in this panel.</p>
+</div>
+
 
                             </div>
                             <div id="DashboardPanelPlot.plot_params" class="classattr">
@@ -403,7 +447,9 @@
     </div>
     <a class="headerlink" href="#DashboardPanelPlot.plot_params"></a>
     
-    
+            <div class="docstring"><p>Parameters for customizing the plot visualization. Format depends on plot type (e.g., <code>plot_type</code>, <code>aggregation</code>, <code>is_stacked</code>).</p>
+</div>
+
 
                             </div>
                 </section>
@@ -417,7 +463,12 @@
     </div>
     <a class="headerlink" href="#DashboardModel"></a>
     
-    
+            <div class="docstring"><p>Complete dashboard configuration.</p>
+
+<p>Contains all tabs and panels that make up a project's dashboard. Used to
+configure how metrics are organized and displayed in the UI.</p>
+</div>
+
 
                             <div id="DashboardModel.tabs" class="classattr">
                                 <div class="attr variable">
@@ -427,7 +478,9 @@
     </div>
     <a class="headerlink" href="#DashboardModel.tabs"></a>
     
-    
+            <div class="docstring"><p>List of <code><a href="#DashboardTabModel">DashboardTabModel</a></code> objects representing dashboard tabs.</p>
+</div>
+
 
                             </div>
                             <div id="DashboardModel.panels" class="classattr">
@@ -438,7 +491,9 @@
     </div>
     <a class="headerlink" href="#DashboardModel.panels"></a>
     
-    
+            <div class="docstring"><p>List of <code><a href="#DashboardPanelPlot">DashboardPanelPlot</a></code> objects representing dashboard panels.</p>
+</div>
+
 
                             </div>
                 </section>
@@ -452,7 +507,12 @@
     </div>
     <a class="headerlink" href="#ProjectModel"></a>
     
-    
+            <div class="docstring"><p>Model for an Evidently project.</p>
+
+<p>Represents a project that organizes evaluations, snapshots, and datasets.
+Projects are the top-level organizational unit in Evidently workspaces.</p>
+</div>
+
 
                             <div id="ProjectModel.id" class="classattr">
                                 <div class="attr variable">
@@ -462,7 +522,9 @@
     </div>
     <a class="headerlink" href="#ProjectModel.id"></a>
     
-    
+            <div class="docstring"><p>Unique project identifier.</p>
+</div>
+
 
                             </div>
                             <div id="ProjectModel.name" class="classattr">
@@ -473,7 +535,9 @@
     </div>
     <a class="headerlink" href="#ProjectModel.name"></a>
     
-    
+            <div class="docstring"><p>Project name.</p>
+</div>
+
 
                             </div>
                             <div id="ProjectModel.description" class="classattr">
@@ -484,7 +548,9 @@
     </div>
     <a class="headerlink" href="#ProjectModel.description"></a>
     
-    
+            <div class="docstring"><p>Optional project description.</p>
+</div>
+
 
                             </div>
                             <div id="ProjectModel.org_id" class="classattr">
@@ -495,7 +561,9 @@
     </div>
     <a class="headerlink" href="#ProjectModel.org_id"></a>
     
-    
+            <div class="docstring"><p>Optional organization ID (for cloud workspaces).</p>
+</div>
+
 
                             </div>
                             <div id="ProjectModel.version" class="classattr">
@@ -506,7 +574,9 @@
     </div>
     <a class="headerlink" href="#ProjectModel.version"></a>
     
-    
+            <div class="docstring"><p>Project version string.</p>
+</div>
+
 
                             </div>
                 </section>
@@ -520,7 +590,12 @@
     </div>
     <a class="headerlink" href="#SnapshotLink"></a>
     
-    
+            <div class="docstring"><p>Link between a snapshot and a dataset.</p>
+
+<p>Associates a snapshot (evaluation run) with a dataset, specifying the dataset's
+role (reference vs current) and subtype (e.g., production, training).</p>
+</div>
+
 
                             <div id="SnapshotLink.snapshot_id" class="classattr">
                                 <div class="attr variable">
@@ -530,7 +605,9 @@
     </div>
     <a class="headerlink" href="#SnapshotLink.snapshot_id"></a>
     
-    
+            <div class="docstring"><p>ID of the snapshot.</p>
+</div>
+
 
                             </div>
                             <div id="SnapshotLink.dataset_type" class="classattr">
@@ -541,7 +618,9 @@
     </div>
     <a class="headerlink" href="#SnapshotLink.dataset_type"></a>
     
-    
+            <div class="docstring"><p>Type of dataset (e.g., <code>"reference"</code>, <code>"current"</code>).</p>
+</div>
+
 
                             </div>
                             <div id="SnapshotLink.dataset_subtype" class="classattr">
@@ -552,7 +631,9 @@
     </div>
     <a class="headerlink" href="#SnapshotLink.dataset_subtype"></a>
     
-    
+            <div class="docstring"><p>Subtype of dataset (e.g., <code>"production"</code>, <code>"training"</code>).</p>
+</div>
+
 
                             </div>
                 </section>
@@ -566,7 +647,12 @@
     </div>
     <a class="headerlink" href="#SnapshotMetadataModel"></a>
     
-    
+            <div class="docstring"><p>Metadata for a snapshot (evaluation run).</p>
+
+<p>Contains information about a snapshot including its ID, name, tags, timestamp,
+and links to associated datasets. Returned when listing or querying snapshots.</p>
+</div>
+
 
                             <div id="SnapshotMetadataModel.id" class="classattr">
                                 <div class="attr variable">
@@ -576,7 +662,9 @@
     </div>
     <a class="headerlink" href="#SnapshotMetadataModel.id"></a>
     
-    
+            <div class="docstring"><p>Unique snapshot identifier.</p>
+</div>
+
 
                             </div>
                             <div id="SnapshotMetadataModel.name" class="classattr">
@@ -587,7 +675,9 @@
     </div>
     <a class="headerlink" href="#SnapshotMetadataModel.name"></a>
     
-    
+            <div class="docstring"><p>Optional snapshot name.</p>
+</div>
+
 
                             </div>
                             <div id="SnapshotMetadataModel.metadata" class="classattr">
@@ -598,7 +688,9 @@
     </div>
     <a class="headerlink" href="#SnapshotMetadataModel.metadata"></a>
     
-    
+            <div class="docstring"><p>Additional metadata as key-value pairs.</p>
+</div>
+
 
                             </div>
                             <div id="SnapshotMetadataModel.tags" class="classattr">
@@ -609,7 +701,9 @@
     </div>
     <a class="headerlink" href="#SnapshotMetadataModel.tags"></a>
     
-    
+            <div class="docstring"><p>List of tags associated with the snapshot.</p>
+</div>
+
 
                             </div>
                             <div id="SnapshotMetadataModel.timestamp" class="classattr">
@@ -620,7 +714,9 @@
     </div>
     <a class="headerlink" href="#SnapshotMetadataModel.timestamp"></a>
     
-    
+            <div class="docstring"><p>Timestamp when the snapshot was created.</p>
+</div>
+
 
                             </div>
                             <div id="SnapshotMetadataModel.links" class="classattr">
@@ -631,7 +727,9 @@
     </div>
     <a class="headerlink" href="#SnapshotMetadataModel.links"></a>
     
-    
+            <div class="docstring"><p>Links to datasets associated with this snapshot. Maps dataset types to <code><a href="#SnapshotLink">SnapshotLink</a></code> objects.</p>
+</div>
+
 
                             </div>
                 </section>

@@ -145,7 +145,11 @@
     </div>
     <a class="headerlink" href="#AnthropicOptions"></a>
     
-    
+            <div class="docstring"><p>Base class for LLM provider options.</p>
+
+<p>Provides common configuration for API keys, rate limits, and custom API URLs.</p>
+</div>
+
 
                             <div id="AnthropicOptions.limits" class="classattr">
                                 <div class="attr variable">
@@ -155,7 +159,9 @@
     </div>
     <a class="headerlink" href="#AnthropicOptions.limits"></a>
     
-    
+            <div class="docstring"><p>Rate limiting configuration.</p>
+</div>
+
 
                             </div>
                             <div class="inherited">
@@ -183,7 +189,11 @@
     </div>
     <a class="headerlink" href="#LLMOptions"></a>
     
-    
+            <div class="docstring"><p>Base class for LLM provider options.</p>
+
+<p>Provides common configuration for API keys, rate limits, and custom API URLs.</p>
+</div>
+
 
                             <div id="LLMOptions.__init__" class="classattr">
                                 <div class="attr function">
@@ -194,9 +204,14 @@
     </div>
     <a class="headerlink" href="#LLMOptions.__init__"></a>
     
-            <div class="docstring"><p>Create a new model by parsing and validating input data from keyword arguments.</p>
+            <div class="docstring"><p>Initialize LLM options.</p>
 
-<p>Raises ValidationError if the input data cannot be parsed to form a valid model.</p>
+<p>Args:</p>
+
+<ul>
+<li><code><a href="#LLMOptions.api_key">api_key</a></code>: Optional API key for the provider.</li>
+<li><code>rpm_limit</code>: Optional requests per minute limit (backward compatibility).</li>
+</ul>
 </div>
 
 
@@ -209,7 +224,9 @@
     </div>
     <a class="headerlink" href="#LLMOptions.api_key"></a>
     
-    
+            <div class="docstring"><p>Optional API key for the provider.</p>
+</div>
+
 
                             </div>
                             <div id="LLMOptions.limits" class="classattr">
@@ -220,7 +237,9 @@
     </div>
     <a class="headerlink" href="#LLMOptions.limits"></a>
     
-    
+            <div class="docstring"><p>Rate limiting configuration.</p>
+</div>
+
 
                             </div>
                             <div id="LLMOptions.api_url" class="classattr">
@@ -231,7 +250,9 @@
     </div>
     <a class="headerlink" href="#LLMOptions.api_url"></a>
     
-    
+            <div class="docstring"><p>Optional custom API URL (for self-hosted providers).</p>
+</div>
+
 
                             </div>
                             <div id="LLMOptions.get_api_key" class="classattr">
@@ -244,7 +265,15 @@
     </div>
     <a class="headerlink" href="#LLMOptions.get_api_key"></a>
     
-    
+            <div class="docstring"><p>Get the API key as a plain string.</p>
+
+<p>Returns:</p>
+
+<ul>
+<li>API key string, or <code>None</code> if not set.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="LLMOptions.get_additional_kwargs" class="classattr">
@@ -257,7 +286,15 @@
     </div>
     <a class="headerlink" href="#LLMOptions.get_additional_kwargs"></a>
     
-    
+            <div class="docstring"><p>Get additional keyword arguments for the LLM client.</p>
+
+<p>Returns:</p>
+
+<ul>
+<li>Dictionary of additional arguments (empty by default, can be overridden).</li>
+</ul>
+</div>
+
 
                             </div>
                 </section>
@@ -308,7 +345,11 @@
     </div>
     <a class="headerlink" href="#GeminiOptions"></a>
     
-    
+            <div class="docstring"><p>Base class for LLM provider options.</p>
+
+<p>Provides common configuration for API keys, rate limits, and custom API URLs.</p>
+</div>
+
 
                             <div class="inherited">
                                 <h5>Inherited Members</h5>
@@ -336,7 +377,11 @@
     </div>
     <a class="headerlink" href="#DeepSeekOptions"></a>
     
-    
+            <div class="docstring"><p>Base class for LLM provider options.</p>
+
+<p>Provides common configuration for API keys, rate limits, and custom API URLs.</p>
+</div>
+
 
                             <div class="inherited">
                                 <h5>Inherited Members</h5>
@@ -364,7 +409,11 @@
     </div>
     <a class="headerlink" href="#VertexAIOptions"></a>
     
-    
+            <div class="docstring"><p>Base class for LLM provider options.</p>
+
+<p>Provides common configuration for API keys, rate limits, and custom API URLs.</p>
+</div>
+
 
                             <div id="VertexAIOptions.get_additional_kwargs" class="classattr">
                                 <div class="attr function">
@@ -376,7 +425,15 @@
     </div>
     <a class="headerlink" href="#VertexAIOptions.get_additional_kwargs"></a>
     
-    
+            <div class="docstring"><p>Get additional keyword arguments for the LLM client.</p>
+
+<p>Returns:</p>
+
+<ul>
+<li>Dictionary of additional arguments (empty by default, can be overridden).</li>
+</ul>
+</div>
+
 
                             </div>
                             <div class="inherited">
@@ -404,7 +461,11 @@
     </div>
     <a class="headerlink" href="#MistralOptions"></a>
     
-    
+            <div class="docstring"><p>Base class for LLM provider options.</p>
+
+<p>Provides common configuration for API keys, rate limits, and custom API URLs.</p>
+</div>
+
 
                             <div id="MistralOptions.limits" class="classattr">
                                 <div class="attr variable">
@@ -414,7 +475,9 @@
     </div>
     <a class="headerlink" href="#MistralOptions.limits"></a>
     
-    
+            <div class="docstring"><p>Rate limiting configuration.</p>
+</div>
+
 
                             </div>
                             <div class="inherited">
@@ -442,7 +505,11 @@
     </div>
     <a class="headerlink" href="#OllamaOptions"></a>
     
-    
+            <div class="docstring"><p>Base class for LLM provider options.</p>
+
+<p>Provides common configuration for API keys, rate limits, and custom API URLs.</p>
+</div>
+
 
                             <div id="OllamaOptions.api_url" class="classattr">
                                 <div class="attr variable">
@@ -452,7 +519,9 @@
     </div>
     <a class="headerlink" href="#OllamaOptions.api_url"></a>
     
-    
+            <div class="docstring"><p>Optional custom API URL (for self-hosted providers).</p>
+</div>
+
 
                             </div>
                             <div class="inherited">

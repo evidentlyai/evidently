@@ -231,7 +231,15 @@ underlying manager/API.</p>
     </div>
     <a class="headerlink" href="#PromptArtifactAdapter.__init__"></a>
     
-    
+            <div class="docstring"><p>Initialize the adapter.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>workspace</code>: <code>RemoteWorkspace</code> to use for API calls.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="PromptArtifactAdapter.list_prompts" class="classattr">
@@ -455,7 +463,15 @@ underlying manager/API.</p>
     </div>
     <a class="headerlink" href="#ConfigArtifactAdapter.__init__"></a>
     
-    
+            <div class="docstring"><p>Initialize the adapter.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>workspace</code>: <code>RemoteWorkspace</code> to use for API calls.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="ConfigArtifactAdapter.list_configs" class="classattr">
@@ -663,7 +679,23 @@ underlying manager/API.</p>
     </div>
     <a class="headerlink" href="#ConfigArtifactAdapter.add_descriptor"></a>
     
-    
+            <div class="docstring"><p>Add or update a descriptor config.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>project_id</code>: Project ID.</li>
+<li><code>name</code>: Name of the descriptor config.</li>
+<li><code>descriptor</code>: <code>Descriptor</code> object to store.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li><code>ConfigVersion</code> containing the descriptor.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="ConfigArtifactAdapter.get_descriptor" class="classattr">
@@ -676,7 +708,23 @@ underlying manager/API.</p>
     </div>
     <a class="headerlink" href="#ConfigArtifactAdapter.get_descriptor"></a>
     
-    
+            <div class="docstring"><p>Get a descriptor config.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>project_id</code>: Project ID.</li>
+<li><code>name</code>: Name of the descriptor config.</li>
+<li><code>version</code>: Version number or <code>"latest"</code>.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li><code>Descriptor</code> object from the config.</li>
+</ul>
+</div>
+
 
                             </div>
                 </section>
@@ -705,7 +753,15 @@ underlying manager/API.</p>
     </div>
     <a class="headerlink" href="#ArtifactConfigAdapter.__init__"></a>
     
-    
+            <div class="docstring"><p>Initialize the adapter.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>workspace</code>: <code>CloudWorkspace</code> to use for API calls.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="ArtifactConfigAdapter.list_artifacts" class="classattr">

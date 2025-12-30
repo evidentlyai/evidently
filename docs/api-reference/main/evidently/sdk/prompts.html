@@ -128,6 +128,18 @@
                     <a class="class" href="#RemotePrompt">RemotePrompt</a>
                             <ul class="memberlist">
                         <li>
+                                <a class="variable" href="#RemotePrompt.id">id</a>
+                        </li>
+                        <li>
+                                <a class="variable" href="#RemotePrompt.project_id">project_id</a>
+                        </li>
+                        <li>
+                                <a class="variable" href="#RemotePrompt.name">name</a>
+                        </li>
+                        <li>
+                                <a class="variable" href="#RemotePrompt.metadata">metadata</a>
+                        </li>
+                        <li>
                                 <a class="function" href="#RemotePrompt.bind">bind</a>
                         </li>
                         <li>
@@ -319,7 +331,11 @@
     </div>
     <a class="headerlink" href="#PromptMetadata"></a>
     
-    
+            <div class="docstring"><p>Metadata for a prompt.</p>
+
+<p>Stores creation/update timestamps and author information.</p>
+</div>
+
 
                             <div id="PromptMetadata.created_at" class="classattr">
                                 <div class="attr variable">
@@ -329,7 +345,9 @@
     </div>
     <a class="headerlink" href="#PromptMetadata.created_at"></a>
     
-    
+            <div class="docstring"><p>Creation timestamp.</p>
+</div>
+
 
                             </div>
                             <div id="PromptMetadata.updated_at" class="classattr">
@@ -340,7 +358,9 @@
     </div>
     <a class="headerlink" href="#PromptMetadata.updated_at"></a>
     
-    
+            <div class="docstring"><p>Last update timestamp.</p>
+</div>
+
 
                             </div>
                             <div id="PromptMetadata.author" class="classattr">
@@ -351,7 +371,9 @@
     </div>
     <a class="headerlink" href="#PromptMetadata.author"></a>
     
-    
+            <div class="docstring"><p>Optional user ID of the creator.</p>
+</div>
+
 
                             </div>
                 </section>
@@ -365,7 +387,12 @@
     </div>
     <a class="headerlink" href="#Prompt"></a>
     
-    
+            <div class="docstring"><p>A prompt in the Evidently system.</p>
+
+<p>Prompts are versioned objects that store prompt templates for LLM interactions.
+Each prompt can have multiple versions to track changes over time.</p>
+</div>
+
 
                             <div id="Prompt.id" class="classattr">
                                 <div class="attr variable">
@@ -375,7 +402,9 @@
     </div>
     <a class="headerlink" href="#Prompt.id"></a>
     
-    
+            <div class="docstring"><p>Unique prompt identifier.</p>
+</div>
+
 
                             </div>
                             <div id="Prompt.project_id" class="classattr">
@@ -386,7 +415,9 @@
     </div>
     <a class="headerlink" href="#Prompt.project_id"></a>
     
-    
+            <div class="docstring"><p>Project this prompt belongs to.</p>
+</div>
+
 
                             </div>
                             <div id="Prompt.name" class="classattr">
@@ -397,7 +428,9 @@
     </div>
     <a class="headerlink" href="#Prompt.name"></a>
     
-    
+            <div class="docstring"><p>Name of the prompt.</p>
+</div>
+
 
                             </div>
                             <div id="Prompt.metadata" class="classattr">
@@ -408,7 +441,9 @@
     </div>
     <a class="headerlink" href="#Prompt.metadata"></a>
     
-    
+            <div class="docstring"><p>Metadata about the prompt.</p>
+</div>
+
 
                             </div>
                 </section>
@@ -422,7 +457,11 @@
     </div>
     <a class="headerlink" href="#PromptVersionMetadata"></a>
     
-    
+            <div class="docstring"><p>Metadata for a prompt version.</p>
+
+<p>Stores creation/update timestamps and author information for a specific version.</p>
+</div>
+
 
                             <div id="PromptVersionMetadata.created_at" class="classattr">
                                 <div class="attr variable">
@@ -432,7 +471,9 @@
     </div>
     <a class="headerlink" href="#PromptVersionMetadata.created_at"></a>
     
-    
+            <div class="docstring"><p>Creation timestamp.</p>
+</div>
+
 
                             </div>
                             <div id="PromptVersionMetadata.updated_at" class="classattr">
@@ -443,7 +484,9 @@
     </div>
     <a class="headerlink" href="#PromptVersionMetadata.updated_at"></a>
     
-    
+            <div class="docstring"><p>Last update timestamp.</p>
+</div>
+
 
                             </div>
                             <div id="PromptVersionMetadata.author" class="classattr">
@@ -454,7 +497,9 @@
     </div>
     <a class="headerlink" href="#PromptVersionMetadata.author"></a>
     
-    
+            <div class="docstring"><p>Optional user ID of the creator.</p>
+</div>
+
 
                             </div>
                 </section>
@@ -468,7 +513,12 @@
     </div>
     <a class="headerlink" href="#PromptVersion"></a>
     
-    
+            <div class="docstring"><p>A version of a prompt.</p>
+
+<p>Each prompt can have multiple versions, allowing you to track changes
+over time and roll back if needed. Versions are numbered sequentially starting from 1.</p>
+</div>
+
 
                             <div id="PromptVersion.__init__" class="classattr">
                                 <div class="attr function">
@@ -494,7 +544,9 @@
     </div>
     <a class="headerlink" href="#PromptVersion.id"></a>
     
-    
+            <div class="docstring"><p>Unique version identifier.</p>
+</div>
+
 
                             </div>
                             <div id="PromptVersion.prompt_id" class="classattr">
@@ -505,7 +557,9 @@
     </div>
     <a class="headerlink" href="#PromptVersion.prompt_id"></a>
     
-    
+            <div class="docstring"><p>ID of the parent prompt.</p>
+</div>
+
 
                             </div>
                             <div id="PromptVersion.version" class="classattr">
@@ -516,7 +570,9 @@
     </div>
     <a class="headerlink" href="#PromptVersion.version"></a>
     
-    
+            <div class="docstring"><p>Version number (1, 2, 3, ...).</p>
+</div>
+
 
                             </div>
                             <div id="PromptVersion.metadata" class="classattr">
@@ -527,7 +583,9 @@
     </div>
     <a class="headerlink" href="#PromptVersion.metadata"></a>
     
-    
+            <div class="docstring"><p>Metadata about this version.</p>
+</div>
+
 
                             </div>
                             <div id="PromptVersion.content" class="classattr">
@@ -538,7 +596,9 @@
     </div>
     <a class="headerlink" href="#PromptVersion.content"></a>
     
-    
+            <div class="docstring"><p>The prompt content for this version.</p>
+</div>
+
 
                             </div>
                             <div id="PromptVersion.content_type" class="classattr">
@@ -549,7 +609,9 @@
     </div>
     <a class="headerlink" href="#PromptVersion.content_type"></a>
     
-    
+            <div class="docstring"><p>Type of prompt content.</p>
+</div>
+
 
                             </div>
                 </section>
@@ -575,8 +637,66 @@
     </div>
     <a class="headerlink" href="#RemotePrompt"></a>
     
-    
+            <div class="docstring"><p>Remote prompt with API access.</p>
 
+<p>Provides methods to interact with a remote prompt through the API,
+including version management and updates. Use <code><a href="#PromptAPI">PromptAPI</a></code> to create
+and manage remote prompts.</p>
+</div>
+
+
+                            <div id="RemotePrompt.id" class="classattr">
+                                <div class="attr variable">
+            <span class="name">id</span><span class="annotation">: uuid.UUID</span>
+
+        
+    </div>
+    <a class="headerlink" href="#RemotePrompt.id"></a>
+    
+            <div class="docstring"><p>Unique prompt identifier.</p>
+</div>
+
+
+                            </div>
+                            <div id="RemotePrompt.project_id" class="classattr">
+                                <div class="attr variable">
+            <span class="name">project_id</span><span class="annotation">: uuid.UUID</span>
+
+        
+    </div>
+    <a class="headerlink" href="#RemotePrompt.project_id"></a>
+    
+            <div class="docstring"><p>Project this prompt belongs to.</p>
+</div>
+
+
+                            </div>
+                            <div id="RemotePrompt.name" class="classattr">
+                                <div class="attr variable">
+            <span class="name">name</span><span class="annotation">: str</span>
+
+        
+    </div>
+    <a class="headerlink" href="#RemotePrompt.name"></a>
+    
+            <div class="docstring"><p>Name of the prompt.</p>
+</div>
+
+
+                            </div>
+                            <div id="RemotePrompt.metadata" class="classattr">
+                                <div class="attr variable">
+            <span class="name">metadata</span><span class="annotation">: <a href="#PromptMetadata">PromptMetadata</a></span>
+
+        
+    </div>
+    <a class="headerlink" href="#RemotePrompt.metadata"></a>
+    
+            <div class="docstring"><p>Metadata about the prompt.</p>
+</div>
+
+
+                            </div>
                             <div id="RemotePrompt.bind" class="classattr">
                                 <div class="attr function">
             
@@ -587,7 +707,21 @@
     </div>
     <a class="headerlink" href="#RemotePrompt.bind"></a>
     
-    
+            <div class="docstring"><p>Bind this prompt to an API instance.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>api</code>: <code><a href="#PromptAPI">PromptAPI</a></code> to use for operations.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li>Self for method chaining.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="RemotePrompt.list_versions" class="classattr">
@@ -600,7 +734,15 @@
     </div>
     <a class="headerlink" href="#RemotePrompt.list_versions"></a>
     
-    
+            <div class="docstring"><p>List all versions of this prompt.</p>
+
+<p>Returns:</p>
+
+<ul>
+<li>List of <code><a href="#PromptVersion">PromptVersion</a></code> objects.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="RemotePrompt.get_version" class="classattr">
@@ -613,7 +755,21 @@
     </div>
     <a class="headerlink" href="#RemotePrompt.get_version"></a>
     
-    
+            <div class="docstring"><p>Get a specific version of this prompt.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>version</code>: Version number or <code>"latest"</code>.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li><code><a href="#PromptVersion">PromptVersion</a></code> for the specified version.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="RemotePrompt.bump_version" class="classattr">
@@ -626,7 +782,21 @@
     </div>
     <a class="headerlink" href="#RemotePrompt.bump_version"></a>
     
-    
+            <div class="docstring"><p>Create a new version with the given content.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>content</code>: Content to store in the new version.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li>New <code><a href="#PromptVersion">PromptVersion</a></code> with incremented version number.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="RemotePrompt.delete" class="classattr">
@@ -639,7 +809,12 @@
     </div>
     <a class="headerlink" href="#RemotePrompt.delete"></a>
     
-    
+            <div class="docstring"><p>Delete this prompt and all its versions.</p>
+
+<p>This operation is irreversible and will permanently remove the prompt
+and all associated versions from the workspace.</p>
+</div>
+
 
                             </div>
                             <div id="RemotePrompt.delete_version" class="classattr">
@@ -652,7 +827,17 @@
     </div>
     <a class="headerlink" href="#RemotePrompt.delete_version"></a>
     
-    
+            <div class="docstring"><p>Delete a specific version.</p>
+
+<p>This operation is irreversible and will permanently remove the version.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>version_id</code>: ID of the version to delete.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="RemotePrompt.save" class="classattr">
@@ -665,20 +850,12 @@
     </div>
     <a class="headerlink" href="#RemotePrompt.save"></a>
     
-    
+            <div class="docstring"><p>Save changes to this prompt's metadata to the remote workspace.</p>
 
-                            </div>
-                            <div class="inherited">
-                                <h5>Inherited Members</h5>
-                                <dl>
-                                    <div><dt><a href="#Prompt">Prompt</a></dt>
-                                <dd id="RemotePrompt.id" class="variable"><a href="#Prompt.id">id</a></dd>
-                <dd id="RemotePrompt.project_id" class="variable"><a href="#Prompt.project_id">project_id</a></dd>
-                <dd id="RemotePrompt.name" class="variable"><a href="#Prompt.name">name</a></dd>
-                <dd id="RemotePrompt.metadata" class="variable"><a href="#Prompt.metadata">metadata</a></dd>
+<p>Updates the prompt's name and metadata fields. Does not affect versions.</p>
+</div>
 
-            </div>
-                                </dl>
+
                             </div>
                 </section>
                 <section id="PromptAPI">
