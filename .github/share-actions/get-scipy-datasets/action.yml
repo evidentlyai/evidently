@@ -28,6 +28,7 @@ runs:
         echo "gcp_credentials_path=$(pwd)/gcp-credentials.json" >> "$GITHUB_OUTPUT"
       shell: bash
     - name: DVC Pull
+      if: ${{ steps.cache-scipy-data.outputs.cache-hit != 'true' }}
       env:
         GOOGLE_APPLICATION_CREDENTIALS: ${{ steps.save_gcp_key.outputs.gcp_credentials_path }}
       run: uv run --with dvc[gs] dvc pull
@@ -36,7 +37,7 @@ runs:
       if: ${{ steps.cache-scipy-data.outputs.cache-hit != 'true' }}
       env:
         SCIKIT_LEARN_DATA: scikit_learn_data
-      run: uv run --with scikit-learn --with pillow --with dvc[gs] python .github/scripts/download_scipy_datasets.py
+      run: uv run --with scikit-learn --with pillow python .github/scripts/download_scipy_datasets.py
       shell: bash
     - name: Show cache folder
       run: ls scikit_learn_data
