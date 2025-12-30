@@ -57,29 +57,71 @@ from evidently.ui.utils import get_html_link_to_report
 
 
 class ProjectDashboard:
+    """Dashboard interface for configuring project visualizations.
+
+    `ProjectDashboard` provides methods to manage dashboard tabs and panels
+    for a project. Use it to customize which metrics are displayed and how
+    they are organized.
+
+    Access via `Project.dashboard` property.
+    """
+
     @property
     @abc.abstractmethod
     def project_id(self) -> ProjectID:
+        """Get the project ID this dashboard belongs to.
+
+        Returns:
+        * `ProjectID` of the associated project
+        """
         raise NotImplementedError
 
     @abc.abstractmethod
     def add_tab(self, tab: str):
+        """Add a new tab to the dashboard.
+
+        Args:
+        * `tab`: Name of the tab to add
+        """
         raise NotImplementedError
 
     @abstractmethod
     def delete_tab(self, tab: str):
+        """Delete a tab from the dashboard.
+
+        Args:
+        * `tab`: Name of the tab to delete
+        """
         raise NotImplementedError
 
     @abstractmethod
     def add_panel(self, panel: DashboardPanelPlot, tab: Optional[str] = None, create_if_not_exists: bool = True):
+        """Add a panel to a dashboard tab.
+
+        Args:
+        * `panel`: `DashboardPanelPlot` to add
+        * `tab`: Optional tab name (creates tab if it doesn't exist and `create_if_not_exists=True`)
+        * `create_if_not_exists`: If True, create the tab if it doesn't exist
+        """
         raise NotImplementedError
 
     @abstractmethod
     def delete_panel(self, panel: str, tab: str):
+        """Delete a panel from a dashboard tab.
+
+        Args:
+        * `panel`: ID of the panel to delete
+        * `tab`: Name of the tab containing the panel
+        """
         raise NotImplementedError
 
     @abstractmethod
     def model(self) -> DashboardModel:
+        """Get the dashboard model configuration.
+
+        Returns:
+        * `DashboardModel` with current dashboard configuration
+        """
         raise NotImplementedError
 
     def __repr__(self):
@@ -102,6 +144,23 @@ class ProjectDashboard:
 
 
 class Project:
+    """Represents an Evidently project for organizing evaluations.
+
+    A `Project` groups related evaluations (snapshots) together. You can manage
+    project metadata, configure dashboards, and access all runs associated
+    with the project.
+
+    Example:
+    ```python
+    workspace = Workspace.create("my_workspace")
+    project = workspace.add_project(ProjectModel(name="My Project"))
+    project.name = "Updated Name"
+    project.save()
+    ```
+
+    Access projects via `Workspace.get_project()` or `Workspace.list_projects()`.
+    """
+
     _project: ProjectModel
     _dashboard: ProjectDashboard
     _workspace: "WorkspaceBase"
@@ -112,35 +171,81 @@ class Project:
         dashboard: ProjectDashboard,
         workspace: "WorkspaceBase",
     ):
+        """Initialize a Project instance.
+
+        Args:
+        * `project`: `ProjectModel` with project data
+        * `dashboard`: `ProjectDashboard` for managing visualizations
+        * `workspace`: `WorkspaceBase` for persistence operations
+        """
         self._project = project
         self._workspace = workspace
         self._dashboard = dashboard
 
     @property
     def id(self) -> ProjectID:
+        """Get the project ID.
+
+        Returns:
+        * `ProjectID` unique identifier for this project
+        """
         return self._project.id
 
     @property
     def name(self) -> str:
+        """Get the project name.
+
+        Returns:
+        * Project name string
+        """
         return self._project.name
 
     @name.setter
     def name(self, value: str):
+        """Set the project name.
+
+        Args:
+        * `value`: New project name
+
+        Note: Call `save()` to persist changes.
+        """
         self._project.name = value
 
     @property
     def description(self) -> Optional[str]:
+        """Get the project description.
+
+        Returns:
+        * Project description string, or None if not set
+        """
         return self._project.description
 
     @description.setter
     def description(self, value: str):
+        """Set the project description.
+
+        Args:
+        * `value`: New project description
+
+        Note: Call `save()` to persist changes.
+        """
         self._project.description = value
 
     def save(self):
+        """Save project changes to the workspace.
+
+        Persists any modifications to project name, description, or other
+        metadata to the underlying `Workspace`.
+        """
         self._workspace.update_project(self._project)
 
     @property
     def dashboard(self) -> ProjectDashboard:
+        """Get the dashboard interface for this project.
+
+        Returns:
+        * `ProjectDashboard` for configuring visualizations
+        """
         return self._dashboard
 
     def __repr__(self):

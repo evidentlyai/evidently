@@ -1,4 +1,5 @@
 from typing import Annotated
+from typing import Callable
 from typing import List
 
 from litestar import Router
@@ -122,20 +123,33 @@ async def delete_artifact_version(
     await artifact_manager.delete_artifact_version(user_id, artifact_version_id)
 
 
-def artifacts_router() -> Router:
+def artifacts_router(guard: Callable) -> Router:
     return Router(
         path="/artifacts",
         route_handlers=[
-            list_artifacts,
-            get_artifact,
-            get_artifact_by_name,
-            add_artifact,
-            update_artifact,
-            delete_artifact,
-            list_artifact_versions,
-            get_artifact_version,
-            get_artifact_version_by_version,
-            add_artifact_version,
-            delete_artifact_version,
+            # read
+            Router(
+                "",
+                route_handlers=[
+                    list_artifacts,
+                    get_artifact,
+                    get_artifact_by_name,
+                    list_artifact_versions,
+                    get_artifact_version,
+                    get_artifact_version_by_version,
+                ],
+            ),
+            # write
+            Router(
+                "",
+                route_handlers=[
+                    add_artifact,
+                    update_artifact,
+                    delete_artifact,
+                    add_artifact_version,
+                    delete_artifact_version,
+                ],
+                guards=[guard],
+            ),
         ],
     )

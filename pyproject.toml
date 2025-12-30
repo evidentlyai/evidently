@@ -1,0 +1,185 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.version]
+source = "code"
+path = "src/evidently/_version.py"
+
+[project]
+name = "evidently"
+dynamic = ["version"]
+description = "Open-source tools to analyze, monitor, and debug machine learning model in production."
+readme = "README.md"
+requires-python = ">=3.9"
+license = {text = "Apache License 2.0"}
+authors = [
+    {name = "Emeli Dral", email = "emeli.dral@gmail.com"}
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+dependencies = [
+    "plotly>=5.10.0,<6",
+    "statsmodels>=0.12.2",
+    "scikit-learn>=1.1.1",
+    "pandas[parquet]>=1.3.5",
+    "numpy>=1.22.0",
+    "nltk>=3.6.7",
+    "scipy>=1.10.0",
+    "requests>=2.32.0",
+    "PyYAML>=5.4",
+    "pydantic>=1.10.16",
+    "litestar>=2.19.0",
+    "typing-inspect>=0.9.0",
+    "uvicorn[standard]>=0.22.0",
+    "watchdog>=3.0.0",
+    "typer>=0.3",
+    "rich>=13",
+    "iterative-telemetry>=0.0.5",
+    "dynaconf>=3.2.4",
+    "certifi>=2024.7.4",
+    "urllib3>=1.26.19",
+    "fsspec>=2024.9.0",
+    "ujson>=5.4.0",
+    "deprecation>=2.1.0",
+    "uuid6>=2024.7.10",
+    "cryptography>=43.0.1",
+    "opentelemetry-proto>=1.25.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pip-audit>=2.7.2",
+    "wheel==0.38.1",
+    "setuptools==65.5.1; python_version < '3.12'",
+    "setuptools==68.2.2; python_version >= '3.12'",
+    "jupyter==1.0.0",
+    "mypy==1.1.1",
+    "pandas-stubs>=1.3.5",
+    "pytest==7.4.4",
+    "tracely>=0.2.11",
+    "types-PyYAML==6.0.1",
+    "types-requests==2.26.0",
+    "types-dataclasses==0.6",
+    "types-python-dateutil==2.8.19",
+    "types-ujson>=5.4.0",
+    "pillow>=11.3.0",
+    "httpx==0.27.0",
+    "ruff==0.3.7",
+    "pre-commit==3.5.0",
+    "pytest-asyncio==0.23.7",
+    "pytest-mock==3.14.0",
+]
+llm = [
+    "openai>=1.16.2",
+    "evaluate>=0.4.1",
+    "transformers[torch]>=4.39.3",
+    "sentence-transformers>=2.7.0",
+    "sqlvalidator>=0.0.20",
+    "litellm>=1.74.3",
+    "llama-index>=0.10",
+    "faiss-cpu>=1.8.0",
+]
+spark = [
+    "pyspark>=3.4.0,<4",
+]
+fsspec = [
+    "s3fs>=2024.9.0",
+    "gcsfs>=2024.9.0",
+]
+s3 = [
+    "s3fs>=2024.9.0",
+]
+gcs = [
+    "gcsfs>=2024.9.0",
+]
+sql = [
+    "sqlalchemy>=2.0.0",
+    "psycopg2-binary>=2.9.0",
+    "alembic>=1.13.0",
+]
+
+[project.scripts]
+evidently = "evidently.cli:app"
+
+[project.urls]
+Homepage = "https://github.com/evidentlyai/evidently"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/evidently"]
+
+[tool.hatch.build.targets.wheel.shared-data]
+"src/evidently/nbextension/static" = "evidently/nbextension/static"
+"src/evidently/legacy/ui/assets" = "evidently/legacy/ui/assets"
+"src/evidently/ui/service/assets" = "evidently/ui/service/assets"
+"src/evidently/ui/service/storage/sql/migrations" = "evidently/ui/service/storage/sql/migrations"
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "/README.md",
+    "/MANIFEST.in",
+    "/src",
+]
+
+[tool.mypy]
+show_error_codes = true
+files = ["src/evidently"]
+python_version = "3.9"
+disable_error_code = "misc"
+namespace_packages = true
+no_implicit_optional = false
+plugins = ["pydantic.mypy", "numpy.typing.mypy_plugin"]
+
+[[tool.mypy.overrides]]
+module = [
+    "nltk.*",
+    "torch.*",
+    "evaluate.*",
+    "transformers.*",
+    "openai.*",
+    "sentence_transformers.*",
+    "scipy.*",
+    "sklearn.*",
+    "plotly.*",
+    "umap.*",
+    "IPython.*",
+    "iterative_telemetry.*",
+    "fastapi_restful.*",
+    "watchdog.*",
+    "pydantic.v1.*",
+    "pyspark.*",
+    "idna.*",
+    "fsspec.*",
+    "dynaconf.*",
+    "litestar.*",
+    "typing_inspect.*",
+    "ujson.*",
+    "deprecation.*",
+    "litellm.*",
+    "sqlvalidator.*",
+    "llama_index.*",
+    "pypdf.*",
+    "faiss.*",
+    "tracely.*",
+    "sqlalchemy.*",
+    "alembic.*",
+]
+ignore_missing_imports = true
+
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_classes = "*Test"
+markers = [
+    "slow: slow tests",
+    "asyncio: async tests",
+]

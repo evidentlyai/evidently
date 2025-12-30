@@ -645,22 +645,35 @@ class Report:
     Each `Report` runs a computation and visualizes a set of Metrics and conditional Tests.
     If you pass two datasets, you get a side-by-side comparison.
 
+    Use `Dataset` to prepare your data and `DataDefinition` to map columns. The `run()` method
+    returns a `Snapshot` object with computed results.
+
+    **Documentation**: See [Report Guide](https://docs.evidentlyai.com/docs/library/report) for detailed usage.
+
     Using a preset:
     ```python
+    from evidently import Report, Dataset
+    from evidently.presets import DataSummaryPreset
+
     report = Report([DataSummaryPreset()])
-    my_eval = report.run(eval_data_1, None)
+    dataset = Dataset.from_pandas(df, data_definition=DataDefinition())
+    snapshot = report.run(dataset, None)
     ```
 
     Using custom metrics:
     ```python
+    from evidently.metrics import ColumnCount, ValueStats
+
     report = Report([ColumnCount(), ValueStats(column="target")])
-    my_eval = report.run(eval_data_1, None)
+    snapshot = report.run(dataset, None)
     ```
 
     With reference data for drift detection:
     ```python
+    from evidently.presets import DataDriftPreset
+
     report = Report([DataDriftPreset()])
-    my_eval = report.run(eval_data_1, eval_data_2)
+    snapshot = report.run(current_dataset, reference_dataset)
     ```
     """
 
@@ -716,8 +729,8 @@ class Report:
         """Run the report on datasets and return a `Snapshot` with computed results.
 
         Args:
-        * `current_data`: Current dataset to evaluate (`pandas.DataFrame` or `evidently.core.datasets.Dataset`)
-        * `reference_data`: Optional reference dataset for comparison/drift detection
+        * `current_data`: Current dataset to evaluate (`pandas.DataFrame` or `Dataset`)
+        * `reference_data`: Optional reference dataset for comparison/drift detection (`pandas.DataFrame` or `Dataset`)
         * `additional_data`: Optional dictionary of additional datasets by name
         * `timestamp`: Optional timestamp for the snapshot (defaults to now)
         * `metadata`: Optional metadata to merge with report metadata
@@ -725,11 +738,17 @@ class Report:
         * `name`: Optional name for the snapshot
 
         Returns:
-        * `Snapshot`: Object containing computed metric results, tests, and visualizations
+        * `Snapshot`: Object containing computed metric results, tests, and visualizations.
+          Use `Snapshot.save_html()`, `Snapshot.json()`, or `Snapshot.dict()` to export results.
 
         Example:
         ```python
-        snapshot = report.run(current_data, reference_data, name="daily_check")
+        from evidently import Report, Dataset
+        from evidently.presets import DataSummaryPreset
+
+        report = Report([DataSummaryPreset()])
+        dataset = Dataset.from_pandas(df, data_definition=DataDefinition())
+        snapshot = report.run(dataset, None, name="daily_check")
         snapshot.save_html("report.html")
         ```
         """

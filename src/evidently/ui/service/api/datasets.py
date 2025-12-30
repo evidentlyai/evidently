@@ -400,20 +400,28 @@ def datasets_api(guard: Callable) -> Router:
     return Router(
         "/datasets",
         route_handlers=[
+            # read
+            Router(
+                "",
+                route_handlers=[
+                    get_dataset,
+                    list_datasets,
+                    download_dataset,
+                    get_dataset_metadata,
+                    get_data_definition,
+                ],
+            ),
+            # write
             Router(
                 "",
                 route_handlers=[
                     upload_dataset,
                     update_dataset,
                     delete_dataset,
-                    get_dataset,
-                    list_datasets,
-                    download_dataset,
-                    get_dataset_metadata,
-                    get_data_definition,
                     materialize_from_source,
                     add_tracing_dataset,
                 ],
+                guards=[guard],
             ),
         ],
     )

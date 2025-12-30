@@ -1,3 +1,32 @@
+"""Row-level descriptors for evaluating text and LLM outputs.
+
+Descriptors compute scores or labels for individual rows in your dataset.
+They are used to assess text quality, LLM output characteristics, and other
+row-level properties. After computing descriptors, you can:
+- View them as columns in your dataset
+- Use them in `TextEvals` preset to summarize across the dataset
+- Add conditions to create descriptor tests
+
+Descriptors range from simple (e.g., `TextLength`) to complex LLM-based
+evaluations (e.g., `LLMEval`, `LLMJudge`).
+
+**Documentation**:
+- [All Descriptors](https://docs.evidentlyai.com/metrics/all_descriptors) for a complete reference
+- [Descriptors Guide](https://docs.evidentlyai.com/docs/library/descriptors) for usage instructions
+
+Example:
+```python
+from evidently import Dataset
+from evidently.descriptors import TextLength, LLMEval
+
+dataset = Dataset.from_pandas(df)
+dataset.add_descriptors([
+    TextLength(column="response"),
+    LLMEval(column="response", prompt="Is this response helpful?")
+])
+```
+"""
+
 from evidently.core.datasets import ColumnTest
 from evidently.core.datasets import TestSummary
 
