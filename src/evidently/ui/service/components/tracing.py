@@ -28,6 +28,8 @@ class TracingComponent(Component):
     __section__: ClassVar[str] = "tracing"
 
     def get_api_route_handlers(self, ctx: ComponentContext):
+        from evidently.ui.service.components.security import SecurityComponent
         from evidently.ui.service.tracing.api import tracing_api
 
-        return [tracing_api()]
+        guard = ctx.get_component(SecurityComponent).get_auth_guard()
+        return [tracing_api(guard)]
