@@ -50,17 +50,36 @@ from evidently.metrics.row_test_summary import RowTestSummary
 
 
 class ValueStats(ColumnMetricContainer):
+    """Small preset providing descriptive statistics for a single column.
+
+    Generates multiple metrics for a column including row count, missing values,
+    min, max, mean, std, quantiles (0.25, 0.5, 0.75), and unique value counts.
+    Metrics vary based on column type (numerical, categorical, datetime, text).
+
+    """
+
     row_count_tests: SingleValueMetricTests = None
+    """Optional test conditions for row count."""
     missing_values_count_tests: SingleValueMetricTests = None
+    """Optional test conditions for missing values count."""
     min_tests: SingleValueMetricTests = None
+    """Optional test conditions for minimum value."""
     max_tests: SingleValueMetricTests = None
+    """Optional test conditions for maximum value."""
     mean_tests: SingleValueMetricTests = None
+    """Optional test conditions for mean value."""
     std_tests: SingleValueMetricTests = None
+    """Optional test conditions for standard deviation."""
     q25_tests: SingleValueMetricTests = None
+    """Optional test conditions for 25th quantile."""
     q50_tests: SingleValueMetricTests = None
+    """Optional test conditions for 50th quantile (median)."""
     q75_tests: SingleValueMetricTests = None
+    """Optional test conditions for 75th quantile."""
     unique_values_count_tests: ByLabelMetricTests = None
+    """Optional test conditions for unique value counts."""
     replace_nan: Label = None
+    """Optional value to replace NaN with for unique value counting."""
 
     @validator(
         "row_count_tests",
@@ -363,17 +382,36 @@ class ValueStats(ColumnMetricContainer):
 
 
 class DatasetStats(MetricContainer):
+    """Small preset providing dataset-level descriptive statistics.
+
+    Generates metrics for overall dataset characteristics including row/column counts,
+    duplicated rows/columns, constant columns, empty rows/columns, and missing values.
+    Provides a comprehensive overview of dataset structure and quality.
+
+    """
+
     row_count_tests: SingleValueMetricTests = None
+    """Optional test conditions for row count."""
     column_count_tests: SingleValueMetricTests = None
+    """Optional test conditions for column count."""
     duplicated_row_count_tests: SingleValueMetricTests = None
+    """Optional test conditions for duplicated row count."""
     duplicated_column_count_tests: SingleValueMetricTests = None
+    """Optional test conditions for duplicated column count."""
     almost_duplicated_column_count_tests: SingleValueMetricTests = None
+    """Optional test conditions for almost duplicated columns."""
     almost_constant_column_count_tests: SingleValueMetricTests = None
+    """Optional test conditions for almost constant columns."""
     empty_row_count_tests: SingleValueMetricTests = None
+    """Optional test conditions for empty row count."""
     empty_column_count_tests: SingleValueMetricTests = None
+    """Optional test conditions for empty column count."""
     constant_columns_count_tests: SingleValueMetricTests = None
+    """Optional test conditions for constant column count."""
     dataset_missing_value_count_tests: SingleValueMetricTests = None
+    """Optional test conditions for dataset missing value count."""
     dataset_missing_value_share_tests: SingleValueMetricTests = None
+    """Optional test conditions for dataset missing value share."""
 
     def __init__(
         self,
@@ -454,9 +492,20 @@ class ValueStatsTests:
 
 
 class TextEvals(MetricContainer):
+    """Preset for summarizing text descriptor results.
+
+    Generates statistics for text descriptors (numerical and categorical descriptors
+    computed from text data). Includes row-level test summaries and value statistics
+    for descriptor columns.
+
+    """
+
     columns: Optional[List[str]] = None
+    """Optional list of descriptor column names to analyze (None = all descriptors)."""
     row_count_tests: SingleValueMetricTests = None
+    """Optional test conditions for row count."""
     column_tests: Optional[Dict[str, ValueStatsTests]] = None
+    """Optional dictionary mapping column names to ValueStatsTests configurations."""
 
     def __init__(
         self,
@@ -517,21 +566,43 @@ class TextEvals(MetricContainer):
 
 
 class DataSummaryPreset(MetricContainer):
+    """Large preset combining dataset statistics and column value statistics.
+
+    Combines `DatasetStats` and `ValueStats` for all or specified columns to provide
+    a comprehensive overview of dataset structure, quality, and column-level statistics.
+    This is the most comprehensive preset for exploratory data analysis.
+
+    """
+
     columns: Optional[List[str]] = None
+    """Optional list of column names to analyze (None = all columns)."""
     row_count_tests: SingleValueMetricTests = None
+    """Optional test conditions for row count."""
     column_count_tests: SingleValueMetricTests = None
+    """Optional test conditions for column count."""
     duplicated_row_count_tests: SingleValueMetricTests = None
+    """Optional test conditions for duplicated row count."""
     duplicated_column_count_tests: SingleValueMetricTests = None
+    """Optional test conditions for duplicated column count."""
     almost_duplicated_column_count_tests: SingleValueMetricTests = None
+    """Optional test conditions for almost duplicated columns."""
     almost_constant_column_count_tests: SingleValueMetricTests = None
+    """Optional test conditions for almost constant columns."""
     empty_row_count_tests: SingleValueMetricTests = None
+    """Optional test conditions for empty row count."""
     empty_column_count_tests: SingleValueMetricTests = None
+    """Optional test conditions for empty column count."""
     constant_columns_count_tests: SingleValueMetricTests = None
+    """Optional test conditions for constant column count."""
     dataset_missing_value_count_tests: SingleValueMetricTests = None
+    """Optional test conditions for dataset missing value count."""
     column_tests: Optional[Dict[str, ValueStatsTests]] = None
+    """Optional dictionary mapping column names to ValueStatsTests configurations."""
 
     _dataset_stats: Optional[DatasetStats] = PrivateAttr(None)
+    """Internal dataset stats preset."""
     _text_evals: Optional[TextEvals] = PrivateAttr(None)
+    """Internal text evals preset."""
 
     def __init__(
         self,

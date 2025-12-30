@@ -128,6 +128,8 @@ jobs:
         uses: ./.github/share-actions/get-bikes-dataset-cached
       - name: 🔍 Get scipy dataset cached
         uses: ./.github/share-actions/get-scipy-datasets
+        with:
+          google_backend_sa_key: ${{ secrets.GOOGLE_BACKEND_SA_KEY }}
 
   test-minimal:
     name: Test on minimal requirements

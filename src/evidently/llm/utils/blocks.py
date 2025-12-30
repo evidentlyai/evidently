@@ -78,21 +78,27 @@ class Anchor(PromptBlock):
     """{start}\n{block}\n{end}"""
 
     start: str
+    """Start marker text."""
     block: PromptBlock
+    """Block to wrap between start and end markers."""
     end: str
+    """End marker text."""
 
 
 class Tag(PromptBlock):
     """<{tag_name}>\n{block}\n</{tag_name}>"""
 
     tag_name: str
+    """Name of the XML tag."""
     block: PromptBlock
+    """Block to wrap in the tag."""
 
 
 class SimpleBlock(PromptBlock):
     """{value}"""
 
     value: str
+    """Text value to display."""
 
 
 class CompositePromptBlock(PromptBlock):
@@ -148,7 +154,9 @@ def find_largest_json(text):
 
 class JsonOutputFormatBlock(OutputFormatBlock[Dict[str, Any]]):
     fields: Dict[str, Union[Tuple[str, str], str]]
+    """Mapping from field names to descriptions or (description, key) tuples."""
     search_for_substring: bool = True
+    """Whether to search for JSON substring if parsing fails (default: True)."""
 
     def render(self) -> str:
         values = []
@@ -180,6 +188,7 @@ class StringListFormatBlock(OutputFormatBlock[List[str]]):
     This should be only a list of string {of_what}, each one on a new line with no enumeration"""
 
     of_what: str
+    """Description of what items to return in the list."""
 
     def parse_response(self, response: str) -> List[str]:
         return [line.strip() for line in response.split("\n") if line.strip()]
@@ -190,6 +199,7 @@ class TagStringListFormatBlock(OutputFormatBlock[List[str]]):
     This should be only a list of string {of_what}, each one inside <{of_what}></{of_what}> tag"""
 
     of_what: str
+    """Description of what items to return in the list."""
 
     def parse_response(self, response: str) -> List[str]:
         return get_tags(response, self.of_what)
@@ -199,6 +209,7 @@ class StringFormatBlock(OutputFormatBlock[str]):
     """Return {what} only."""
 
     what: str
+    """Description of what to return."""
 
     def parse_response(self, response: str) -> str:
         return response
