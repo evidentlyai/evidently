@@ -96,6 +96,7 @@ class PatchDatasetRequest(EvidentlyAPIModel):
     data_definition: Optional[DataDefinition] = None
     metadata: Optional[Dict[str, MetadataValueType]] = None
     tags: Optional[List[str]] = None
+    human_feedback_custom_shortcut_labels: Optional[List[str]] = None
 
 
 @post("/upload")
@@ -157,7 +158,14 @@ async def update_dataset(
 ) -> None:
     """Update a dataset."""
     await dataset_manager.update_dataset(
-        user_id, dataset_id, data.name, data.description, data.data_definition, data.metadata, data.tags
+        user_id,
+        dataset_id,
+        data.name,
+        data.description,
+        data.data_definition,
+        data.metadata,
+        data.tags,
+        data.human_feedback_custom_shortcut_labels,
     )
 
 

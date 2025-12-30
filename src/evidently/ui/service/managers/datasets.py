@@ -112,6 +112,7 @@ class DatasetManager(BaseManager):
         data_definition: Optional[DataDefinition],
         metadata: Optional[dict[str, MetadataValueType]],
         tags: Optional[List[str]],
+        human_feedback_custom_shortcut_labels: Optional[List[str]] = None,
     ) -> None:
         """Update a dataset."""
         dataset = await self.dataset_metadata.get_dataset_metadata(dataset_id)
@@ -128,6 +129,8 @@ class DatasetManager(BaseManager):
             dataset.metadata = metadata
         if tags is not None:
             dataset.tags = tags
+        if human_feedback_custom_shortcut_labels is not None:
+            dataset.human_feedback_custom_shortcut_labels = human_feedback_custom_shortcut_labels
 
         await self.dataset_metadata.update_dataset_metadata(dataset_id=dataset_id, new_metadata=dataset)
 

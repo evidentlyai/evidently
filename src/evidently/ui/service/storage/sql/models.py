@@ -251,6 +251,7 @@ class DatasetSQLModel(Base):
             metadata=self.metadata_json,
             tags=self.tags,
             tracing_params=parse_obj_as(DatasetTracingParams, self.tracing_params) if self.tracing_params else None,
+            human_feedback_custom_shortcut_labels=self.human_feedback_custom_shortcut_labels,
         )
 
     @classmethod
