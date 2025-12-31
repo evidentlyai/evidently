@@ -83,7 +83,18 @@ class ServicePage:
 
 
 class RunServiceInfo(BaseModel):
+    """Base class for service run status information.
+
+    Returned by `EvidentlyUIRunner.run()` to indicate the status of the UI service.
+    Use `raise_on_error()` to raise an exception if the service failed to start.
+    """
+
     def raise_on_error(self):
+        """Raise an exception if the service failed to start.
+
+        Raises:
+        * `ServiceRunnerError`: If the service is not running or failed to start.
+        """
         pass
 
 
@@ -97,9 +108,15 @@ class ServiceRunnerError(Exception):
 
 
 class RunServiceInfoVariants:
+    """Variants of `RunServiceInfo` representing different service states."""
+
     class Success(RunServiceInfo):
+        """Service is running successfully."""
+
         port: int
+        """Port number the service is running on."""
         process: subprocess.Popen
+        """Subprocess handle for the running service."""
 
         class Config:
             """@private"""
@@ -113,14 +130,24 @@ class RunServiceInfoVariants:
             return f"Running on {get_url_to_service_by_port(port=self.port)}"
 
         def _repr_html_(self):
+            """Get HTML representation with link to the service.
+
+            Returns:
+            * HTML string with link to the running service.
+            """
             return get_html_link_to_running_service(url_to_service=get_url_to_service_by_port(port=self.port))
 
     class NotRunning(RunServiceInfo):
+        """Service is not running."""
+
         def raise_on_error(self):
             raise ServiceRunnerError("Service is not running. Please run it first using `run()` method.")
 
     class Failed(RunServiceInfo):
+        """Service failed to start."""
+
         error_message: str
+        """Error message describing why the service failed."""
 
         def __str__(self) -> str:
             return self.error_message

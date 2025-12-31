@@ -1,4 +1,8 @@
 name: Get bikes dataset cached
+inputs:
+  google_backend_sa_key:
+    description: 'GCP service account key (base64 encoded)'
+    required: true
 runs:
   using: "composite"
   steps:
@@ -15,6 +19,20 @@ runs:
       uses: astral-sh/setup-uv@v7
       with:
         python-version: "3.11"
+    - name: Save GCP SA key
+      id: save_gcp_key
+      env:
+        GOOGLE_BACKEND_SA_KEY: ${{ inputs.google_backend_sa_key }}
+      run: |
+        echo "${GOOGLE_BACKEND_SA_KEY}" | base64 -d > gcp-credentials.json
+        echo "gcp_credentials_path=$(pwd)/gcp-credentials.json" >> "$GITHUB_OUTPUT"
+      shell: bash
+    - name: DVC Pull
+      if: ${{ steps.cache-scipy-data.outputs.cache-hit != 'true' }}
+      env:
+        GOOGLE_APPLICATION_CREDENTIALS: ${{ steps.save_gcp_key.outputs.gcp_credentials_path }}
+      run: uv run --with dvc[gs] dvc pull
+      shell: bash
     - name: Download datasets
       if: ${{ steps.cache-scipy-data.outputs.cache-hit != 'true' }}
       env:

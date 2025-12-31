@@ -34,16 +34,34 @@ from evidently.metrics.regression import _gen_regression_input_data
 
 
 class RegressionQuality(MetricContainer):
+    """Small preset summarizing regression quality metrics.
+
+    Generates aggregated regression metrics including mean error, MAPE, RMSE, MAE,
+    R² score, and absolute max error. Optionally includes visualizations like
+    predicted vs actual plots, error plots, and error distributions.
+
+    """
+
     pred_actual_plot: bool = False
+    """Whether to show predicted vs actual plot."""
     error_plot: bool = False
+    """Whether to show error plot."""
     error_distr: bool = False
+    """Whether to show error distribution."""
     mean_error_tests: MeanStdMetricTests
+    """Optional test conditions for mean error (mean and std)."""
     mape_tests: MeanStdMetricTests
+    """Optional test conditions for MAPE (mean and std)."""
     rmse_tests: SingleValueMetricTests = None
+    """Optional test conditions for RMSE."""
     mae_tests: MeanStdMetricTests
+    """Optional test conditions for MAE (mean and std)."""
     r2score_tests: SingleValueMetricTests = None
+    """Optional test conditions for R² score."""
     abs_max_error_tests: SingleValueMetricTests = None
+    """Optional test conditions for absolute max error."""
     regression_name: str = "default"
+    """Name of the regression task."""
 
     def __init__(
         self,
@@ -127,10 +145,21 @@ class RegressionQuality(MetricContainer):
 
 
 class RegressionDummyQuality(MetricContainer):
+    """Small preset summarizing quality of a dummy/baseline regression model.
+
+    Generates metrics for a simple baseline model (e.g., always predict the mean).
+    Useful as a baseline to compare your model against.
+
+    """
+
     mae_tests: SingleValueMetricTests = None
+    """Optional test conditions for dummy MAE."""
     mape_tests: SingleValueMetricTests = None
+    """Optional test conditions for dummy MAPE."""
     rmse_tests: SingleValueMetricTests = None
+    """Optional test conditions for dummy RMSE."""
     regression_name: str = "default"
+    """Name of the regression task."""
 
     def __init__(
         self,
@@ -170,15 +199,30 @@ class RegressionDummyQuality(MetricContainer):
 
 
 class RegressionPreset(MetricContainer):
+    """Large preset with comprehensive regression quality metrics and visualizations.
+
+    Combines `RegressionQuality` with all visualizations enabled to provide a complete
+    regression evaluation including mean error, MAPE, RMSE, MAE, R² score, absolute
+    max error, and visualizations (predicted vs actual, error plots, error distributions).
+    """
+
     mean_error_tests: MeanStdMetricTests
+    """Optional test conditions for mean error (mean and std)."""
     mape_tests: MeanStdMetricTests
+    """Optional test conditions for MAPE (mean and std)."""
     rmse_tests: SingleValueMetricTests = None
+    """Optional test conditions for RMSE."""
     mae_tests: MeanStdMetricTests
+    """Optional test conditions for MAE (mean and std)."""
     r2score_tests: SingleValueMetricTests = None
+    """Optional test conditions for R² score."""
     abs_max_error_tests: SingleValueMetricTests = None
+    """Optional test conditions for absolute max error."""
 
     _quality: Optional[RegressionQuality] = PrivateAttr(None)
+    """Internal regression quality preset."""
     regression_name: str = "default"
+    """Name of the regression task."""
 
     def __init__(
         self,

@@ -63,21 +63,50 @@ MetricId = str
 
 
 class MetricConfig(FrozenBaseModel):
+    """Configuration for a metric instance.
+
+    Contains the metric ID and parameters needed to instantiate and run a metric.
+    """
+
     metric_id: MetricId
+    """Unique identifier for the metric."""
     params: Dict[str, Any]
+    """Dictionary of metric-specific parameters."""
 
 
 class MetricValueLocation(BaseModel):
+    """Location reference for extracting a specific value from a metric result.
+
+    Used to navigate metric result hierarchies (e.g., extracting a label-specific
+    value from a `ByLabelValue` result).
+    """
+
     metric: MetricConfig
+    """Metric configuration."""
     param: Dict[str, Any]
+    """Parameters for extracting the specific value (e.g., label name, value type)."""
 
     def __init__(self, metric: MetricConfig, param: Dict[str, Any]):
         super().__init__(metric=metric, param=param)
 
     def params(self) -> Dict[str, Any]:
+        """Get extraction parameters.
+
+        Returns:
+        * Dictionary of parameters for value extraction.
+        """
         return self.param
 
     def value(self, context: "Context", dataset_type: "DatasetType") -> "SingleValue":
+        """Extract a single value from a metric result.
+
+        Args:
+        * `context`: `Context` containing metric results.
+        * `dataset_type`: `DatasetType.Current` or `DatasetType.Reference`.
+
+        Returns:
+        * `SingleValue` extracted from the metric result.
+        """
         value = self._metric_value_by_dataset(context, dataset_type)
         return self.extract_value(value)
 
@@ -91,6 +120,17 @@ class MetricValueLocation(BaseModel):
 
     # @abc.abstractmethod
     def extract_value(self, value: "MetricResult") -> "SingleValue":
+        """Extract a single value from a metric result based on parameters.
+
+        Args:
+        * `value`: `MetricResult` to extract from.
+
+        Returns:
+        * `SingleValue` extracted value.
+
+        Raises:
+        * `ValueError`: If parameters are invalid or value cannot be extracted.
+        """
         if isinstance(value, SingleValue):
             return value
         if isinstance(value, ByLabelValue):
@@ -123,17 +163,33 @@ class MetricValueLocation(BaseModel):
 
 
 class MetricResult(AutoAliasMixin, PolymorphicModel):
+    """Base class for all metric results.
+
+    Metric results contain the computed values from metric calculations, along
+    with display information and optional test results. Different metric types
+    return different result subclasses (e.g., `SingleValue`, `ByLabelValue`).
+    """
+
     class Config:
         is_base_type = True
 
     __alias_type__: ClassVar[str] = "metric_result_v2"
 
     display_name: str
+    """Human-readable name for this result."""
     metric_value_location: Optional["MetricValueLocation"] = None
+    """Location reference for extracting specific values from this result."""
     widget: Optional[List[BaseWidgetInfo]] = None
+    """Optional visualization widgets for displaying this result."""
     tests: List["MetricTestResult"] = Field(default_factory=list)
+    """List of test results associated with this metric result."""
 
     def set_tests(self, tests: List["MetricTestResult"]):
+        """Set test results for this metric.
+
+        Args:
+        * `tests`: List of `MetricTestResult` objects.
+        """
         self.tests = tests
 
     def _repr_html_(self):
@@ -144,16 +200,36 @@ class MetricResult(AutoAliasMixin, PolymorphicModel):
         return render_results((self, None), html=False)
 
     def is_widget_set(self) -> bool:
+        """Check if visualization widgets are set.
+
+        Returns:
+        * `True` if widgets are available, `False` otherwise.
+        """
         return self.widget is not None
 
     def set_display_name(self, value: str):
+        """Set the display name for this result.
+
+        Args:
+        * `value`: New display name.
+        """
         self.display_name = value
 
     @abc.abstractmethod
     def set_metric_location(self, metric: MetricConfig):
+        """Set the metric location for this result.
+
+        Args:
+        * `metric`: `MetricConfig` to associate with this result.
+        """
         raise NotImplementedError()
 
     def to_dict(self):
+        """Convert result to dictionary representation.
+
+        Returns:
+        * Dictionary containing metric ID, name, config, and value.
+        """
         return {
             "id": self.metric_value_location.metric.metric_id,
             "metric_name": self.explicit_metric_id(),
@@ -162,6 +238,14 @@ class MetricResult(AutoAliasMixin, PolymorphicModel):
         }
 
     def explicit_metric_id(self):
+        """Generate an explicit metric identifier string.
+
+        Creates a human-readable identifier that includes the metric type
+        and all configuration parameters.
+
+        Returns:
+        * String identifier in format `Type(param1=value1,param2=value2,...)`.
+        """
         metric_value_location = self.metric_value_location
         config = metric_value_location.metric.params
         config_items = []
@@ -191,12 +275,30 @@ class MetricResult(AutoAliasMixin, PolymorphicModel):
         raise NotImplementedError()
 
     def itervalues(self) -> typing.Iterable[Tuple[str, float]]:
+        """Iterate over all numeric values in this result.
+
+        Yields:
+        * Tuples of (key, value) for each numeric value in the result.
+        """
         yield from _flatten(self.to_simple_dict())
 
     def get_widgets(self) -> List[BaseWidgetInfo]:
+        """Get visualization widgets for this result.
+
+        Returns:
+        * List of `BaseWidgetInfo` objects, or empty list if no widgets are set.
+        """
         return self.widget or []
 
     def get_metric_value_location(self) -> MetricValueLocation:
+        """Get the metric value location.
+
+        Returns:
+        * `MetricValueLocation` for this result.
+
+        Raises:
+        * `AssertionError`: If metric value location is not set.
+        """
         assert self.metric_value_location, "Metric Value location should be set in all metric results"
         return self.metric_value_location
 
@@ -265,43 +367,98 @@ Value = Union[float, int]
 
 
 class TestConfig(BaseModel):
+    """Configuration for a metric test.
+
+    Contains the test ID and parameters needed to run a test on a metric result.
+    """
+
     id: MetricTestId
+    """Unique identifier for the test."""
     params: dict
+    """Dictionary of test-specific parameters."""
 
 
 class MetricTestResult(BaseModel):
+    """Result of running a test on a metric value.
+
+    Contains the test outcome, status, and associated metric configuration.
+    """
+
     id: MetricTestId
+    """Unique identifier for this test result."""
     name: str
+    """Human-readable test name."""
     description: str
+    """Description of the test result."""
     metric_config: MetricConfig
+    """Configuration of the metric that was tested."""
     test_config: dict
+    """Configuration of the test that was run."""
     status: TestStatus
+    """Test status (PASS, FAIL, WARNING, ERROR, etc.)."""
     bound_test: Optional["BoundTest"] = None
+    """Optional bound test instance that generated this result."""
 
 
 class SingleValue(MetricResult):
+    """Metric result containing a single numeric value.
+
+    Used by metrics that compute a single scalar value (e.g., mean, count, accuracy).
+    """
+
     value: Value
+    """The numeric value (float or int)."""
 
     def to_simple_dict(self) -> object:
+        """Convert to simple dictionary representation.
+
+        Returns:
+        * The numeric value.
+        """
         return self.value
 
     def __format__(self, format_spec):
         return format(self.value, format_spec)
 
     def set_metric_location(self, metric: MetricConfig):
+        """Set metric location for this single value result.
+
+        Args:
+        * `metric`: `MetricConfig` to associate.
+        """
         self.metric_value_location = single_value_location(metric)
 
 
 class ByLabelValue(MetricResult):
+    """Metric result containing values for each label.
+
+    Used by classification metrics that compute separate values for each class label
+    (e.g., precision per label, recall per label).
+    """
+
     class Config:
         smart_union = True
 
     values: Dict[Label, SingleValue]
+    """Dictionary mapping label to its corresponding metric value."""
 
     def labels(self) -> List[Label]:
+        """Get all labels in this result.
+
+        Returns:
+        * List of all label values.
+        """
         return list(self.values.keys())
 
     def get_label_result(self, label: Label) -> Optional[SingleValue]:
+        """Get the metric value for a specific label.
+
+        Args:
+        * `label`: Label to get value for.
+
+        Returns:
+        * `SingleValue` for the label, or `None` if label not found.
+        """
         value = self.values.get(
             label,
         )
@@ -413,13 +570,30 @@ def convert_types(val):
 
 
 class CountValue(MetricResult):
+    """Metric result containing both count and share (proportion) values.
+
+    Used by metrics that track occurrences (e.g., missing values, duplicates).
+    """
+
     count: SingleValue
+    """Absolute count value."""
     share: SingleValue
+    """Proportion/share value (typically between 0 and 1)."""
 
     def get_count(self) -> SingleValue:
+        """Get the count value.
+
+        Returns:
+        * `SingleValue` containing the count.
+        """
         return self.count
 
     def get_share(self) -> SingleValue:
+        """Get the share value.
+
+        Returns:
+        * `SingleValue` containing the share/proportion.
+        """
         return self.share
 
     def to_simple_dict(self) -> object:
@@ -438,13 +612,30 @@ class CountValue(MetricResult):
 
 
 class MeanStdValue(MetricResult):
+    """Metric result containing mean and standard deviation values.
+
+    Used by metrics that compute statistical summaries (e.g., error distribution).
+    """
+
     mean: SingleValue
+    """Mean value."""
     std: SingleValue
+    """Standard deviation value."""
 
     def get_mean(self) -> SingleValue:
+        """Get the mean value.
+
+        Returns:
+        * `SingleValue` containing the mean.
+        """
         return self.mean
 
     def get_std(self) -> SingleValue:
+        """Get the standard deviation value.
+
+        Returns:
+        * `SingleValue` containing the standard deviation.
+        """
         return self.std
 
     def to_simple_dict(self) -> object:
@@ -463,15 +654,39 @@ class MeanStdValue(MetricResult):
 
 
 class DataframeValue(MetricResult):
+    """Metric result containing a pandas DataFrame.
+
+    Used by metrics that return tabular data (e.g., correlation matrices, detailed breakdowns).
+    """
+
     value: pd.DataFrame
+    """DataFrame containing the metric results."""
 
     def set_metric_location(self, metric: MetricConfig):
+        """Set metric location for this dataframe result.
+
+        Args:
+        * `metric`: `MetricConfig` to associate.
+        """
         self.metric_value_location = dataframe_value_location(metric)
 
     def to_simple_dict(self) -> object:
+        """Convert DataFrame to dictionary representation.
+
+        Returns:
+        * Dictionary representation of the DataFrame.
+        """
         return self.value.to_dict()
 
     def iter_single_values(self) -> typing.Iterator[SingleValue]:
+        """Iterate over all numeric values in the DataFrame as `SingleValue` objects.
+
+        Extracts each numeric cell as a separate `SingleValue`, preserving
+        column and label information for filtering and testing.
+
+        Yields:
+        * `SingleValue` objects for each numeric cell in the DataFrame.
+        """
         df = self.value
         label_columns = df.select_dtypes(exclude=["number"]).columns.tolist()
         value_columns = df.select_dtypes(include=["number"]).columns.tolist()
@@ -490,8 +705,15 @@ class DataframeValue(MetricResult):
 
 
 class DatasetType(enum.Enum):
+    """Type of dataset used in metric calculations.
+
+    Distinguishes between current (production) and reference (baseline) datasets.
+    """
+
     Current = "current"
+    """Current/production dataset."""
     Reference = "reference"
+    """Reference/baseline dataset."""
 
 
 def single_value_location(metric: MetricConfig) -> MetricValueLocation:
@@ -784,16 +1006,30 @@ class MetricCalculationBase(Generic[TResult]):
 
 
 class MetricTest(AutoAliasMixin, EvidentlyBaseModel):
+    """Base class for metric tests.
+
+    Tests validate metric results against thresholds or conditions. Tests can be
+    bound to specific metric values and run automatically when metrics are calculated.
+    """
+
     class Config:
         is_base_type = True
 
     __alias_type__: ClassVar[str] = "test_v2"
     is_critical: bool = True
+    """If `True`, test failures are treated as critical errors. If `False`, failures are warnings."""
     alias: Optional[str] = None
+    """Optional custom name for this test instance."""
     label_filters: Optional[Dict[str, str]] = None
+    """Optional filters for DataFrame metrics to select specific rows by label values."""
 
     @abstractmethod
     def to_test(self) -> MetricTestProto:
+        """Convert to a test protocol function.
+
+        Returns:
+        * Callable test function that takes context, metric, and value.
+        """
         raise not_implemented(self)
 
     def run(self, context: "Context", metric: "MetricCalculationBase", value: MetricResult) -> MetricTestResult:
@@ -842,15 +1078,33 @@ class MetricTest(AutoAliasMixin, EvidentlyBaseModel):
 
 
 class BoundTest(AutoAliasMixin, EvidentlyBaseModel, Generic[TResult], ABC):
+    """Test bound to a specific metric and value location.
+
+    A bound test is associated with a specific metric instance and knows how to
+    extract the relevant value from the metric result to run the test.
+    """
+
     class Config:
         is_base_type = True
 
     __alias_type__: ClassVar[str] = "bound_test"
     test: MetricTest
+    """The test to run."""
     metric_fingerprint: Fingerprint
+    """Fingerprint of the metric this test is bound to."""
 
     @abstractmethod
     def run_test(self, context: "Context", calculation: MetricCalculationBase[TResult], metric_result: TResult):
+        """Run the test on a metric result.
+
+        Args:
+        * `context`: `Context` containing metric results.
+        * `calculation`: `MetricCalculationBase` that computed the result.
+        * `metric_result`: `MetricResult` to test.
+
+        Returns:
+        * `MetricTestResult` with test outcome.
+        """
         raise NotImplementedError(self.__class__)
 
 
@@ -858,6 +1112,13 @@ TCalculation = TypeVar("TCalculation")
 
 
 class Metric(AutoAliasMixin, EvidentlyBaseModel, Generic[TCalculation]):
+    """Base class for all metric configurations.
+
+    A `Metric` defines the configuration and parameters for computing a metric.
+    Each metric class is associated with a `MetricCalculation` class that performs
+    the actual computation. Metrics can include bound tests that run automatically.
+    """
+
     __alias_type__: ClassVar[str] = "metric_v2"
 
     class Config:
@@ -874,6 +1135,14 @@ class Metric(AutoAliasMixin, EvidentlyBaseModel, Generic[TCalculation]):
         return typing.cast(Type[TCalculation], self.__calculation_type__)
 
     def to_calculation(self) -> TCalculation:
+        """Create a calculation instance from this metric configuration.
+
+        Returns:
+        * `MetricCalculation` instance that can compute this metric.
+
+        Raises:
+        * `ValueError`: If calculation type is not properly configured.
+        """
         metric_type = self.__get_calculation_type__()
         if not issubclass(metric_type, MetricCalculation):
             raise ValueError(f"{self.__class__.__name__} __calculation_type__ is not a subclass of MetricCalculation")
@@ -881,10 +1150,20 @@ class Metric(AutoAliasMixin, EvidentlyBaseModel, Generic[TCalculation]):
         return typing.cast(TCalculation, metric_type(self.get_metric_id(), self))
 
     def get_metric_id(self) -> str:
+        """Get unique identifier for this metric instance.
+
+        Returns:
+        * String identifier based on metric fingerprint.
+        """
         return self.get_fingerprint()
 
     @property
     def metric_id(self) -> str:
+        """Get unique identifier for this metric instance.
+
+        Returns:
+        * String identifier based on metric fingerprint.
+        """
         return self.get_fingerprint()
 
     def _default_tests(self, context: "Context") -> List[BoundTest]:
@@ -910,6 +1189,19 @@ class Metric(AutoAliasMixin, EvidentlyBaseModel, Generic[TCalculation]):
         return self._default_tests(context)
 
     def call(self, context: "Context"):
+        """Execute this metric on a context.
+
+        Creates a calculation instance and runs it on the provided context.
+
+        Args:
+        * `context`: `Context` containing datasets and configuration.
+
+        Returns:
+        * Tuple of (current_result, optional_reference_result).
+
+        Raises:
+        * `ValueError`: If calculation type is not properly configured.
+        """
         calculation = self.to_calculation()
         if not isinstance(calculation, MetricCalculation):
             raise ValueError(f"{self.__class__.__name__} __calculation_type__ is not a subclass of MetricCalculation")
@@ -917,6 +1209,14 @@ class Metric(AutoAliasMixin, EvidentlyBaseModel, Generic[TCalculation]):
 
     @abstractmethod
     def get_bound_tests(self, context: "Context") -> Sequence[BoundTest]:
+        """Get all bound tests for this metric.
+
+        Args:
+        * `context`: `Context` to determine which tests to include.
+
+        Returns:
+        * Sequence of `BoundTest` objects to run on this metric's results.
+        """
         raise not_implemented(self)
 
 
@@ -987,7 +1287,14 @@ def convert_tests(tests: Union[GenericSingleValueMetricTests, "GenericByLabelMet
 
 
 class SingleValueMetric(Metric):
+    """Base class for metrics that return a single numeric value.
+
+    Metrics that compute a single scalar result (e.g., mean, accuracy, MAE)
+    should inherit from this class.
+    """
+
     tests: SingleValueMetricTests = None
+    """Optional list of tests to run on the single value result."""
 
     def get_bound_tests(self, context: "Context") -> List[BoundTest]:
         if self.tests is None and context.configuration.include_tests:
@@ -1004,7 +1311,20 @@ TSingleValueMetric = TypeVar("TSingleValueMetric", bound=SingleValueMetric)
 
 
 class SingleValueCalculation(MetricCalculation[SingleValue, TSingleValueMetric], Generic[TSingleValueMetric], ABC):
+    """Base calculation class for metrics that return a single value.
+
+    Provides a `result()` method to create `SingleValue` results from numeric values.
+    """
+
     def result(self, value: Value) -> SingleValue:
+        """Create a `SingleValue` result from a numeric value.
+
+        Args:
+        * `value`: Numeric value (float or int) to wrap in a result.
+
+        Returns:
+        * `SingleValue` with the value and appropriate metadata.
+        """
         result = SingleValue(value=value, display_name=self.display_name())
         result.metric_value_location = single_value_location(self.to_metric_config())
         return result
@@ -1041,7 +1361,14 @@ GenericByLabelMetricTests = Union[GenericTestDict, ByLabelMetricTests]
 
 
 class ByLabelMetric(Metric):
+    """Base class for metrics that return values per label.
+
+    Metrics that compute separate values for each classification label
+    (e.g., precision per label, recall per label) should inherit from this class.
+    """
+
     tests: ByLabelMetricTests = None
+    """Optional dictionary mapping labels to lists of tests to run on each label's value."""
 
     def get_bound_tests(self, context: "Context") -> List[BoundTest]:
         if self.tests is None and context.configuration.include_tests:
@@ -1059,16 +1386,54 @@ T = TypeVar("T")
 
 
 class ByLabelCalculation(MetricCalculation[ByLabelValue, TByLabelMetric], Generic[TByLabelMetric], ABC):
+    """Base calculation class for metrics that return values per label.
+
+    Provides methods to compute and aggregate label-specific values.
+    """
+
     def label_metric(self, label: Label) -> SingleValueCalculation:
+        """Get a single-value calculation for a specific label.
+
+        Args:
+        * `label`: Label to get calculation for.
+
+        Returns:
+        * `SingleValueCalculation` for computing the metric for this label.
+        """
         raise NotImplementedError
 
     def label_display_name(self, label: Label) -> str:
+        """Generate display name for a label-specific value.
+
+        Args:
+        * `label`: Label to generate name for.
+
+        Returns:
+        * Display name string.
+        """
         return self.display_name() + f" for label {label}"
 
     def _relabel(self, context: "Context", label: Label) -> Label:
+        """Transform label value (for remapping, etc.).
+
+        Args:
+        * `context`: `Context` containing datasets.
+        * `label`: Original label value.
+
+        Returns:
+        * Transformed label value.
+        """
         return label
 
     def result(self, values: Dict[Label, Value]) -> ByLabelValue:
+        """Create a `ByLabelValue` result from label-to-value mapping.
+
+        Args:
+        * `values`: Dictionary mapping labels to their metric values.
+
+        Returns:
+        * `ByLabelValue` with all label values and appropriate metadata.
+        """
         return ByLabelValue(
             values={
                 k: SingleValue(
@@ -1088,6 +1453,20 @@ class ByLabelCalculation(MetricCalculation[ByLabelValue, TByLabelMetric], Generi
         current_result: Dict[Label, T],
         reference_result: Optional[Dict[Label, T]],
     ):
+        """Collect label-specific results from intermediate calculations.
+
+        Helper method to extract values from label-specific intermediate results
+        and create `ByLabelValue` results for both current and reference datasets.
+
+        Args:
+        * `context`: `Context` containing datasets.
+        * `value_extract`: Function to extract numeric value from intermediate result type `T`.
+        * `current_result`: Dictionary of label to intermediate result for current dataset.
+        * `reference_result`: Optional dictionary of label to intermediate result for reference dataset.
+
+        Returns:
+        * Tuple of (current `ByLabelValue`, optional reference `ByLabelValue`).
+        """
         return (
             self.result(
                 {self._relabel(context, k): value_extract(v) for k, v in current_result.items()},
@@ -1199,8 +1578,16 @@ class CountBoundTest(BoundTest[CountValue]):
 
 
 class CountMetric(Metric):
+    """Base class for metrics that return count and share values.
+
+    Metrics that track occurrences and their proportions (e.g., missing values,
+    duplicates) should inherit from this class.
+    """
+
     tests: SingleValueMetricTests = None
+    """Optional list of tests to run on the count value."""
     share_tests: SingleValueMetricTests = None
+    """Optional list of tests to run on the share value."""
 
     def get_bound_tests(self, context: "Context") -> Sequence[BoundTest]:
         if self.tests is None and self.share_tests is None and context.configuration.include_tests:
@@ -1223,13 +1610,37 @@ TCountMetric = TypeVar("TCountMetric", bound=CountMetric)
 
 
 class CountCalculation(MetricCalculation[CountValue, TCountMetric], Generic[TCountMetric], ABC):
+    """Base calculation class for metrics that return count and share values.
+
+    Provides methods to create `CountValue` results from count and share values.
+    """
+
     def count_display_name(self) -> str:
+        """Get display name for the count value.
+
+        Returns:
+        * Display name string for the count.
+        """
         return self.display_name()
 
     def share_display_name(self) -> str:
+        """Get display name for the share value.
+
+        Returns:
+        * Display name string for the share.
+        """
         return self.display_name()
 
     def result(self, count: int, share: float) -> CountValue:
+        """Create a `CountValue` result from count and share.
+
+        Args:
+        * `count`: Absolute count value.
+        * `share`: Proportion/share value (typically between 0 and 1).
+
+        Returns:
+        * `CountValue` with count, share, and appropriate metadata.
+        """
         return CountValue(
             count=SingleValue(
                 value=count,
@@ -1347,8 +1758,16 @@ def convert_to_mean_tests(tests: MeanStdMetricsPossibleTests) -> Optional[MeanSt
 
 
 class MeanStdMetric(Metric):
+    """Base class for metrics that return mean and standard deviation values.
+
+    Metrics that compute statistical summaries (e.g., error distribution statistics)
+    should inherit from this class.
+    """
+
     mean_tests: SingleValueMetricTests = None
+    """Optional list of tests to run on the mean value."""
     std_tests: SingleValueMetricTests = None
+    """Optional list of tests to run on the standard deviation value."""
 
     def get_bound_tests(self, context: "Context") -> Sequence[BoundTest]:
         if self.mean_tests is None and self.mean_tests is None and context.configuration.include_tests:
@@ -1368,7 +1787,14 @@ class MeanStdMetric(Metric):
 
 
 class DataframeMetric(Metric):
+    """Base class for metrics that return pandas DataFrames.
+
+    Metrics that return tabular data (e.g., correlation matrices, detailed breakdowns)
+    should inherit from this class.
+    """
+
     tests: Optional[Dict[str, List[MetricTest]]] = None
+    """Optional dictionary mapping column names to lists of tests to run on each column."""
 
     def get_bound_tests(self, context: "Context") -> Sequence[BoundTest]:
         if self.tests is None and context.configuration.include_tests:
@@ -1395,13 +1821,37 @@ TDataframeMetric = TypeVar("TDataframeMetric", bound=DataframeMetric)
 
 
 class MeanStdCalculation(MetricCalculation[MeanStdValue, TMeanStdMetric], Generic[TMeanStdMetric], ABC):
+    """Base calculation class for metrics that return mean and standard deviation.
+
+    Provides methods to create `MeanStdValue` results from mean and std values.
+    """
+
     def mean_display_name(self) -> str:
+        """Get display name for the mean value.
+
+        Returns:
+        * Display name string for the mean.
+        """
         return self.display_name()
 
     def std_display_name(self) -> str:
+        """Get display name for the standard deviation value.
+
+        Returns:
+        * Display name string for the std.
+        """
         return self.display_name()
 
     def result(self, mean: Value, std: Value) -> MeanStdValue:
+        """Create a `MeanStdValue` result from mean and standard deviation.
+
+        Args:
+        * `mean`: Mean value.
+        * `std`: Standard deviation value.
+
+        Returns:
+        * `MeanStdValue` with mean, std, and appropriate metadata.
+        """
         return MeanStdValue(
             mean=SingleValue(
                 value=mean,
@@ -1418,7 +1868,20 @@ class MeanStdCalculation(MetricCalculation[MeanStdValue, TMeanStdMetric], Generi
 
 
 class DataframeCalculation(MetricCalculation[DataframeValue, TDataframeMetric], Generic[TDataframeMetric], ABC):
+    """Base calculation class for metrics that return DataFrames.
+
+    Provides methods to create `DataframeValue` results from pandas DataFrames.
+    """
+
     def result(self, dataframe: pd.DataFrame) -> DataframeValue:
+        """Create a `DataframeValue` result from a DataFrame.
+
+        Args:
+        * `dataframe`: `pd.DataFrame` containing the metric results.
+
+        Returns:
+        * `DataframeValue` with the DataFrame and appropriate metadata.
+        """
         return DataframeValue(
             value=dataframe,
             display_name=self.display_name(),
@@ -1426,7 +1889,13 @@ class DataframeCalculation(MetricCalculation[DataframeValue, TDataframeMetric], 
 
 
 class ColumnMetric(Metric, ABC):
+    """Base class for metrics that operate on a specific column.
+
+    Metrics that compute values for a single column should inherit from this class.
+    """
+
     column: str
+    """Name of the column to compute the metric for."""
 
 
 MetricTestResult.update_forward_refs()

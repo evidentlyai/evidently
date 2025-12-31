@@ -5,8 +5,16 @@ from evidently.pydantic_utils import FrozenBaseModel
 
 
 class LLMMessage(FrozenBaseModel):
+    """A message in an LLM conversation.
+
+    Represents a single message with a role (e.g., "user", "system") and content.
+    Used to build conversation histories for LLM interactions.
+    """
+
     role: str
+    """Role of the message sender (e.g., "user", "system", "assistant")."""
     content: str
+    """Text content of the message."""
 
     @classmethod
     def user(cls, message: str):

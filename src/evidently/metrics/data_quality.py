@@ -21,7 +21,17 @@ from evidently.metrics._legacy import LegacyMetricCalculation
 
 
 class ColumnCorrelations(MetricContainer):
+    """Calculate correlations between a specific column and all other columns.
+
+    Generates correlation metrics for a column with all other columns in the dataset.
+    Automatically selects appropriate correlation methods based on column types:
+    - Numerical columns: Pearson, Spearman, Kendall
+    - Categorical columns: Cramer's V
+
+    """
+
     column_name: str
+    """Name of the column to analyze correlations for."""
 
     def generate_metrics(self, context: "Context") -> Sequence[MetricOrContainer]:
         column_type = context.data_definition.get_column_type(self.column_name)
@@ -48,8 +58,17 @@ class ColumnCorrelations(MetricContainer):
 
 
 class ColumnCorrelationMatrix(DataframeMetric):
+    """Calculate correlation matrix for a specific column with all other columns.
+
+    Computes correlations between the specified column and all other columns using
+    the specified method. Returns a dataframe with correlation values.
+
+    """
+
     column_name: str
+    """Name of the column to analyze correlations for."""
     kind: Literal["auto", "pearson", "spearman", "kendall", "cramer_v"] = "auto"
+    """Correlation method to use (auto selects based on column type)."""
 
 
 class LegacyColumnCorrelationsCalculation(
@@ -87,6 +106,14 @@ class LegacyColumnCorrelationsCalculation(
 
 
 class DatasetCorrelations(MetricContainer):
+    """Calculate correlation matrices for all columns in the dataset.
+
+    Generates correlation matrices using multiple methods (Pearson, Spearman, Kendall, Cramer's V)
+    to analyze relationships between all columns in the dataset.
+
+
+    """
+
     def generate_metrics(self, context: "Context") -> Sequence[MetricOrContainer]:
         return [
             CorrelationMatrix(kind="pearson"),
@@ -106,7 +133,15 @@ class DatasetCorrelations(MetricContainer):
 
 
 class CorrelationMatrix(DataframeMetric):
+    """Calculate correlation matrix for all columns in the dataset.
+
+    Computes pairwise correlations between all columns using the specified method.
+    Returns a dataframe with correlation values for all column pairs.
+
+    """
+
     kind: Literal["auto", "pearson", "spearman", "kendall", "cramer_v"] = "auto"
+    """Correlation method to use (auto selects based on column types)."""
 
 
 def _extract_render_tab(widgets: List[BaseWidgetInfo], kind: str, title: str) -> List[BaseWidgetInfo]:

@@ -95,11 +95,22 @@ class BaseRagDatasetGenerator(BaseLLMDatasetGenerator, ABC):
 
 
 class RagQueryDatasetGenerator(BaseRagDatasetGenerator):
+    """Dataset generator for RAG queries based on document chunks.
+
+    Generates questions/queries that are relevant to provided document chunks,
+    useful for creating evaluation datasets for RAG systems.
+    """
+
     query_template: RagQueryPromptTemplate = RagQueryPromptTemplate()
+    """Prompt template for generating queries."""
     query_spec: GenerationSpec = GenerationSpec(kind="question")
+    """Specification for query generation."""
     additional_prompt_blocks: List[PromptBlock] = []
+    """Additional prompt blocks to include."""
     count: int = 10
+    """Number of queries to generate."""
     chunks_per_query: int = 5
+    """Number of document chunks to use per query."""
 
     def __init__(
         self,
@@ -144,12 +155,25 @@ class RagQueryDatasetGenerator(BaseRagDatasetGenerator):
         super().__init__(**data)
 
     def get_chunks_and_query_count(self, all_chunks_count: int) -> Tuple[int, int, int]:
+        """Calculate chunk and query counts for generation.
+
+        Args:
+        * `all_chunks_count`: Total number of available chunks.
+
+        Returns:
+        * Tuple of (chunk_set_count, chunks_in_set_count, questions_per_chunkset).
+        """
         questions_per_chunkset = min(10, self.count)
         chunk_set_count = ceil(self.count / questions_per_chunkset)
         chunks_in_set_count = min(self.chunks_per_query, all_chunks_count)
         return chunk_set_count, chunks_in_set_count, questions_per_chunkset
 
     async def generate_queries_with_context(self) -> Tuple[DataCollection, List[RAGQuery]]:
+        """Generate queries along with their document context.
+
+        Returns:
+        * Tuple of (data_collection, list of generated queries).
+        """
         documents = self.data_collection.get_data_collection()
         chunk_set_count, chunks_in_set_count, questions_per_chunkset = self.get_chunks_and_query_count(
             len(documents.chunks)
@@ -159,10 +183,24 @@ class RagQueryDatasetGenerator(BaseRagDatasetGenerator):
         return documents, queries
 
     async def agenerate(self) -> DatasetGeneratorResult:
+        """Generate dataset asynchronously.
+
+        Returns:
+        * `pd.DataFrame` with generated queries in a "queries" column.
+        """
         _, queries = await self.generate_queries_with_context()
         return pd.DataFrame({"queries": queries})
 
     async def generate_queries(self, chunk_sets: Sequence[List[Chunk]], questions_per_chunkset: int) -> List[RAGQuery]:
+        """Generate queries from chunk sets.
+
+        Args:
+        * `chunk_sets`: Sequence of chunk lists to generate queries from.
+        * `questions_per_chunkset`: Number of questions to generate per chunk set.
+
+        Returns:
+        * List of generated query strings.
+        """
         with self.query_template.with_context(
             query_spec=self.query_spec, additional_prompt_blocks=self.additional_prompt_blocks
         ):
@@ -175,18 +213,35 @@ class RagQueryDatasetGenerator(BaseRagDatasetGenerator):
 
     @property
     def prepared_query_template(self) -> PreparedTemplate:
+        """Get the prepared query template with all context applied.
+
+        Returns:
+        * `PreparedTemplate` ready for use with the LLM.
+        """
         return self.query_template.prepare(
             query_spec=self.query_spec, additional_prompt_blocks=self.additional_prompt_blocks
         )
 
 
 class RagResponseDatasetGenerator(BaseRagDatasetGenerator):
+    """Dataset generator for RAG responses based on queries and document chunks.
+
+    Generates responses to queries using relevant document chunks as context,
+    useful for creating evaluation datasets for RAG systems.
+    """
+
     response_template: RagResponsePromptTemplate = RagResponsePromptTemplate()
+    """Prompt template for generating responses."""
     response_spec: GenerationSpec = GenerationSpec(kind="response")
+    """Specification for response generation."""
     query_spec: GenerationSpec = GenerationSpec(kind="question")
+    """Specification for query type."""
     queries: List[RAGQuery]
+    """List of queries to generate responses for."""
     additional_prompt_blocks: List[PromptBlock] = []
+    """Additional prompt blocks to include."""
     include_context: bool = False
+    """Whether to include context chunks in output DataFrame."""
 
     def __init__(
         self,
@@ -235,6 +290,11 @@ class RagResponseDatasetGenerator(BaseRagDatasetGenerator):
         super().__init__(**data)
 
     async def agenerate(self) -> DatasetGeneratorResult:
+        """Generate dataset asynchronously.
+
+        Returns:
+        * `pd.DataFrame` with generated responses (and optionally context).
+        """
         documents = self.data_collection.get_data_collection()
         relevant_chunks = [documents.find_relevant_chunks(q) for q in self.queries]
         responses = await self.generate_responses(self.queries, relevant_chunks)
@@ -244,6 +304,15 @@ class RagResponseDatasetGenerator(BaseRagDatasetGenerator):
         return pd.DataFrame(data)
 
     async def generate_responses(self, queries: List[RAGQuery], relevant_chunks: List[List[Chunk]]) -> List[str]:
+        """Generate responses for queries using relevant chunks as context.
+
+        Args:
+        * `queries`: List of query strings.
+        * `relevant_chunks`: List of chunk lists, one per query.
+
+        Returns:
+        * List of generated response strings.
+        """
         with self.response_template.with_context(
             response_spec=self.response_spec,
             query_spec=self.query_spec,
@@ -257,6 +326,11 @@ class RagResponseDatasetGenerator(BaseRagDatasetGenerator):
 
     @property
     def prepared_response_template(self) -> PreparedTemplate:
+        """Get the prepared response template with all context applied.
+
+        Returns:
+        * `PreparedTemplate` ready for use with the LLM.
+        """
         return self.response_template.prepare(
             query_spec=self.query_spec,
             additional_prompt_blocks=self.additional_prompt_blocks,
@@ -265,13 +339,26 @@ class RagResponseDatasetGenerator(BaseRagDatasetGenerator):
 
 
 class RagDatasetGenerator(BaseRagDatasetGenerator):
+    """Complete RAG dataset generator for query-response pairs.
+
+    Generates both queries and responses using document chunks, creating
+    a complete evaluation dataset for RAG systems.
+    """
+
     query_template: RagQueryPromptTemplate = RagQueryPromptTemplate()
+    """Prompt template for generating queries."""
     query_spec: GenerationSpec = GenerationSpec(kind="question")
+    """Specification for query generation."""
     response_spec: GenerationSpec = GenerationSpec(kind="response")
+    """Specification for response generation."""
     response_template: RagResponsePromptTemplate = RagResponsePromptTemplate()
+    """Prompt template for generating responses."""
     additional_prompt_blocks: List[PromptBlock] = []
+    """Additional prompt blocks to include."""
     include_context: bool = False
+    """Whether to include context chunks in output DataFrame."""
     count: int
+    """Number of query-response pairs to generate."""
 
     def __init__(
         self,
@@ -325,6 +412,11 @@ class RagDatasetGenerator(BaseRagDatasetGenerator):
         super().__init__(**data)
 
     async def agenerate(self) -> DatasetGeneratorResult:
+        """Generate complete RAG dataset with queries and responses.
+
+        Returns:
+        * `pd.DataFrame` with "queries" and "responses" columns (and optionally "context").
+        """
         documents, queries = await self.query_generator.generate_queries_with_context()
         relevant_chunks = [documents.find_relevant_chunks(q) for q in queries]
 
@@ -337,6 +429,11 @@ class RagDatasetGenerator(BaseRagDatasetGenerator):
 
     @property
     def query_generator(self) -> RagQueryDatasetGenerator:
+        """Get the query generator instance.
+
+        Returns:
+        * `RagQueryDatasetGenerator` configured with this generator's settings.
+        """
         return RagQueryDatasetGenerator(
             data_collection=self.data_collection,
             count=self.count,
@@ -349,6 +446,14 @@ class RagDatasetGenerator(BaseRagDatasetGenerator):
         )
 
     def response_generator(self, queries: List[RAGQuery]) -> RagResponseDatasetGenerator:
+        """Get the response generator instance for given queries.
+
+        Args:
+        * `queries`: List of queries to generate responses for.
+
+        Returns:
+        * `RagResponseDatasetGenerator` configured with this generator's settings.
+        """
         return RagResponseDatasetGenerator(
             data_collection=self.data_collection,
             query_spec=self.query_spec,
@@ -363,8 +468,18 @@ class RagDatasetGenerator(BaseRagDatasetGenerator):
 
     @property
     def prepared_query_template(self) -> PreparedTemplate:
+        """Get the prepared query template.
+
+        Returns:
+        * `PreparedTemplate` ready for use with the LLM.
+        """
         return self.query_generator.prepared_query_template
 
     @property
     def prepared_response_template(self) -> PreparedTemplate:
+        """Get the prepared response template.
+
+        Returns:
+        * `PreparedTemplate` ready for use with the LLM.
+        """
         return self.response_generator([]).prepared_response_template

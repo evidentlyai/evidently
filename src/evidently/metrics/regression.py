@@ -126,9 +126,19 @@ class LegacyRegressionSingleValueMetric(
 
 
 class MeanError(MeanStdRegressionMetric):
+    """Calculate mean error and standard deviation of errors for regression.
+
+    Computes the average prediction error (prediction - target) and its standard deviation.
+    Positive values indicate over-prediction, negative values indicate under-prediction.
+
+    """
+
     error_plot: bool = True
+    """Whether to show error plot visualization."""
     error_distr: bool = False
+    """Whether to show error distribution."""
     error_normality: bool = False
+    """Whether to show error normality test."""
 
     def __init__(self, **kwargs):
         if "tests" in kwargs:
@@ -167,9 +177,19 @@ class MeanErrorCalculation(LegacyRegressionMeanStdMetric[MeanError]):
 
 
 class MAE(MeanStdRegressionMetric):
+    """Calculate Mean Absolute Error (MAE) for regression.
+
+    MAE measures the average magnitude of errors without considering direction.
+    Lower values indicate better performance. Returns both mean and standard deviation.
+
+    """
+
     error_plot: bool = False
+    """Whether to show error plot visualization."""
     error_distr: bool = True
+    """Whether to show error distribution."""
     error_normality: bool = False
+    """Whether to show error normality test."""
 
     def __init__(self, **kwargs):
         if "tests" in kwargs:
@@ -215,9 +235,19 @@ class MAECalculation(LegacyRegressionMeanStdMetric[MAE]):
 
 
 class RMSE(SingleValueRegressionMetric):
+    """Calculate Root Mean Squared Error (RMSE) for regression.
+
+    RMSE measures the square root of the average squared errors. It penalizes
+    large errors more than MAE. Lower values indicate better performance.
+
+    """
+
     error_plot: bool = False
+    """Whether to show error plot visualization."""
     error_distr: bool = True
+    """Whether to show error distribution."""
     error_normality: bool = False
+    """Whether to show error normality test."""
 
     def _default_tests_with_reference(self, context: Context) -> List[BoundTest]:
         return [eq(Reference(relative=0.1)).bind_single(self.get_fingerprint())]
@@ -241,8 +271,17 @@ class RMSECalculation(LegacyRegressionSingleValueMetric[RMSE]):
 
 
 class MAPE(MeanStdRegressionMetric):
+    """Calculate Mean Absolute Percentage Error (MAPE) for regression.
+
+    MAPE expresses errors as a percentage of the actual values, making it
+    scale-independent. Returns both mean and standard deviation. Lower values are better.
+
+    """
+
     perc_error_plot: bool = True
+    """Whether to show percentage error plot."""
     error_distr: bool = False
+    """Whether to show error distribution."""
 
     def __init__(self, **kwargs):
         if "tests" in kwargs:
@@ -279,8 +318,18 @@ class MAPECalculation(LegacyRegressionMeanStdMetric[MAPE]):
 
 
 class R2Score(SingleValueRegressionMetric):
+    """Calculate R² (coefficient of determination) score for regression.
+
+    R² measures how well the model explains the variance in the target variable.
+    Values range from negative infinity to 1.0, with 1.0 being perfect fit.
+    Higher values indicate better performance.
+
+    """
+
     error_distr: bool = False
+    """Whether to show error distribution."""
     error_normality: bool = False
+    """Whether to show error normality test."""
 
     def _default_tests(self, context: Context) -> List[BoundTest]:
         return [gt(0).bind_single(self.get_fingerprint())]
@@ -303,8 +352,17 @@ class R2ScoreCalculation(LegacyRegressionSingleValueMetric[R2Score]):
 
 
 class AbsMaxError(SingleValueRegressionMetric):
+    """Calculate the maximum absolute error for regression.
+
+    Returns the largest absolute error across all predictions. Useful for
+    identifying worst-case prediction errors.
+
+    """
+
     error_distr: bool = False
+    """Whether to show error distribution."""
     error_normality: bool = False
+    """Whether to show error normality test."""
 
     def _default_tests_with_reference(self, context: Context) -> List[BoundTest]:
         return [eq(Reference(relative=0.1)).bind_single(self.get_fingerprint())]
@@ -360,6 +418,13 @@ class LegacyRegressionDummyValueMetric(
 
 
 class DummyMAE(SingleValueRegressionMetric):
+    """Calculate Mean Absolute Error for a dummy/baseline regression model.
+
+    Computes MAE using a simple baseline (e.g., always predict the mean).
+    Useful as a baseline to compare your model against.
+
+    """
+
     pass
 
 
@@ -379,6 +444,12 @@ class DummyMAECalculation(LegacyRegressionDummyValueMetric[DummyMAE]):
 
 
 class DummyMAPE(SingleValueRegressionMetric):
+    """Calculate Mean Absolute Percentage Error for a dummy/baseline regression model.
+
+    Computes MAPE using a simple baseline. Useful as a baseline to compare your model against.
+
+    """
+
     pass
 
 
@@ -398,6 +469,14 @@ class DummyMAPECalculation(LegacyRegressionDummyValueMetric[DummyMAPE]):
 
 
 class DummyRMSE(SingleValueRegressionMetric):
+    """Calculate Root Mean Squared Error for a dummy/baseline regression model.
+
+    Computes RMSE using a simple baseline. Useful as a baseline to compare your model against.
+
+    Args:
+    * `regression_name`: Name of the regression task (default: "default").
+    """
+
     pass
 
 
