@@ -10,6 +10,7 @@ from typing import Optional
 
 import litestar
 from litestar import Router
+from litestar.exceptions import HTTPException
 from litestar.exceptions import NotFoundException
 from litestar.params import Dependency
 from opentelemetry.proto.collector.trace.v1 import trace_service_pb2
@@ -171,7 +172,10 @@ async def add_human_feedback(
     data: AddHumanFeedbackRequest,
 ) -> None:
     metadata = await dataset_manager.get_dataset_metadata(user_id, export_id)
-    span_name = await tracing_storage.add_feedback(export_id, data.trace_id, data.feedback)
+    try:
+        span_name = await tracing_storage.add_feedback(export_id, data.trace_id, data.feedback)
+    except NotImplementedError:
+        raise HTTPException(status_code=501, detail="Human feedback supported only for SQLite storage")
     data_definition = metadata.data_definition
     if data_definition.service_columns is None:
         data_definition.service_columns = ServiceColumns()
