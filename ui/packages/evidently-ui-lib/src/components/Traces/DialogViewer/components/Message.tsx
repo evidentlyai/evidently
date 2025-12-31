@@ -1,4 +1,4 @@
-import { Paper, Stack, Typography } from '@mui/material'
+import { Divider, Paper, Stack, Typography } from '@mui/material'
 
 type MessageProps = {
   title: string
@@ -14,13 +14,13 @@ export const Message = (props: MessageProps) => {
     <Paper
       sx={(theme) => ({
         p: 2,
+        minWidth: 0,
         border: 'none',
+        overflow: 'scroll',
         borderRadius: 4,
         marginLeft: align === 'right' ? 3 : '0',
         marginRight: align === 'right' ? '0' : 3,
-        ...theme.applyStyles('light', {
-          bgcolor: '#f6f6f6'
-        })
+        ...theme.applyStyles('light', { bgcolor: '#f6f6f6' })
       })}
     >
       <Stack gap={1}>
@@ -38,17 +38,20 @@ export const Message = (props: MessageProps) => {
           align={'left'}
           fontSize={'1rem'}
           component='pre'
-          sx={{ fontFamily: 'monospace', whiteSpace: 'break-spaces' }}
+          sx={{
+            fontFamily: 'monospace',
+            whiteSpace: 'break-spaces',
+            maxHeight: 400,
+            overflow: 'scroll',
+            width: '100%'
+          }}
         >
           {message?.trim()}
         </Typography>
 
-        <Typography
-          align={align === 'right' ? 'left' : 'right'}
-          fontSize={'0.875rem'}
-          component='pre'
-          sx={{ fontFamily: 'monospace', whiteSpace: 'break-spaces' }}
-        >
+        <Divider />
+
+        <Typography align={align === 'right' ? 'left' : 'right'} variant='caption'>
           {time}
         </Typography>
       </Stack>

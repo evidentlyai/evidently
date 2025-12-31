@@ -11,6 +11,7 @@ type LinkToTraceProps = {
   target?: HTMLAttributeAnchorTarget | undefined
   startIcon?: React.ReactNode
   endIcon?: React.ReactNode
+  size?: ButtonProps['size']
 }
 
 export const LinkToTrace = (props: LinkToTraceProps) => {
@@ -22,13 +23,14 @@ export const LinkToTrace = (props: LinkToTraceProps) => {
     variant,
     target,
     startIcon,
-    endIcon
+    endIcon,
+    size
   } = props
 
   return (
     <RouterLink
       type='button'
-      size='small'
+      size={size}
       startIcon={startIcon}
       endIcon={endIcon}
       title={title}

@@ -1,5 +1,7 @@
 import { responseParser } from 'evidently-ui-lib/api/client-heplers'
+import { FeedbackForm } from 'evidently-ui-lib/components/HumanFeedback/FeedbackForm'
 import { TraceViewer } from 'evidently-ui-lib/components/Traces/TraceViewer/index'
+import { extractFeedbackData } from 'evidently-ui-lib/components/Traces/TraceViewer/utils'
 import {
   useCurrentRouteParams,
   useIsAnyLoaderOrActionRunning
@@ -35,12 +37,25 @@ export const handle = { crumb }
 export const loadData = async ({ params }: loadDataArgs<{ queryKeys: 'trace-id' }>) => {
   const { exportId } = params as CurrentRouteParams
 
-  return clientAPI
+  const metadataPromise = clientAPI
+    .GET('/api/datasets/{dataset_id}/metadata', {
+      params: { path: { dataset_id: exportId } }
+    })
+    .then(responseParser())
+
+  const dataPromise = clientAPI
     .GET('/api/v1/traces/list', {
       params: { query: { export_id: exportId, getter_type: 'ungrouped' } }
     })
     .then(responseParser())
-    .then((traces) => ({ traces: traces.sessions, name: traces.metadata.name }))
+
+  const [metadata, data] = await Promise.all([metadataPromise, dataPromise])
+
+  return {
+    traces: data.sessions,
+    name: data.metadata.name,
+    human_feedback_custom_shortcut_labels: metadata.human_feedback_custom_shortcut_labels
+  }
 }
 
 ///////////////////
@@ -49,9 +64,7 @@ export const loadData = async ({ params }: loadDataArgs<{ queryKeys: 'trace-id' 
 
 export const Component = () => {
   const { loaderData: data, params, query } = useCurrentRouteParams<CurrentRoute>()
-
   const defaultTraceId = query['trace-id']
-
   const { projectId, exportId } = params
 
   const isLoading = useIsAnyLoaderOrActionRunning()
@@ -61,9 +74,44 @@ export const Component = () => {
     action: 'delete-trace'
   })
 
+  const editTraceFeedbackFetcher = useSubmitFetcher({
+    path: '/projects/:projectId/traces/:exportId',
+    action: 'edit-trace-feedback'
+  })
+
+  const editTraceFeedbackCustomShortcutLabelsFetcher = useSubmitFetcher({
+    path: '/projects/:projectId/traces/:exportId',
+    action: 'edit-trace-feedback-custom-shortcut-labels'
+  })
+
+  const additionalLabels = data.human_feedback_custom_shortcut_labels ?? []
+
   return (
     <TraceViewer
       key={exportId}
+      traceComponent={({ trace }) => (
+        <FeedbackForm
+          key={trace.trace_id}
+          buttonText='Save'
+          evaluationZero
+          defaultFeedbackData={extractFeedbackData(trace)}
+          onSubmitFeedbackData={(data) => {
+            editTraceFeedbackFetcher.submit({
+              data: { traceId: trace.trace_id, label: data.label, comment: data.comment },
+              paramsToReplace: { projectId, exportId }
+            })
+          }}
+          submitDisabled={editTraceFeedbackFetcher.state !== 'idle'}
+          additionalLabels={additionalLabels}
+          setAdditionalLabels={(human_feedback_custom_shortcut_labels) => {
+            editTraceFeedbackCustomShortcutLabelsFetcher.submit({
+              data: { human_feedback_custom_shortcut_labels },
+              paramsToReplace: { projectId, exportId }
+            })
+          }}
+          additionalLabelsDisabled={editTraceFeedbackCustomShortcutLabelsFetcher.state !== 'idle'}
+        />
+      )}
       defaultTraceId={defaultTraceId}
       data={Object.values(data.traces).flat()}
       isLoading={isLoading}

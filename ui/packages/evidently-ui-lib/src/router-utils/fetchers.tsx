@@ -1,4 +1,11 @@
 import { useCallback, useMemo } from 'react'
+import {
+  type SubmitOptions,
+  useActionData,
+  useFetcher,
+  useNavigation,
+  useSubmit
+} from 'react-router-dom'
 import { makeRouteUrl } from '~/router-utils/router-builder'
 import type {
   GetParamsOptional,
@@ -6,13 +13,6 @@ import type {
   MatchWithAction,
   MatchWithLoader
 } from '~/router-utils/types'
-import {
-  type SubmitOptions,
-  useActionData,
-  useFetcher,
-  useNavigation,
-  useSubmit
-} from '~/shared-dependencies/react-router-dom'
 import { REST_PARAMS_FOR_FETCHER_SUBMIT } from '~/utils/index'
 
 export const useSubmitFetcherGeneral = <M extends MatchWithAction, K extends keyof M['action']>({

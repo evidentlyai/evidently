@@ -64,6 +64,7 @@ class DatasetMetadata(BaseModel):
     metadata: Dict[str, MetadataValueType] = {}
     tags: List[str] = []
     tracing_params: Optional[DatasetTracingParams] = None
+    human_feedback_custom_shortcut_labels: Optional[List[str]] = None
 
 
 class DatasetMetadataFull(DatasetMetadata):

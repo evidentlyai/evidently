@@ -1,3 +1,4 @@
+import logging
 import uuid
 from collections import defaultdict
 from enum import Enum
@@ -9,14 +10,17 @@ from typing import Optional
 
 import litestar
 from litestar import Router
+from litestar.exceptions import HTTPException
 from litestar.exceptions import NotFoundException
 from litestar.params import Dependency
 from opentelemetry.proto.collector.trace.v1 import trace_service_pb2
 
 from evidently._pydantic_compat import BaseModel
+from evidently.core.datasets import ServiceColumns
 from evidently.legacy.ui.type_aliases import UserID
 from evidently.ui.service.datasets.metadata import DatasetTracingParams
 from evidently.ui.service.managers.datasets import DatasetManager
+from evidently.ui.service.tracing.storage.base import HumanFeedbackModel
 from evidently.ui.service.tracing.storage.base import SpanModel
 from evidently.ui.service.tracing.storage.base import TraceModel
 from evidently.ui.service.tracing.storage.base import TracingStorage
@@ -154,6 +158,45 @@ async def trace_sessions(
     return TraceSessionsResponse(sessions={"undefined": traces}, metadata=metadata)
 
 
+class AddHumanFeedbackRequest(BaseModel):
+    trace_id: str
+    feedback: HumanFeedbackModel
+
+
+@litestar.post("/human_feedback")
+async def add_human_feedback(
+    tracing_storage: TracingStorage,
+    dataset_manager: Annotated[DatasetManager, Dependency(skip_validation=True)],
+    user_id: UserID,
+    export_id: uuid.UUID,
+    data: AddHumanFeedbackRequest,
+) -> None:
+    metadata = await dataset_manager.get_dataset_metadata(user_id, export_id)
+    try:
+        span_name = await tracing_storage.add_feedback(export_id, data.trace_id, data.feedback)
+    except NotImplementedError:
+        raise HTTPException(status_code=501, detail="Human feedback supported only for SQLite storage")
+    data_definition = metadata.data_definition
+    if data_definition.service_columns is None:
+        data_definition.service_columns = ServiceColumns()
+    if (
+        data_definition.service_columns.human_feedback_label is None
+        or not data_definition.service_columns.human_feedback_label.startswith(span_name)
+    ):
+        if (
+            data_definition.service_columns.human_feedback_label
+            and data_definition.service_columns.human_feedback_label.startswith(span_name)
+        ):
+            logging.warning(
+                f"{metadata.name} dataset has different human feedback label:"
+                f" was: {data_definition.service_columns.human_feedback_label}, but expected:"
+                f" {span_name}.human_feedback_label. Replacing it with a new one..."
+            )
+        data_definition.service_columns.human_feedback_label = f"{span_name}.human_feedback_label"
+        data_definition.service_columns.human_feedback_comment = f"{span_name}.human_feedback_comment"
+        await dataset_manager.update_dataset(user_id, export_id, None, None, data_definition, None, None)
+
+
 async def _determine_session_info(traces: List[TraceModel]) -> DatasetTracingParams:
     sample = traces[:10]
     params = DatasetTracingParams()
@@ -237,6 +280,7 @@ def tracing_api(guard: Callable) -> Router:
                     export,
                     delete_trace,
                     update_metadata,
+                    add_human_feedback,
                 ],
                 guards=[guard],
             ),
