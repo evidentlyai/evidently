@@ -170,6 +170,18 @@
                     <a class="class" href="#RemoteArtifact">RemoteArtifact</a>
                             <ul class="memberlist">
                         <li>
+                                <a class="variable" href="#RemoteArtifact.id">id</a>
+                        </li>
+                        <li>
+                                <a class="variable" href="#RemoteArtifact.project_id">project_id</a>
+                        </li>
+                        <li>
+                                <a class="variable" href="#RemoteArtifact.name">name</a>
+                        </li>
+                        <li>
+                                <a class="variable" href="#RemoteArtifact.metadata">metadata</a>
+                        </li>
+                        <li>
                                 <a class="function" href="#RemoteArtifact.bind">bind</a>
                         </li>
                         <li>
@@ -361,16 +373,9 @@
     </div>
     <a class="headerlink" href="#ArtifactContentType"></a>
     
-            <div class="docstring"><p>str(object='') -> str
-str(bytes_or_buffer[, encoding[, errors]]) -> str</p>
+            <div class="docstring"><p>Type of content stored in an artifact.</p>
 
-<p>Create a new string object from the given object. If encoding or
-errors is specified, then the object must expose a data buffer
-that will be decoded using the given encoding and error handler.
-Otherwise, returns the result of object.__str__() (if defined)
-or repr(object).
-encoding defaults to sys.getdefaultencoding().
-errors defaults to 'strict'.</p>
+<p>Determines how the artifact content is interpreted and used.</p>
 </div>
 
 
@@ -383,7 +388,9 @@ errors defaults to 'strict'.</p>
     </div>
     <a class="headerlink" href="#ArtifactContentType.Prompt"></a>
     
-    
+            <div class="docstring"><p>Prompt template content.</p>
+</div>
+
 
                             </div>
                             <div id="ArtifactContentType.Config" class="classattr">
@@ -395,7 +402,9 @@ errors defaults to 'strict'.</p>
     </div>
     <a class="headerlink" href="#ArtifactContentType.Config"></a>
     
-    
+            <div class="docstring"><p>Configuration content.</p>
+</div>
+
 
                             </div>
                             <div id="ArtifactContentType.Descriptor" class="classattr">
@@ -407,7 +416,9 @@ errors defaults to 'strict'.</p>
     </div>
     <a class="headerlink" href="#ArtifactContentType.Descriptor"></a>
     
-    
+            <div class="docstring"><p>Descriptor definition content.</p>
+</div>
+
 
                             </div>
                             <div id="ArtifactContentType.RunDescriptorsConfig" class="classattr">
@@ -419,7 +430,9 @@ errors defaults to 'strict'.</p>
     </div>
     <a class="headerlink" href="#ArtifactContentType.RunDescriptorsConfig"></a>
     
-    
+            <div class="docstring"><p>Run descriptors configuration content.</p>
+</div>
+
 
                             </div>
                 </section>
@@ -433,7 +446,12 @@ errors defaults to 'strict'.</p>
     </div>
     <a class="headerlink" href="#ArtifactContent"></a>
     
-    
+            <div class="docstring"><p>Base class for artifact content wrappers.</p>
+
+<p>Artifact content wraps typed values (e.g., prompts, configs) for storage
+and versioning in the artifact system.</p>
+</div>
+
 
                             <div id="ArtifactContent.data" class="classattr">
                                 <div class="attr variable">
@@ -443,7 +461,9 @@ errors defaults to 'strict'.</p>
     </div>
     <a class="headerlink" href="#ArtifactContent.data"></a>
     
-    
+            <div class="docstring"><p>Raw data stored in the artifact.</p>
+</div>
+
 
                             </div>
                             <div id="ArtifactContent.get_value" class="classattr">
@@ -456,7 +476,15 @@ errors defaults to 'strict'.</p>
     </div>
     <a class="headerlink" href="#ArtifactContent.get_value"></a>
     
-    
+            <div class="docstring"><p>Extract the typed value from the content.</p>
+
+<p>Returns:</p>
+
+<ul>
+<li>Typed value parsed from the stored data.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="ArtifactContent.get_type" class="classattr">
@@ -469,7 +497,15 @@ errors defaults to 'strict'.</p>
     </div>
     <a class="headerlink" href="#ArtifactContent.get_type"></a>
     
-    
+            <div class="docstring"><p>Get the content type.</p>
+
+<p>Returns:</p>
+
+<ul>
+<li><code><a href="#ArtifactContentType">ArtifactContentType</a></code> indicating what kind of content this is.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="ArtifactContent.from_value" class="classattr">
@@ -484,7 +520,21 @@ errors defaults to 'strict'.</p>
     </div>
     <a class="headerlink" href="#ArtifactContent.from_value"></a>
     
-    
+            <div class="docstring"><p>Create content wrapper from a typed value.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>value</code>: Typed value to wrap.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li><code><a href="#ArtifactContent">ArtifactContent</a></code> instance wrapping the value.</li>
+</ul>
+</div>
+
 
                             </div>
                 </section>
@@ -498,7 +548,11 @@ errors defaults to 'strict'.</p>
     </div>
     <a class="headerlink" href="#ArtifactMetadata"></a>
     
-    
+            <div class="docstring"><p>Metadata for an artifact.</p>
+
+<p>Stores creation/update timestamps, author information, and optional description.</p>
+</div>
+
 
                             <div id="ArtifactMetadata.created_at" class="classattr">
                                 <div class="attr variable">
@@ -508,7 +562,9 @@ errors defaults to 'strict'.</p>
     </div>
     <a class="headerlink" href="#ArtifactMetadata.created_at"></a>
     
-    
+            <div class="docstring"><p>Creation timestamp.</p>
+</div>
+
 
                             </div>
                             <div id="ArtifactMetadata.updated_at" class="classattr">
@@ -519,7 +575,9 @@ errors defaults to 'strict'.</p>
     </div>
     <a class="headerlink" href="#ArtifactMetadata.updated_at"></a>
     
-    
+            <div class="docstring"><p>Last update timestamp.</p>
+</div>
+
 
                             </div>
                             <div id="ArtifactMetadata.author" class="classattr">
@@ -530,7 +588,9 @@ errors defaults to 'strict'.</p>
     </div>
     <a class="headerlink" href="#ArtifactMetadata.author"></a>
     
-    
+            <div class="docstring"><p>Optional user ID of the creator.</p>
+</div>
+
 
                             </div>
                             <div id="ArtifactMetadata.description" class="classattr">
@@ -541,7 +601,9 @@ errors defaults to 'strict'.</p>
     </div>
     <a class="headerlink" href="#ArtifactMetadata.description"></a>
     
-    
+            <div class="docstring"><p>Optional description of the artifact.</p>
+</div>
+
 
                             </div>
                 </section>
@@ -555,7 +617,12 @@ errors defaults to 'strict'.</p>
     </div>
     <a class="headerlink" href="#Artifact"></a>
     
-    
+            <div class="docstring"><p>An artifact in the Evidently system.</p>
+
+<p>Artifacts are versioned objects that can store prompts, configs, descriptors,
+or other structured data. Each artifact has a name, metadata, and multiple versions.</p>
+</div>
+
 
                             <div id="Artifact.id" class="classattr">
                                 <div class="attr variable">
@@ -565,7 +632,9 @@ errors defaults to 'strict'.</p>
     </div>
     <a class="headerlink" href="#Artifact.id"></a>
     
-    
+            <div class="docstring"><p>Unique artifact identifier.</p>
+</div>
+
 
                             </div>
                             <div id="Artifact.project_id" class="classattr">
@@ -576,7 +645,9 @@ errors defaults to 'strict'.</p>
     </div>
     <a class="headerlink" href="#Artifact.project_id"></a>
     
-    
+            <div class="docstring"><p>Project this artifact belongs to.</p>
+</div>
+
 
                             </div>
                             <div id="Artifact.name" class="classattr">
@@ -587,7 +658,9 @@ errors defaults to 'strict'.</p>
     </div>
     <a class="headerlink" href="#Artifact.name"></a>
     
-    
+            <div class="docstring"><p>Name of the artifact.</p>
+</div>
+
 
                             </div>
                             <div id="Artifact.metadata" class="classattr">
@@ -598,7 +671,9 @@ errors defaults to 'strict'.</p>
     </div>
     <a class="headerlink" href="#Artifact.metadata"></a>
     
-    
+            <div class="docstring"><p>Metadata about the artifact.</p>
+</div>
+
 
                             </div>
                 </section>
@@ -612,7 +687,12 @@ errors defaults to 'strict'.</p>
     </div>
     <a class="headerlink" href="#ArtifactVersionMetadata"></a>
     
-    
+            <div class="docstring"><p>Metadata for an artifact version.</p>
+
+<p>Stores creation/update timestamps, author information, and optional comment
+describing the changes in this version.</p>
+</div>
+
 
                             <div id="ArtifactVersionMetadata.created_at" class="classattr">
                                 <div class="attr variable">
@@ -622,7 +702,9 @@ errors defaults to 'strict'.</p>
     </div>
     <a class="headerlink" href="#ArtifactVersionMetadata.created_at"></a>
     
-    
+            <div class="docstring"><p>Creation timestamp.</p>
+</div>
+
 
                             </div>
                             <div id="ArtifactVersionMetadata.updated_at" class="classattr">
@@ -633,7 +715,9 @@ errors defaults to 'strict'.</p>
     </div>
     <a class="headerlink" href="#ArtifactVersionMetadata.updated_at"></a>
     
-    
+            <div class="docstring"><p>Last update timestamp.</p>
+</div>
+
 
                             </div>
                             <div id="ArtifactVersionMetadata.author" class="classattr">
@@ -644,7 +728,9 @@ errors defaults to 'strict'.</p>
     </div>
     <a class="headerlink" href="#ArtifactVersionMetadata.author"></a>
     
-    
+            <div class="docstring"><p>Optional user ID of the creator.</p>
+</div>
+
 
                             </div>
                             <div id="ArtifactVersionMetadata.comment" class="classattr">
@@ -655,7 +741,9 @@ errors defaults to 'strict'.</p>
     </div>
     <a class="headerlink" href="#ArtifactVersionMetadata.comment"></a>
     
-    
+            <div class="docstring"><p>Optional comment describing this version.</p>
+</div>
+
 
                             </div>
                 </section>
@@ -669,7 +757,12 @@ errors defaults to 'strict'.</p>
     </div>
     <a class="headerlink" href="#ArtifactVersion"></a>
     
-    
+            <div class="docstring"><p>A version of an artifact.</p>
+
+<p>Each artifact can have multiple versions, allowing you to track changes
+over time and roll back if needed. Versions are numbered sequentially starting from 1.</p>
+</div>
+
 
                             <div id="ArtifactVersion.__init__" class="classattr">
                                 <div class="attr function">
@@ -695,7 +788,9 @@ errors defaults to 'strict'.</p>
     </div>
     <a class="headerlink" href="#ArtifactVersion.id"></a>
     
-    
+            <div class="docstring"><p>Unique version identifier.</p>
+</div>
+
 
                             </div>
                             <div id="ArtifactVersion.artifact_id" class="classattr">
@@ -706,7 +801,9 @@ errors defaults to 'strict'.</p>
     </div>
     <a class="headerlink" href="#ArtifactVersion.artifact_id"></a>
     
-    
+            <div class="docstring"><p>ID of the parent artifact.</p>
+</div>
+
 
                             </div>
                             <div id="ArtifactVersion.version" class="classattr">
@@ -717,7 +814,9 @@ errors defaults to 'strict'.</p>
     </div>
     <a class="headerlink" href="#ArtifactVersion.version"></a>
     
-    
+            <div class="docstring"><p>Version number (1, 2, 3, ...).</p>
+</div>
+
 
                             </div>
                             <div id="ArtifactVersion.metadata" class="classattr">
@@ -728,7 +827,9 @@ errors defaults to 'strict'.</p>
     </div>
     <a class="headerlink" href="#ArtifactVersion.metadata"></a>
     
-    
+            <div class="docstring"><p>Metadata about this version.</p>
+</div>
+
 
                             </div>
                             <div id="ArtifactVersion.content" class="classattr">
@@ -739,7 +840,9 @@ errors defaults to 'strict'.</p>
     </div>
     <a class="headerlink" href="#ArtifactVersion.content"></a>
     
-    
+            <div class="docstring"><p>The artifact content for this version.</p>
+</div>
+
 
                             </div>
                             <div id="ArtifactVersion.content_type" class="classattr">
@@ -750,7 +853,9 @@ errors defaults to 'strict'.</p>
     </div>
     <a class="headerlink" href="#ArtifactVersion.content_type"></a>
     
-    
+            <div class="docstring"><p>Type of content stored.</p>
+</div>
+
 
                             </div>
                 </section>
@@ -776,8 +881,66 @@ errors defaults to 'strict'.</p>
     </div>
     <a class="headerlink" href="#RemoteArtifact"></a>
     
-    
+            <div class="docstring"><p>Remote artifact with API access.</p>
 
+<p>Provides methods to interact with a remote artifact through the API,
+including version management and updates. Use <code><a href="#ArtifactAPI">ArtifactAPI</a></code> to create
+and manage remote artifacts.</p>
+</div>
+
+
+                            <div id="RemoteArtifact.id" class="classattr">
+                                <div class="attr variable">
+            <span class="name">id</span><span class="annotation">: uuid.UUID</span>
+
+        
+    </div>
+    <a class="headerlink" href="#RemoteArtifact.id"></a>
+    
+            <div class="docstring"><p>Unique artifact identifier.</p>
+</div>
+
+
+                            </div>
+                            <div id="RemoteArtifact.project_id" class="classattr">
+                                <div class="attr variable">
+            <span class="name">project_id</span><span class="annotation">: uuid.UUID</span>
+
+        
+    </div>
+    <a class="headerlink" href="#RemoteArtifact.project_id"></a>
+    
+            <div class="docstring"><p>Project this artifact belongs to.</p>
+</div>
+
+
+                            </div>
+                            <div id="RemoteArtifact.name" class="classattr">
+                                <div class="attr variable">
+            <span class="name">name</span><span class="annotation">: str</span>
+
+        
+    </div>
+    <a class="headerlink" href="#RemoteArtifact.name"></a>
+    
+            <div class="docstring"><p>Name of the artifact.</p>
+</div>
+
+
+                            </div>
+                            <div id="RemoteArtifact.metadata" class="classattr">
+                                <div class="attr variable">
+            <span class="name">metadata</span><span class="annotation">: <a href="#ArtifactMetadata">ArtifactMetadata</a></span>
+
+        
+    </div>
+    <a class="headerlink" href="#RemoteArtifact.metadata"></a>
+    
+            <div class="docstring"><p>Metadata about the artifact.</p>
+</div>
+
+
+                            </div>
                             <div id="RemoteArtifact.bind" class="classattr">
                                 <div class="attr function">
             
@@ -788,7 +951,21 @@ errors defaults to 'strict'.</p>
     </div>
     <a class="headerlink" href="#RemoteArtifact.bind"></a>
     
-    
+            <div class="docstring"><p>Bind this artifact to an API instance.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>api</code>: <code><a href="#ArtifactAPI">ArtifactAPI</a></code> to use for operations.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li>Self for method chaining.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="RemoteArtifact.list_versions" class="classattr">
@@ -801,7 +978,15 @@ errors defaults to 'strict'.</p>
     </div>
     <a class="headerlink" href="#RemoteArtifact.list_versions"></a>
     
-    
+            <div class="docstring"><p>List all versions of this artifact.</p>
+
+<p>Returns:</p>
+
+<ul>
+<li>List of <code><a href="#ArtifactVersion">ArtifactVersion</a></code> objects.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="RemoteArtifact.get_version" class="classattr">
@@ -814,7 +999,21 @@ errors defaults to 'strict'.</p>
     </div>
     <a class="headerlink" href="#RemoteArtifact.get_version"></a>
     
-    
+            <div class="docstring"><p>Get a specific version of this artifact.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>version</code>: Version number or <code>"latest"</code>.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li><code><a href="#ArtifactVersion">ArtifactVersion</a></code> for the specified version.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="RemoteArtifact.bump_version" class="classattr">
@@ -827,7 +1026,21 @@ errors defaults to 'strict'.</p>
     </div>
     <a class="headerlink" href="#RemoteArtifact.bump_version"></a>
     
-    
+            <div class="docstring"><p>Create a new version with the given content.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>content</code>: Content to store in the new version.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li>New <code><a href="#ArtifactVersion">ArtifactVersion</a></code> with incremented version number.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="RemoteArtifact.delete" class="classattr">
@@ -840,7 +1053,12 @@ errors defaults to 'strict'.</p>
     </div>
     <a class="headerlink" href="#RemoteArtifact.delete"></a>
     
-    
+            <div class="docstring"><p>Delete this artifact and all its versions.</p>
+
+<p>This operation is irreversible and will permanently remove the artifact
+and all associated versions from the workspace.</p>
+</div>
+
 
                             </div>
                             <div id="RemoteArtifact.delete_version" class="classattr">
@@ -853,7 +1071,17 @@ errors defaults to 'strict'.</p>
     </div>
     <a class="headerlink" href="#RemoteArtifact.delete_version"></a>
     
-    
+            <div class="docstring"><p>Delete a specific version.</p>
+
+<p>This operation is irreversible and will permanently remove the version.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>version_id</code>: ID of the version to delete.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="RemoteArtifact.save" class="classattr">
@@ -866,20 +1094,12 @@ errors defaults to 'strict'.</p>
     </div>
     <a class="headerlink" href="#RemoteArtifact.save"></a>
     
-    
+            <div class="docstring"><p>Save changes to this artifact's metadata to the remote workspace.</p>
 
-                            </div>
-                            <div class="inherited">
-                                <h5>Inherited Members</h5>
-                                <dl>
-                                    <div><dt><a href="#Artifact">Artifact</a></dt>
-                                <dd id="RemoteArtifact.id" class="variable"><a href="#Artifact.id">id</a></dd>
-                <dd id="RemoteArtifact.project_id" class="variable"><a href="#Artifact.project_id">project_id</a></dd>
-                <dd id="RemoteArtifact.name" class="variable"><a href="#Artifact.name">name</a></dd>
-                <dd id="RemoteArtifact.metadata" class="variable"><a href="#Artifact.metadata">metadata</a></dd>
+<p>Updates the artifact's name and metadata fields. Does not affect versions.</p>
+</div>
 
-            </div>
-                                </dl>
+
                             </div>
                 </section>
                 <section id="ArtifactAPI">

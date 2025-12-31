@@ -672,7 +672,17 @@ metadata to the underlying <code><a href="#Workspace">Workspace</a></code>.</p>
     </div>
     <a class="headerlink" href="#Project.dict"></a>
     
-    
+            <div class="docstring"><p>Get the project as a dictionary.</p>
+
+<p>Returns a dictionary representation suitable for serialization (JSON/YAML).</p>
+
+<p>Returns:</p>
+
+<ul>
+<li>Dictionary representation of the project model.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="Project.version" class="classattr">
@@ -697,7 +707,12 @@ metadata to the underlying <code><a href="#Workspace">Workspace</a></code>.</p>
     </div>
     <a class="headerlink" href="#SnapshotRef"></a>
     
-    
+            <div class="docstring"><p>Reference to a snapshot (run) with its URL and IDs.</p>
+
+<p>Returned by <code><a href="#WorkspaceBase.add_run">WorkspaceBase.add_run()</a></code> to provide access to the uploaded snapshot.
+Contains the snapshot ID, project ID, and URL for viewing the snapshot.</p>
+</div>
+
 
                             <div id="SnapshotRef.id" class="classattr">
                                 <div class="attr variable">
@@ -707,7 +722,9 @@ metadata to the underlying <code><a href="#Workspace">Workspace</a></code>.</p>
     </div>
     <a class="headerlink" href="#SnapshotRef.id"></a>
     
-    
+            <div class="docstring"><p>Snapshot ID.</p>
+</div>
+
 
                             </div>
                             <div id="SnapshotRef.project_id" class="classattr">
@@ -718,7 +735,9 @@ metadata to the underlying <code><a href="#Workspace">Workspace</a></code>.</p>
     </div>
     <a class="headerlink" href="#SnapshotRef.project_id"></a>
     
-    
+            <div class="docstring"><p>Project ID this snapshot belongs to.</p>
+</div>
+
 
                             </div>
                             <div id="SnapshotRef.url" class="classattr">
@@ -729,7 +748,9 @@ metadata to the underlying <code><a href="#Workspace">Workspace</a></code>.</p>
     </div>
     <a class="headerlink" href="#SnapshotRef.url"></a>
     
-    
+            <div class="docstring"><p>URL to view the snapshot.</p>
+</div>
+
 
                             </div>
                 </section>
@@ -743,8 +764,10 @@ metadata to the underlying <code><a href="#Workspace">Workspace</a></code>.</p>
     </div>
     <a class="headerlink" href="#WorkspaceBase"></a>
     
-            <div class="docstring"><p>Helper class that provides a standard way to create an ABC using
-inheritance.</p>
+            <div class="docstring"><p>Base class for workspace implementations.</p>
+
+<p>Provides the interface for managing Evidently projects, runs (snapshots),
+datasets, and dashboards. Implemented by <code><a href="#Workspace">Workspace</a></code>, <code><a href="#RemoteWorkspace">RemoteWorkspace</a></code>, and <code><a href="#CloudWorkspace">CloudWorkspace</a></code>.</p>
 </div>
 
 
@@ -758,7 +781,25 @@ inheritance.</p>
     </div>
     <a class="headerlink" href="#WorkspaceBase.create_project"></a>
     
-    
+            <div class="docstring"><p>Create a new project with the given name and description.</p>
+
+<p>Convenience method that creates a <code>ProjectModel</code> and calls <code><a href="#WorkspaceBase.add_project">add_project()</a></code>.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>name</code>: Name of the project to create.</li>
+<li><code>description</code>: Optional description for the project.</li>
+<li><code>org_id</code>: Optional organization ID.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li><code><a href="#Project">Project</a></code>: The newly created project.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="WorkspaceBase.add_project" class="classattr">
@@ -772,7 +813,22 @@ inheritance.</p>
     </div>
     <a class="headerlink" href="#WorkspaceBase.add_project"></a>
     
-    
+            <div class="docstring"><p>Add a new project to the workspace.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>project</code>: <code>ProjectModel</code> with project data.</li>
+<li><code>org_id</code>: Optional organization ID.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li><code><a href="#Project">Project</a></code>: The newly created project.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="WorkspaceBase.get_project" class="classattr">
@@ -786,7 +842,21 @@ inheritance.</p>
     </div>
     <a class="headerlink" href="#WorkspaceBase.get_project"></a>
     
-    
+            <div class="docstring"><p>Get a project by ID.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>project_id</code>: UUID of the project to retrieve.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li><code><a href="#Project">Project</a></code> if found, <code>None</code> otherwise.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="WorkspaceBase.delete_project" class="classattr">
@@ -800,7 +870,15 @@ inheritance.</p>
     </div>
     <a class="headerlink" href="#WorkspaceBase.delete_project"></a>
     
-    
+            <div class="docstring"><p>Delete a project from the workspace.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>project_id</code>: UUID of the project to delete.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="WorkspaceBase.list_projects" class="classattr">
@@ -814,7 +892,21 @@ inheritance.</p>
     </div>
     <a class="headerlink" href="#WorkspaceBase.list_projects"></a>
     
-    
+            <div class="docstring"><p>List all projects in the workspace.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>org_id</code>: Optional organization ID to filter by.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li>Sequence of <code><a href="#Project">Project</a></code> objects.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="WorkspaceBase.update_project" class="classattr">
@@ -828,7 +920,15 @@ inheritance.</p>
     </div>
     <a class="headerlink" href="#WorkspaceBase.update_project"></a>
     
-    
+            <div class="docstring"><p>Update an existing project.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>project</code>: <code>ProjectModel</code> with updated data.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="WorkspaceBase.add_run" class="classattr">
@@ -841,13 +941,25 @@ inheritance.</p>
     </div>
     <a class="headerlink" href="#WorkspaceBase.add_run"></a>
     
-            <div class="docstring"><p>Args:
-    project_id: project ID
-    run: Run object for upload
-    include_data: if set to True - input data will be uploaded to server (if supported)
-    name: new name for run
-Returns:
-    snapshot reference object with ID of uploaded snapshot</p>
+            <div class="docstring"><p>Add a snapshot (run) to a project.</p>
+
+<p>Uploads a <code>Snapshot</code> to the specified project. Optionally includes
+the input datasets if <code>include_data=True</code>.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>project_id</code>: UUID of the project to add the run to.</li>
+<li><code>run</code>: <code>Snapshot</code> object to upload.</li>
+<li><code>include_data</code>: If <code>True</code>, uploads input datasets to the server (if supported).</li>
+<li><code>name</code>: Optional name for the run (overrides snapshot name if provided).</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li><code><a href="#SnapshotRef">SnapshotRef</a></code>: Reference object with snapshot ID, project ID, and URL.</li>
+</ul>
 </div>
 
 
@@ -863,7 +975,16 @@ Returns:
     </div>
     <a class="headerlink" href="#WorkspaceBase.delete_run"></a>
     
-    
+            <div class="docstring"><p>Delete a snapshot (run) from a project.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>project_id</code>: UUID of the project.</li>
+<li><code>snapshot_id</code>: UUID of the snapshot to delete.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="WorkspaceBase.get_run" class="classattr">
@@ -877,7 +998,22 @@ Returns:
     </div>
     <a class="headerlink" href="#WorkspaceBase.get_run"></a>
     
-    
+            <div class="docstring"><p>Get a snapshot (run) by ID.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>project_id</code>: UUID of the project.</li>
+<li><code>snapshot_id</code>: UUID of the snapshot to retrieve.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li><code>SnapshotModel</code> if found, <code>None</code> otherwise.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="WorkspaceBase.list_runs" class="classattr">
@@ -891,7 +1027,21 @@ Returns:
     </div>
     <a class="headerlink" href="#WorkspaceBase.list_runs"></a>
     
-    
+            <div class="docstring"><p>List all snapshots (runs) for a project.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>project_id</code>: UUID of the project.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li>Sequence of <code>SnapshotID</code> objects.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="WorkspaceBase.search_project" class="classattr">
@@ -905,7 +1055,22 @@ Returns:
     </div>
     <a class="headerlink" href="#WorkspaceBase.search_project"></a>
     
-    
+            <div class="docstring"><p>Search for projects by name.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>project_name</code>: Name or partial name to search for.</li>
+<li><code>org_id</code>: Optional organization ID to filter by.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li>Sequence of matching <code><a href="#Project">Project</a></code> objects.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="WorkspaceBase.add_dataset" class="classattr">
@@ -919,7 +1084,25 @@ Returns:
     </div>
     <a class="headerlink" href="#WorkspaceBase.add_dataset"></a>
     
-    
+            <div class="docstring"><p>Add a dataset to a project.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>project_id</code>: UUID of the project.</li>
+<li><code>dataset</code>: <code>Dataset</code> object to add.</li>
+<li><code>name</code>: Name for the dataset.</li>
+<li><code>description</code>: Optional description for the dataset.</li>
+<li><code>link</code>: Optional <code>SnapshotLink</code> to associate dataset with a snapshot.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li><code>DatasetID</code> of the added dataset.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="WorkspaceBase.load_dataset" class="classattr">
@@ -932,7 +1115,21 @@ Returns:
     </div>
     <a class="headerlink" href="#WorkspaceBase.load_dataset"></a>
     
-    
+            <div class="docstring"><p>Load a dataset by ID.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>dataset_id</code>: UUID of the dataset to load.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li><code>Dataset</code> object.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="WorkspaceBase.list_datasets" class="classattr">
@@ -945,7 +1142,22 @@ Returns:
     </div>
     <a class="headerlink" href="#WorkspaceBase.list_datasets"></a>
     
-    
+            <div class="docstring"><p>List all datasets in a project.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>project</code>: UUID of the project.</li>
+<li><code>origins</code>: Optional list of origin types to filter by.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li><code>DatasetList</code> containing dataset information.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="WorkspaceBase.save_dashboard" class="classattr">
@@ -959,7 +1171,16 @@ Returns:
     </div>
     <a class="headerlink" href="#WorkspaceBase.save_dashboard"></a>
     
-    
+            <div class="docstring"><p>Save dashboard configuration for a project.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>project_id</code>: UUID of the project.</li>
+<li><code>dashboard</code>: <code>DashboardModel</code> with dashboard configuration.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="WorkspaceBase.get_dashboard" class="classattr">
@@ -973,7 +1194,21 @@ Returns:
     </div>
     <a class="headerlink" href="#WorkspaceBase.get_dashboard"></a>
     
-    
+            <div class="docstring"><p>Get dashboard configuration for a project.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>project_id</code>: UUID of the project.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li><code>DashboardModel</code> with current dashboard configuration.</li>
+</ul>
+</div>
+
 
                             </div>
                 </section>
@@ -1339,7 +1574,25 @@ All data is stored in the specified directory on the local file system.</p>
     </div>
     <a class="headerlink" href="#Workspace.add_dataset"></a>
     
-    
+            <div class="docstring"><p>Add a dataset to a project.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>project_id</code>: UUID of the project.</li>
+<li><code>dataset</code>: <code>Dataset</code> object to add.</li>
+<li><code>name</code>: Name for the dataset.</li>
+<li><code>description</code>: Optional description for the dataset.</li>
+<li><code>link</code>: Optional <code>SnapshotLink</code> to associate dataset with a snapshot.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li><code>DatasetID</code> of the added dataset.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="Workspace.list_datasets" class="classattr">
@@ -1352,7 +1605,22 @@ All data is stored in the specified directory on the local file system.</p>
     </div>
     <a class="headerlink" href="#Workspace.list_datasets"></a>
     
-    
+            <div class="docstring"><p>List all datasets in a project.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>project</code>: UUID of the project.</li>
+<li><code>origins</code>: Optional list of origin types to filter by.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li><code>DatasetList</code> containing dataset information.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="Workspace.load_dataset" class="classattr">
@@ -1365,7 +1633,21 @@ All data is stored in the specified directory on the local file system.</p>
     </div>
     <a class="headerlink" href="#Workspace.load_dataset"></a>
     
-    
+            <div class="docstring"><p>Load a dataset by ID.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>dataset_id</code>: UUID of the dataset to load.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li><code>Dataset</code> object.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="Workspace.save_dashboard" class="classattr">
@@ -2165,7 +2447,21 @@ from <code>EVIDENTLY_API_KEY</code> environment variable</li>
     </div>
     <a class="headerlink" href="#CloudWorkspace.create_org"></a>
     
-    
+            <div class="docstring"><p>Create a new organization.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>name</code>: Name of the organization.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li><code>Org</code> object representing the created organization.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="CloudWorkspace.list_orgs" class="classattr">
@@ -2178,7 +2474,15 @@ from <code>EVIDENTLY_API_KEY</code> environment variable</li>
     </div>
     <a class="headerlink" href="#CloudWorkspace.list_orgs"></a>
     
-    
+            <div class="docstring"><p>List all organizations accessible to the current user.</p>
+
+<p>Returns:</p>
+
+<ul>
+<li>List of <code>Org</code> objects.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div class="inherited">

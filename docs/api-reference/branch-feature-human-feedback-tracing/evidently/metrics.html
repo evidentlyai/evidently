@@ -904,7 +904,13 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#GroupBy"></a>
     
-    
+            <div class="docstring"><p>Base class for containers that generate multiple metrics.</p>
+
+<p>Metric containers are used to programmatically create multiple related metrics,
+such as generating the same metric for multiple columns or creating metric combinations.
+Examples include <code>ColumnMetricGenerator</code> and preset classes like <code>DataDriftPreset</code>.</p>
+</div>
+
 
                             <div id="GroupBy.__init__" class="classattr">
                                 <div class="attr function">
@@ -915,9 +921,13 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#GroupBy.__init__"></a>
     
-            <div class="docstring"><p>Create a new model by parsing and validating input data from keyword arguments.</p>
+            <div class="docstring"><p>Initialize a metric container.</p>
 
-<p>Raises ValidationError if the input data cannot be parsed to form a valid model.</p>
+<p>Args:</p>
+
+<ul>
+<li><code><a href="#GroupBy.include_tests">include_tests</a></code>: If <code>True</code>, generated metrics will include default tests.</li>
+</ul>
 </div>
 
 
@@ -954,7 +964,21 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#GroupBy.generate_metrics"></a>
     
-    
+            <div class="docstring"><p>Generate metrics based on the container configuration.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>context</code>: <code>Context</code> containing datasets and configuration.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li>Sequence of <code>Metric</code> or <code>MetricContainer</code> objects to compute.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="GroupBy.label_metric" class="classattr">
@@ -994,7 +1018,13 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#RowTestSummary"></a>
     
-    
+            <div class="docstring"><p>Base class for containers that generate multiple metrics.</p>
+
+<p>Metric containers are used to programmatically create multiple related metrics,
+such as generating the same metric for multiple columns or creating metric combinations.
+Examples include <code>ColumnMetricGenerator</code> and preset classes like <code>DataDriftPreset</code>.</p>
+</div>
+
 
                             <div id="RowTestSummary.columns" class="classattr">
                                 <div class="attr variable">
@@ -1028,7 +1058,21 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#RowTestSummary.generate_metrics"></a>
     
-    
+            <div class="docstring"><p>Generate metrics based on the container configuration.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>context</code>: <code>Context</code> containing datasets and configuration.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li>Sequence of <code>Metric</code> or <code>MetricContainer</code> objects to compute.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="RowTestSummary.get_row_count_metric" class="classattr">
@@ -1080,7 +1124,24 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#RowTestSummary.render"></a>
     
-    
+            <div class="docstring"><p>Render visualization widgets for this container.</p>
+
+<p>Combines widgets from all child metrics/containers.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>context</code>: <code>Context</code> containing datasets and configuration.</li>
+<li><code>child_widgets</code>: Optional list of (metric_id, widgets) tuples from child metrics.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li>List of <code>BaseWidgetInfo</code> objects for visualization.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div class="inherited">
@@ -1107,7 +1168,20 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#CategoryCount"></a>
     
-    
+            <div class="docstring"><p>Count occurrences of specified category or categories in a categorical column.</p>
+
+<p>Counts how many times specific category values appear in the column.
+Can count a single category or multiple categories (for joint share).</p>
+
+<p>Example:</p>
+
+<div class="pdoc-code codehilite">
+<pre><span></span><code><span class="n">CategoryCount</span><span class="p">(</span><span class="n">column</span><span class="o">=</span><span class="s2">&quot;city&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;NY&quot;</span><span class="p">)</span>
+<span class="n">CategoryCount</span><span class="p">(</span><span class="n">column</span><span class="o">=</span><span class="s2">&quot;city&quot;</span><span class="p">,</span> <span class="n">categories</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;NY&quot;</span><span class="p">,</span> <span class="s2">&quot;LA&quot;</span><span class="p">])</span>
+</code></pre>
+</div>
+</div>
+
 
                             <div id="CategoryCount.__init__" class="classattr">
                                 <div class="attr function">
@@ -1133,7 +1207,9 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#CategoryCount.category"></a>
     
-    
+            <div class="docstring"><p>Single category value to count.</p>
+</div>
+
 
                             </div>
                             <div id="CategoryCount.categories" class="classattr">
@@ -1144,7 +1220,9 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#CategoryCount.categories"></a>
     
-    
+            <div class="docstring"><p>List of category values to count (for joint share).</p>
+</div>
+
 
                             </div>
                             <div class="inherited">
@@ -1182,7 +1260,19 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#ValueDrift"></a>
     
-    
+            <div class="docstring"><p>Detect data drift for a specific column by comparing distributions.</p>
+
+<p>Calculates drift score between current and reference datasets for a single column.
+Supports numerical, categorical, and text columns with various drift detection methods.
+Requires reference data to compute drift.</p>
+
+<p>See Also:</p>
+
+<ul>
+<li><a href="https://docs.evidentlyai.com/metrics/customize_data_drift">Drift Methods Documentation</a> for available methods.</li>
+</ul>
+</div>
+
 
                             <div id="ValueDrift.method" class="classattr">
                                 <div class="attr variable">
@@ -1192,7 +1282,9 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#ValueDrift.method"></a>
     
-    
+            <div class="docstring"><p>Drift detection method (auto-selected if None).</p>
+</div>
+
 
                             </div>
                             <div id="ValueDrift.threshold" class="classattr">
@@ -1203,7 +1295,9 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#ValueDrift.threshold"></a>
     
-    
+            <div class="docstring"><p>Drift threshold (uses method default if None).</p>
+</div>
+
 
                             </div>
                             <div class="inherited">
@@ -1239,7 +1333,18 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#DriftedColumnsCount"></a>
     
-    
+            <div class="docstring"><p>Count the number and share of columns with detected data drift.</p>
+
+<p>Calculates how many columns show significant drift between current and reference datasets.
+Each column is tested for drift using the specified method. Requires reference data.</p>
+
+<p>See Also:</p>
+
+<ul>
+<li><a href="https://docs.evidentlyai.com/metrics/customize_data_drift">Drift Methods Documentation</a> for available methods.</li>
+</ul>
+</div>
+
 
                             <div id="DriftedColumnsCount.columns" class="classattr">
                                 <div class="attr variable">
@@ -1249,7 +1354,9 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#DriftedColumnsCount.columns"></a>
     
-    
+            <div class="docstring"><p>Optional list of column names to analyze (None = all columns).</p>
+</div>
+
 
                             </div>
                             <div id="DriftedColumnsCount.embeddings" class="classattr">
@@ -1260,7 +1367,9 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#DriftedColumnsCount.embeddings"></a>
     
-    
+            <div class="docstring"><p>Optional list of embedding column names.</p>
+</div>
+
 
                             </div>
                             <div id="DriftedColumnsCount.embeddings_drift_method" class="classattr">
@@ -1271,7 +1380,9 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#DriftedColumnsCount.embeddings_drift_method"></a>
     
-    
+            <div class="docstring"><p>Optional dictionary mapping embedding columns to drift methods.</p>
+</div>
+
 
                             </div>
                             <div id="DriftedColumnsCount.drift_share" class="classattr">
@@ -1282,7 +1393,9 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#DriftedColumnsCount.drift_share"></a>
     
-    
+            <div class="docstring"><p>Threshold for drift share (0.5 = 50% of columns).</p>
+</div>
+
 
                             </div>
                             <div id="DriftedColumnsCount.method" class="classattr">
@@ -1293,7 +1406,9 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#DriftedColumnsCount.method"></a>
     
-    
+            <div class="docstring"><p>Optional drift detection method (auto-selected if None).</p>
+</div>
+
 
                             </div>
                             <div id="DriftedColumnsCount.cat_method" class="classattr">
@@ -1304,7 +1419,9 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#DriftedColumnsCount.cat_method"></a>
     
-    
+            <div class="docstring"><p>Optional method for categorical columns.</p>
+</div>
+
 
                             </div>
                             <div id="DriftedColumnsCount.num_method" class="classattr">
@@ -1315,7 +1432,9 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#DriftedColumnsCount.num_method"></a>
     
-    
+            <div class="docstring"><p>Optional method for numerical columns.</p>
+</div>
+
 
                             </div>
                             <div id="DriftedColumnsCount.text_method" class="classattr">
@@ -1326,7 +1445,9 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#DriftedColumnsCount.text_method"></a>
     
-    
+            <div class="docstring"><p>Optional method for text columns.</p>
+</div>
+
 
                             </div>
                             <div id="DriftedColumnsCount.per_column_method" class="classattr">
@@ -1337,7 +1458,9 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#DriftedColumnsCount.per_column_method"></a>
     
-    
+            <div class="docstring"><p>Optional dictionary mapping column names to methods.</p>
+</div>
+
 
                             </div>
                             <div id="DriftedColumnsCount.threshold" class="classattr">
@@ -1348,7 +1471,9 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#DriftedColumnsCount.threshold"></a>
     
-    
+            <div class="docstring"><p>Optional drift threshold (uses method default if None).</p>
+</div>
+
 
                             </div>
                             <div id="DriftedColumnsCount.cat_threshold" class="classattr">
@@ -1359,7 +1484,9 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#DriftedColumnsCount.cat_threshold"></a>
     
-    
+            <div class="docstring"><p>Optional threshold for categorical columns.</p>
+</div>
+
 
                             </div>
                             <div id="DriftedColumnsCount.num_threshold" class="classattr">
@@ -1370,7 +1497,9 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#DriftedColumnsCount.num_threshold"></a>
     
-    
+            <div class="docstring"><p>Optional threshold for numerical columns.</p>
+</div>
+
 
                             </div>
                             <div id="DriftedColumnsCount.text_threshold" class="classattr">
@@ -1381,7 +1510,9 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#DriftedColumnsCount.text_threshold"></a>
     
-    
+            <div class="docstring"><p>Optional threshold for text columns.</p>
+</div>
+
 
                             </div>
                             <div id="DriftedColumnsCount.per_column_threshold" class="classattr">
@@ -1392,7 +1523,9 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#DriftedColumnsCount.per_column_threshold"></a>
     
-    
+            <div class="docstring"><p>Optional dictionary mapping column names to thresholds.</p>
+</div>
+
 
                             </div>
                             <div class="inherited">
@@ -1426,7 +1559,12 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#MaxValue"></a>
     
-    
+            <div class="docstring"><p>Calculate the maximum value of a numerical column.</p>
+
+<p>Returns the largest value in the specified column. Useful for understanding
+the upper bound of your data distribution.</p>
+</div>
+
 
                             <div class="inherited">
                                 <h5>Inherited Members</h5>
@@ -1461,7 +1599,12 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#MeanValue"></a>
     
-    
+            <div class="docstring"><p>Calculate the mean (average) value of a numerical column.</p>
+
+<p>Computes the arithmetic mean of all values in the specified column.
+Useful for understanding the central tendency of your data.</p>
+</div>
+
 
                             <div class="inherited">
                                 <h5>Inherited Members</h5>
@@ -1496,7 +1639,12 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#MedianValue"></a>
     
-    
+            <div class="docstring"><p>Calculate the median value of a numerical column.</p>
+
+<p>Returns the middle value when all values are sorted. More robust to outliers
+than the mean. Useful for understanding the central tendency of skewed data.</p>
+</div>
+
 
                             <div class="inherited">
                                 <h5>Inherited Members</h5>
@@ -1531,7 +1679,12 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#MinValue"></a>
     
-    
+            <div class="docstring"><p>Calculate the minimum value of a numerical column.</p>
+
+<p>Returns the smallest value in the specified column. Useful for understanding
+the lower bound of your data distribution.</p>
+</div>
+
 
                             <div class="inherited">
                                 <h5>Inherited Members</h5>
@@ -1566,7 +1719,12 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#MissingValueCount"></a>
     
-    
+            <div class="docstring"><p>Count the number and share of missing (null/NaN) values in a column.</p>
+
+<p>Identifies and counts missing values (NaN, None, etc.) in the specified column.
+Returns both count and share (percentage) of missing values.</p>
+</div>
+
 
                             <div class="inherited">
                                 <h5>Inherited Members</h5>
@@ -1603,7 +1761,12 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#InListValueCount"></a>
     
-    
+            <div class="docstring"><p>Count values that match any value in a specified list.</p>
+
+<p>Counts how many values in the column appear in the provided list.
+Returns both count and share (percentage) of matching values.</p>
+</div>
+
 
                             <div id="InListValueCount.values" class="classattr">
                                 <div class="attr variable">
@@ -1613,7 +1776,9 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#InListValueCount.values"></a>
     
-    
+            <div class="docstring"><p>List of values to match against.</p>
+</div>
+
 
                             </div>
                             <div class="inherited">
@@ -1651,7 +1816,19 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#InRangeValueCount"></a>
     
-    
+            <div class="docstring"><p>Count values within a specified range in a numerical column.</p>
+
+<p>Counts how many values fall within the range [left, right] (inclusive).
+Returns both count and share (percentage) of values in range.</p>
+
+<p>Example:</p>
+
+<div class="pdoc-code codehilite">
+<pre><span></span><code><span class="n">InRangeValueCount</span><span class="p">(</span><span class="n">column</span><span class="o">=</span><span class="s2">&quot;age&quot;</span><span class="p">,</span> <span class="n">left</span><span class="o">=</span><span class="mi">18</span><span class="p">,</span> <span class="n">right</span><span class="o">=</span><span class="mi">65</span><span class="p">)</span>
+</code></pre>
+</div>
+</div>
+
 
                             <div id="InRangeValueCount.left" class="classattr">
                                 <div class="attr variable">
@@ -1661,7 +1838,9 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#InRangeValueCount.left"></a>
     
-    
+            <div class="docstring"><p>Lower bound of the range (inclusive).</p>
+</div>
+
 
                             </div>
                             <div id="InRangeValueCount.right" class="classattr">
@@ -1672,7 +1851,9 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#InRangeValueCount.right"></a>
     
-    
+            <div class="docstring"><p>Upper bound of the range (inclusive).</p>
+</div>
+
 
                             </div>
                             <div class="inherited">
@@ -1710,7 +1891,19 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#OutListValueCount"></a>
     
-    
+            <div class="docstring"><p>Count values that do not match any value in a specified list.</p>
+
+<p>Counts how many values in the column do not appear in the provided list.
+Returns both count and share (percentage) of non-matching values.</p>
+
+<p>Example:</p>
+
+<div class="pdoc-code codehilite">
+<pre><span></span><code><span class="n">OutListValueCount</span><span class="p">(</span><span class="n">column</span><span class="o">=</span><span class="s2">&quot;city&quot;</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;NY&quot;</span><span class="p">,</span> <span class="s2">&quot;LA&quot;</span><span class="p">])</span>
+</code></pre>
+</div>
+</div>
+
 
                             <div id="OutListValueCount.values" class="classattr">
                                 <div class="attr variable">
@@ -1720,7 +1913,9 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#OutListValueCount.values"></a>
     
-    
+            <div class="docstring"><p>List of values to check against.</p>
+</div>
+
 
                             </div>
                             <div class="inherited">
@@ -1758,7 +1953,12 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#OutRangeValueCount"></a>
     
-    
+            <div class="docstring"><p>Count values outside a specified range in a numerical column.</p>
+
+<p>Counts how many values fall outside the range [left, right].
+Returns both count and share (percentage) of values out of range.</p>
+</div>
+
 
                             <div id="OutRangeValueCount.left" class="classattr">
                                 <div class="attr variable">
@@ -1768,7 +1968,9 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#OutRangeValueCount.left"></a>
     
-    
+            <div class="docstring"><p>Lower bound of the range.</p>
+</div>
+
 
                             </div>
                             <div id="OutRangeValueCount.right" class="classattr">
@@ -1779,7 +1981,9 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#OutRangeValueCount.right"></a>
     
-    
+            <div class="docstring"><p>Upper bound of the range.</p>
+</div>
+
 
                             </div>
                             <div class="inherited">
@@ -1817,7 +2021,12 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#QuantileValue"></a>
     
-    
+            <div class="docstring"><p>Calculate a quantile value of a numerical column.</p>
+
+<p>Returns the value at a specific quantile (e.g., 0.25 for first quartile,
+0.5 for median, 0.75 for third quartile). Defaults to 0.5 (median).</p>
+</div>
+
 
                             <div id="QuantileValue.quantile" class="classattr">
                                 <div class="attr variable">
@@ -1827,7 +2036,9 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#QuantileValue.quantile"></a>
     
-    
+            <div class="docstring"><p>Quantile value to compute (0.0 to 1.0).</p>
+</div>
+
 
                             </div>
                             <div class="inherited">
@@ -1863,7 +2074,12 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#StdValue"></a>
     
-    
+            <div class="docstring"><p>Calculate the standard deviation of a numerical column.</p>
+
+<p>Computes the standard deviation, measuring the spread or variability of values
+around the mean. Higher values indicate more variability.</p>
+</div>
+
 
                             <div class="inherited">
                                 <h5>Inherited Members</h5>
@@ -1898,7 +2114,12 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#SumValue"></a>
     
-    
+            <div class="docstring"><p>Calculate the sum of all values in a numerical column.</p>
+
+<p>Returns the total of all values in the specified column. Useful for
+aggregating numerical data.</p>
+</div>
+
 
                             <div class="inherited">
                                 <h5>Inherited Members</h5>
@@ -1933,7 +2154,19 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#UniqueValueCount"></a>
     
-    
+            <div class="docstring"><p>Count the number and share of unique values in a column.</p>
+
+<p>Calculates how many distinct values appear in the column and what percentage
+of the total values they represent. Useful for understanding data cardinality.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code><a href="#UniqueValueCount.column">column</a></code>: Name of the column to analyze.</li>
+<li><code><a href="#UniqueValueCount.tests">tests</a></code>: Optional list of test conditions.</li>
+</ul>
+</div>
+
 
                             <div class="inherited">
                                 <h5>Inherited Members</h5>
@@ -1970,7 +2203,12 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#ColumnCount"></a>
     
-    
+            <div class="docstring"><p>Count the total number of columns in the dataset.</p>
+
+<p>Can count all columns or filter by column type (numerical, categorical, text, datetime).
+Useful for monitoring schema changes and data structure.</p>
+</div>
+
 
                             <div id="ColumnCount.column_type" class="classattr">
                                 <div class="attr variable">
@@ -1980,7 +2218,9 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#ColumnCount.column_type"></a>
     
-    
+            <div class="docstring"><p>Optional column type to filter by (None = all columns).</p>
+</div>
+
 
                             </div>
                             <div class="inherited">
@@ -2012,7 +2252,12 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#RowCount"></a>
     
-    
+            <div class="docstring"><p>Count the total number of rows in the dataset.</p>
+
+<p>Returns the number of rows (records) in the dataset. Useful for understanding
+dataset size and monitoring changes in data volume.</p>
+</div>
+
 
                             <div class="inherited">
                                 <h5>Inherited Members</h5>
@@ -2043,7 +2288,12 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#DuplicatedRowCount"></a>
     
-    
+            <div class="docstring"><p>Count the number of duplicate rows in the dataset.</p>
+
+<p>Identifies and counts rows that are completely identical to other rows.
+Useful for data quality checks.</p>
+</div>
+
 
                             <div class="inherited">
                                 <h5>Inherited Members</h5>
@@ -2074,7 +2324,12 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#DuplicatedColumnsCount"></a>
     
-    
+            <div class="docstring"><p>Count the number of duplicate columns in the dataset.</p>
+
+<p>Identifies columns that are completely identical to other columns.
+Useful for detecting redundant features.</p>
+</div>
+
 
                             <div class="inherited">
                                 <h5>Inherited Members</h5>
@@ -2105,7 +2360,21 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#DatasetMissingValueCount"></a>
     
-    
+            <div class="docstring"><p>Count the total number and share of missing values across specified columns.</p>
+
+<p>Calculates missing values (NaN, None, etc.) across multiple columns in the dataset.
+Returns both total count and share (percentage) of missing values.
+Displays missing value counts per column.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>columns</code>: List of column names to analyze. Required.</li>
+<li><code><a href="#DatasetMissingValueCount.tests">tests</a></code>: Optional list of test conditions.</li>
+<li><code><a href="#DatasetMissingValueCount.share_tests">share_tests</a></code>: Optional list of tests for the share (percentage).</li>
+</ul>
+</div>
+
 
                             <div class="inherited">
                                 <h5>Inherited Members</h5>
@@ -2138,7 +2407,12 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#AlmostConstantColumnsCount"></a>
     
-    
+            <div class="docstring"><p>Count the number of almost constant columns (95% identical values).</p>
+
+<p>Identifies columns where 95% or more of the values are the same.
+These columns provide little information and may indicate data quality issues.</p>
+</div>
+
 
                             <div class="inherited">
                                 <h5>Inherited Members</h5>
@@ -2169,7 +2443,12 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#AlmostDuplicatedColumnsCount"></a>
     
-    
+            <div class="docstring"><p>Count the number of almost duplicate columns in the dataset.</p>
+
+<p>Identifies columns that are nearly identical (within a small epsilon threshold).
+Useful for detecting highly correlated or redundant features.</p>
+</div>
+
 
                             <div class="inherited">
                                 <h5>Inherited Members</h5>
@@ -2200,7 +2479,18 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#ConstantColumnsCount"></a>
     
-    
+            <div class="docstring"><p>Count the number of constant columns (all values identical).</p>
+
+<p>Identifies columns where every value is exactly the same.
+These columns provide no information and should typically be removed.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code><a href="#ConstantColumnsCount.tests">tests</a></code>: Optional list of test conditions.</li>
+</ul>
+</div>
+
 
                             <div class="inherited">
                                 <h5>Inherited Members</h5>
@@ -2231,7 +2521,12 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#EmptyRowsCount"></a>
     
-    
+            <div class="docstring"><p>Count the number of completely empty rows in the dataset.</p>
+
+<p>Identifies rows where all values are missing or empty.
+Useful for data quality monitoring.</p>
+</div>
+
 
                             <div class="inherited">
                                 <h5>Inherited Members</h5>
@@ -2262,7 +2557,12 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#EmptyColumnsCount"></a>
     
-    
+            <div class="docstring"><p>Count the number of completely empty columns in the dataset.</p>
+
+<p>Identifies columns where all values are missing or empty.
+Useful for detecting unused or broken data sources.</p>
+</div>
+
 
                             <div class="inherited">
                                 <h5>Inherited Members</h5>
@@ -2293,7 +2593,20 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#DummyF1Score"></a>
     
-    
+            <div class="docstring"><p>Calculate F1 score for a dummy/baseline model.</p>
+
+<p>Computes F1 score using a simple heuristic-based model. Useful as a baseline
+to compare your model against.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code><a href="#DummyF1Score.classification_name">classification_name</a></code>: Name of the classification task (default: "default").</li>
+<li><code><a href="#DummyF1Score.probas_threshold">probas_threshold</a></code>: Optional probability threshold.</li>
+<li><code><a href="#DummyF1Score.k">k</a></code>: Optional top-k value for multiclass classification.</li>
+</ul>
+</div>
+
 
                             <div class="inherited">
                                 <h5>Inherited Members</h5>
@@ -2324,7 +2637,20 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#DummyPrecision"></a>
     
-    
+            <div class="docstring"><p>Calculate precision for a dummy/baseline model.</p>
+
+<p>Computes precision using a simple heuristic-based model (e.g., always predict
+the most common class). Useful as a baseline to compare your model against.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code><a href="#DummyPrecision.classification_name">classification_name</a></code>: Name of the classification task (default: "default").</li>
+<li><code><a href="#DummyPrecision.probas_threshold">probas_threshold</a></code>: Optional probability threshold.</li>
+<li><code><a href="#DummyPrecision.k">k</a></code>: Optional top-k value for multiclass classification.</li>
+</ul>
+</div>
+
 
                             <div class="inherited">
                                 <h5>Inherited Members</h5>
@@ -2355,7 +2681,20 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#DummyRecall"></a>
     
-    
+            <div class="docstring"><p>Calculate recall for a dummy/baseline model.</p>
+
+<p>Computes recall using a simple heuristic-based model. Useful as a baseline
+to compare your model against.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code><a href="#DummyRecall.classification_name">classification_name</a></code>: Name of the classification task (default: "default").</li>
+<li><code><a href="#DummyRecall.probas_threshold">probas_threshold</a></code>: Optional probability threshold.</li>
+<li><code><a href="#DummyRecall.k">k</a></code>: Optional top-k value for multiclass classification.</li>
+</ul>
+</div>
+
 
                             <div class="inherited">
                                 <h5>Inherited Members</h5>
@@ -2386,7 +2725,12 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#F1Score"></a>
     
-    
+            <div class="docstring"><p>Calculate F1 score (harmonic mean of precision and recall).</p>
+
+<p>F1 score balances precision and recall, providing a single metric for
+classification performance. Higher values indicate better performance.</p>
+</div>
+
 
                             <div id="F1Score.conf_matrix" class="classattr">
                                 <div class="attr variable">
@@ -2396,7 +2740,9 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#F1Score.conf_matrix"></a>
     
-    
+            <div class="docstring"><p>Whether to show confusion matrix visualization.</p>
+</div>
+
 
                             </div>
                             <div class="inherited">
@@ -2428,7 +2774,12 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#Accuracy"></a>
     
-    
+            <div class="docstring"><p>Calculate classification accuracy (proportion of correct predictions).</p>
+
+<p>Accuracy measures the fraction of predictions that match the true labels.
+Simple and intuitive, but can be misleading for imbalanced datasets.</p>
+</div>
+
 
                             <div class="inherited">
                                 <h5>Inherited Members</h5>
@@ -2459,7 +2810,14 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#Precision"></a>
     
-    
+            <div class="docstring"><p>Calculate precision (proportion of positive predictions that are correct).</p>
+
+<p>Precision measures how many of the predicted positive cases are actually positive.
+Useful when false positives are costly.</p>
+
+<p>Note: At least one visualization (<code><a href="#Precision.conf_matrix">conf_matrix</a></code>, <code><a href="#Precision.pr_curve">pr_curve</a></code>, or <code><a href="#Precision.pr_table">pr_table</a></code>) must be enabled.</p>
+</div>
+
 
                             <div id="Precision.conf_matrix" class="classattr">
                                 <div class="attr variable">
@@ -2469,7 +2827,9 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#Precision.conf_matrix"></a>
     
-    
+            <div class="docstring"><p>Whether to show confusion matrix visualization.</p>
+</div>
+
 
                             </div>
                             <div id="Precision.pr_curve" class="classattr">
@@ -2480,7 +2840,9 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#Precision.pr_curve"></a>
     
-    
+            <div class="docstring"><p>Whether to show precision-recall curve.</p>
+</div>
+
 
                             </div>
                             <div id="Precision.pr_table" class="classattr">
@@ -2491,7 +2853,9 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#Precision.pr_table"></a>
     
-    
+            <div class="docstring"><p>Whether to show precision-recall table.</p>
+</div>
+
 
                             </div>
                             <div class="inherited">
@@ -2523,7 +2887,14 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#Recall"></a>
     
-    
+            <div class="docstring"><p>Calculate recall (proportion of actual positives that are correctly identified).</p>
+
+<p>Recall measures how many of the actual positive cases are correctly predicted.
+Useful when false negatives are costly.</p>
+
+<p>Note: At least one visualization (<code><a href="#Recall.conf_matrix">conf_matrix</a></code>, <code><a href="#Recall.pr_curve">pr_curve</a></code>, or <code><a href="#Recall.pr_table">pr_table</a></code>) must be enabled.</p>
+</div>
+
 
                             <div id="Recall.conf_matrix" class="classattr">
                                 <div class="attr variable">
@@ -2533,7 +2904,9 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#Recall.conf_matrix"></a>
     
-    
+            <div class="docstring"><p>Whether to show confusion matrix visualization.</p>
+</div>
+
 
                             </div>
                             <div id="Recall.pr_curve" class="classattr">
@@ -2544,7 +2917,9 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#Recall.pr_curve"></a>
     
-    
+            <div class="docstring"><p>Whether to show precision-recall curve.</p>
+</div>
+
 
                             </div>
                             <div id="Recall.pr_table" class="classattr">
@@ -2555,7 +2930,9 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#Recall.pr_table"></a>
     
-    
+            <div class="docstring"><p>Whether to show precision-recall table.</p>
+</div>
+
 
                             </div>
                             <div class="inherited">
@@ -2587,7 +2964,14 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#TPR"></a>
     
-    
+            <div class="docstring"><p>Calculate True Positive Rate (TPR), also known as recall or sensitivity.</p>
+
+<p>TPR measures the proportion of actual positives correctly identified.
+Equivalent to recall. Higher values indicate better detection of positive cases.</p>
+
+<p>Note: <code><a href="#TPR.pr_table">pr_table</a></code> visualization must be enabled.</p>
+</div>
+
 
                             <div id="TPR.pr_table" class="classattr">
                                 <div class="attr variable">
@@ -2597,7 +2981,9 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#TPR.pr_table"></a>
     
-    
+            <div class="docstring"><p>Whether to show precision-recall table.</p>
+</div>
+
 
                             </div>
                             <div class="inherited">
@@ -2629,7 +3015,14 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#TNR"></a>
     
-    
+            <div class="docstring"><p>Calculate True Negative Rate (TNR), also known as specificity.</p>
+
+<p>TNR measures the proportion of actual negatives correctly identified.
+Higher values indicate better detection of negative cases.</p>
+
+<p>Note: <code><a href="#TNR.pr_table">pr_table</a></code> visualization must be enabled.</p>
+</div>
+
 
                             <div id="TNR.pr_table" class="classattr">
                                 <div class="attr variable">
@@ -2639,7 +3032,9 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#TNR.pr_table"></a>
     
-    
+            <div class="docstring"><p>Whether to show precision-recall table.</p>
+</div>
+
 
                             </div>
                             <div class="inherited">
@@ -2671,7 +3066,14 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#FPR"></a>
     
-    
+            <div class="docstring"><p>Calculate False Positive Rate (FPR).</p>
+
+<p>FPR measures the proportion of actual negatives incorrectly classified as positive.
+Lower values are better. FPR = 1 - TNR.</p>
+
+<p>Note: <code><a href="#FPR.pr_table">pr_table</a></code> visualization must be enabled.</p>
+</div>
+
 
                             <div id="FPR.pr_table" class="classattr">
                                 <div class="attr variable">
@@ -2681,7 +3083,9 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#FPR.pr_table"></a>
     
-    
+            <div class="docstring"><p>Whether to show precision-recall table.</p>
+</div>
+
 
                             </div>
                             <div class="inherited">
@@ -2713,7 +3117,14 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#FNR"></a>
     
-    
+            <div class="docstring"><p>Calculate False Negative Rate (FNR).</p>
+
+<p>FNR measures the proportion of actual positives incorrectly classified as negative.
+Lower values are better. FNR = 1 - TPR.</p>
+
+<p>Note: <code><a href="#FNR.pr_table">pr_table</a></code> visualization must be enabled.</p>
+</div>
+
 
                             <div id="FNR.pr_table" class="classattr">
                                 <div class="attr variable">
@@ -2723,7 +3134,9 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#FNR.pr_table"></a>
     
-    
+            <div class="docstring"><p>Whether to show precision-recall table.</p>
+</div>
+
 
                             </div>
                             <div class="inherited">
@@ -2755,7 +3168,14 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#LogLoss"></a>
     
-    
+            <div class="docstring"><p>Calculate logarithmic loss (cross-entropy loss).</p>
+
+<p>Log loss penalizes confident wrong predictions more heavily. Lower values
+indicate better calibrated probability predictions. Requires probability predictions.</p>
+
+<p>Note: <code><a href="#LogLoss.pr_table">pr_table</a></code> visualization must be enabled. Requires probability predictions.</p>
+</div>
+
 
                             <div id="LogLoss.pr_table" class="classattr">
                                 <div class="attr variable">
@@ -2765,7 +3185,9 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#LogLoss.pr_table"></a>
     
-    
+            <div class="docstring"><p>Whether to show precision-recall table.</p>
+</div>
+
 
                             </div>
                             <div class="inherited">
@@ -2797,7 +3219,14 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#RocAuc"></a>
     
-    
+            <div class="docstring"><p>Calculate ROC AUC (Area Under the Receiver Operating Characteristic Curve).</p>
+
+<p>ROC AUC measures the model's ability to distinguish between classes across
+all possible thresholds. Values range from 0 to 1, with 0.5 being random and 1.0 perfect.</p>
+
+<p>Note: At least one visualization (<code><a href="#RocAuc.roc_curve">roc_curve</a></code> or <code><a href="#RocAuc.pr_table">pr_table</a></code>) must be enabled.</p>
+</div>
+
 
                             <div id="RocAuc.roc_curve" class="classattr">
                                 <div class="attr variable">
@@ -2807,7 +3236,9 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#RocAuc.roc_curve"></a>
     
-    
+            <div class="docstring"><p>Whether to show ROC curve.</p>
+</div>
+
 
                             </div>
                             <div id="RocAuc.pr_table" class="classattr">
@@ -2818,7 +3249,9 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#RocAuc.pr_table"></a>
     
-    
+            <div class="docstring"><p>Whether to show precision-recall table.</p>
+</div>
+
 
                             </div>
                             <div class="inherited">
@@ -2850,7 +3283,21 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#F1ByLabel"></a>
     
-    
+            <div class="docstring"><p>Calculate F1 score separately for each class label in multiclass classification.</p>
+
+<p>Returns a dictionary mapping each label to its F1 score. Useful for understanding
+per-class performance in multiclass problems.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code><a href="#F1ByLabel.classification_name">classification_name</a></code>: Name of the classification task (default: "default").</li>
+<li><code><a href="#F1ByLabel.probas_threshold">probas_threshold</a></code>: Optional probability threshold for binary classification.</li>
+<li><code><a href="#F1ByLabel.k">k</a></code>: Optional top-k value for multiclass classification.</li>
+<li><code><a href="#F1ByLabel.tests">tests</a></code>: Optional list of test conditions.</li>
+</ul>
+</div>
+
 
                             <div class="inherited">
                                 <h5>Inherited Members</h5>
@@ -2881,7 +3328,21 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#PrecisionByLabel"></a>
     
-    
+            <div class="docstring"><p>Calculate precision separately for each class label in multiclass classification.</p>
+
+<p>Returns a dictionary mapping each label to its precision score. Useful for
+understanding per-class precision in multiclass problems.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code><a href="#PrecisionByLabel.classification_name">classification_name</a></code>: Name of the classification task (default: "default").</li>
+<li><code><a href="#PrecisionByLabel.probas_threshold">probas_threshold</a></code>: Optional probability threshold for binary classification.</li>
+<li><code><a href="#PrecisionByLabel.k">k</a></code>: Optional top-k value for multiclass classification.</li>
+<li><code><a href="#PrecisionByLabel.tests">tests</a></code>: Optional list of test conditions.</li>
+</ul>
+</div>
+
 
                             <div class="inherited">
                                 <h5>Inherited Members</h5>
@@ -2912,7 +3373,21 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#RecallByLabel"></a>
     
-    
+            <div class="docstring"><p>Calculate recall separately for each class label in multiclass classification.</p>
+
+<p>Returns a dictionary mapping each label to its recall score. Useful for
+understanding per-class recall in multiclass problems.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code><a href="#RecallByLabel.classification_name">classification_name</a></code>: Name of the classification task (default: "default").</li>
+<li><code><a href="#RecallByLabel.probas_threshold">probas_threshold</a></code>: Optional probability threshold for binary classification.</li>
+<li><code><a href="#RecallByLabel.k">k</a></code>: Optional top-k value for multiclass classification.</li>
+<li><code><a href="#RecallByLabel.tests">tests</a></code>: Optional list of test conditions.</li>
+</ul>
+</div>
+
 
                             <div class="inherited">
                                 <h5>Inherited Members</h5>
@@ -2943,7 +3418,21 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#RocAucByLabel"></a>
     
-    
+            <div class="docstring"><p>Calculate ROC AUC separately for each class label in multiclass classification.</p>
+
+<p>Returns a dictionary mapping each label to its ROC AUC score. Useful for
+understanding per-class ROC AUC in multiclass problems.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code><a href="#RocAucByLabel.classification_name">classification_name</a></code>: Name of the classification task (default: "default").</li>
+<li><code><a href="#RocAucByLabel.probas_threshold">probas_threshold</a></code>: Optional probability threshold for binary classification.</li>
+<li><code><a href="#RocAucByLabel.k">k</a></code>: Optional top-k value for multiclass classification.</li>
+<li><code><a href="#RocAucByLabel.tests">tests</a></code>: Optional list of test conditions.</li>
+</ul>
+</div>
+
 
                             <div class="inherited">
                                 <h5>Inherited Members</h5>
@@ -2974,7 +3463,12 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#MeanError"></a>
     
-    
+            <div class="docstring"><p>Calculate mean error and standard deviation of errors for regression.</p>
+
+<p>Computes the average prediction error (prediction - target) and its standard deviation.
+Positive values indicate over-prediction, negative values indicate under-prediction.</p>
+</div>
+
 
                             <div id="MeanError.__init__" class="classattr">
                                 <div class="attr function">
@@ -3000,7 +3494,9 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#MeanError.error_plot"></a>
     
-    
+            <div class="docstring"><p>Whether to show error plot visualization.</p>
+</div>
+
 
                             </div>
                             <div id="MeanError.error_distr" class="classattr">
@@ -3011,7 +3507,9 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#MeanError.error_distr"></a>
     
-    
+            <div class="docstring"><p>Whether to show error distribution.</p>
+</div>
+
 
                             </div>
                             <div id="MeanError.error_normality" class="classattr">
@@ -3022,7 +3520,9 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#MeanError.error_normality"></a>
     
-    
+            <div class="docstring"><p>Whether to show error normality test.</p>
+</div>
+
 
                             </div>
                             <div class="inherited">
@@ -3056,7 +3556,12 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#MAE"></a>
     
-    
+            <div class="docstring"><p>Calculate Mean Absolute Error (MAE) for regression.</p>
+
+<p>MAE measures the average magnitude of errors without considering direction.
+Lower values indicate better performance. Returns both mean and standard deviation.</p>
+</div>
+
 
                             <div id="MAE.__init__" class="classattr">
                                 <div class="attr function">
@@ -3082,7 +3587,9 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#MAE.error_plot"></a>
     
-    
+            <div class="docstring"><p>Whether to show error plot visualization.</p>
+</div>
+
 
                             </div>
                             <div id="MAE.error_distr" class="classattr">
@@ -3093,7 +3600,9 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#MAE.error_distr"></a>
     
-    
+            <div class="docstring"><p>Whether to show error distribution.</p>
+</div>
+
 
                             </div>
                             <div id="MAE.error_normality" class="classattr">
@@ -3104,7 +3613,9 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#MAE.error_normality"></a>
     
-    
+            <div class="docstring"><p>Whether to show error normality test.</p>
+</div>
+
 
                             </div>
                             <div class="inherited">
@@ -3138,7 +3649,12 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#MAPE"></a>
     
-    
+            <div class="docstring"><p>Calculate Mean Absolute Percentage Error (MAPE) for regression.</p>
+
+<p>MAPE expresses errors as a percentage of the actual values, making it
+scale-independent. Returns both mean and standard deviation. Lower values are better.</p>
+</div>
+
 
                             <div id="MAPE.__init__" class="classattr">
                                 <div class="attr function">
@@ -3164,7 +3680,9 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#MAPE.perc_error_plot"></a>
     
-    
+            <div class="docstring"><p>Whether to show percentage error plot.</p>
+</div>
+
 
                             </div>
                             <div id="MAPE.error_distr" class="classattr">
@@ -3175,7 +3693,9 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#MAPE.error_distr"></a>
     
-    
+            <div class="docstring"><p>Whether to show error distribution.</p>
+</div>
+
 
                             </div>
                             <div class="inherited">
@@ -3209,7 +3729,12 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#RMSE"></a>
     
-    
+            <div class="docstring"><p>Calculate Root Mean Squared Error (RMSE) for regression.</p>
+
+<p>RMSE measures the square root of the average squared errors. It penalizes
+large errors more than MAE. Lower values indicate better performance.</p>
+</div>
+
 
                             <div id="RMSE.error_plot" class="classattr">
                                 <div class="attr variable">
@@ -3219,7 +3744,9 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#RMSE.error_plot"></a>
     
-    
+            <div class="docstring"><p>Whether to show error plot visualization.</p>
+</div>
+
 
                             </div>
                             <div id="RMSE.error_distr" class="classattr">
@@ -3230,7 +3757,9 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#RMSE.error_distr"></a>
     
-    
+            <div class="docstring"><p>Whether to show error distribution.</p>
+</div>
+
 
                             </div>
                             <div id="RMSE.error_normality" class="classattr">
@@ -3241,7 +3770,9 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#RMSE.error_normality"></a>
     
-    
+            <div class="docstring"><p>Whether to show error normality test.</p>
+</div>
+
 
                             </div>
                             <div class="inherited">
@@ -3273,7 +3804,13 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#R2Score"></a>
     
-    
+            <div class="docstring"><p>Calculate R² (coefficient of determination) score for regression.</p>
+
+<p>R² measures how well the model explains the variance in the target variable.
+Values range from negative infinity to 1.0, with 1.0 being perfect fit.
+Higher values indicate better performance.</p>
+</div>
+
 
                             <div id="R2Score.error_distr" class="classattr">
                                 <div class="attr variable">
@@ -3283,7 +3820,9 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#R2Score.error_distr"></a>
     
-    
+            <div class="docstring"><p>Whether to show error distribution.</p>
+</div>
+
 
                             </div>
                             <div id="R2Score.error_normality" class="classattr">
@@ -3294,7 +3833,9 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#R2Score.error_normality"></a>
     
-    
+            <div class="docstring"><p>Whether to show error normality test.</p>
+</div>
+
 
                             </div>
                             <div class="inherited">
@@ -3326,7 +3867,12 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#AbsMaxError"></a>
     
-    
+            <div class="docstring"><p>Calculate the maximum absolute error for regression.</p>
+
+<p>Returns the largest absolute error across all predictions. Useful for
+identifying worst-case prediction errors.</p>
+</div>
+
 
                             <div id="AbsMaxError.error_distr" class="classattr">
                                 <div class="attr variable">
@@ -3336,7 +3882,9 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#AbsMaxError.error_distr"></a>
     
-    
+            <div class="docstring"><p>Whether to show error distribution.</p>
+</div>
+
 
                             </div>
                             <div id="AbsMaxError.error_normality" class="classattr">
@@ -3347,7 +3895,9 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#AbsMaxError.error_normality"></a>
     
-    
+            <div class="docstring"><p>Whether to show error normality test.</p>
+</div>
+
 
                             </div>
                             <div class="inherited">
@@ -3379,7 +3929,12 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#DummyMAE"></a>
     
-    
+            <div class="docstring"><p>Calculate Mean Absolute Error for a dummy/baseline regression model.</p>
+
+<p>Computes MAE using a simple baseline (e.g., always predict the mean).
+Useful as a baseline to compare your model against.</p>
+</div>
+
 
                             <div class="inherited">
                                 <h5>Inherited Members</h5>
@@ -3410,7 +3965,11 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#DummyMAPE"></a>
     
-    
+            <div class="docstring"><p>Calculate Mean Absolute Percentage Error for a dummy/baseline regression model.</p>
+
+<p>Computes MAPE using a simple baseline. Useful as a baseline to compare your model against.</p>
+</div>
+
 
                             <div class="inherited">
                                 <h5>Inherited Members</h5>
@@ -3441,7 +4000,17 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#DummyRMSE"></a>
     
-    
+            <div class="docstring"><p>Calculate Root Mean Squared Error for a dummy/baseline regression model.</p>
+
+<p>Computes RMSE using a simple baseline. Useful as a baseline to compare your model against.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code><a href="#DummyRMSE.regression_name">regression_name</a></code>: Name of the regression task (default: "default").</li>
+</ul>
+</div>
+
 
                             <div class="inherited">
                                 <h5>Inherited Members</h5>
@@ -3472,7 +4041,12 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#ScoreDistribution"></a>
     
-    
+            <div class="docstring"><p>Calculate score distribution entropy for ranking/recsys.</p>
+
+<p>Measures the diversity of recommendation scores using entropy. Higher entropy
+indicates more diverse score distribution.</p>
+</div>
+
 
                             <div id="ScoreDistribution.k" class="classattr">
                                 <div class="attr variable">
@@ -3482,7 +4056,9 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#ScoreDistribution.k"></a>
     
-    
+            <div class="docstring"><p>Number of top items to consider.</p>
+</div>
+
 
                             </div>
                             <div id="ScoreDistribution.ranking_name" class="classattr">
@@ -3493,7 +4069,9 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#ScoreDistribution.ranking_name"></a>
     
-    
+            <div class="docstring"><p>Name of the ranking task.</p>
+</div>
+
 
                             </div>
                             <div class="inherited">
@@ -3525,7 +4103,22 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#NDCG"></a>
     
-    
+            <div class="docstring"><p>Calculate Normalized Discounted Cumulative Gain (NDCG@k) for ranking/recsys.</p>
+
+<p>NDCG measures ranking quality by considering position and relevance. Higher values
+indicate better ranking quality. Values range from 0 to 1.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code><a href="#NDCG.k">k</a></code>: Number of top items to consider in the ranking.</li>
+<li><code><a href="#NDCG.ranking_name">ranking_name</a></code>: Name of the ranking task (default: "default").</li>
+<li><code><a href="#NDCG.min_rel_score">min_rel_score</a></code>: Minimum relevance score threshold (optional).</li>
+<li><code><a href="#NDCG.no_feedback_users">no_feedback_users</a></code>: Whether to exclude users with no feedback (default: False).</li>
+<li><code><a href="#NDCG.tests">tests</a></code>: Optional list of test conditions.</li>
+</ul>
+</div>
+
 
                             <div class="inherited">
                                 <h5>Inherited Members</h5>
@@ -3556,7 +4149,12 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#FBetaTopK"></a>
     
-    
+            <div class="docstring"><p>Calculate F-beta score@k for ranking/recsys.</p>
+
+<p>F-beta is a weighted harmonic mean of precision and recall. Beta controls
+the weight: beta &gt; 1 favors recall, beta &lt; 1 favors precision.</p>
+</div>
+
 
                             <div id="FBetaTopK.beta" class="classattr">
                                 <div class="attr variable">
@@ -3566,7 +4164,9 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#FBetaTopK.beta"></a>
     
-    
+            <div class="docstring"><p>Weight factor for recall vs precision (1.0 = balanced F1).</p>
+</div>
+
 
                             </div>
                             <div class="inherited">
@@ -3598,7 +4198,22 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#HitRate"></a>
     
-    
+            <div class="docstring"><p>Calculate Hit Rate@k for ranking/recsys.</p>
+
+<p>Hit Rate measures the proportion of users who have at least one relevant item
+in their top-k recommendations. Higher values indicate better coverage.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code><a href="#HitRate.k">k</a></code>: Number of top items to consider in the ranking.</li>
+<li><code><a href="#HitRate.ranking_name">ranking_name</a></code>: Name of the ranking task (default: "default").</li>
+<li><code><a href="#HitRate.min_rel_score">min_rel_score</a></code>: Minimum relevance score threshold (optional).</li>
+<li><code><a href="#HitRate.no_feedback_users">no_feedback_users</a></code>: Whether to exclude users with no feedback (default: False).</li>
+<li><code><a href="#HitRate.tests">tests</a></code>: Optional list of test conditions.</li>
+</ul>
+</div>
+
 
                             <div class="inherited">
                                 <h5>Inherited Members</h5>
@@ -3629,7 +4244,22 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#MAP"></a>
     
-    
+            <div class="docstring"><p>Calculate Mean Average Precision (MAP@k) for ranking/recsys.</p>
+
+<p>MAP measures the average precision across all users. Higher values indicate
+better ranking quality.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code><a href="#MAP.k">k</a></code>: Number of top items to consider in the ranking.</li>
+<li><code><a href="#MAP.ranking_name">ranking_name</a></code>: Name of the ranking task (default: "default").</li>
+<li><code><a href="#MAP.min_rel_score">min_rel_score</a></code>: Minimum relevance score threshold (optional).</li>
+<li><code><a href="#MAP.no_feedback_users">no_feedback_users</a></code>: Whether to exclude users with no feedback (default: False).</li>
+<li><code><a href="#MAP.tests">tests</a></code>: Optional list of test conditions.</li>
+</ul>
+</div>
+
 
                             <div class="inherited">
                                 <h5>Inherited Members</h5>
@@ -3660,7 +4290,22 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#MRR"></a>
     
-    
+            <div class="docstring"><p>Calculate Mean Reciprocal Rank (MRR@k) for ranking/recsys.</p>
+
+<p>MRR measures the average reciprocal rank of the first relevant item.
+Higher values indicate better ranking quality.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code><a href="#MRR.k">k</a></code>: Number of top items to consider in the ranking.</li>
+<li><code><a href="#MRR.ranking_name">ranking_name</a></code>: Name of the ranking task (default: "default").</li>
+<li><code><a href="#MRR.min_rel_score">min_rel_score</a></code>: Minimum relevance score threshold (optional).</li>
+<li><code><a href="#MRR.no_feedback_users">no_feedback_users</a></code>: Whether to exclude users with no feedback (default: False).</li>
+<li><code><a href="#MRR.tests">tests</a></code>: Optional list of test conditions.</li>
+</ul>
+</div>
+
 
                             <div class="inherited">
                                 <h5>Inherited Members</h5>
@@ -3691,7 +4336,12 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#PrecisionTopK"></a>
     
-    
+            <div class="docstring"><p>Calculate Precision@k for ranking/recsys.</p>
+
+<p>Precision measures the proportion of relevant items in the top-k recommendations.
+Higher values indicate better precision.</p>
+</div>
+
 
                             <div class="inherited">
                                 <h5>Inherited Members</h5>
@@ -3722,7 +4372,22 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#RecallTopK"></a>
     
-    
+            <div class="docstring"><p>Calculate Recall@k for ranking/recsys.</p>
+
+<p>Recall measures the proportion of relevant items found in the top-k recommendations.
+Higher values indicate better coverage of relevant items.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code><a href="#RecallTopK.k">k</a></code>: Number of top items to consider in the ranking.</li>
+<li><code><a href="#RecallTopK.ranking_name">ranking_name</a></code>: Name of the ranking task (default: "default").</li>
+<li><code><a href="#RecallTopK.min_rel_score">min_rel_score</a></code>: Minimum relevance score threshold (optional).</li>
+<li><code><a href="#RecallTopK.no_feedback_users">no_feedback_users</a></code>: Whether to exclude users with no feedback (default: False).</li>
+<li><code><a href="#RecallTopK.tests">tests</a></code>: Optional list of test conditions.</li>
+</ul>
+</div>
+
 
                             <div class="inherited">
                                 <h5>Inherited Members</h5>
@@ -3753,7 +4418,12 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#PopularityBiasMetric"></a>
     
-    
+            <div class="docstring"><p>Measure popularity bias in recommendations.</p>
+
+<p>Evaluates how much recommendations favor popular items. Can measure using
+Average Recommendation Popularity (ARP), coverage, or Gini coefficient.</p>
+</div>
+
 
                             <div id="PopularityBiasMetric.k" class="classattr">
                                 <div class="attr variable">
@@ -3763,7 +4433,9 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#PopularityBiasMetric.k"></a>
     
-    
+            <div class="docstring"><p>Number of top items to consider.</p>
+</div>
+
 
                             </div>
                             <div id="PopularityBiasMetric.normalize_arp" class="classattr">
@@ -3774,7 +4446,9 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#PopularityBiasMetric.normalize_arp"></a>
     
-    
+            <div class="docstring"><p>Whether to normalize ARP.</p>
+</div>
+
 
                             </div>
                             <div id="PopularityBiasMetric.ranking_name" class="classattr">
@@ -3785,7 +4459,9 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#PopularityBiasMetric.ranking_name"></a>
     
-    
+            <div class="docstring"><p>Name of the ranking task.</p>
+</div>
+
 
                             </div>
                             <div id="PopularityBiasMetric.metric" class="classattr">
@@ -3796,7 +4472,9 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#PopularityBiasMetric.metric"></a>
     
-    
+            <div class="docstring"><p>Metric type: ARP, coverage, or Gini coefficient.</p>
+</div>
+
 
                             </div>
                             <div class="inherited">
@@ -3828,7 +4506,12 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#Personalization"></a>
     
-    
+            <div class="docstring"><p>Measure personalization (diversity between users' recommendations).</p>
+
+<p>Calculates how different recommendations are across users. Higher values
+indicate more personalized (diverse) recommendations per user.</p>
+</div>
+
 
                             <div id="Personalization.k" class="classattr">
                                 <div class="attr variable">
@@ -3838,7 +4521,9 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#Personalization.k"></a>
     
-    
+            <div class="docstring"><p>Number of top items to consider.</p>
+</div>
+
 
                             </div>
                             <div id="Personalization.ranking_name" class="classattr">
@@ -3849,7 +4534,9 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#Personalization.ranking_name"></a>
     
-    
+            <div class="docstring"><p>Name of the ranking task.</p>
+</div>
+
 
                             </div>
                             <div class="inherited">
@@ -3881,7 +4568,12 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#Diversity"></a>
     
-    
+            <div class="docstring"><p>Measure diversity of recommended items within each user's list.</p>
+
+<p>Calculates how diverse items are within a user's top-k recommendations
+based on item features. Higher values indicate more diverse recommendations.</p>
+</div>
+
 
                             <div id="Diversity.k" class="classattr">
                                 <div class="attr variable">
@@ -3891,7 +4583,9 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#Diversity.k"></a>
     
-    
+            <div class="docstring"><p>Number of top items to consider.</p>
+</div>
+
 
                             </div>
                             <div id="Diversity.item_features" class="classattr">
@@ -3902,7 +4596,9 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#Diversity.item_features"></a>
     
-    
+            <div class="docstring"><p>List of feature column names for diversity calculation.</p>
+</div>
+
 
                             </div>
                             <div id="Diversity.ranking_name" class="classattr">
@@ -3913,7 +4609,9 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#Diversity.ranking_name"></a>
     
-    
+            <div class="docstring"><p>Name of the ranking task.</p>
+</div>
+
 
                             </div>
                             <div class="inherited">
@@ -3945,7 +4643,12 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#Serendipity"></a>
     
-    
+            <div class="docstring"><p>Measure serendipity (unexpected but relevant recommendations).</p>
+
+<p>Evaluates how surprising yet relevant recommendations are. Higher values
+indicate more serendipitous recommendations.</p>
+</div>
+
 
                             <div id="Serendipity.k" class="classattr">
                                 <div class="attr variable">
@@ -3955,7 +4658,9 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#Serendipity.k"></a>
     
-    
+            <div class="docstring"><p>Number of top items to consider.</p>
+</div>
+
 
                             </div>
                             <div id="Serendipity.item_features" class="classattr">
@@ -3966,7 +4671,9 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#Serendipity.item_features"></a>
     
-    
+            <div class="docstring"><p>List of feature column names for serendipity calculation.</p>
+</div>
+
 
                             </div>
                             <div id="Serendipity.ranking_name" class="classattr">
@@ -3977,7 +4684,9 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#Serendipity.ranking_name"></a>
     
-    
+            <div class="docstring"><p>Name of the ranking task.</p>
+</div>
+
 
                             </div>
                             <div class="inherited">
@@ -4009,7 +4718,12 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#Novelty"></a>
     
-    
+            <div class="docstring"><p>Measure novelty (how new/unpopular recommended items are).</p>
+
+<p>Evaluates how novel (less popular) the recommended items are. Higher values
+indicate recommendations of less popular items.</p>
+</div>
+
 
                             <div id="Novelty.k" class="classattr">
                                 <div class="attr variable">
@@ -4019,7 +4733,9 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#Novelty.k"></a>
     
-    
+            <div class="docstring"><p>Number of top items to consider.</p>
+</div>
+
 
                             </div>
                             <div id="Novelty.ranking_name" class="classattr">
@@ -4030,7 +4746,9 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#Novelty.ranking_name"></a>
     
-    
+            <div class="docstring"><p>Name of the ranking task.</p>
+</div>
+
 
                             </div>
                             <div class="inherited">
@@ -4062,7 +4780,12 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#ItemBias"></a>
     
-    
+            <div class="docstring"><p>Measure bias in recommendations towards specific item groups.</p>
+
+<p>Evaluates whether recommendations are biased towards certain item categories
+or groups. Returns a dataframe showing bias distribution across item groups.</p>
+</div>
+
 
                             <div id="ItemBias.k" class="classattr">
                                 <div class="attr variable">
@@ -4072,7 +4795,9 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#ItemBias.k"></a>
     
-    
+            <div class="docstring"><p>Number of top items to consider.</p>
+</div>
+
 
                             </div>
                             <div id="ItemBias.column_name" class="classattr">
@@ -4083,7 +4808,9 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#ItemBias.column_name"></a>
     
-    
+            <div class="docstring"><p>Name of the column containing item group/category information.</p>
+</div>
+
 
                             </div>
                             <div id="ItemBias.distribution" class="classattr">
@@ -4094,7 +4821,9 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#ItemBias.distribution"></a>
     
-    
+            <div class="docstring"><p>Distribution to use: "default" or "train".</p>
+</div>
+
 
                             </div>
                             <div id="ItemBias.ranking_name" class="classattr">
@@ -4105,7 +4834,9 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#ItemBias.ranking_name"></a>
     
-    
+            <div class="docstring"><p>Name of the ranking task.</p>
+</div>
+
 
                             </div>
                             <div id="ItemBias.get_bound_tests" class="classattr">
@@ -4118,7 +4849,21 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#ItemBias.get_bound_tests"></a>
     
-    
+            <div class="docstring"><p>Get all bound tests for this metric.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>context</code>: <code>Context</code> to determine which tests to include.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li>Sequence of <code>BoundTest</code> objects to run on this metric's results.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div class="inherited">
@@ -4144,7 +4889,12 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#UserBias"></a>
     
-    
+            <div class="docstring"><p>Measure bias in recommendations towards specific user groups.</p>
+
+<p>Evaluates whether recommendations are biased towards certain user categories
+or groups. Returns a dataframe showing bias distribution across user groups.</p>
+</div>
+
 
                             <div id="UserBias.column_name" class="classattr">
                                 <div class="attr variable">
@@ -4154,7 +4904,9 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#UserBias.column_name"></a>
     
-    
+            <div class="docstring"><p>Name of the column containing user group/category information.</p>
+</div>
+
 
                             </div>
                             <div id="UserBias.distribution" class="classattr">
@@ -4165,7 +4917,9 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#UserBias.distribution"></a>
     
-    
+            <div class="docstring"><p>Distribution to use: "default" or "train".</p>
+</div>
+
 
                             </div>
                             <div id="UserBias.ranking_name" class="classattr">
@@ -4176,7 +4930,9 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#UserBias.ranking_name"></a>
     
-    
+            <div class="docstring"><p>Name of the ranking task.</p>
+</div>
+
 
                             </div>
                             <div id="UserBias.get_bound_tests" class="classattr">
@@ -4189,7 +4945,21 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#UserBias.get_bound_tests"></a>
     
-    
+            <div class="docstring"><p>Get all bound tests for this metric.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>context</code>: <code>Context</code> to determine which tests to include.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li>Sequence of <code>BoundTest</code> objects to run on this metric's results.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div class="inherited">
@@ -4215,7 +4985,13 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#RecCasesTable"></a>
     
-    
+            <div class="docstring"><p>Display recommendation cases as a table for specific users.</p>
+
+<p>Shows detailed recommendation examples for specified users, including
+recommended items, scores, and optional features. Useful for debugging
+and understanding recommendation behavior.</p>
+</div>
+
 
                             <div id="RecCasesTable.user_ids" class="classattr">
                                 <div class="attr variable">
@@ -4225,7 +5001,9 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#RecCasesTable.user_ids"></a>
     
-    
+            <div class="docstring"><p>Optional list of user IDs to display (None = all users).</p>
+</div>
+
 
                             </div>
                             <div id="RecCasesTable.display_features" class="classattr">
@@ -4236,7 +5014,9 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#RecCasesTable.display_features"></a>
     
-    
+            <div class="docstring"><p>Optional list of feature columns to display.</p>
+</div>
+
 
                             </div>
                             <div id="RecCasesTable.ranking_name" class="classattr">
@@ -4247,7 +5027,9 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#RecCasesTable.ranking_name"></a>
     
-    
+            <div class="docstring"><p>Name of the ranking task.</p>
+</div>
+
 
                             </div>
                             <div class="inherited">
@@ -4279,7 +5061,20 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#DummyTPR"></a>
     
-    
+            <div class="docstring"><p>Calculate True Positive Rate for a dummy/baseline model.</p>
+
+<p>Computes TPR using a simple heuristic-based model. Useful as a baseline
+to compare your model against.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code><a href="#DummyTPR.classification_name">classification_name</a></code>: Name of the classification task (default: "default").</li>
+<li><code><a href="#DummyTPR.probas_threshold">probas_threshold</a></code>: Optional probability threshold.</li>
+<li><code><a href="#DummyTPR.k">k</a></code>: Optional top-k value for multiclass classification.</li>
+</ul>
+</div>
+
 
                             <div class="inherited">
                                 <h5>Inherited Members</h5>
@@ -4310,7 +5105,20 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#DummyTNR"></a>
     
-    
+            <div class="docstring"><p>Calculate True Negative Rate for a dummy/baseline model.</p>
+
+<p>Computes TNR using a simple heuristic-based model. Useful as a baseline
+to compare your model against.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code><a href="#DummyTNR.classification_name">classification_name</a></code>: Name of the classification task (default: "default").</li>
+<li><code><a href="#DummyTNR.probas_threshold">probas_threshold</a></code>: Optional probability threshold.</li>
+<li><code><a href="#DummyTNR.k">k</a></code>: Optional top-k value for multiclass classification.</li>
+</ul>
+</div>
+
 
                             <div class="inherited">
                                 <h5>Inherited Members</h5>
@@ -4341,7 +5149,20 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#DummyRocAuc"></a>
     
-    
+            <div class="docstring"><p>Calculate ROC AUC for a dummy/baseline model.</p>
+
+<p>Computes ROC AUC using a simple heuristic-based model. Useful as a baseline
+to compare your model against (typically 0.5 for random).</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code><a href="#DummyRocAuc.classification_name">classification_name</a></code>: Name of the classification task (default: "default").</li>
+<li><code><a href="#DummyRocAuc.probas_threshold">probas_threshold</a></code>: Optional probability threshold.</li>
+<li><code><a href="#DummyRocAuc.k">k</a></code>: Optional top-k value for multiclass classification.</li>
+</ul>
+</div>
+
 
                             <div class="inherited">
                                 <h5>Inherited Members</h5>
@@ -4372,7 +5193,20 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#DummyLogLoss"></a>
     
-    
+            <div class="docstring"><p>Calculate logarithmic loss for a dummy/baseline model.</p>
+
+<p>Computes log loss using a simple heuristic-based model (equals 0.5 for a
+constant model). Useful as a baseline to compare your model against.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code><a href="#DummyLogLoss.classification_name">classification_name</a></code>: Name of the classification task (default: "default").</li>
+<li><code><a href="#DummyLogLoss.probas_threshold">probas_threshold</a></code>: Optional probability threshold.</li>
+<li><code><a href="#DummyLogLoss.k">k</a></code>: Optional top-k value for multiclass classification.</li>
+</ul>
+</div>
+
 
                             <div class="inherited">
                                 <h5>Inherited Members</h5>
@@ -4403,7 +5237,20 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#DummyFPR"></a>
     
-    
+            <div class="docstring"><p>Calculate False Positive Rate for a dummy/baseline model.</p>
+
+<p>Computes FPR using a simple heuristic-based model. Useful as a baseline
+to compare your model against.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code><a href="#DummyFPR.classification_name">classification_name</a></code>: Name of the classification task (default: "default").</li>
+<li><code><a href="#DummyFPR.probas_threshold">probas_threshold</a></code>: Optional probability threshold.</li>
+<li><code><a href="#DummyFPR.k">k</a></code>: Optional top-k value for multiclass classification.</li>
+</ul>
+</div>
+
 
                             <div class="inherited">
                                 <h5>Inherited Members</h5>
@@ -4434,7 +5281,20 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#DummyFNR"></a>
     
-    
+            <div class="docstring"><p>Calculate False Negative Rate for a dummy/baseline model.</p>
+
+<p>Computes FNR using a simple heuristic-based model. Useful as a baseline
+to compare your model against.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code><a href="#DummyFNR.classification_name">classification_name</a></code>: Name of the classification task (default: "default").</li>
+<li><code><a href="#DummyFNR.probas_threshold">probas_threshold</a></code>: Optional probability threshold.</li>
+<li><code><a href="#DummyFNR.k">k</a></code>: Optional top-k value for multiclass classification.</li>
+</ul>
+</div>
+
 
                             <div class="inherited">
                                 <h5>Inherited Members</h5>
@@ -4465,7 +5325,20 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#DummyAccuracy"></a>
     
-    
+            <div class="docstring"><p>Calculate accuracy for a dummy/baseline model.</p>
+
+<p>Computes accuracy using a simple heuristic-based model (e.g., always predict
+the most common class). Useful as a baseline to compare your model against.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code><a href="#DummyAccuracy.classification_name">classification_name</a></code>: Name of the classification task (default: "default").</li>
+<li><code><a href="#DummyAccuracy.probas_threshold">probas_threshold</a></code>: Optional probability threshold.</li>
+<li><code><a href="#DummyAccuracy.k">k</a></code>: Optional top-k value for multiclass classification.</li>
+</ul>
+</div>
+
 
                             <div class="inherited">
                                 <h5>Inherited Members</h5>
@@ -4496,7 +5369,17 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#ColumnCorrelations"></a>
     
-    
+            <div class="docstring"><p>Calculate correlations between a specific column and all other columns.</p>
+
+<p>Generates correlation metrics for a column with all other columns in the dataset.
+Automatically selects appropriate correlation methods based on column types:</p>
+
+<ul>
+<li>Numerical columns: Pearson, Spearman, Kendall</li>
+<li>Categorical columns: Cramer's V</li>
+</ul>
+</div>
+
 
                             <div id="ColumnCorrelations.column_name" class="classattr">
                                 <div class="attr variable">
@@ -4506,7 +5389,9 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#ColumnCorrelations.column_name"></a>
     
-    
+            <div class="docstring"><p>Name of the column to analyze correlations for.</p>
+</div>
+
 
                             </div>
                             <div id="ColumnCorrelations.generate_metrics" class="classattr">
@@ -4519,7 +5404,21 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#ColumnCorrelations.generate_metrics"></a>
     
-    
+            <div class="docstring"><p>Generate metrics based on the container configuration.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>context</code>: <code>Context</code> containing datasets and configuration.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li>Sequence of <code>Metric</code> or <code>MetricContainer</code> objects to compute.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="ColumnCorrelations.render" class="classattr">
@@ -4532,7 +5431,24 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#ColumnCorrelations.render"></a>
     
-    
+            <div class="docstring"><p>Render visualization widgets for this container.</p>
+
+<p>Combines widgets from all child metrics/containers.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>context</code>: <code>Context</code> containing datasets and configuration.</li>
+<li><code>child_widgets</code>: Optional list of (metric_id, widgets) tuples from child metrics.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li>List of <code>BaseWidgetInfo</code> objects for visualization.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div class="inherited">
@@ -4559,7 +5475,12 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#CorrelationMatrix"></a>
     
-    
+            <div class="docstring"><p>Calculate correlation matrix for all columns in the dataset.</p>
+
+<p>Computes pairwise correlations between all columns using the specified method.
+Returns a dataframe with correlation values for all column pairs.</p>
+</div>
+
 
                             <div id="CorrelationMatrix.kind" class="classattr">
                                 <div class="attr variable">
@@ -4569,7 +5490,9 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#CorrelationMatrix.kind"></a>
     
-    
+            <div class="docstring"><p>Correlation method to use (auto selects based on column types).</p>
+</div>
+
 
                             </div>
                             <div class="inherited">
@@ -4601,7 +5524,12 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#DatasetCorrelations"></a>
     
-    
+            <div class="docstring"><p>Calculate correlation matrices for all columns in the dataset.</p>
+
+<p>Generates correlation matrices using multiple methods (Pearson, Spearman, Kendall, Cramer's V)
+to analyze relationships between all columns in the dataset.</p>
+</div>
+
 
                             <div id="DatasetCorrelations.generate_metrics" class="classattr">
                                 <div class="attr function">
@@ -4613,7 +5541,21 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#DatasetCorrelations.generate_metrics"></a>
     
-    
+            <div class="docstring"><p>Generate metrics based on the container configuration.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>context</code>: <code>Context</code> containing datasets and configuration.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li>Sequence of <code>Metric</code> or <code>MetricContainer</code> objects to compute.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="DatasetCorrelations.render" class="classattr">
@@ -4626,7 +5568,24 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#DatasetCorrelations.render"></a>
     
-    
+            <div class="docstring"><p>Render visualization widgets for this container.</p>
+
+<p>Combines widgets from all child metrics/containers.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>context</code>: <code>Context</code> containing datasets and configuration.</li>
+<li><code>child_widgets</code>: Optional list of (metric_id, widgets) tuples from child metrics.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li>List of <code>BaseWidgetInfo</code> objects for visualization.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div class="inherited">
@@ -4653,7 +5612,12 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#ColumnCorrelationMatrix"></a>
     
-    
+            <div class="docstring"><p>Calculate correlation matrix for a specific column with all other columns.</p>
+
+<p>Computes correlations between the specified column and all other columns using
+the specified method. Returns a dataframe with correlation values.</p>
+</div>
+
 
                             <div id="ColumnCorrelationMatrix.column_name" class="classattr">
                                 <div class="attr variable">
@@ -4663,7 +5627,9 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#ColumnCorrelationMatrix.column_name"></a>
     
-    
+            <div class="docstring"><p>Name of the column to analyze correlations for.</p>
+</div>
+
 
                             </div>
                             <div id="ColumnCorrelationMatrix.kind" class="classattr">
@@ -4674,7 +5640,9 @@ multiple related metrics together.</p>
     </div>
     <a class="headerlink" href="#ColumnCorrelationMatrix.kind"></a>
     
-    
+            <div class="docstring"><p>Correlation method to use (auto selects based on column type).</p>
+</div>
+
 
                             </div>
                             <div class="inherited">

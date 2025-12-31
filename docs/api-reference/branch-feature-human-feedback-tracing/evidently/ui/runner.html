@@ -288,7 +288,12 @@ and forces a fresh start, ignoring cached runs.</li>
     </div>
     <a class="headerlink" href="#RunServiceInfo"></a>
     
-    
+            <div class="docstring"><p>Base class for service run status information.</p>
+
+<p>Returned by <code><a href="#EvidentlyUIRunner.run">EvidentlyUIRunner.run()</a></code> to indicate the status of the UI service.
+Use <code><a href="#RunServiceInfo.raise_on_error">raise_on_error()</a></code> to raise an exception if the service failed to start.</p>
+</div>
+
 
                             <div id="RunServiceInfo.raise_on_error" class="classattr">
                                 <div class="attr function">
@@ -300,7 +305,15 @@ and forces a fresh start, ignoring cached runs.</li>
     </div>
     <a class="headerlink" href="#RunServiceInfo.raise_on_error"></a>
     
-    
+            <div class="docstring"><p>Raise an exception if the service failed to start.</p>
+
+<p>Raises:</p>
+
+<ul>
+<li><code>ServiceRunnerError</code>: If the service is not running or failed to start.</li>
+</ul>
+</div>
+
 
                             </div>
                 </section>
@@ -314,7 +327,9 @@ and forces a fresh start, ignoring cached runs.</li>
     </div>
     <a class="headerlink" href="#RunServiceInfoVariants"></a>
     
-    
+            <div class="docstring"><p>Variants of <code><a href="#RunServiceInfo">RunServiceInfo</a></code> representing different service states.</p>
+</div>
+
 
                 </section>
                 <section id="RunServiceInfoVariants.Success">
@@ -327,7 +342,9 @@ and forces a fresh start, ignoring cached runs.</li>
     </div>
     <a class="headerlink" href="#RunServiceInfoVariants.Success"></a>
     
-    
+            <div class="docstring"><p>Service is running successfully.</p>
+</div>
+
 
                             <div id="RunServiceInfoVariants.Success.port" class="classattr">
                                 <div class="attr variable">
@@ -337,7 +354,9 @@ and forces a fresh start, ignoring cached runs.</li>
     </div>
     <a class="headerlink" href="#RunServiceInfoVariants.Success.port"></a>
     
-    
+            <div class="docstring"><p>Port number the service is running on.</p>
+</div>
+
 
                             </div>
                             <div id="RunServiceInfoVariants.Success.process" class="classattr">
@@ -348,7 +367,9 @@ and forces a fresh start, ignoring cached runs.</li>
     </div>
     <a class="headerlink" href="#RunServiceInfoVariants.Success.process"></a>
     
-    
+            <div class="docstring"><p>Subprocess handle for the running service.</p>
+</div>
+
 
                             </div>
                 </section>
@@ -362,7 +383,9 @@ and forces a fresh start, ignoring cached runs.</li>
     </div>
     <a class="headerlink" href="#RunServiceInfoVariants.NotRunning"></a>
     
-    
+            <div class="docstring"><p>Service is not running.</p>
+</div>
+
 
                             <div id="RunServiceInfoVariants.NotRunning.raise_on_error" class="classattr">
                                 <div class="attr function">
@@ -374,7 +397,15 @@ and forces a fresh start, ignoring cached runs.</li>
     </div>
     <a class="headerlink" href="#RunServiceInfoVariants.NotRunning.raise_on_error"></a>
     
-    
+            <div class="docstring"><p>Raise an exception if the service failed to start.</p>
+
+<p>Raises:</p>
+
+<ul>
+<li><code>ServiceRunnerError</code>: If the service is not running or failed to start.</li>
+</ul>
+</div>
+
 
                             </div>
                 </section>
@@ -388,7 +419,9 @@ and forces a fresh start, ignoring cached runs.</li>
     </div>
     <a class="headerlink" href="#RunServiceInfoVariants.Failed"></a>
     
-    
+            <div class="docstring"><p>Service failed to start.</p>
+</div>
+
 
                             <div id="RunServiceInfoVariants.Failed.error_message" class="classattr">
                                 <div class="attr variable">
@@ -398,7 +431,9 @@ and forces a fresh start, ignoring cached runs.</li>
     </div>
     <a class="headerlink" href="#RunServiceInfoVariants.Failed.error_message"></a>
     
-    
+            <div class="docstring"><p>Error message describing why the service failed.</p>
+</div>
+
 
                             </div>
                             <div id="RunServiceInfoVariants.Failed.raise_on_error" class="classattr">
@@ -411,7 +446,15 @@ and forces a fresh start, ignoring cached runs.</li>
     </div>
     <a class="headerlink" href="#RunServiceInfoVariants.Failed.raise_on_error"></a>
     
-    
+            <div class="docstring"><p>Raise an exception if the service failed to start.</p>
+
+<p>Raises:</p>
+
+<ul>
+<li><code>ServiceRunnerError</code>: If the service is not running or failed to start.</li>
+</ul>
+</div>
+
 
                             </div>
                 </section>

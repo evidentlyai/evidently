@@ -898,7 +898,11 @@
     </div>
     <a class="headerlink" href="#MetricConfig"></a>
     
-    
+            <div class="docstring"><p>Configuration for a metric instance.</p>
+
+<p>Contains the metric ID and parameters needed to instantiate and run a metric.</p>
+</div>
+
 
                             <div id="MetricConfig.metric_id" class="classattr">
                                 <div class="attr variable">
@@ -908,7 +912,9 @@
     </div>
     <a class="headerlink" href="#MetricConfig.metric_id"></a>
     
-    
+            <div class="docstring"><p>Unique identifier for the metric.</p>
+</div>
+
 
                             </div>
                             <div id="MetricConfig.params" class="classattr">
@@ -919,7 +925,9 @@
     </div>
     <a class="headerlink" href="#MetricConfig.params"></a>
     
-    
+            <div class="docstring"><p>Dictionary of metric-specific parameters.</p>
+</div>
+
 
                             </div>
                 </section>
@@ -933,7 +941,12 @@
     </div>
     <a class="headerlink" href="#MetricValueLocation"></a>
     
-    
+            <div class="docstring"><p>Location reference for extracting a specific value from a metric result.</p>
+
+<p>Used to navigate metric result hierarchies (e.g., extracting a label-specific
+value from a <code><a href="#ByLabelValue">ByLabelValue</a></code> result).</p>
+</div>
+
 
                             <div id="MetricValueLocation.__init__" class="classattr">
                                 <div class="attr function">
@@ -959,7 +972,9 @@
     </div>
     <a class="headerlink" href="#MetricValueLocation.metric"></a>
     
-    
+            <div class="docstring"><p>Metric configuration.</p>
+</div>
+
 
                             </div>
                             <div id="MetricValueLocation.param" class="classattr">
@@ -970,7 +985,9 @@
     </div>
     <a class="headerlink" href="#MetricValueLocation.param"></a>
     
-    
+            <div class="docstring"><p>Parameters for extracting the specific value (e.g., label name, value type).</p>
+</div>
+
 
                             </div>
                             <div id="MetricValueLocation.params" class="classattr">
@@ -983,7 +1000,15 @@
     </div>
     <a class="headerlink" href="#MetricValueLocation.params"></a>
     
-    
+            <div class="docstring"><p>Get extraction parameters.</p>
+
+<p>Returns:</p>
+
+<ul>
+<li>Dictionary of parameters for value extraction.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="MetricValueLocation.value" class="classattr">
@@ -996,7 +1021,22 @@
     </div>
     <a class="headerlink" href="#MetricValueLocation.value"></a>
     
-    
+            <div class="docstring"><p>Extract a single value from a metric result.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>context</code>: <code>Context</code> containing metric results.</li>
+<li><code>dataset_type</code>: <code><a href="#DatasetType.Current">DatasetType.Current</a></code> or <code><a href="#DatasetType.Reference">DatasetType.Reference</a></code>.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li><code><a href="#SingleValue">SingleValue</a></code> extracted from the metric result.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="MetricValueLocation.extract_value" class="classattr">
@@ -1009,7 +1049,27 @@
     </div>
     <a class="headerlink" href="#MetricValueLocation.extract_value"></a>
     
-    
+            <div class="docstring"><p>Extract a single value from a metric result based on parameters.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code><a href="#MetricValueLocation.value">value</a></code>: <code><a href="#MetricResult">MetricResult</a></code> to extract from.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li><code><a href="#SingleValue">SingleValue</a></code> extracted value.</li>
+</ul>
+
+<p>Raises:</p>
+
+<ul>
+<li><code>ValueError</code>: If parameters are invalid or value cannot be extracted.</li>
+</ul>
+</div>
+
 
                             </div>
                 </section>
@@ -1023,7 +1083,13 @@
     </div>
     <a class="headerlink" href="#MetricResult"></a>
     
-    
+            <div class="docstring"><p>Base class for all metric results.</p>
+
+<p>Metric results contain the computed values from metric calculations, along
+with display information and optional test results. Different metric types
+return different result subclasses (e.g., <code><a href="#SingleValue">SingleValue</a></code>, <code><a href="#ByLabelValue">ByLabelValue</a></code>).</p>
+</div>
+
 
                             <div id="MetricResult.display_name" class="classattr">
                                 <div class="attr variable">
@@ -1033,7 +1099,9 @@
     </div>
     <a class="headerlink" href="#MetricResult.display_name"></a>
     
-    
+            <div class="docstring"><p>Human-readable name for this result.</p>
+</div>
+
 
                             </div>
                             <div id="MetricResult.metric_value_location" class="classattr">
@@ -1044,7 +1112,9 @@
     </div>
     <a class="headerlink" href="#MetricResult.metric_value_location"></a>
     
-    
+            <div class="docstring"><p>Location reference for extracting specific values from this result.</p>
+</div>
+
 
                             </div>
                             <div id="MetricResult.widget" class="classattr">
@@ -1055,7 +1125,9 @@
     </div>
     <a class="headerlink" href="#MetricResult.widget"></a>
     
-    
+            <div class="docstring"><p>Optional visualization widgets for displaying this result.</p>
+</div>
+
 
                             </div>
                             <div id="MetricResult.tests" class="classattr">
@@ -1066,7 +1138,9 @@
     </div>
     <a class="headerlink" href="#MetricResult.tests"></a>
     
-    
+            <div class="docstring"><p>List of test results associated with this metric result.</p>
+</div>
+
 
                             </div>
                             <div id="MetricResult.set_tests" class="classattr">
@@ -1079,7 +1153,15 @@
     </div>
     <a class="headerlink" href="#MetricResult.set_tests"></a>
     
-    
+            <div class="docstring"><p>Set test results for this metric.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code><a href="#MetricResult.tests">tests</a></code>: List of <code><a href="#MetricTestResult">MetricTestResult</a></code> objects.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="MetricResult.is_widget_set" class="classattr">
@@ -1092,7 +1174,15 @@
     </div>
     <a class="headerlink" href="#MetricResult.is_widget_set"></a>
     
-    
+            <div class="docstring"><p>Check if visualization widgets are set.</p>
+
+<p>Returns:</p>
+
+<ul>
+<li><code>True</code> if widgets are available, <code>False</code> otherwise.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="MetricResult.set_display_name" class="classattr">
@@ -1105,7 +1195,15 @@
     </div>
     <a class="headerlink" href="#MetricResult.set_display_name"></a>
     
-    
+            <div class="docstring"><p>Set the display name for this result.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>value</code>: New display name.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="MetricResult.set_metric_location" class="classattr">
@@ -1119,7 +1217,15 @@
     </div>
     <a class="headerlink" href="#MetricResult.set_metric_location"></a>
     
-    
+            <div class="docstring"><p>Set the metric location for this result.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>metric</code>: <code><a href="#MetricConfig">MetricConfig</a></code> to associate with this result.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="MetricResult.to_dict" class="classattr">
@@ -1132,7 +1238,15 @@
     </div>
     <a class="headerlink" href="#MetricResult.to_dict"></a>
     
-    
+            <div class="docstring"><p>Convert result to dictionary representation.</p>
+
+<p>Returns:</p>
+
+<ul>
+<li>Dictionary containing metric ID, name, config, and value.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="MetricResult.explicit_metric_id" class="classattr">
@@ -1145,7 +1259,18 @@
     </div>
     <a class="headerlink" href="#MetricResult.explicit_metric_id"></a>
     
-    
+            <div class="docstring"><p>Generate an explicit metric identifier string.</p>
+
+<p>Creates a human-readable identifier that includes the metric type
+and all configuration parameters.</p>
+
+<p>Returns:</p>
+
+<ul>
+<li>String identifier in format <code>Type(param1=value1,param2=value2,...)</code>.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="MetricResult.to_simple_dict" class="classattr">
@@ -1172,7 +1297,15 @@
     </div>
     <a class="headerlink" href="#MetricResult.itervalues"></a>
     
-    
+            <div class="docstring"><p>Iterate over all numeric values in this result.</p>
+
+<p>Yields:</p>
+
+<ul>
+<li>Tuples of (key, value) for each numeric value in the result.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="MetricResult.get_widgets" class="classattr">
@@ -1185,7 +1318,15 @@
     </div>
     <a class="headerlink" href="#MetricResult.get_widgets"></a>
     
-    
+            <div class="docstring"><p>Get visualization widgets for this result.</p>
+
+<p>Returns:</p>
+
+<ul>
+<li>List of <code>BaseWidgetInfo</code> objects, or empty list if no widgets are set.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="MetricResult.get_metric_value_location" class="classattr">
@@ -1198,7 +1339,21 @@
     </div>
     <a class="headerlink" href="#MetricResult.get_metric_value_location"></a>
     
-    
+            <div class="docstring"><p>Get the metric value location.</p>
+
+<p>Returns:</p>
+
+<ul>
+<li><code><a href="#MetricValueLocation">MetricValueLocation</a></code> for this result.</li>
+</ul>
+
+<p>Raises:</p>
+
+<ul>
+<li><code>AssertionError</code>: If metric value location is not set.</li>
+</ul>
+</div>
+
 
                             </div>
                 </section>
@@ -1312,7 +1467,11 @@
     </div>
     <a class="headerlink" href="#TestConfig"></a>
     
-    
+            <div class="docstring"><p>Configuration for a metric test.</p>
+
+<p>Contains the test ID and parameters needed to run a test on a metric result.</p>
+</div>
+
 
                             <div id="TestConfig.id" class="classattr">
                                 <div class="attr variable">
@@ -1322,7 +1481,9 @@
     </div>
     <a class="headerlink" href="#TestConfig.id"></a>
     
-    
+            <div class="docstring"><p>Unique identifier for the test.</p>
+</div>
+
 
                             </div>
                             <div id="TestConfig.params" class="classattr">
@@ -1333,7 +1494,9 @@
     </div>
     <a class="headerlink" href="#TestConfig.params"></a>
     
-    
+            <div class="docstring"><p>Dictionary of test-specific parameters.</p>
+</div>
+
 
                             </div>
                 </section>
@@ -1347,7 +1510,11 @@
     </div>
     <a class="headerlink" href="#MetricTestResult"></a>
     
-    
+            <div class="docstring"><p>Result of running a test on a metric value.</p>
+
+<p>Contains the test outcome, status, and associated metric configuration.</p>
+</div>
+
 
                             <div id="MetricTestResult.id" class="classattr">
                                 <div class="attr variable">
@@ -1357,7 +1524,9 @@
     </div>
     <a class="headerlink" href="#MetricTestResult.id"></a>
     
-    
+            <div class="docstring"><p>Unique identifier for this test result.</p>
+</div>
+
 
                             </div>
                             <div id="MetricTestResult.name" class="classattr">
@@ -1368,7 +1537,9 @@
     </div>
     <a class="headerlink" href="#MetricTestResult.name"></a>
     
-    
+            <div class="docstring"><p>Human-readable test name.</p>
+</div>
+
 
                             </div>
                             <div id="MetricTestResult.description" class="classattr">
@@ -1379,7 +1550,9 @@
     </div>
     <a class="headerlink" href="#MetricTestResult.description"></a>
     
-    
+            <div class="docstring"><p>Description of the test result.</p>
+</div>
+
 
                             </div>
                             <div id="MetricTestResult.metric_config" class="classattr">
@@ -1390,7 +1563,9 @@
     </div>
     <a class="headerlink" href="#MetricTestResult.metric_config"></a>
     
-    
+            <div class="docstring"><p>Configuration of the metric that was tested.</p>
+</div>
+
 
                             </div>
                             <div id="MetricTestResult.test_config" class="classattr">
@@ -1401,7 +1576,9 @@
     </div>
     <a class="headerlink" href="#MetricTestResult.test_config"></a>
     
-    
+            <div class="docstring"><p>Configuration of the test that was run.</p>
+</div>
+
 
                             </div>
                             <div id="MetricTestResult.status" class="classattr">
@@ -1412,7 +1589,9 @@
     </div>
     <a class="headerlink" href="#MetricTestResult.status"></a>
     
-    
+            <div class="docstring"><p>Test status (PASS, FAIL, WARNING, ERROR, etc.).</p>
+</div>
+
 
                             </div>
                             <div id="MetricTestResult.bound_test" class="classattr">
@@ -1423,7 +1602,9 @@
     </div>
     <a class="headerlink" href="#MetricTestResult.bound_test"></a>
     
-    
+            <div class="docstring"><p>Optional bound test instance that generated this result.</p>
+</div>
+
 
                             </div>
                 </section>
@@ -1437,7 +1618,11 @@
     </div>
     <a class="headerlink" href="#SingleValue"></a>
     
-    
+            <div class="docstring"><p>Metric result containing a single numeric value.</p>
+
+<p>Used by metrics that compute a single scalar value (e.g., mean, count, accuracy).</p>
+</div>
+
 
                             <div id="SingleValue.value" class="classattr">
                                 <div class="attr variable">
@@ -1447,7 +1632,9 @@
     </div>
     <a class="headerlink" href="#SingleValue.value"></a>
     
-    
+            <div class="docstring"><p>The numeric value (float or int).</p>
+</div>
+
 
                             </div>
                             <div id="SingleValue.to_simple_dict" class="classattr">
@@ -1460,7 +1647,15 @@
     </div>
     <a class="headerlink" href="#SingleValue.to_simple_dict"></a>
     
-    
+            <div class="docstring"><p>Convert to simple dictionary representation.</p>
+
+<p>Returns:</p>
+
+<ul>
+<li>The numeric value.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="SingleValue.set_metric_location" class="classattr">
@@ -1473,7 +1668,15 @@
     </div>
     <a class="headerlink" href="#SingleValue.set_metric_location"></a>
     
-    
+            <div class="docstring"><p>Set metric location for this single value result.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>metric</code>: <code><a href="#MetricConfig">MetricConfig</a></code> to associate.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div class="inherited">
@@ -1508,7 +1711,12 @@
     </div>
     <a class="headerlink" href="#ByLabelValue"></a>
     
-    
+            <div class="docstring"><p>Metric result containing values for each label.</p>
+
+<p>Used by classification metrics that compute separate values for each class label
+(e.g., precision per label, recall per label).</p>
+</div>
+
 
                             <div id="ByLabelValue.values" class="classattr">
                                 <div class="attr variable">
@@ -1518,7 +1726,9 @@
     </div>
     <a class="headerlink" href="#ByLabelValue.values"></a>
     
-    
+            <div class="docstring"><p>Dictionary mapping label to its corresponding metric value.</p>
+</div>
+
 
                             </div>
                             <div id="ByLabelValue.labels" class="classattr">
@@ -1531,7 +1741,15 @@
     </div>
     <a class="headerlink" href="#ByLabelValue.labels"></a>
     
-    
+            <div class="docstring"><p>Get all labels in this result.</p>
+
+<p>Returns:</p>
+
+<ul>
+<li>List of all label values.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="ByLabelValue.get_label_result" class="classattr">
@@ -1544,7 +1762,21 @@
     </div>
     <a class="headerlink" href="#ByLabelValue.get_label_result"></a>
     
-    
+            <div class="docstring"><p>Get the metric value for a specific label.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>label</code>: Label to get value for.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li><code><a href="#SingleValue">SingleValue</a></code> for the label, or <code>None</code> if label not found.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="ByLabelValue.set_metric_location" class="classattr">
@@ -1557,7 +1789,15 @@
     </div>
     <a class="headerlink" href="#ByLabelValue.set_metric_location"></a>
     
-    
+            <div class="docstring"><p>Set the metric location for this result.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>metric</code>: <code><a href="#MetricConfig">MetricConfig</a></code> to associate with this result.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="ByLabelValue.to_simple_dict" class="classattr">
@@ -1643,7 +1883,13 @@
     </div>
     <a class="headerlink" href="#ByLabelCountValue"></a>
     
-    
+            <div class="docstring"><p>Base class for all metric results.</p>
+
+<p>Metric results contain the computed values from metric calculations, along
+with display information and optional test results. Different metric types
+return different result subclasses (e.g., <code><a href="#SingleValue">SingleValue</a></code>, <code><a href="#ByLabelValue">ByLabelValue</a></code>).</p>
+</div>
+
 
                             <div id="ByLabelCountValue.counts" class="classattr">
                                 <div class="attr variable">
@@ -1738,7 +1984,15 @@
     </div>
     <a class="headerlink" href="#ByLabelCountValue.set_metric_location"></a>
     
-    
+            <div class="docstring"><p>Set the metric location for this result.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>metric</code>: <code><a href="#MetricConfig">MetricConfig</a></code> to associate with this result.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="ByLabelCountValue.convert_labels" class="classattr">
@@ -1824,7 +2078,11 @@
     </div>
     <a class="headerlink" href="#CountValue"></a>
     
-    
+            <div class="docstring"><p>Metric result containing both count and share (proportion) values.</p>
+
+<p>Used by metrics that track occurrences (e.g., missing values, duplicates).</p>
+</div>
+
 
                             <div id="CountValue.count" class="classattr">
                                 <div class="attr variable">
@@ -1834,7 +2092,9 @@
     </div>
     <a class="headerlink" href="#CountValue.count"></a>
     
-    
+            <div class="docstring"><p>Absolute count value.</p>
+</div>
+
 
                             </div>
                             <div id="CountValue.share" class="classattr">
@@ -1845,7 +2105,9 @@
     </div>
     <a class="headerlink" href="#CountValue.share"></a>
     
-    
+            <div class="docstring"><p>Proportion/share value (typically between 0 and 1).</p>
+</div>
+
 
                             </div>
                             <div id="CountValue.get_count" class="classattr">
@@ -1858,7 +2120,15 @@
     </div>
     <a class="headerlink" href="#CountValue.get_count"></a>
     
-    
+            <div class="docstring"><p>Get the count value.</p>
+
+<p>Returns:</p>
+
+<ul>
+<li><code><a href="#SingleValue">SingleValue</a></code> containing the count.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="CountValue.get_share" class="classattr">
@@ -1871,7 +2141,15 @@
     </div>
     <a class="headerlink" href="#CountValue.get_share"></a>
     
-    
+            <div class="docstring"><p>Get the share value.</p>
+
+<p>Returns:</p>
+
+<ul>
+<li><code><a href="#SingleValue">SingleValue</a></code> containing the share/proportion.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="CountValue.to_simple_dict" class="classattr">
@@ -1897,7 +2175,15 @@
     </div>
     <a class="headerlink" href="#CountValue.set_metric_location"></a>
     
-    
+            <div class="docstring"><p>Set the metric location for this result.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>metric</code>: <code><a href="#MetricConfig">MetricConfig</a></code> to associate with this result.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div class="inherited">
@@ -1932,7 +2218,11 @@
     </div>
     <a class="headerlink" href="#MeanStdValue"></a>
     
-    
+            <div class="docstring"><p>Metric result containing mean and standard deviation values.</p>
+
+<p>Used by metrics that compute statistical summaries (e.g., error distribution).</p>
+</div>
+
 
                             <div id="MeanStdValue.mean" class="classattr">
                                 <div class="attr variable">
@@ -1942,7 +2232,9 @@
     </div>
     <a class="headerlink" href="#MeanStdValue.mean"></a>
     
-    
+            <div class="docstring"><p>Mean value.</p>
+</div>
+
 
                             </div>
                             <div id="MeanStdValue.std" class="classattr">
@@ -1953,7 +2245,9 @@
     </div>
     <a class="headerlink" href="#MeanStdValue.std"></a>
     
-    
+            <div class="docstring"><p>Standard deviation value.</p>
+</div>
+
 
                             </div>
                             <div id="MeanStdValue.get_mean" class="classattr">
@@ -1966,7 +2260,15 @@
     </div>
     <a class="headerlink" href="#MeanStdValue.get_mean"></a>
     
-    
+            <div class="docstring"><p>Get the mean value.</p>
+
+<p>Returns:</p>
+
+<ul>
+<li><code><a href="#SingleValue">SingleValue</a></code> containing the mean.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="MeanStdValue.get_std" class="classattr">
@@ -1979,7 +2281,15 @@
     </div>
     <a class="headerlink" href="#MeanStdValue.get_std"></a>
     
-    
+            <div class="docstring"><p>Get the standard deviation value.</p>
+
+<p>Returns:</p>
+
+<ul>
+<li><code><a href="#SingleValue">SingleValue</a></code> containing the standard deviation.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="MeanStdValue.to_simple_dict" class="classattr">
@@ -2005,7 +2315,15 @@
     </div>
     <a class="headerlink" href="#MeanStdValue.set_metric_location"></a>
     
-    
+            <div class="docstring"><p>Set the metric location for this result.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>metric</code>: <code><a href="#MetricConfig">MetricConfig</a></code> to associate with this result.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div class="inherited">
@@ -2040,7 +2358,11 @@
     </div>
     <a class="headerlink" href="#DataframeValue"></a>
     
-    
+            <div class="docstring"><p>Metric result containing a pandas DataFrame.</p>
+
+<p>Used by metrics that return tabular data (e.g., correlation matrices, detailed breakdowns).</p>
+</div>
+
 
                             <div id="DataframeValue.value" class="classattr">
                                 <div class="attr variable">
@@ -2050,7 +2372,9 @@
     </div>
     <a class="headerlink" href="#DataframeValue.value"></a>
     
-    
+            <div class="docstring"><p>DataFrame containing the metric results.</p>
+</div>
+
 
                             </div>
                             <div id="DataframeValue.set_metric_location" class="classattr">
@@ -2063,7 +2387,15 @@
     </div>
     <a class="headerlink" href="#DataframeValue.set_metric_location"></a>
     
-    
+            <div class="docstring"><p>Set metric location for this dataframe result.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>metric</code>: <code><a href="#MetricConfig">MetricConfig</a></code> to associate.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="DataframeValue.to_simple_dict" class="classattr">
@@ -2076,7 +2408,15 @@
     </div>
     <a class="headerlink" href="#DataframeValue.to_simple_dict"></a>
     
-    
+            <div class="docstring"><p>Convert DataFrame to dictionary representation.</p>
+
+<p>Returns:</p>
+
+<ul>
+<li>Dictionary representation of the DataFrame.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="DataframeValue.iter_single_values" class="classattr">
@@ -2089,7 +2429,18 @@
     </div>
     <a class="headerlink" href="#DataframeValue.iter_single_values"></a>
     
-    
+            <div class="docstring"><p>Iterate over all numeric values in the DataFrame as <code><a href="#SingleValue">SingleValue</a></code> objects.</p>
+
+<p>Extracts each numeric cell as a separate <code><a href="#SingleValue">SingleValue</a></code>, preserving
+column and label information for filtering and testing.</p>
+
+<p>Yields:</p>
+
+<ul>
+<li><code><a href="#SingleValue">SingleValue</a></code> objects for each numeric cell in the DataFrame.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div class="inherited">
@@ -2124,7 +2475,11 @@
     </div>
     <a class="headerlink" href="#DatasetType"></a>
     
-    
+            <div class="docstring"><p>Type of dataset used in metric calculations.</p>
+
+<p>Distinguishes between current (production) and reference (baseline) datasets.</p>
+</div>
+
 
                             <div id="DatasetType.Current" class="classattr">
                                 <div class="attr variable">
@@ -2135,7 +2490,9 @@
     </div>
     <a class="headerlink" href="#DatasetType.Current"></a>
     
-    
+            <div class="docstring"><p>Current/production dataset.</p>
+</div>
+
 
                             </div>
                             <div id="DatasetType.Reference" class="classattr">
@@ -2147,7 +2504,9 @@
     </div>
     <a class="headerlink" href="#DatasetType.Reference"></a>
     
-    
+            <div class="docstring"><p>Reference/baseline dataset.</p>
+</div>
+
 
                             </div>
                 </section>
@@ -2521,7 +2880,12 @@ Returns:</p>
     </div>
     <a class="headerlink" href="#MetricTest"></a>
     
-    
+            <div class="docstring"><p>Base class for metric tests.</p>
+
+<p>Tests validate metric results against thresholds or conditions. Tests can be
+bound to specific metric values and run automatically when metrics are calculated.</p>
+</div>
+
 
                             <div id="MetricTest.is_critical" class="classattr">
                                 <div class="attr variable">
@@ -2531,7 +2895,9 @@ Returns:</p>
     </div>
     <a class="headerlink" href="#MetricTest.is_critical"></a>
     
-    
+            <div class="docstring"><p>If <code>True</code>, test failures are treated as critical errors. If <code>False</code>, failures are warnings.</p>
+</div>
+
 
                             </div>
                             <div id="MetricTest.alias" class="classattr">
@@ -2542,7 +2908,9 @@ Returns:</p>
     </div>
     <a class="headerlink" href="#MetricTest.alias"></a>
     
-    
+            <div class="docstring"><p>Optional custom name for this test instance.</p>
+</div>
+
 
                             </div>
                             <div id="MetricTest.label_filters" class="classattr">
@@ -2553,7 +2921,9 @@ Returns:</p>
     </div>
     <a class="headerlink" href="#MetricTest.label_filters"></a>
     
-    
+            <div class="docstring"><p>Optional filters for DataFrame metrics to select specific rows by label values.</p>
+</div>
+
 
                             </div>
                             <div id="MetricTest.to_test" class="classattr">
@@ -2567,7 +2937,15 @@ Returns:</p>
     </div>
     <a class="headerlink" href="#MetricTest.to_test"></a>
     
-    
+            <div class="docstring"><p>Convert to a test protocol function.</p>
+
+<p>Returns:</p>
+
+<ul>
+<li>Callable test function that takes context, metric, and value.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="MetricTest.run" class="classattr">
@@ -2697,7 +3075,12 @@ Returns:</p>
     </div>
     <a class="headerlink" href="#BoundTest"></a>
     
-    
+            <div class="docstring"><p>Test bound to a specific metric and value location.</p>
+
+<p>A bound test is associated with a specific metric instance and knows how to
+extract the relevant value from the metric result to run the test.</p>
+</div>
+
 
                             <div id="BoundTest.test" class="classattr">
                                 <div class="attr variable">
@@ -2707,7 +3090,9 @@ Returns:</p>
     </div>
     <a class="headerlink" href="#BoundTest.test"></a>
     
-    
+            <div class="docstring"><p>The test to run.</p>
+</div>
+
 
                             </div>
                             <div id="BoundTest.metric_fingerprint" class="classattr">
@@ -2718,7 +3103,9 @@ Returns:</p>
     </div>
     <a class="headerlink" href="#BoundTest.metric_fingerprint"></a>
     
-    
+            <div class="docstring"><p>Fingerprint of the metric this test is bound to.</p>
+</div>
+
 
                             </div>
                             <div id="BoundTest.run_test" class="classattr">
@@ -2732,7 +3119,23 @@ Returns:</p>
     </div>
     <a class="headerlink" href="#BoundTest.run_test"></a>
     
-    
+            <div class="docstring"><p>Run the test on a metric result.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>context</code>: <code>Context</code> containing metric results.</li>
+<li><code>calculation</code>: <code><a href="#MetricCalculationBase">MetricCalculationBase</a></code> that computed the result.</li>
+<li><code>metric_result</code>: <code><a href="#MetricResult">MetricResult</a></code> to test.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li><code><a href="#MetricTestResult">MetricTestResult</a></code> with test outcome.</li>
+</ul>
+</div>
+
 
                             </div>
                 </section>
@@ -2746,7 +3149,13 @@ Returns:</p>
     </div>
     <a class="headerlink" href="#Metric"></a>
     
-    
+            <div class="docstring"><p>Base class for all metric configurations.</p>
+
+<p>A <code><a href="#Metric">Metric</a></code> defines the configuration and parameters for computing a metric.
+Each metric class is associated with a <code><a href="#MetricCalculation">MetricCalculation</a></code> class that performs
+the actual computation. Metrics can include bound tests that run automatically.</p>
+</div>
+
 
                             <div id="Metric.to_calculation" class="classattr">
                                 <div class="attr function">
@@ -2758,7 +3167,21 @@ Returns:</p>
     </div>
     <a class="headerlink" href="#Metric.to_calculation"></a>
     
-    
+            <div class="docstring"><p>Create a calculation instance from this metric configuration.</p>
+
+<p>Returns:</p>
+
+<ul>
+<li><code><a href="#MetricCalculation">MetricCalculation</a></code> instance that can compute this metric.</li>
+</ul>
+
+<p>Raises:</p>
+
+<ul>
+<li><code>ValueError</code>: If calculation type is not properly configured.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="Metric.get_metric_id" class="classattr">
@@ -2771,7 +3194,15 @@ Returns:</p>
     </div>
     <a class="headerlink" href="#Metric.get_metric_id"></a>
     
-    
+            <div class="docstring"><p>Get unique identifier for this metric instance.</p>
+
+<p>Returns:</p>
+
+<ul>
+<li>String identifier based on metric fingerprint.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="Metric.metric_id" class="classattr">
@@ -2782,7 +3213,15 @@ Returns:</p>
     </div>
     <a class="headerlink" href="#Metric.metric_id"></a>
     
-    
+            <div class="docstring"><p>Get unique identifier for this metric instance.</p>
+
+<p>Returns:</p>
+
+<ul>
+<li>String identifier based on metric fingerprint.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="Metric.call" class="classattr">
@@ -2795,7 +3234,29 @@ Returns:</p>
     </div>
     <a class="headerlink" href="#Metric.call"></a>
     
-    
+            <div class="docstring"><p>Execute this metric on a context.</p>
+
+<p>Creates a calculation instance and runs it on the provided context.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>context</code>: <code>Context</code> containing datasets and configuration.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li>Tuple of (current_result, optional_reference_result).</li>
+</ul>
+
+<p>Raises:</p>
+
+<ul>
+<li><code>ValueError</code>: If calculation type is not properly configured.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="Metric.get_bound_tests" class="classattr">
@@ -2809,7 +3270,21 @@ Returns:</p>
     </div>
     <a class="headerlink" href="#Metric.get_bound_tests"></a>
     
-    
+            <div class="docstring"><p>Get all bound tests for this metric.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>context</code>: <code>Context</code> to determine which tests to include.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li>Sequence of <code><a href="#BoundTest">BoundTest</a></code> objects to run on this metric's results.</li>
+</ul>
+</div>
+
 
                             </div>
                 </section>
@@ -2903,7 +3378,12 @@ Returns:</p>
     </div>
     <a class="headerlink" href="#SingleValueBoundTest"></a>
     
-    
+            <div class="docstring"><p>Test bound to a specific metric and value location.</p>
+
+<p>A bound test is associated with a specific metric instance and knows how to
+extract the relevant value from the metric result to run the test.</p>
+</div>
+
 
                             <div id="SingleValueBoundTest.run_test" class="classattr">
                                 <div class="attr function">
@@ -2915,7 +3395,23 @@ Returns:</p>
     </div>
     <a class="headerlink" href="#SingleValueBoundTest.run_test"></a>
     
-    
+            <div class="docstring"><p>Run the test on a metric result.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>context</code>: <code>Context</code> containing metric results.</li>
+<li><code>calculation</code>: <code><a href="#MetricCalculationBase">MetricCalculationBase</a></code> that computed the result.</li>
+<li><code>metric_result</code>: <code><a href="#MetricResult">MetricResult</a></code> to test.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li><code><a href="#MetricTestResult">MetricTestResult</a></code> with test outcome.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div class="inherited">
@@ -3004,7 +3500,12 @@ Returns:</p>
     </div>
     <a class="headerlink" href="#SingleValueMetric"></a>
     
-    
+            <div class="docstring"><p>Base class for metrics that return a single numeric value.</p>
+
+<p>Metrics that compute a single scalar result (e.g., mean, accuracy, MAE)
+should inherit from this class.</p>
+</div>
+
 
                             <div id="SingleValueMetric.tests" class="classattr">
                                 <div class="attr variable">
@@ -3014,7 +3515,9 @@ Returns:</p>
     </div>
     <a class="headerlink" href="#SingleValueMetric.tests"></a>
     
-    
+            <div class="docstring"><p>Optional list of tests to run on the single value result.</p>
+</div>
+
 
                             </div>
                             <div id="SingleValueMetric.get_bound_tests" class="classattr">
@@ -3027,7 +3530,21 @@ Returns:</p>
     </div>
     <a class="headerlink" href="#SingleValueMetric.get_bound_tests"></a>
     
-    
+            <div class="docstring"><p>Get all bound tests for this metric.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>context</code>: <code>Context</code> to determine which tests to include.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li>Sequence of <code><a href="#BoundTest">BoundTest</a></code> objects to run on this metric's results.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="SingleValueMetric.validate_tests" class="classattr">
@@ -3067,9 +3584,9 @@ Returns:</p>
     </div>
     <a class="headerlink" href="#SingleValueCalculation"></a>
     
-            <div class="docstring"><p>Base metric class.</p>
+            <div class="docstring"><p>Base calculation class for metrics that return a single value.</p>
 
-<p>Metric is class to perform calculation over given dataset and return result.</p>
+<p>Provides a <code><a href="#SingleValueCalculation.result">result()</a></code> method to create <code><a href="#SingleValue">SingleValue</a></code> results from numeric values.</p>
 </div>
 
 
@@ -3083,7 +3600,21 @@ Returns:</p>
     </div>
     <a class="headerlink" href="#SingleValueCalculation.result"></a>
     
-    
+            <div class="docstring"><p>Create a <code><a href="#SingleValue">SingleValue</a></code> result from a numeric value.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>value</code>: Numeric value (float or int) to wrap in a result.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li><code><a href="#SingleValue">SingleValue</a></code> with the value and appropriate metadata.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div class="inherited">
@@ -3118,7 +3649,12 @@ Returns:</p>
     </div>
     <a class="headerlink" href="#ByLabelBoundTest"></a>
     
-    
+            <div class="docstring"><p>Test bound to a specific metric and value location.</p>
+
+<p>A bound test is associated with a specific metric instance and knows how to
+extract the relevant value from the metric result to run the test.</p>
+</div>
+
 
                             <div id="ByLabelBoundTest.label" class="classattr">
                                 <div class="attr variable">
@@ -3141,7 +3677,23 @@ Returns:</p>
     </div>
     <a class="headerlink" href="#ByLabelBoundTest.run_test"></a>
     
-    
+            <div class="docstring"><p>Run the test on a metric result.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>context</code>: <code>Context</code> containing metric results.</li>
+<li><code>calculation</code>: <code><a href="#MetricCalculationBase">MetricCalculationBase</a></code> that computed the result.</li>
+<li><code>metric_result</code>: <code><a href="#MetricResult">MetricResult</a></code> to test.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li><code><a href="#MetricTestResult">MetricTestResult</a></code> with test outcome.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div class="inherited">
@@ -3205,7 +3757,12 @@ Returns:</p>
     </div>
     <a class="headerlink" href="#ByLabelMetric"></a>
     
-    
+            <div class="docstring"><p>Base class for metrics that return values per label.</p>
+
+<p>Metrics that compute separate values for each classification label
+(e.g., precision per label, recall per label) should inherit from this class.</p>
+</div>
+
 
                             <div id="ByLabelMetric.tests" class="classattr">
                                 <div class="attr variable">
@@ -3215,7 +3772,9 @@ Returns:</p>
     </div>
     <a class="headerlink" href="#ByLabelMetric.tests"></a>
     
-    
+            <div class="docstring"><p>Optional dictionary mapping labels to lists of tests to run on each label's value.</p>
+</div>
+
 
                             </div>
                             <div id="ByLabelMetric.get_bound_tests" class="classattr">
@@ -3228,7 +3787,21 @@ Returns:</p>
     </div>
     <a class="headerlink" href="#ByLabelMetric.get_bound_tests"></a>
     
-    
+            <div class="docstring"><p>Get all bound tests for this metric.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>context</code>: <code>Context</code> to determine which tests to include.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li>Sequence of <code><a href="#BoundTest">BoundTest</a></code> objects to run on this metric's results.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="ByLabelMetric.validate_tests" class="classattr">
@@ -3268,9 +3841,9 @@ Returns:</p>
     </div>
     <a class="headerlink" href="#ByLabelCalculation"></a>
     
-            <div class="docstring"><p>Base metric class.</p>
+            <div class="docstring"><p>Base calculation class for metrics that return values per label.</p>
 
-<p>Metric is class to perform calculation over given dataset and return result.</p>
+<p>Provides methods to compute and aggregate label-specific values.</p>
 </div>
 
 
@@ -3284,7 +3857,21 @@ Returns:</p>
     </div>
     <a class="headerlink" href="#ByLabelCalculation.label_metric"></a>
     
-    
+            <div class="docstring"><p>Get a single-value calculation for a specific label.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>label</code>: Label to get calculation for.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li><code><a href="#SingleValueCalculation">SingleValueCalculation</a></code> for computing the metric for this label.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="ByLabelCalculation.label_display_name" class="classattr">
@@ -3297,7 +3884,21 @@ Returns:</p>
     </div>
     <a class="headerlink" href="#ByLabelCalculation.label_display_name"></a>
     
-    
+            <div class="docstring"><p>Generate display name for a label-specific value.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>label</code>: Label to generate name for.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li>Display name string.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="ByLabelCalculation.result" class="classattr">
@@ -3310,7 +3911,21 @@ Returns:</p>
     </div>
     <a class="headerlink" href="#ByLabelCalculation.result"></a>
     
-    
+            <div class="docstring"><p>Create a <code><a href="#ByLabelValue">ByLabelValue</a></code> result from label-to-value mapping.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>values</code>: Dictionary mapping labels to their metric values.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li><code><a href="#ByLabelValue">ByLabelValue</a></code> with all label values and appropriate metadata.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="ByLabelCalculation.collect_by_label_result" class="classattr">
@@ -3323,7 +3938,27 @@ Returns:</p>
     </div>
     <a class="headerlink" href="#ByLabelCalculation.collect_by_label_result"></a>
     
-    
+            <div class="docstring"><p>Collect label-specific results from intermediate calculations.</p>
+
+<p>Helper method to extract values from label-specific intermediate results
+and create <code><a href="#ByLabelValue">ByLabelValue</a></code> results for both current and reference datasets.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>context</code>: <code>Context</code> containing datasets.</li>
+<li><code>value_extract</code>: Function to extract numeric value from intermediate result type <code>T</code>.</li>
+<li><code>current_result</code>: Dictionary of label to intermediate result for current dataset.</li>
+<li><code>reference_result</code>: Optional dictionary of label to intermediate result for reference dataset.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li>Tuple of (current <code><a href="#ByLabelValue">ByLabelValue</a></code>, optional reference <code><a href="#ByLabelValue">ByLabelValue</a></code>).</li>
+</ul>
+</div>
+
 
                             </div>
                             <div class="inherited">
@@ -3358,7 +3993,12 @@ Returns:</p>
     </div>
     <a class="headerlink" href="#ByLabelCountBoundTest"></a>
     
-    
+            <div class="docstring"><p>Test bound to a specific metric and value location.</p>
+
+<p>A bound test is associated with a specific metric instance and knows how to
+extract the relevant value from the metric result to run the test.</p>
+</div>
+
 
                             <div id="ByLabelCountBoundTest.label" class="classattr">
                                 <div class="attr variable">
@@ -3392,7 +4032,23 @@ Returns:</p>
     </div>
     <a class="headerlink" href="#ByLabelCountBoundTest.run_test"></a>
     
-    
+            <div class="docstring"><p>Run the test on a metric result.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>context</code>: <code>Context</code> containing metric results.</li>
+<li><code>calculation</code>: <code><a href="#MetricCalculationBase">MetricCalculationBase</a></code> that computed the result.</li>
+<li><code>metric_result</code>: <code><a href="#MetricResult">MetricResult</a></code> to test.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li><code><a href="#MetricTestResult">MetricTestResult</a></code> with test outcome.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div class="inherited">
@@ -3417,7 +4073,13 @@ Returns:</p>
     </div>
     <a class="headerlink" href="#ByLabelCountMetric"></a>
     
-    
+            <div class="docstring"><p>Base class for all metric configurations.</p>
+
+<p>A <code><a href="#Metric">Metric</a></code> defines the configuration and parameters for computing a metric.
+Each metric class is associated with a <code><a href="#MetricCalculation">MetricCalculation</a></code> class that performs
+the actual computation. Metrics can include bound tests that run automatically.</p>
+</div>
+
 
                             <div id="ByLabelCountMetric.replace_nan" class="classattr">
                                 <div class="attr variable">
@@ -3462,7 +4124,21 @@ Returns:</p>
     </div>
     <a class="headerlink" href="#ByLabelCountMetric.get_bound_tests"></a>
     
-    
+            <div class="docstring"><p>Get all bound tests for this metric.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>context</code>: <code>Context</code> to determine which tests to include.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li>Sequence of <code><a href="#BoundTest">BoundTest</a></code> objects to run on this metric's results.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="ByLabelCountMetric.validate_tests" class="classattr">
@@ -3592,7 +4268,12 @@ Returns:</p>
     </div>
     <a class="headerlink" href="#CountBoundTest"></a>
     
-    
+            <div class="docstring"><p>Test bound to a specific metric and value location.</p>
+
+<p>A bound test is associated with a specific metric instance and knows how to
+extract the relevant value from the metric result to run the test.</p>
+</div>
+
 
                             <div id="CountBoundTest.is_count" class="classattr">
                                 <div class="attr variable">
@@ -3615,7 +4296,23 @@ Returns:</p>
     </div>
     <a class="headerlink" href="#CountBoundTest.run_test"></a>
     
-    
+            <div class="docstring"><p>Run the test on a metric result.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>context</code>: <code>Context</code> containing metric results.</li>
+<li><code>calculation</code>: <code><a href="#MetricCalculationBase">MetricCalculationBase</a></code> that computed the result.</li>
+<li><code>metric_result</code>: <code><a href="#MetricResult">MetricResult</a></code> to test.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li><code><a href="#MetricTestResult">MetricTestResult</a></code> with test outcome.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div class="inherited">
@@ -3640,7 +4337,12 @@ Returns:</p>
     </div>
     <a class="headerlink" href="#CountMetric"></a>
     
-    
+            <div class="docstring"><p>Base class for metrics that return count and share values.</p>
+
+<p>Metrics that track occurrences and their proportions (e.g., missing values,
+duplicates) should inherit from this class.</p>
+</div>
+
 
                             <div id="CountMetric.tests" class="classattr">
                                 <div class="attr variable">
@@ -3650,7 +4352,9 @@ Returns:</p>
     </div>
     <a class="headerlink" href="#CountMetric.tests"></a>
     
-    
+            <div class="docstring"><p>Optional list of tests to run on the count value.</p>
+</div>
+
 
                             </div>
                             <div id="CountMetric.share_tests" class="classattr">
@@ -3661,7 +4365,9 @@ Returns:</p>
     </div>
     <a class="headerlink" href="#CountMetric.share_tests"></a>
     
-    
+            <div class="docstring"><p>Optional list of tests to run on the share value.</p>
+</div>
+
 
                             </div>
                             <div id="CountMetric.get_bound_tests" class="classattr">
@@ -3674,7 +4380,21 @@ Returns:</p>
     </div>
     <a class="headerlink" href="#CountMetric.get_bound_tests"></a>
     
-    
+            <div class="docstring"><p>Get all bound tests for this metric.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>context</code>: <code>Context</code> to determine which tests to include.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li>Sequence of <code><a href="#BoundTest">BoundTest</a></code> objects to run on this metric's results.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="CountMetric.validate_tests" class="classattr">
@@ -3728,9 +4448,9 @@ Returns:</p>
     </div>
     <a class="headerlink" href="#CountCalculation"></a>
     
-            <div class="docstring"><p>Base metric class.</p>
+            <div class="docstring"><p>Base calculation class for metrics that return count and share values.</p>
 
-<p>Metric is class to perform calculation over given dataset and return result.</p>
+<p>Provides methods to create <code><a href="#CountValue">CountValue</a></code> results from count and share values.</p>
 </div>
 
 
@@ -3744,7 +4464,15 @@ Returns:</p>
     </div>
     <a class="headerlink" href="#CountCalculation.count_display_name"></a>
     
-    
+            <div class="docstring"><p>Get display name for the count value.</p>
+
+<p>Returns:</p>
+
+<ul>
+<li>Display name string for the count.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="CountCalculation.share_display_name" class="classattr">
@@ -3757,7 +4485,15 @@ Returns:</p>
     </div>
     <a class="headerlink" href="#CountCalculation.share_display_name"></a>
     
-    
+            <div class="docstring"><p>Get display name for the share value.</p>
+
+<p>Returns:</p>
+
+<ul>
+<li>Display name string for the share.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="CountCalculation.result" class="classattr">
@@ -3770,7 +4506,22 @@ Returns:</p>
     </div>
     <a class="headerlink" href="#CountCalculation.result"></a>
     
-    
+            <div class="docstring"><p>Create a <code><a href="#CountValue">CountValue</a></code> result from count and share.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>count</code>: Absolute count value.</li>
+<li><code>share</code>: Proportion/share value (typically between 0 and 1).</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li><code><a href="#CountValue">CountValue</a></code> with count, share, and appropriate metadata.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div class="inherited">
@@ -3805,7 +4556,12 @@ Returns:</p>
     </div>
     <a class="headerlink" href="#MeanStdBoundTest"></a>
     
-    
+            <div class="docstring"><p>Test bound to a specific metric and value location.</p>
+
+<p>A bound test is associated with a specific metric instance and knows how to
+extract the relevant value from the metric result to run the test.</p>
+</div>
+
 
                             <div id="MeanStdBoundTest.is_mean" class="classattr">
                                 <div class="attr variable">
@@ -3828,7 +4584,23 @@ Returns:</p>
     </div>
     <a class="headerlink" href="#MeanStdBoundTest.run_test"></a>
     
-    
+            <div class="docstring"><p>Run the test on a metric result.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>context</code>: <code>Context</code> containing metric results.</li>
+<li><code>calculation</code>: <code><a href="#MetricCalculationBase">MetricCalculationBase</a></code> that computed the result.</li>
+<li><code>metric_result</code>: <code><a href="#MetricResult">MetricResult</a></code> to test.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li><code><a href="#MetricTestResult">MetricTestResult</a></code> with test outcome.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div class="inherited">
@@ -3853,7 +4625,12 @@ Returns:</p>
     </div>
     <a class="headerlink" href="#DataframeBoundTest"></a>
     
-    
+            <div class="docstring"><p>Test bound to a specific metric and value location.</p>
+
+<p>A bound test is associated with a specific metric instance and knows how to
+extract the relevant value from the metric result to run the test.</p>
+</div>
+
 
                             <div id="DataframeBoundTest.column" class="classattr">
                                 <div class="attr variable">
@@ -3887,7 +4664,23 @@ Returns:</p>
     </div>
     <a class="headerlink" href="#DataframeBoundTest.run_test"></a>
     
-    
+            <div class="docstring"><p>Run the test on a metric result.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>context</code>: <code>Context</code> containing metric results.</li>
+<li><code>calculation</code>: <code><a href="#MetricCalculationBase">MetricCalculationBase</a></code> that computed the result.</li>
+<li><code>metric_result</code>: <code><a href="#MetricResult">MetricResult</a></code> to test.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li><code><a href="#MetricTestResult">MetricTestResult</a></code> with test outcome.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div class="inherited">
@@ -3989,7 +4782,12 @@ Returns:</p>
     </div>
     <a class="headerlink" href="#MeanStdMetric"></a>
     
-    
+            <div class="docstring"><p>Base class for metrics that return mean and standard deviation values.</p>
+
+<p>Metrics that compute statistical summaries (e.g., error distribution statistics)
+should inherit from this class.</p>
+</div>
+
 
                             <div id="MeanStdMetric.mean_tests" class="classattr">
                                 <div class="attr variable">
@@ -3999,7 +4797,9 @@ Returns:</p>
     </div>
     <a class="headerlink" href="#MeanStdMetric.mean_tests"></a>
     
-    
+            <div class="docstring"><p>Optional list of tests to run on the mean value.</p>
+</div>
+
 
                             </div>
                             <div id="MeanStdMetric.std_tests" class="classattr">
@@ -4010,7 +4810,9 @@ Returns:</p>
     </div>
     <a class="headerlink" href="#MeanStdMetric.std_tests"></a>
     
-    
+            <div class="docstring"><p>Optional list of tests to run on the standard deviation value.</p>
+</div>
+
 
                             </div>
                             <div id="MeanStdMetric.get_bound_tests" class="classattr">
@@ -4023,7 +4825,21 @@ Returns:</p>
     </div>
     <a class="headerlink" href="#MeanStdMetric.get_bound_tests"></a>
     
-    
+            <div class="docstring"><p>Get all bound tests for this metric.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>context</code>: <code>Context</code> to determine which tests to include.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li>Sequence of <code><a href="#BoundTest">BoundTest</a></code> objects to run on this metric's results.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="MeanStdMetric.validate_mean_tests" class="classattr">
@@ -4077,7 +4893,12 @@ Returns:</p>
     </div>
     <a class="headerlink" href="#DataframeMetric"></a>
     
-    
+            <div class="docstring"><p>Base class for metrics that return pandas DataFrames.</p>
+
+<p>Metrics that return tabular data (e.g., correlation matrices, detailed breakdowns)
+should inherit from this class.</p>
+</div>
+
 
                             <div id="DataframeMetric.tests" class="classattr">
                                 <div class="attr variable">
@@ -4087,7 +4908,9 @@ Returns:</p>
     </div>
     <a class="headerlink" href="#DataframeMetric.tests"></a>
     
-    
+            <div class="docstring"><p>Optional dictionary mapping column names to lists of tests to run on each column.</p>
+</div>
+
 
                             </div>
                             <div id="DataframeMetric.get_bound_tests" class="classattr">
@@ -4100,7 +4923,21 @@ Returns:</p>
     </div>
     <a class="headerlink" href="#DataframeMetric.get_bound_tests"></a>
     
-    
+            <div class="docstring"><p>Get all bound tests for this metric.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>context</code>: <code>Context</code> to determine which tests to include.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li>Sequence of <code><a href="#BoundTest">BoundTest</a></code> objects to run on this metric's results.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="DataframeMetric.validate_tests" class="classattr">
@@ -4140,9 +4977,9 @@ Returns:</p>
     </div>
     <a class="headerlink" href="#MeanStdCalculation"></a>
     
-            <div class="docstring"><p>Base metric class.</p>
+            <div class="docstring"><p>Base calculation class for metrics that return mean and standard deviation.</p>
 
-<p>Metric is class to perform calculation over given dataset and return result.</p>
+<p>Provides methods to create <code><a href="#MeanStdValue">MeanStdValue</a></code> results from mean and std values.</p>
 </div>
 
 
@@ -4156,7 +4993,15 @@ Returns:</p>
     </div>
     <a class="headerlink" href="#MeanStdCalculation.mean_display_name"></a>
     
-    
+            <div class="docstring"><p>Get display name for the mean value.</p>
+
+<p>Returns:</p>
+
+<ul>
+<li>Display name string for the mean.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="MeanStdCalculation.std_display_name" class="classattr">
@@ -4169,7 +5014,15 @@ Returns:</p>
     </div>
     <a class="headerlink" href="#MeanStdCalculation.std_display_name"></a>
     
-    
+            <div class="docstring"><p>Get display name for the standard deviation value.</p>
+
+<p>Returns:</p>
+
+<ul>
+<li>Display name string for the std.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="MeanStdCalculation.result" class="classattr">
@@ -4182,7 +5035,22 @@ Returns:</p>
     </div>
     <a class="headerlink" href="#MeanStdCalculation.result"></a>
     
-    
+            <div class="docstring"><p>Create a <code><a href="#MeanStdValue">MeanStdValue</a></code> result from mean and standard deviation.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>mean</code>: Mean value.</li>
+<li><code>std</code>: Standard deviation value.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li><code><a href="#MeanStdValue">MeanStdValue</a></code> with mean, std, and appropriate metadata.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div class="inherited">
@@ -4217,9 +5085,9 @@ Returns:</p>
     </div>
     <a class="headerlink" href="#DataframeCalculation"></a>
     
-            <div class="docstring"><p>Base metric class.</p>
+            <div class="docstring"><p>Base calculation class for metrics that return DataFrames.</p>
 
-<p>Metric is class to perform calculation over given dataset and return result.</p>
+<p>Provides methods to create <code><a href="#DataframeValue">DataframeValue</a></code> results from pandas DataFrames.</p>
 </div>
 
 
@@ -4233,7 +5101,21 @@ Returns:</p>
     </div>
     <a class="headerlink" href="#DataframeCalculation.result"></a>
     
-    
+            <div class="docstring"><p>Create a <code><a href="#DataframeValue">DataframeValue</a></code> result from a DataFrame.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>dataframe</code>: <code>pd.DataFrame</code> containing the metric results.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li><code><a href="#DataframeValue">DataframeValue</a></code> with the DataFrame and appropriate metadata.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div class="inherited">
@@ -4268,7 +5150,11 @@ Returns:</p>
     </div>
     <a class="headerlink" href="#ColumnMetric"></a>
     
-    
+            <div class="docstring"><p>Base class for metrics that operate on a specific column.</p>
+
+<p>Metrics that compute values for a single column should inherit from this class.</p>
+</div>
+
 
                             <div id="ColumnMetric.column" class="classattr">
                                 <div class="attr variable">
@@ -4278,7 +5164,9 @@ Returns:</p>
     </div>
     <a class="headerlink" href="#ColumnMetric.column"></a>
     
-    
+            <div class="docstring"><p>Name of the column to compute the metric for.</p>
+</div>
+
 
                             </div>
                             <div class="inherited">

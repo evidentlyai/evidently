@@ -399,7 +399,12 @@ errors defaults to 'strict'.</p>
     </div>
     <a class="headerlink" href="#ArtifactPromptContent"></a>
     
-    
+            <div class="docstring"><p>Base class for artifact content wrappers.</p>
+
+<p>Artifact content wraps typed values (e.g., prompts, configs) for storage
+and versioning in the artifact system.</p>
+</div>
+
 
                             <div id="ArtifactPromptContent.data" class="classattr">
                                 <div class="attr variable">
@@ -409,7 +414,9 @@ errors defaults to 'strict'.</p>
     </div>
     <a class="headerlink" href="#ArtifactPromptContent.data"></a>
     
-    
+            <div class="docstring"><p>Raw data stored in the artifact.</p>
+</div>
+
 
                             </div>
                             <div id="ArtifactPromptContent.from_value" class="classattr">
@@ -423,7 +430,21 @@ errors defaults to 'strict'.</p>
     </div>
     <a class="headerlink" href="#ArtifactPromptContent.from_value"></a>
     
-    
+            <div class="docstring"><p>Create content wrapper from a typed value.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>value</code>: Typed value to wrap.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li><code>ArtifactContent</code> instance wrapping the value.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div class="inherited">

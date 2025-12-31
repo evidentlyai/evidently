@@ -522,7 +522,12 @@ evaluations (e.g., <code><a href="#LLMEval">LLMEval</a></code>, <code><a href="#
     </div>
     <a class="headerlink" href="#ColumnTest"></a>
     
-    
+            <div class="docstring"><p>Descriptor that tests values in a column against a condition.</p>
+
+<p>Creates a boolean descriptor column indicating whether each value in the
+input column satisfies the condition. Useful for filtering or flagging rows.</p>
+</div>
+
 
                             <div id="ColumnTest.__init__" class="classattr">
                                 <div class="attr function">
@@ -548,7 +553,9 @@ evaluations (e.g., <code><a href="#LLMEval">LLMEval</a></code>, <code><a href="#
     </div>
     <a class="headerlink" href="#ColumnTest.column"></a>
     
-    
+            <div class="docstring"><p>Name of the input column to test.</p>
+</div>
+
 
                             </div>
                             <div id="ColumnTest.condition" class="classattr">
@@ -559,7 +566,9 @@ evaluations (e.g., <code><a href="#LLMEval">LLMEval</a></code>, <code><a href="#
     </div>
     <a class="headerlink" href="#ColumnTest.condition"></a>
     
-    
+            <div class="docstring"><p>Column condition to apply.</p>
+</div>
+
 
                             </div>
                             <div id="ColumnTest.generate_data" class="classattr">
@@ -572,7 +581,22 @@ evaluations (e.g., <code><a href="#LLMEval">LLMEval</a></code>, <code><a href="#
     </div>
     <a class="headerlink" href="#ColumnTest.generate_data"></a>
     
-    
+            <div class="docstring"><p>Generate a boolean column indicating which rows satisfy the condition.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>dataset</code>: <code>Dataset</code> to process.</li>
+<li><code>options</code>: Processing options.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li><code>DatasetColumn</code> with boolean values (True if condition passes, False otherwise).</li>
+</ul>
+</div>
+
 
                             </div>
                             <div class="inherited">
@@ -1748,7 +1772,18 @@ evaluations (e.g., <code><a href="#LLMEval">LLMEval</a></code>, <code><a href="#
     </div>
     <a class="headerlink" href="#TestSummary"></a>
     
-    
+            <div class="docstring"><p>Descriptor that aggregates test results across multiple test descriptors.</p>
+
+<p>Computes summary statistics from boolean test result columns, such as:</p>
+
+<ul>
+<li>Whether all tests pass for each row</li>
+<li>Whether any test fails for each row</li>
+<li>Count and rate of passing tests</li>
+<li>Weighted score across tests</li>
+</ul>
+</div>
+
 
                             <div id="TestSummary.__init__" class="classattr">
                                 <div class="attr function">
@@ -1774,7 +1809,9 @@ evaluations (e.g., <code><a href="#LLMEval">LLMEval</a></code>, <code><a href="#
     </div>
     <a class="headerlink" href="#TestSummary.success_all"></a>
     
-    
+            <div class="docstring"><p>Whether to compute 'all tests pass' indicator.</p>
+</div>
+
 
                             </div>
                             <div id="TestSummary.success_any" class="classattr">
@@ -1785,7 +1822,9 @@ evaluations (e.g., <code><a href="#LLMEval">LLMEval</a></code>, <code><a href="#
     </div>
     <a class="headerlink" href="#TestSummary.success_any"></a>
     
-    
+            <div class="docstring"><p>Whether to compute 'any test fails' indicator.</p>
+</div>
+
 
                             </div>
                             <div id="TestSummary.success_count" class="classattr">
@@ -1796,7 +1835,9 @@ evaluations (e.g., <code><a href="#LLMEval">LLMEval</a></code>, <code><a href="#
     </div>
     <a class="headerlink" href="#TestSummary.success_count"></a>
     
-    
+            <div class="docstring"><p>Whether to compute count of passing tests.</p>
+</div>
+
 
                             </div>
                             <div id="TestSummary.success_rate" class="classattr">
@@ -1807,7 +1848,9 @@ evaluations (e.g., <code><a href="#LLMEval">LLMEval</a></code>, <code><a href="#
     </div>
     <a class="headerlink" href="#TestSummary.success_rate"></a>
     
-    
+            <div class="docstring"><p>Whether to compute proportion of passing tests.</p>
+</div>
+
 
                             </div>
                             <div id="TestSummary.score" class="classattr">
@@ -1818,7 +1861,9 @@ evaluations (e.g., <code><a href="#LLMEval">LLMEval</a></code>, <code><a href="#
     </div>
     <a class="headerlink" href="#TestSummary.score"></a>
     
-    
+            <div class="docstring"><p>Whether to compute weighted score across tests.</p>
+</div>
+
 
                             </div>
                             <div id="TestSummary.score_weights" class="classattr">
@@ -1829,7 +1874,9 @@ evaluations (e.g., <code><a href="#LLMEval">LLMEval</a></code>, <code><a href="#
     </div>
     <a class="headerlink" href="#TestSummary.score_weights"></a>
     
-    
+            <div class="docstring"><p>Optional dictionary mapping test names to weights for scoring.</p>
+</div>
+
 
                             </div>
                             <div id="TestSummary.normalize_scores" class="classattr">
@@ -1840,7 +1887,9 @@ evaluations (e.g., <code><a href="#LLMEval">LLMEval</a></code>, <code><a href="#
     </div>
     <a class="headerlink" href="#TestSummary.normalize_scores"></a>
     
-    
+            <div class="docstring"><p>Whether to normalize scores by total weight.</p>
+</div>
+
 
                             </div>
                             <div id="TestSummary.generate_data" class="classattr">
@@ -1853,7 +1902,31 @@ evaluations (e.g., <code><a href="#LLMEval">LLMEval</a></code>, <code><a href="#
     </div>
     <a class="headerlink" href="#TestSummary.generate_data"></a>
     
-    
+            <div class="docstring"><p>Generate summary columns from test result columns.</p>
+
+<p>Aggregates boolean test results into summary statistics based on
+configured flags (success_all, success_any, success_count, etc.).</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>dataset</code>: <code>Dataset</code> containing test result columns.</li>
+<li><code>options</code>: Processing options.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li>Dictionary of summary columns, or single column if only one is generated.</li>
+</ul>
+
+<p>Raises:</p>
+
+<ul>
+<li><code>ValueError</code>: If no tests are specified or no summary columns are configured.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="TestSummary.list_input_columns" class="classattr">
@@ -1866,7 +1939,15 @@ evaluations (e.g., <code><a href="#LLMEval">LLMEval</a></code>, <code><a href="#
     </div>
     <a class="headerlink" href="#TestSummary.list_input_columns"></a>
     
-    
+            <div class="docstring"><p>Get list of input columns needed for this descriptor.</p>
+
+<p>Returns:</p>
+
+<ul>
+<li>List of test column names if score weights are specified, <code>None</code> otherwise.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="TestSummary.get_special_columns_info" class="classattr">
@@ -1879,7 +1960,21 @@ evaluations (e.g., <code><a href="#LLMEval">LLMEval</a></code>, <code><a href="#
     </div>
     <a class="headerlink" href="#TestSummary.get_special_columns_info"></a>
     
-    
+            <div class="docstring"><p>Get special column information for test summary aggregation.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>rename</code>: Dictionary mapping internal column names to final names.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li>List of <code>TestSummaryInfo</code> objects describing the summary columns.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="TestSummary.add_to_descriptors_list" class="classattr">

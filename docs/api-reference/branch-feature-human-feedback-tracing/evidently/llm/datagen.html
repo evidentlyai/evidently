@@ -322,7 +322,13 @@
     </div>
     <a class="headerlink" href="#FewShotDatasetGenerator"></a>
     
-    
+            <div class="docstring"><p>Dataset generator using few-shot learning approach.</p>
+
+<p>Generates synthetic data by providing examples to an LLM and asking
+it to generate similar content. Useful for creating training or
+evaluation datasets when you have limited examples.</p>
+</div>
+
 
                             <div id="FewShotDatasetGenerator.__init__" class="classattr">
                                 <div class="attr function">
@@ -348,7 +354,9 @@
     </div>
     <a class="headerlink" href="#FewShotDatasetGenerator.template"></a>
     
-    
+            <div class="docstring"><p>Prompt template for generation.</p>
+</div>
+
 
                             </div>
                             <div id="FewShotDatasetGenerator.sample_spec" class="classattr">
@@ -359,7 +367,9 @@
     </div>
     <a class="headerlink" href="#FewShotDatasetGenerator.sample_spec"></a>
     
-    
+            <div class="docstring"><p>Specification for what to generate.</p>
+</div>
+
 
                             </div>
                             <div id="FewShotDatasetGenerator.additional_prompt_blocks" class="classattr">
@@ -370,7 +380,9 @@
     </div>
     <a class="headerlink" href="#FewShotDatasetGenerator.additional_prompt_blocks"></a>
     
-    
+            <div class="docstring"><p>Additional prompt blocks to include.</p>
+</div>
+
 
                             </div>
                             <div id="FewShotDatasetGenerator.count" class="classattr">
@@ -381,7 +393,9 @@
     </div>
     <a class="headerlink" href="#FewShotDatasetGenerator.count"></a>
     
-    
+            <div class="docstring"><p>Number of samples to generate.</p>
+</div>
+
 
                             </div>
                             <div id="FewShotDatasetGenerator.provider" class="classattr">
@@ -392,7 +406,9 @@
     </div>
     <a class="headerlink" href="#FewShotDatasetGenerator.provider"></a>
     
-    
+            <div class="docstring"><p>LLM provider name.</p>
+</div>
+
 
                             </div>
                             <div id="FewShotDatasetGenerator.options" class="classattr">
@@ -403,7 +419,9 @@
     </div>
     <a class="headerlink" href="#FewShotDatasetGenerator.options"></a>
     
-    
+            <div class="docstring"><p>Processing options.</p>
+</div>
+
 
                             </div>
                             <div id="FewShotDatasetGenerator.model" class="classattr">
@@ -414,7 +432,9 @@
     </div>
     <a class="headerlink" href="#FewShotDatasetGenerator.model"></a>
     
-    
+            <div class="docstring"><p>LLM model name.</p>
+</div>
+
 
                             </div>
                             <div id="FewShotDatasetGenerator.agenerate" class="classattr">
@@ -427,7 +447,18 @@
     </div>
     <a class="headerlink" href="#FewShotDatasetGenerator.agenerate"></a>
     
-    
+            <div class="docstring"><p>Generate dataset asynchronously.</p>
+
+<p>Uses the LLM to generate samples based on examples, with retry
+logic to ensure enough unique samples are generated.</p>
+
+<p>Returns:</p>
+
+<ul>
+<li><code>pd.DataFrame</code> with generated samples in a "texts" column.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="FewShotDatasetGenerator.prepared_sample_template" class="classattr">
@@ -438,7 +469,15 @@
     </div>
     <a class="headerlink" href="#FewShotDatasetGenerator.prepared_sample_template"></a>
     
-    
+            <div class="docstring"><p>Get the prepared prompt template with all context applied.</p>
+
+<p>Returns:</p>
+
+<ul>
+<li><code>PreparedTemplate</code> ready for use with the LLM.</li>
+</ul>
+</div>
+
 
                             </div>
                 </section>
@@ -452,7 +491,12 @@
     </div>
     <a class="headerlink" href="#RagDatasetGenerator"></a>
     
-    
+            <div class="docstring"><p>Complete RAG dataset generator for query-response pairs.</p>
+
+<p>Generates both queries and responses using document chunks, creating
+a complete evaluation dataset for RAG systems.</p>
+</div>
+
 
                             <div id="RagDatasetGenerator.__init__" class="classattr">
                                 <div class="attr function">
@@ -478,7 +522,9 @@
     </div>
     <a class="headerlink" href="#RagDatasetGenerator.query_template"></a>
     
-    
+            <div class="docstring"><p>Prompt template for generating queries.</p>
+</div>
+
 
                             </div>
                             <div id="RagDatasetGenerator.query_spec" class="classattr">
@@ -489,7 +535,9 @@
     </div>
     <a class="headerlink" href="#RagDatasetGenerator.query_spec"></a>
     
-    
+            <div class="docstring"><p>Specification for query generation.</p>
+</div>
+
 
                             </div>
                             <div id="RagDatasetGenerator.response_spec" class="classattr">
@@ -500,7 +548,9 @@
     </div>
     <a class="headerlink" href="#RagDatasetGenerator.response_spec"></a>
     
-    
+            <div class="docstring"><p>Specification for response generation.</p>
+</div>
+
 
                             </div>
                             <div id="RagDatasetGenerator.response_template" class="classattr">
@@ -511,7 +561,9 @@
     </div>
     <a class="headerlink" href="#RagDatasetGenerator.response_template"></a>
     
-    
+            <div class="docstring"><p>Prompt template for generating responses.</p>
+</div>
+
 
                             </div>
                             <div id="RagDatasetGenerator.additional_prompt_blocks" class="classattr">
@@ -522,7 +574,9 @@
     </div>
     <a class="headerlink" href="#RagDatasetGenerator.additional_prompt_blocks"></a>
     
-    
+            <div class="docstring"><p>Additional prompt blocks to include.</p>
+</div>
+
 
                             </div>
                             <div id="RagDatasetGenerator.include_context" class="classattr">
@@ -533,7 +587,9 @@
     </div>
     <a class="headerlink" href="#RagDatasetGenerator.include_context"></a>
     
-    
+            <div class="docstring"><p>Whether to include context chunks in output DataFrame.</p>
+</div>
+
 
                             </div>
                             <div id="RagDatasetGenerator.count" class="classattr">
@@ -544,7 +600,9 @@
     </div>
     <a class="headerlink" href="#RagDatasetGenerator.count"></a>
     
-    
+            <div class="docstring"><p>Number of query-response pairs to generate.</p>
+</div>
+
 
                             </div>
                             <div id="RagDatasetGenerator.data_collection" class="classattr">
@@ -566,7 +624,9 @@
     </div>
     <a class="headerlink" href="#RagDatasetGenerator.provider"></a>
     
-    
+            <div class="docstring"><p>LLM provider name.</p>
+</div>
+
 
                             </div>
                             <div id="RagDatasetGenerator.options" class="classattr">
@@ -577,7 +637,9 @@
     </div>
     <a class="headerlink" href="#RagDatasetGenerator.options"></a>
     
-    
+            <div class="docstring"><p>Processing options.</p>
+</div>
+
 
                             </div>
                             <div id="RagDatasetGenerator.model" class="classattr">
@@ -588,7 +650,9 @@
     </div>
     <a class="headerlink" href="#RagDatasetGenerator.model"></a>
     
-    
+            <div class="docstring"><p>LLM model name.</p>
+</div>
+
 
                             </div>
                             <div id="RagDatasetGenerator.agenerate" class="classattr">
@@ -601,7 +665,15 @@
     </div>
     <a class="headerlink" href="#RagDatasetGenerator.agenerate"></a>
     
-    
+            <div class="docstring"><p>Generate complete RAG dataset with queries and responses.</p>
+
+<p>Returns:</p>
+
+<ul>
+<li><code>pd.DataFrame</code> with "queries" and "responses" columns (and optionally "context").</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="RagDatasetGenerator.query_generator" class="classattr">
@@ -612,7 +684,15 @@
     </div>
     <a class="headerlink" href="#RagDatasetGenerator.query_generator"></a>
     
-    
+            <div class="docstring"><p>Get the query generator instance.</p>
+
+<p>Returns:</p>
+
+<ul>
+<li><code><a href="#RagQueryDatasetGenerator">RagQueryDatasetGenerator</a></code> configured with this generator's settings.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="RagDatasetGenerator.response_generator" class="classattr">
@@ -625,7 +705,21 @@
     </div>
     <a class="headerlink" href="#RagDatasetGenerator.response_generator"></a>
     
-    
+            <div class="docstring"><p>Get the response generator instance for given queries.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>queries</code>: List of queries to generate responses for.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li><code><a href="#RagResponseDatasetGenerator">RagResponseDatasetGenerator</a></code> configured with this generator's settings.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="RagDatasetGenerator.prepared_query_template" class="classattr">
@@ -636,7 +730,15 @@
     </div>
     <a class="headerlink" href="#RagDatasetGenerator.prepared_query_template"></a>
     
-    
+            <div class="docstring"><p>Get the prepared query template.</p>
+
+<p>Returns:</p>
+
+<ul>
+<li><code>PreparedTemplate</code> ready for use with the LLM.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="RagDatasetGenerator.prepared_response_template" class="classattr">
@@ -647,7 +749,15 @@
     </div>
     <a class="headerlink" href="#RagDatasetGenerator.prepared_response_template"></a>
     
-    
+            <div class="docstring"><p>Get the prepared response template.</p>
+
+<p>Returns:</p>
+
+<ul>
+<li><code>PreparedTemplate</code> ready for use with the LLM.</li>
+</ul>
+</div>
+
 
                             </div>
                 </section>
@@ -661,7 +771,12 @@
     </div>
     <a class="headerlink" href="#RagQueryDatasetGenerator"></a>
     
-    
+            <div class="docstring"><p>Dataset generator for RAG queries based on document chunks.</p>
+
+<p>Generates questions/queries that are relevant to provided document chunks,
+useful for creating evaluation datasets for RAG systems.</p>
+</div>
+
 
                             <div id="RagQueryDatasetGenerator.__init__" class="classattr">
                                 <div class="attr function">
@@ -687,7 +802,9 @@
     </div>
     <a class="headerlink" href="#RagQueryDatasetGenerator.query_template"></a>
     
-    
+            <div class="docstring"><p>Prompt template for generating queries.</p>
+</div>
+
 
                             </div>
                             <div id="RagQueryDatasetGenerator.query_spec" class="classattr">
@@ -698,7 +815,9 @@
     </div>
     <a class="headerlink" href="#RagQueryDatasetGenerator.query_spec"></a>
     
-    
+            <div class="docstring"><p>Specification for query generation.</p>
+</div>
+
 
                             </div>
                             <div id="RagQueryDatasetGenerator.additional_prompt_blocks" class="classattr">
@@ -709,7 +828,9 @@
     </div>
     <a class="headerlink" href="#RagQueryDatasetGenerator.additional_prompt_blocks"></a>
     
-    
+            <div class="docstring"><p>Additional prompt blocks to include.</p>
+</div>
+
 
                             </div>
                             <div id="RagQueryDatasetGenerator.count" class="classattr">
@@ -720,7 +841,9 @@
     </div>
     <a class="headerlink" href="#RagQueryDatasetGenerator.count"></a>
     
-    
+            <div class="docstring"><p>Number of queries to generate.</p>
+</div>
+
 
                             </div>
                             <div id="RagQueryDatasetGenerator.chunks_per_query" class="classattr">
@@ -731,7 +854,9 @@
     </div>
     <a class="headerlink" href="#RagQueryDatasetGenerator.chunks_per_query"></a>
     
-    
+            <div class="docstring"><p>Number of document chunks to use per query.</p>
+</div>
+
 
                             </div>
                             <div id="RagQueryDatasetGenerator.data_collection" class="classattr">
@@ -753,7 +878,9 @@
     </div>
     <a class="headerlink" href="#RagQueryDatasetGenerator.provider"></a>
     
-    
+            <div class="docstring"><p>LLM provider name.</p>
+</div>
+
 
                             </div>
                             <div id="RagQueryDatasetGenerator.options" class="classattr">
@@ -764,7 +891,9 @@
     </div>
     <a class="headerlink" href="#RagQueryDatasetGenerator.options"></a>
     
-    
+            <div class="docstring"><p>Processing options.</p>
+</div>
+
 
                             </div>
                             <div id="RagQueryDatasetGenerator.model" class="classattr">
@@ -775,7 +904,9 @@
     </div>
     <a class="headerlink" href="#RagQueryDatasetGenerator.model"></a>
     
-    
+            <div class="docstring"><p>LLM model name.</p>
+</div>
+
 
                             </div>
                             <div id="RagQueryDatasetGenerator.get_chunks_and_query_count" class="classattr">
@@ -788,7 +919,21 @@
     </div>
     <a class="headerlink" href="#RagQueryDatasetGenerator.get_chunks_and_query_count"></a>
     
-    
+            <div class="docstring"><p>Calculate chunk and query counts for generation.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>all_chunks_count</code>: Total number of available chunks.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li>Tuple of (chunk_set_count, chunks_in_set_count, questions_per_chunkset).</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="RagQueryDatasetGenerator.generate_queries_with_context" class="classattr">
@@ -801,7 +946,15 @@
     </div>
     <a class="headerlink" href="#RagQueryDatasetGenerator.generate_queries_with_context"></a>
     
-    
+            <div class="docstring"><p>Generate queries along with their document context.</p>
+
+<p>Returns:</p>
+
+<ul>
+<li>Tuple of (data_collection, list of generated queries).</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="RagQueryDatasetGenerator.agenerate" class="classattr">
@@ -814,7 +967,15 @@
     </div>
     <a class="headerlink" href="#RagQueryDatasetGenerator.agenerate"></a>
     
-    
+            <div class="docstring"><p>Generate dataset asynchronously.</p>
+
+<p>Returns:</p>
+
+<ul>
+<li><code>pd.DataFrame</code> with generated queries in a "queries" column.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="RagQueryDatasetGenerator.generate_queries" class="classattr">
@@ -827,7 +988,22 @@
     </div>
     <a class="headerlink" href="#RagQueryDatasetGenerator.generate_queries"></a>
     
-    
+            <div class="docstring"><p>Generate queries from chunk sets.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>chunk_sets</code>: Sequence of chunk lists to generate queries from.</li>
+<li><code>questions_per_chunkset</code>: Number of questions to generate per chunk set.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li>List of generated query strings.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="RagQueryDatasetGenerator.prepared_query_template" class="classattr">
@@ -838,7 +1014,15 @@
     </div>
     <a class="headerlink" href="#RagQueryDatasetGenerator.prepared_query_template"></a>
     
-    
+            <div class="docstring"><p>Get the prepared query template with all context applied.</p>
+
+<p>Returns:</p>
+
+<ul>
+<li><code>PreparedTemplate</code> ready for use with the LLM.</li>
+</ul>
+</div>
+
 
                             </div>
                 </section>
@@ -852,7 +1036,12 @@
     </div>
     <a class="headerlink" href="#RagResponseDatasetGenerator"></a>
     
-    
+            <div class="docstring"><p>Dataset generator for RAG responses based on queries and document chunks.</p>
+
+<p>Generates responses to queries using relevant document chunks as context,
+useful for creating evaluation datasets for RAG systems.</p>
+</div>
+
 
                             <div id="RagResponseDatasetGenerator.__init__" class="classattr">
                                 <div class="attr function">
@@ -878,7 +1067,9 @@
     </div>
     <a class="headerlink" href="#RagResponseDatasetGenerator.response_template"></a>
     
-    
+            <div class="docstring"><p>Prompt template for generating responses.</p>
+</div>
+
 
                             </div>
                             <div id="RagResponseDatasetGenerator.response_spec" class="classattr">
@@ -889,7 +1080,9 @@
     </div>
     <a class="headerlink" href="#RagResponseDatasetGenerator.response_spec"></a>
     
-    
+            <div class="docstring"><p>Specification for response generation.</p>
+</div>
+
 
                             </div>
                             <div id="RagResponseDatasetGenerator.query_spec" class="classattr">
@@ -900,7 +1093,9 @@
     </div>
     <a class="headerlink" href="#RagResponseDatasetGenerator.query_spec"></a>
     
-    
+            <div class="docstring"><p>Specification for query type.</p>
+</div>
+
 
                             </div>
                             <div id="RagResponseDatasetGenerator.queries" class="classattr">
@@ -911,7 +1106,9 @@
     </div>
     <a class="headerlink" href="#RagResponseDatasetGenerator.queries"></a>
     
-    
+            <div class="docstring"><p>List of queries to generate responses for.</p>
+</div>
+
 
                             </div>
                             <div id="RagResponseDatasetGenerator.additional_prompt_blocks" class="classattr">
@@ -922,7 +1119,9 @@
     </div>
     <a class="headerlink" href="#RagResponseDatasetGenerator.additional_prompt_blocks"></a>
     
-    
+            <div class="docstring"><p>Additional prompt blocks to include.</p>
+</div>
+
 
                             </div>
                             <div id="RagResponseDatasetGenerator.include_context" class="classattr">
@@ -933,7 +1132,9 @@
     </div>
     <a class="headerlink" href="#RagResponseDatasetGenerator.include_context"></a>
     
-    
+            <div class="docstring"><p>Whether to include context chunks in output DataFrame.</p>
+</div>
+
 
                             </div>
                             <div id="RagResponseDatasetGenerator.data_collection" class="classattr">
@@ -955,7 +1156,9 @@
     </div>
     <a class="headerlink" href="#RagResponseDatasetGenerator.provider"></a>
     
-    
+            <div class="docstring"><p>LLM provider name.</p>
+</div>
+
 
                             </div>
                             <div id="RagResponseDatasetGenerator.options" class="classattr">
@@ -966,7 +1169,9 @@
     </div>
     <a class="headerlink" href="#RagResponseDatasetGenerator.options"></a>
     
-    
+            <div class="docstring"><p>Processing options.</p>
+</div>
+
 
                             </div>
                             <div id="RagResponseDatasetGenerator.model" class="classattr">
@@ -977,7 +1182,9 @@
     </div>
     <a class="headerlink" href="#RagResponseDatasetGenerator.model"></a>
     
-    
+            <div class="docstring"><p>LLM model name.</p>
+</div>
+
 
                             </div>
                             <div id="RagResponseDatasetGenerator.agenerate" class="classattr">
@@ -990,7 +1197,15 @@
     </div>
     <a class="headerlink" href="#RagResponseDatasetGenerator.agenerate"></a>
     
-    
+            <div class="docstring"><p>Generate dataset asynchronously.</p>
+
+<p>Returns:</p>
+
+<ul>
+<li><code>pd.DataFrame</code> with generated responses (and optionally context).</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="RagResponseDatasetGenerator.generate_responses" class="classattr">
@@ -1003,7 +1218,22 @@
     </div>
     <a class="headerlink" href="#RagResponseDatasetGenerator.generate_responses"></a>
     
-    
+            <div class="docstring"><p>Generate responses for queries using relevant chunks as context.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code><a href="#RagResponseDatasetGenerator.queries">queries</a></code>: List of query strings.</li>
+<li><code>relevant_chunks</code>: List of chunk lists, one per query.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li>List of generated response strings.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="RagResponseDatasetGenerator.prepared_response_template" class="classattr">
@@ -1014,7 +1244,15 @@
     </div>
     <a class="headerlink" href="#RagResponseDatasetGenerator.prepared_response_template"></a>
     
-    
+            <div class="docstring"><p>Get the prepared response template with all context applied.</p>
+
+<p>Returns:</p>
+
+<ul>
+<li><code>PreparedTemplate</code> ready for use with the LLM.</li>
+</ul>
+</div>
+
 
                             </div>
                 </section>
@@ -1028,7 +1266,15 @@
     </div>
     <a class="headerlink" href="#UserProfile"></a>
     
-    
+            <div class="docstring"><p>Assume the user profile is:</p>
+
+<ul>
+<li>Intent: {intent}</li>
+<li>Role: {role}</li>
+<li>Tone: {tone}</li>
+</ul>
+</div>
+
 
                             <div id="UserProfile.intent" class="classattr">
                                 <div class="attr variable">
@@ -1038,7 +1284,9 @@
     </div>
     <a class="headerlink" href="#UserProfile.intent"></a>
     
-    
+            <div class="docstring"><p>Optional user intent or goal.</p>
+</div>
+
 
                             </div>
                             <div id="UserProfile.role" class="classattr">
@@ -1049,7 +1297,9 @@
     </div>
     <a class="headerlink" href="#UserProfile.role"></a>
     
-    
+            <div class="docstring"><p>Optional user role or persona.</p>
+</div>
+
 
                             </div>
                             <div id="UserProfile.tone" class="classattr">
@@ -1060,7 +1310,9 @@
     </div>
     <a class="headerlink" href="#UserProfile.tone"></a>
     
-    
+            <div class="docstring"><p>Communication tone (default: "neutral").</p>
+</div>
+
 
                             </div>
                             <div id="UserProfile.render" class="classattr">
@@ -1103,7 +1355,10 @@
     </div>
     <a class="headerlink" href="#Examples"></a>
     
-    
+            <div class="docstring"><p>Use these examples as stylistic guidance:
+{examples}</p>
+</div>
+
 
                             <div id="Examples.examples" class="classattr">
                                 <div class="attr variable">
@@ -1113,7 +1368,9 @@
     </div>
     <a class="headerlink" href="#Examples.examples"></a>
     
-    
+            <div class="docstring"><p>List of example strings to use as stylistic guidance.</p>
+</div>
+
 
                             </div>
                             <div id="Examples.render" class="classattr">
@@ -1169,7 +1426,8 @@
     </div>
     <a class="headerlink" href="#ServiceSpec"></a>
     
-            <div class="docstring"><p>The {kind} system is built for the following purpose: {purpose}</p>
+            <div class="docstring"><p>Service: {kind}
+Purpose: {purpose}</p>
 </div>
 
 
@@ -1197,7 +1455,9 @@
     </div>
     <a class="headerlink" href="#ServiceSpec.kind"></a>
     
-    
+            <div class="docstring"><p>Type of service (e.g., "RAG", "chatbot").</p>
+</div>
+
 
                             </div>
                             <div id="ServiceSpec.purpose" class="classattr">
@@ -1208,7 +1468,9 @@
     </div>
     <a class="headerlink" href="#ServiceSpec.purpose"></a>
     
-    
+            <div class="docstring"><p>Description of the service's purpose.</p>
+</div>
+
 
                             </div>
                             <div class="inherited">
@@ -1239,7 +1501,7 @@
     </div>
     <a class="headerlink" href="#GenerationSpec"></a>
     
-            <div class="docstring"><p>Generate standalone {kind} with {complexity} complexity.
+            <div class="docstring"><p>Generate {kind} with {complexity} complexity.
 {examples}</p>
 </div>
 
@@ -1268,7 +1530,9 @@
     </div>
     <a class="headerlink" href="#GenerationSpec.kind"></a>
     
-    
+            <div class="docstring"><p>Type of content to generate (e.g., "questions", "responses").</p>
+</div>
+
 
                             </div>
                             <div id="GenerationSpec.complexity" class="classattr">
@@ -1279,7 +1543,9 @@
     </div>
     <a class="headerlink" href="#GenerationSpec.complexity"></a>
     
-    
+            <div class="docstring"><p>Complexity level ("low", "medium", "high").</p>
+</div>
+
 
                             </div>
                             <div id="GenerationSpec.examples" class="classattr">
@@ -1290,7 +1556,9 @@
     </div>
     <a class="headerlink" href="#GenerationSpec.examples"></a>
     
-    
+            <div class="docstring"><p>Optional examples to guide generation.</p>
+</div>
+
 
                             </div>
                             <div id="GenerationSpec.has_examples" class="classattr">

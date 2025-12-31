@@ -448,7 +448,12 @@
     </div>
     <a class="headerlink" href="#RateLimits"></a>
     
-    
+            <div class="docstring"><p>Rate limiting configuration for LLM API calls.</p>
+
+<p>Defines limits for requests per minute (RPM) and tokens per minute (TPM)
+to avoid exceeding API rate limits.</p>
+</div>
+
 
                             <div id="RateLimits.rpm" class="classattr">
                                 <div class="attr variable">
@@ -458,7 +463,9 @@
     </div>
     <a class="headerlink" href="#RateLimits.rpm"></a>
     
-    
+            <div class="docstring"><p>Optional requests per minute limit.</p>
+</div>
+
 
                             </div>
                             <div id="RateLimits.itpm" class="classattr">
@@ -469,7 +476,9 @@
     </div>
     <a class="headerlink" href="#RateLimits.itpm"></a>
     
-    
+            <div class="docstring"><p>Optional input tokens per minute limit.</p>
+</div>
+
 
                             </div>
                             <div id="RateLimits.otpm" class="classattr">
@@ -480,7 +489,9 @@
     </div>
     <a class="headerlink" href="#RateLimits.otpm"></a>
     
-    
+            <div class="docstring"><p>Optional output tokens per minute limit.</p>
+</div>
+
 
                             </div>
                             <div id="RateLimits.tpm" class="classattr">
@@ -491,7 +502,9 @@
     </div>
     <a class="headerlink" href="#RateLimits.tpm"></a>
     
-    
+            <div class="docstring"><p>Optional total tokens per minute limit.</p>
+</div>
+
 
                             </div>
                             <div id="RateLimits.interval" class="classattr">
@@ -502,7 +515,9 @@
     </div>
     <a class="headerlink" href="#RateLimits.interval"></a>
     
-    
+            <div class="docstring"><p>Time window for rate limiting.</p>
+</div>
+
 
                             </div>
                 </section>
@@ -586,7 +601,12 @@
     </div>
     <a class="headerlink" href="#RateLimiter"></a>
     
-    
+            <div class="docstring"><p>Rate limiter for LLM API calls.</p>
+
+<p>Enforces rate limits on requests and tokens to avoid exceeding API quotas.
+Tracks usage over time windows and blocks requests when limits would be exceeded.</p>
+</div>
+
 
                             <div id="RateLimiter.__init__" class="classattr">
                                 <div class="attr function">
@@ -597,7 +617,16 @@
     </div>
     <a class="headerlink" href="#RateLimiter.__init__"></a>
     
-    
+            <div class="docstring"><p>Initialize the rate limiter.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code><a href="#RateLimiter.limits">limits</a></code>: <code><a href="#RateLimits">RateLimits</a></code> configuration.</li>
+<li><code><a href="#RateLimiter.initial_output_estimation">initial_output_estimation</a></code>: Initial estimate for output token size.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="RateLimiter.limits" class="classattr">
@@ -665,7 +694,21 @@
     </div>
     <a class="headerlink" href="#RateLimiter.enter"></a>
     
-    
+            <div class="docstring"><p>Get a context manager for a rate-limited request.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>request</code>: <code><a href="#LimitRequest">LimitRequest</a></code> to rate limit.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li>Context manager that blocks until rate limits allow the request.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="RateLimiter.clean" class="classattr">
@@ -678,7 +721,9 @@
     </div>
     <a class="headerlink" href="#RateLimiter.clean"></a>
     
-    
+            <div class="docstring"><p>Remove old entries outside the rate limit window.</p>
+</div>
+
 
                             </div>
                             <div id="RateLimiter.mean_output_size" class="classattr">
@@ -691,7 +736,15 @@
     </div>
     <a class="headerlink" href="#RateLimiter.mean_output_size"></a>
     
-    
+            <div class="docstring"><p>Get the mean output token size from historical data.</p>
+
+<p>Returns:</p>
+
+<ul>
+<li>Mean output token size, or initial estimation if no data available.</li>
+</ul>
+</div>
+
 
                             </div>
                 </section>
@@ -706,7 +759,9 @@
     </div>
     <a class="headerlink" href="#LLMRequest"></a>
     
-    
+            <div class="docstring"><p>Request to an LLM with messages and response parsing.</p>
+</div>
+
 
                             <div id="LLMRequest.__init__" class="classattr">
                                 <div class="attr function">
@@ -728,7 +783,9 @@
     </div>
     <a class="headerlink" href="#LLMRequest.messages"></a>
     
-    
+            <div class="docstring"><p>List of <code>LLMMessage</code> objects for the conversation.</p>
+</div>
+
 
                             </div>
                             <div id="LLMRequest.response_parser" class="classattr">
@@ -739,7 +796,9 @@
     </div>
     <a class="headerlink" href="#LLMRequest.response_parser"></a>
     
-    
+            <div class="docstring"><p>Function to parse the raw string response into <code>TResult</code>.</p>
+</div>
+
 
                             </div>
                             <div id="LLMRequest.response_type" class="classattr">
@@ -750,7 +809,9 @@
     </div>
     <a class="headerlink" href="#LLMRequest.response_type"></a>
     
-    
+            <div class="docstring"><p>Type of the expected result.</p>
+</div>
+
 
                             </div>
                             <div id="LLMRequest.retries" class="classattr">
@@ -762,7 +823,9 @@
     </div>
     <a class="headerlink" href="#LLMRequest.retries"></a>
     
-    
+            <div class="docstring"><p>Number of retry attempts on failure.</p>
+</div>
+
 
                             </div>
                 </section>
@@ -777,7 +840,9 @@
     </div>
     <a class="headerlink" href="#LLMResult"></a>
     
-    
+            <div class="docstring"><p>Result from an LLM API call.</p>
+</div>
+
 
                             <div id="LLMResult.__init__" class="classattr">
                                 <div class="attr function">
@@ -799,7 +864,9 @@
     </div>
     <a class="headerlink" href="#LLMResult.result"></a>
     
-    
+            <div class="docstring"><p>Parsed result value.</p>
+</div>
+
 
                             </div>
                             <div id="LLMResult.input_tokens" class="classattr">
@@ -810,7 +877,9 @@
     </div>
     <a class="headerlink" href="#LLMResult.input_tokens"></a>
     
-    
+            <div class="docstring"><p>Number of input tokens used.</p>
+</div>
+
 
                             </div>
                             <div id="LLMResult.output_tokens" class="classattr">
@@ -821,7 +890,9 @@
     </div>
     <a class="headerlink" href="#LLMResult.output_tokens"></a>
     
-    
+            <div class="docstring"><p>Number of output tokens used.</p>
+</div>
+
 
                             </div>
                 </section>
@@ -883,8 +954,12 @@
     </div>
     <a class="headerlink" href="#LLMWrapper"></a>
     
-            <div class="docstring"><p>Helper class that provides a standard way to create an ABC using
-inheritance.</p>
+            <div class="docstring"><p>Base class for LLM API wrappers.</p>
+
+<p>Provides a unified interface for calling different LLM providers
+with rate limiting, batching, and retry logic.</p>
+
+<p>Subclasses should implement <code><a href="#LLMWrapper.complete">complete()</a></code> for the specific provider.</p>
 </div>
 
 
@@ -899,7 +974,22 @@ inheritance.</p>
     </div>
     <a class="headerlink" href="#LLMWrapper.complete"></a>
     
-    
+            <div class="docstring"><p>Complete a conversation with the LLM.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>messages</code>: List of <code>LLMMessage</code> objects for the conversation.</li>
+<li><code>seed</code>: Optional random seed for deterministic outputs.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li><code><a href="#LLMResult">LLMResult</a></code> with the response string and token usage.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="LLMWrapper.complete_batch" class="classattr">
@@ -912,7 +1002,23 @@ inheritance.</p>
     </div>
     <a class="headerlink" href="#LLMWrapper.complete_batch"></a>
     
-    
+            <div class="docstring"><p>Complete multiple conversations in parallel.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>messages_batch</code>: List of message lists, one per conversation.</li>
+<li><code>batch_size</code>: Optional maximum concurrent requests.</li>
+<li><code>limits</code>: Optional rate limits.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li>List of response strings.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="LLMWrapper.run" class="classattr">
@@ -925,7 +1031,27 @@ inheritance.</p>
     </div>
     <a class="headerlink" href="#LLMWrapper.run"></a>
     
-    
+            <div class="docstring"><p>Run a single LLM request with retry logic.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>request</code>: <code><a href="#LLMRequest">LLMRequest</a></code> to execute.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li>Parsed result value.</li>
+</ul>
+
+<p>Raises:</p>
+
+<ul>
+<li>Exception: If all retries fail.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="LLMWrapper.run_batch" class="classattr">
@@ -938,7 +1064,23 @@ inheritance.</p>
     </div>
     <a class="headerlink" href="#LLMWrapper.run_batch"></a>
     
-    
+            <div class="docstring"><p>Run multiple requests in parallel with rate limiting.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>requests</code>: Sequence of <code><a href="#LLMRequest">LLMRequest</a></code> objects.</li>
+<li><code>batch_size</code>: Optional maximum concurrent requests.</li>
+<li><code>limits</code>: Optional rate limits.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li>List of parsed results.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="LLMWrapper.get_batch_size" class="classattr">
@@ -951,7 +1093,15 @@ inheritance.</p>
     </div>
     <a class="headerlink" href="#LLMWrapper.get_batch_size"></a>
     
-    
+            <div class="docstring"><p>Get the default batch size for concurrent requests.</p>
+
+<p>Returns:</p>
+
+<ul>
+<li>Maximum number of concurrent requests (default: 100).</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="LLMWrapper.get_limits" class="classattr">
@@ -964,7 +1114,15 @@ inheritance.</p>
     </div>
     <a class="headerlink" href="#LLMWrapper.get_limits"></a>
     
-    
+            <div class="docstring"><p>Get the default rate limits.</p>
+
+<p>Returns:</p>
+
+<ul>
+<li><code><a href="#RateLimits">RateLimits</a></code> with default values (no limits).</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="LLMWrapper.get_used_options" class="classattr">
@@ -977,7 +1135,15 @@ inheritance.</p>
     </div>
     <a class="headerlink" href="#LLMWrapper.get_used_options"></a>
     
-    
+            <div class="docstring"><p>Get the option types used by this wrapper.</p>
+
+<p>Returns:</p>
+
+<ul>
+<li>List of <code>Option</code> classes that this wrapper accepts.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="LLMWrapper.estimate_tokens" class="classattr">
@@ -990,7 +1156,21 @@ inheritance.</p>
     </div>
     <a class="headerlink" href="#LLMWrapper.estimate_tokens"></a>
     
-    
+            <div class="docstring"><p>Estimate token count for a message.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>msg</code>: <code>LLMMessage</code> to estimate.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li>Estimated token count (default: character count).</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="LLMWrapper.complete_batch_sync" class="classattr">
@@ -1003,7 +1183,23 @@ inheritance.</p>
     </div>
     <a class="headerlink" href="#LLMWrapper.complete_batch_sync"></a>
     
-    
+            <div class="docstring"><p>Complete multiple conversations in parallel.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>messages_batch</code>: List of message lists, one per conversation.</li>
+<li><code>batch_size</code>: Optional maximum concurrent requests.</li>
+<li><code>limits</code>: Optional rate limits.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li>List of response strings.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="LLMWrapper.run_sync" class="classattr">
@@ -1016,7 +1212,27 @@ inheritance.</p>
     </div>
     <a class="headerlink" href="#LLMWrapper.run_sync"></a>
     
-    
+            <div class="docstring"><p>Run a single LLM request with retry logic.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>request</code>: <code><a href="#LLMRequest">LLMRequest</a></code> to execute.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li>Parsed result value.</li>
+</ul>
+
+<p>Raises:</p>
+
+<ul>
+<li>Exception: If all retries fail.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="LLMWrapper.run_batch_sync" class="classattr">
@@ -1029,7 +1245,23 @@ inheritance.</p>
     </div>
     <a class="headerlink" href="#LLMWrapper.run_batch_sync"></a>
     
-    
+            <div class="docstring"><p>Run multiple requests in parallel with rate limiting.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>requests</code>: Sequence of <code><a href="#LLMRequest">LLMRequest</a></code> objects.</li>
+<li><code>batch_size</code>: Optional maximum concurrent requests.</li>
+<li><code>limits</code>: Optional rate limits.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li>List of parsed results.</li>
+</ul>
+</div>
+
 
                             </div>
                 </section>
@@ -1093,7 +1325,31 @@ inheritance.</p>
     </div>
     <a class="headerlink" href="#get_llm_wrapper"></a>
     
-    
+            <div class="docstring"><p>Get an LLM wrapper for the specified provider and model.</p>
+
+<p>Looks up registered wrappers first, then falls back to LiteLLM if available.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>provider</code>: Provider name (e.g., "openai", "anthropic").</li>
+<li><code>model</code>: Model name (e.g., "gpt-4o-mini", "claude-3-sonnet").</li>
+<li><code>options</code>: Processing options with provider-specific configuration.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li><code><a href="#LLMWrapper">LLMWrapper</a></code> instance for the provider/model.</li>
+</ul>
+
+<p>Raises:</p>
+
+<ul>
+<li><code>ValueError</code>: If no wrapper is found for the provider/model.</li>
+</ul>
+</div>
+
 
                 </section>
                 <section id="LLMOptions">
@@ -1106,7 +1362,11 @@ inheritance.</p>
     </div>
     <a class="headerlink" href="#LLMOptions"></a>
     
-    
+            <div class="docstring"><p>Base class for LLM provider options.</p>
+
+<p>Provides common configuration for API keys, rate limits, and custom API URLs.</p>
+</div>
+
 
                             <div id="LLMOptions.__init__" class="classattr">
                                 <div class="attr function">
@@ -1117,9 +1377,14 @@ inheritance.</p>
     </div>
     <a class="headerlink" href="#LLMOptions.__init__"></a>
     
-            <div class="docstring"><p>Create a new model by parsing and validating input data from keyword arguments.</p>
+            <div class="docstring"><p>Initialize LLM options.</p>
 
-<p>Raises ValidationError if the input data cannot be parsed to form a valid model.</p>
+<p>Args:</p>
+
+<ul>
+<li><code><a href="#LLMOptions.api_key">api_key</a></code>: Optional API key for the provider.</li>
+<li><code>rpm_limit</code>: Optional requests per minute limit (backward compatibility).</li>
+</ul>
 </div>
 
 
@@ -1132,7 +1397,9 @@ inheritance.</p>
     </div>
     <a class="headerlink" href="#LLMOptions.api_key"></a>
     
-    
+            <div class="docstring"><p>Optional API key for the provider.</p>
+</div>
+
 
                             </div>
                             <div id="LLMOptions.limits" class="classattr">
@@ -1143,7 +1410,9 @@ inheritance.</p>
     </div>
     <a class="headerlink" href="#LLMOptions.limits"></a>
     
-    
+            <div class="docstring"><p>Rate limiting configuration.</p>
+</div>
+
 
                             </div>
                             <div id="LLMOptions.api_url" class="classattr">
@@ -1154,7 +1423,9 @@ inheritance.</p>
     </div>
     <a class="headerlink" href="#LLMOptions.api_url"></a>
     
-    
+            <div class="docstring"><p>Optional custom API URL (for self-hosted providers).</p>
+</div>
+
 
                             </div>
                             <div id="LLMOptions.get_api_key" class="classattr">
@@ -1167,7 +1438,15 @@ inheritance.</p>
     </div>
     <a class="headerlink" href="#LLMOptions.get_api_key"></a>
     
-    
+            <div class="docstring"><p>Get the API key as a plain string.</p>
+
+<p>Returns:</p>
+
+<ul>
+<li>API key string, or <code>None</code> if not set.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="LLMOptions.get_additional_kwargs" class="classattr">
@@ -1180,7 +1459,15 @@ inheritance.</p>
     </div>
     <a class="headerlink" href="#LLMOptions.get_additional_kwargs"></a>
     
-    
+            <div class="docstring"><p>Get additional keyword arguments for the LLM client.</p>
+
+<p>Returns:</p>
+
+<ul>
+<li>Dictionary of additional arguments (empty by default, can be overridden).</li>
+</ul>
+</div>
+
 
                             </div>
                 </section>
@@ -1219,7 +1506,9 @@ inheritance.</p>
     </div>
     <a class="headerlink" href="#OpenAIKey"></a>
     
-    
+            <div class="docstring"><p>Options for OpenAI provider.</p>
+</div>
+
 
                             <div id="OpenAIKey.limits" class="classattr">
                                 <div class="attr variable">
@@ -1229,7 +1518,9 @@ inheritance.</p>
     </div>
     <a class="headerlink" href="#OpenAIKey.limits"></a>
     
-    
+            <div class="docstring"><p>Rate limiting configuration (default: 500 requests per minute).</p>
+</div>
+
 
                             </div>
                             <div class="inherited">
@@ -1270,8 +1561,10 @@ inheritance.</p>
     </div>
     <a class="headerlink" href="#OpenAIWrapper"></a>
     
-            <div class="docstring"><p>Helper class that provides a standard way to create an ABC using
-inheritance.</p>
+            <div class="docstring"><p>Wrapper for OpenAI API.</p>
+
+<p>Provides async access to OpenAI's chat completion API with rate limiting
+and token tracking.</p>
 </div>
 
 
@@ -1330,7 +1623,22 @@ inheritance.</p>
     </div>
     <a class="headerlink" href="#OpenAIWrapper.complete"></a>
     
-    
+            <div class="docstring"><p>Complete a conversation with the LLM.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>messages</code>: List of <code>LLMMessage</code> objects for the conversation.</li>
+<li><code>seed</code>: Optional random seed for deterministic outputs.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li><code><a href="#LLMResult">LLMResult</a></code> with the response string and token usage.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="OpenAIWrapper.get_limits" class="classattr">
@@ -1343,7 +1651,15 @@ inheritance.</p>
     </div>
     <a class="headerlink" href="#OpenAIWrapper.get_limits"></a>
     
-    
+            <div class="docstring"><p>Get the default rate limits.</p>
+
+<p>Returns:</p>
+
+<ul>
+<li><code><a href="#RateLimits">RateLimits</a></code> with default values (no limits).</li>
+</ul>
+</div>
+
 
                             </div>
                             <div class="inherited">
@@ -1388,8 +1704,12 @@ inheritance.</p>
     </div>
     <a class="headerlink" href="#LiteLLMWrapper"></a>
     
-            <div class="docstring"><p>Helper class that provides a standard way to create an ABC using
-inheritance.</p>
+            <div class="docstring"><p>Base class for LLM API wrappers.</p>
+
+<p>Provides a unified interface for calling different LLM providers
+with rate limiting, batching, and retry logic.</p>
+
+<p>Subclasses should implement <code><a href="#LiteLLMWrapper.complete">complete()</a></code> for the specific provider.</p>
 </div>
 
 
@@ -1415,7 +1735,15 @@ inheritance.</p>
     </div>
     <a class="headerlink" href="#LiteLLMWrapper.get_used_options"></a>
     
-    
+            <div class="docstring"><p>Get the option types used by this wrapper.</p>
+
+<p>Returns:</p>
+
+<ul>
+<li>List of <code>Option</code> classes that this wrapper accepts.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="LiteLLMWrapper.model" class="classattr">
@@ -1461,7 +1789,22 @@ inheritance.</p>
     </div>
     <a class="headerlink" href="#LiteLLMWrapper.complete"></a>
     
-    
+            <div class="docstring"><p>Complete a conversation with the LLM.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>messages</code>: List of <code>LLMMessage</code> objects for the conversation.</li>
+<li><code>seed</code>: Optional random seed for deterministic outputs.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li><code><a href="#LLMResult">LLMResult</a></code> with the response string and token usage.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="LiteLLMWrapper.get_limits" class="classattr">
@@ -1474,7 +1817,15 @@ inheritance.</p>
     </div>
     <a class="headerlink" href="#LiteLLMWrapper.get_limits"></a>
     
-    
+            <div class="docstring"><p>Get the default rate limits.</p>
+
+<p>Returns:</p>
+
+<ul>
+<li><code><a href="#RateLimits">RateLimits</a></code> with default values (no limits).</li>
+</ul>
+</div>
+
 
                             </div>
                             <div class="inherited">
@@ -1504,7 +1855,11 @@ inheritance.</p>
     </div>
     <a class="headerlink" href="#AnthropicOptions"></a>
     
-    
+            <div class="docstring"><p>Base class for LLM provider options.</p>
+
+<p>Provides common configuration for API keys, rate limits, and custom API URLs.</p>
+</div>
+
 
                             <div id="AnthropicOptions.limits" class="classattr">
                                 <div class="attr variable">
@@ -1514,7 +1869,9 @@ inheritance.</p>
     </div>
     <a class="headerlink" href="#AnthropicOptions.limits"></a>
     
-    
+            <div class="docstring"><p>Rate limiting configuration.</p>
+</div>
+
 
                             </div>
                             <div class="inherited">
@@ -1543,8 +1900,12 @@ inheritance.</p>
     </div>
     <a class="headerlink" href="#AnthropicWrapper"></a>
     
-            <div class="docstring"><p>Helper class that provides a standard way to create an ABC using
-inheritance.</p>
+            <div class="docstring"><p>Base class for LLM API wrappers.</p>
+
+<p>Provides a unified interface for calling different LLM providers
+with rate limiting, batching, and retry logic.</p>
+
+<p>Subclasses should implement <code><a href="#AnthropicWrapper.complete">complete()</a></code> for the specific provider.</p>
 </div>
 
 
@@ -1585,7 +1946,11 @@ inheritance.</p>
     </div>
     <a class="headerlink" href="#GeminiOptions"></a>
     
-    
+            <div class="docstring"><p>Base class for LLM provider options.</p>
+
+<p>Provides common configuration for API keys, rate limits, and custom API URLs.</p>
+</div>
+
 
                             <div class="inherited">
                                 <h5>Inherited Members</h5>
@@ -1614,8 +1979,12 @@ inheritance.</p>
     </div>
     <a class="headerlink" href="#GeminiWrapper"></a>
     
-            <div class="docstring"><p>Helper class that provides a standard way to create an ABC using
-inheritance.</p>
+            <div class="docstring"><p>Base class for LLM API wrappers.</p>
+
+<p>Provides a unified interface for calling different LLM providers
+with rate limiting, batching, and retry logic.</p>
+
+<p>Subclasses should implement <code><a href="#GeminiWrapper.complete">complete()</a></code> for the specific provider.</p>
 </div>
 
 
@@ -1656,7 +2025,11 @@ inheritance.</p>
     </div>
     <a class="headerlink" href="#VertexAIOptions"></a>
     
-    
+            <div class="docstring"><p>Base class for LLM provider options.</p>
+
+<p>Provides common configuration for API keys, rate limits, and custom API URLs.</p>
+</div>
+
 
                             <div id="VertexAIOptions.get_additional_kwargs" class="classattr">
                                 <div class="attr function">
@@ -1668,7 +2041,15 @@ inheritance.</p>
     </div>
     <a class="headerlink" href="#VertexAIOptions.get_additional_kwargs"></a>
     
-    
+            <div class="docstring"><p>Get additional keyword arguments for the LLM client.</p>
+
+<p>Returns:</p>
+
+<ul>
+<li>Dictionary of additional arguments (empty by default, can be overridden).</li>
+</ul>
+</div>
+
 
                             </div>
                             <div class="inherited">
@@ -1697,8 +2078,12 @@ inheritance.</p>
     </div>
     <a class="headerlink" href="#VertexAIWrapper"></a>
     
-            <div class="docstring"><p>Helper class that provides a standard way to create an ABC using
-inheritance.</p>
+            <div class="docstring"><p>Base class for LLM API wrappers.</p>
+
+<p>Provides a unified interface for calling different LLM providers
+with rate limiting, batching, and retry logic.</p>
+
+<p>Subclasses should implement <code><a href="#VertexAIWrapper.complete">complete()</a></code> for the specific provider.</p>
 </div>
 
 
@@ -1739,7 +2124,11 @@ inheritance.</p>
     </div>
     <a class="headerlink" href="#DeepSeekOptions"></a>
     
-    
+            <div class="docstring"><p>Base class for LLM provider options.</p>
+
+<p>Provides common configuration for API keys, rate limits, and custom API URLs.</p>
+</div>
+
 
                             <div class="inherited">
                                 <h5>Inherited Members</h5>
@@ -1768,8 +2157,12 @@ inheritance.</p>
     </div>
     <a class="headerlink" href="#DeepSeekWrapper"></a>
     
-            <div class="docstring"><p>Helper class that provides a standard way to create an ABC using
-inheritance.</p>
+            <div class="docstring"><p>Base class for LLM API wrappers.</p>
+
+<p>Provides a unified interface for calling different LLM providers
+with rate limiting, batching, and retry logic.</p>
+
+<p>Subclasses should implement <code><a href="#DeepSeekWrapper.complete">complete()</a></code> for the specific provider.</p>
 </div>
 
 
@@ -1810,7 +2203,11 @@ inheritance.</p>
     </div>
     <a class="headerlink" href="#MistralOptions"></a>
     
-    
+            <div class="docstring"><p>Base class for LLM provider options.</p>
+
+<p>Provides common configuration for API keys, rate limits, and custom API URLs.</p>
+</div>
+
 
                             <div id="MistralOptions.limits" class="classattr">
                                 <div class="attr variable">
@@ -1820,7 +2217,9 @@ inheritance.</p>
     </div>
     <a class="headerlink" href="#MistralOptions.limits"></a>
     
-    
+            <div class="docstring"><p>Rate limiting configuration.</p>
+</div>
+
 
                             </div>
                             <div class="inherited">
@@ -1849,8 +2248,12 @@ inheritance.</p>
     </div>
     <a class="headerlink" href="#MistralWrapper"></a>
     
-            <div class="docstring"><p>Helper class that provides a standard way to create an ABC using
-inheritance.</p>
+            <div class="docstring"><p>Base class for LLM API wrappers.</p>
+
+<p>Provides a unified interface for calling different LLM providers
+with rate limiting, batching, and retry logic.</p>
+
+<p>Subclasses should implement <code><a href="#MistralWrapper.complete">complete()</a></code> for the specific provider.</p>
 </div>
 
 
@@ -1891,7 +2294,11 @@ inheritance.</p>
     </div>
     <a class="headerlink" href="#OllamaOptions"></a>
     
-    
+            <div class="docstring"><p>Base class for LLM provider options.</p>
+
+<p>Provides common configuration for API keys, rate limits, and custom API URLs.</p>
+</div>
+
 
                             <div id="OllamaOptions.api_url" class="classattr">
                                 <div class="attr variable">
@@ -1901,7 +2308,9 @@ inheritance.</p>
     </div>
     <a class="headerlink" href="#OllamaOptions.api_url"></a>
     
-    
+            <div class="docstring"><p>Optional custom API URL (for self-hosted providers).</p>
+</div>
+
 
                             </div>
                             <div class="inherited">
@@ -1930,8 +2339,12 @@ inheritance.</p>
     </div>
     <a class="headerlink" href="#OllamaWrapper"></a>
     
-            <div class="docstring"><p>Helper class that provides a standard way to create an ABC using
-inheritance.</p>
+            <div class="docstring"><p>Base class for LLM API wrappers.</p>
+
+<p>Provides a unified interface for calling different LLM providers
+with rate limiting, batching, and retry logic.</p>
+
+<p>Subclasses should implement <code><a href="#OllamaWrapper.complete">complete()</a></code> for the specific provider.</p>
 </div>
 
 
@@ -1972,7 +2385,11 @@ inheritance.</p>
     </div>
     <a class="headerlink" href="#NebiusOptions"></a>
     
-    
+            <div class="docstring"><p>Base class for LLM provider options.</p>
+
+<p>Provides common configuration for API keys, rate limits, and custom API URLs.</p>
+</div>
+
 
                             <div class="inherited">
                                 <h5>Inherited Members</h5>
@@ -2001,8 +2418,12 @@ inheritance.</p>
     </div>
     <a class="headerlink" href="#NebiusWrapper"></a>
     
-            <div class="docstring"><p>Helper class that provides a standard way to create an ABC using
-inheritance.</p>
+            <div class="docstring"><p>Base class for LLM API wrappers.</p>
+
+<p>Provides a unified interface for calling different LLM providers
+with rate limiting, batching, and retry logic.</p>
+
+<p>Subclasses should implement <code><a href="#NebiusWrapper.complete">complete()</a></code> for the specific provider.</p>
 </div>
 
 

@@ -664,7 +664,12 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#ClassificationDummyQuality"></a>
     
-    
+            <div class="docstring"><p>Small preset summarizing quality of a dummy/baseline classification model.</p>
+
+<p>Generates metrics for a simple heuristic-based baseline model (e.g., always predict
+the most common class). Useful as a baseline to compare your model against.</p>
+</div>
+
 
                             <div id="ClassificationDummyQuality.__init__" class="classattr">
                                 <div class="attr function">
@@ -675,9 +680,13 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#ClassificationDummyQuality.__init__"></a>
     
-            <div class="docstring"><p>Create a new model by parsing and validating input data from keyword arguments.</p>
+            <div class="docstring"><p>Initialize a metric container.</p>
 
-<p>Raises ValidationError if the input data cannot be parsed to form a valid model.</p>
+<p>Args:</p>
+
+<ul>
+<li><code><a href="#ClassificationDummyQuality.include_tests">include_tests</a></code>: If <code>True</code>, generated metrics will include default tests.</li>
+</ul>
 </div>
 
 
@@ -690,7 +699,9 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#ClassificationDummyQuality.probas_threshold"></a>
     
-    
+            <div class="docstring"><p>Optional probability threshold.</p>
+</div>
+
 
                             </div>
                             <div id="ClassificationDummyQuality.k" class="classattr">
@@ -701,7 +712,9 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#ClassificationDummyQuality.k"></a>
     
-    
+            <div class="docstring"><p>Optional top-k value for multiclass classification.</p>
+</div>
+
 
                             </div>
                             <div id="ClassificationDummyQuality.classification_name" class="classattr">
@@ -712,7 +725,9 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#ClassificationDummyQuality.classification_name"></a>
     
-    
+            <div class="docstring"><p>Name of the classification task.</p>
+</div>
+
 
                             </div>
                             <div id="ClassificationDummyQuality.generate_metrics" class="classattr">
@@ -725,7 +740,21 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#ClassificationDummyQuality.generate_metrics"></a>
     
-    
+            <div class="docstring"><p>Generate metrics based on the container configuration.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>context</code>: <code>Context</code> containing datasets and configuration.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li>Sequence of <code>Metric</code> or <code>MetricContainer</code> objects to compute.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="ClassificationDummyQuality.render" class="classattr">
@@ -738,7 +767,24 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#ClassificationDummyQuality.render"></a>
     
-    
+            <div class="docstring"><p>Render visualization widgets for this container.</p>
+
+<p>Combines widgets from all child metrics/containers.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>context</code>: <code>Context</code> containing datasets and configuration.</li>
+<li><code>child_widgets</code>: Optional list of (metric_id, widgets) tuples from child metrics.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li>List of <code>BaseWidgetInfo</code> objects for visualization.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div class="inherited">
@@ -764,7 +810,13 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#ClassificationPreset"></a>
     
-    
+            <div class="docstring"><p>Large preset with comprehensive classification quality metrics and visualizations.</p>
+
+<p>Combines <code><a href="#ClassificationQuality">ClassificationQuality</a></code> and <code><a href="#ClassificationQualityByLabel">ClassificationQualityByLabel</a></code> to provide
+a complete classification evaluation including aggregated metrics, per-label metrics,
+and optional visualizations (confusion matrix, PR curves, ROC curves).</p>
+</div>
+
 
                             <div id="ClassificationPreset.__init__" class="classattr">
                                 <div class="attr function">
@@ -775,9 +827,13 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#ClassificationPreset.__init__"></a>
     
-            <div class="docstring"><p>Create a new model by parsing and validating input data from keyword arguments.</p>
+            <div class="docstring"><p>Initialize a metric container.</p>
 
-<p>Raises ValidationError if the input data cannot be parsed to form a valid model.</p>
+<p>Args:</p>
+
+<ul>
+<li><code><a href="#ClassificationPreset.include_tests">include_tests</a></code>: If <code>True</code>, generated metrics will include default tests.</li>
+</ul>
 </div>
 
 
@@ -790,7 +846,9 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#ClassificationPreset.probas_threshold"></a>
     
-    
+            <div class="docstring"><p>Optional probability threshold for binary classification.</p>
+</div>
+
 
                             </div>
                             <div id="ClassificationPreset.accuracy_tests" class="classattr">
@@ -801,7 +859,9 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#ClassificationPreset.accuracy_tests"></a>
     
-    
+            <div class="docstring"><p>Optional test conditions for accuracy.</p>
+</div>
+
 
                             </div>
                             <div id="ClassificationPreset.precision_tests" class="classattr">
@@ -812,7 +872,9 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#ClassificationPreset.precision_tests"></a>
     
-    
+            <div class="docstring"><p>Optional test conditions for precision.</p>
+</div>
+
 
                             </div>
                             <div id="ClassificationPreset.recall_tests" class="classattr">
@@ -823,7 +885,9 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#ClassificationPreset.recall_tests"></a>
     
-    
+            <div class="docstring"><p>Optional test conditions for recall.</p>
+</div>
+
 
                             </div>
                             <div id="ClassificationPreset.f1score_tests" class="classattr">
@@ -834,7 +898,9 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#ClassificationPreset.f1score_tests"></a>
     
-    
+            <div class="docstring"><p>Optional test conditions for F1 score.</p>
+</div>
+
 
                             </div>
                             <div id="ClassificationPreset.rocauc_tests" class="classattr">
@@ -845,7 +911,9 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#ClassificationPreset.rocauc_tests"></a>
     
-    
+            <div class="docstring"><p>Optional test conditions for ROC AUC.</p>
+</div>
+
 
                             </div>
                             <div id="ClassificationPreset.logloss_tests" class="classattr">
@@ -856,7 +924,9 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#ClassificationPreset.logloss_tests"></a>
     
-    
+            <div class="docstring"><p>Optional test conditions for log loss.</p>
+</div>
+
 
                             </div>
                             <div id="ClassificationPreset.tpr_tests" class="classattr">
@@ -867,7 +937,9 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#ClassificationPreset.tpr_tests"></a>
     
-    
+            <div class="docstring"><p>Optional test conditions for TPR.</p>
+</div>
+
 
                             </div>
                             <div id="ClassificationPreset.tnr_tests" class="classattr">
@@ -878,7 +950,9 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#ClassificationPreset.tnr_tests"></a>
     
-    
+            <div class="docstring"><p>Optional test conditions for TNR.</p>
+</div>
+
 
                             </div>
                             <div id="ClassificationPreset.fpr_tests" class="classattr">
@@ -889,7 +963,9 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#ClassificationPreset.fpr_tests"></a>
     
-    
+            <div class="docstring"><p>Optional test conditions for FPR.</p>
+</div>
+
 
                             </div>
                             <div id="ClassificationPreset.fnr_tests" class="classattr">
@@ -900,7 +976,9 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#ClassificationPreset.fnr_tests"></a>
     
-    
+            <div class="docstring"><p>Optional test conditions for FNR.</p>
+</div>
+
 
                             </div>
                             <div id="ClassificationPreset.f1score_by_label_tests" class="classattr">
@@ -911,7 +989,9 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#ClassificationPreset.f1score_by_label_tests"></a>
     
-    
+            <div class="docstring"><p>Optional test conditions for F1 score by label.</p>
+</div>
+
 
                             </div>
                             <div id="ClassificationPreset.precision_by_label_tests" class="classattr">
@@ -922,7 +1002,9 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#ClassificationPreset.precision_by_label_tests"></a>
     
-    
+            <div class="docstring"><p>Optional test conditions for precision by label.</p>
+</div>
+
 
                             </div>
                             <div id="ClassificationPreset.recall_by_label_tests" class="classattr">
@@ -933,7 +1015,9 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#ClassificationPreset.recall_by_label_tests"></a>
     
-    
+            <div class="docstring"><p>Optional test conditions for recall by label.</p>
+</div>
+
 
                             </div>
                             <div id="ClassificationPreset.rocauc_by_label_tests" class="classattr">
@@ -944,7 +1028,9 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#ClassificationPreset.rocauc_by_label_tests"></a>
     
-    
+            <div class="docstring"><p>Optional test conditions for ROC AUC by label.</p>
+</div>
+
 
                             </div>
                             <div id="ClassificationPreset.classification_name" class="classattr">
@@ -955,7 +1041,9 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#ClassificationPreset.classification_name"></a>
     
-    
+            <div class="docstring"><p>Name of the classification task.</p>
+</div>
+
 
                             </div>
                             <div id="ClassificationPreset.generate_metrics" class="classattr">
@@ -968,7 +1056,21 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#ClassificationPreset.generate_metrics"></a>
     
-    
+            <div class="docstring"><p>Generate metrics based on the container configuration.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>context</code>: <code>Context</code> containing datasets and configuration.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li>Sequence of <code>Metric</code> or <code>MetricContainer</code> objects to compute.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="ClassificationPreset.render" class="classattr">
@@ -981,7 +1083,24 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#ClassificationPreset.render"></a>
     
-    
+            <div class="docstring"><p>Render visualization widgets for this container.</p>
+
+<p>Combines widgets from all child metrics/containers.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>context</code>: <code>Context</code> containing datasets and configuration.</li>
+<li><code>child_widgets</code>: Optional list of (metric_id, widgets) tuples from child metrics.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li>List of <code>BaseWidgetInfo</code> objects for visualization.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div class="inherited">
@@ -1007,7 +1126,13 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#ClassificationQuality"></a>
     
-    
+            <div class="docstring"><p>Small preset summarizing classification quality metrics.</p>
+
+<p>Generates aggregated classification metrics including accuracy, precision, recall,
+F1 score, ROC AUC, log loss, and binary classification rates (TPR, TNR, FPR, FNR).
+Optionally includes visualizations like confusion matrix, PR curve, and PR table.</p>
+</div>
+
 
                             <div id="ClassificationQuality.__init__" class="classattr">
                                 <div class="attr function">
@@ -1018,9 +1143,13 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#ClassificationQuality.__init__"></a>
     
-            <div class="docstring"><p>Create a new model by parsing and validating input data from keyword arguments.</p>
+            <div class="docstring"><p>Initialize a metric container.</p>
 
-<p>Raises ValidationError if the input data cannot be parsed to form a valid model.</p>
+<p>Args:</p>
+
+<ul>
+<li><code><a href="#ClassificationQuality.include_tests">include_tests</a></code>: If <code>True</code>, generated metrics will include default tests.</li>
+</ul>
 </div>
 
 
@@ -1033,7 +1162,9 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#ClassificationQuality.classification_name"></a>
     
-    
+            <div class="docstring"><p>Name of the classification task.</p>
+</div>
+
 
                             </div>
                             <div id="ClassificationQuality.probas_threshold" class="classattr">
@@ -1044,7 +1175,9 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#ClassificationQuality.probas_threshold"></a>
     
-    
+            <div class="docstring"><p>Optional probability threshold for binary classification.</p>
+</div>
+
 
                             </div>
                             <div id="ClassificationQuality.conf_matrix" class="classattr">
@@ -1055,7 +1188,9 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#ClassificationQuality.conf_matrix"></a>
     
-    
+            <div class="docstring"><p>Whether to show confusion matrix visualization.</p>
+</div>
+
 
                             </div>
                             <div id="ClassificationQuality.pr_curve" class="classattr">
@@ -1066,7 +1201,9 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#ClassificationQuality.pr_curve"></a>
     
-    
+            <div class="docstring"><p>Whether to show precision-recall curve.</p>
+</div>
+
 
                             </div>
                             <div id="ClassificationQuality.pr_table" class="classattr">
@@ -1077,7 +1214,9 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#ClassificationQuality.pr_table"></a>
     
-    
+            <div class="docstring"><p>Whether to show precision-recall table.</p>
+</div>
+
 
                             </div>
                             <div id="ClassificationQuality.accuracy_tests" class="classattr">
@@ -1088,7 +1227,9 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#ClassificationQuality.accuracy_tests"></a>
     
-    
+            <div class="docstring"><p>Optional test conditions for accuracy.</p>
+</div>
+
 
                             </div>
                             <div id="ClassificationQuality.precision_tests" class="classattr">
@@ -1099,7 +1240,9 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#ClassificationQuality.precision_tests"></a>
     
-    
+            <div class="docstring"><p>Optional test conditions for precision.</p>
+</div>
+
 
                             </div>
                             <div id="ClassificationQuality.recall_tests" class="classattr">
@@ -1110,7 +1253,9 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#ClassificationQuality.recall_tests"></a>
     
-    
+            <div class="docstring"><p>Optional test conditions for recall.</p>
+</div>
+
 
                             </div>
                             <div id="ClassificationQuality.f1score_tests" class="classattr">
@@ -1121,7 +1266,9 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#ClassificationQuality.f1score_tests"></a>
     
-    
+            <div class="docstring"><p>Optional test conditions for F1 score.</p>
+</div>
+
 
                             </div>
                             <div id="ClassificationQuality.rocauc_tests" class="classattr">
@@ -1132,7 +1279,9 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#ClassificationQuality.rocauc_tests"></a>
     
-    
+            <div class="docstring"><p>Optional test conditions for ROC AUC.</p>
+</div>
+
 
                             </div>
                             <div id="ClassificationQuality.logloss_tests" class="classattr">
@@ -1143,7 +1292,9 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#ClassificationQuality.logloss_tests"></a>
     
-    
+            <div class="docstring"><p>Optional test conditions for log loss.</p>
+</div>
+
 
                             </div>
                             <div id="ClassificationQuality.tpr_tests" class="classattr">
@@ -1154,7 +1305,9 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#ClassificationQuality.tpr_tests"></a>
     
-    
+            <div class="docstring"><p>Optional test conditions for TPR.</p>
+</div>
+
 
                             </div>
                             <div id="ClassificationQuality.tnr_tests" class="classattr">
@@ -1165,7 +1318,9 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#ClassificationQuality.tnr_tests"></a>
     
-    
+            <div class="docstring"><p>Optional test conditions for TNR.</p>
+</div>
+
 
                             </div>
                             <div id="ClassificationQuality.fpr_tests" class="classattr">
@@ -1176,7 +1331,9 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#ClassificationQuality.fpr_tests"></a>
     
-    
+            <div class="docstring"><p>Optional test conditions for FPR.</p>
+</div>
+
 
                             </div>
                             <div id="ClassificationQuality.fnr_tests" class="classattr">
@@ -1187,7 +1344,9 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#ClassificationQuality.fnr_tests"></a>
     
-    
+            <div class="docstring"><p>Optional test conditions for FNR.</p>
+</div>
+
 
                             </div>
                             <div id="ClassificationQuality.generate_metrics" class="classattr">
@@ -1200,7 +1359,21 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#ClassificationQuality.generate_metrics"></a>
     
-    
+            <div class="docstring"><p>Generate metrics based on the container configuration.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>context</code>: <code>Context</code> containing datasets and configuration.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li>Sequence of <code>Metric</code> or <code>MetricContainer</code> objects to compute.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="ClassificationQuality.render" class="classattr">
@@ -1213,7 +1386,24 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#ClassificationQuality.render"></a>
     
-    
+            <div class="docstring"><p>Render visualization widgets for this container.</p>
+
+<p>Combines widgets from all child metrics/containers.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>context</code>: <code>Context</code> containing datasets and configuration.</li>
+<li><code>child_widgets</code>: Optional list of (metric_id, widgets) tuples from child metrics.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li>List of <code>BaseWidgetInfo</code> objects for visualization.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div class="inherited">
@@ -1239,7 +1429,12 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#ClassificationQualityByLabel"></a>
     
-    
+            <div class="docstring"><p>Small preset summarizing classification quality metrics by label.</p>
+
+<p>Generates per-class metrics for multiclass classification including F1, precision,
+recall, and ROC AUC for each label. Useful for understanding per-class performance.</p>
+</div>
+
 
                             <div id="ClassificationQualityByLabel.__init__" class="classattr">
                                 <div class="attr function">
@@ -1250,9 +1445,13 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#ClassificationQualityByLabel.__init__"></a>
     
-            <div class="docstring"><p>Create a new model by parsing and validating input data from keyword arguments.</p>
+            <div class="docstring"><p>Initialize a metric container.</p>
 
-<p>Raises ValidationError if the input data cannot be parsed to form a valid model.</p>
+<p>Args:</p>
+
+<ul>
+<li><code><a href="#ClassificationQualityByLabel.include_tests">include_tests</a></code>: If <code>True</code>, generated metrics will include default tests.</li>
+</ul>
 </div>
 
 
@@ -1265,7 +1464,9 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#ClassificationQualityByLabel.probas_threshold"></a>
     
-    
+            <div class="docstring"><p>Optional probability threshold for binary classification.</p>
+</div>
+
 
                             </div>
                             <div id="ClassificationQualityByLabel.k" class="classattr">
@@ -1276,7 +1477,9 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#ClassificationQualityByLabel.k"></a>
     
-    
+            <div class="docstring"><p>Optional top-k value for multiclass classification.</p>
+</div>
+
 
                             </div>
                             <div id="ClassificationQualityByLabel.f1score_tests" class="classattr">
@@ -1287,7 +1490,9 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#ClassificationQualityByLabel.f1score_tests"></a>
     
-    
+            <div class="docstring"><p>Optional test conditions for F1 score by label.</p>
+</div>
+
 
                             </div>
                             <div id="ClassificationQualityByLabel.precision_tests" class="classattr">
@@ -1298,7 +1503,9 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#ClassificationQualityByLabel.precision_tests"></a>
     
-    
+            <div class="docstring"><p>Optional test conditions for precision by label.</p>
+</div>
+
 
                             </div>
                             <div id="ClassificationQualityByLabel.recall_tests" class="classattr">
@@ -1309,7 +1516,9 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#ClassificationQualityByLabel.recall_tests"></a>
     
-    
+            <div class="docstring"><p>Optional test conditions for recall by label.</p>
+</div>
+
 
                             </div>
                             <div id="ClassificationQualityByLabel.rocauc_tests" class="classattr">
@@ -1320,7 +1529,9 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#ClassificationQualityByLabel.rocauc_tests"></a>
     
-    
+            <div class="docstring"><p>Optional test conditions for ROC AUC by label.</p>
+</div>
+
 
                             </div>
                             <div id="ClassificationQualityByLabel.classification_name" class="classattr">
@@ -1331,7 +1542,9 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#ClassificationQualityByLabel.classification_name"></a>
     
-    
+            <div class="docstring"><p>Name of the classification task.</p>
+</div>
+
 
                             </div>
                             <div id="ClassificationQualityByLabel.generate_metrics" class="classattr">
@@ -1344,7 +1557,21 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#ClassificationQualityByLabel.generate_metrics"></a>
     
-    
+            <div class="docstring"><p>Generate metrics based on the container configuration.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>context</code>: <code>Context</code> containing datasets and configuration.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li>Sequence of <code>Metric</code> or <code>MetricContainer</code> objects to compute.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="ClassificationQualityByLabel.render" class="classattr">
@@ -1357,7 +1584,24 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#ClassificationQualityByLabel.render"></a>
     
-    
+            <div class="docstring"><p>Render visualization widgets for this container.</p>
+
+<p>Combines widgets from all child metrics/containers.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>context</code>: <code>Context</code> containing datasets and configuration.</li>
+<li><code>child_widgets</code>: Optional list of (metric_id, widgets) tuples from child metrics.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li>List of <code>BaseWidgetInfo</code> objects for visualization.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div class="inherited">
@@ -1383,7 +1627,13 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#ValueStats"></a>
     
-    
+            <div class="docstring"><p>Small preset providing descriptive statistics for a single column.</p>
+
+<p>Generates multiple metrics for a column including row count, missing values,
+min, max, mean, std, quantiles (0.25, 0.5, 0.75), and unique value counts.
+Metrics vary based on column type (numerical, categorical, datetime, text).</p>
+</div>
+
 
                             <div id="ValueStats.__init__" class="classattr">
                                 <div class="attr function">
@@ -1394,9 +1644,14 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#ValueStats.__init__"></a>
     
-            <div class="docstring"><p>Create a new model by parsing and validating input data from keyword arguments.</p>
+            <div class="docstring"><p>Initialize a column metric container.</p>
 
-<p>Raises ValidationError if the input data cannot be parsed to form a valid model.</p>
+<p>Args:</p>
+
+<ul>
+<li><code><a href="#ValueStats.column">column</a></code>: Name of the column to generate metrics for.</li>
+<li><code><a href="#ValueStats.include_tests">include_tests</a></code>: If <code>True</code>, generated metrics will include default tests.</li>
+</ul>
 </div>
 
 
@@ -1409,7 +1664,9 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#ValueStats.row_count_tests"></a>
     
-    
+            <div class="docstring"><p>Optional test conditions for row count.</p>
+</div>
+
 
                             </div>
                             <div id="ValueStats.missing_values_count_tests" class="classattr">
@@ -1420,7 +1677,9 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#ValueStats.missing_values_count_tests"></a>
     
-    
+            <div class="docstring"><p>Optional test conditions for missing values count.</p>
+</div>
+
 
                             </div>
                             <div id="ValueStats.min_tests" class="classattr">
@@ -1431,7 +1690,9 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#ValueStats.min_tests"></a>
     
-    
+            <div class="docstring"><p>Optional test conditions for minimum value.</p>
+</div>
+
 
                             </div>
                             <div id="ValueStats.max_tests" class="classattr">
@@ -1442,7 +1703,9 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#ValueStats.max_tests"></a>
     
-    
+            <div class="docstring"><p>Optional test conditions for maximum value.</p>
+</div>
+
 
                             </div>
                             <div id="ValueStats.mean_tests" class="classattr">
@@ -1453,7 +1716,9 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#ValueStats.mean_tests"></a>
     
-    
+            <div class="docstring"><p>Optional test conditions for mean value.</p>
+</div>
+
 
                             </div>
                             <div id="ValueStats.std_tests" class="classattr">
@@ -1464,7 +1729,9 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#ValueStats.std_tests"></a>
     
-    
+            <div class="docstring"><p>Optional test conditions for standard deviation.</p>
+</div>
+
 
                             </div>
                             <div id="ValueStats.q25_tests" class="classattr">
@@ -1475,7 +1742,9 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#ValueStats.q25_tests"></a>
     
-    
+            <div class="docstring"><p>Optional test conditions for 25th quantile.</p>
+</div>
+
 
                             </div>
                             <div id="ValueStats.q50_tests" class="classattr">
@@ -1486,7 +1755,9 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#ValueStats.q50_tests"></a>
     
-    
+            <div class="docstring"><p>Optional test conditions for 50th quantile (median).</p>
+</div>
+
 
                             </div>
                             <div id="ValueStats.q75_tests" class="classattr">
@@ -1497,7 +1768,9 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#ValueStats.q75_tests"></a>
     
-    
+            <div class="docstring"><p>Optional test conditions for 75th quantile.</p>
+</div>
+
 
                             </div>
                             <div id="ValueStats.unique_values_count_tests" class="classattr">
@@ -1508,7 +1781,9 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#ValueStats.unique_values_count_tests"></a>
     
-    
+            <div class="docstring"><p>Optional test conditions for unique value counts.</p>
+</div>
+
 
                             </div>
                             <div id="ValueStats.replace_nan" class="classattr">
@@ -1519,7 +1794,9 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#ValueStats.replace_nan"></a>
     
-    
+            <div class="docstring"><p>Optional value to replace NaN with for unique value counting.</p>
+</div>
+
 
                             </div>
                             <div id="ValueStats.validate_tests" class="classattr">
@@ -1546,7 +1823,21 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#ValueStats.generate_metrics"></a>
     
-    
+            <div class="docstring"><p>Generate metrics based on the container configuration.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>context</code>: <code>Context</code> containing datasets and configuration.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li>Sequence of <code>Metric</code> or <code>MetricContainer</code> objects to compute.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="ValueStats.render" class="classattr">
@@ -1559,7 +1850,24 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#ValueStats.render"></a>
     
-    
+            <div class="docstring"><p>Render visualization widgets for this container.</p>
+
+<p>Combines widgets from all child metrics/containers.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>context</code>: <code>Context</code> containing datasets and configuration.</li>
+<li><code>child_widgets</code>: Optional list of (metric_id, widgets) tuples from child metrics.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li>List of <code>BaseWidgetInfo</code> objects for visualization.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div class="inherited">
@@ -1589,7 +1897,13 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#TextEvals"></a>
     
-    
+            <div class="docstring"><p>Preset for summarizing text descriptor results.</p>
+
+<p>Generates statistics for text descriptors (numerical and categorical descriptors
+computed from text data). Includes row-level test summaries and value statistics
+for descriptor columns.</p>
+</div>
+
 
                             <div id="TextEvals.__init__" class="classattr">
                                 <div class="attr function">
@@ -1600,9 +1914,13 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#TextEvals.__init__"></a>
     
-            <div class="docstring"><p>Create a new model by parsing and validating input data from keyword arguments.</p>
+            <div class="docstring"><p>Initialize a metric container.</p>
 
-<p>Raises ValidationError if the input data cannot be parsed to form a valid model.</p>
+<p>Args:</p>
+
+<ul>
+<li><code><a href="#TextEvals.include_tests">include_tests</a></code>: If <code>True</code>, generated metrics will include default tests.</li>
+</ul>
 </div>
 
 
@@ -1615,7 +1933,9 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#TextEvals.columns"></a>
     
-    
+            <div class="docstring"><p>Optional list of descriptor column names to analyze (None = all descriptors).</p>
+</div>
+
 
                             </div>
                             <div id="TextEvals.row_count_tests" class="classattr">
@@ -1626,7 +1946,9 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#TextEvals.row_count_tests"></a>
     
-    
+            <div class="docstring"><p>Optional test conditions for row count.</p>
+</div>
+
 
                             </div>
                             <div id="TextEvals.column_tests" class="classattr">
@@ -1637,7 +1959,9 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#TextEvals.column_tests"></a>
     
-    
+            <div class="docstring"><p>Optional dictionary mapping column names to ValueStatsTests configurations.</p>
+</div>
+
 
                             </div>
                             <div id="TextEvals.get_cols" class="classattr">
@@ -1676,7 +2000,21 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#TextEvals.generate_metrics"></a>
     
-    
+            <div class="docstring"><p>Generate metrics based on the container configuration.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>context</code>: <code>Context</code> containing datasets and configuration.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li>Sequence of <code>Metric</code> or <code>MetricContainer</code> objects to compute.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="TextEvals.render" class="classattr">
@@ -1689,7 +2027,24 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#TextEvals.render"></a>
     
-    
+            <div class="docstring"><p>Render visualization widgets for this container.</p>
+
+<p>Combines widgets from all child metrics/containers.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>context</code>: <code>Context</code> containing datasets and configuration.</li>
+<li><code>child_widgets</code>: Optional list of (metric_id, widgets) tuples from child metrics.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li>List of <code>BaseWidgetInfo</code> objects for visualization.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div class="inherited">
@@ -1715,7 +2070,13 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#DatasetStats"></a>
     
-    
+            <div class="docstring"><p>Small preset providing dataset-level descriptive statistics.</p>
+
+<p>Generates metrics for overall dataset characteristics including row/column counts,
+duplicated rows/columns, constant columns, empty rows/columns, and missing values.
+Provides a comprehensive overview of dataset structure and quality.</p>
+</div>
+
 
                             <div id="DatasetStats.__init__" class="classattr">
                                 <div class="attr function">
@@ -1726,9 +2087,13 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#DatasetStats.__init__"></a>
     
-            <div class="docstring"><p>Create a new model by parsing and validating input data from keyword arguments.</p>
+            <div class="docstring"><p>Initialize a metric container.</p>
 
-<p>Raises ValidationError if the input data cannot be parsed to form a valid model.</p>
+<p>Args:</p>
+
+<ul>
+<li><code><a href="#DatasetStats.include_tests">include_tests</a></code>: If <code>True</code>, generated metrics will include default tests.</li>
+</ul>
 </div>
 
 
@@ -1741,7 +2106,9 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#DatasetStats.row_count_tests"></a>
     
-    
+            <div class="docstring"><p>Optional test conditions for row count.</p>
+</div>
+
 
                             </div>
                             <div id="DatasetStats.column_count_tests" class="classattr">
@@ -1752,7 +2119,9 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#DatasetStats.column_count_tests"></a>
     
-    
+            <div class="docstring"><p>Optional test conditions for column count.</p>
+</div>
+
 
                             </div>
                             <div id="DatasetStats.duplicated_row_count_tests" class="classattr">
@@ -1763,7 +2132,9 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#DatasetStats.duplicated_row_count_tests"></a>
     
-    
+            <div class="docstring"><p>Optional test conditions for duplicated row count.</p>
+</div>
+
 
                             </div>
                             <div id="DatasetStats.duplicated_column_count_tests" class="classattr">
@@ -1774,7 +2145,9 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#DatasetStats.duplicated_column_count_tests"></a>
     
-    
+            <div class="docstring"><p>Optional test conditions for duplicated column count.</p>
+</div>
+
 
                             </div>
                             <div id="DatasetStats.almost_duplicated_column_count_tests" class="classattr">
@@ -1785,7 +2158,9 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#DatasetStats.almost_duplicated_column_count_tests"></a>
     
-    
+            <div class="docstring"><p>Optional test conditions for almost duplicated columns.</p>
+</div>
+
 
                             </div>
                             <div id="DatasetStats.almost_constant_column_count_tests" class="classattr">
@@ -1796,7 +2171,9 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#DatasetStats.almost_constant_column_count_tests"></a>
     
-    
+            <div class="docstring"><p>Optional test conditions for almost constant columns.</p>
+</div>
+
 
                             </div>
                             <div id="DatasetStats.empty_row_count_tests" class="classattr">
@@ -1807,7 +2184,9 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#DatasetStats.empty_row_count_tests"></a>
     
-    
+            <div class="docstring"><p>Optional test conditions for empty row count.</p>
+</div>
+
 
                             </div>
                             <div id="DatasetStats.empty_column_count_tests" class="classattr">
@@ -1818,7 +2197,9 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#DatasetStats.empty_column_count_tests"></a>
     
-    
+            <div class="docstring"><p>Optional test conditions for empty column count.</p>
+</div>
+
 
                             </div>
                             <div id="DatasetStats.constant_columns_count_tests" class="classattr">
@@ -1829,7 +2210,9 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#DatasetStats.constant_columns_count_tests"></a>
     
-    
+            <div class="docstring"><p>Optional test conditions for constant column count.</p>
+</div>
+
 
                             </div>
                             <div id="DatasetStats.dataset_missing_value_count_tests" class="classattr">
@@ -1840,7 +2223,9 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#DatasetStats.dataset_missing_value_count_tests"></a>
     
-    
+            <div class="docstring"><p>Optional test conditions for dataset missing value count.</p>
+</div>
+
 
                             </div>
                             <div id="DatasetStats.dataset_missing_value_share_tests" class="classattr">
@@ -1851,7 +2236,9 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#DatasetStats.dataset_missing_value_share_tests"></a>
     
-    
+            <div class="docstring"><p>Optional test conditions for dataset missing value share.</p>
+</div>
+
 
                             </div>
                             <div id="DatasetStats.generate_metrics" class="classattr">
@@ -1864,7 +2251,21 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#DatasetStats.generate_metrics"></a>
     
-    
+            <div class="docstring"><p>Generate metrics based on the container configuration.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>context</code>: <code>Context</code> containing datasets and configuration.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li>Sequence of <code>Metric</code> or <code>MetricContainer</code> objects to compute.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="DatasetStats.render" class="classattr">
@@ -1877,7 +2278,24 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#DatasetStats.render"></a>
     
-    
+            <div class="docstring"><p>Render visualization widgets for this container.</p>
+
+<p>Combines widgets from all child metrics/containers.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>context</code>: <code>Context</code> containing datasets and configuration.</li>
+<li><code>child_widgets</code>: Optional list of (metric_id, widgets) tuples from child metrics.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li>List of <code>BaseWidgetInfo</code> objects for visualization.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div class="inherited">
@@ -1903,7 +2321,13 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#DataSummaryPreset"></a>
     
-    
+            <div class="docstring"><p>Large preset combining dataset statistics and column value statistics.</p>
+
+<p>Combines <code><a href="#DatasetStats">DatasetStats</a></code> and <code><a href="#ValueStats">ValueStats</a></code> for all or specified columns to provide
+a comprehensive overview of dataset structure, quality, and column-level statistics.
+This is the most comprehensive preset for exploratory data analysis.</p>
+</div>
+
 
                             <div id="DataSummaryPreset.__init__" class="classattr">
                                 <div class="attr function">
@@ -1914,9 +2338,13 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#DataSummaryPreset.__init__"></a>
     
-            <div class="docstring"><p>Create a new model by parsing and validating input data from keyword arguments.</p>
+            <div class="docstring"><p>Initialize a metric container.</p>
 
-<p>Raises ValidationError if the input data cannot be parsed to form a valid model.</p>
+<p>Args:</p>
+
+<ul>
+<li><code><a href="#DataSummaryPreset.include_tests">include_tests</a></code>: If <code>True</code>, generated metrics will include default tests.</li>
+</ul>
 </div>
 
 
@@ -1929,7 +2357,9 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#DataSummaryPreset.columns"></a>
     
-    
+            <div class="docstring"><p>Optional list of column names to analyze (None = all columns).</p>
+</div>
+
 
                             </div>
                             <div id="DataSummaryPreset.row_count_tests" class="classattr">
@@ -1940,7 +2370,9 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#DataSummaryPreset.row_count_tests"></a>
     
-    
+            <div class="docstring"><p>Optional test conditions for row count.</p>
+</div>
+
 
                             </div>
                             <div id="DataSummaryPreset.column_count_tests" class="classattr">
@@ -1951,7 +2383,9 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#DataSummaryPreset.column_count_tests"></a>
     
-    
+            <div class="docstring"><p>Optional test conditions for column count.</p>
+</div>
+
 
                             </div>
                             <div id="DataSummaryPreset.duplicated_row_count_tests" class="classattr">
@@ -1962,7 +2396,9 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#DataSummaryPreset.duplicated_row_count_tests"></a>
     
-    
+            <div class="docstring"><p>Optional test conditions for duplicated row count.</p>
+</div>
+
 
                             </div>
                             <div id="DataSummaryPreset.duplicated_column_count_tests" class="classattr">
@@ -1973,7 +2409,9 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#DataSummaryPreset.duplicated_column_count_tests"></a>
     
-    
+            <div class="docstring"><p>Optional test conditions for duplicated column count.</p>
+</div>
+
 
                             </div>
                             <div id="DataSummaryPreset.almost_duplicated_column_count_tests" class="classattr">
@@ -1984,7 +2422,9 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#DataSummaryPreset.almost_duplicated_column_count_tests"></a>
     
-    
+            <div class="docstring"><p>Optional test conditions for almost duplicated columns.</p>
+</div>
+
 
                             </div>
                             <div id="DataSummaryPreset.almost_constant_column_count_tests" class="classattr">
@@ -1995,7 +2435,9 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#DataSummaryPreset.almost_constant_column_count_tests"></a>
     
-    
+            <div class="docstring"><p>Optional test conditions for almost constant columns.</p>
+</div>
+
 
                             </div>
                             <div id="DataSummaryPreset.empty_row_count_tests" class="classattr">
@@ -2006,7 +2448,9 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#DataSummaryPreset.empty_row_count_tests"></a>
     
-    
+            <div class="docstring"><p>Optional test conditions for empty row count.</p>
+</div>
+
 
                             </div>
                             <div id="DataSummaryPreset.empty_column_count_tests" class="classattr">
@@ -2017,7 +2461,9 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#DataSummaryPreset.empty_column_count_tests"></a>
     
-    
+            <div class="docstring"><p>Optional test conditions for empty column count.</p>
+</div>
+
 
                             </div>
                             <div id="DataSummaryPreset.constant_columns_count_tests" class="classattr">
@@ -2028,7 +2474,9 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#DataSummaryPreset.constant_columns_count_tests"></a>
     
-    
+            <div class="docstring"><p>Optional test conditions for constant column count.</p>
+</div>
+
 
                             </div>
                             <div id="DataSummaryPreset.dataset_missing_value_count_tests" class="classattr">
@@ -2039,7 +2487,9 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#DataSummaryPreset.dataset_missing_value_count_tests"></a>
     
-    
+            <div class="docstring"><p>Optional test conditions for dataset missing value count.</p>
+</div>
+
 
                             </div>
                             <div id="DataSummaryPreset.column_tests" class="classattr">
@@ -2050,7 +2500,9 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#DataSummaryPreset.column_tests"></a>
     
-    
+            <div class="docstring"><p>Optional dictionary mapping column names to ValueStatsTests configurations.</p>
+</div>
+
 
                             </div>
                             <div id="DataSummaryPreset.generate_metrics" class="classattr">
@@ -2063,7 +2515,21 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#DataSummaryPreset.generate_metrics"></a>
     
-    
+            <div class="docstring"><p>Generate metrics based on the container configuration.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>context</code>: <code>Context</code> containing datasets and configuration.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li>Sequence of <code>Metric</code> or <code>MetricContainer</code> objects to compute.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="DataSummaryPreset.render" class="classattr">
@@ -2076,7 +2542,24 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#DataSummaryPreset.render"></a>
     
-    
+            <div class="docstring"><p>Render visualization widgets for this container.</p>
+
+<p>Combines widgets from all child metrics/containers.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>context</code>: <code>Context</code> containing datasets and configuration.</li>
+<li><code>child_widgets</code>: Optional list of (metric_id, widgets) tuples from child metrics.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li>List of <code>BaseWidgetInfo</code> objects for visualization.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div class="inherited">
@@ -2102,7 +2585,12 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#RegressionDummyQuality"></a>
     
-    
+            <div class="docstring"><p>Small preset summarizing quality of a dummy/baseline regression model.</p>
+
+<p>Generates metrics for a simple baseline model (e.g., always predict the mean).
+Useful as a baseline to compare your model against.</p>
+</div>
+
 
                             <div id="RegressionDummyQuality.__init__" class="classattr">
                                 <div class="attr function">
@@ -2113,9 +2601,13 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#RegressionDummyQuality.__init__"></a>
     
-            <div class="docstring"><p>Create a new model by parsing and validating input data from keyword arguments.</p>
+            <div class="docstring"><p>Initialize a metric container.</p>
 
-<p>Raises ValidationError if the input data cannot be parsed to form a valid model.</p>
+<p>Args:</p>
+
+<ul>
+<li><code><a href="#RegressionDummyQuality.include_tests">include_tests</a></code>: If <code>True</code>, generated metrics will include default tests.</li>
+</ul>
 </div>
 
 
@@ -2128,7 +2620,9 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#RegressionDummyQuality.mae_tests"></a>
     
-    
+            <div class="docstring"><p>Optional test conditions for dummy MAE.</p>
+</div>
+
 
                             </div>
                             <div id="RegressionDummyQuality.mape_tests" class="classattr">
@@ -2139,7 +2633,9 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#RegressionDummyQuality.mape_tests"></a>
     
-    
+            <div class="docstring"><p>Optional test conditions for dummy MAPE.</p>
+</div>
+
 
                             </div>
                             <div id="RegressionDummyQuality.rmse_tests" class="classattr">
@@ -2150,7 +2646,9 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#RegressionDummyQuality.rmse_tests"></a>
     
-    
+            <div class="docstring"><p>Optional test conditions for dummy RMSE.</p>
+</div>
+
 
                             </div>
                             <div id="RegressionDummyQuality.regression_name" class="classattr">
@@ -2161,7 +2659,9 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#RegressionDummyQuality.regression_name"></a>
     
-    
+            <div class="docstring"><p>Name of the regression task.</p>
+</div>
+
 
                             </div>
                             <div id="RegressionDummyQuality.generate_metrics" class="classattr">
@@ -2174,7 +2674,21 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#RegressionDummyQuality.generate_metrics"></a>
     
-    
+            <div class="docstring"><p>Generate metrics based on the container configuration.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>context</code>: <code>Context</code> containing datasets and configuration.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li>Sequence of <code>Metric</code> or <code>MetricContainer</code> objects to compute.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="RegressionDummyQuality.render" class="classattr">
@@ -2187,7 +2701,24 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#RegressionDummyQuality.render"></a>
     
-    
+            <div class="docstring"><p>Render visualization widgets for this container.</p>
+
+<p>Combines widgets from all child metrics/containers.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>context</code>: <code>Context</code> containing datasets and configuration.</li>
+<li><code>child_widgets</code>: Optional list of (metric_id, widgets) tuples from child metrics.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li>List of <code>BaseWidgetInfo</code> objects for visualization.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div class="inherited">
@@ -2213,7 +2744,13 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#RegressionQuality"></a>
     
-    
+            <div class="docstring"><p>Small preset summarizing regression quality metrics.</p>
+
+<p>Generates aggregated regression metrics including mean error, MAPE, RMSE, MAE,
+R² score, and absolute max error. Optionally includes visualizations like
+predicted vs actual plots, error plots, and error distributions.</p>
+</div>
+
 
                             <div id="RegressionQuality.__init__" class="classattr">
                                 <div class="attr function">
@@ -2224,9 +2761,13 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#RegressionQuality.__init__"></a>
     
-            <div class="docstring"><p>Create a new model by parsing and validating input data from keyword arguments.</p>
+            <div class="docstring"><p>Initialize a metric container.</p>
 
-<p>Raises ValidationError if the input data cannot be parsed to form a valid model.</p>
+<p>Args:</p>
+
+<ul>
+<li><code><a href="#RegressionQuality.include_tests">include_tests</a></code>: If <code>True</code>, generated metrics will include default tests.</li>
+</ul>
 </div>
 
 
@@ -2239,7 +2780,9 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#RegressionQuality.pred_actual_plot"></a>
     
-    
+            <div class="docstring"><p>Whether to show predicted vs actual plot.</p>
+</div>
+
 
                             </div>
                             <div id="RegressionQuality.error_plot" class="classattr">
@@ -2250,7 +2793,9 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#RegressionQuality.error_plot"></a>
     
-    
+            <div class="docstring"><p>Whether to show error plot.</p>
+</div>
+
 
                             </div>
                             <div id="RegressionQuality.error_distr" class="classattr">
@@ -2261,7 +2806,9 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#RegressionQuality.error_distr"></a>
     
-    
+            <div class="docstring"><p>Whether to show error distribution.</p>
+</div>
+
 
                             </div>
                             <div id="RegressionQuality.mean_error_tests" class="classattr">
@@ -2272,7 +2819,9 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#RegressionQuality.mean_error_tests"></a>
     
-    
+            <div class="docstring"><p>Optional test conditions for mean error (mean and std).</p>
+</div>
+
 
                             </div>
                             <div id="RegressionQuality.mape_tests" class="classattr">
@@ -2283,7 +2832,9 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#RegressionQuality.mape_tests"></a>
     
-    
+            <div class="docstring"><p>Optional test conditions for MAPE (mean and std).</p>
+</div>
+
 
                             </div>
                             <div id="RegressionQuality.rmse_tests" class="classattr">
@@ -2294,7 +2845,9 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#RegressionQuality.rmse_tests"></a>
     
-    
+            <div class="docstring"><p>Optional test conditions for RMSE.</p>
+</div>
+
 
                             </div>
                             <div id="RegressionQuality.mae_tests" class="classattr">
@@ -2305,7 +2858,9 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#RegressionQuality.mae_tests"></a>
     
-    
+            <div class="docstring"><p>Optional test conditions for MAE (mean and std).</p>
+</div>
+
 
                             </div>
                             <div id="RegressionQuality.r2score_tests" class="classattr">
@@ -2316,7 +2871,9 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#RegressionQuality.r2score_tests"></a>
     
-    
+            <div class="docstring"><p>Optional test conditions for R² score.</p>
+</div>
+
 
                             </div>
                             <div id="RegressionQuality.abs_max_error_tests" class="classattr">
@@ -2327,7 +2884,9 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#RegressionQuality.abs_max_error_tests"></a>
     
-    
+            <div class="docstring"><p>Optional test conditions for absolute max error.</p>
+</div>
+
 
                             </div>
                             <div id="RegressionQuality.regression_name" class="classattr">
@@ -2338,7 +2897,9 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#RegressionQuality.regression_name"></a>
     
-    
+            <div class="docstring"><p>Name of the regression task.</p>
+</div>
+
 
                             </div>
                             <div id="RegressionQuality.generate_metrics" class="classattr">
@@ -2351,7 +2912,21 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#RegressionQuality.generate_metrics"></a>
     
-    
+            <div class="docstring"><p>Generate metrics based on the container configuration.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>context</code>: <code>Context</code> containing datasets and configuration.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li>Sequence of <code>Metric</code> or <code>MetricContainer</code> objects to compute.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="RegressionQuality.render" class="classattr">
@@ -2364,7 +2939,24 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#RegressionQuality.render"></a>
     
-    
+            <div class="docstring"><p>Render visualization widgets for this container.</p>
+
+<p>Combines widgets from all child metrics/containers.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>context</code>: <code>Context</code> containing datasets and configuration.</li>
+<li><code>child_widgets</code>: Optional list of (metric_id, widgets) tuples from child metrics.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li>List of <code>BaseWidgetInfo</code> objects for visualization.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div class="inherited">
@@ -2390,7 +2982,13 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#RegressionPreset"></a>
     
-    
+            <div class="docstring"><p>Large preset with comprehensive regression quality metrics and visualizations.</p>
+
+<p>Combines <code><a href="#RegressionQuality">RegressionQuality</a></code> with all visualizations enabled to provide a complete
+regression evaluation including mean error, MAPE, RMSE, MAE, R² score, absolute
+max error, and visualizations (predicted vs actual, error plots, error distributions).</p>
+</div>
+
 
                             <div id="RegressionPreset.__init__" class="classattr">
                                 <div class="attr function">
@@ -2401,9 +2999,13 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#RegressionPreset.__init__"></a>
     
-            <div class="docstring"><p>Create a new model by parsing and validating input data from keyword arguments.</p>
+            <div class="docstring"><p>Initialize a metric container.</p>
 
-<p>Raises ValidationError if the input data cannot be parsed to form a valid model.</p>
+<p>Args:</p>
+
+<ul>
+<li><code><a href="#RegressionPreset.include_tests">include_tests</a></code>: If <code>True</code>, generated metrics will include default tests.</li>
+</ul>
 </div>
 
 
@@ -2416,7 +3018,9 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#RegressionPreset.mean_error_tests"></a>
     
-    
+            <div class="docstring"><p>Optional test conditions for mean error (mean and std).</p>
+</div>
+
 
                             </div>
                             <div id="RegressionPreset.mape_tests" class="classattr">
@@ -2427,7 +3031,9 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#RegressionPreset.mape_tests"></a>
     
-    
+            <div class="docstring"><p>Optional test conditions for MAPE (mean and std).</p>
+</div>
+
 
                             </div>
                             <div id="RegressionPreset.rmse_tests" class="classattr">
@@ -2438,7 +3044,9 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#RegressionPreset.rmse_tests"></a>
     
-    
+            <div class="docstring"><p>Optional test conditions for RMSE.</p>
+</div>
+
 
                             </div>
                             <div id="RegressionPreset.mae_tests" class="classattr">
@@ -2449,7 +3057,9 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#RegressionPreset.mae_tests"></a>
     
-    
+            <div class="docstring"><p>Optional test conditions for MAE (mean and std).</p>
+</div>
+
 
                             </div>
                             <div id="RegressionPreset.r2score_tests" class="classattr">
@@ -2460,7 +3070,9 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#RegressionPreset.r2score_tests"></a>
     
-    
+            <div class="docstring"><p>Optional test conditions for R² score.</p>
+</div>
+
 
                             </div>
                             <div id="RegressionPreset.abs_max_error_tests" class="classattr">
@@ -2471,7 +3083,9 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#RegressionPreset.abs_max_error_tests"></a>
     
-    
+            <div class="docstring"><p>Optional test conditions for absolute max error.</p>
+</div>
+
 
                             </div>
                             <div id="RegressionPreset.regression_name" class="classattr">
@@ -2482,7 +3096,9 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#RegressionPreset.regression_name"></a>
     
-    
+            <div class="docstring"><p>Name of the regression task.</p>
+</div>
+
 
                             </div>
                             <div id="RegressionPreset.generate_metrics" class="classattr">
@@ -2495,7 +3111,21 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#RegressionPreset.generate_metrics"></a>
     
-    
+            <div class="docstring"><p>Generate metrics based on the container configuration.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>context</code>: <code>Context</code> containing datasets and configuration.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li>Sequence of <code>Metric</code> or <code>MetricContainer</code> objects to compute.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="RegressionPreset.render" class="classattr">
@@ -2508,7 +3138,24 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#RegressionPreset.render"></a>
     
-    
+            <div class="docstring"><p>Render visualization widgets for this container.</p>
+
+<p>Combines widgets from all child metrics/containers.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>context</code>: <code>Context</code> containing datasets and configuration.</li>
+<li><code>child_widgets</code>: Optional list of (metric_id, widgets) tuples from child metrics.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li>List of <code>BaseWidgetInfo</code> objects for visualization.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div class="inherited">
@@ -2534,7 +3181,18 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#DataDriftPreset"></a>
     
-    
+            <div class="docstring"><p>Large preset for detecting data drift across columns.</p>
+
+<p>Calculates data drift for all or specified columns using various drift detection methods.
+Generates <code>DriftedColumnsCount</code> and <code>ValueDrift</code> metrics for each column. Requires reference data.</p>
+
+<p>See Also:</p>
+
+<ul>
+<li><a href="https://docs.evidentlyai.com/metrics/customize_data_drift">Drift Methods Documentation</a> for available methods.</li>
+</ul>
+</div>
+
 
                             <div id="DataDriftPreset.__init__" class="classattr">
                                 <div class="attr function">
@@ -2545,9 +3203,13 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#DataDriftPreset.__init__"></a>
     
-            <div class="docstring"><p>Create a new model by parsing and validating input data from keyword arguments.</p>
+            <div class="docstring"><p>Initialize a metric container.</p>
 
-<p>Raises ValidationError if the input data cannot be parsed to form a valid model.</p>
+<p>Args:</p>
+
+<ul>
+<li><code><a href="#DataDriftPreset.include_tests">include_tests</a></code>: If <code>True</code>, generated metrics will include default tests.</li>
+</ul>
 </div>
 
 
@@ -2560,7 +3222,9 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#DataDriftPreset.columns"></a>
     
-    
+            <div class="docstring"><p>Optional list of column names to analyze (None = all columns).</p>
+</div>
+
 
                             </div>
                             <div id="DataDriftPreset.embeddings" class="classattr">
@@ -2571,7 +3235,9 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#DataDriftPreset.embeddings"></a>
     
-    
+            <div class="docstring"><p>Optional list of embedding column names.</p>
+</div>
+
 
                             </div>
                             <div id="DataDriftPreset.embeddings_drift_method" class="classattr">
@@ -2582,7 +3248,9 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#DataDriftPreset.embeddings_drift_method"></a>
     
-    
+            <div class="docstring"><p>Optional dictionary mapping embedding columns to drift methods.</p>
+</div>
+
 
                             </div>
                             <div id="DataDriftPreset.drift_share" class="classattr">
@@ -2593,7 +3261,9 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#DataDriftPreset.drift_share"></a>
     
-    
+            <div class="docstring"><p>Threshold for drift share (0.5 = 50% of columns).</p>
+</div>
+
 
                             </div>
                             <div id="DataDriftPreset.method" class="classattr">
@@ -2604,7 +3274,9 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#DataDriftPreset.method"></a>
     
-    
+            <div class="docstring"><p>Optional drift detection method for all columns (auto-selected if None).</p>
+</div>
+
 
                             </div>
                             <div id="DataDriftPreset.cat_method" class="classattr">
@@ -2615,7 +3287,9 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#DataDriftPreset.cat_method"></a>
     
-    
+            <div class="docstring"><p>Optional method for categorical columns.</p>
+</div>
+
 
                             </div>
                             <div id="DataDriftPreset.num_method" class="classattr">
@@ -2626,7 +3300,9 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#DataDriftPreset.num_method"></a>
     
-    
+            <div class="docstring"><p>Optional method for numerical columns.</p>
+</div>
+
 
                             </div>
                             <div id="DataDriftPreset.text_method" class="classattr">
@@ -2637,7 +3313,9 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#DataDriftPreset.text_method"></a>
     
-    
+            <div class="docstring"><p>Optional method for text columns.</p>
+</div>
+
 
                             </div>
                             <div id="DataDriftPreset.per_column_method" class="classattr">
@@ -2648,7 +3326,9 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#DataDriftPreset.per_column_method"></a>
     
-    
+            <div class="docstring"><p>Optional dictionary mapping column names to methods.</p>
+</div>
+
 
                             </div>
                             <div id="DataDriftPreset.threshold" class="classattr">
@@ -2659,7 +3339,9 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#DataDriftPreset.threshold"></a>
     
-    
+            <div class="docstring"><p>Optional drift threshold for all columns (uses method default if None).</p>
+</div>
+
 
                             </div>
                             <div id="DataDriftPreset.cat_threshold" class="classattr">
@@ -2670,7 +3352,9 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#DataDriftPreset.cat_threshold"></a>
     
-    
+            <div class="docstring"><p>Optional threshold for categorical columns.</p>
+</div>
+
 
                             </div>
                             <div id="DataDriftPreset.num_threshold" class="classattr">
@@ -2681,7 +3365,9 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#DataDriftPreset.num_threshold"></a>
     
-    
+            <div class="docstring"><p>Optional threshold for numerical columns.</p>
+</div>
+
 
                             </div>
                             <div id="DataDriftPreset.text_threshold" class="classattr">
@@ -2692,7 +3378,9 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#DataDriftPreset.text_threshold"></a>
     
-    
+            <div class="docstring"><p>Optional threshold for text columns.</p>
+</div>
+
 
                             </div>
                             <div id="DataDriftPreset.per_column_threshold" class="classattr">
@@ -2703,7 +3391,9 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#DataDriftPreset.per_column_threshold"></a>
     
-    
+            <div class="docstring"><p>Optional dictionary mapping column names to thresholds.</p>
+</div>
+
 
                             </div>
                             <div id="DataDriftPreset.generate_metrics" class="classattr">
@@ -2716,7 +3406,21 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#DataDriftPreset.generate_metrics"></a>
     
-    
+            <div class="docstring"><p>Generate metrics based on the container configuration.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>context</code>: <code>Context</code> containing datasets and configuration.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li>Sequence of <code>Metric</code> or <code>MetricContainer</code> objects to compute.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="DataDriftPreset.render" class="classattr">
@@ -2729,7 +3433,24 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#DataDriftPreset.render"></a>
     
-    
+            <div class="docstring"><p>Render visualization widgets for this container.</p>
+
+<p>Combines widgets from all child metrics/containers.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>context</code>: <code>Context</code> containing datasets and configuration.</li>
+<li><code>child_widgets</code>: Optional list of (metric_id, widgets) tuples from child metrics.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li>List of <code>BaseWidgetInfo</code> objects for visualization.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div class="inherited">
@@ -2789,9 +3510,13 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#RecsysPreset.__init__"></a>
     
-            <div class="docstring"><p>Create a new model by parsing and validating input data from keyword arguments.</p>
+            <div class="docstring"><p>Initialize a metric container.</p>
 
-<p>Raises ValidationError if the input data cannot be parsed to form a valid model.</p>
+<p>Args:</p>
+
+<ul>
+<li><code><a href="#RecsysPreset.include_tests">include_tests</a></code>: If <code>True</code>, generated metrics will include default tests.</li>
+</ul>
 </div>
 
 
@@ -2927,7 +3652,21 @@ evaluations without manually selecting individual metrics.</p>
     </div>
     <a class="headerlink" href="#RecsysPreset.generate_metrics"></a>
     
-    
+            <div class="docstring"><p>Generate metrics based on the container configuration.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>context</code>: <code>Context</code> containing datasets and configuration.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li>Sequence of <code>Metric</code> or <code>MetricContainer</code> objects to compute.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div class="inherited">

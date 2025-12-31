@@ -121,7 +121,12 @@
     </div>
     <a class="headerlink" href="#Reference"></a>
     
-    
+            <div class="docstring"><p>Reference value for threshold comparisons.</p>
+
+<p>Used in tests to compare metric values against reference data. Can specify
+either a relative change (percentage) or absolute difference, or both.</p>
+</div>
+
 
                             <div id="Reference.relative" class="classattr">
                                 <div class="attr variable">
@@ -131,7 +136,9 @@
     </div>
     <a class="headerlink" href="#Reference.relative"></a>
     
-    
+            <div class="docstring"><p>Optional relative change threshold (percentage as decimal, e.g., 0.1 for 10%).</p>
+</div>
+
 
                             </div>
                             <div id="Reference.absolute" class="classattr">
@@ -142,7 +149,9 @@
     </div>
     <a class="headerlink" href="#Reference.absolute"></a>
     
-    
+            <div class="docstring"><p>Optional absolute difference threshold.</p>
+</div>
+
 
                             </div>
                 </section>
@@ -155,7 +164,9 @@
     </div>
     <a class="headerlink" href="#ThresholdType"></a>
     
-    
+            <div class="docstring"><p>Type alias for threshold values: numeric, approximate, or reference-based.</p>
+</div>
+
 
                 </section>
                 <section id="ThresholdValue">
@@ -167,7 +178,9 @@
     </div>
     <a class="headerlink" href="#ThresholdValue"></a>
     
-    
+            <div class="docstring"><p>Type alias for threshold values: numeric or approximate.</p>
+</div>
+
 
                 </section>
                 <section id="threshold_typecheck_guard">
@@ -180,7 +193,21 @@
     </div>
     <a class="headerlink" href="#threshold_typecheck_guard"></a>
     
-    
+            <div class="docstring"><p>Validate that a value is a valid threshold type.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>value</code>: Value to validate.</li>
+</ul>
+
+<p>Raises:</p>
+
+<ul>
+<li><code>ValueError</code>: If value is not a valid threshold type.</li>
+</ul>
+</div>
+
 
                 </section>
                 <section id="GenericTest">
@@ -193,7 +220,13 @@
     </div>
     <a class="headerlink" href="#GenericTest"></a>
     
-    
+            <div class="docstring"><p>Unified test interface for both metrics and descriptors.</p>
+
+<p><code><a href="#GenericTest">GenericTest</a></code> provides a single interface for tests that can work with both
+metric results and descriptor values. It contains both metric and descriptor
+test implementations and automatically selects the appropriate one.</p>
+</div>
+
 
                             <div id="GenericTest.test_name" class="classattr">
                                 <div class="attr variable">
@@ -203,7 +236,9 @@
     </div>
     <a class="headerlink" href="#GenericTest.test_name"></a>
     
-    
+            <div class="docstring"><p>Name of the test (e.g., "gt", "lt", "between").</p>
+</div>
+
 
                             </div>
                             <div id="GenericTest.metric" class="classattr">
@@ -214,7 +249,9 @@
     </div>
     <a class="headerlink" href="#GenericTest.metric"></a>
     
-    
+            <div class="docstring"><p>Optional <code>MetricTest</code> implementation for metric results.</p>
+</div>
+
 
                             </div>
                             <div id="GenericTest.descriptor" class="classattr">
@@ -225,7 +262,9 @@
     </div>
     <a class="headerlink" href="#GenericTest.descriptor"></a>
     
-    
+            <div class="docstring"><p>Optional <code>DescriptorTest</code> implementation for descriptor values.</p>
+</div>
+
 
                             </div>
                             <div id="GenericTest.for_metric" class="classattr">
@@ -238,7 +277,21 @@
     </div>
     <a class="headerlink" href="#GenericTest.for_metric"></a>
     
-    
+            <div class="docstring"><p>Get the metric test implementation.</p>
+
+<p>Returns:</p>
+
+<ul>
+<li><code>MetricTest</code> for this test.</li>
+</ul>
+
+<p>Raises:</p>
+
+<ul>
+<li><code>ValueError</code>: If metric test is not available.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="GenericTest.for_descriptor" class="classattr">
@@ -251,7 +304,21 @@
     </div>
     <a class="headerlink" href="#GenericTest.for_descriptor"></a>
     
-    
+            <div class="docstring"><p>Get the descriptor test implementation.</p>
+
+<p>Returns:</p>
+
+<ul>
+<li><code>DescriptorTest</code> for this test.</li>
+</ul>
+
+<p>Raises:</p>
+
+<ul>
+<li><code>ValueError</code>: If descriptor test is not available.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="GenericTest.bind_single" class="classattr">
@@ -264,7 +331,21 @@
     </div>
     <a class="headerlink" href="#GenericTest.bind_single"></a>
     
-    
+            <div class="docstring"><p>Bind this test to a single-value metric.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>fingerprint</code>: Metric fingerprint to bind to.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li><code>BoundTest</code> bound to the metric.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="GenericTest.bind_count" class="classattr">
@@ -277,7 +358,22 @@
     </div>
     <a class="headerlink" href="#GenericTest.bind_count"></a>
     
-    
+            <div class="docstring"><p>Bind this test to a count metric.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>fingerprint</code>: Metric fingerprint to bind to.</li>
+<li><code>is_count</code>: If <code>True</code>, test the count value; if <code>False</code>, test the share value.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li><code>BoundTest</code> bound to the metric.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="GenericTest.bind_by_label" class="classattr">
@@ -290,7 +386,22 @@
     </div>
     <a class="headerlink" href="#GenericTest.bind_by_label"></a>
     
-    
+            <div class="docstring"><p>Bind this test to a by-label metric for a specific label.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>fingerprint</code>: Metric fingerprint to bind to.</li>
+<li><code>label</code>: Label to test.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li><code>BoundTest</code> bound to the metric and label.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="GenericTest.bind_by_label_count" class="classattr">
@@ -303,7 +414,23 @@
     </div>
     <a class="headerlink" href="#GenericTest.bind_by_label_count"></a>
     
-    
+            <div class="docstring"><p>Bind this test to a by-label-count metric.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>fingerprint</code>: Metric fingerprint to bind to.</li>
+<li><code>label</code>: Label to test.</li>
+<li><code>slot</code>: Whether to test "count" or "share".</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li><code>BoundTest</code> bound to the metric, label, and slot.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="GenericTest.bind_mean_std" class="classattr">
@@ -316,7 +443,22 @@
     </div>
     <a class="headerlink" href="#GenericTest.bind_mean_std"></a>
     
-    
+            <div class="docstring"><p>Bind this test to a mean-std metric.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>fingerprint</code>: Metric fingerprint to bind to.</li>
+<li><code>is_mean</code>: If <code>True</code>, test the mean value; if <code>False</code>, test the std value.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li><code>BoundTest</code> bound to the metric.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="GenericTest.bind_dataframe" class="classattr">
@@ -329,7 +471,23 @@
     </div>
     <a class="headerlink" href="#GenericTest.bind_dataframe"></a>
     
-    
+            <div class="docstring"><p>Bind this test to a dataframe metric column.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>fingerprint</code>: Metric fingerprint to bind to.</li>
+<li><code>column</code>: Column name in the dataframe to test.</li>
+<li><code>label_filters</code>: Optional filters to select specific rows by label values.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li><code>BoundTest</code> bound to the metric, column, and filters.</li>
+</ul>
+</div>
+
 
                             </div>
                 </section>

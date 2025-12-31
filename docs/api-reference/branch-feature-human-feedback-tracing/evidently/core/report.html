@@ -268,7 +268,12 @@
     </div>
     <a class="headerlink" href="#ContextColumnData"></a>
     
-    
+            <div class="docstring"><p>Wrapper for column data in a <code><a href="#Context">Context</a></code> for metric calculations.</p>
+
+<p>Provides access to column information and categorical labels during metric computation.
+Used internally by metrics to access column data and type information.</p>
+</div>
+
 
                             <div id="ContextColumnData.__init__" class="classattr">
                                 <div class="attr function">
@@ -279,7 +284,15 @@
     </div>
     <a class="headerlink" href="#ContextColumnData.__init__"></a>
     
-    
+            <div class="docstring"><p>Initialize with a dataset column.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>column</code>: The <code>DatasetColumn</code> to wrap.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="ContextColumnData.labels" class="classattr">
@@ -292,7 +305,21 @@
     </div>
     <a class="headerlink" href="#ContextColumnData.labels"></a>
     
-    
+            <div class="docstring"><p>Get unique labels for a categorical column.</p>
+
+<p>Returns:</p>
+
+<ul>
+<li>List of unique label values in the column.</li>
+</ul>
+
+<p>Raises:</p>
+
+<ul>
+<li><code>AttributeError</code>: If the column is not categorical.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="ContextColumnData.column_type" class="classattr">
@@ -303,7 +330,15 @@
     </div>
     <a class="headerlink" href="#ContextColumnData.column_type"></a>
     
-    
+            <div class="docstring"><p>Get the type of the column.</p>
+
+<p>Returns:</p>
+
+<ul>
+<li><code>ColumnType</code>: The type of the column (e.g., Numerical, Categorical, Text).</li>
+</ul>
+</div>
+
 
                             </div>
                 </section>
@@ -317,7 +352,10 @@
     </div>
     <a class="headerlink" href="#ReferenceMetricNotFound"></a>
     
-            <div class="docstring"><p>Common base class for all exceptions</p>
+            <div class="docstring"><p>Exception raised when reference metric result is requested but not available.</p>
+
+<p>This exception is raised when trying to access a reference metric result
+that was not computed (e.g., when no reference dataset was provided).</p>
 </div>
 
 
@@ -330,7 +368,15 @@
     </div>
     <a class="headerlink" href="#ReferenceMetricNotFound.__init__"></a>
     
-    
+            <div class="docstring"><p>Initialize the exception.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code><a href="#ReferenceMetricNotFound.metric_id">metric_id</a></code>: The ID of the metric that was not found.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="ReferenceMetricNotFound.metric_id" class="classattr">
@@ -355,7 +401,21 @@
     </div>
     <a class="headerlink" href="#Context"></a>
     
-    
+            <div class="docstring"><p>Execution context for metric calculations during report runs.</p>
+
+<p>The <code><a href="#Context">Context</a></code> manages the state and data during metric computation. It provides:</p>
+
+<ul>
+<li>Access to current and reference datasets</li>
+<li>Caching of computed metric results</li>
+<li>Access to column data and data definitions</li>
+<li>Support for metric dependencies and containers</li>
+</ul>
+
+<p>The <code><a href="#Context">Context</a></code> is created automatically when you call <code><a href="#Report.run">Report.run()</a></code> and is passed
+to metrics during calculation. You typically don't create <code><a href="#Context">Context</a></code> objects directly.</p>
+</div>
+
 
                             <div id="Context.__init__" class="classattr">
                                 <div class="attr function">
@@ -366,7 +426,15 @@
     </div>
     <a class="headerlink" href="#Context.__init__"></a>
     
-    
+            <div class="docstring"><p>Initialize the context with a report configuration.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>report</code>: The <code><a href="#Report">Report</a></code> configuration.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="Context.init_dataset" class="classattr">
@@ -379,7 +447,17 @@
     </div>
     <a class="headerlink" href="#Context.init_dataset"></a>
     
-    
+            <div class="docstring"><p>Initialize the context with datasets for metric computation.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>current_data</code>: The current dataset to evaluate.</li>
+<li><code>reference_data</code>: Optional reference dataset for comparison.</li>
+<li><code><a href="#Context.additional_data">additional_data</a></code>: Optional dictionary of additional datasets by name.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="Context.column" class="classattr">
@@ -392,7 +470,21 @@
     </div>
     <a class="headerlink" href="#Context.column"></a>
     
-    
+            <div class="docstring"><p>Get column data wrapper for a specific column.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>column_name</code>: Name of the column to access.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li><code><a href="#ContextColumnData">ContextColumnData</a></code>: Wrapper object providing column data and type information.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="Context.calculate_metric" class="classattr">
@@ -405,7 +497,24 @@
     </div>
     <a class="headerlink" href="#Context.calculate_metric"></a>
     
-    
+            <div class="docstring"><p>Calculate a metric and cache the result.</p>
+
+<p>Computes the metric if not already cached, handles dependencies,
+runs associated tests, and returns the result.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>calc</code>: The metric calculation to execute.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li><code>TResultType</code>: The computed metric result.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="Context.get_metric_result" class="classattr">
@@ -418,7 +527,23 @@
     </div>
     <a class="headerlink" href="#Context.get_metric_result"></a>
     
-    
+            <div class="docstring"><p>Get the result of a metric computation.</p>
+
+<p>Returns cached result if available, otherwise calculates the metric.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>metric</code>: The metric identifier, metric object, or calculation to get results for.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li><code>MetricResult</code>: The computed metric result.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="Context.get_metric" class="classattr">
@@ -431,7 +556,21 @@
     </div>
     <a class="headerlink" href="#Context.get_metric"></a>
     
-    
+            <div class="docstring"><p>Get the metric calculation object for a metric ID.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>metric</code>: The metric ID to look up.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li><code>MetricCalculationBase</code>: The metric calculation object.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="Context.get_reference_metric_result" class="classattr">
@@ -444,7 +583,27 @@
     </div>
     <a class="headerlink" href="#Context.get_reference_metric_result"></a>
     
-    
+            <div class="docstring"><p>Get the reference metric result for a metric.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>metric_id</code>: The metric ID to get reference results for.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li><code>MetricResult</code>: The reference metric result.</li>
+</ul>
+
+<p>Raises:</p>
+
+<ul>
+<li><code><a href="#ReferenceMetricNotFound">ReferenceMetricNotFound</a></code>: If reference data was not provided or metric was not computed.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="Context.get_legacy_metric" class="classattr">
@@ -457,7 +616,26 @@
     </div>
     <a class="headerlink" href="#Context.get_legacy_metric"></a>
     
-    
+            <div class="docstring"><p>Calculate a legacy metric and return result with widgets.</p>
+
+<p>Supports legacy (v1) metrics for backward compatibility. Handles dependencies
+and caches results.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>metric</code>: The legacy metric to calculate.</li>
+<li><code>input_data_generator</code>: Optional function to generate input data. Uses default if None.</li>
+<li><code>task_name</code>: Optional task name for classification/ranking metrics.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li>Tuple of (metric result, list of HTML widgets).</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="Context.data_definition" class="classattr">
@@ -468,7 +646,15 @@
     </div>
     <a class="headerlink" href="#Context.data_definition"></a>
     
-    
+            <div class="docstring"><p>Get the data definition for the current dataset.</p>
+
+<p>Returns:</p>
+
+<ul>
+<li><code>DataDefinition</code>: The column mapping and type information.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="Context.configuration" class="classattr">
@@ -479,7 +665,15 @@
     </div>
     <a class="headerlink" href="#Context.configuration"></a>
     
-    
+            <div class="docstring"><p>Get the report configuration.</p>
+
+<p>Returns:</p>
+
+<ul>
+<li><code><a href="#Report">Report</a></code>: The report that created this context.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="Context.has_reference" class="classattr">
@@ -490,7 +684,15 @@
     </div>
     <a class="headerlink" href="#Context.has_reference"></a>
     
-    
+            <div class="docstring"><p>Check if reference data is available.</p>
+
+<p>Returns:</p>
+
+<ul>
+<li><code>bool</code>: True if reference dataset was provided, False otherwise.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="Context.additional_data" class="classattr">
@@ -501,7 +703,15 @@
     </div>
     <a class="headerlink" href="#Context.additional_data"></a>
     
-    
+            <div class="docstring"><p>Get additional datasets by name.</p>
+
+<p>Returns:</p>
+
+<ul>
+<li>Dictionary mapping dataset names to <code>Dataset</code> objects.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="Context.metrics_container" class="classattr">
@@ -514,7 +724,21 @@
     </div>
     <a class="headerlink" href="#Context.metrics_container"></a>
     
-    
+            <div class="docstring"><p>Get metrics for a container by fingerprint.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>metric_container_fingerprint</code>: The fingerprint of the container.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li>Optional list of metrics/containers, or None if not found.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="Context.set_metric_container_data" class="classattr">
@@ -527,7 +751,16 @@
     </div>
     <a class="headerlink" href="#Context.set_metric_container_data"></a>
     
-    
+            <div class="docstring"><p>Store metrics for a container.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>metric_container_fingerprint</code>: The fingerprint of the container.</li>
+<li><code>items</code>: List of metrics or containers to store.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="Context.get_labels" class="classattr">
@@ -540,7 +773,24 @@
     </div>
     <a class="headerlink" href="#Context.get_labels"></a>
     
-    
+            <div class="docstring"><p>Get all unique labels from target and prediction columns.</p>
+
+<p>Collects labels from both current and reference datasets if available.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>target</code>: Name of the target column.</li>
+<li><code>prediction</code>: Optional name of the prediction column.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li>List of unique label values across both datasets.</li>
+</ul>
+</div>
+
 
                             </div>
                 </section>
@@ -568,7 +818,12 @@
     </div>
     <a class="headerlink" href="#SnapshotItem"></a>
     
-    
+            <div class="docstring"><p>Represents a single metric result item in a snapshot.</p>
+
+<p>Contains the metric identifier and associated visualization widgets.
+Used internally to organize metric results in a <code><a href="#Snapshot">Snapshot</a></code>.</p>
+</div>
+
 
                             <div id="SnapshotItem.__init__" class="classattr">
                                 <div class="attr function">
@@ -590,7 +845,9 @@
     </div>
     <a class="headerlink" href="#SnapshotItem.metric_id"></a>
     
-    
+            <div class="docstring"><p>Optional identifier of the metric.</p>
+</div>
+
 
                             </div>
                             <div id="SnapshotItem.widgets" class="classattr">
@@ -601,7 +858,9 @@
     </div>
     <a class="headerlink" href="#SnapshotItem.widgets"></a>
     
-    
+            <div class="docstring"><p>List of HTML widgets for visualizing the metric results.</p>
+</div>
+
 
                             </div>
                 </section>
@@ -729,7 +988,24 @@
     </div>
     <a class="headerlink" href="#Snapshot.render_only_fingerprint"></a>
     
-    
+            <div class="docstring"><p>Render HTML for a specific metric by fingerprint in Jupyter notebook.</p>
+
+<p>Displays only the metric matching the given fingerprint, useful for
+selectively showing specific metrics in notebooks.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>fingerprint</code>: The fingerprint identifier of the metric to render.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li>IPython HTML display object for the metric widgets.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="Snapshot.json" class="classattr">

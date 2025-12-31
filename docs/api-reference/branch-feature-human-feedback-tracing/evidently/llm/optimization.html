@@ -335,6 +335,9 @@
     <a class="headerlink" href="#PromptOptimizer"></a>
     
             <div class="docstring"><p>Main class for running prompt optimization using a given strategy.</p>
+
+<p>Optimizes prompts iteratively by evaluating them on a dataset and
+using an optimization strategy to generate improved versions.</p>
 </div>
 
 
@@ -347,7 +350,17 @@
     </div>
     <a class="headerlink" href="#PromptOptimizer.__init__"></a>
     
-    
+            <div class="docstring"><p>Initialize the optimizer.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code><a href="#PromptOptimizer.name">name</a></code>: Name of the optimizer.</li>
+<li><code><a href="#PromptOptimizer.config">config</a></code>: <code>OptimizerConfig</code> with optimizer settings.</li>
+<li><code><a href="#PromptOptimizer.checkpoint_path">checkpoint_path</a></code>: Optional path for saving/loading checkpoints.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="PromptOptimizer.run" class="classattr">
@@ -360,7 +373,23 @@
     </div>
     <a class="headerlink" href="#PromptOptimizer.run"></a>
     
-    
+            <div class="docstring"><p>Run the optimizer synchronously.</p>
+
+<p>Wrapper around <code><a href="#PromptOptimizer.arun">arun()</a></code> that handles async execution.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>executor</code>: <code>PromptExecutor</code> to execute prompts (uses strategy default if not provided).</li>
+<li><code>scorer</code>: <code>OptimizationScorer</code> to evaluate prompts (uses strategy default if not provided).</li>
+<li><code>dataset</code>: <code>Dataset</code> to evaluate on.</li>
+<li><code>options</code>: Processing options.</li>
+<li><code>early_stop</code>: Optional early stopping configuration.</li>
+<li><code>repetitions</code>: Number of optimization runs to perform.</li>
+<li><code>**params</code>: Additional parameters to set in context.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="PromptOptimizer.arun" class="classattr">
@@ -373,7 +402,22 @@
     </div>
     <a class="headerlink" href="#PromptOptimizer.arun"></a>
     
-            <div class="docstring"><p>Run the optimizer</p>
+            <div class="docstring"><p>Run the optimizer asynchronously.</p>
+
+<p>Executes the optimization strategy, iteratively improving prompts
+based on evaluation scores until early stopping conditions are met.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>executor</code>: <code>PromptExecutor</code> to execute prompts (uses strategy default if not provided).</li>
+<li><code>scorer</code>: <code>OptimizationScorer</code> to evaluate prompts (uses strategy default if not provided).</li>
+<li><code>dataset</code>: <code>Dataset</code> to evaluate on.</li>
+<li><code>options</code>: Processing options.</li>
+<li><code>early_stop</code>: Optional early stopping configuration.</li>
+<li><code>repetitions</code>: Number of optimization runs to perform.</li>
+<li><code>**params</code>: Additional parameters to set in context.</li>
+</ul>
 </div>
 
 
@@ -496,6 +540,9 @@
     <a class="headerlink" href="#PromptExecutionLog"></a>
     
             <div class="docstring"><p>Log entry for prompt execution results.</p>
+
+<p>Tracks the execution of a prompt, including the prompt text and
+the resulting predictions, reasoning, and scores.</p>
 </div>
 
 
@@ -508,9 +555,14 @@
     </div>
     <a class="headerlink" href="#PromptExecutionLog.__init__"></a>
     
-            <div class="docstring"><p>Create a new model by parsing and validating input data from keyword arguments.</p>
+            <div class="docstring"><p>Initialize a prompt execution log.</p>
 
-<p>Raises ValidationError if the input data cannot be parsed to form a valid model.</p>
+<p>Args:</p>
+
+<ul>
+<li><code><a href="#PromptExecutionLog.prompt">prompt</a></code>: The prompt that was executed.</li>
+<li><code><a href="#PromptExecutionLog.result">result</a></code>: <code>LLMResultDataset</code> with execution results.</li>
+</ul>
 </div>
 
 
@@ -523,7 +575,9 @@
     </div>
     <a class="headerlink" href="#PromptExecutionLog.prompt"></a>
     
-    
+            <div class="docstring"><p>The prompt that was executed.</p>
+</div>
+
 
                             </div>
                             <div id="PromptExecutionLog.result" class="classattr">
@@ -534,7 +588,9 @@
     </div>
     <a class="headerlink" href="#PromptExecutionLog.result"></a>
     
-    
+            <div class="docstring"><p>Execution results (predictions, reasoning, scores).</p>
+</div>
+
 
                             </div>
                             <div id="PromptExecutionLog.message" class="classattr">
@@ -547,7 +603,15 @@
     </div>
     <a class="headerlink" href="#PromptExecutionLog.message"></a>
     
-    
+            <div class="docstring"><p>Get a human-readable message for this execution.</p>
+
+<p>Returns:</p>
+
+<ul>
+<li>String describing the execution with result counts.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="PromptExecutionLog.full_message" class="classattr">
@@ -560,7 +624,15 @@
     </div>
     <a class="headerlink" href="#PromptExecutionLog.full_message"></a>
     
-    
+            <div class="docstring"><p>Get the full message for this execution.</p>
+
+<p>Returns:</p>
+
+<ul>
+<li>String with the full prompt text.</li>
+</ul>
+</div>
+
 
                             </div>
                 </section>
@@ -574,7 +646,10 @@
     </div>
     <a class="headerlink" href="#BlankLLMJudge"></a>
     
-            <div class="docstring"><p>Abstract base class for prompt executors.</p>
+            <div class="docstring"><p>Prompt executor that builds an LLM judge on-the-fly.</p>
+
+<p>Automatically creates a binary or multiclass classification judge
+based on the target labels in the dataset, then uses it to execute prompts.</p>
 </div>
 
 
@@ -586,7 +661,9 @@
     </div>
     <a class="headerlink" href="#BlankLLMJudge.kind"></a>
     
-    
+            <div class="docstring"><p>Optional kind identifier for the judge.</p>
+</div>
+
 
                             </div>
                             <div id="BlankLLMJudge.execute" class="classattr">
@@ -599,7 +676,22 @@
     </div>
     <a class="headerlink" href="#BlankLLMJudge.execute"></a>
     
-    
+            <div class="docstring"><p>Execute a prompt using the built judge.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>prompt</code>: Prompt to execute (uses base prompt if empty).</li>
+<li><code>run</code>: <code>OptimizerRun</code> to log execution.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li><code><a href="#PromptExecutionLog">PromptExecutionLog</a></code> with execution results.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="BlankLLMJudge.get_base_prompt" class="classattr">
@@ -612,7 +704,15 @@
     </div>
     <a class="headerlink" href="#BlankLLMJudge.get_base_prompt"></a>
     
-    
+            <div class="docstring"><p>Get the base prompt (empty for blank judge).</p>
+
+<p>Returns:</p>
+
+<ul>
+<li>Empty string (base prompt comes from sub-executor).</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="BlankLLMJudge.get_task" class="classattr">
@@ -625,7 +725,15 @@
     </div>
     <a class="headerlink" href="#BlankLLMJudge.get_task"></a>
     
-    
+            <div class="docstring"><p>Get task description (empty for blank judge).</p>
+
+<p>Returns:</p>
+
+<ul>
+<li>Empty string.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="BlankLLMJudge.get_best_result" class="classattr">
@@ -638,7 +746,22 @@
     </div>
     <a class="headerlink" href="#BlankLLMJudge.get_best_result"></a>
     
-    
+            <div class="docstring"><p>Get the best result function from the sub-executor.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>prompt</code>: Prompt to get result for.</li>
+<li><code>context</code>: <code>OptimizerContext</code>.</li>
+</ul>
+
+<p>Returns:</p>
+
+<ul>
+<li>Best result function from sub-executor.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="BlankLLMJudge.sub_executor" class="classattr">
@@ -649,7 +772,21 @@
     </div>
     <a class="headerlink" href="#BlankLLMJudge.sub_executor"></a>
     
-    
+            <div class="docstring"><p>Get the sub-executor (judge-based executor).</p>
+
+<p>Returns:</p>
+
+<ul>
+<li><code>LLMJudgePromptExecutor</code> instance.</li>
+</ul>
+
+<p>Raises:</p>
+
+<ul>
+<li><code>OptimizationRuntimeError</code>: If sub-executor hasn't been initialized.</li>
+</ul>
+</div>
+
 
                             </div>
                             <div id="BlankLLMJudge.start" class="classattr">
@@ -662,7 +799,15 @@
     </div>
     <a class="headerlink" href="#BlankLLMJudge.start"></a>
     
-    
+            <div class="docstring"><p>Initialize the sub-executor by building the judge.</p>
+
+<p>Args:</p>
+
+<ul>
+<li><code>run</code>: <code>OptimizerRun</code> to use for building the judge.</li>
+</ul>
+</div>
+
 
                             </div>
                 </section>
