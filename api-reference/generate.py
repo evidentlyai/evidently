@@ -149,8 +149,10 @@ def generate_docs_by_git_revision(
     becho("Generating documentation for git revision...")
     yecho(revision)
 
-    path_to_artifact, version = get_revision_info(git_revision_name if git_revision_name else revision)
-    github_blob_url = f"{github_blob_prefix}/{revision}/src/evidently/"
+    revision_name = git_revision_name if git_revision_name else revision
+
+    path_to_artifact, version = get_revision_info(revision_name)
+    github_blob_url = f"{github_blob_prefix}/{revision_name}/src/evidently/"
     output_path = OUTPUT_DIR_PATH / path_to_artifact
 
     modules_to_use = merge_additional_modules_with_defaults(modules)
