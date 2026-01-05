@@ -250,7 +250,8 @@ jobs:
       - name: 📚 Generate and upload API reference
         uses: ./.github/share-actions/generate-and-save-api-reference
         with:
-          source-flag: --git-revision ${{ github.head_ref || github.ref_name }}
+          source-flag: --git-revision ${{ github.ref_name }}
+          additional-flags: --git-revision-name ${{ github.head_ref || github.ref_name }}
 
   download-and-deploy-api-reference:
     name: Download and deploy API reference documentation

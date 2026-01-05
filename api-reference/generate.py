@@ -110,20 +110,16 @@ def build_with_flag_for_evidently(evidently_ref: str) -> list[str]:
     return [flag, evidently_ref]
 
 
-def format_revision_name(revision: str) -> str:
-    """Format a git revision (branch, tag, or commit) into a clean directory name format."""
+def get_revision_info(revision: str) -> tuple[str, str]:
     # Check if it's a hash (hexadecimal string, typically 7-40 characters)
-    if re.match(r"^[0-9a-f]{7,40}$", revision.lower()):
-        prefix = "hash-"
-    # Check if it's a branch (contains "/" which is common in branch names)
-    elif "/" in revision:
-        prefix = "branch-"
-    else:
-        # Leave as is (could be a tag or simple branch name)
-        prefix = ""
+    revision = revision.lower()
+    if re.match(r"^[0-9a-f]{7,40}$", revision):
+        return (revision, f"hash: {revision}")
+    # Check if it's a semver version (e.g., v1.2.3, 1.2.3)
+    elif re.match(r"^v?\d+\.\d+\.\d+$", revision):
+        return (revision, revision)
 
-    formatted = revision.replace("/", "-").lower()
-    return f"{prefix}{formatted}" if prefix else formatted
+    return (revision.replace("/", "-"), f"branch: {revision}")
 
 
 def format_local_path(path: Path) -> str:
@@ -143,6 +139,7 @@ def generate_docs_by_git_revision(
     modules: list[str] | None = None,
     repo_url: str | None = None,
     api_reference_index_href: str = "/",
+    git_revision_name: str | None = None,
 ) -> None:
     """Generate documentation from a git revision (branch, tag, or commit)."""
     github_repo_url = repo_url or GITHUB_REPO_URL
@@ -152,9 +149,9 @@ def generate_docs_by_git_revision(
     becho("Generating documentation for git revision...")
     yecho(revision)
 
-    version = format_revision_name(revision).replace("-", ": ", 1)
+    path_to_artifact, version = get_revision_info(git_revision_name if git_revision_name else revision)
     github_blob_url = f"{github_blob_prefix}/{revision}/src/evidently/"
-    output_path = OUTPUT_DIR_PATH / format_revision_name(revision)
+    output_path = OUTPUT_DIR_PATH / path_to_artifact
 
     modules_to_use = merge_additional_modules_with_defaults(modules)
 
@@ -301,6 +298,11 @@ def generate_docs(
     api_reference_index_href: str = Option(
         "/", "--api-reference-index-href", help="Href path for the 'All versions' link (default: '/')"
     ),
+    git_revision_name: str = Option(
+        None,
+        "--git-revision-name",
+        help="Custom name for output directory when using --git-revision (default: auto-formatted revision name)",
+    ),
 ):
     """Generate documentation for Evidently.
 
@@ -341,6 +343,7 @@ def generate_docs(
             modules=modules_list,
             repo_url=repo_url,
             api_reference_index_href=api_reference_index_href,
+            git_revision_name=git_revision_name,
         )
     elif local_source_code:
         generate_docs_from_local_source(
