@@ -22,10 +22,8 @@ RUN apt-get update && \
         build-essential \
         make \
         gcc \
-        curl \
-    && curl -LsSf https://astral.sh/uv/install.sh | sh \
-    && /root/.cargo/bin/uv pip install .${INSTALL_EXTRAS} \
-    && apt-get remove -y --purge make gcc build-essential curl \
+    && pip install .${INSTALL_EXTRAS} \
+    && apt-get remove -y --purge make gcc build-essential \
     && apt-get autoremove -y \
     && rm -rf /var/lib/apt/lists/* \
     && rm -rf /src

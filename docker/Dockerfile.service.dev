@@ -23,8 +23,7 @@ COPY pyproject.toml .
 COPY README.md .
 COPY src ./src
 
-RUN curl -LsSf https://astral.sh/uv/install.sh | sh \
-    && /root/.cargo/bin/uv pip install . \
+RUN pip install . \
     && rm -rf /src
 
 WORKDIR /app
