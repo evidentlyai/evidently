@@ -345,7 +345,7 @@ jobs:
         run: pip install git+https://github.com/evidentlyai/evidently.git@${{ github.sha }}
 
       - name: Install dvc
-        run: pip install 'dvc[gs]==3.50.1'
+        run: pip install 'pathspec<1' 'dvc[gs]==3.50.1'
 
       - name: Pull test data
         run: dvc pull
@@ -398,7 +398,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Install dvc
-        run: pip install 'dvc[gs]==3.50.1'
+        run: pip install 'pathspec<1' 'dvc[gs]==3.50.1'
 
       - name: Pull test data
         run: dvc pull
