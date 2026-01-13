@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
 import {
   Box,
@@ -227,7 +227,7 @@ export const SnapshotsListTemplate = (props: SnapshotActionsWrapperProps) => {
   )
 
   // Reset to first page when filters change
-  useMemo(() => {
+  useEffect(() => {
     setPage(0)
   }, [selectedTags, metadataQuery, sortByTimestamp])
 
@@ -423,8 +423,8 @@ export const SnapshotsListTemplate = (props: SnapshotActionsWrapperProps) => {
                         variant={slots?.donwloadButtonVariant || 'outlined'}
                         disabled={disabled ?? false}
                         downloadLink={
-                          // better type safety
-                          downloadLink
+                          // normalize to string before replace (DownloadSnapshotURL isn't guaranteed to be string)
+                          String(downloadLink)
                             .replace('{project_id}', projectId)
                             .replace('{snapshot_id}', snapshot.id)
                         }
