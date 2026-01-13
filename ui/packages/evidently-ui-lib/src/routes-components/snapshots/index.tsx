@@ -226,11 +226,6 @@ export const SnapshotsListTemplate = (props: SnapshotActionsWrapperProps) => {
     [filteredSnapshotsByMetadata, sortByTimestamp]
   )
 
-  // Reset to first page when filters change
-  useMemo(() => {
-    setPage(0)
-  }, [selectedTags, metadataQuery, sortByTimestamp])
-
   // Paginate results
   const paginatedSnapshots = useMemo(
     () => resultSnapshots.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage),
@@ -257,7 +252,10 @@ export const SnapshotsListTemplate = (props: SnapshotActionsWrapperProps) => {
             multiple
             limitTags={2}
             value={selectedTags}
-            onChange={(_, newSelectedTags) => setTags(newSelectedTags)}
+            onChange={(_, newSelectedTags) => {
+              setTags(newSelectedTags)
+              setPage(0)
+            }}
             options={ALL_TAGS}
             renderInput={(params) => (
               <TextField {...params} variant='standard' label='Filter by Tags' />
@@ -269,7 +267,10 @@ export const SnapshotsListTemplate = (props: SnapshotActionsWrapperProps) => {
             <TextField
               fullWidth
               value={metadataQuery}
-              onChange={(event) => setMetadataQuery(event.target.value)}
+              onChange={(event) => {
+                setMetadataQuery(event.target.value)
+                setPage(0)
+              }}
               variant='standard'
               label='Search in Metadata'
             />
@@ -345,17 +346,16 @@ export const SnapshotsListTemplate = (props: SnapshotActionsWrapperProps) => {
                 direction={sortByTimestamp}
                 onClick={() => {
                   setSortByTimestamp((prev) => {
+                    let next: typeof prev
                     if (prev === undefined) {
-                      return 'desc'
+                      next = 'desc'
+                    } else if (prev === 'desc') {
+                      next = 'asc'
+                    } else {
+                      next = undefined
                     }
-
-                    if (prev === 'desc') {
-                      return 'asc'
-                    }
-
-                    if (prev === 'asc') {
-                      return undefined
-                    }
+                    setPage(0)
+                    return next
                   })
                 }}
               >
@@ -423,8 +423,8 @@ export const SnapshotsListTemplate = (props: SnapshotActionsWrapperProps) => {
                         variant={slots?.donwloadButtonVariant || 'outlined'}
                         disabled={disabled ?? false}
                         downloadLink={
-                          // better type safety
-                          downloadLink
+                          // normalize to string before replace (DownloadSnapshotURL isn't guaranteed to be string)
+                          String(downloadLink)
                             .replace('{project_id}', projectId)
                             .replace('{snapshot_id}', snapshot.id)
                         }
