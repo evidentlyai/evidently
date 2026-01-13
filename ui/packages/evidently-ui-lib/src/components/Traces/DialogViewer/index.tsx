@@ -1,6 +1,6 @@
 import { Box, Card, CardActionArea, CardContent, Divider, Stack, Typography } from '@mui/material'
 import type { TraceModel } from 'api/types'
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { FieldAutocomplete } from './components/FieldAutocomplete'
 import { SessionCardContent } from './components/SessionCardContent'
 import { TraceComponent } from './components/TraceComponent'
@@ -9,36 +9,37 @@ import type { Description } from './types'
 type DialogViewerProps = {
   data: Record<string, TraceModel[]>
   description: Description
-  LinkToTrace: (props: { traceId: string }) => JSX.Element
+  traceHeader: (props: { trace: TraceModel }) => React.ReactNode
 }
 
 export const DialogViewer = (props: DialogViewerProps) => {
-  const { data, description, LinkToTrace } = props
+  const { data, description, traceHeader } = props
 
   const ref = useRef<HTMLElement>(null)
-  let input = description.inputAttribute
-  let output = description.outputAttribute
 
-  if (input === null || input === '') {
-    if (Object.values(data).flat().length > 0) {
-      const rootSpan = Object.values(data)
-        .flat()[0]
-        .spans.find((x) => x.parent_span_id === '')
-      if (rootSpan) {
-        input = Object.keys(rootSpan.attributes).filter((x) => x !== 'result')[0]
-      }
-    }
-  }
-
-  if (output === null || output === '') {
-    output = 'result'
-  }
+  const input = description.inputAttribute || ''
+  const output = description.outputAttribute || ''
 
   const sessions = Object.keys(data)
 
   const isSingleSession = sessions.length === 1
 
   const [sessionId, setSessionId] = useState({ sessionId: sessions.length > 0 ? sessions[0] : '' })
+
+  const isAFewSessions = !isSingleSession && sessionId.sessionId
+
+  useEffect(() => {
+    if (sessionId.sessionId && ref?.current) {
+      const element = ref.current
+      const rect = element.getBoundingClientRect()
+      const isTopVisible =
+        rect.top >= 0 && rect.top < (window.innerHeight || document.documentElement.clientHeight)
+
+      if (!isTopVisible) {
+        element.scrollIntoView()
+      }
+    }
+  }, [sessionId.sessionId])
 
   let [selectedSessionId, selectedTraces] = Object.entries(data)[0]
 
@@ -50,8 +51,6 @@ export const DialogViewer = (props: DialogViewerProps) => {
     selectedSessionId = sessionId.sessionId
     selectedTraces = data[sessionId.sessionId ?? 'undefined']
   }
-
-  const isAFewSessions = !isSingleSession && sessionId.sessionId
 
   const dataValues = Object.values(data)
   let fields: string[] = []
@@ -70,19 +69,11 @@ export const DialogViewer = (props: DialogViewerProps) => {
     <Box
       ref={ref}
       display={'grid'}
-      gridTemplateColumns={`${isAFewSessions ? 400 : 0}px  calc(100% - ${isAFewSessions ? 400 : 0}px)`}
-      alignItems={'start'}
+      gridTemplateColumns={isAFewSessions ? 'min(25%, 400px) 1fr' : '0 1fr'}
       sx={{ transition: '625ms ease-in-out' }}
     >
-      <Box
-        sx={{
-          height: 1,
-          borderRightStyle: 'solid',
-          borderRightWidth: isAFewSessions ? '1px' : '0px',
-          borderRightColor: 'divider'
-        }}
-      >
-        <Box sx={{ position: 'sticky', top: 0, left: 0, overflowX: 'hidden', zIndex: 3 }}>
+      <Box borderRight={isAFewSessions ? '1px solid' : 'none'} borderColor='divider'>
+        <Box position='sticky' top={0} left={0} zIndex={3}>
           {isAFewSessions && (
             <Box p={3} maxHeight={'100vh'} overflow={'scroll'}>
               <Stack gap={1}>
@@ -90,21 +81,13 @@ export const DialogViewer = (props: DialogViewerProps) => {
                   <Card
                     key={sessionId}
                     sx={[
-                      {
-                        border: '1px solid',
-                        borderColor: 'divider'
-                      },
+                      { border: '1px solid', borderColor: 'divider' },
                       selectedSessionId === sessionId && {
                         borderColor: 'primary.main'
                       }
                     ]}
                   >
-                    <CardActionArea
-                      onClick={() => {
-                        setSessionId({ sessionId })
-                        ref?.current?.scrollIntoView()
-                      }}
-                    >
+                    <CardActionArea onClick={() => setSessionId({ sessionId })}>
                       <CardContent>
                         <SessionCardContent
                           traces={data[sessionId ?? 'undefined']}
@@ -124,50 +107,44 @@ export const DialogViewer = (props: DialogViewerProps) => {
         </Box>
       </Box>
 
-      <Box>
-        <Box maxWidth={'lg'} mx={'auto'}>
-          <Stack direction={'row'} gap={2} justifyContent={'center'} alignItems={'flex-end'} pb={1}>
-            <Box sx={{ minWidth: 300 }}>
-              <Typography variant='subtitle2' gutterBottom>
-                User message field
-              </Typography>
+      <Box maxWidth={'lg'} mx={'auto'} px={1} width='100%' minWidth={0} overflow='scroll'>
+        <Stack direction={'row'} gap={2} justifyContent={'center'} alignItems={'flex-end'} pb={1}>
+          <Box maxWidth={300} width={1}>
+            <Typography variant='subtitle2' gutterBottom>
+              User message field
+            </Typography>
 
-              <FieldAutocomplete
-                value={description.inputAttribute}
-                setValue={description.setInputAttribute}
-                options={fields}
+            <FieldAutocomplete
+              value={description.inputAttribute}
+              setValue={description.setInputAttribute}
+              options={fields}
+            />
+          </Box>
+
+          <Box maxWidth={300} width={1}>
+            <Typography variant='subtitle2' gutterBottom>
+              Assistant message field
+            </Typography>
+
+            <FieldAutocomplete
+              value={description.outputAttribute}
+              setValue={description.setOutputAttribute}
+              options={fields}
+            />
+          </Box>
+        </Stack>
+
+        <Stack mt={2} gap={2} direction={'column'} divider={<Divider />}>
+          {selectedTraces.map((trace) => (
+            <Box key={trace.trace_id} width='100%' maxWidth={0.95} mx={'auto'}>
+              <TraceComponent
+                data={trace}
+                traceHeader={traceHeader({ trace })}
+                description={{ ...description, inputAttribute: input, outputAttribute: output }}
               />
             </Box>
-
-            <Box sx={{ minWidth: 300 }}>
-              <Typography variant='subtitle2' gutterBottom>
-                Assistant message field
-              </Typography>
-
-              <FieldAutocomplete
-                value={description.outputAttribute}
-                setValue={description.setOutputAttribute}
-                options={fields}
-              />
-            </Box>
-          </Stack>
-
-          <Stack gap={2} direction={'column'} divider={<Divider />}>
-            {selectedTraces.map((v) => (
-              <Box key={v.trace_id} width={0.95} mx={'auto'}>
-                <TraceComponent
-                  data={v}
-                  LinkToTrace={LinkToTrace}
-                  description={{
-                    ...description,
-                    inputAttribute: input,
-                    outputAttribute: output
-                  }}
-                />
-              </Box>
-            ))}
-          </Stack>
-        </Box>
+          ))}
+        </Stack>
       </Box>
     </Box>
   )

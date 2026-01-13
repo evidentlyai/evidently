@@ -28,14 +28,32 @@ export const SessionCardContent = (props: SessionCardContentProps) => {
   return (
     <>
       <Typography
-        variant={'subtitle2'}
-        component='pre'
-        sx={{ fontFamily: 'monospace', whiteSpace: 'break-spaces' }}
+        component='div'
+        sx={{
+          fontFamily: 'monospace',
+          fontSize: '0.8rem',
+          overflow: 'hidden',
+          display: '-webkit-box',
+          WebkitLineClamp: 2,
+          WebkitBoxOrient: 'vertical',
+          wordBreak: 'break-word'
+        }}
       >
-        <b>User</b>: {userMessage?.length > 30 ? `${userMessage?.slice(0, 30)}...` : userMessage}
-        <br />
-        <b>Agent</b>:{' '}
-        {agentMessage?.length > 30 ? `${agentMessage?.slice(0, 30)}...` : agentMessage}
+        <b>User</b>: {userMessage}
+      </Typography>
+      <Typography
+        component='div'
+        sx={{
+          fontFamily: 'monospace',
+          fontSize: '0.8rem',
+          overflow: 'hidden',
+          display: '-webkit-box',
+          WebkitLineClamp: 2,
+          WebkitBoxOrient: 'vertical',
+          wordBreak: 'break-word'
+        }}
+      >
+        <b>Agent</b>: {agentMessage}
       </Typography>
       <Divider sx={{ my: 1 }} />
       <Typography variant='subtitle2'>{traces.length * 2} messages</Typography>

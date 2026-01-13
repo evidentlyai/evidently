@@ -19,7 +19,7 @@ RUN apt-get update && \
         gcc
 
 WORKDIR /src
-COPY setup.py .
+COPY pyproject.toml .
 COPY README.md .
 COPY src ./src
 

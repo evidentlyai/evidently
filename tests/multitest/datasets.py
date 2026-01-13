@@ -1,5 +1,6 @@
 import dataclasses
 import pathlib
+import shutil
 from enum import Enum
 from typing import Any
 from typing import List
@@ -120,6 +121,9 @@ def adult():
 
 @dataset
 def housing():
+    shutil.copy(
+        pathlib.Path(__file__).resolve().parents[2] / "test_data" / "cal_housing_py3.pkz", datasets.get_data_home()
+    )
     housing_data = datasets.fetch_california_housing(as_frame=True)
     housing = housing_data.frame
 

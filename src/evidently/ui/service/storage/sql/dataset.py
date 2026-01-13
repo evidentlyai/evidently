@@ -54,6 +54,7 @@ class SQLDatasetMetadataStorage(BaseSQLStorage, DatasetMetadataStorage):
                 "source": json.loads(new_metadata.source.json()),
                 "metadata_json": new_metadata.metadata,
                 "tags": new_metadata.tags,
+                "human_feedback_custom_shortcut_labels": new_metadata.human_feedback_custom_shortcut_labels,
             }
             params: Dict[str, Any] = {key: value for key, value in param_dict.items() if value is not None}
 

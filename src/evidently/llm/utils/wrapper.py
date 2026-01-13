@@ -34,11 +34,22 @@ TResult = TypeVar("TResult")
 
 
 class RateLimits(BaseModel):
+    """Rate limiting configuration for LLM API calls.
+
+    Defines limits for requests per minute (RPM) and tokens per minute (TPM)
+    to avoid exceeding API rate limits.
+    """
+
     rpm: Optional[int] = None
+    """Optional requests per minute limit."""
     itpm: Optional[int] = None
+    """Optional input tokens per minute limit."""
     otpm: Optional[int] = None
+    """Optional output tokens per minute limit."""
     tpm: Optional[int] = None
+    """Optional total tokens per minute limit."""
     interval: datetime.timedelta = datetime.timedelta(minutes=1)
+    """Time window for rate limiting."""
     # continious_token_refresh: bool = False
 
 
@@ -131,7 +142,19 @@ class LimiterStat:
 
 
 class RateLimiter:
+    """Rate limiter for LLM API calls.
+
+    Enforces rate limits on requests and tokens to avoid exceeding API quotas.
+    Tracks usage over time windows and blocks requests when limits would be exceeded.
+    """
+
     def __init__(self, limits: RateLimits, initial_output_estimation: int = 100000):
+        """Initialize the rate limiter.
+
+        Args:
+        * `limits`: `RateLimits` configuration.
+        * `initial_output_estimation`: Initial estimate for output token size.
+        """
         self.limits = limits
         self.enters: List[_Enter] = []
         self.stats: List[LimiterStat] = []
@@ -139,13 +162,27 @@ class RateLimiter:
         self.initial_output_estimation = initial_output_estimation
 
     def enter(self, request: "LimitRequest"):
+        """Get a context manager for a rate-limited request.
+
+        Args:
+        * `request`: `LimitRequest` to rate limit.
+
+        Returns:
+        * Context manager that blocks until rate limits allow the request.
+        """
         return _RateLimiterEntrypoint(self, request)
 
     async def clean(self):
+        """Remove old entries outside the rate limit window."""
         now = datetime.datetime.now()
         self.enters = [e for e in self.enters if not e.done or now - e.ts < self.limits.interval]
 
     def mean_output_size(self):
+        """Get the mean output token size from historical data.
+
+        Returns:
+        * Mean output token size, or initial estimation if no data available.
+        """
         if len(self.stats) == 0:
             return self.initial_output_estimation
         return sum(s.output_tokens for s in self.stats) / len(self.stats)
@@ -153,17 +190,28 @@ class RateLimiter:
 
 @dataclasses.dataclass
 class LLMRequest(Generic[TResult]):
+    """Request to an LLM with messages and response parsing."""
+
     messages: List[LLMMessage]
+    """List of `LLMMessage` objects for the conversation."""
     response_parser: Callable[[str], TResult]
+    """Function to parse the raw string response into `TResult`."""
     response_type: Type[TResult]
+    """Type of the expected result."""
     retries: int = 1
+    """Number of retry attempts on failure."""
 
 
 @dataclasses.dataclass
 class LLMResult(Generic[TResult]):
+    """Result from an LLM API call."""
+
     result: TResult
+    """Parsed result value."""
     input_tokens: int
+    """Number of input tokens used."""
     output_tokens: int
+    """Number of output tokens used."""
 
 
 TBatchItem = TypeVar("TBatchItem")
@@ -178,10 +226,27 @@ class LimitRequest(Generic[TBatchItem]):
 
 
 class LLMWrapper(ABC):
+    """Base class for LLM API wrappers.
+
+    Provides a unified interface for calling different LLM providers
+    with rate limiting, batching, and retry logic.
+
+    Subclasses should implement `complete()` for the specific provider.
+    """
+
     __used_options__: ClassVar[List[Type[Option]]] = []
 
     @abstractmethod
     async def complete(self, messages: List[LLMMessage], seed: Optional[int] = None) -> LLMResult[str]:
+        """Complete a conversation with the LLM.
+
+        Args:
+        * `messages`: List of `LLMMessage` objects for the conversation.
+        * `seed`: Optional random seed for deterministic outputs.
+
+        Returns:
+        * `LLMResult` with the response string and token usage.
+        """
         raise NotImplementedError
 
     async def _batch(
@@ -191,6 +256,17 @@ class LLMWrapper(ABC):
         batch_size: Optional[int] = None,
         limits: Optional[RateLimits] = None,
     ) -> List[TBatchResult]:
+        """Execute a batch of requests with rate limiting and concurrency control.
+
+        Args:
+        * `coro`: Coroutine function to execute for each request.
+        * `batches`: Sequence of rate-limited requests.
+        * `batch_size`: Optional maximum concurrent requests.
+        * `limits`: Optional rate limits (uses default if not provided).
+
+        Returns:
+        * List of results from all requests.
+        """
         if batch_size is None:
             batch_size = self.get_batch_size()
         if limits is None:
@@ -212,13 +288,45 @@ class LLMWrapper(ABC):
         batch_size: Optional[int] = None,
         limits: Optional[RateLimits] = None,
     ) -> List[str]:
+        """Complete multiple conversations in parallel.
+
+        Args:
+        * `messages_batch`: List of message lists, one per conversation.
+        * `batch_size`: Optional maximum concurrent requests.
+        * `limits`: Optional rate limits.
+
+        Returns:
+        * List of response strings.
+        """
         requests = [LimitRequest(msgs, sum(self.estimate_tokens(m) for m in msgs)) for msgs in messages_batch]
         return await self._batch(self.complete, requests, batch_size, limits)
 
     async def run(self, request: LLMRequest[TResult]) -> TResult:
+        """Run a single LLM request with retry logic.
+
+        Args:
+        * `request`: `LLMRequest` to execute.
+
+        Returns:
+        * Parsed result value.
+
+        Raises:
+        * Exception: If all retries fail.
+        """
         return (await self._run(request)).result
 
     async def _run(self, request: LLMRequest[TResult]) -> LLMResult[TResult]:
+        """Run a request with retry logic and response parsing.
+
+        Args:
+        * `request`: `LLMRequest` to execute.
+
+        Returns:
+        * `LLMResult` with parsed result and token usage.
+
+        Raises:
+        * Exception: If all retries fail.
+        """
         num_retries = request.retries
         error = None
         while num_retries >= 0:
@@ -238,19 +346,52 @@ class LLMWrapper(ABC):
         batch_size: Optional[int] = None,
         limits: Optional[RateLimits] = None,
     ) -> List[TResult]:
+        """Run multiple requests in parallel with rate limiting.
+
+        Args:
+        * `requests`: Sequence of `LLMRequest` objects.
+        * `batch_size`: Optional maximum concurrent requests.
+        * `limits`: Optional rate limits.
+
+        Returns:
+        * List of parsed results.
+        """
         rs = [LimitRequest(r, sum(self.estimate_tokens(m) for m in r.messages)) for r in requests]
         return await self._batch(self._run, rs, batch_size, limits)
 
     def get_batch_size(self) -> int:
+        """Get the default batch size for concurrent requests.
+
+        Returns:
+        * Maximum number of concurrent requests (default: 100).
+        """
         return 100
 
     def get_limits(self) -> RateLimits:
+        """Get the default rate limits.
+
+        Returns:
+        * `RateLimits` with default values (no limits).
+        """
         return RateLimits()
 
     def get_used_options(self) -> List[Type[Option]]:
+        """Get the option types used by this wrapper.
+
+        Returns:
+        * List of `Option` classes that this wrapper accepts.
+        """
         return self.__used_options__
 
     def estimate_tokens(self, msg: LLMMessage):
+        """Estimate token count for a message.
+
+        Args:
+        * `msg`: `LLMMessage` to estimate.
+
+        Returns:
+        * Estimated token count (default: character count).
+        """
         return len(msg.content)
 
     complete_batch_sync = sync_api(complete_batch)
@@ -273,6 +414,21 @@ def llm_provider(name: LLMProvider, model: Optional[LLMModel]) -> Callable[[LLMW
 
 
 def get_llm_wrapper(provider: LLMProvider, model: LLMModel, options: Options) -> LLMWrapper:
+    """Get an LLM wrapper for the specified provider and model.
+
+    Looks up registered wrappers first, then falls back to LiteLLM if available.
+
+    Args:
+    * `provider`: Provider name (e.g., "openai", "anthropic").
+    * `model`: Model name (e.g., "gpt-4o-mini", "claude-3-sonnet").
+    * `options`: Processing options with provider-specific configuration.
+
+    Returns:
+    * `LLMWrapper` instance for the provider/model.
+
+    Raises:
+    * `ValueError`: If no wrapper is found for the provider/model.
+    """
     key: Tuple[str, Optional[str]] = (provider, model)
     if key in _wrappers:
         return _wrappers[key](model, options)
@@ -287,17 +443,31 @@ def get_llm_wrapper(provider: LLMProvider, model: LLMModel, options: Options) ->
 
 
 class LLMOptions(Option):
+    """Base class for LLM provider options.
+
+    Provides common configuration for API keys, rate limits, and custom API URLs.
+    """
+
     __provider_name__: ClassVar[str]
 
     class Config:
         extra = "forbid"
 
     api_key: Optional[SecretStr] = None
+    """Optional API key for the provider."""
     # rpm_limit: int = 500
     limits: RateLimits = RateLimits()
+    """Rate limiting configuration."""
     api_url: Optional[str] = None
+    """Optional custom API URL (for self-hosted providers)."""
 
     def __init__(self, api_key: Optional[str] = None, rpm_limit: Optional[int] = None, **data):
+        """Initialize LLM options.
+
+        Args:
+        * `api_key`: Optional API key for the provider.
+        * `rpm_limit`: Optional requests per minute limit (backward compatibility).
+        """
         self.api_key = SecretStr(api_key) if api_key is not None else None
         super().__init__(**data)
         # backward comp
@@ -305,17 +475,30 @@ class LLMOptions(Option):
             self.limits.rpm = rpm_limit
 
     def get_api_key(self) -> Optional[str]:
+        """Get the API key as a plain string.
+
+        Returns:
+        * API key string, or `None` if not set.
+        """
         if self.api_key is None:
             return None
         return self.api_key.get_secret_value()
 
     def get_additional_kwargs(self) -> Dict[str, Any]:
+        """Get additional keyword arguments for the LLM client.
+
+        Returns:
+        * Dictionary of additional arguments (empty by default, can be overridden).
+        """
         return {}
 
 
 class OpenAIKey(LLMOptions):
+    """Options for OpenAI provider."""
+
     __provider_name__: ClassVar[str] = "openai"
     limits: RateLimits = RateLimits(rpm=500)
+    """Rate limiting configuration (default: 500 requests per minute)."""
 
 
 OpenAIOptions = OpenAIKey  # for consistency
@@ -323,6 +506,12 @@ OpenAIOptions = OpenAIKey  # for consistency
 
 @llm_provider("openai", None)
 class OpenAIWrapper(LLMWrapper):
+    """Wrapper for OpenAI API.
+
+    Provides async access to OpenAI's chat completion API with rate limiting
+    and token tracking.
+    """
+
     __used_options__: ClassVar = [OpenAIKey]
 
     def __init__(self, model: str, options: Options):

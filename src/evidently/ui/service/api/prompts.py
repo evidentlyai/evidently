@@ -1,4 +1,5 @@
 from typing import Annotated
+from typing import Callable
 from typing import List
 
 from litestar import Router
@@ -215,20 +216,33 @@ async def delete_prompt_version(
     await artifact_manager.delete_artifact_version(user_id, prompt_version_id)
 
 
-def prompts_router() -> Router:
+def prompts_router(guard: Callable) -> Router:
     return Router(
         path="/prompts",
         route_handlers=[
-            list_prompts,
-            get_prompt,
-            get_prompt_by_name,
-            add_prompt,
-            update_prompt,
-            delete_prompt,
-            list_prompt_versions,
-            get_prompt_version,
-            get_prompt_version_by_version,
-            add_prompt_version,
-            delete_prompt_version,
+            # read
+            Router(
+                "",
+                route_handlers=[
+                    list_prompts,
+                    get_prompt,
+                    get_prompt_by_name,
+                    list_prompt_versions,
+                    get_prompt_version,
+                    get_prompt_version_by_version,
+                ],
+            ),
+            # write
+            Router(
+                "",
+                route_handlers=[
+                    add_prompt,
+                    update_prompt,
+                    delete_prompt,
+                    add_prompt_version,
+                    delete_prompt_version,
+                ],
+                guards=[guard],
+            ),
         ],
     )

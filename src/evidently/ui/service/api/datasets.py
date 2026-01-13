@@ -96,6 +96,7 @@ class PatchDatasetRequest(EvidentlyAPIModel):
     data_definition: Optional[DataDefinition] = None
     metadata: Optional[Dict[str, MetadataValueType]] = None
     tags: Optional[List[str]] = None
+    human_feedback_custom_shortcut_labels: Optional[List[str]] = None
 
 
 @post("/upload")
@@ -157,7 +158,14 @@ async def update_dataset(
 ) -> None:
     """Update a dataset."""
     await dataset_manager.update_dataset(
-        user_id, dataset_id, data.name, data.description, data.data_definition, data.metadata, data.tags
+        user_id,
+        dataset_id,
+        data.name,
+        data.description,
+        data.data_definition,
+        data.metadata,
+        data.tags,
+        data.human_feedback_custom_shortcut_labels,
     )
 
 
@@ -392,20 +400,28 @@ def datasets_api(guard: Callable) -> Router:
     return Router(
         "/datasets",
         route_handlers=[
+            # read
+            Router(
+                "",
+                route_handlers=[
+                    get_dataset,
+                    list_datasets,
+                    download_dataset,
+                    get_dataset_metadata,
+                    get_data_definition,
+                ],
+            ),
+            # write
             Router(
                 "",
                 route_handlers=[
                     upload_dataset,
                     update_dataset,
                     delete_dataset,
-                    get_dataset,
-                    list_datasets,
-                    download_dataset,
-                    get_dataset_metadata,
-                    get_data_definition,
                     materialize_from_source,
                     add_tracing_dataset,
                 ],
+                guards=[guard],
             ),
         ],
     )

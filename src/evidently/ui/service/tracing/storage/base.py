@@ -32,6 +32,11 @@ class TraceModel(BaseModel):
     spans: List[SpanModel]
 
 
+class HumanFeedbackModel(BaseModel):
+    label: Optional[str]
+    comment: Optional[str]
+
+
 ExportID: TypeAlias = uuid.UUID
 
 
@@ -81,6 +86,30 @@ class TracingStorage(abc.ABC):
     async def delete_trace(self, export_id: ExportID, trace_id: str) -> None:
         raise NotImplementedError()
 
+    @abc.abstractmethod
+    async def add_feedback(self, export_id: ExportID, trace_id: str, feedback: HumanFeedbackModel) -> str:
+        """
+        adds a feedback to the trace for given export_id
+        Args:
+            export_id:
+            trace_id:
+            feedback:
+
+        Returns:
+            span name where the feedback was added
+        """
+        raise NotImplementedError()
+
+
+def _enrich_span_usage(span: SpanModel) -> None:
+    if "openinference.span.kind" in span.attributes:  # assume this span is from openinference instrumentor
+        if "llm.token_count.completion" in span.attributes:
+            # completion tokens is output
+            span.attributes["tokens.output"] = span.attributes["llm.token_count.completion"]
+        if "llm.token_count.prompt" in span.attributes:
+            # prompt tokens is input
+            span.attributes["tokens.input"] = span.attributes["llm.token_count.prompt"]
+
 
 class NoopTracingStorage(TracingStorage):
     def get_trace_range_for_run(self, start_id: int, start_time: datetime, end_time: datetime) -> Optional[uuid.UUID]:
@@ -117,6 +146,9 @@ class NoopTracingStorage(TracingStorage):
 
     async def delete_trace(self, export_id: ExportID, trace_id: str) -> None:
         return
+
+    async def add_feedback(self, export_id: ExportID, trace_id: str, feedback: HumanFeedbackModel) -> str:
+        raise NotImplementedError()
 
     @classmethod
     def provide(cls) -> "TracingStorage":

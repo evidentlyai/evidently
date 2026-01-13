@@ -9,8 +9,8 @@ import numpy as np
 import pandas as pd
 from sklearn import datasets
 
-from evidently import Dataset
 from evidently.core.datasets import DataDefinition
+from evidently.core.datasets import Dataset
 from evidently.core.datasets import MulticlassClassification
 from evidently.core.report import Report
 from evidently.descriptors import NonLetterCharacterPercentage

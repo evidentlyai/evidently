@@ -6,7 +6,7 @@ from typing import Optional
 from typing import Tuple
 from typing import Union
 
-from evidently import Dataset
+from evidently.core.datasets import Dataset
 from evidently.core.report import Snapshot
 from evidently.ui.workspace import Project
 from evidently.ui.workspace import RemoteWorkspace

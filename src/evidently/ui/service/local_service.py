@@ -56,8 +56,8 @@ class LocalServiceComponent(ServiceComponent):
         return [
             create_projects_api(guard),
             service_api(),
-            artifacts_router(),
-            prompts_router(),
+            artifacts_router(guard),
+            prompts_router(guard),
             llm_judges_router(),
         ]
 

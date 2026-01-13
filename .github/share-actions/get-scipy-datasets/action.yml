@@ -1,4 +1,8 @@
 name: Get bikes dataset cached
+inputs:
+  google_backend_sa_key:
+    description: 'GCP service account key (base64 encoded)'
+    required: true
 runs:
   using: "composite"
   steps:
@@ -7,16 +11,34 @@ runs:
       env:
         cache-name: cache-scipy-data
       with:
-        path: ~/scikit_learn_data
+        path: scikit_learn_data
         key: cache-scipy-data
         enableCrossOsArchive: true
-
     - name: Install the latest version of uv and set the python version
       if: ${{ steps.cache-scipy-data.outputs.cache-hit != 'true' }}
       uses: astral-sh/setup-uv@v7
       with:
         python-version: "3.11"
+    - name: Save GCP SA key
+      id: save_gcp_key
+      env:
+        GOOGLE_BACKEND_SA_KEY: ${{ inputs.google_backend_sa_key }}
+      run: |
+        echo "${GOOGLE_BACKEND_SA_KEY}" | base64 -d > gcp-credentials.json
+        echo "gcp_credentials_path=$(pwd)/gcp-credentials.json" >> "$GITHUB_OUTPUT"
+      shell: bash
+    - name: DVC Pull
+      if: ${{ steps.cache-scipy-data.outputs.cache-hit != 'true' }}
+      env:
+        GOOGLE_APPLICATION_CREDENTIALS: ${{ steps.save_gcp_key.outputs.gcp_credentials_path }}
+      run: uv run --with dvc[gs] dvc pull
+      shell: bash
     - name: Download datasets
       if: ${{ steps.cache-scipy-data.outputs.cache-hit != 'true' }}
-      run: uv run --with scikit-learn --with pillow python -c "from sklearn import datasets; datasets.fetch_california_housing(); datasets.fetch_lfw_people(); datasets.fetch_20newsgroups()"
+      env:
+        SCIKIT_LEARN_DATA: scikit_learn_data
+      run: uv run --with scikit-learn --with pillow python .github/scripts/download_scipy_datasets.py
+      shell: bash
+    - name: Show cache folder
+      run: ls scikit_learn_data
       shell: bash

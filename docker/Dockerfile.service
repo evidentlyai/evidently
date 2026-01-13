@@ -14,7 +14,7 @@ LABEL maintainer="mike0sv@evidentlyai.com"
 
 
 WORKDIR /src
-COPY setup.py .
+COPY pyproject.toml .
 COPY README.md .
 COPY src ./src
 RUN apt-get update && \

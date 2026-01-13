@@ -25,11 +25,32 @@ ColumnTypeStr = Union[ColumnType, str]
 
 
 class ColumnMetricGenerator(MetricContainer):
+    """Generator for creating the same metric for multiple columns.
+
+    Automatically generates a metric instance for each column matching the specified
+    criteria (column names or types). Useful for applying the same metric to many
+    columns without manually creating each instance.
+
+    Example:
+    ```python
+    from evidently.metrics import MeanValue
+    from evidently.generators import ColumnMetricGenerator
+
+    # Generate MeanValue for all numerical columns
+    generator = ColumnMetricGenerator(MeanValue, column_types="numerical")
+    ```
+    """
+
     metric_type_alias: str
+    """Alias string identifying the metric type."""
     _metric_type: Union[Type[ColumnMetric], Type[ColumnMetricContainer]] = PrivateAttr()
+    """The metric class to instantiate for each column."""
     columns: Optional[List[str]] = None
+    """Optional list of specific column names to generate metrics for."""
     column_types: Union[ColumnTypeStr, List[ColumnTypeStr], Literal["all"]] = "all"
+    """Column types to match ("all", single type, or list of types)."""
     metric_kwargs: Dict[str, Any]
+    """Dictionary of additional arguments to pass to each metric instance."""
 
     def __init__(
         self,
@@ -67,9 +88,28 @@ class ColumnMetricGenerator(MetricContainer):
         super().__init__(include_tests=include_tests)
 
     def _instantiate_metric(self, column: str) -> MetricOrContainer:
+        """Create a metric instance for a specific column.
+
+        Args:
+        * `column`: Column name to create metric for.
+
+        Returns:
+        * `Metric` or `MetricContainer` instance.
+        """
         return self._metric_type(column=column, **self.metric_kwargs)
 
     def generate_metrics(self, context: "Context") -> Sequence[MetricOrContainer]:
+        """Generate metric instances for matching columns.
+
+        Creates a metric instance for each column that matches the specified
+        criteria (column names or types).
+
+        Args:
+        * `context`: `Context` containing datasets and data definition.
+
+        Returns:
+        * Sequence of `Metric` or `MetricContainer` instances, one per matching column.
+        """
         if self.columns is not None:
             column_list = self.columns
         else:
@@ -88,4 +128,13 @@ class ColumnMetricGenerator(MetricContainer):
         context: "Context",
         child_widgets: Optional[List[Tuple[Optional[MetricId], List[BaseWidgetInfo]]]] = None,
     ) -> List[BaseWidgetInfo]:
+        """Render visualization widgets from all generated metrics.
+
+        Args:
+        * `context`: `Context` containing datasets and configuration.
+        * `child_widgets`: Optional list of (metric_id, widgets) tuples from generated metrics.
+
+        Returns:
+        * List of `BaseWidgetInfo` objects for visualization.
+        """
         return list(chain(*[widget[1] for widget in (child_widgets or [])]))

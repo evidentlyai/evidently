@@ -1,4 +1,11 @@
 name: Generate docs and upload artifact
+inputs:
+  source-flag:
+    description: 'Flag to pass to the generate.py script to specify the source of the documentation generation'
+    required: true
+  additional-flags:
+    description: 'Additional flags to pass to the generate.py script'
+    required: false
 runs:
   using: "composite"
   steps:
@@ -11,7 +18,7 @@ runs:
       run: |
         ./api-reference/generate.py \
           --api-reference-index-href "/evidently/api-reference" \
-          --git-revision ${{ github.head_ref || github.ref_name }}
+          ${{ inputs.source-flag }} ${{ inputs.additional-flags }}
       shell: bash
 
     - name: Upload documentation artifact

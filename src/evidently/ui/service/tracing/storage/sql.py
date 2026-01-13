@@ -25,9 +25,11 @@ from evidently.core.datasets import Dataset
 from evidently.ui.service.storage.sql.base import BaseSQLStorage
 from evidently.ui.service.storage.sql.models import Base
 from evidently.ui.service.tracing.storage.base import ExportID
+from evidently.ui.service.tracing.storage.base import HumanFeedbackModel
 from evidently.ui.service.tracing.storage.base import SpanModel
 from evidently.ui.service.tracing.storage.base import TraceModel
 from evidently.ui.service.tracing.storage.base import TracingStorage
+from evidently.ui.service.tracing.storage.base import _enrich_span_usage
 
 EVIDENTLY_TRACE_LINK_COLUMN_NAME = "_evidently_trace_link"
 
@@ -221,6 +223,22 @@ class SQLTracingStorage(BaseSQLStorage, TracingStorage):
             )
             session.commit()
 
+    async def add_feedback(self, export_id: ExportID, trace_id: str, feedback: HumanFeedbackModel) -> str:
+        with self.session as session:
+            stmt = select(TraceSpanModel).where(
+                TraceSpanModel.trace_id == uuid.UUID(trace_id),
+                TraceSpanModel.export_id == export_id,
+                TraceSpanModel.parent_span_id == "",
+            )
+            data = session.scalar(stmt)
+            new_attributes = data.span_attributes.copy()
+
+            new_attributes["human_feedback_label"] = feedback.label
+            new_attributes["human_feedback_comment"] = feedback.comment
+            data.span_attributes = new_attributes
+            session.commit()
+            return data.span_name
+
 
 def _collect_trace(data: Sequence[TraceSpanModel]) -> List[TraceModel]:
     """Collect spans into TraceModel objects."""
@@ -249,6 +267,7 @@ def _collect_trace(data: Sequence[TraceSpanModel]) -> List[TraceModel]:
             end_time=item.end_time,
             attributes={k: str(v) for (k, v) in item.span_attributes.items() if isinstance(v, (str, int, float, bool))},
         )
+        _enrich_span_usage(span)
         trace.spans.append(span)
     if trace is not None:
         trace.end_time = None if len(trace.spans) == 0 else trace.spans[-1].end_time

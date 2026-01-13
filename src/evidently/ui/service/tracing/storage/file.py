@@ -19,9 +19,11 @@ from evidently.legacy.ui.type_aliases import ProjectID
 from evidently.ui.service.errors import DatasetNotFound
 from evidently.ui.service.storage.fslocation import FSLocation
 from evidently.ui.service.tracing.storage.base import ExportID
+from evidently.ui.service.tracing.storage.base import HumanFeedbackModel
 from evidently.ui.service.tracing.storage.base import SpanModel
 from evidently.ui.service.tracing.storage.base import TraceModel
 from evidently.ui.service.tracing.storage.base import TracingStorage
+from evidently.ui.service.tracing.storage.base import _enrich_span_usage
 
 EVIDENTLY_TRACE_LINK_COLUMN_NAME = "_evidently_trace_link"
 
@@ -432,6 +434,8 @@ class FileTracingStorage(TracingStorage):
         # Sort spans within each trace by start_time
         for trace in traces_dict.values():
             trace.spans.sort(key=lambda s: s.start_time)
+            for span in trace.spans:
+                _enrich_span_usage(span)
 
         traces = list(traces_dict.values())
         traces.sort(key=lambda t: t.start_time)
@@ -466,6 +470,10 @@ class FileTracingStorage(TracingStorage):
                 for line in f_in:
                     f_out.write(line)
             self.location.rmtree(temp_file_path)
+
+    async def add_feedback(self, export_id: ExportID, trace_id: str, feedback: HumanFeedbackModel) -> str:
+        """Add a feedback to the trace."""
+        raise NotImplementedError()
 
 
 def _trace_to_dict(export_id: ExportID, trace: TraceModel) -> dict:

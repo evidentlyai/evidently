@@ -128,6 +128,8 @@ jobs:
         uses: ./.github/share-actions/get-bikes-dataset-cached
       - name: 🔍 Get scipy dataset cached
         uses: ./.github/share-actions/get-scipy-datasets
+        with:
+          google_backend_sa_key: ${{ secrets.GOOGLE_BACKEND_SA_KEY }}
 
   test-minimal:
     name: Test on minimal requirements
@@ -138,6 +140,7 @@ jobs:
     if: ${{ needs.changed_files.outputs.evidently_any_modified == 'true' }}
     env:
       EVIDENTLY_TEST_ENVIRONMENT: 1
+      SCIKIT_LEARN_DATA: scikit_learn_data
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -166,6 +169,7 @@ jobs:
     name: Test ${{ matrix.os }} with py${{ matrix.python }}
     env:
       EVIDENTLY_TEST_ENVIRONMENT: 1
+      SCIKIT_LEARN_DATA: scikit_learn_data
     needs:
       - linter
       - prepare-cache-data
@@ -185,7 +189,7 @@ jobs:
         with:
           python-version: ${{ matrix.python }}
           cache: "pip"
-          cache-dependency-path: setup.py
+          cache-dependency-path: pyproject.toml
       - name: Get scipy dataset cached
         uses: ./.github/share-actions/get-scipy-datasets
       - name: Install pytorch for linux
@@ -212,7 +216,7 @@ jobs:
           python-version: "3.9"
           architecture: "x64"
           cache: "pip"
-          cache-dependency-path: setup.py
+          cache-dependency-path: pyproject.toml
       - name: Install pytorch for linux
         if: runner.os == 'Linux' && runner.arch == 'X64'
         run: pip install torch --index-url https://download.pytorch.org/whl/cpu
@@ -220,8 +224,10 @@ jobs:
         run: pip install -e .
       - name: Install wheel
         run: pip install wheel
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
       - name: Build package
-        run: python setup.py sdist bdist_wheel
+        run: uv build
       - name: Archive built package
         uses: actions/upload-artifact@v4
         with:
@@ -232,11 +238,29 @@ jobs:
     name: Generate API reference documentation
     runs-on: ubuntu-22.04
     needs: changed_files
-    if: ${{ needs.changed_files.outputs.api_reference_any_modified == 'true' || needs.changed_files.outputs.evidently_any_modified == 'true' }}
+    if: >-
+      ${{
+        (
+          needs.changed_files.outputs.api_reference_any_modified == 'true' ||
+          needs.changed_files.outputs.evidently_any_modified == 'true'
+        )
+      }}
     steps:
       - uses: actions/checkout@v4
+      - name: Set git revision
+        id: set-revision
+        run: |
+          if [ -n "${{ github.event.pull_request.number }}" ]; then
+            echo "revision=pull/${{ github.ref_name }}" >> $GITHUB_OUTPUT
+          else
+            echo "revision=${{ github.ref_name }}" >> $GITHUB_OUTPUT
+          fi
+          echo "revision_name=${{ github.head_ref || github.ref_name }}" >> $GITHUB_OUTPUT
       - name: 📚 Generate and upload API reference
         uses: ./.github/share-actions/generate-and-save-api-reference
+        with:
+          source-flag: --git-revision ${{ steps.set-revision.outputs.revision }}
+          additional-flags: --git-revision-name ${{ steps.set-revision.outputs.revision_name }}
 
   download-and-deploy-api-reference:
     name: Download and deploy API reference documentation
@@ -248,6 +272,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: gh-pages
+          fetch-depth: 0
 
       # this action exists in `gh-pages` branch
       - name: 📚 Download and deploy API reference documentation
@@ -320,7 +345,7 @@ jobs:
         run: pip install git+https://github.com/evidentlyai/evidently.git@${{ github.sha }}
 
       - name: Install dvc
-        run: pip install 'dvc[gs]==3.50.1'
+        run: pip install 'pathspec<1' 'dvc[gs]==3.50.1'
 
       - name: Pull test data
         run: dvc pull
@@ -373,7 +398,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Install dvc
-        run: pip install 'dvc[gs]==3.50.1'
+        run: pip install 'pathspec<1' 'dvc[gs]==3.50.1'
 
       - name: Pull test data
         run: dvc pull
@@ -385,7 +410,7 @@ jobs:
         with:
           python-version: "3.9"
           cache: "pip"
-          cache-dependency-path: setup.py
+          cache-dependency-path: pyproject.toml
 
       - name: Install package
         run: pip install -e .[dev]

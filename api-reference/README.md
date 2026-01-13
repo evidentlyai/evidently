@@ -51,9 +51,13 @@ Starts a local development server with live reloading. This command:
 
 ### Custom Modules
 
+Manually specify which modules and submodules to document:
+
 ```bash
 ./api-reference/generate.py --local-source-code --modules "evidently.metrics,evidently.guardrails"
 ```
+
+This allows you to include submodules that are not imported by the root module.
 
 ### Additional Options
 
@@ -74,6 +78,10 @@ Documentation is saved to `docs/dist/`:
 - Local: `dist/users-<path-to-repo>/`
 - Git: `dist/branch-<name>/` or `dist/hash-<hash>/`
 - PyPI: `dist/<version>/`
+
+## Documentation Filtering
+
+All private members (names starting with `_`) are automatically excluded from documentation, even if they are listed in `__all__`.
 
 ## Troubleshooting
 

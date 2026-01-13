@@ -42,7 +42,13 @@ const RenderCellLinkToTrace = ({ value }: RenderCellLinkToTraceProps) => {
   }
 
   return (
-    <LinkToTrace projectId={projectId} exportId={exportId} traceId={traceId} variant='outlined' />
+    <LinkToTrace
+      projectId={projectId}
+      exportId={exportId}
+      traceId={traceId}
+      variant='outlined'
+      size='small'
+    />
   )
 }
 

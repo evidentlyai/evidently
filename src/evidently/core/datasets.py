@@ -43,32 +43,74 @@ if TYPE_CHECKING:
 
 
 class ColumnRole(Enum):
+    """Role of a column in the dataset.
+
+    Defines the semantic role of a column (e.g., target, prediction, feature).
+    Used in `DataDefinition` to specify column purposes.
+    """
+
     Unset = "Unset"
+    """Column role is not set."""
     Target = "target"
+    """Column contains target/ground truth values."""
     Output = "output"
+    """Column contains model output/predictions."""
     Feature = "feature"
+    """Column is a feature used for prediction."""
     Descriptor = "descriptor"
+    """Column is a computed descriptor (e.g., from text)."""
     UserId = "user_id"
+    """Column contains user IDs (for ranking/recsys)."""
     ItemId = "item_id"
+    """Column contains item IDs (for ranking/recsys)."""
     Input = "input"
+    """Column is an input to the model."""
     Context = "context"
+    """Column contains context information."""
     Example = "example"
+    """Column contains example data."""
 
 
 @dataclasses.dataclass
 class ColumnInfo:
+    """Information about a column's type and role."""
+
     type: ColumnType
+    """Column type (numerical, categorical, text, etc.)."""
     role: ColumnRole = ColumnRole.Unset
+    """Column role (target, feature, etc.)."""
 
 
 @dataclasses.dataclass
 class BinaryClassification:
+    """Configuration for binary classification evaluation tasks.
+
+    Maps columns containing target labels and predictions for binary classification.
+    Used in `DataDefinition` to specify which columns contain classification data.
+
+    Example:
+    ```python
+    definition = DataDefinition(
+        classification=[BinaryClassification(
+            target="target",
+            prediction_labels="prediction"
+        )]
+    )
+    ```
+    """
+
     name: str
+    """Identifier for this classification task."""
     target: str
+    """Column name with true binary labels."""
     prediction_labels: Optional[str]
+    """Column name with predicted binary labels."""
     prediction_probas: Optional[str]
+    """Column name with predicted probabilities."""
     pos_label: Label
+    """Value representing the positive class."""
     labels: Optional[Dict[Label, str]]
+    """Optional mapping of label values to display names."""
 
     def __init__(
         self,
@@ -80,6 +122,11 @@ class BinaryClassification:
         pos_label: Optional[str] = None,
         labels: Optional[Dict[Label, str]] = None,
     ):
+        """Initialize binary classification configuration.
+
+        If no arguments are provided, defaults to `target="target"` and `prediction_probas="prediction"`.
+        Otherwise, requires `target` and at least one of `prediction_labels` or `prediction_probas`.
+        """
         self.name = name
         if (
             target is None
@@ -107,11 +154,33 @@ class BinaryClassification:
 
 @dataclasses.dataclass
 class MulticlassClassification:
+    """Configuration for multiclass classification evaluation tasks.
+
+    Maps columns containing target labels and predictions for multiclass classification.
+    Used in `DataDefinition` to specify which columns contain classification data.
+
+    Example:
+    ```python
+    definition = DataDefinition(
+        classification=[MulticlassClassification(
+            target="target",
+            prediction_labels="prediction",
+            prediction_probas=["0", "1", "2"]
+        )]
+    )
+    ```
+    """
+
     name: str = "default"
+    """Identifier for this classification task."""
     target: str = "target"
+    """Column name with true class labels."""
     prediction_labels: Optional[str] = "prediction"
+    """Column name with predicted class labels."""
     prediction_probas: Optional[List[str]] = None
+    """List of column names with predicted probabilities per class."""
     labels: Optional[Dict[Label, str]] = None
+    """Optional mapping of label values to display names."""
 
     def __init__(
         self,
@@ -122,6 +191,11 @@ class MulticlassClassification:
         prediction_probas: Optional[List[str]] = None,
         labels: Optional[Dict[Label, str]] = None,
     ):
+        """Initialize multiclass classification configuration.
+
+        If no arguments are provided, defaults to `target="target"` and `prediction_labels="prediction"`.
+        Otherwise, requires `target` and at least one of `prediction_labels` or `prediction_probas`.
+        """
         self.name = name
         if target is None and prediction_labels is None and prediction_probas is None and labels is None:
             self.target = "target"
@@ -144,19 +218,54 @@ Classification = Union[BinaryClassification, MulticlassClassification]
 
 @dataclasses.dataclass
 class Regression:
+    """Configuration for regression evaluation tasks.
+
+    Maps columns containing target values and predictions for regression.
+    Used in `DataDefinition` to specify which columns contain regression data.
+
+    Example:
+    ```python
+    definition = DataDefinition(
+        regression=[Regression(target="y_true", prediction="y_pred")]
+    )
+    ```
+    """
+
     name: str = "default"
+    """Identifier for this regression task."""
     target: str = "target"
+    """Column name with actual/true values."""
     prediction: str = "prediction"
+    """Column name with predicted values."""
 
 
 @dataclasses.dataclass
 class Recsys:
+    """Configuration for recommender systems and ranking evaluation tasks.
+
+    Maps columns for evaluating recommendation systems, including user-item interactions
+    and relevance scores. Used in `DataDefinition` to specify ranking/recsys data structure.
+
+    Example:
+    ```python
+    definition = DataDefinition(
+        ranking=[Recsys()]
+    )
+    ```
+    """
+
     name: str = "default"
+    """Identifier for this ranking task."""
     user_id: str = "user_id"
+    """Column name with user identifiers."""
     item_id: str = "item_id"
+    """Column name with item identifiers."""
     target: str = "target"
+    """Column name with relevance labels/scores."""
     prediction: str = "prediction"
+    """Column name with predicted scores or ranks."""
     recommendations_type: str = "score"
+    """Type of prediction - "score" or "rank"."""
 
 
 @dataclasses.dataclass
@@ -171,24 +280,67 @@ class RAG:
 
 @dataclasses.dataclass
 class LLMClassification:
+    """Configuration for LLM classification evaluation tasks.
+
+    Maps columns containing LLM inputs, outputs, and optional reasoning for LLM evaluation.
+    Used in `DataDefinition` to specify which columns contain LLM interaction data.
+
+    Example:
+    ```python
+    definition = DataDefinition(
+        llm=LLMClassification(
+            input="question",
+            target="expected_answer",
+            predictions="model_answer"
+        )
+    )
+    ```
+    """
+
     input: str
+    """Column name with LLM input/prompt text."""
     target: str
+    """Column name with expected/ground truth output."""
     predictions: Optional[str] = None
+    """Column name with LLM-generated output."""
     reasoning: Optional[str] = None
+    """Column name with reasoning text."""
     prediction_reasoning: Optional[str] = None
+    """Column name with reasoning for predictions."""
     name: str = "llm_default"
+    """Identifier for this LLM task."""
 
 
 class SpecialColumnInfo(AutoAliasMixin, EvidentlyBaseModel):
+    """Base class for special column information.
+
+    Used to define special columns that require custom handling or metrics.
+    Subclasses can provide custom metrics and column type information.
+    """
+
     __alias_type__: ClassVar = "special_column_info"
+    """Alias type for serialization."""
 
     class Config:
         is_base_type = True
 
     def get_metrics(self) -> List["MetricOrContainer"]:
+        """Get metrics associated with this special column.
+
+        Returns:
+        * List of metrics or metric containers.
+        """
         return []
 
     def get_column_type(self, column_name: str) -> Optional[ColumnType]:
+        """Get the column type for a column name.
+
+        Args:
+        * `column_name`: Name of the column.
+
+        Returns:
+        * `ColumnType` if known, `None` otherwise.
+        """
         return None
 
 
@@ -199,29 +351,81 @@ DEFAULT_TRACE_LINK_COLUMN = "_evidently_trace_link"
 
 
 class ServiceColumns(BaseModel):
+    """Service columns for special functionality.
+
+    Defines columns used for special features like trace linking and human feedback.
+    """
+
     trace_link: Optional[str] = None
+    """Optional column name for trace links."""
     human_feedback_label: Optional[str] = None
+    """Optional column name for human feedback labels."""
     human_feedback_comment: Optional[str] = None
+    """Optional column name for human feedback comments."""
 
 
 class DataDefinition(BaseModel):
+    """Maps column types and roles in your dataset for correct evaluation processing.
+
+    `DataDefinition` maps:
+    - Column types (e.g., categorical, numerical, text)
+    - Column roles (e.g., id, prediction, target, timestamp)
+    - Task-specific configurations (classification, regression, ranking, LLM)
+
+    This allows Evidently to process the data correctly. Some evaluations need specific
+    columns and will fail if they're missing.
+
+    **Documentation**: See [Data Definition Guide](https://docs.evidentlyai.com/docs/library/data_definition) for detailed mapping options.
+
+    Auto-mapping (empty DataDefinition):
+    ```python
+    dataset = Dataset.from_pandas(df, data_definition=DataDefinition())
+    ```
+
+    Manual mapping:
+    ```python
+    definition = DataDefinition(
+        numerical_columns=["Age", "Salary"],
+        categorical_columns=["Department"],
+        classification=[BinaryClassification(target="target", prediction_labels="prediction")]
+    )
+    ```
+    """
+
     id_column: Optional[str] = None
+    """Column name with unique identifiers."""
     timestamp: Optional[str] = None
+    """Column name with timestamp values."""
     service_columns: Optional[ServiceColumns] = None
+    """Service columns like trace links."""
     numerical_columns: Optional[List[str]] = None
+    """List of numerical column names."""
     categorical_columns: Optional[List[str]] = None
+    """List of categorical column names."""
     text_columns: Optional[List[str]] = None
+    """List of text column names."""
     datetime_columns: Optional[List[str]] = None
+    """List of datetime column names."""
     unknown_columns: Optional[List[str]] = None
+    """List of unknown/unclassified column names."""
     list_columns: Optional[List[str]] = None
+    """List of list/array column names."""
     classification: Optional[List[Classification]] = None
+    """List of classification task configurations (`BinaryClassification` or `MulticlassClassification`)."""
     regression: Optional[List[Regression]] = None
+    """List of regression task configurations (`Regression`)."""
     llm: Optional[LLMDefinition] = None
+    """LLM task configuration (`LLMClassification`)."""
     numerical_descriptors: List[str] = []
+    """List of numerical descriptor column names."""
     categorical_descriptors: List[str] = []
+    """List of categorical descriptor column names."""
     test_descriptors: Optional[List[str]] = None
+    """List of test descriptor column names."""
     ranking: Optional[List[Recsys]] = None
+    """List of ranking/recsys task configurations (`Recsys`)."""
     special_columns: List[SpecialColumnInfo] = []
+    """Additional special column configurations."""
 
     def __init__(
         self,
@@ -243,6 +447,11 @@ class DataDefinition(BaseModel):
         service_columns: Optional[ServiceColumns] = None,
         special_columns: Optional[List[SpecialColumnInfo]] = None,
     ):
+        """Initialize DataDefinition with column mappings.
+
+        The constructor maps all parameters directly to the corresponding model fields.
+        If `numerical_descriptors` or `categorical_descriptors` are not provided, they default to empty lists.
+        """
         super().__init__(
             id_column=id_column,
             timestamp=timestamp,
@@ -268,24 +477,62 @@ class DataDefinition(BaseModel):
         self.ranking = ranking
 
     def get_numerical_columns(self):
+        """Get all numerical columns including descriptors.
+
+        Returns:
+        * List of numerical column names (includes both explicitly mapped and descriptor columns)
+        """
         return (self.numerical_columns or []) + (self.numerical_descriptors or [])
 
     def get_categorical_columns(self):
+        """Get all categorical columns including descriptors.
+
+        Returns:
+        * List of categorical column names (includes both explicitly mapped and descriptor columns)
+        """
         return (self.categorical_columns or []) + (self.categorical_descriptors or [])
 
     def get_text_columns(self):
+        """Get all text columns.
+
+        Returns:
+        * List of text column names
+        """
         return self.text_columns or []
 
     def get_datetime_columns(self):
+        """Get all datetime columns.
+
+        Returns:
+        * List of datetime column names
+        """
         return self.datetime_columns or []
 
     def get_unknown_columns(self):
+        """Get all unknown/unclassified columns.
+
+        Returns:
+        * List of unknown column names
+        """
         return self.unknown_columns or []
 
     def get_list_columns(self):
+        """Get all list/array columns.
+
+        Returns:
+        * List of list column names
+        """
         return self.list_columns or []
 
     def get_column_type(self, column_name: str) -> ColumnType:
+        """Get the column type for a specific column.
+
+        Args:
+        * `column_name`: Name of the column to check
+
+        Returns:
+        * `evidently.legacy.core.ColumnType` enum value for the column
+        """
         if column_name in self.get_numerical_columns():
             return ColumnType.Numerical
         if column_name in self.get_categorical_columns():
@@ -309,6 +556,14 @@ class DataDefinition(BaseModel):
         return ColumnType.Unknown
 
     def get_classification(self, classification_id: str) -> Optional[Classification]:
+        """Get classification configuration by ID.
+
+        Args:
+        * `classification_id`: Name/ID of the classification task
+
+        Returns:
+        * `BinaryClassification` or `MulticlassClassification` configuration or None if not found
+        """
         item_list = list(filter(lambda x: x.name == classification_id, self.classification or []))
         if len(item_list) == 0:
             return None
@@ -317,6 +572,14 @@ class DataDefinition(BaseModel):
         return item_list[0]
 
     def get_ranking(self, ranking_id: str) -> Optional[Recsys]:
+        """Get ranking/recsys configuration by ID.
+
+        Args:
+        * `ranking_id`: Name/ID of the ranking task
+
+        Returns:
+        * `Recsys` configuration or None if not found
+        """
         item_list = list(filter(lambda x: x.name == ranking_id, self.ranking or []))
         if len(item_list) == 0:
             return None
@@ -325,6 +588,14 @@ class DataDefinition(BaseModel):
         return item_list[0]
 
     def get_columns(self, types: List[ColumnType]) -> Generator[str, None, None]:
+        """Get column names of specified types.
+
+        Args:
+        * `types`: List of `evidently.legacy.core.ColumnType` values to filter by
+
+        Returns:
+        * Generator yielding column names matching the specified types
+        """
         if ColumnType.Numerical in types:
             yield from self.get_numerical_columns()
         if ColumnType.Categorical in types:
@@ -339,6 +610,14 @@ class DataDefinition(BaseModel):
             yield from self.get_list_columns()
 
     def get_regression(self, regression_id: str) -> Optional[Regression]:
+        """Get regression configuration by ID.
+
+        Args:
+        * `regression_id`: Name/ID of the regression task
+
+        Returns:
+        * `Regression` configuration or None if not found
+        """
         item_list = list(filter(lambda x: x.name == regression_id, self.regression or []))
         if len(item_list) == 0:
             return None
@@ -348,33 +627,79 @@ class DataDefinition(BaseModel):
 
 
 class DatasetColumn:
+    """Wrapper for a single column in a dataset.
+
+    Contains the column type and the actual data as a pandas Series.
+    Used internally to access column data with type information.
+    """
+
     type: ColumnType
+    """Column type (numerical, categorical, text, etc.)."""
     data: pd.Series
+    """Pandas Series containing the column data."""
 
     def __init__(self, type: Union[str, ColumnType], data: pd.Series) -> None:
+        """Initialize a dataset column.
+
+        Args:
+        * `type`: `ColumnType` or string name of the column type.
+        * `data`: `pandas.Series` containing the column data.
+        """
         self.type = ColumnType(type)
         self.data = data
 
 
 class ColumnCondition(AutoAliasMixin, EvidentlyBaseModel, abc.ABC):
+    """Base class for column value conditions.
+
+    Used to define conditions that check values in a column (e.g., greater than,
+    in range, matches pattern). Used in descriptor tests and column filters.
+    """
+
     __alias_type__: ClassVar[str] = "column_condition"
+    """Alias type for serialization."""
 
     class Config:
         is_base_type = True
 
     @abstractmethod
     def check(self, value: Any) -> bool:
+        """Check if a value satisfies the condition.
+
+        Args:
+        * `value`: Value to check.
+
+        Returns:
+        * `True` if condition is satisfied, `False` otherwise.
+        """
         raise NotImplementedError
 
     @abstractmethod
     def get_default_alias(self, column: str) -> str:
+        """Get default alias name for this condition.
+
+        Args:
+        * `column`: Column name this condition applies to.
+
+        Returns:
+        * Default alias string.
+        """
         raise NotImplementedError
 
 
 class DescriptorTest(BaseModel):
+    """Test condition for a descriptor column.
+
+    Defines a condition to test values in a descriptor column. Can be used
+    to create derived descriptors based on test results.
+    """
+
     condition: ColumnCondition
+    """Column condition to apply."""
     column: Optional[str] = None
+    """Optional column name (uses parent descriptor column if None)."""
     alias: Optional[str] = None
+    """Optional alias name for the test result."""
 
     def __init__(
         self,
@@ -406,13 +731,23 @@ AnyDescriptorTest = Union["DescriptorTest", "GenericTest"]
 
 
 class Descriptor(AutoAliasMixin, EvidentlyBaseModel, abc.ABC):
+    """Base class for descriptors that compute row-level features.
+
+    Descriptors compute additional columns from existing data (e.g., text length,
+    sentiment score, custom transformations). Used to enrich datasets with
+    computed features for evaluation.
+    """
+
     class Config:
         is_base_type = True
 
     __alias_type__: ClassVar = "descriptor_v2"
+    """Alias type for serialization."""
 
     alias: str
+    """Name for the descriptor output column."""
     tests: List[DescriptorTest] = []
+    """List of test conditions to apply to descriptor values."""
 
     def __init__(self, alias: str, tests: Optional[List[AnyDescriptorTest]] = None, **data: Any) -> None:
         self.alias = alias
@@ -452,15 +787,35 @@ class Descriptor(AutoAliasMixin, EvidentlyBaseModel, abc.ABC):
 
 
 class SingleInputDescriptor(Descriptor, abc.ABC):
+    """Base class for descriptors that operate on a single input column.
+
+    Simplifies descriptor implementation for descriptors that only need one
+    input column. Subclasses only need to implement `generate_data()`.
+    """
+
     column: str
+    """Name of the input column to process."""
 
     def list_input_columns(self) -> List[str]:
+        """Get the list of input columns.
+
+        Returns:
+        * List containing the single input column name.
+        """
         return [self.column]
 
 
 class ColumnTest(SingleInputDescriptor):
+    """Descriptor that tests values in a column against a condition.
+
+    Creates a boolean descriptor column indicating whether each value in the
+    input column satisfies the condition. Useful for filtering or flagging rows.
+    """
+
     column: str
+    """Name of the input column to test."""
     condition: ColumnCondition
+    """Column condition to apply."""
 
     def __init__(
         self, column: str, condition: Union[ColumnCondition, GenericTest], alias: Optional[str] = None, **data: Any
@@ -477,45 +832,104 @@ class ColumnTest(SingleInputDescriptor):
     def generate_data(
         self, dataset: "Dataset", options: Options
     ) -> Union[DatasetColumn, Dict[DisplayName, DatasetColumn]]:
+        """Generate a boolean column indicating which rows satisfy the condition.
+
+        Args:
+        * `dataset`: `Dataset` to process.
+        * `options`: Processing options.
+
+        Returns:
+        * `DatasetColumn` with boolean values (True if condition passes, False otherwise).
+        """
         data = dataset.column(self.column)
         res = data.data.apply(self.condition.check)
         return DatasetColumn(ColumnType.Categorical, res)
 
 
 class TestSummaryInfo(SpecialColumnInfo):
+    """Special column information for test summary aggregation.
+
+    Defines columns that aggregate test results across multiple descriptors,
+    providing summary statistics like "all tests pass", "any test fails", etc.
+    """
+
     all_column: Optional[str] = None
+    """Optional column name for 'all tests pass' indicator."""
     any_column: Optional[str] = None
+    """Optional column name for 'any test fails' indicator."""
     count_column: Optional[str] = None
+    """Optional column name for test failure count."""
     rate_column: Optional[str] = None
+    """Optional column name for test failure rate."""
     score_column: Optional[str] = None
+    """Optional column name for weighted test score."""
     score_weights: Optional[Dict[str, float]] = None
+    """Optional dictionary mapping test names to weights."""
 
     @property
     def has_all(self):
+        """Check if 'all' column is configured.
+
+        Returns:
+        * `True` if `any_column` is set, `False` otherwise.
+        """
         return self.any_column is not None
 
     @property
     def has_any(self):
+        """Check if 'any' column is configured.
+
+        Returns:
+        * `True` if `any_column` is set, `False` otherwise.
+        """
         return self.any_column is not None
 
     @property
     def has_count(self):
+        """Check if 'count' column is configured.
+
+        Returns:
+        * `True` if `count_column` is set, `False` otherwise.
+        """
         return self.count_column is not None
 
     @property
     def has_rate(self):
+        """Check if 'rate' column is configured.
+
+        Returns:
+        * `True` if `rate_column` is set, `False` otherwise.
+        """
         return self.rate_column is not None
 
     @property
     def has_score(self):
+        """Check if 'score' column is configured.
+
+        Returns:
+        * `True` if `score_column` is set, `False` otherwise.
+        """
         return self.score_column is not None
 
     def get_metrics(self) -> List["MetricOrContainer"]:
+        """Get metrics for aggregating test summary columns.
+
+        Returns:
+        * List containing a `TestSummaryInfoPreset` metric.
+        """
         from evidently.presets.special import TestSummaryInfoPreset
 
         return [TestSummaryInfoPreset(column_info=self)]
 
     def get_column_type(self, column_name: str) -> Optional[ColumnType]:
+        """Get the column type for a summary column name.
+
+        Args:
+        * `column_name`: Name of the column to check.
+
+        Returns:
+        * `ColumnType.Categorical` for all/any columns, `ColumnType.Numerical` for count/rate/score columns, or `None` if not found.
+        """
         if column_name in (self.all_column, self.any_column):
             return ColumnType.Categorical
         if column_name in (self.count_column, self.rate_column, self.score_column):
@@ -524,13 +938,29 @@ class TestSummaryInfo(SpecialColumnInfo):
 
 
 class TestSummary(Descriptor):
+    """Descriptor that aggregates test results across multiple test descriptors.
+
+    Computes summary statistics from boolean test result columns, such as:
+    - Whether all tests pass for each row
+    - Whether any test fails for each row
+    - Count and rate of passing tests
+    - Weighted score across tests
+    """
+
     success_all: bool = True
+    """Whether to compute 'all tests pass' indicator."""
     success_any: bool = False
+    """Whether to compute 'any test fails' indicator."""
     success_count: bool = False
+    """Whether to compute count of passing tests."""
     success_rate: bool = False
+    """Whether to compute proportion of passing tests."""
     score: bool = False
+    """Whether to compute weighted score across tests."""
     score_weights: Optional[Dict[str, float]] = None
+    """Optional dictionary mapping test names to weights for scoring."""
     normalize_scores: bool = True
+    """Whether to normalize scores by total weight."""
 
     def __init__(
         self,
@@ -556,6 +986,21 @@ class TestSummary(Descriptor):
     def generate_data(
         self, dataset: "Dataset", options: Options
     ) -> Union[DatasetColumn, Dict[DisplayName, DatasetColumn]]:
+        """Generate summary columns from test result columns.
+
+        Aggregates boolean test results into summary statistics based on
+        configured flags (success_all, success_any, success_count, etc.).
+
+        Args:
+        * `dataset`: `Dataset` containing test result columns.
+        * `options`: Processing options.
+
+        Returns:
+        * Dictionary of summary columns, or single column if only one is generated.
+
+        Raises:
+        * `ValueError`: If no tests are specified or no summary columns are configured.
+        """
         tests = dataset.data_definition.test_descriptors or []
         if len(tests) == 0:
             raise ValueError("No tests specified")
@@ -585,11 +1030,24 @@ class TestSummary(Descriptor):
         return result
 
     def list_input_columns(self) -> Optional[List[str]]:
+        """Get list of input columns needed for this descriptor.
+
+        Returns:
+        * List of test column names if score weights are specified, `None` otherwise.
+        """
         if self.score and self.score_weights is not None:
             return list(self.score_weights.keys())
         return None
 
     def get_special_columns_info(self, rename: Dict[str, str]) -> List[SpecialColumnInfo]:
+        """Get special column information for test summary aggregation.
+
+        Args:
+        * `rename`: Dictionary mapping internal column names to final names.
+
+        Returns:
+        * List of `TestSummaryInfo` objects describing the summary columns.
+        """
         alias = self.alias or "summary"
         if len(rename) == 1:
             return [
@@ -715,15 +1173,64 @@ class ColumnStats:
 
 @dataclasses.dataclass
 class DatasetStats:
+    """Statistics summary for a dataset.
+
+    Contains overall dataset statistics including row count, column count,
+    and per-column statistics.
+    """
+
     row_count: int
+    """Total number of rows in the dataset."""
     column_count: int
+    """Total number of columns in the dataset."""
     column_stats: Dict[str, ColumnStats]
+    """Dictionary mapping column names to their ColumnStats."""
 
 
 PossibleDatasetTypes = Union["Dataset", pd.DataFrame]
 
 
 class Dataset:
+    """Dataset object that wraps your data with metadata and data definition.
+
+    `Dataset` is the main data structure in Evidently. It wraps a `pandas.DataFrame`
+    with additional metadata including:
+    - `DataDefinition`: column types and roles mapping
+    - Descriptors: computed row-level scores (for text/LLM data)
+    - Metadata and tags: additional information about the dataset
+
+    You typically create a `Dataset` from a `pandas.DataFrame` using `Dataset.from_pandas()`.
+    Use `Dataset` objects with `Report.run()` to perform evaluations.
+
+    **Documentation**: See [Data Definition Guide](https://docs.evidentlyai.com/docs/library/data_definition) for column mapping.
+
+    Create from pandas DataFrame:
+    ```python
+    from evidently import Dataset, DataDefinition
+
+    dataset = Dataset.from_pandas(
+        source_df,
+        data_definition=DataDefinition()
+    )
+    ```
+
+    Add descriptors for text evaluation:
+    ```python
+    from evidently.descriptors import TextLength
+
+    dataset.add_descriptors([TextLength(column="text")])
+    ```
+
+    Use in a Report:
+    ```python
+    from evidently import Report
+    from evidently.presets import DataSummaryPreset
+
+    report = Report([DataSummaryPreset()])
+    snapshot = report.run(dataset, None)
+    ```
+    """
+
     _data_definition: DataDefinition
     _metadata: Dict[str, MetadataValueType]
     _tags: List[str]
@@ -738,6 +1245,27 @@ class Dataset:
         metadata: Dict[str, MetadataValueType] = None,
         tags: List[str] = None,
     ) -> "Dataset":
+        """Create a `Dataset` from a `pandas.DataFrame`.
+
+        Args:
+        * `data`: `pandas.DataFrame` with your data
+        * `data_definition`: Optional `DataDefinition` for column mapping (auto-inferred if None).
+          Use `DataDefinition()` for automatic mapping or provide explicit column mappings.
+        * `descriptors`: Optional list of descriptors to compute and add to dataset
+        * `options`: Optional options for descriptor computation
+        * `metadata`: Optional metadata dictionary
+        * `tags`: Optional list of tags
+
+        Returns:
+        * `Dataset` object ready for use with `Report.run()`
+
+        Example:
+        ```python
+        from evidently import Dataset, DataDefinition
+
+        dataset = Dataset.from_pandas(df, data_definition=DataDefinition())
+        ```
+        """
         dataset = PandasDataset(data, data_definition, metadata=metadata, tags=tags)
         if descriptors is not None:
             dataset.add_descriptors(descriptors, options)
@@ -745,6 +1273,17 @@ class Dataset:
 
     @staticmethod
     def from_any(dataset: PossibleDatasetTypes) -> "Dataset":
+        """Convert various dataset types to a `Dataset` object.
+
+        Args:
+        * `dataset`: `pandas.DataFrame` or `Dataset` object
+
+        Returns:
+        * `Dataset` object (converts DataFrame if needed)
+
+        Raises:
+        * ValueError if dataset type is not supported
+        """
         if isinstance(dataset, Dataset):
             return dataset
         if isinstance(dataset, pd.DataFrame):
@@ -753,42 +1292,102 @@ class Dataset:
 
     @abstractmethod
     def as_dataframe(self) -> pd.DataFrame:
+        """Get the underlying `pandas.DataFrame`.
+
+        Returns:
+        * `pandas.DataFrame` with all data including computed descriptors
+        """
         raise NotImplementedError()
 
     @abstractmethod
     def column(self, column_name: str) -> DatasetColumn:
+        """Get a specific column from the dataset.
+
+        Args:
+        * `column_name`: Name of the column to retrieve
+
+        Returns:
+        * `DatasetColumn` object with column data and type information
+        """
         raise NotImplementedError()
 
     @abstractmethod
     def subdataset(self, column_name: str, label: object) -> "Dataset":
+        """Create a filtered subdataset matching a column value.
+
+        Args:
+        * `column_name`: Column to filter by
+        * `label`: Value to filter for
+
+        Returns:
+        * New `Dataset` containing only rows where column equals label
+        """
         raise NotImplementedError()
 
     @abstractmethod
     def stats(self) -> DatasetStats:
+        """Get statistical summary of the dataset.
+
+        Returns:
+        * `DatasetStats` object with row count, column count, and per-column statistics
+        """
         raise NotImplementedError()
 
     @property
     def data_definition(self) -> DataDefinition:
+        """Get the `DataDefinition` mapping for this dataset.
+
+        Returns:
+        * `DataDefinition` object with column type and role mappings
+        * `DataDefinition` object with column types and roles
+        """
         return self._data_definition
 
     @property
     def metadata(self) -> Dict[str, MetadataValueType]:
+        """Get metadata associated with this dataset.
+
+        Returns:
+        * Dictionary of metadata key-value pairs
+        """
         return self._metadata
 
     @property
     def tags(self) -> List[str]:
+        """Get tags associated with this dataset.
+
+        Returns:
+        * List of tag strings
+        """
         return self._tags
 
     @abstractmethod
     def add_descriptor(self, descriptor: Descriptor, options: AnyOptions = None):
+        """Add a descriptor to compute row-level scores.
+
+        Args:
+        * `descriptor`: `Descriptor` object to compute
+        * `options`: Optional options for descriptor computation
+        """
         raise NotImplementedError
 
     def add_descriptors(self, descriptors: List[Descriptor], options: AnyOptions = None):
+        """Add multiple descriptors to the dataset.
+
+        Args:
+        * `descriptors`: List of `Descriptor` objects to compute
+        * `options`: Optional options for descriptor computation
+        """
         for descriptor in descriptors:
             self.add_descriptor(descriptor, options)
 
     @abstractmethod
     def save(self, uri: str):
+        """Save the dataset to a file.
+
+        Args:
+        * `uri`: File path to save the dataset (supports .evidently_dataset format)
+        """
         raise NotImplementedError
 
     @classmethod
@@ -803,6 +1402,17 @@ class Dataset:
 
     @classmethod
     def load(cls, uri: str) -> "Dataset":
+        """Load a dataset from a file.
+
+        Args:
+        * `uri`: File path to load from (supports CSV, Parquet, and .evidently_dataset formats)
+
+        Returns:
+        * `Dataset` object loaded from file
+
+        Raises:
+        * Exception if dataset cannot be loaded
+        """
         for subclass in cls.__subclasses__():
             if subclass._can_load(uri):
                 return subclass._load(uri)
