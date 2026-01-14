@@ -109,22 +109,20 @@ def get_one_column_drift(
     scatter: Optional[Union[ScatterField, ScatterAggField]] = None
     if column_type == ColumnType.Numerical:
         current_nbinsx = options.get_nbinsx(column.name)
-        current_small_distribution = [
-            t.tolist()
-            for t in np.histogram(
-                current_column[np.isfinite(current_column)],
-                bins=current_nbinsx,
-                density=True,
-            )
-        ]
-        reference_small_distribution = [
-            t.tolist()
-            for t in np.histogram(
-                reference_column[np.isfinite(reference_column)],
-                bins=current_nbinsx,
-                density=True,
-            )
-        ]
+        # Calculate histogram counts and convert to percentages for better interpretability
+        current_hist_counts, current_hist_bins = np.histogram(
+            current_column[np.isfinite(current_column)],
+            bins=current_nbinsx,
+        )
+        current_hist_pct = (current_hist_counts / current_hist_counts.sum() * 100) if current_hist_counts.sum() > 0 else current_hist_counts
+        current_small_distribution = [current_hist_pct.tolist(), current_hist_bins.tolist()]
+
+        reference_hist_counts, reference_hist_bins = np.histogram(
+            reference_column[np.isfinite(reference_column)],
+            bins=current_nbinsx,
+        )
+        reference_hist_pct = (reference_hist_counts / reference_hist_counts.sum() * 100) if reference_hist_counts.sum() > 0 else reference_hist_counts
+        reference_small_distribution = [reference_hist_pct.tolist(), reference_hist_bins.tolist()]
         if not agg_data:
             current_scatter = {column.display_name: current_column}
             if datetime_data is not None:
