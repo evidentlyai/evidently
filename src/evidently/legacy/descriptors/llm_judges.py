@@ -160,6 +160,28 @@ class DeclineLLMEval(BinaryClassificationLLMEval):
     model = "gpt-4o-mini"
 
 
+class QualityLLMEval(BinaryClassificationLLMEval):
+    class Config:
+        type_alias = "evidently:descriptor:QualityLLMEval"
+
+    name: ClassVar = "Quality"
+    template: ClassVar = BinaryClassificationPromptTemplate(
+        criteria=textwrap.dedent(
+            """
+            "A LQ indicates that the post is of very low quality, semantically meaningless, and contains broken-off or repetitive text."
+            "A HQ indicates the post is of very high quality, addressing a complex topic with advanced vocabulary, phrasing, and style."
+            """
+        ).strip(),
+        target_category="HQ",
+        non_target_category="LQ",
+        uncertainty=Uncertainty.UNKNOWN,
+        include_reasoning=True,
+        pre_messages=[LLMMessage.system("You are a judge which evaluates text.")]
+    )
+    provider = "openai"
+    model = "gpt-4o-mini"
+
+
 class ContextQualityLLMEval(BinaryClassificationLLMEval):
     class Config:
         type_alias = "evidently:descriptor:ContextQualityLLMEval"

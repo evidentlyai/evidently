@@ -40,6 +40,7 @@ from .generated_descriptors import BiasLLMEval
 from .generated_descriptors import BinaryClassificationLLMEval
 from .generated_descriptors import CompletenessLLMEval
 from .generated_descriptors import ContainsLink
+from .generated_descriptors import QualityLLMEval
 from .generated_descriptors import ContextQualityLLMEval
 from .generated_descriptors import CorrectnessLLMEval
 from .generated_descriptors import DeclineLLMEval
@@ -88,6 +89,7 @@ __all__ = [
     "CompletenessLLMEval",
     "Contains",
     "ContainsLink",
+    "QualityLLMEval",
     "ContextQualityLLMEval",
     "ContextRelevance",
     "CorrectnessLLMEval",

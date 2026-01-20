@@ -13,6 +13,7 @@ from .json_match_descriptor import JSONMatch
 from .json_schema_match_descriptor import JSONSchemaMatch
 from .llm_judges import BiasLLMEval
 from .llm_judges import CompletenessLLMEval
+from .llm_judges import QualityLLMEval
 from .llm_judges import ContextQualityLLMEval
 from .llm_judges import CorrectnessLLMEval
 from .llm_judges import DeclineLLMEval
@@ -52,6 +53,7 @@ __all__ = [
     "NegativityLLMEval",
     "PIILLMEval",
     "DeclineLLMEval",
+    "QualityLLMEval",
     "ContextQualityLLMEval",
     "BiasLLMEval",
     "ToxicityLLMEval",
