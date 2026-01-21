@@ -176,7 +176,7 @@ class QualityLLMEval(BinaryClassificationLLMEval):
         non_target_category="LQ",
         uncertainty=Uncertainty.UNKNOWN,
         include_reasoning=True,
-        pre_messages=[LLMMessage.system("You are a judge which evaluates text.")]
+        pre_messages=[LLMMessage.system("You are a judge which evaluates text.")],
     )
     provider = "openai"
     model = "gpt-4o-mini"

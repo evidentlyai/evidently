@@ -842,16 +842,16 @@ def CompletenessLLMEval(
 
 
 def QualityLLMEval(
-        column_name: str,
-        provider: str = "openai",
-        model: str = "gpt-4o-mini",
-        additional_columns: Optional[Dict[str, str]] = None,
-        include_category: Optional[bool] = None,
-        include_score: Optional[bool] = None,
-        include_reasoning: Optional[bool] = None,
-        uncertainty: Optional[Uncertainty] = None,
-        alias: Optional[str] = None,
-        tests: Optional[List[Union["DescriptorTest", "GenericTest"]]] = None,
+    column_name: str,
+    provider: str = "openai",
+    model: str = "gpt-4o-mini",
+    additional_columns: Optional[Dict[str, str]] = None,
+    include_category: Optional[bool] = None,
+    include_score: Optional[bool] = None,
+    include_reasoning: Optional[bool] = None,
+    uncertainty: Optional[Uncertainty] = None,
+    alias: Optional[str] = None,
+    tests: Optional[List[Union["DescriptorTest", "GenericTest"]]] = None,
 ):
     """Score the reference free quality using LLM evaluation.
 
