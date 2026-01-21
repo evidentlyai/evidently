@@ -40,7 +40,6 @@ from .generated_descriptors import BiasLLMEval
 from .generated_descriptors import BinaryClassificationLLMEval
 from .generated_descriptors import CompletenessLLMEval
 from .generated_descriptors import ContainsLink
-from .generated_descriptors import QualityLLMEval
 from .generated_descriptors import ContextQualityLLMEval
 from .generated_descriptors import CorrectnessLLMEval
 from .generated_descriptors import DeclineLLMEval
@@ -62,6 +61,7 @@ from .generated_descriptors import NonLetterCharacterPercentage
 from .generated_descriptors import OOVWordsPercentage
 from .generated_descriptors import OpenAI
 from .generated_descriptors import PIILLMEval
+from .generated_descriptors import QualityLLMEval
 from .generated_descriptors import SemanticSimilarity
 from .generated_descriptors import SentenceCount
 from .generated_descriptors import Sentiment
