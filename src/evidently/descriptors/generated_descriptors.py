@@ -853,7 +853,7 @@ def QualityLLMEval(
         alias: Optional[str] = None,
         tests: Optional[List[Union["DescriptorTest", "GenericTest"]]] = None,
 ):
-    """Score the political lean using LLM evaluation.
+    """Score the reference free quality using LLM evaluation.
 
     Args:
     * `column_name`: Name of the text column to evaluate.
