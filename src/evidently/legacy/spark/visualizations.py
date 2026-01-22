@@ -75,7 +75,7 @@ def choose_agg_period(
         "M": ("month", "y-M"),
         "W": ("week", "week"),  # exception cause date_format does not have week of year
         "D": ("day", "y-M-d"),
-        "H": ("hour", "y-M-d:H"),
+        "h": ("hour", "y-M-d:H"),
     }
     max_date, min_date = calculate_stats(current_date, date_column_name, sf.max, sf.min)
     if reference_date is not None:
@@ -83,7 +83,7 @@ def choose_agg_period(
         max_date, min_date = max(max_date, max_date_r), min(min_date, min_date_r)
     days = (max_date - min_date).days
     time_points = pd.Series(
-        index=["A", "Q", "M", "W", "D", "H"],
+        index=["A", "Q", "M", "W", "D", "h"],
         data=[
             abs(OPTIMAL_POINTS - days / 365),
             abs(OPTIMAL_POINTS - days / 90),

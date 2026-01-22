@@ -1274,7 +1274,7 @@ def plot_top_error_contours(
 
 
 def choose_agg_period(current_date_column: pd.Series, reference_date_column: Optional[pd.Series]) -> Tuple[str, str]:
-    prefix_dict = {"A": "year", "Q": "quarter", "M": "month", "W": "week", "D": "day", "H": "hour", "min": "minute"}
+    prefix_dict = {"A": "year", "Q": "quarter", "M": "month", "W": "week", "D": "day", "h": "hour", "min": "minute"}
     datetime_feature = current_date_column
     if reference_date_column is not None:
         datetime_feature = pd.concat([datetime_feature, reference_date_column])
@@ -1282,7 +1282,7 @@ def choose_agg_period(current_date_column: pd.Series, reference_date_column: Opt
     if days == 0:
         days = (datetime_feature.max() - datetime_feature.min()).seconds / (3600 * 24)
     time_points = pd.Series(
-        index=["A", "Q", "M", "W", "D", "H", "min"],
+        index=["A", "Q", "M", "W", "D", "h", "min"],
         data=[
             abs(OPTIMAL_POINTS - days / 365),
             abs(OPTIMAL_POINTS - days / 90),
