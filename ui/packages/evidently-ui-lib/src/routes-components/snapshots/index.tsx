@@ -110,12 +110,9 @@ type TablePaginationActionsProps = {
   onPageChange: (event: React.MouseEvent<HTMLButtonElement>, newPage: number) => void
 }
 
-function TablePaginationActions({
-  count,
-  page,
-  rowsPerPage,
-  onPageChange
-}: TablePaginationActionsProps) {
+function TablePaginationActions(props: TablePaginationActionsProps) {
+  const { count, page, rowsPerPage, onPageChange } = props
+
   const handleFirstPageButtonClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     onPageChange(event, 0)
   }
@@ -135,7 +132,7 @@ function TablePaginationActions({
   const isLastPage = page >= Math.ceil(count / rowsPerPage) - 1
 
   return (
-    <Box sx={{ flexShrink: 0, ml: 2.5 }}>
+    <Box flexShrink={0}>
       <IconButton
         onClick={handleFirstPageButtonClick}
         disabled={page === 0}
@@ -228,7 +225,7 @@ export const SnapshotsListTemplate = (props: SnapshotActionsWrapperProps) => {
 
   // Paginate results
   const paginatedSnapshots = useMemo(
-    () => resultSnapshots.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage),
+    () => resultSnapshots.slice(page * rowsPerPage, (page + 1) * rowsPerPage),
     [resultSnapshots, page, rowsPerPage]
   )
 
@@ -319,6 +316,19 @@ export const SnapshotsListTemplate = (props: SnapshotActionsWrapperProps) => {
     </Box>
   )
 
+  const TablePaginationComponent = (
+    <TablePagination
+      rowsPerPageOptions={[10, 30, 50]}
+      component='div'
+      count={resultSnapshots.length}
+      rowsPerPage={rowsPerPage}
+      page={page}
+      onPageChange={handleChangePage}
+      onRowsPerPageChange={handleChangeRowsPerPage}
+      ActionsComponent={TablePaginationActions}
+    />
+  )
+
   if (snapshots.length === 0) {
     return (
       <>
@@ -333,6 +343,7 @@ export const SnapshotsListTemplate = (props: SnapshotActionsWrapperProps) => {
   return (
     <>
       {FilterComponent}
+      {TablePaginationComponent}
       <Table>
         <TableHead>
           <TableRow>
@@ -423,7 +434,7 @@ export const SnapshotsListTemplate = (props: SnapshotActionsWrapperProps) => {
                         variant={slots?.donwloadButtonVariant || 'outlined'}
                         disabled={disabled ?? false}
                         downloadLink={
-                          // normalize to string before replace (DownloadSnapshotURL isn't guaranteed to be string)
+                          // TODO: better type safety here
                           String(downloadLink)
                             .replace('{project_id}', projectId)
                             .replace('{snapshot_id}', snapshot.id)
@@ -460,16 +471,7 @@ export const SnapshotsListTemplate = (props: SnapshotActionsWrapperProps) => {
           ))}
         </TableBody>
       </Table>
-      <TablePagination
-        rowsPerPageOptions={[10, 30, 50]}
-        component='div'
-        count={resultSnapshots.length}
-        rowsPerPage={rowsPerPage}
-        page={page}
-        onPageChange={handleChangePage}
-        onRowsPerPageChange={handleChangeRowsPerPage}
-        ActionsComponent={TablePaginationActions}
-      />
+      {TablePaginationComponent}
     </>
   )
 }
