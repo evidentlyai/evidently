@@ -14,6 +14,7 @@ import {
   TableBody,
   TableCell,
   TableHead,
+  TablePagination,
   TableRow,
   TableSortLabel,
   TextField,
@@ -23,7 +24,13 @@ import {
 
 import { useLocalStorage } from '@uidotdev/usehooks'
 
-import { Delete as DeleteIcon } from '@mui/icons-material'
+import {
+  Delete as DeleteIcon,
+  FirstPage as FirstPageIcon,
+  KeyboardArrowLeft,
+  KeyboardArrowRight,
+  LastPage as LastPageIcon
+} from '@mui/icons-material'
 import { Autocomplete } from '@mui/material'
 import type { DownloadSnapshotURL, MetadataModel, ReportModel } from '~/api/types'
 import { DownloadButton } from '~/components/Actions/DownloadButton'
@@ -96,6 +103,59 @@ type SnapshotActionsWrapperProps = {
   snapshotSelection?: { title: string; action: (snapshots: string[]) => void }
 }
 
+type TablePaginationActionsProps = {
+  count: number
+  page: number
+  rowsPerPage: number
+  onPageChange: (event: React.MouseEvent<HTMLButtonElement>, newPage: number) => void
+}
+
+function TablePaginationActions({
+  count,
+  page,
+  rowsPerPage,
+  onPageChange
+}: TablePaginationActionsProps) {
+  const handleFirstPageButtonClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    onPageChange(event, 0)
+  }
+
+  const handleBackButtonClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    onPageChange(event, page - 1)
+  }
+
+  const handleNextButtonClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    onPageChange(event, page + 1)
+  }
+
+  const handleLastPageButtonClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    onPageChange(event, Math.max(0, Math.ceil(count / rowsPerPage) - 1))
+  }
+
+  const isLastPage = page >= Math.ceil(count / rowsPerPage) - 1
+
+  return (
+    <Box sx={{ flexShrink: 0, ml: 2.5 }}>
+      <IconButton
+        onClick={handleFirstPageButtonClick}
+        disabled={page === 0}
+        aria-label='first page'
+      >
+        <FirstPageIcon />
+      </IconButton>
+      <IconButton onClick={handleBackButtonClick} disabled={page === 0} aria-label='previous page'>
+        <KeyboardArrowLeft />
+      </IconButton>
+      <IconButton onClick={handleNextButtonClick} disabled={isLastPage} aria-label='next page'>
+        <KeyboardArrowRight />
+      </IconButton>
+      <IconButton onClick={handleLastPageButtonClick} disabled={isLastPage} aria-label='last page'>
+        <LastPageIcon />
+      </IconButton>
+    </Box>
+  )
+}
+
 export const SnapshotsListTemplate = (props: SnapshotActionsWrapperProps) => {
   const {
     query,
@@ -115,6 +175,10 @@ export const SnapshotsListTemplate = (props: SnapshotActionsWrapperProps) => {
   const [isCollapsedJson, setIsCollapsedJson] = useLocalStorage('show-full-json-metadata', false)
   const [selectedTags, setTags] = useState(() => query.tags?.split(',') || [])
   const [metadataQuery, setMetadataQuery] = useState(() => query['metadata-query'] || '')
+
+  // Pagination state
+  const [page, setPage] = useState(0)
+  const [rowsPerPage, setRowsPerPage] = useState(10)
 
   useUpdateQueryStringValueWithoutNavigation('tags', selectedTags.join(','))
   useUpdateQueryStringValueWithoutNavigation('metadata-query', String(metadataQuery))
@@ -162,6 +226,21 @@ export const SnapshotsListTemplate = (props: SnapshotActionsWrapperProps) => {
     [filteredSnapshotsByMetadata, sortByTimestamp]
   )
 
+  // Paginate results
+  const paginatedSnapshots = useMemo(
+    () => resultSnapshots.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage),
+    [resultSnapshots, page, rowsPerPage]
+  )
+
+  const handleChangePage = (_event: unknown, newPage: number) => {
+    setPage(newPage)
+  }
+
+  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setRowsPerPage(Number.parseInt(event.target.value, 10))
+    setPage(0)
+  }
+
   const [selectedSnapshots, setSelectedSnapshots] = useState<Set<string>>(new Set())
   const isSnapshotSelected = (id: string) => selectedSnapshots.has(id)
 
@@ -173,7 +252,10 @@ export const SnapshotsListTemplate = (props: SnapshotActionsWrapperProps) => {
             multiple
             limitTags={2}
             value={selectedTags}
-            onChange={(_, newSelectedTags) => setTags(newSelectedTags)}
+            onChange={(_, newSelectedTags) => {
+              setTags(newSelectedTags)
+              setPage(0)
+            }}
             options={ALL_TAGS}
             renderInput={(params) => (
               <TextField {...params} variant='standard' label='Filter by Tags' />
@@ -185,7 +267,10 @@ export const SnapshotsListTemplate = (props: SnapshotActionsWrapperProps) => {
             <TextField
               fullWidth
               value={metadataQuery}
-              onChange={(event) => setMetadataQuery(event.target.value)}
+              onChange={(event) => {
+                setMetadataQuery(event.target.value)
+                setPage(0)
+              }}
               variant='standard'
               label='Search in Metadata'
             />
@@ -261,17 +346,16 @@ export const SnapshotsListTemplate = (props: SnapshotActionsWrapperProps) => {
                 direction={sortByTimestamp}
                 onClick={() => {
                   setSortByTimestamp((prev) => {
+                    let next: typeof prev
                     if (prev === undefined) {
-                      return 'desc'
+                      next = 'desc'
+                    } else if (prev === 'desc') {
+                      next = 'asc'
+                    } else {
+                      next = undefined
                     }
-
-                    if (prev === 'desc') {
-                      return 'asc'
-                    }
-
-                    if (prev === 'asc') {
-                      return undefined
-                    }
+                    setPage(0)
+                    return next
                   })
                 }}
               >
@@ -283,7 +367,7 @@ export const SnapshotsListTemplate = (props: SnapshotActionsWrapperProps) => {
           <TableRow />
         </TableHead>
         <TableBody>
-          {resultSnapshots.map((snapshot) => (
+          {paginatedSnapshots.map((snapshot) => (
             <TableRow key={`r-${snapshot.id}`}>
               {snapshotSelection && (
                 <TableCell padding='checkbox'>
@@ -339,8 +423,8 @@ export const SnapshotsListTemplate = (props: SnapshotActionsWrapperProps) => {
                         variant={slots?.donwloadButtonVariant || 'outlined'}
                         disabled={disabled ?? false}
                         downloadLink={
-                          // better type safety
-                          downloadLink
+                          // normalize to string before replace (DownloadSnapshotURL isn't guaranteed to be string)
+                          String(downloadLink)
                             .replace('{project_id}', projectId)
                             .replace('{snapshot_id}', snapshot.id)
                         }
@@ -376,6 +460,16 @@ export const SnapshotsListTemplate = (props: SnapshotActionsWrapperProps) => {
           ))}
         </TableBody>
       </Table>
+      <TablePagination
+        rowsPerPageOptions={[10, 30, 50]}
+        component='div'
+        count={resultSnapshots.length}
+        rowsPerPage={rowsPerPage}
+        page={page}
+        onPageChange={handleChangePage}
+        onRowsPerPageChange={handleChangeRowsPerPage}
+        ActionsComponent={TablePaginationActions}
+      />
     </>
   )
 }
