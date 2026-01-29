@@ -30,7 +30,7 @@ def setup_deterministic_generation_uuid(seed: int = 8754):
     def deterministic_uuid() -> uuid.UUID:
         return fake.uuid4(cast_to=None)
 
-    def deterministic_uuid6() -> uuid.UUID:
+    def deterministic_uuid6() -> uuid6.UUID:
         return uuid6.UUID(int=deterministic_uuid().int)
 
     uuid.uuid4 = deterministic_uuid
