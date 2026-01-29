@@ -149,30 +149,33 @@ def _stable_value_counts(series: pd.Series):
     return series.value_counts().reindex(pd.unique(series.to_numpy()))
 
 
+def _idmax_possibly_empty_column(series: pd.Series):
+    value_count = _stable_value_counts(series)
+    if all(pd.isna(value_count)):
+        return None
+    else:
+        value = value_count.idxmax()
+        if pd.isnull(value):
+            return None
+        return value
+
+
 def _error_cat_feature_bias(dataset, feature_name, err_quantiles: ErrorWithQuantiles) -> FeatureBias:
     error = err_quantiles.error
     quantile_top = err_quantiles.quantile_top
     quantile_other = err_quantiles.quantile_other
-    ref_overall_value = _stable_value_counts(dataset[feature_name]).idxmax()
-    ref_under_value = _stable_value_counts(dataset[error <= quantile_top][feature_name]).idxmax()
-    ref_over_value = _stable_value_counts(dataset[error >= quantile_other][feature_name]).idxmax()
+    ref_overall_value = _idmax_possibly_empty_column(dataset[feature_name])
+    ref_under_value = _idmax_possibly_empty_column(dataset[error <= quantile_top][feature_name])
+    ref_over_value = _idmax_possibly_empty_column(dataset[error >= quantile_other][feature_name])
     if (
-        (ref_overall_value != ref_under_value)
+        (ref_overall_value is None and ref_under_value is None and ref_over_value is None)
+        or (ref_overall_value != ref_under_value)
         or (ref_over_value != ref_overall_value)
         or (ref_under_value != ref_overall_value)
     ):
         ref_range_value = 1
     else:
         ref_range_value = 0
-
-    if pd.isnull(ref_overall_value):
-        ref_overall_value = None
-
-    if pd.isnull(ref_under_value):
-        ref_under_value = None
-
-    if pd.isnull(ref_over_value):
-        ref_over_value = None
 
     return FeatureBias(
         feature_type="cat",

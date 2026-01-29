@@ -5,6 +5,7 @@ from typing import List
 from typing import Optional
 from typing import Union
 
+import numpy
 import numpy as np
 import pandas as pd
 from pandas.core.dtypes.common import infer_dtype_from_object  # type: ignore[attr-defined]
@@ -1015,8 +1016,15 @@ class TestColumnsType(Test):
                 description = f"No column '{column_name}' in the metrics data"
                 return TestResult(name=self.name, description=description, status=status, group=self.group)
 
-            expected_type = infer_dtype_from_object(expected_type_object)
-            real_column_type = infer_dtype_from_object(real_column_type_object)
+            if isinstance(expected_type_object, numpy.dtypes.DateTime64DType):
+                expected_type = expected_type_object.type
+            else:
+                expected_type = infer_dtype_from_object(expected_type_object)
+
+            if isinstance(real_column_type_object, numpy.dtypes.DateTime64DType):
+                real_column_type = real_column_type_object.type
+            else:
+                real_column_type = infer_dtype_from_object(real_column_type_object)
             columns.append(
                 ColumnTypeParameter(
                     actual_type=real_column_type.__name__, expected_type=expected_type.__name__, column_name=column_name
