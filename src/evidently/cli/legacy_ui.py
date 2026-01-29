@@ -18,7 +18,7 @@ def setup_deterministic_generation_uuid(seed: int = 8754):
     Faker.seed(seed)
     fake = Faker()
 
-    def deterministic_uuid():
+    def deterministic_uuid() -> uuid.UUID:
         return fake.uuid4(cast_to=None)
 
     uuid.uuid4 = deterministic_uuid

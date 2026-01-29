@@ -1242,8 +1242,8 @@ class Dataset:
         data_definition: Optional[DataDefinition] = None,
         descriptors: Optional[List[Descriptor]] = None,
         options: AnyOptions = None,
-        metadata: Dict[str, MetadataValueType] = None,
-        tags: List[str] = None,
+        metadata: Optional[Dict[str, MetadataValueType]] = None,
+        tags: Optional[List[str]] = None,
     ) -> "Dataset":
         """Create a `Dataset` from a `pandas.DataFrame`.
 
@@ -1535,8 +1535,8 @@ class PandasDataset(Dataset):
         self,
         data: pd.DataFrame,
         data_definition: Optional[DataDefinition] = None,
-        metadata: Dict[str, MetadataValueType] = None,
-        tags: List[str] = None,
+        metadata: Optional[Dict[str, MetadataValueType]] = None,
+        tags: Optional[List[str]] = None,
     ):
         self._data = data.copy()
         if (
