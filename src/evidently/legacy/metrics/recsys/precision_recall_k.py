@@ -17,15 +17,15 @@ from evidently.legacy.renderers.base_renderer import MetricRenderer
 from evidently.legacy.renderers.base_renderer import default_renderer
 
 
-def safe_pd_column_expanding(df: pd.DataFrame):
+def safe_pd_column_expanding_and_sum(df: pd.DataFrame):
     try:
         # Try the old way (works on older pandas)
         with warnings.catch_warnings():
             warnings.filterwarnings("ignore", message=".*axis=1.*", category=FutureWarning)
-            return df.expanding(axis=1)  # type: ignore[arg-type]
+            return df.expanding(axis=1).sum()  # type: ignore[arg-type]
     except TypeError:
         # pandas removed axis=1 -> use transpose trick
-        return df.T.expanding()
+        return df.T.expanding().sum().T
 
 
 class PrecisionRecallCalculationResult(MetricResult):
@@ -66,23 +66,21 @@ class PrecisionRecallCalculation(Metric[PrecisionRecallCalculationResult]):
         res["precision_include_no_feedback"] = list(user_df[[f"precision_{k}" for k in range(1, k + 1)]].mean())
         res["precision"] = list(user_df.loc[user_df["all"] != 0, [f"precision_{k}" for k in range(1, k + 1)]].mean())
         res["map_include_no_feedback"] = list(
-            safe_pd_column_expanding(
+            safe_pd_column_expanding_and_sum(
                 user_df[[f"precision_{k}" for k in range(1, k + 1)]].multiply(
                     user_df[[f"rel_{k}" for k in range(1, k + 1)]].values
                 )
             )
-            .sum()
             .divide(user_df["all"], axis=0)
             .fillna(0)
             .mean()
         )
         res["map"] = list(
-            safe_pd_column_expanding(
+            safe_pd_column_expanding_and_sum(
                 user_df.loc[user_df["all"] != 0, [f"precision_{k}" for k in range(1, k + 1)]].multiply(
                     user_df.loc[user_df["all"] != 0, [f"rel_{k}" for k in range(1, k + 1)]].values
                 )
             )
-            .sum()
             .divide(user_df.loc[user_df["all"] != 0, "all"], axis=0)
             .fillna(0)
             .mean()
@@ -90,23 +88,21 @@ class PrecisionRecallCalculation(Metric[PrecisionRecallCalculationResult]):
         res["recall_include_no_feedback"] = list(user_df[[f"recall_{k}" for k in range(1, k + 1)]].mean())
         res["recall"] = list(user_df.loc[user_df["all"] != 0, [f"recall_{k}" for k in range(1, k + 1)]].mean())
         res["mar_include_no_feedback"] = list(
-            safe_pd_column_expanding(
+            safe_pd_column_expanding_and_sum(
                 user_df[[f"recall_{k}" for k in range(1, k + 1)]].multiply(
                     user_df[[f"rel_{k}" for k in range(1, k + 1)]].values
                 )
             )
-            .sum()
             .divide(user_df["all"], axis=0)
             .fillna(0)
             .mean()
         )
         res["mar"] = list(
-            safe_pd_column_expanding(
+            safe_pd_column_expanding_and_sum(
                 user_df.loc[user_df["all"] != 0, [f"recall_{k}" for k in range(1, k + 1)]].multiply(
                     user_df.loc[user_df["all"] != 0, [f"rel_{k}" for k in range(1, k + 1)]].values
                 )
             )
-            .sum()
             .divide(user_df.loc[user_df["all"] != 0, "all"], axis=0)
             .fillna(0)
             .mean()

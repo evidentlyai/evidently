@@ -47,3 +47,15 @@ def make_target_bins_for_reg_plots(
         )
     df_for_bins["target_binned"] = pd.cut(df_for_bins[target_column], min(df_for_bins[target_column].nunique(), 10))
     return df_for_bins
+
+
+def fill_diagonal(data: pd.DataFrame, value):
+    """
+    Fill diagonal of DataFrame with given value in-place.
+    Args:
+        data: input DataFrame
+        value: value to fill with
+    """
+    min_el = min(data.shape)
+    for i in range(min_el):
+        data.iloc[i, i] = value

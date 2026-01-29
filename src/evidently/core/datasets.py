@@ -1430,7 +1430,7 @@ def infer_column_type(column_data: pd.Series) -> ColumnType:
             return ColumnType.Categorical
         else:
             return ColumnType.Numerical
-    if column_data.dtype.name in ["string"]:
+    if column_data.dtype.name in ["string", "str"]:
         if column_data.nunique() > (column_data.count() * 0.5):
             return ColumnType.Text
         else:
