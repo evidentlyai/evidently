@@ -204,10 +204,10 @@ def relabel_data(
     if max_categories is None:
         return current_data.copy(), reference_data.copy() if reference_data is not None else None
 
-    current_data_str = current_data.astype(str)
+    current_data_str = current_data.astype(str).fillna("NaN")
     reference_data_str = None
     if reference_data is not None:
-        reference_data_str = reference_data.astype(str)
+        reference_data_str = reference_data.astype(str).fillna("NaN")
         unique_values = len(
             np.union1d(
                 current_data_str.unique(),

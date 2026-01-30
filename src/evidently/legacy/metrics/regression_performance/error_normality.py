@@ -113,11 +113,10 @@ class RegressionErrorNormality(UsesRawDataMixin, Metric[RegressionErrorNormality
         if not agg_data:
             return df
         df["bin"] = pd.cut(err_data.sort_values().to_numpy(), bins=10, labels=False, retbins=False)
-        return (
-            df.groupby("bin", group_keys=False)
-            .apply(lambda x: x.sample(n=min(100, x.shape[0]), random_state=0))
-            .drop("bin", axis=1)
-        )
+        grouped = df.groupby("bin", group_keys=False).apply(lambda x: x.sample(n=min(100, x.shape[0]), random_state=0))
+        if "bin" in grouped.columns:
+            grouped = grouped.drop("bin", axis=1)
+        return grouped
 
 
 @default_renderer(wrap_type=RegressionErrorNormality)

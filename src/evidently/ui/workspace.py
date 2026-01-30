@@ -1328,7 +1328,7 @@ class CloudWorkspace(RemoteWorkspace):
     def __init__(
         self,
         token: Optional[str] = None,
-        url: str = None,
+        url: Optional[str] = None,
     ):
         """Initialize a cloud workspace connection.
 

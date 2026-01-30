@@ -9,8 +9,8 @@ from typing import Optional
 from typing import Sequence
 from typing import Union
 
-import numpy as np
 import pandas as pd
+import pandas.api.types
 
 from evidently._pydantic_compat import BaseModel
 from evidently.legacy.core import ColumnType
@@ -596,7 +596,7 @@ def _get_column_type(
                 )
                 cur_type = ref_type
             # TODO: add proper type check
-            if not np.can_cast(cur_type, ref_type) and not np.can_cast(ref_type, cur_type):  # type: ignore[arg-type]
+            if pandas.api.types.is_dtype_equal(cur_type, ref_type):
                 logging.warning(
                     f"Column {column_name} have different types in reference {ref_type} and current {cur_type}."
                     f" Returning type from reference"

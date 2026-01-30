@@ -1,4 +1,5 @@
 import os
+from typing import Optional
 
 import uvicorn
 
@@ -53,7 +54,7 @@ def run_local(
     host: str = "127.0.0.1",
     port: int = 8000,
     workspace: str = "workspace",
-    secret: str = None,
+    secret: Optional[str] = None,
     conf_path: str = None,
 ):
     config = get_config(host=host, port=port, workspace=workspace, secret=secret, conf_path=conf_path)

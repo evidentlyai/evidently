@@ -1,6 +1,7 @@
 import inspect
 from typing import Iterable
 from typing import List
+from typing import Optional
 from typing import Tuple
 
 
@@ -12,7 +13,7 @@ def not_implemented(self_obj: object):
     return NotImplementedError(f"Metric Type: {type(self_obj)} should implement {name}()")
 
 
-def _flatten(obj: object, paths: List[str] = None) -> Iterable[Tuple[str, float]]:
+def _flatten(obj: object, paths: Optional[List[str]] = None) -> Iterable[Tuple[str, float]]:
     paths = paths or []
     if isinstance(obj, float):
         yield ".".join(paths), obj

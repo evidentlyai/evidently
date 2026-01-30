@@ -27,11 +27,14 @@ def setup_deterministic_generation_uuid(seed: int = 8754):
     Faker.seed(seed)
     fake = Faker()
 
-    def deterministic_uuid():
+    def deterministic_uuid() -> uuid.UUID:
         return fake.uuid4(cast_to=None)
 
+    def deterministic_uuid6() -> uuid6.UUID:
+        return uuid6.UUID(int=deterministic_uuid().int)
+
     uuid.uuid4 = deterministic_uuid
-    uuid6.uuid7 = deterministic_uuid
+    uuid6.uuid7 = deterministic_uuid6
 
 
 def _create_demo_projects_task(demo_names: list[str], host: str, port: int, secret: Optional[str]):

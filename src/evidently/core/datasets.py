@@ -1242,8 +1242,8 @@ class Dataset:
         data_definition: Optional[DataDefinition] = None,
         descriptors: Optional[List[Descriptor]] = None,
         options: AnyOptions = None,
-        metadata: Dict[str, MetadataValueType] = None,
-        tags: List[str] = None,
+        metadata: Optional[Dict[str, MetadataValueType]] = None,
+        tags: Optional[List[str]] = None,
     ) -> "Dataset":
         """Create a `Dataset` from a `pandas.DataFrame`.
 
@@ -1430,7 +1430,7 @@ def infer_column_type(column_data: pd.Series) -> ColumnType:
             return ColumnType.Categorical
         else:
             return ColumnType.Numerical
-    if column_data.dtype.name in ["string"]:
+    if column_data.dtype.name in ["string", "str"]:
         if column_data.nunique() > (column_data.count() * 0.5):
             return ColumnType.Text
         else:
@@ -1535,8 +1535,8 @@ class PandasDataset(Dataset):
         self,
         data: pd.DataFrame,
         data_definition: Optional[DataDefinition] = None,
-        metadata: Dict[str, MetadataValueType] = None,
-        tags: List[str] = None,
+        metadata: Optional[Dict[str, MetadataValueType]] = None,
+        tags: Optional[List[str]] = None,
     ):
         self._data = data.copy()
         if (

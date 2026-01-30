@@ -4,7 +4,6 @@ from typing import List
 from typing import Optional
 from typing import Union
 
-import numpy as np
 import pandas as pd
 
 from evidently.legacy.base_metric import InputData
@@ -17,6 +16,7 @@ from evidently.legacy.core import IncludeTags
 from evidently.legacy.features.non_letter_character_percentage_feature import NonLetterCharacterPercentage
 from evidently.legacy.features.OOV_words_percentage_feature import OOVWordsPercentage
 from evidently.legacy.features.text_length_feature import TextLength
+from evidently.legacy.metrics.utils import fill_diagonal
 from evidently.legacy.model.widget import BaseWidgetInfo
 from evidently.legacy.options.base import AnyOptions
 from evidently.legacy.renderers.base_renderer import MetricRenderer
@@ -138,7 +138,7 @@ class DatasetCorrelationsMetric(Metric[DatasetCorrelationsMetricResult]):
             prediction_name = prediction.predicted_values.column_name
         columns_corr = [i for i in correlation_matrix.columns if i not in [target_name, prediction_name]]
         # fill diagonal with 1 values for getting abs max values
-        np.fill_diagonal(correlation_matrix.values, 0)
+        fill_diagonal(correlation_matrix, 0)
 
         target_prediction_correlation: Optional[pd.DataFrame]
         if (
