@@ -42,14 +42,16 @@ Evidently is very modular. You can start with one-off evaluations or host a full
 * Best for experiments, exploratory analysis and debugging.
 * View interactive Reports in Python or export as JSON, Python dictionary, HTML, or view in monitoring UI.
 
-Turn any Report into a **Test Suite** by adding pass/fail conditions.
+Turn any Report into a **Test Suite** by adding pass/fail conditions to automatically validate data quality, model performance, or drift over time.
+
 * Best for regression testing, CI/CD checks, or data validation.
 * Zero setup option: auto-generate test conditions from the reference dataset.
 * Simple syntax to set test conditions as `gt` (greater than), `lt` (less than), etc.
 
 | Reports |
 |--|
-|![Report example](https://github.com/evidentlyai/docs/blob/eb1630cdd80d31d55921ff4d34fc7b5e6e9c9f90/images/concepts/report_test_preview.gif)|
+|![Report Turn any Report into a **Test Suite** by adding pass/fail conditions to automatically validate data quality, model performance, or drift over time.
+example](https://github.com/evidentlyai/docs/blob/eb1630cdd80d31d55921ff4d34fc7b5e6e9c9f90/images/concepts/report_test_preview.gif)|
 
 ## 2. Monitoring Dashboard
 
