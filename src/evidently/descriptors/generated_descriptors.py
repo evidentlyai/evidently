@@ -841,6 +841,47 @@ def CompletenessLLMEval(
     return FeatureDescriptor(feature=feature, alias=alias, tests=tests)
 
 
+def QualityLLMEval(
+    column_name: str,
+    provider: str = "openai",
+    model: str = "gpt-4o-mini",
+    additional_columns: Optional[Dict[str, str]] = None,
+    include_category: Optional[bool] = None,
+    include_score: Optional[bool] = None,
+    include_reasoning: Optional[bool] = None,
+    uncertainty: Optional[Uncertainty] = None,
+    alias: Optional[str] = None,
+    tests: Optional[List[Union["DescriptorTest", "GenericTest"]]] = None,
+):
+    """Score the reference free quality using LLM evaluation.
+
+    Args:
+    * `column_name`: Name of the text column to evaluate.
+    * `provider`: LLM provider name (e.g., "openai", "anthropic").
+    * `model`: Model name to use (e.g., "gpt-4o-mini").
+    * `additional_columns`: Optional mapping of prompt variables to column names.
+    * `include_category`: Whether to include category in output.
+    * `include_score`: Whether to include score in output.
+    * `include_reasoning`: Whether to include reasoning in output.
+    * `uncertainty`: Optional uncertainty handling strategy.
+    * `alias`: Optional alias for the descriptor.
+    * `tests`: Optional list of tests to apply.
+    """
+    from evidently.legacy.descriptors.llm_judges import QualityLLMEval as QualityLLMEvalV1
+
+    feature = QualityLLMEvalV1(
+        provider=provider,
+        model=model,
+        additional_columns=additional_columns,
+        include_category=include_category,
+        include_score=include_score,
+        include_reasoning=include_reasoning,
+        uncertainty=uncertainty,
+        display_name=alias,
+    ).feature(column_name)
+    return FeatureDescriptor(feature=feature, alias=alias, tests=tests)
+
+
 def ContextQualityLLMEval(
     column_name: str,
     question: str,

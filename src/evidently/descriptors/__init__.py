@@ -61,6 +61,7 @@ from .generated_descriptors import NonLetterCharacterPercentage
 from .generated_descriptors import OOVWordsPercentage
 from .generated_descriptors import OpenAI
 from .generated_descriptors import PIILLMEval
+from .generated_descriptors import QualityLLMEval
 from .generated_descriptors import SemanticSimilarity
 from .generated_descriptors import SentenceCount
 from .generated_descriptors import Sentiment
@@ -88,6 +89,7 @@ __all__ = [
     "CompletenessLLMEval",
     "Contains",
     "ContainsLink",
+    "QualityLLMEval",
     "ContextQualityLLMEval",
     "ContextRelevance",
     "CorrectnessLLMEval",
