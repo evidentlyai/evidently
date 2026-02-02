@@ -566,7 +566,7 @@ class DataDefinition(BaseModel):
         """
         item_list = list(filter(lambda x: x.name == classification_id, self.classification or []))
         if len(item_list) == 0:
-            return None
+            raise ValueError("No classification with id {} found".format(classification_id))
         if len(item_list) > 1:
             raise ValueError("More than one classification with id {}".format(classification_id))
         return item_list[0]
