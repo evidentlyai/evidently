@@ -11,7 +11,7 @@ name = "evidently"
 dynamic = ["version"]
 description = "Open-source tools to analyze, monitor, and debug machine learning model in production."
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 license = {text = "Apache License 2.0"}
 authors = [
     {name = "Emeli Dral", email = "emeli.dral@gmail.com"}
@@ -22,7 +22,6 @@ classifiers = [
     "License :: OSI Approved :: Apache Software License",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
@@ -133,7 +132,7 @@ include = [
 [tool.mypy]
 show_error_codes = true
 files = ["src/evidently"]
-python_version = "3.9"
+python_version = "3.10"
 disable_error_code = "misc"
 namespace_packages = true
 no_implicit_optional = false

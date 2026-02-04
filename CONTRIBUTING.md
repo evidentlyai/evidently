@@ -38,9 +38,9 @@ Here is the general workflow:
 git clone https://github.com/evidentlyai/evidently.git
 ```
 
-## 2. (Optional, but recommended!) Create virtual environment with python 3.8
+## 2. (Optional, but recommended!) Create virtual environment with python 3.10
 
-Note: Since evidently v0.4.16 python 3.8 is the earliest version we support.
+Note: Since evidently v0.4.16 python 3.10 is the earliest version we support.
 Although you probably use one of the most recent python version, it is important to make sure that your changes do not cause any issues in older python versions. This is why we suggest you to test them under the oldest supported python version.
 
 #### MacOS / Linux

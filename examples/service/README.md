@@ -73,7 +73,7 @@ For detailed documentation and configuration options, visit:
 
 ## ✅ Requirements
 
-- Python 3.8+
+- Python 3.10+
 - `evidently` Python package  
   Install it via:
 
