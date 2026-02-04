@@ -9,7 +9,7 @@ from evidently.pydantic_utils import TYPE_ALIASES
 from evidently.pydantic_utils import PolymorphicModel
 
 # for np.testing.assert_equal to work with ApproxValue
-np.core.numeric.ScalarType = np.core.numeric.ScalarType + (ApproxValue,)  # type: ignore[attr-defined]
+np._core.numeric.ScalarType = np._core.numeric.ScalarType + (ApproxValue,)  # type: ignore[attr-defined]
 
 
 def smart_assert_equal(actual, expected, path=""):
