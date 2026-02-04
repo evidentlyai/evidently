@@ -240,6 +240,7 @@ jobs:
     needs: changed_files
     if: >-
       ${{
+        github.repository == 'evidentlyai/evidently' &&
         (
           needs.changed_files.outputs.api_reference_any_modified == 'true' ||
           needs.changed_files.outputs.evidently_any_modified == 'true'
@@ -247,20 +248,10 @@ jobs:
       }}
     steps:
       - uses: actions/checkout@v4
-      - name: Set git revision
-        id: set-revision
-        run: |
-          if [ -n "${{ github.event.pull_request.number }}" ]; then
-            echo "revision=pull/${{ github.ref_name }}" >> $GITHUB_OUTPUT
-          else
-            echo "revision=${{ github.ref_name }}" >> $GITHUB_OUTPUT
-          fi
-          echo "revision_name=${{ github.head_ref || github.ref_name }}" >> $GITHUB_OUTPUT
       - name: 📚 Generate and upload API reference
         uses: ./.github/share-actions/generate-and-save-api-reference
         with:
-          source-flag: --git-revision ${{ steps.set-revision.outputs.revision }}
-          additional-flags: --git-revision-name ${{ steps.set-revision.outputs.revision_name }}
+          source-flag: --git-revision ${{ github.head_ref || github.ref_name }}
 
   download-and-deploy-api-reference:
     name: Download and deploy API reference documentation
