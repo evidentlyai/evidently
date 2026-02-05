@@ -1,5 +1,6 @@
 """Methods for clean null or NaN values in a dataset"""
 
+from typing import List
 from typing import Optional
 
 import numpy as np
@@ -49,7 +50,7 @@ def process_columns(dataset: pd.DataFrame, column_mapping: ColumnMapping) -> Dat
     elif column_mapping.prediction is None:
         prediction_column = None
     else:
-        prediction_columns_list = list(dataset[column_mapping.prediction].columns)
+        prediction_columns_list: List[str] = list(dataset[column_mapping.prediction].columns)
         if prediction_columns_list:
             utility_columns += prediction_columns_list
 

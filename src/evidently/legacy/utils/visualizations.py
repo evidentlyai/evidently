@@ -6,6 +6,7 @@ from typing import List
 from typing import Optional
 from typing import Tuple
 from typing import Union
+from typing import cast
 
 import numpy as np
 import pandas as pd
@@ -331,10 +332,11 @@ def plot_distr_with_cond_perc_button(
         dict_style[value_name] = "solid"
 
     data_series = pd.Series(fig.data)
-    visible_list: List[bool] = list(visible)
-    max_y = np.max([np.max(x["y"]) for x in data_series[visible_list]])
-    not_visible = [not x for x in visible_list]
-    max_y_perc = np.max([np.max(x["y"]) for x in data_series[not_visible]])
+    visible_list = list(visible)
+    visible_indices = [i for i, v in enumerate(visible_list) if v]
+    not_visible_indices = [i for i, v in enumerate(visible_list) if not v]
+    max_y = np.max([np.max(cast(Any, data_series.iloc[i])["y"]) for i in visible_indices])
+    max_y_perc = np.max([np.max(cast(Any, data_series.iloc[i])["y"]) for i in not_visible_indices])
 
     if len(lines) > 0:
         for line, name in lines:

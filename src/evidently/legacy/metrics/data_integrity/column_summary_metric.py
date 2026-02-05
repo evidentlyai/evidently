@@ -309,10 +309,9 @@ def _split_periods(curr_data: pd.DataFrame, ref_data: pd.DataFrame, feature_name
     max_ref_date = pd.Timestamp(ref_data[feature_name].max())
     min_curr_date = pd.Timestamp(curr_data[feature_name].min())
 
-    if (
-        curr_data.loc[curr_data[feature_name] == min_curr_date, "number_of_items"].iloc[0]
-        > ref_data.loc[ref_data[feature_name] == max_ref_date, "number_of_items"].iloc[0]
-    ):
+    curr_count = float(curr_data.loc[curr_data[feature_name] == min_curr_date, "number_of_items"].iloc[0])
+    ref_count = float(ref_data.loc[ref_data[feature_name] == max_ref_date, "number_of_items"].iloc[0])
+    if curr_count > ref_count:
         curr_data.loc[curr_data[feature_name] == min_curr_date, "number_of_items"] = (
             curr_data.loc[curr_data[feature_name] == min_curr_date, "number_of_items"]
             + ref_data.loc[ref_data[feature_name] == max_ref_date, "number_of_items"]
