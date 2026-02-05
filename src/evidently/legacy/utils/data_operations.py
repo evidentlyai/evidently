@@ -2,6 +2,7 @@
 
 from typing import List
 from typing import Optional
+from typing import Union
 
 import numpy as np
 import pandas as pd
@@ -40,19 +41,20 @@ def process_columns(dataset: pd.DataFrame, column_mapping: ColumnMapping) -> Dat
     utility_columns = [date_column, id_column, target_column]
     text_feature_names = column_mapping.text_features
 
-    prediction_column: Optional[str] = None
+    prediction_for_utility: Optional[Union[str, List[str]]] = None
     if isinstance(column_mapping.prediction, str):
         if column_mapping.prediction in dataset:
-            prediction_column = column_mapping.prediction
+            prediction_for_utility = column_mapping.prediction
+            utility_columns.append(prediction_for_utility)
         else:
-            prediction_column = None
-        utility_columns.append(prediction_column)
+            utility_columns.append(None)
     elif column_mapping.prediction is None:
-        prediction_column = None
+        pass
     else:
         prediction_columns_list: List[str] = list(dataset[column_mapping.prediction].columns)
         if prediction_columns_list:
             utility_columns += prediction_columns_list
+        prediction_for_utility = list(column_mapping.prediction)
 
     utility_columns_set = set(utility_columns)
     cat_feature_names_set = set(cat_feature_names or [])
@@ -103,7 +105,7 @@ def process_columns(dataset: pd.DataFrame, column_mapping: ColumnMapping) -> Dat
 
     return DatasetColumns(
         utility_columns=DatasetUtilityColumns(
-            date=date_column, id=id_column, target=target_column, prediction=prediction_column
+            date=date_column, id=id_column, target=target_column, prediction=prediction_for_utility
         ),
         target_type=target_type,
         num_feature_names=num_feature_names or [],
