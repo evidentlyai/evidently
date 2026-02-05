@@ -25,7 +25,6 @@ concurrency:
 env:
   # Prefix artifacts with PR number for pull requests (works for forks too)
   ARTIFACT_PREFIX: ${{ github.event.pull_request.number && format('PR-{0}-', github.event.pull_request.number) || '' }}
-  BRANCH_NAME_FORMATTED: ${{ replace(github.event.pull_request.head.ref || github.ref_name, '/', '-') }}
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -206,7 +205,14 @@ jobs:
       - name: Install package
         run: pip install -e .[dev,spark,fsspec,llm,sql]
       - name: Run Tests
-        run: python -m pytest --durations=50 --html=pytest-reports/${{ env.ARTIFACT_PREFIX }}${{ env.BRANCH_NAME_FORMATTED }}.html --self-contained-html
+        shell: bash
+        run: |
+          BRANCH_NAME="${{ github.event.pull_request.head.ref || github.ref_name }}"
+          BRANCH_NAME="${BRANCH_NAME//\//-}"
+          python -m pytest \
+            --durations=50 \
+            --html="pytest-reports/${{ env.ARTIFACT_PREFIX }}${BRANCH_NAME}.html" \
+            --self-contained-html
       - name: Upload HTML test report
         if: always()
         uses: actions/upload-artifact@v4
@@ -349,7 +355,6 @@ jobs:
             ui
             .dvc
             .github
-
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
@@ -392,8 +397,11 @@ jobs:
 
       - name: Run Service Playwright tests
         working-directory: ui/service
+        shell: bash
         run: |
-          PLAYWRIGHT_HTML_REPORT="playwright-report/${{ env.ARTIFACT_PREFIX }}${{ env.BRANCH_NAME_FORMATTED }}" pnpm test
+          BRANCH_NAME="${{ github.event.pull_request.head.ref || github.ref_name }}"
+          BRANCH_NAME="${BRANCH_NAME//\//-}"
+          PLAYWRIGHT_HTML_REPORT="playwright-report/${{ env.ARTIFACT_PREFIX }}${BRANCH_NAME}" pnpm test
 
       - uses: actions/upload-artifact@v4
         if: always()
@@ -411,7 +419,6 @@ jobs:
     steps:
       - name: ⬇️ Checkout repo
         uses: actions/checkout@v4
-
       - name: Install dvc
         run: pip install 'pathspec<1' 'dvc[gs]==3.50.1'
 
@@ -447,8 +454,11 @@ jobs:
 
       - name: Run Service Playwright tests
         working-directory: ui/html-visual-testing
+        shell: bash
         run: |
-          PLAYWRIGHT_HTML_REPORT="playwright-report/${{ env.ARTIFACT_PREFIX }}${{ env.BRANCH_NAME_FORMATTED }}" pnpm test
+          BRANCH_NAME="${{ github.event.pull_request.head.ref || github.ref_name }}"
+          BRANCH_NAME="${BRANCH_NAME//\//-}"
+          PLAYWRIGHT_HTML_REPORT="playwright-report/${{ env.ARTIFACT_PREFIX }}${BRANCH_NAME}" pnpm test
 
       - uses: actions/upload-artifact@v4
         if: always()
