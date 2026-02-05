@@ -26,9 +26,9 @@ class Reference(BaseModel):
     either a relative change (percentage) or absolute difference, or both.
     """
 
-    relative: Annotated[Optional[float], Field(default=None)]
+    relative: Annotated[Optional[float], Field()] = None
     """Optional relative change threshold (percentage as decimal, e.g., 0.1 for 10%)."""
-    absolute: Annotated[Optional[float], Field(default=None)]
+    absolute: Annotated[Optional[float], Field()] = None
     """Optional absolute difference threshold."""
 
     def __hash__(self) -> int:
