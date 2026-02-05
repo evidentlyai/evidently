@@ -7,7 +7,7 @@ numpy==1.23.0
 nltk==3.6.7
 scipy==1.10.0
 requests==2.32.0
-PyYAML==5.4
+PyYAML==6.0.1
 pydantic==1.10.16
 litestar==2.19.0
 typing-inspect==0.9.0
