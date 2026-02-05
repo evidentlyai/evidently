@@ -24,7 +24,7 @@ concurrency:
 
 env:
   # Prefix artifacts with PR number for pull requests (works for forks too)
-  ARTIFACT_PREFIX: ${{ github.event.pull_request.number && format('PR-{0}-', github.event.pull_request.number) || '' }}
+  ARTIFACT_PREFIX: ${{ github.event.pull_request.number && format('pr-{0}-', github.event.pull_request.number) || '' }}
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -219,7 +219,6 @@ jobs:
       - name: Install package
         run: pip install -e .[dev,spark,fsspec,llm,sql]
       - name: Run Tests
-        shell: bash
         run: python -m pytest --durations=50
 
   python-build:
@@ -250,7 +249,7 @@ jobs:
       - name: Archive built package
         uses: actions/upload-artifact@v4
         with:
-          name: build-artifacts
+          name: evidently-package-build-artifact
           path: dist/
 
   generate-api-reference:
@@ -281,24 +280,6 @@ jobs:
           name: api-reference
           path: api-reference/dist
           retention-days: 5
-
-
-  # download-and-deploy-api-reference:
-  #   name: Download and deploy API reference documentation
-  #   runs-on: ubuntu-22.04
-  #   needs: generate-api-reference
-  #   permissions:
-  #     contents: write
-  #   steps:
-  #     - uses: actions/checkout@v4
-  #       with:
-  #         ref: gh-pages
-  #         fetch-depth: 0
-
-  #     # this action exists in `gh-pages` branch
-  #     - name: 📚 Download and deploy API reference documentation
-  #       uses: ./.github/share-actions/deploy-just-saved-api-reference
-
 
   ui-build:
     name: UI build
