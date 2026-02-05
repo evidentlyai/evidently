@@ -138,13 +138,12 @@ class Project(Entity):
     version: str = "1"
     # Field(default=datetime.datetime.fromisoformat("1900-01-01T00:00:00"))
 
-    _project_manager: "ProjectManager" = PrivateAttr(None)
-    _user_id: UserID = PrivateAttr(None)
+    _project_manager: Optional["ProjectManager"] = PrivateAttr(default=None)
+    _user_id: Optional[UserID] = PrivateAttr(default=None)
 
     def bind(self, project_manager: Optional["ProjectManager"], user_id: Optional[UserID]):
-        # todo: better typing (add optional or forbid optional)
-        self._project_manager = project_manager  # type: ignore[assignment]
-        self._user_id = user_id  # type: ignore[assignment]
+        self._project_manager = project_manager
+        self._user_id = user_id
         return self
 
     @property

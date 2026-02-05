@@ -86,7 +86,7 @@ class RegressionTopErrorMetric(UsesRawDataMixin, Metric[RegressionTopErrorMetric
                 curr_error,
             )
         )
-        curr_mean_err_per_group = self._calculate_underperformance(curr_error, quantile_5, quantile_95)
+        curr_mean_err_per_group = self._calculate_underperformance(curr_error, float(quantile_5), float(quantile_95))
 
         reference: Optional[Union[TopData, AggTopData]] = None
         if ref_df is not None:
@@ -105,7 +105,7 @@ class RegressionTopErrorMetric(UsesRawDataMixin, Metric[RegressionTopErrorMetric
                     ref_error,
                 )
             )
-            ref_mean_err_per_group = self._calculate_underperformance(ref_error, quantile_5, quantile_95)
+            ref_mean_err_per_group = self._calculate_underperformance(ref_error, float(quantile_5), float(quantile_95))
         if self.get_options().render_options.raw_data or not self._is_possible_contour(
             curr_df, ref_df, prediction_name, target_name
         ):

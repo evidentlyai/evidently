@@ -66,7 +66,7 @@ def _hellinger_distance(
         for key in keys:
             p1 = ref[key]
             p2 = curr[key]
-            hellinger_distance += sqrt(p1 * p2)
+            hellinger_distance += sqrt(float(p1) * float(p2))
 
         hellinger_distance = np.clip(hellinger_distance, 0, 1)
         hellinger_distance = sqrt(1 - hellinger_distance)
@@ -82,7 +82,7 @@ def _hellinger_distance(
         for i in range(len(h1)):
             p1 = h1[i]
             p2 = h2[i]
-            hellinger_distance += sqrt(p1 * p2) * bin_width
+            hellinger_distance += sqrt(float(p1) * float(p2)) * bin_width
 
         hellinger_distance = np.clip(hellinger_distance, 0, 1)
         hellinger_distance = sqrt(1 - hellinger_distance)

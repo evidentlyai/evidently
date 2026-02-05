@@ -1,3 +1,4 @@
+import os
 import os.path
 import re
 from json import JSONDecodeError
@@ -33,7 +34,7 @@ class WorkspaceDirHandler(FileSystemEventHandler):
             self.on_snapshot_event(event)
 
     def is_project_event(self, event: FileSystemEvent):
-        path = Path(event.src_path)
+        path = Path(os.fsdecode(event.src_path))
         f_name = path.name
         if f_name != METADATA_PATH:
             return False
@@ -44,7 +45,7 @@ class WorkspaceDirHandler(FileSystemEventHandler):
         return True
 
     def is_snapshot_event(self, event: FileSystemEvent):
-        path = Path(event.src_path)
+        path = Path(os.fsdecode(event.src_path))
         f_name = path.name
         if not re.fullmatch(uuid4hex + r"\.json", f_name):
             return False

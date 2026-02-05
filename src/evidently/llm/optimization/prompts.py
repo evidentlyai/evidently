@@ -507,7 +507,7 @@ class BlankLLMJudge(PromptExecutor):
         """
         return self.sub_executor.get_best_result(prompt, context)
 
-    _sub_executor: LLMJudgePromptExecutor = PrivateAttr(None)
+    _sub_executor: Optional[LLMJudgePromptExecutor] = PrivateAttr(default=None)
 
     @property
     def sub_executor(self) -> LLMJudgePromptExecutor:
@@ -1214,9 +1214,9 @@ def iter_mistakes(run: OptimizerRun) -> Iterator[_Row]:
 class FeedbackStrategy(PromptOptimizerStrategy):
     """A feedback-based prompt optimization strategy that uses mistakes to improve prompts."""
 
-    __registry_alias__: ClassVar = "feedback"
+    __registry_alias__: ClassVar[str] = "feedback"
 
-    add_feedback_prompt = (
+    add_feedback_prompt: str = (
         "I ran LLM for some inputs to do {task} and it made some mistakes. "
         "Here is my original prompt <prompt>\n{prompt}\n</prompt>\n"
         "And here are rows where LLM made mistakes:\n"
@@ -1226,7 +1226,7 @@ class FeedbackStrategy(PromptOptimizerStrategy):
         "{instructions} "
         "Return new prompt inside <new_prompt> tag"
     )
-    row_template = """<input>{input}</input>
+    row_template: str = """<input>{input}</input>
 <target>{target}</target>
 <llm_response>{llm_response}</llm_response>
 <human_reasoning>{human_reasoning}</human_reasoning>

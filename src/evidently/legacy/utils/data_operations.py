@@ -49,10 +49,9 @@ def process_columns(dataset: pd.DataFrame, column_mapping: ColumnMapping) -> Dat
     elif column_mapping.prediction is None:
         prediction_column = None
     else:
-        prediction_column = dataset[column_mapping.prediction].columns.tolist()
-
-        if prediction_column:
-            utility_columns += prediction_column
+        prediction_columns_list = list(dataset[column_mapping.prediction].columns)
+        if prediction_columns_list:
+            utility_columns += prediction_columns_list
 
     utility_columns_set = set(utility_columns)
     cat_feature_names_set = set(cat_feature_names or [])

@@ -10,8 +10,8 @@ from evidently.ui.service.services.dashbord.file import JsonFileDashboardManager
 
 
 class DashboardComponent(Component):
-    __service_name__ = "dashboards"
-    storage_type = "file"
+    __service_name__: str = "dashboards"
+    storage_type: str = "file"
     path: str = "workspace"
 
     def provider(self):

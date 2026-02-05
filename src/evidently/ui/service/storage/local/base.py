@@ -59,7 +59,7 @@ UUID_REGEX = re.compile("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-
 class FSSpecBlobStorage(BlobStorage):
     base_path: str
 
-    _location: FSLocation = PrivateAttr(None)
+    _location: Optional[FSLocation] = PrivateAttr(default=None)
 
     def __init__(self, base_path: str):
         self.base_path = base_path
@@ -248,6 +248,7 @@ class JsonFileProjectMetadataStorage(ProjectMetadataStorage):
         snapshot = self.state.snapshots[project_id][snapshot_id]
         return SnapshotMetadataModel(
             id=snapshot_id,
+            name=None,
             metadata=snapshot.metadata,
             tags=snapshot.tags,
             timestamp=snapshot.timestamp,
@@ -273,8 +274,8 @@ class MetricItem(BaseModel):
 class InMemoryDataStorage(DataStorage):
     path: str
 
-    _state: LocalState = PrivateAttr(None)
-    _metrics_points: Dict[uuid.UUID, Dict[uuid.UUID, List[MetricItem]]] = PrivateAttr(None)
+    _state: Optional[LocalState] = PrivateAttr(default=None)
+    _metrics_points: Optional[Dict[uuid.UUID, Dict[uuid.UUID, List[MetricItem]]]] = PrivateAttr(default=None)
 
     def __init__(self, path: str, local_state: Optional[LocalState] = None):
         self.path = path

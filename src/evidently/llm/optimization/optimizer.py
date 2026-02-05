@@ -223,7 +223,7 @@ class LLMDataset(BaseModel):
         if specified and not np.isclose(total, 1.0):
             raise ValueError("Specified shares must sum to 1.0")
 
-        remaining_indices = indices
+        remaining_indices: np.ndarray[Any, Any] = indices
         remaining_shares = dict(specified)
 
         self.split_masks = {}

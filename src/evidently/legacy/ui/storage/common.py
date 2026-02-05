@@ -32,13 +32,13 @@ class NoUser(User):
 
 class NoTeam(Team):
     id: TeamID = ZERO_UUID
-    name = ""
+    name: str = ""
     org_id: OrgID = ZERO_UUID
 
 
 class NoOrg(Org):
     id: OrgID = ZERO_UUID
-    name = ""
+    name: str = ""
 
 
 NO_USER = NoUser()

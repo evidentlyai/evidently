@@ -1,4 +1,5 @@
 from functools import partial
+from typing import Any
 from typing import Callable
 from typing import ClassVar
 from typing import Dict
@@ -117,7 +118,7 @@ def _lmnli_fever(data: pd.Series, labels: List[str], threshold: Optional[float])
 def _toxicity(model_name: Optional[str], toxic_label: Optional[str], data: pd.Series) -> pd.Series:
     import evaluate
 
-    column_data = data.values.tolist()
+    column_data: List[Any] = data.values.tolist()
     model = evaluate.load("toxicity", model_name, module_type="measurement")
     if toxic_label is None:
         scores = model.compute(predictions=column_data)

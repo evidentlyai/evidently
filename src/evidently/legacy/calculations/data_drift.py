@@ -231,9 +231,9 @@ def get_one_column_drift(
                 x_name = "Index binned"
             else:
                 if datetime_column_name is not None:
-                    name = datetime_column_name
+                    name = str(datetime_column_name)
                 elif curr_data.index.name is not None:
-                    name = curr_data.index.name
+                    name = str(curr_data.index.name)
                 else:
                     name = "Index"
                 x_name = f"{name} ({prefix})"

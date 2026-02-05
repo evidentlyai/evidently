@@ -73,8 +73,8 @@ def get_count_values(col1: pd.Series, col2: pd.Series, col1_name: str, col2_name
     df = pd.DataFrame({col2_name: col2, col1_name: col1})
     grouped = df.groupby([col2_name, col1_name], observed=False).size()
     grouped.name = "count_objects"
-    grouped = grouped.reset_index()
-    return grouped[grouped["count_objects"] > 0]
+    grouped_df = grouped.reset_index()
+    return grouped_df[grouped_df["count_objects"] > 0]
 
 
 def get_data_for_cat_cat_plot(
@@ -250,9 +250,9 @@ def transform_df_to_time_count_view(
     if not isinstance(grouped, pd.Series):
         raise ValueError("grouped has incorrect type")
     grouped.name = "num"
-    grouped = grouped.reset_index()
-    grouped[datetime_column_name] = grouped["period"].dt.to_timestamp()
-    return grouped[grouped["num"] > 0]
+    grouped_df = grouped.reset_index()
+    grouped_df[datetime_column_name] = grouped_df["period"].dt.to_timestamp()
+    return grouped_df[grouped_df["num"] > 0]
 
 
 def prepare_data_for_date_cat(date_curr, date_ref, datetime_name, cat_name, cat_curr, cat_ref):

@@ -1,4 +1,5 @@
 import abc
+from typing import Any
 from typing import Dict
 from typing import Generic
 from typing import List
@@ -43,14 +44,13 @@ def semantic_similarity_scoring(question: DatasetColumn, context: DatasetColumn,
     context_rows = no_index_context.explode([context_column]).reset_index()
     second = model.encode(context_rows[context_column].fillna(""))
 
-    scores = pd.Series(data=[[x] for x in second], index=context_rows.index)
+    scores = pd.Series(data=[[x] for x in second], index=context_rows.index, dtype=object)
     scind = pd.DataFrame(data={"ind": context_rows["index"], "scores": scores})
     rsd = pd.Series([scind.iloc[x]["scores"] for x in scind.groupby("ind").groups.values()])
+    pairs: list[tuple[Any, Any]] = list(zip(first, rsd))
+    series_data: list[list[float]] = [[normalized_cosine_distance(x, y1[0]) for y1 in y] for x, y in pairs]
     return DatasetColumn(
-        data=pd.Series(
-            [[normalized_cosine_distance(x, y1[0]) for y1 in y] for x, y in zip(first, rsd)],
-            index=question.data.index,
-        ),
+        data=pd.Series(data=series_data, index=question.data.index),
         type=ColumnType.List,
     )
 

@@ -229,7 +229,7 @@ def dataframes_to_table(
                 type="table",
                 params={
                     "header": list(columns),
-                    "data": [[idx] + list(df.loc[idx].values) for idx in df.index],
+                    "data": [[df.index[i]] + list(df.iloc[i].values) for i in range(len(df))],
                 },
                 size=2,
             ),

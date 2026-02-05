@@ -1,11 +1,13 @@
 import datetime
 from abc import ABC
 from typing import TYPE_CHECKING
+from typing import Any
 from typing import ClassVar
 from typing import List
 from typing import Optional
 from typing import Tuple
 from typing import Type
+from typing import cast
 from uuid import UUID
 
 import pandas as pd
@@ -213,16 +215,14 @@ class TracingSessionDataSource(TracingDataSource):
         df = await super().materialize(dataset_manager)
 
         df_sorted = df.sort_values(by=[self.session_id_column, self.timestamp_column])
-        df_grouped = (
-            df_sorted.groupby(self.session_id_column)
-            .apply(
-                lambda x: "\n\n".join(
-                    [f"USER: {q}\n\nAGENT: {r}" for q, r in zip(x[self.question_column], x[self.response_column])]
-                )
+
+        def format_conversation(group: pd.DataFrame) -> str:
+            return "\n\n".join(
+                [f"USER: {q}\n\nAGENT: {r}" for q, r in zip(group[self.question_column], group[self.response_column])]
             )
-            .reset_index()
-        )
-        df_grouped.columns = ["session_id", "conversation"]  # type: ignore[assignment]
+
+        df_grouped = df_sorted.groupby(self.session_id_column).apply(cast(Any, format_conversation)).reset_index()
+        df_grouped.columns = pd.Index(["session_id", "conversation"])
         return df_grouped
 
 

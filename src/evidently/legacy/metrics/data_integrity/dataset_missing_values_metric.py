@@ -168,10 +168,9 @@ class DatasetMissingValuesMetric(Metric[DatasetMissingValuesMetricResult]):
             for missing_value in self.missing_values:
                 if missing_value is None:
                     # check all pandas null-types like numpy.NAN, pandas.NA, pandas.NaT, etc
-                    column_missing_value = dataset[column_name].isnull().sum()
-
+                    column_missing_value: int = int(dataset[column_name].isnull().sum())
                 else:
-                    column_missing_value = (dataset[column_name] == missing_value).sum()
+                    column_missing_value = int((dataset[column_name] == missing_value).sum())
 
                 if column_missing_value > 0:
                     # increase overall counter

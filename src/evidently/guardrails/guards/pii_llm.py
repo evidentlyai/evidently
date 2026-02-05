@@ -16,7 +16,7 @@ class PIICheck(GuardrailBase):
         return "PII Check"
 
     def validate(self, data: str):
-        piillm_eval = PIILLMEval()
+        piillm_eval = PIILLMEval(provider="openai", model="gpt-4o-mini")
         request: LLMRequest[dict] = LLMRequest(
             messages=piillm_eval.template.get_messages({"input": data}),
             response_parser=piillm_eval.template.get_parser(),

@@ -1,4 +1,5 @@
 from itertools import product
+from typing import Any
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -84,8 +85,9 @@ class SerendipityMetric(Metric[SerendipityMetricResult]):
             df[target_name] = (df[target_name] >= min_rel_score).astype(int)
         if recommendations_type == RecomType.SCORE:
             df[prediction_name] = df.groupby(user_id)[prediction_name].transform("rank", ascending=False)
-        df = df.loc[(df[target_name] > 0) & (df[prediction_name] <= k), [user_id, item_id]]
-        all_users = df[user_id].unique()
+        mask = (df[target_name] > 0) & (df[prediction_name] <= k)
+        df = df.loc[mask, [user_id, item_id]]
+        all_users: np.ndarray[Any, Any] = df[user_id].unique()
         all_users = np.intersect1d(all_users, train_df[user_id].unique())
         user_res = []
         for user in all_users:

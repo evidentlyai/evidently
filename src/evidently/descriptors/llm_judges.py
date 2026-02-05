@@ -4,6 +4,7 @@ from typing import Iterator
 from typing import List
 from typing import Optional
 from typing import Union
+from typing import cast
 
 import pandas as pd
 
@@ -76,7 +77,7 @@ class GenericLLMDescriptor(Descriptor):
             dataset.as_dataframe()[list(self.input_columns)].rename(columns=self.input_columns).iterrows()
         ):
             yield LLMRequest(
-                messages=self._fmt_messages(column_values.to_dict()),
+                messages=self._fmt_messages(cast(Dict[str, Any], column_values.to_dict())),
                 response_parser=self.prompt.get_parser(),
                 response_type=self.prompt.get_response_type(),
             )

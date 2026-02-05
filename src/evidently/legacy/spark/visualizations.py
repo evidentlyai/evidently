@@ -93,8 +93,9 @@ def choose_agg_period(
             abs(OPTIMAL_POINTS - days * 24),
         ],
     )
-    period_prefix, pattern = prefix_dict[time_points.idxmin()]
-    return period_prefix, pattern, str(time_points.idxmin())
+    idxmin_val = str(time_points.idxmin())
+    period_prefix, pattern = prefix_dict[idxmin_val]
+    return period_prefix, pattern, idxmin_val
 
 
 def get_distribution_for_column(
