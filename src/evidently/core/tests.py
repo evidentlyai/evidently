@@ -1,5 +1,4 @@
 from typing import TYPE_CHECKING
-from typing import Annotated
 from typing import Any
 from typing import Dict
 from typing import Optional
@@ -26,9 +25,9 @@ class Reference(BaseModel):
     either a relative change (percentage) or absolute difference, or both.
     """
 
-    relative: Annotated[Optional[float], Field()] = None
+    relative: Optional[float] = Field(default=None)
     """Optional relative change threshold (percentage as decimal, e.g., 0.1 for 10%)."""
-    absolute: Annotated[Optional[float], Field()] = None
+    absolute: Optional[float] = Field(default=None)
     """Optional absolute difference threshold."""
 
     def __hash__(self) -> int:
