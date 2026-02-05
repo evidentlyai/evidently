@@ -2,7 +2,9 @@
 
 from typing import List
 from typing import Optional
+from typing import Sequence
 from typing import Union
+from typing import cast
 
 import numpy as np
 import pandas as pd
@@ -54,7 +56,7 @@ def process_columns(dataset: pd.DataFrame, column_mapping: ColumnMapping) -> Dat
         prediction_columns_list: List[str] = list(dataset[column_mapping.prediction].columns)
         if prediction_columns_list:
             utility_columns += prediction_columns_list
-        prediction_for_utility = list(column_mapping.prediction)
+        prediction_for_utility = list(cast(Sequence[str], column_mapping.prediction))
 
     utility_columns_set = set(utility_columns)
     cat_feature_names_set = set(cat_feature_names or [])
