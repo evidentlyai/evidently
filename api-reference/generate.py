@@ -24,20 +24,26 @@ from typer import Typer
 from typer import echo
 
 # Constants
-GITHUB_REPO_URL = "https://github.com/evidentlyai/evidently"
+EVIDENTLY_GITHUB_REPO = "evidentlyai/evidently"
 THEME_DIR = "evidently-theme"
 OUTPUT_DIR = "dist"
 SQL_EXTRAS = "[sql]"
 
 # Get the script's directory (api-reference directory) to ensure paths are always correct
 SCRIPT_DIR = Path(__file__).parent.resolve()
+REPO_DIR = SCRIPT_DIR.parent.resolve()
 THEME_DIR_PATH = SCRIPT_DIR / THEME_DIR
 OUTPUT_DIR_PATH = SCRIPT_DIR / OUTPUT_DIR
+MAIN_MODULES = ["evidently", "evidently.core"]
 
 
 # pdoc flags (will be set dynamically to use absolute paths)
-def get_pdoc_flags(github_blob_url: str, output_path: str) -> list[str]:
+def get_pdoc_flags(output_path: str, github_blob_url: str) -> list[str]:
     """Get pdoc flags with correct theme path."""
+
+    blob_flags = ["-e", f"evidently={github_blob_url}"] if github_blob_url else []
+    output_flags = ["-o", output_path]
+
     return [
         # "--no-include-undocumented",
         "--no-show-source",
@@ -47,10 +53,8 @@ def get_pdoc_flags(github_blob_url: str, output_path: str) -> list[str]:
         "https://demo.evidentlyai.com/static/img/evidently-ai-logo.png",
         "--favicon",
         "https://demo.evidentlyai.com/favicon.ico",
-        "-e",
-        f"evidently={github_blob_url}",
-        "-o",
-        output_path,
+        *blob_flags,
+        *output_flags,
     ]
 
 
@@ -64,10 +68,7 @@ def yecho(message: str) -> None:
     print(f"\033[33m{message}\033[0m")
 
 
-def merge_additional_modules_with_defaults(modules: list[str] | None = None) -> list[str]:
-    MAIN_MODULES = ["evidently", "evidently.core"]
-    modules = modules or []
-
+def merge_additional_modules_with_defaults(modules: list[str]) -> list[str]:
     return list(set([*MAIN_MODULES, *modules]))
 
 
@@ -91,13 +92,9 @@ def add_extras_to_ref(ref: str) -> str:
 
     if extras in ref:
         return ref
-    elif "==" in ref:
-        # Result: "evidently[sql]==v0.7.16"
-        package, version = ref.split("==", 1)
-        return f"{package}{extras}=={version}"
-    else:
-        # Result: "git+...@v0.7.16[sql]" or "/path/to/evidently[sql]"
-        return f"{ref}{extras}"
+
+    # Result: "git+...@v0.7.16[sql]" or "/path/to/evidently[sql]"
+    return f"{ref}{extras}"
 
 
 def build_with_flag_for_evidently(evidently_ref: str) -> list[str]:
@@ -132,30 +129,42 @@ def format_local_path(path: Path) -> str:
     return path_str.replace("/", "-")
 
 
-def generate_docs_by_git_revision(
-    revision: str,
-    no_cache: bool = False,
-    uv_run_flags: str = "",
-    modules: list[str] | None = None,
-    repo_url: str | None = None,
-    api_reference_index_href: str = "/",
-    git_revision_name: str | None = None,
+def build_github_repo_url(github_repo: str) -> str:
+    """Build full GitHub repository URL from repo identifier (e.g., 'owner/repo')."""
+    return f"https://github.com/{github_repo}"
+
+
+def generate_docs_impl(
+    *,
+    revision: str | None,
+    local_source: bool,
+    no_cache: bool,
+    uv_run_flags: str,
+    modules: list[str],
+    github_repo: str,
+    api_reference_index_href: str,
+    output_prefix: str = "",
 ) -> None:
-    """Generate documentation from a git revision (branch, tag, or commit)."""
-    github_repo_url = repo_url or GITHUB_REPO_URL
-    github_blob_prefix = f"{github_repo_url}/blob"
-    evidently_ref = f"git+{github_repo_url}.git@{revision}"
+    repo_url = build_github_repo_url(github_repo)
+    github_blob_prefix = f"{repo_url}/blob"
 
-    becho("Generating documentation for git revision...")
-    yecho(revision)
+    github_blob_url = ""
+    output_path = OUTPUT_DIR_PATH / (output_prefix + format_local_path(REPO_DIR))
+    version = f"Local: {REPO_DIR}"
 
-    revision_name = git_revision_name if git_revision_name else revision
+    if revision:
+        path_to_artifact, version = get_revision_info(revision)
+        github_blob_url = f"{github_blob_prefix}/{revision}/src/evidently/"
+        output_path = OUTPUT_DIR_PATH / (output_prefix + path_to_artifact)
+        evidently_ref = f"git+{repo_url}.git@{revision}"
 
-    path_to_artifact, version = get_revision_info(revision_name)
-    github_blob_url = f"{github_blob_prefix}/{revision_name}/src/evidently/"
-    output_path = OUTPUT_DIR_PATH / path_to_artifact
-
-    modules_to_use = merge_additional_modules_with_defaults(modules)
+    if local_source:
+        evidently_ref = str(REPO_DIR)
+        becho("Generating documentation for local path...")
+        yecho(evidently_ref)
+    else:
+        becho("Generating documentation for git revision...")
+        yecho(revision)
 
     run_pdoc(
         version=version,
@@ -164,74 +173,7 @@ def generate_docs_by_git_revision(
         output_path=str(output_path),
         no_cache=no_cache,
         uv_run_flags=uv_run_flags,
-        modules=modules_to_use,
-        api_reference_index_href=api_reference_index_href,
-    )
-
-
-def generate_docs_by_pypi_version(
-    version: str,
-    no_cache: bool = False,
-    uv_run_flags: str = "",
-    modules: list[str] | None = None,
-    repo_url: str | None = None,
-    api_reference_index_href: str = "/",
-) -> None:
-    """Generate documentation from a PyPI package version."""
-    evidently_ref = f"evidently=={version}"
-
-    becho(f"Generating documentation for PyPI version {version}...")
-
-    github_repo_url = repo_url or GITHUB_REPO_URL
-    github_blob_prefix = f"{github_repo_url}/blob"
-    version_label = f"Version: {version}"
-    github_blob_url = f"{github_blob_prefix}/{version}/src/evidently/"
-    output_path = OUTPUT_DIR_PATH / version
-
-    modules_to_use = merge_additional_modules_with_defaults(modules)
-
-    run_pdoc(
-        version=version_label,
-        evidently_ref=evidently_ref,
-        github_blob_url=github_blob_url,
-        output_path=str(output_path),
-        no_cache=no_cache,
-        uv_run_flags=uv_run_flags,
-        modules=modules_to_use,
-        api_reference_index_href=api_reference_index_href,
-    )
-
-
-def generate_docs_from_local_source(
-    no_cache: bool = False,
-    uv_run_flags: str = "",
-    modules: list[str] | None = None,
-    repo_url: str | None = None,
-    api_reference_index_href: str = "/",
-) -> None:
-    """Generate documentation from a local source."""
-    path_to_evidently = Path(__file__).parent.parent.resolve()
-    evidently_ref = str(path_to_evidently)
-
-    becho("Generating documentation for local path...")
-    yecho(path_to_evidently)
-
-    github_repo_url = repo_url or GITHUB_REPO_URL
-    github_blob_prefix = f"{github_repo_url}/blob"
-    version = f"Local file: {path_to_evidently}"
-    github_blob_url = f"{github_blob_prefix}/main/src/evidently/"
-    output_path = OUTPUT_DIR_PATH / format_local_path(path_to_evidently)
-
-    modules_to_use = merge_additional_modules_with_defaults(modules)
-
-    run_pdoc(
-        version=version,
-        evidently_ref=evidently_ref,
-        github_blob_url=github_blob_url,
-        output_path=str(output_path),
-        no_cache=no_cache,
-        uv_run_flags=uv_run_flags,
-        modules=modules_to_use,
+        modules=modules,
         api_reference_index_href=api_reference_index_href,
     )
 
@@ -260,7 +202,7 @@ def run_pdoc(
         *build_uv_run_flags(uv_run_flags, no_cache),
         *build_with_flag_for_evidently(evidently_ref),
         "pdoc",
-        *get_pdoc_flags(github_blob_url, output_path),
+        *get_pdoc_flags(output_path, github_blob_url),
         *modules,
     ]
 
@@ -281,80 +223,58 @@ app = Typer(
 
 @app.callback(invoke_without_command=True)
 def generate_docs(
-    git_revision: str = Option(
-        None, "--git-revision", help="Git revision (branch, tag, or commit) to generate documentation from"
+    github_repo: str = Option(
+        EVIDENTLY_GITHUB_REPO,
+        "--github-repo",
+        help="GitHub repository identifier (e.g., 'owner/repo', default: evidentlyai/evidently)",
     ),
-    pypi_version: str = Option(None, "--pypi-version", help="PyPI package version to generate documentation from"),
+    git_revision: str = Option(
+        None,
+        "--git-revision",
+        help="Git revision (branch, tag, or commit). Required unless --local-source-code is used. "
+        "When used with --local-source-code, sets the GitHub blob URL and output directory name.",
+    ),
     local_source_code: bool = Option(
-        False, "--local-source-code", help="Generate documentation from local source code"
+        False,
+        "--local-source-code",
+        help="Generate documentation from local source code instead of fetching from git. "
+        "Can be combined with --git-revision for output naming.",
     ),
     # Additional flags
     no_cache: bool = Option(False, "--no-cache", help="Disable cache for uv run"),
     uv_run_flags: str = Option("", "--uv-run-flags", help="Additional flags to pass to uv run (space-separated)"),
     additional_modules: str = Option(
-        None, "--additional-modules", help="Comma-separated list of additional modules to document"
-    ),
-    repo_url: str = Option(
-        None, "--repo-url", help="Custom GitHub repository URL (default: https://github.com/evidentlyai/evidently)"
+        "", "--additional-modules", help="Comma-separated list of additional modules to document"
     ),
     api_reference_index_href: str = Option(
         "/", "--api-reference-index-href", help="Href path for the 'All versions' link (default: '/')"
     ),
-    git_revision_name: str = Option(
-        None,
-        "--git-revision-name",
-        help="Custom name for output directory when using --git-revision (default: auto-formatted revision name)",
-    ),
+    output_prefix: str = Option("", "--output-prefix", help="Prefix to add to output directory path (default: '')"),
 ):
     """Generate documentation for Evidently.
 
-    You must specify exactly one of: --git-revision, --pypi-version, or --local-source-code.
+    Usage modes:
+      --git-revision <rev>                    Build from git revision
+      --local-source-code                     Build from local source (output named by local path)
+      --local-source-code --git-revision <rev> Build from local source (output named by revision)
     """
-    # Validate that exactly one source is provided
-    provided_count = sum(
-        [
-            1 if git_revision else 0,
-            1 if pypi_version else 0,
-            1 if local_source_code else 0,
-        ]
+    # Validate: at least one of git_revision or local_source_code must be provided
+    if not git_revision and not local_source_code:
+        raise BadParameter("You must specify --git-revision and/or --local-source-code")
+
+    additional_modules_list = [m.strip() for m in additional_modules.split(",") if m.strip()]
+    modules = merge_additional_modules_with_defaults(additional_modules_list)
+
+    generate_docs_impl(
+        revision=git_revision,
+        local_source=local_source_code,
+        no_cache=no_cache,
+        uv_run_flags=uv_run_flags,
+        modules=modules,
+        github_repo=github_repo,
+        api_reference_index_href=api_reference_index_href,
+        output_prefix=output_prefix,
     )
-
-    if provided_count == 0:
-        raise BadParameter("You must specify exactly one of: --git-revision, --pypi-version, or --local-source-code")
-    if provided_count > 1:
-        raise BadParameter("You can only specify one of: --git-revision, --pypi-version, or --local-source-code")
-
-    modules_list = None
-    if additional_modules:
-        modules_list = [m.strip() for m in additional_modules.split(",") if m.strip()]
-
-    if pypi_version:
-        generate_docs_by_pypi_version(
-            version=pypi_version,
-            no_cache=no_cache,
-            uv_run_flags=uv_run_flags,
-            modules=modules_list,
-            repo_url=repo_url,
-            api_reference_index_href=api_reference_index_href,
-        )
-    elif git_revision:
-        generate_docs_by_git_revision(
-            revision=git_revision,
-            no_cache=no_cache,
-            uv_run_flags=uv_run_flags,
-            modules=modules_list,
-            repo_url=repo_url,
-            api_reference_index_href=api_reference_index_href,
-            git_revision_name=git_revision_name,
-        )
-    elif local_source_code:
-        generate_docs_from_local_source(
-            no_cache=no_cache,
-            uv_run_flags=uv_run_flags,
-            modules=modules_list,
-            repo_url=repo_url,
-            api_reference_index_href=api_reference_index_href,
-        )
 
     becho("Done")
 

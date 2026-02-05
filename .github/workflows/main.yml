@@ -22,6 +22,11 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  # Prefix artifacts with PR number for pull requests (works for forks too)
+  ARTIFACT_PREFIX: ${{ github.event.pull_request.number && format('PR-{0}-', github.event.pull_request.number) || '' }}
+  BRANCH_NAME_FORMATTED: ${{ replace(github.event.pull_request.head.ref || github.ref_name, '/', '-') }}
+
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   changed_files:
@@ -201,7 +206,14 @@ jobs:
       - name: Install package
         run: pip install -e .[dev,spark,fsspec,llm,sql]
       - name: Run Tests
-        run: python -m pytest --durations=50
+        run: python -m pytest --durations=50 --html=pytest-reports/${{ env.ARTIFACT_PREFIX }}${{ env.BRANCH_NAME_FORMATTED }}.html --self-contained-html
+      - name: Upload HTML test report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pytest-html-report
+          path: pytest-reports
+          retention-days: 30
 
   python-build:
     # The type of runner that the job will run on
@@ -234,7 +246,7 @@ jobs:
           name: build-artifacts
           path: dist/
 
-  generate-and-save-api-reference:
+  generate-api-reference:
     name: Generate API reference documentation
     runs-on: ubuntu-22.04
     needs: changed_files
@@ -247,36 +259,38 @@ jobs:
       }}
     steps:
       - uses: actions/checkout@v4
-      - name: Set git revision
-        id: set-revision
-        run: |
-          if [ -n "${{ github.event.pull_request.number }}" ]; then
-            echo "revision=pull/${{ github.ref_name }}" >> $GITHUB_OUTPUT
-          else
-            echo "revision=${{ github.ref_name }}" >> $GITHUB_OUTPUT
-          fi
-          echo "revision_name=${{ github.head_ref || github.ref_name }}" >> $GITHUB_OUTPUT
       - name: 📚 Generate and upload API reference
-        uses: ./.github/share-actions/generate-and-save-api-reference
+        uses: ./.github/share-actions/generate-api-reference
         with:
-          source-flag: --git-revision ${{ steps.set-revision.outputs.revision }}
-          additional-flags: --git-revision-name ${{ steps.set-revision.outputs.revision_name }}
+          flags: >-
+            --local-source-code
+            --github-repo ${{ github.event.pull_request.head.repo.full_name || github.repository }}
+            --git-revision ${{ github.event.pull_request.head.ref || github.ref_name }}
+            --output-prefix ${{ env.ARTIFACT_PREFIX }}
 
-  download-and-deploy-api-reference:
-    name: Download and deploy API reference documentation
-    runs-on: ubuntu-22.04
-    needs: generate-and-save-api-reference
-    permissions:
-      contents: write
-    steps:
-      - uses: actions/checkout@v4
+      - name: Upload documentation artifact
+        uses: actions/upload-artifact@v4
         with:
-          ref: gh-pages
-          fetch-depth: 0
+          name: api-reference
+          path: api-reference/dist
+          retention-days: 5
 
-      # this action exists in `gh-pages` branch
-      - name: 📚 Download and deploy API reference documentation
-        uses: ./.github/share-actions/deploy-just-saved-api-reference
+
+  # download-and-deploy-api-reference:
+  #   name: Download and deploy API reference documentation
+  #   runs-on: ubuntu-22.04
+  #   needs: generate-api-reference
+  #   permissions:
+  #     contents: write
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #       with:
+  #         ref: gh-pages
+  #         fetch-depth: 0
+
+  #     # this action exists in `gh-pages` branch
+  #     - name: 📚 Download and deploy API reference documentation
+  #       uses: ./.github/share-actions/deploy-just-saved-api-reference
 
 
   ui-build:
@@ -378,7 +392,8 @@ jobs:
 
       - name: Run Service Playwright tests
         working-directory: ui/service
-        run: pnpm test
+        run: |
+          PLAYWRIGHT_HTML_REPORT="playwright-report/${{ env.ARTIFACT_PREFIX }}${{ env.BRANCH_NAME_FORMATTED }}" pnpm test
 
       - uses: actions/upload-artifact@v4
         if: always()
@@ -432,11 +447,12 @@ jobs:
 
       - name: Run Service Playwright tests
         working-directory: ui/html-visual-testing
-        run: pnpm test
+        run: |
+          PLAYWRIGHT_HTML_REPORT="playwright-report/${{ env.ARTIFACT_PREFIX }}${{ env.BRANCH_NAME_FORMATTED }}" pnpm test
 
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: html-visual-testing-playwright-report
+          name: ui-html-visual-testing-playwright-report
           path: ui/html-visual-testing/playwright-report/
           retention-days: 30

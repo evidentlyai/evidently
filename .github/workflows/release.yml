@@ -109,7 +109,7 @@ jobs:
           push: true
           tags: evidently/evidently-service:${{ steps.generate-tag.outputs.generated-tag }},evidently/evidently-service:latest
 
-  generate-and-save-api-reference:
+  generate-api-reference:
     name: Generate API reference documentation from PyPI version
     runs-on: ubuntu-22.04
     continue-on-error: true
@@ -119,16 +119,24 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: 📚 Generate and upload API reference
-        uses: ./.github/share-actions/generate-and-save-api-reference
+        uses: ./.github/share-actions/generate-api-reference
         with:
-          source-flag: --git-revision ${{ github.ref_name }}
+          flags: --git-revision ${{ github.ref_name }}
+
+      - name: Upload documentation artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: api-reference
+          path: api-reference/dist
+          retention-days: 5
+
 
   download-and-deploy-api-reference:
     name: Download and deploy API reference documentation
     runs-on: ubuntu-22.04
     continue-on-error: true
     needs:
-      - generate-and-save-api-reference
+      - generate-api-reference
     permissions:
       contents: write
     steps:

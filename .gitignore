@@ -11,6 +11,7 @@ example_scripts
 .pytest_cache
 dist
 build
+reports/
 MANIFEST
 uv.lock
 
@@ -24,3 +25,4 @@ evidently-v2-openapi-schema
 # see .devcontainer/devcontainer.json
 test-workspace
 workspace-for-visual-testing
+workspace
