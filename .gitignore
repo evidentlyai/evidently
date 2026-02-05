@@ -25,4 +25,3 @@ evidently-v2-openapi-schema
 # see .devcontainer/devcontainer.json
 test-workspace
 workspace-for-visual-testing
-workspace
