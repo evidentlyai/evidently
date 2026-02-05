@@ -11,6 +11,7 @@ export const createBody = () => {
             <p>Open-source ML and LLM observability framework</p>
           </header>
           <a href="./api-reference" role="button">API Reference</a>
+          <a href="./ci" role="button">CI Reports</a>
         </article>
       </main>
     </body>

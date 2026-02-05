@@ -2,14 +2,14 @@ name: Commit and push documentation
 runs:
   using: "composite"
   steps:
-    - name: 🔧 Commit and push docs
+    - name: 🔧 Commit and push
       shell: bash
       run: |
         git config user.name "Evidently Bot"
         git config user.email "evidently-bot@evidentlyai.com"
 
         git add -A
-        
+
         # Check if there are any changes to commit
         if git diff --staged --quiet; then
           echo "No changes to commit, working tree clean"

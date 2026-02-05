@@ -23,6 +23,9 @@ importers:
       '@types/semver':
         specifier: ^7.7.1
         version: 7.7.1
+      adm-zip:
+        specifier: ^0.5.16
+        version: 0.5.16
       htmlfy:
         specifier: ^1.0.1
         version: 1.0.1
@@ -33,6 +36,9 @@ importers:
         specifier: ^4.21.0
         version: 4.21.0
     devDependencies:
+      '@types/adm-zip':
+        specifier: ^0.5.7
+        version: 0.5.7
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -251,11 +257,18 @@ packages:
   '@remix-run/html-template@0.3.0':
     resolution: {integrity: sha512-aAMx68udtIk0fmCpCXHYscVeCDsRVEmEgh4XvtusPr3vkHu3jn4gx5oAxgsPXPdDmmD/d75SYyI0m/F+aLz5iQ==}
 
+  '@types/adm-zip@0.5.7':
+    resolution: {integrity: sha512-DNEs/QvmyRLurdQPChqq0Md4zGvPwHerAJYWk9l2jCbD1VPpnzRJorOdiq4zsw09NFbYnhfsoEhWtxIzXpn2yw==}
+
   '@types/node@24.10.2':
     resolution: {integrity: sha512-WOhQTZ4G8xZ1tjJTvKOpyEVSGgOTvJAfDK3FNFgELyaTpzhdgHVHeqW8V+UJvzF5BT+/B54T/1S2K6gd9c7bbA==}
 
   '@types/semver@7.7.1':
     resolution: {integrity: sha512-FmgJfu+MOcQ370SD0ev7EI8TlCAfKYU+B4m5T3yXc1CiRN94g/SZPtsCkk506aUDtlMnFZvasDwHHUcZUEaYuA==}
+
+  adm-zip@0.5.16:
+    resolution: {integrity: sha512-TGw5yVi4saajsSEgz25grObGHEUaDrniwvA2qwSC060KfqGPdglhvPMA2lPIoxs3PQIItj2iag35fONcQqgUaQ==}
+    engines: {node: '>=12.0'}
 
   esbuild@0.27.1:
     resolution: {integrity: sha512-yY35KZckJJuVVPXpvjgxiCuVEJT67F6zDeVTv4rizyPrfGBUpZQsvmxnN+C371c2esD/hNMjj4tpBhuueLN7aA==}
@@ -411,11 +424,17 @@ snapshots:
 
   '@remix-run/html-template@0.3.0': {}
 
+  '@types/adm-zip@0.5.7':
+    dependencies:
+      '@types/node': 24.10.2
+
   '@types/node@24.10.2':
     dependencies:
       undici-types: 7.16.0
 
   '@types/semver@7.7.1': {}
+
+  adm-zip@0.5.16: {}
 
   esbuild@0.27.1:
     optionalDependencies:

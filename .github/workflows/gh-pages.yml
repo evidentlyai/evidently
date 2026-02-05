@@ -15,12 +15,5 @@ jobs:
           ref: gh-pages
           fetch-depth: 0
 
-      - name: 📦 Setup node and pnpm install
-        uses: ./.github/share-actions/setup-node-and-pnpm-install
-
-      - name: 🔧 Run generation
-        run: pnpm run-all
-
-        # there is no push if no diff
-      - name: 🚀 Push API reference documentation
-        uses: ./.github/share-actions/commit-and-push-docs
+      - name: 🚀 Build and deploy documentation
+        uses: ./.github/share-actions/build-and-deploy

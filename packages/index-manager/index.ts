@@ -1,26 +1,17 @@
 import { apiReferenceIndex } from '@lib/use-cases/api-reference-index'
+import { ci } from '@lib/use-cases/ci'
 import { index } from '@lib/use-cases/index'
 import { consoleGroup, consoleGroupEnd } from '@lib/utils'
 
 const action = process.argv[2]
 
 switch (action) {
-  case 'index:write':
-    index.writeIndex()
-    break
-  case 'index:print':
-    index.printIndex()
-    break
-  case 'copy-new-api-references':
-    apiReferenceIndex.copyNewApiReferences()
-    break
-  case 'delete-old-branch-folders':
-    apiReferenceIndex.deleteOldBranchFolders()
-    break
   case 'run-all':
+    ci.copyNewCIArtifacts()
     apiReferenceIndex.copyNewApiReferences()
     apiReferenceIndex.deleteOldBranchFolders()
     apiReferenceIndex.writeApiReferenceIndex()
+    ci.writeCIndex()
     index.writeIndex()
 
     consoleGroup('index')
@@ -29,6 +20,10 @@ switch (action) {
 
     consoleGroup('api-reference')
     apiReferenceIndex.printApiReferenceIndex()
+    consoleGroupEnd()
+
+    consoleGroup('ci')
+    ci.printCIIndex()
     consoleGroupEnd()
     break
   default:

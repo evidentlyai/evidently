@@ -14,11 +14,13 @@
     "@remix-run/html-template": "^0.3.0",
     "@types/node": "^24.10.2",
     "@types/semver": "^7.7.1",
+    "adm-zip": "^0.5.16",
     "htmlfy": "^1.0.1",
     "semver": "^7.7.3",
     "tsx": "^4.21.0"
   },
   "devDependencies": {
+    "@types/adm-zip": "^0.5.7",
     "typescript": "^5.9.3"
   },
   "volta": {

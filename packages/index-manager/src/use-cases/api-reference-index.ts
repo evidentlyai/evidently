@@ -47,9 +47,7 @@ const copyNewApiReferences = (): void => {
       fs.rmSync(destFolderPath, { recursive: true, force: true })
     }
 
-    fs.cpSync(sourceFolderPath, destFolderPath, {
-      recursive: true
-    })
+    fs.cpSync(sourceFolderPath, destFolderPath, { recursive: true })
 
     console.log(`Copied: ${folder}`)
   }
