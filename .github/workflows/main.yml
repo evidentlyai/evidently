@@ -167,7 +167,21 @@ jobs:
       - name: Install package
         run: pip install -e .[dev,spark,fsspec,llm,sql]
       - name: Run Tests
-        run: python -m pytest --durations=50
+        shell: bash
+        run: |
+          BRANCH_NAME="${{ github.event.pull_request.head.ref || github.ref_name }}"
+          BRANCH_NAME="${BRANCH_NAME//\//-}"
+          python -m pytest --durations=50 \
+            --html="pytest-reports/${{ env.ARTIFACT_PREFIX }}${BRANCH_NAME}.html" \
+            --self-contained-html
+
+      - name: Upload HTML test report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pytest-html-report
+          path: pytest-reports
+          retention-days: 30
   test:
     # The type of runner that the job will run on
     name: Test ${{ matrix.os }} with py${{ matrix.python }}
@@ -206,20 +220,7 @@ jobs:
         run: pip install -e .[dev,spark,fsspec,llm,sql]
       - name: Run Tests
         shell: bash
-        run: |
-          BRANCH_NAME="${{ github.event.pull_request.head.ref || github.ref_name }}"
-          BRANCH_NAME="${BRANCH_NAME//\//-}"
-          python -m pytest \
-            --durations=50 \
-            --html="pytest-reports/${{ env.ARTIFACT_PREFIX }}${BRANCH_NAME}.html" \
-            --self-contained-html
-      - name: Upload HTML test report
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: pytest-html-report
-          path: pytest-reports
-          retention-days: 30
+        run: python -m pytest --durations=50
 
   python-build:
     # The type of runner that the job will run on
