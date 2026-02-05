@@ -172,7 +172,7 @@ jobs:
           BRANCH_NAME="${{ github.event.pull_request.head.ref || github.ref_name }}"
           BRANCH_NAME="${BRANCH_NAME//\//-}"
           python -m pytest --durations=50 \
-            --html="pytest-reports/${{ env.ARTIFACT_PREFIX }}${BRANCH_NAME}.html" \
+            --html="pytest-reports/${{ env.ARTIFACT_PREFIX }}/${BRANCH_NAME}/index.html" \
             --self-contained-html
 
       - name: Upload HTML test report
