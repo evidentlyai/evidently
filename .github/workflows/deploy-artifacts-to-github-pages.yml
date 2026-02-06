@@ -7,6 +7,7 @@ on:
 
 jobs:
   deploy:
+    if: github.event.workflow_run.conclusion != 'cancelled'
     runs-on: ubuntu-latest
     # Uncomment and configure if you need approval for deployments
     # environment: gh-pages-approval
