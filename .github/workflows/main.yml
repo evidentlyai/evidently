@@ -272,7 +272,7 @@ jobs:
             --local-source-code
             --github-repo ${{ github.event.pull_request.head.repo.full_name || github.repository }}
             --git-revision ${{ github.event.pull_request.head.ref || github.ref_name }}
-            --output-prefix ${{ env.ARTIFACT_PREFIX }}
+            --output-prefix '${{ env.ARTIFACT_PREFIX }}'
 
       - name: Upload documentation artifact
         uses: actions/upload-artifact@v4
