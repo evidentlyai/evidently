@@ -475,7 +475,7 @@ export const renderArtifacts = (artifacts: string[], fullPath: string, path: str
   })
 
   return html`
-    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)); gap: 1rem; margin-top: 0.5rem;">
+    <div style="display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 0.5rem;">
       ${artifacts.map((artifact, index) => {
         const testResult = testResults[index]
 
@@ -486,7 +486,7 @@ export const renderArtifacts = (artifacts: string[], fullPath: string, path: str
               ? html`<span style="font-size: 1.1rem; margin-left: 0.5rem;" title="Some tests failed">❌</span>`
               : ''
 
-        return html`<article style="padding: 1rem; border: 1px solid var(--pico-muted-border-color); border-radius: var(--pico-border-radius); transition: transform 0.2s, box-shadow 0.2s;">
+        return html`<article style="padding: 1rem; border: 1px solid var(--pico-muted-border-color); border-radius: var(--pico-border-radius); transition: transform 0.2s, box-shadow 0.2s; flex: 1 1 250px;">
             <a href="./${path}/${artifact}" style="text-decoration: none; color: inherit; display: block;">
               <header style="margin-bottom: 0.5rem;">
                 <hgroup style="margin-bottom: 0;">
