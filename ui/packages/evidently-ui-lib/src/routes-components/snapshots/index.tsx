@@ -342,6 +342,7 @@ export const SnapshotsListTemplate = (props: SnapshotActionsWrapperProps) => {
 
   return (
     <>
+      <p>Some text here</p>
       {FilterComponent}
       {TablePaginationComponent}
       <Table>
