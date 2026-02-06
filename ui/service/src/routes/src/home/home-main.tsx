@@ -34,7 +34,7 @@ export const Component = () => {
 
   return (
     <>
-      <p>Some text here</p>
+      <p>Some text here 2</p>
       <NavigationProgress />
       <ScrollRestoration />
       <ServiceHeader version={loaderData.version} HomeLink={HomeLink} />
