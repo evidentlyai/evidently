@@ -1,8 +1,6 @@
 import { Box } from '@mui/material'
 import type React from 'react'
 
-// import {WithStyles, WithTheme} from "@material-ui/core/styles";
-
 import { ResponsiveBarCanvas } from '@nivo/bar'
 
 import type { BigTableDataRow, LineGraphOptions } from '~/api'
@@ -36,6 +34,25 @@ const _HistogramGraphColumn: React.FunctionComponent<HistogramGraphColumnProps> 
         axisRight={null}
         enableGridX={false}
         enableGridY={false}
+        tooltip={({ id, value }) => (
+          <div
+            style={{
+              background: 'rgba(30, 30, 30, 0.95)',
+              color: '#fff',
+              padding: '6px 10px',
+              borderRadius: '4px',
+              fontSize: '12px',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.3)'
+            }}
+          >
+            <div>
+              <strong>Value:</strong> {typeof id === 'number' ? id.toFixed(4) : id}
+            </div>
+            <div>
+              <strong>Percent:</strong> {typeof value === 'number' ? value.toFixed(2) : value}%
+            </div>
+          </div>
+        )}
       />
     </Box>
   )
