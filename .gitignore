@@ -11,6 +11,7 @@ example_scripts
 .pytest_cache
 dist
 build
+pytest-reports/
 MANIFEST
 uv.lock
 

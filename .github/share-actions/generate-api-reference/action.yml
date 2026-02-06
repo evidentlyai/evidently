@@ -1,0 +1,17 @@
+name: Generate docs and upload artifact
+inputs:
+  flags:
+    description: 'Flags to pass to the generate.py script'
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - name: Install uv
+      uses: astral-sh/setup-uv@v7
+      with:
+        python-version: "3.11"
+
+    - name: Generate documentation
+      run: |
+        ./api-reference/generate.py --api-reference-index-href "/evidently/api-reference" ${{ inputs.flags }}
+      shell: bash
