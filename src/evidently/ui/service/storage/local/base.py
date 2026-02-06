@@ -59,7 +59,7 @@ UUID_REGEX = re.compile("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-
 class FSSpecBlobStorage(BlobStorage):
     base_path: str
 
-    _location: FSLocation = PrivateAttr(None)
+    _location: Optional[FSLocation] = PrivateAttr(default=None)
 
     def __init__(self, base_path: str):
         self.base_path = base_path
@@ -166,14 +166,14 @@ class LocalState(WorkspaceLocalState):
 class JsonFileProjectMetadataStorage(ProjectMetadataStorage):
     path: str
 
-    _state: LocalState = PrivateAttr(None)
+    _state: Optional[LocalState] = PrivateAttr(default=None)
 
     def __init__(self, path: str, local_state: Optional[LocalState] = None):
         self.path = path
         self._state = local_state or LocalState.load(self.path, None)
 
     @property
-    def state(self):
+    def state(self) -> LocalState:
         if self._state is None:
             self._state = LocalState.load(self.path, None)
         return self._state
@@ -248,6 +248,7 @@ class JsonFileProjectMetadataStorage(ProjectMetadataStorage):
         snapshot = self.state.snapshots[project_id][snapshot_id]
         return SnapshotMetadataModel(
             id=snapshot_id,
+            name=None,
             metadata=snapshot.metadata,
             tags=snapshot.tags,
             timestamp=snapshot.timestamp,
@@ -273,8 +274,8 @@ class MetricItem(BaseModel):
 class InMemoryDataStorage(DataStorage):
     path: str
 
-    _state: LocalState = PrivateAttr(None)
-    _metrics_points: Dict[uuid.UUID, Dict[uuid.UUID, List[MetricItem]]] = PrivateAttr(None)
+    _state: Optional[LocalState] = PrivateAttr(default=None)
+    _metrics_points: Optional[Dict[uuid.UUID, Dict[uuid.UUID, List[MetricItem]]]] = PrivateAttr(default=None)
 
     def __init__(self, path: str, local_state: Optional[LocalState] = None):
         self.path = path
@@ -295,8 +296,11 @@ class InMemoryDataStorage(DataStorage):
         return self._add_snapshot_points_sync(project_id, snapshot_id, snapshot)
 
     def _add_snapshot_points_sync(self, project_id: ProjectID, snapshot_id: SnapshotID, snapshot: SnapshotModel):
-        if project_id in self._metrics_points and snapshot_id in self._metrics_points[project_id]:
-            self._metrics_points[project_id][snapshot_id] = []
+        if self._metrics_points is None:
+            self._metrics_points = {}
+        points = self._metrics_points
+        if project_id in points and snapshot_id in points[project_id]:
+            points[project_id][snapshot_id] = []
         for result in snapshot.metric_results.values():
             if isinstance(result, SingleValue):
                 self._add_value(project_id, snapshot_id, snapshot.timestamp, result)
@@ -338,11 +342,14 @@ class InMemoryDataStorage(DataStorage):
             if k in ["type", "tests", "count_tests", "share_tests", "mean_tests", "std_tests"]:
                 continue
             params[k] = str(v)
-        if project_id not in self._metrics_points:
-            self._metrics_points[project_id] = {}
-        if snapshot_id not in self._metrics_points[project_id]:
-            self._metrics_points[project_id][snapshot_id] = []
-        self._metrics_points[project_id][snapshot_id].append(
+        if self._metrics_points is None:
+            self._metrics_points = {}
+        points = self._metrics_points
+        if project_id not in points:
+            points[project_id] = {}
+        if snapshot_id not in points[project_id]:
+            points[project_id][snapshot_id] = []
+        points[project_id][snapshot_id].append(
             MetricItem(
                 snapshot_id=snapshot_id,
                 timestamp=timestamp,
@@ -420,8 +427,9 @@ class InMemoryDataStorage(DataStorage):
         last_snapshot = None
         series_filters_map: Dict[tuple, int] = {}
         index = 0
+        points = self._metrics_points if self._metrics_points is not None else {}
         for snapshot_id, timestamp, snapshot in matching_snapshots:
-            for item in self._metrics_points.get(project_id, {}).get(snapshot_id, []):
+            for item in points.get(project_id, {}).get(snapshot_id, []):
                 metric_type = item.metric_type
                 params = item.params
                 snapshot_tags = matching_snapshots_map[snapshot_id].tags

@@ -4,7 +4,6 @@ import inspect
 import itertools
 import json
 import os
-import sys
 import warnings
 from abc import ABC
 from enum import Enum
@@ -41,7 +40,7 @@ from evidently._pydantic_compat import parse_obj_as
 if TYPE_CHECKING:
     from evidently._pydantic_compat import DictStrAny
 
-md5_kwargs = {"usedforsecurity": False} if sys.version_info >= (3, 9) else {}
+md5_kwargs = {"usedforsecurity": False}
 
 
 T = TypeVar("T")

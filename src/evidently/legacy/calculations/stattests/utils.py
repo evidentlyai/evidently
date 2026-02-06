@@ -1,4 +1,6 @@
 from collections import Counter
+from typing import Any
+from typing import Set
 
 import numpy as np
 import pandas as pd
@@ -27,7 +29,8 @@ def get_binned_data(
     n_vals = reference_data.nunique()
 
     if feature_type == ColumnType.Numerical and n_vals > 20:
-        bins = np.histogram_bin_edges(pd.concat([reference_data, current_data], axis=0).values, bins="sturges")
+        combined = np.asarray(pd.concat([reference_data, current_data], axis=0).values)
+        bins = np.histogram_bin_edges(combined, bins="sturges")
         reference_percents = np.histogram(reference_data, bins)[0] / len(reference_data)
         current_percents = np.histogram(current_data, bins)[0] / len(current_data)
 
@@ -96,7 +99,7 @@ def generate_fisher2x2_contingency_table(reference_data: pd.Series, current_data
         raise ValueError(
             "reference_data and current_data are not of equal length, please ensure that they are of equal length"
         )
-    unique_categories = set(reference_data.unique().tolist() + current_data.unique().tolist())
+    unique_categories: Set[Any] = set(reference_data.unique().tolist() + current_data.unique().tolist())
     if len(unique_categories) != 2:
         unique_categories.add("placeholder")
 

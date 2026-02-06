@@ -1,4 +1,5 @@
 from itertools import repeat
+from typing import Any
 from typing import List
 from typing import Optional
 from typing import Union
@@ -65,7 +66,7 @@ class OpenAIFeature(FeatureTypeFieldMixin, GeneratedFeature):
     def generate_feature(self, data: pd.DataFrame, data_definition: DataDefinition) -> pd.DataFrame:
         from openai import OpenAI
 
-        column_data = data[self.column_name].values.tolist()
+        column_data: List[Any] = data[self.column_name].values.tolist()
         client = OpenAI()
         result: List[Union[str, float, None]] = []
 
@@ -75,9 +76,9 @@ class OpenAIFeature(FeatureTypeFieldMixin, GeneratedFeature):
             func = _chat_completions_openai_call
 
         if self.context_column is not None:
-            context_column = data[self.context_column].values.tolist()
+            context_column: List[Optional[str]] = data[self.context_column].values.tolist()
         else:
-            context_column = repeat(self.context)
+            context_column = list(repeat(self.context, len(column_data)))
 
         for message, context in zip(column_data, context_column):
             context = "" if context is None else context

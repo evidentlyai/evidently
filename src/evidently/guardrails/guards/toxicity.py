@@ -16,7 +16,7 @@ class ToxicityCheck(GuardrailBase):
         return "Toxicity Check"
 
     def validate(self, data: str):
-        piillm_eval = ToxicityLLMEval()
+        piillm_eval = ToxicityLLMEval(provider="openai", model="gpt-4o-mini")
         request: LLMRequest[dict] = LLMRequest(
             messages=piillm_eval.template.get_messages({"input": data}),
             response_parser=piillm_eval.template.get_parser(),

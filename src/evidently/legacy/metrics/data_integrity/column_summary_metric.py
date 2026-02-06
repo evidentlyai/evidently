@@ -211,8 +211,8 @@ def plot_data(
             ref_data = reference_data.dt.to_period(freq=freq).value_counts().reset_index()
             ref_data.columns = pd.Index(["x", "number_of_items"])
             ref_data["x"] = ref_data["x"].dt.to_timestamp()
-            max_ref_date = ref_data["x"].max()
-            min_curr_date = curr_data["x"].min()
+            max_ref_date = pd.Timestamp(ref_data["x"].max())
+            min_curr_date = pd.Timestamp(curr_data["x"].min())
             if max_ref_date == min_curr_date:
                 curr_data, ref_data = _split_periods(curr_data, ref_data, "x")
             reference = ref_data
@@ -306,13 +306,12 @@ def plot_data(
 
 
 def _split_periods(curr_data: pd.DataFrame, ref_data: pd.DataFrame, feature_name: str):
-    max_ref_date = ref_data[feature_name].max()
-    min_curr_date = curr_data[feature_name].min()
+    max_ref_date = pd.Timestamp(ref_data[feature_name].max())
+    min_curr_date = pd.Timestamp(curr_data[feature_name].min())
 
-    if (
-        curr_data.loc[curr_data[feature_name] == min_curr_date, "number_of_items"].iloc[0]
-        > ref_data.loc[ref_data[feature_name] == max_ref_date, "number_of_items"].iloc[0]
-    ):
+    curr_count = float(curr_data.loc[curr_data[feature_name] == min_curr_date, "number_of_items"].iloc[0])
+    ref_count = float(ref_data.loc[ref_data[feature_name] == max_ref_date, "number_of_items"].iloc[0])
+    if curr_count > ref_count:
         curr_data.loc[curr_data[feature_name] == min_curr_date, "number_of_items"] = (
             curr_data.loc[curr_data[feature_name] == min_curr_date, "number_of_items"]
             + ref_data.loc[ref_data[feature_name] == max_ref_date, "number_of_items"]
@@ -534,7 +533,7 @@ class ColumnSummaryMetric(UsesRawDataMixin, ColumnMetric[ColumnSummaryResult]):
         self, dataset: str, data: InputData, text_feature: pd.Series, generated_text_features: dict
     ) -> TextCharacteristics:
         number_of_rows = len(text_feature)
-        missing = text_feature.isna().sum()
+        missing: int = int(text_feature.isna().sum())
         if dataset == "current":
             text_length = data.get_current_column(generated_text_features["text_length"].as_column())
             oov = data.get_current_column(generated_text_features["oov"].as_column())

@@ -146,13 +146,12 @@ class Project(Entity):
     version: str = "1"
     # Field(default=datetime.datetime.fromisoformat("1900-01-01T00:00:00"))
 
-    _project_manager: "ProjectManager" = PrivateAttr(None)
-    _user_id: UserID = PrivateAttr(None)
+    _project_manager: Optional["ProjectManager"] = PrivateAttr(default=None)
+    _user_id: Optional[UserID] = PrivateAttr(default=None)
 
     def bind(self, project_manager: Optional["ProjectManager"], user_id: Optional[UserID]):
-        # todo: better typing (add optional or forbid optional)
-        self._project_manager = project_manager  # type: ignore[assignment]
-        self._user_id = user_id  # type: ignore[assignment]
+        self._project_manager = project_manager
+        self._user_id = user_id
         return self
 
     @property
@@ -162,33 +161,33 @@ class Project(Entity):
         return self._project_manager
 
     async def save_async(self):
-        await self.project_manager.update_project(self._user_id, self)
+        await self.project_manager.update_project(self._user_id, self)  # type: ignore[arg-type]
         return self
 
     async def load_snapshot_async(self, snapshot_id: SnapshotID) -> SnapshotModel:
-        return await self.project_manager.load_snapshot(self._user_id, self.id, snapshot_id)
+        return await self.project_manager.load_snapshot(self._user_id, self.id, snapshot_id)  # type: ignore[arg-type]
 
     async def add_snapshot_async(self, snapshot: SnapshotModel):
-        await self.project_manager.add_snapshot(self._user_id, self.id, snapshot)
+        await self.project_manager.add_snapshot(self._user_id, self.id, snapshot)  # type: ignore[arg-type]
 
     async def delete_snapshot_async(self, snapshot_id: Union[str, SnapshotID]):
         if isinstance(snapshot_id, str):
             snapshot_id = uuid6.UUID(snapshot_id)
-        await self.project_manager.delete_snapshot(self._user_id, self.id, snapshot_id)
+        await self.project_manager.delete_snapshot(self._user_id, self.id, snapshot_id)  # type: ignore[arg-type]
 
     async def list_snapshots_async(self) -> List[SnapshotMetadataModel]:
-        return await self.project_manager.list_snapshots(self._user_id, self.id)
+        return await self.project_manager.list_snapshots(self._user_id, self.id)  # type: ignore[arg-type]
 
     async def get_snapshot_metadata_async(self, id: SnapshotID) -> SnapshotMetadataModel:
-        return await self.project_manager.get_snapshot_metadata(self._user_id, self.id, id)
+        return await self.project_manager.get_snapshot_metadata(self._user_id, self.id, id)  # type: ignore[arg-type]
 
     async def reload_async(self, reload_snapshots: bool = False):
         # fixme: reload snapshots
-        project = await self.project_manager.get_project(self._user_id, self.id)
+        project = await self.project_manager.get_project(self._user_id, self.id)  # type: ignore[arg-type]
         self.__dict__.update(project.__dict__)
 
         if reload_snapshots:
-            await self.project_manager.reload_snapshots(self._user_id, self.id)
+            await self.project_manager.reload_snapshots(self._user_id, self.id)  # type: ignore[arg-type]
 
     save = sync_api(save_async)
     load_snapshot = sync_api(load_snapshot_async)

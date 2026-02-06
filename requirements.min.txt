@@ -1,13 +1,13 @@
 # keep in sync with pyproject.toml [project] dependencies (but there should be set as lower bound).
 plotly==5.10.0
-statsmodels==0.12.2
+statsmodels==0.14.0
 scikit-learn==1.1.1
 pandas[parquet]==1.3.5
-numpy==1.22.0
+numpy==1.23.0
 nltk==3.6.7
 scipy==1.10.0
 requests==2.32.0
-PyYAML==5.4
+PyYAML==6.0.1
 pydantic==1.10.16
 litestar==2.19.0
 typing-inspect==0.9.0

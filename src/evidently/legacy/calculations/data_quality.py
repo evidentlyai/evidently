@@ -195,8 +195,8 @@ def get_features_stats(feature: pd.Series, feature_type: ColumnType) -> FeatureQ
             result.most_common_value = np.round(result.most_common_value, 5)
         result.infinite_count = int(np.sum(np.isinf(feature)))
         result.infinite_percentage = get_percentage_from_all_values(result.infinite_count)
-        result.max = np.round(feature.max(), 2)
-        result.min = np.round(feature.min(), 2)
+        result.max = float(np.round(feature.max(), 2))
+        result.min = float(np.round(feature.min(), 2))
         common_stats = dict(feature.describe())
         std = common_stats["std"]
         # TODO: Fix assignment types

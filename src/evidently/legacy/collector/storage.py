@@ -21,11 +21,11 @@ class LogEvent(BaseModel):
 
 
 class CreateReportEvent(LogEvent):
-    type = "CreateReport"
+    type: str = "CreateReport"
 
 
 class UploadReportEvent(LogEvent):
-    type = "UploadReport"
+    type: str = "UploadReport"
 
 
 class ReportPopper:

@@ -3,6 +3,7 @@ from typing import Any
 from typing import List
 from typing import Optional
 from typing import Union
+from typing import cast
 
 import numpy as np
 import pandas as pd
@@ -113,8 +114,12 @@ class RegressionErrorNormality(UsesRawDataMixin, Metric[RegressionErrorNormality
         if not agg_data:
             return df
         df["bin"] = pd.cut(err_data.sort_values().to_numpy(), bins=10, labels=False, retbins=False)
-        grouped = df.groupby("bin", group_keys=False).apply(lambda x: x.sample(n=min(100, x.shape[0]), random_state=0))
-        if "bin" in grouped.columns:
+
+        def _sample_group(x: pd.DataFrame) -> pd.DataFrame:
+            return x.sample(n=min(100, x.shape[0]), random_state=0)
+
+        grouped = df.groupby("bin", group_keys=False).apply(cast(Any, _sample_group))
+        if isinstance(grouped, pd.DataFrame) and "bin" in grouped.columns:
             grouped = grouped.drop("bin", axis=1)
         return grouped
 

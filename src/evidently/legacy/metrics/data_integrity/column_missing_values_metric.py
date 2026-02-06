@@ -110,10 +110,9 @@ class ColumnMissingValuesMetric(Metric[ColumnMissingValuesMetricResult]):
         for value in self.missing_values:
             if value is None:
                 # check all pandas missing values like numpy.NAN, pandas.NA, pandas.NaT, etc
-                missing_values = column.isnull().sum()
-
+                missing_values: int = int(column.isnull().sum())
             else:
-                missing_values = (column == value).sum()
+                missing_values = int((column == value).sum())
 
             if missing_values > 0:
                 # increase overall counter

@@ -1,10 +1,12 @@
 import json
 from typing import TYPE_CHECKING
+from typing import Any
 from typing import Dict
 from typing import List
 from typing import Optional
 from typing import Tuple
 from typing import Union
+from typing import cast
 
 import numpy as np
 import pandas as pd
@@ -329,9 +331,12 @@ def plot_distr_with_cond_perc_button(
         lines.append((value, value_name))
         dict_style[value_name] = "solid"
 
-    max_y = np.max([np.max(x["y"]) for x in pd.Series(fig.data)[visible]])
-    not_visible = [not x for x in visible]
-    max_y_perc = np.max([np.max(x["y"]) for x in pd.Series(fig.data)[not_visible]])
+    data_series = pd.Series(fig.data)
+    visible_list = list(visible)
+    visible_indices = [i for i, v in enumerate(visible_list) if v]
+    not_visible_indices = [i for i, v in enumerate(visible_list) if not v]
+    max_y = np.max([np.max(cast(Any, data_series.iloc[i])["y"]) for i in visible_indices])
+    max_y_perc = np.max([np.max(cast(Any, data_series.iloc[i])["y"]) for i in not_visible_indices])
 
     if len(lines) > 0:
         for line, name in lines:
@@ -543,7 +548,7 @@ def plot_cat_feature_in_time(
     title = "current"
     fig = go.Figure()
     orientation = "v" if not transpose else "h"
-    values = curr_data[feature_name].astype(str).unique()
+    values: np.ndarray[Any, Any] = curr_data[feature_name].astype(str).unique()
     if ref_data is not None:
         values = np.union1d(curr_data[feature_name].astype(str).unique(), ref_data[feature_name].astype(str).unique())
     for i, val in enumerate(values):
@@ -662,8 +667,8 @@ def make_hist_for_num_plot(curr: pd.Series, ref: Optional[pd.Series] = None, cal
     reference_log = None
     if calculate_log:
         current_log, reference_log = histogram_for_data(
-            np.log10(curr[curr > 0]),
-            np.log10(ref[ref > 0]) if ref is not None else None,
+            pd.Series(np.log10(curr[curr > 0].values)),
+            pd.Series(np.log10(ref[ref > 0].values)) if ref is not None else None,
         )
     return Histogram(
         current=current,
@@ -1285,9 +1290,12 @@ def choose_agg_period(current_date_column: pd.Series, reference_date_column: Opt
     datetime_feature = current_date_column
     if reference_date_column is not None:
         datetime_feature = pd.concat([datetime_feature, reference_date_column])
-    days = (datetime_feature.max() - datetime_feature.min()).days
+    dt_max = pd.Timestamp(datetime_feature.max())
+    dt_min = pd.Timestamp(datetime_feature.min())
+    delta = dt_max - dt_min
+    days: float = float(delta.days)
     if days == 0:
-        days = (datetime_feature.max() - datetime_feature.min()).seconds / (3600 * 24)
+        days = delta.seconds / (3600 * 24)
     time_points = pd.Series(
         index=index_data,
         data=[
@@ -1300,8 +1308,9 @@ def choose_agg_period(current_date_column: pd.Series, reference_date_column: Opt
             abs(OPTIMAL_POINTS - days * 24 * 60),
         ],
     )
-    period_prefix = prefix_dict[time_points.idxmin()]
-    return period_prefix, str(time_points.idxmin())
+    idxmin_val: str = str(time_points.idxmin())
+    period_prefix = prefix_dict[idxmin_val]
+    return period_prefix, idxmin_val
 
 
 def get_plot_df(df, datetime_name, column_name, freq):
@@ -1320,9 +1329,8 @@ def prepare_df_for_time_index_plot(
     freq: Optional[str] = None,
     bins: Optional[np.ndarray] = None,
 ) -> Tuple[pd.DataFrame, Optional[str]]:
-    index_name = df.index.name
-    if index_name is None:
-        index_name = "index"
+    index_name_raw = df.index.name
+    index_name: str = "index" if index_name_raw is None else str(index_name_raw)
     if datetime_name is None and is_datetime64_any_dtype(df.index):
         df = df.copy().reset_index()
         datetime_name = index_name
@@ -1334,7 +1342,7 @@ def prepare_df_for_time_index_plot(
         dt_plot_df = dt_plot_df.groupby("per")[column_name].agg(["mean", "std"]).reset_index()
         dt_plot_df["per"] = dt_plot_df["per"].dt.to_timestamp()
         return dt_plot_df, prefix
-    plot_df: pd.DataFrame = df[column_name].reset_index().sort_values(index_name)
+    plot_df: pd.DataFrame = df[column_name].reset_index().sort_values(by=str(index_name))
     new_bins = OPTIMAL_POINTS if bins is None else bins
     plot_df["per"] = pd.cut(plot_df[index_name], bins=new_bins, labels=False)  # type: ignore[call-overload]
     plot_df = plot_df.groupby("per")[column_name].agg(["mean", "std"]).reset_index()

@@ -6,6 +6,7 @@ from typing import Union
 from typing import get_args
 
 from evidently._pydantic_compat import BaseModel
+from evidently._pydantic_compat import Field
 from evidently.core.base_types import Label
 from evidently.legacy.utils.types import ApproxValue
 from evidently.pydantic_utils import Fingerprint
@@ -24,9 +25,9 @@ class Reference(BaseModel):
     either a relative change (percentage) or absolute difference, or both.
     """
 
-    relative: Optional[float] = None
+    relative: Optional[float] = Field(default=None)
     """Optional relative change threshold (percentage as decimal, e.g., 0.1 for 10%)."""
-    absolute: Optional[float] = None
+    absolute: Optional[float] = Field(default=None)
     """Optional absolute difference threshold."""
 
     def __hash__(self) -> int:

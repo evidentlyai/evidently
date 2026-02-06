@@ -193,7 +193,9 @@ class DashboardPanelTestSuite(DashboardPanel):
 def to_period(time_agg: Optional[str], timestamp: datetime.datetime) -> datetime.datetime:
     if time_agg is None:
         return timestamp
-    return pd.Series([timestamp], name="dt").dt.to_period(time_agg)[0].to_timestamp()
+    period_series = pd.Series([timestamp], name="dt").dt.to_period(time_agg)
+    first_period = typing.cast("pd.Period", period_series.iloc[0])
+    return first_period.to_timestamp()
 
 
 @autoregister

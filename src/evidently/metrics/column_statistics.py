@@ -370,9 +370,9 @@ class InRangeValueCountCalculation(CountCalculation[InRangeValueCount]):
 
     def _calculate_value(self, dataset: Dataset):
         column = dataset.column(self.metric.column)
-        value = column.data.between(self.metric.left, self.metric.right).sum()
+        value: float = column.data.between(self.metric.left, self.metric.right).sum()
         total = column.data.count()
-        return self.result(value, value / total)
+        return self.result(int(value), value / total)
 
 
 class OutRangeValueCount(ColumnMetric, CountMetric):
@@ -407,9 +407,9 @@ class OutRangeValueCountCalculation(CountCalculation[OutRangeValueCount]):
 
     def _calculate_value(self, dataset: Dataset):
         column = dataset.column(self.metric.column)
-        value = column.data.between(self.metric.left, self.metric.right).sum()
+        value: float = column.data.between(self.metric.left, self.metric.right).sum()
         total = column.data.count()
-        return self.result(total - value, (total - value) / total)
+        return self.result(int(total - value), (total - value) / total)
 
 
 class InListValueCount(ColumnMetric, CountMetric):
@@ -442,9 +442,10 @@ class InListValueCountCalculation(CountCalculation[InListValueCount]):
 
     def _calculate_value(self, dataset: Dataset):
         column = dataset.column(self.metric.column)
-        value = column.data.value_counts().loc[self.metric.values].sum()  # type: ignore[index]
+        value_counts = column.data.value_counts()
+        value: float = float(value_counts.reindex(self.metric.values, fill_value=0).sum())
         total = column.data.count()
-        return self.result(value, value / total)
+        return self.result(int(value), value / total)
 
 
 class OutListValueCount(ColumnMetric, CountMetric):
@@ -482,9 +483,10 @@ class OutListValueCountCalculation(CountCalculation[OutListValueCount]):
 
     def _calculate_value(self, dataset: Dataset):
         column = dataset.column(self.metric.column)
-        value = column.data.value_counts().loc[self.metric.values].sum()  # type: ignore[index]
+        value_counts = column.data.value_counts()
+        value: float = float(value_counts.reindex(self.metric.values, fill_value=0).sum())
         total = column.data.count()
-        return self.result(total - value, (total - value) / total)
+        return self.result(int(total - value), (total - value) / total)
 
 
 class MissingValueCount(ColumnMetric, CountMetric):
@@ -570,7 +572,14 @@ class ValueDriftCalculation(SingleValueCalculation[ValueDrift]):
             column_name=column,
             options=options,
             dataset_columns=DatasetColumns(
-                utility_columns=DatasetUtilityColumns(),
+                utility_columns=DatasetUtilityColumns(
+                    date=None,
+                    id=None,
+                    target=None,
+                    prediction=None,
+                ),
+                target_type=None,
+                task=None,
                 num_feature_names=[column] if column_type == ColumnType.Numerical else [],
                 cat_feature_names=[column] if column_type == ColumnType.Categorical else [],
                 text_feature_names=[column] if column_type == ColumnType.Text else [],

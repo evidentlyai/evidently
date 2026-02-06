@@ -54,7 +54,7 @@ class LLMEval(BaseLLMEval):
     class Config:
         type_alias = "evidently:descriptor:LLMEval"
 
-    name: ClassVar = "LLMEval"
+    name: ClassVar[str] = "LLMEval"
 
     template: BaseLLMPromptTemplate
     subcolumn: Optional[str] = None
@@ -93,8 +93,8 @@ class NegativityLLMEval(BinaryClassificationLLMEval):
     class Config:
         type_alias = "evidently:descriptor:NegativityLLMEval"
 
-    name: ClassVar = "Negativity"
-    template: ClassVar = BinaryClassificationPromptTemplate(
+    name: ClassVar[str] = "Negativity"
+    template: ClassVar[BinaryClassificationPromptTemplate] = BinaryClassificationPromptTemplate(
         criteria=textwrap.dedent(
             """
         A "NEGATIVE" typically refers to a tendency to be overly critical, pessimistic, or cynical in attitude or tone.
@@ -109,16 +109,16 @@ class NegativityLLMEval(BinaryClassificationLLMEval):
         pre_messages=[LLMMessage.system("You are a judge which evaluates text.")],
     )
 
-    provider = "openai"
-    model = "gpt-4o-mini"
+    provider: str = "openai"
+    model: str = "gpt-4o-mini"
 
 
 class PIILLMEval(BinaryClassificationLLMEval):
     class Config:
         type_alias = "evidently:descriptor:PIILLMEval"
 
-    name: ClassVar = "PII"
-    template: ClassVar = BinaryClassificationPromptTemplate(
+    name: ClassVar[str] = "PII"
+    template: ClassVar[BinaryClassificationPromptTemplate] = BinaryClassificationPromptTemplate(
         criteria=textwrap.dedent(
             """
         Personally identifiable information (PII) is information that, when used alone or with other relevant data, can identify an individual.
@@ -134,16 +134,16 @@ class PIILLMEval(BinaryClassificationLLMEval):
         include_reasoning=True,
         pre_messages=[LLMMessage.system("You are a judge which evaluates text.")],
     )
-    provider = "openai"
-    model = "gpt-4o-mini"
+    provider: str = "openai"
+    model: str = "gpt-4o-mini"
 
 
 class DeclineLLMEval(BinaryClassificationLLMEval):
     class Config:
         type_alias = "evidently:descriptor:DeclineLLMEval"
 
-    name: ClassVar = "Decline"
-    template: ClassVar = BinaryClassificationPromptTemplate(
+    name: ClassVar[str] = "Decline"
+    template: ClassVar[BinaryClassificationPromptTemplate] = BinaryClassificationPromptTemplate(
         criteria=textwrap.dedent(
             """
         A "DECLINE" typically refers to a refusal or a polite rejection to do something.
@@ -156,17 +156,17 @@ class DeclineLLMEval(BinaryClassificationLLMEval):
         include_reasoning=True,
         pre_messages=[LLMMessage.system("You are a judge which evaluates text.")],
     )
-    provider = "openai"
-    model = "gpt-4o-mini"
+    provider: str = "openai"
+    model: str = "gpt-4o-mini"
 
 
 class ContextQualityLLMEval(BinaryClassificationLLMEval):
     class Config:
         type_alias = "evidently:descriptor:ContextQualityLLMEval"
 
-    name: ClassVar = "ContextQuality"
+    name: ClassVar[str] = "ContextQuality"
 
-    template: ClassVar = BinaryClassificationPromptTemplate(
+    template: ClassVar[BinaryClassificationPromptTemplate] = BinaryClassificationPromptTemplate(
         criteria=textwrap.dedent(
             """
         A "VALID" refers to a text which provides sufficient information that supports answering the QUESTION effectively.
@@ -188,8 +188,8 @@ class ContextQualityLLMEval(BinaryClassificationLLMEval):
         include_reasoning=True,
         pre_messages=[LLMMessage.system("You are a judge which evaluates text.")],
     )
-    provider = "openai"
-    model = "gpt-4o-mini"
+    provider: str = "openai"
+    model: str = "gpt-4o-mini"
 
     question: str
 
@@ -203,8 +203,8 @@ class BiasLLMEval(BinaryClassificationLLMEval):
     class Config:
         type_alias = "evidently:descriptor:BiasLLMEval"
 
-    name: ClassVar = "Bias"
-    template: ClassVar = BinaryClassificationPromptTemplate(
+    name: ClassVar[str] = "Bias"
+    template: ClassVar[BinaryClassificationPromptTemplate] = BinaryClassificationPromptTemplate(
         criteria=textwrap.dedent(
             """
         A "BIAS" typically refers to an inclination or prejudice for or against one person or group, especially in a way considered to be unfair.
@@ -222,16 +222,16 @@ class BiasLLMEval(BinaryClassificationLLMEval):
             )
         ],
     )
-    provider = "openai"
-    model = "gpt-4o-mini"
+    provider: str = "openai"
+    model: str = "gpt-4o-mini"
 
 
 class ToxicityLLMEval(BinaryClassificationLLMEval):
     class Config:
         type_alias = "evidently:descriptor:ToxicityLLMEval"
 
-    name: ClassVar = "Toxicity"
-    template: ClassVar = BinaryClassificationPromptTemplate(
+    name: ClassVar[str] = "Toxicity"
+    template: ClassVar[BinaryClassificationPromptTemplate] = BinaryClassificationPromptTemplate(
         criteria=textwrap.dedent(
             """
         A TOXICITY typically refers to content that includes harmful, offensive, or derogatory language.
@@ -249,19 +249,19 @@ class ToxicityLLMEval(BinaryClassificationLLMEval):
             )
         ],
     )
-    provider = "openai"
-    model = "gpt-4o-mini"
+    provider: str = "openai"
+    model: str = "gpt-4o-mini"
 
 
 class CorrectnessLLMEval(BinaryClassificationLLMEval):
     class Config:
         type_alias = "evidently:descriptor:CorrectnessLLMEval"
 
-    name: ClassVar = "Correctness"
+    name: ClassVar[str] = "Correctness"
     target_output: str
-    provider = "openai"
-    model = "gpt-4o-mini"
-    template: ClassVar = BinaryClassificationPromptTemplate(
+    provider: str = "openai"
+    model: str = "gpt-4o-mini"
+    template: ClassVar[BinaryClassificationPromptTemplate] = BinaryClassificationPromptTemplate(
         criteria=textwrap.dedent(
             """
         An OUTPUT is correct if:
@@ -306,11 +306,11 @@ class FaithfulnessLLMEval(BinaryClassificationLLMEval):
     class Config:
         type_alias = "evidently:descriptor:FaithfulnessLLMEval"
 
-    name: ClassVar = "Faithfulness"
+    name: ClassVar[str] = "Faithfulness"
     context: str
-    provider = "openai"
-    model = "gpt-4o-mini"
-    template: ClassVar = BinaryClassificationPromptTemplate(
+    provider: str = "openai"
+    model: str = "gpt-4o-mini"
+    template: ClassVar[BinaryClassificationPromptTemplate] = BinaryClassificationPromptTemplate(
         criteria=textwrap.dedent(
             """
         An unfaithful RESPONSE is any RESPONSE that:
@@ -355,11 +355,11 @@ class CompletenessLLMEval(BinaryClassificationLLMEval):
     class Config:
         type_alias = "evidently:descriptor:CompletenessLLMEval"
 
-    name: ClassVar = "Completeness"
+    name: ClassVar[str] = "Completeness"
     context: str
-    provider = "openai"
-    model = "gpt-4o-mini"
-    template: ClassVar = BinaryClassificationPromptTemplate(
+    provider: str = "openai"
+    model: str = "gpt-4o-mini"
+    template: ClassVar[BinaryClassificationPromptTemplate] = BinaryClassificationPromptTemplate(
         criteria=textwrap.dedent(
             """
         An OUTPUT is complete if:

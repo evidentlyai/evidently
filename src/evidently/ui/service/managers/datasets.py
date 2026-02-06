@@ -1,5 +1,6 @@
 import datetime
 from math import ceil
+from typing import Any
 from typing import List
 from typing import Optional
 from typing import Tuple
@@ -199,10 +200,12 @@ class DatasetManager(BaseManager):
         total_row_count = df.shape[0]
         df = paginate_df(df, page_size, current_page)
 
-        data_records: list[list] = [
-            [item if isinstance(item, (int, float, bool, str, datetime.datetime)) else str(item) for item in x]
-            for x in df.values.tolist()
-        ]
+        rows: list[list[Any]] = df.values.tolist()
+
+        def _row_to_record(x: list[Any]) -> list[Any]:
+            return [item if isinstance(item, (int, float, bool, str, datetime.datetime)) else str(item) for item in x]
+
+        data_records: list[list[Any]] = [_row_to_record(x) for x in rows]
         columns = [
             DatasetColumn(
                 name=column_name,

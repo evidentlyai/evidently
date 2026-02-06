@@ -62,7 +62,7 @@ class IntervalSeries(MetricResult):
 
     @classmethod
     def from_data(cls, data: pd.Series):
-        index = list(data.index)
+        index: List[Interval] = list(data.index)
         interval_series = cls(values=list(data), bins=[i.left for i in index] + [index[-1].right])
         interval_series._data = data
         return interval_series
