@@ -1,4 +1,4 @@
-import { createHead, htmlToString, withHtmlFrame } from '@lib/utils'
+import { createHead, htmlToString, withHtmlFrame } from '@lib/utils/html'
 import { html } from '@remix-run/html-template'
 
 export const createBody = () => {

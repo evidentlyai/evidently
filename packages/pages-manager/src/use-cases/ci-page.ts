@@ -1,7 +1,8 @@
 import fs from 'node:fs'
 
-import { produceCIIndex } from '@lib/produce-indexes/ci-index'
-import { ARTIFACTS_PATH, CI_ARTIFACTS, DOCS_CI_PATH, join } from '@lib/utils'
+import { produceCIIndex } from '@lib/produce-pages/ci-page'
+import { CI_ARTIFACTS } from '@lib/utils/ci-artifacts'
+import { ARTIFACTS_PATH, DOCS_CI_PATH, join } from '@lib/utils/paths'
 
 const copyNewCIArtifacts = (): void => {
   if (!fs.existsSync(ARTIFACTS_PATH)) {

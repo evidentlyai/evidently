@@ -1,10 +1,6 @@
-import {
-  createHead,
-  getCIDescriptors,
-  htmlToString,
-  renderArtifacts,
-  withHtmlFrame
-} from '@lib/utils'
+import { getCIDescriptors } from '@lib/utils/ci-descriptors'
+import { createHead, htmlToString, withHtmlFrame } from '@lib/utils/html'
+import { renderArtifacts } from '@lib/utils/test-statistics'
 import { html } from '@remix-run/html-template'
 
 export const produceCIIndex = (): string => {

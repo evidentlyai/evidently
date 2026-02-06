@@ -1,5 +1,5 @@
 {
-  "name": "index-manager",
+  "name": "pages-manager",
   "version": "1.0.0",
   "description": "",
   "type": "module",
@@ -16,7 +16,7 @@
     "@types/semver": "^7.7.1",
     "adm-zip": "^0.5.16",
     "htmlfy": "^1.0.1",
-    "semver": "^7.7.3",
+    "semver": "^7.7.4",
     "tsx": "^4.21.0"
   },
   "devDependencies": {

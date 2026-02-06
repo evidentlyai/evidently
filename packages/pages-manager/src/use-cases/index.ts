@@ -1,7 +1,7 @@
 import fs from 'node:fs'
 
-import { produceMainIndex } from '@lib/produce-indexes'
-import { getRootPath, join } from '@lib/utils'
+import { produceMainIndex } from '@lib/produce-pages'
+import { getRootPath, join } from '@lib/utils/paths'
 
 const writeIndex = (): void => {
   const indexPath = join(getRootPath(), 'docs', 'index.html')

@@ -1,7 +1,7 @@
-import { apiReferenceIndex } from '@lib/use-cases/api-reference-index'
-import { ci } from '@lib/use-cases/ci'
+import { apiReferenceIndex } from '@lib/use-cases/api-reference-page'
+import { ci } from '@lib/use-cases/ci-page'
 import { index } from '@lib/use-cases/index'
-import { consoleGroup, consoleGroupEnd } from '@lib/utils'
+import { consoleGroup, consoleGroupEnd } from '@lib/utils/console'
 
 const action = process.argv[2]
 

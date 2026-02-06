@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "call-action": "pnpm --filter index-manager call-action",
+    "call-action": "pnpm --filter pages-manager call-action",
     "run-all": "pnpm call-action run-all",
     "type-check": "pnpm -r type-check",
     "code-check": "biome check"

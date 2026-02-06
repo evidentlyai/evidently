@@ -1,4 +1,5 @@
-import { createHead, getApiReferenceDescriptors, htmlToString, withHtmlFrame } from '@lib/utils'
+import { getApiReferenceDescriptors } from '@lib/utils/api-reference'
+import { createHead, htmlToString, withHtmlFrame } from '@lib/utils/html'
 import { html } from '@remix-run/html-template'
 
 export const produceApiReferenceIndex = (): string => {

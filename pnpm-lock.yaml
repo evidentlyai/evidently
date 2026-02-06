@@ -12,7 +12,7 @@ importers:
         specifier: 1.9.4
         version: 1.9.4
 
-  packages/index-manager:
+  packages/pages-manager:
     dependencies:
       '@remix-run/html-template':
         specifier: ^0.3.0
@@ -30,8 +30,8 @@ importers:
         specifier: ^1.0.1
         version: 1.0.1
       semver:
-        specifier: ^7.7.3
-        version: 7.7.3
+        specifier: ^7.7.4
+        version: 7.7.4
       tsx:
         specifier: ^4.21.0
         version: 4.21.0
@@ -289,8 +289,8 @@ packages:
   resolve-pkg-maps@1.0.0:
     resolution: {integrity: sha512-seS2Tj26TBVOC2NIc2rOe2y2ZO7efxITtLZcGSOnHHNOQ7CkiUBfw0Iw2ck6xkIhPwLhKNLS8BO+hEpngQlqzw==}
 
-  semver@7.7.3:
-    resolution: {integrity: sha512-SdsKMrI9TdgjdweUSR9MweHA4EJ8YxHn8DFaDisvhVlUOe4BF1tLD7GAj0lIqWVl+dPb/rExr0Btby5loQm20Q==}
+  semver@7.7.4:
+    resolution: {integrity: sha512-vFKC2IEtQnVhpT78h1Yp8wzwrf8CM+MzKMHGJZfBtzhZNycRFnXsHk6E5TxIkkMsgNS7mdX3AGB7x2QM2di4lA==}
     engines: {node: '>=10'}
     hasBin: true
 
@@ -476,7 +476,7 @@ snapshots:
 
   resolve-pkg-maps@1.0.0: {}
 
-  semver@7.7.3: {}
+  semver@7.7.4: {}
 
   tsx@4.21.0:
     dependencies:

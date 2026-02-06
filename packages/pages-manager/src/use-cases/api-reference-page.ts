@@ -1,16 +1,10 @@
 import fs from 'node:fs'
 
-import { produceApiReferenceIndex } from '@lib/produce-indexes/api-reference-index'
-import {
-  API_REFERENCE_ARTIFACTS_PATH,
-  DOCS_API_REFERENCE_PATH,
-  colorize,
-  consoleGroup,
-  consoleGroupEnd,
-  getApiReferenceDescriptors,
-  getFolderLastModificationTimestamp,
-  join
-} from '@lib/utils'
+import { produceApiReferenceIndex } from '@lib/produce-pages/api-reference-page'
+import { getApiReferenceDescriptors } from '@lib/utils/api-reference'
+import { colorize, consoleGroup, consoleGroupEnd } from '@lib/utils/console'
+import { getFolderLastModificationTimestamp } from '@lib/utils/git'
+import { API_REFERENCE_ARTIFACTS_PATH, DOCS_API_REFERENCE_PATH, join } from '@lib/utils/paths'
 
 const copyNewApiReferences = (): void => {
   if (!fs.existsSync(API_REFERENCE_ARTIFACTS_PATH)) {
