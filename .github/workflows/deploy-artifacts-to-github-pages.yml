@@ -1,0 +1,48 @@
+name: Deploy Artifacts to GitHub Pages
+
+on:
+  workflow_run:
+    workflows: ["CI"]
+    types: [completed]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    # Uncomment and configure if you need approval for deployments
+    # environment: gh-pages-approval
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+          fetch-depth: 0
+
+      # this action exists in `gh-pages` branch
+      - name: 📚 Download Build and Deploy Artifacts
+        uses: ./.github/share-actions/download-build-and-deploy
+
+      - name: Build deployment link
+        if: github.event.workflow_run.event == 'pull_request'
+        id: link
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          BRANCH_NAME="${{ github.event.workflow_run.head_branch }}"
+          PR_NUMBER=$(gh pr list --repo "${{ github.repository }}" --head "$BRANCH_NAME" --json number --jq '.[0].number')
+          BRANCH_NAME="${BRANCH_NAME//\//-}"
+
+          if [ -n "$PR_NUMBER" ]; then
+            echo "pr_number=${PR_NUMBER}" >> $GITHUB_OUTPUT
+            echo "pages_path=pr-${PR_NUMBER}-${BRANCH_NAME}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Comment on PR with deployment link
+        if: steps.link.outputs.pr_number
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          number: ${{ steps.link.outputs.pr_number }}
+          message: |
+            📚 Artifacts deployed to GitHub Pages: https://evidentlyai.github.io/evidently/ci/#${{ steps.link.outputs.pages_path }}
