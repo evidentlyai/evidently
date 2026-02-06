@@ -205,7 +205,7 @@ export const getApiReferenceDescriptors = (): {
 
   const prAndBranchDescriptors = allEntries
     .filter(({ type }) => type === 'pr-and-branch')
-    .sort((a, b) => a.prNumber - b.prNumber)
+    .sort((a, b) => b.prNumber - a.prNumber)
 
   const unknownDescriptors = allEntries.filter(({ type }) => type === 'unknown')
 
