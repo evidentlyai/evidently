@@ -145,9 +145,15 @@ jobs:
           ref: gh-pages
           fetch-depth: 0
 
+      - name: 📥 Download API reference artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: api-reference
+          path: ./artifacts/api-reference
+
       # this action exists in `gh-pages` branch
       - name: 📚 Download and deploy API reference documentation
-        uses: ./.github/share-actions/deploy-just-saved-api-reference
+        uses: ./.github/share-actions/build-and-deploy
 
   create_release:
     name: Create release for the Tag
