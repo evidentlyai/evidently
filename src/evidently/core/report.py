@@ -2,6 +2,7 @@ import dataclasses
 import json
 import pathlib
 import typing
+import pandas as pd
 from datetime import datetime
 from itertools import chain
 from typing import Callable
@@ -936,6 +937,17 @@ class Report:
         snapshot.save_html("report.html")
         ```
         """
+        
+        if isinstance(current_data, pd.DataFrame) and current_data.empty:
+            raise ValueError(
+                 "current_data must contain at least one column; received an empty DataFrame."
+            )
+
+        if isinstance(reference_data, pd.DataFrame) and reference_data.empty:
+            raise ValueError(
+                "reference_data must contain at least one column; received an empty DataFrame."
+            )
+
         current_dataset = Dataset.from_any(current_data)
         reference_dataset = Dataset.from_any(reference_data) if reference_data is not None else None
 
