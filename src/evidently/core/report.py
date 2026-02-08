@@ -2,7 +2,6 @@ import dataclasses
 import json
 import pathlib
 import typing
-import pandas as pd
 from datetime import datetime
 from itertools import chain
 from typing import Callable
@@ -14,6 +13,7 @@ from typing import Tuple
 from typing import TypeVar
 from typing import Union
 
+import pandas as pd
 from typing_extensions import TypeAlias
 
 from evidently.core.base_types import Label
@@ -937,16 +937,12 @@ class Report:
         snapshot.save_html("report.html")
         ```
         """
-        
+
         if isinstance(current_data, pd.DataFrame) and current_data.empty:
-            raise ValueError(
-                 "current_data must contain at least one column; received an empty DataFrame."
-            )
+            raise ValueError("current_data must contain at least one column; received an empty DataFrame.")
 
         if isinstance(reference_data, pd.DataFrame) and reference_data.empty:
-            raise ValueError(
-                "reference_data must contain at least one column; received an empty DataFrame."
-            )
+            raise ValueError("reference_data must contain at least one column; received an empty DataFrame.")
 
         current_dataset = Dataset.from_any(current_data)
         reference_dataset = Dataset.from_any(reference_data) if reference_data is not None else None
