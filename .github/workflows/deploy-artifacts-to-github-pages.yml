@@ -21,9 +21,45 @@ jobs:
           ref: gh-pages
           fetch-depth: 0
 
+      - name: 📥 Download API reference artifact
+        uses: actions/download-artifact@v4
+        continue-on-error: true
+        with:
+          name: api-reference
+          path: ./artifacts/api-reference
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          run-id: ${{ github.event.workflow_run.id }}
+
+      - name: 📥 Download pytest-html-report artifact
+        uses: actions/download-artifact@v4
+        continue-on-error: true
+        with:
+          name: pytest-html-report
+          path: ./artifacts/pytest-html-report
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          run-id: ${{ github.event.workflow_run.id }}
+
+      - name: 📥 Download UI service playwright report artifact
+        uses: actions/download-artifact@v4
+        continue-on-error: true
+        with:
+          name: ui-service-playwright-report
+          path: ./artifacts/ui-service-playwright-report
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          run-id: ${{ github.event.workflow_run.id }}
+
+      - name: 📥 Download UI HTML visual testing playwright report artifact
+        uses: actions/download-artifact@v4
+        continue-on-error: true
+        with:
+          name: ui-html-visual-testing-playwright-report
+          path: ./artifacts/ui-html-visual-testing-playwright-report
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          run-id: ${{ github.event.workflow_run.id }}
+
       # this action exists in `gh-pages` branch
       - name: 📚 Download Build and Deploy Artifacts
-        uses: ./.github/share-actions/download-build-and-deploy
+        uses: ./.github/share-actions/build-and-deploy
 
       - name: Build deployment link
         if: github.event.workflow_run.event == 'pull_request'
