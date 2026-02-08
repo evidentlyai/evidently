@@ -1,9 +1,0 @@
-name: Download and deploy artifacts
-runs:
-  using: "composite"
-  steps:
-    - name: 📥 Download artifacts
-      uses: ./.github/share-actions/download-artifacts
-
-    - name: 🔧 Build and deploy documentation
-      uses: ./.github/share-actions/build-and-deploy
