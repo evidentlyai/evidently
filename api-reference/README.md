@@ -1,29 +1,26 @@
 # Evidently API Reference Documentation
 
-Tools for generating API reference documentation using [pdoc](https://pdoc.dev/docs/pdoc.html). Documentation can be built from local source code, git revisions, or published PyPI versions.
-
-### Local development
-
-
-```bash
-./api-reference/local-dev.sh
-```
-
-Starts a local development server with live reloading. This command:
-- Starts a live-server to serve the generated documentation at `http://localhost:8080` (or next available port)
-- Watches for Python file changes and automatically regenerates the documentation using `./api-reference/generate.py --local-source-code`
-
+Tools for generating API reference documentation using [pdoc](https://pdoc.dev/docs/pdoc.html). Documentation can be built from local source code or git revisions (branch, tag, or commit).
 
 ## Quick Start
 
 **Prerequisites:** Python 3.11+, [uv](https://github.com/astral-sh/uv), Node.js/npm
 
-1. Generate documentation:
+Generate documentation:
    ```bash
    ./api-reference/generate.py --local-source-code
    ```
 
-2. View at `http://localhost:3000`
+
+## Local Development
+
+```bash
+./api-reference/local-dev.sh
+```
+
+Starts a local development server with live reloading:
+- Serves generated documentation at `http://localhost:8080` (or next available port)
+- Watches for Python file changes and regenerates documentation with `./api-reference/generate.py --local-source-code`
 
 ## Use Cases
 
@@ -43,21 +40,13 @@ Starts a local development server with live reloading. This command:
 ./api-reference/generate.py --git-revision abc1234
 ```
 
-### PyPI Versions
+### Additional Modules
+
+Add modules beyond the defaults (`evidently`, `evidently.core`):
 
 ```bash
-./api-reference/generate.py --pypi-version 0.7.17
+./api-reference/generate.py --local-source-code --additional-modules "evidently.metrics,evidently.guardrails"
 ```
-
-### Custom Modules
-
-Manually specify which modules and submodules to document:
-
-```bash
-./api-reference/generate.py --local-source-code --modules "evidently.metrics,evidently.guardrails"
-```
-
-This allows you to include submodules that are not imported by the root module.
 
 ### Additional Options
 
@@ -74,14 +63,10 @@ This allows you to include submodules that are not imported by the root module.
 
 ## Output Structure
 
-Documentation is saved to `docs/dist/`:
-- Local: `dist/users-<path-to-repo>/`
-- Git: `dist/branch-<name>/` or `dist/hash-<hash>/`
-- PyPI: `dist/<version>/`
+Documentation is saved to `api-reference/dist/`:
+- Local: `dist/<path-to-repo-with-dashes>/`
+- Git: `dist/<revision>/` (e.g. `dist/v0.7.17/`, `dist/feature-new-metrics/`, `dist/abc1234/`)
 
-## Documentation Filtering
-
-All private members (names starting with `_`) are automatically excluded from documentation, even if they are listed in `__all__`.
 
 ## Troubleshooting
 
