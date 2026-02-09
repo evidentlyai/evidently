@@ -161,45 +161,53 @@ export const renderArtifacts = (artifacts: string[], fullPath: string, path: str
       ${artifacts.map((artifact, index) => {
         const testResult = testResults[index]
 
-        const statusIcon =
+        const statusWithTextStyle =
+          'display: flex; align-items: center; gap: 0.25rem; font-size: 1.1rem; margin-left: 0.5rem;'
+        const statusWithText =
           testResult && testResult.stats.failed === 0
-            ? html`<span style="font-size: 1.1rem; margin-left: 0.5rem;" title="All tests passed">✅</span>`
+            ? html`<span style="${statusWithTextStyle}" title="All tests passed">✅ <span style="font-size: 0.85rem; color: var(--pico-color);">passed</span></span>`
             : testResult && testResult.stats.failed > 0
-              ? html`<span style="font-size: 1.1rem; margin-left: 0.5rem;" title="Some tests failed">❌</span>`
+              ? html`<span style="${statusWithTextStyle}" title="Some tests failed">❌ <span style="font-size: 0.85rem; color: var(--pico-color);">failed</span></span>`
               : ''
 
+        const statistics = testResult
+          ? [
+              {
+                label: 'Total',
+                value: testResult.stats.total,
+                color: 'var(--pico-muted-color)',
+                underline: true
+              },
+              { label: 'Passed', value: testResult.stats.passed, color: '#28a745' },
+              { label: 'Failed', value: testResult.stats.failed, color: '#dc3545' },
+              { label: 'Skipped', value: testResult.stats.skipped, color: '#ffc107' }
+            ].filter((stat) => stat.value > 0)
+          : []
+
         return html`<article style="padding: 1rem; border: 1px solid var(--pico-muted-border-color); border-radius: var(--pico-border-radius); transition: transform 0.2s, box-shadow 0.2s; flex: 1 1 250px;">
-            <a href="./${path}/${artifact}" style="text-decoration: none; color: inherit; display: block;">
+            <a href="./${path}/${artifact}" style="text-decoration: none; color: inherit; display: flex; flex-direction: column; height: 100%;">
               <header style="margin-bottom: 0.5rem;">
                 <hgroup style="margin-bottom: 0;">
-                  <h6 style="margin-bottom: 0; font-size: 0.9rem; color: var(--pico-primary); display: flex; align-items: center;">
-                    ${artifact}${statusIcon}
+                  <h6 style="margin-bottom: 0; font-size: 0.9rem; color: var(--pico-primary); display: flex; align-items: flex-start;">
+                    ${artifact} <span style="margin-left: auto;">${statusWithText}</span>
                   </h6>
                 </hgroup>
               </header>
               ${
-                testResult
-                  ? html`<div style="margin-top: 0.5rem; font-size: 0.85rem;">
-                  <p style="margin: 0.25rem 0; color: var(--pico-muted-color);">
-                    <strong style="text-decoration: underline;">Total:</strong> ${testResult.stats.total}
-                  </p>
-                  <p style="margin: 0.25rem 0; color: var(--pico-muted-color);">
-                  <strong style="color: #28a745;">Passed:</strong> ${testResult.stats.passed}
-                  </p>
-                  <p style="margin: 0.25rem 0; color: var(--pico-muted-color);">
-                  <strong style="color: #dc3545;">Failed:</strong> ${testResult.stats.failed}
-                  </p>
-                  ${
-                    testResult.stats.skipped > 0
-                      ? html`<p style="margin: 0.25rem 0; color: var(--pico-muted-color);">
-                    <strong style="color: #ffc107;">Skipped:</strong> ${testResult.stats.skipped}
-                    </p>`
-                      : ''
-                  }
-                  </div>`
+                statistics.length > 0
+                  ? html`<div style="font-size: 0.85rem; display: flex; gap: 0.25rem; flex-direction: column;">
+                      ${statistics.map(
+                        (stat) => html`<p style="margin: 0; color: var(--pico-muted-color);">
+                          <strong style="color: ${stat.color}; ${stat.underline ? 'text-decoration: underline;' : ''}">${stat.label}:</strong>
+                          <span>${stat.value}</span>
+                        </p>`
+                      )}
+                    </div>`
                   : ''
               }
+              <div style="margin-top: 0.5rem; flex-grow: 1; display: flex; align-items: flex-start; flex-direction: column; justify-content: flex-end;">
               <p style="margin: 0; font-size: 0.85rem; color: var(--pico-muted-color);">View report →</p>
+              </div>
             </a>
           </article>`
       })}
