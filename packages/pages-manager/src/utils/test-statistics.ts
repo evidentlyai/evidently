@@ -16,6 +16,11 @@ export type ArtifactTestResult = {
   stats: TestStatistics
 }
 
+const TYPE_TO_BADGE_MAP: Record<ArtifactTestResult['type'], string> = {
+  pytest: 'pytest',
+  playwright: 'UI'
+}
+
 const detectArtifactType = (artifactName: string): 'pytest' | 'playwright' | null => {
   if (artifactName === CI_ARTIFACTS_VARS.PYTEST_HTML_REPORT) {
     return 'pytest'
@@ -160,6 +165,7 @@ export const renderArtifacts = (artifacts: string[], fullPath: string, path: str
     <div style="display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 0.5rem;">
       ${artifacts.map((artifact, index) => {
         const testResult = testResults[index]
+        const artifactDisplayName = artifact.replaceAll(/[_-]/g, ' ').trim()
 
         const statusWithTextStyle =
           'display: flex; align-items: center; gap: 0.25rem; font-size: 1.1rem; margin-left: 0.5rem;'
@@ -169,6 +175,10 @@ export const renderArtifacts = (artifacts: string[], fullPath: string, path: str
             : testResult && testResult.stats.failed > 0
               ? html`<span style="${statusWithTextStyle}" title="Some tests failed">❌ <span style="font-size: 0.85rem; color: var(--pico-color);">failed</span></span>`
               : ''
+
+        const typeBadge = testResult
+          ? html`<span style="display: inline-block; padding: 0.25rem 0.5rem; background-color: var(--pico-secondary-background); color: var(--pico-secondary); border-radius: var(--pico-border-radius); font-size: 0.75rem; font-weight: 500; margin-right: 0.5rem;">${TYPE_TO_BADGE_MAP[testResult.type]}</span>`
+          : ''
 
         const statistics = testResult
           ? [
@@ -188,8 +198,8 @@ export const renderArtifacts = (artifacts: string[], fullPath: string, path: str
             <a href="./${path}/${artifact}" style="text-decoration: none; color: inherit; display: flex; flex-direction: column; height: 100%;">
               <header style="margin-bottom: 0.5rem;">
                 <hgroup style="margin-bottom: 0;">
-                  <h6 style="margin-bottom: 0; font-size: 0.9rem; color: var(--pico-primary); display: flex; align-items: flex-start;">
-                    ${artifact} <span style="margin-left: auto;">${statusWithText}</span>
+                  <h6 style="margin-bottom: 0; font-size: 0.9rem; color: var(--pico-primary); display: flex; align-items: center;">
+                    ${typeBadge}${artifactDisplayName} <span style="margin-left: auto;">${statusWithText}</span>
                   </h6>
                 </hgroup>
               </header>
