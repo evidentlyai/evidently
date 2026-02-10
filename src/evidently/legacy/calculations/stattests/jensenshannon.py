@@ -41,7 +41,7 @@ def _jensenshannon(
     feature_type: ColumnType,
     threshold: float,
     n_bins: int = 30,
-    base: Optional[float] = None,
+    base: Optional[float] = 2.0,
 ) -> Tuple[float, bool]:
     """Compute the Jensen-Shannon distance between two arrays
     Args:
@@ -50,7 +50,8 @@ def _jensenshannon(
         feature_type: feature type
         threshold: all values above this threshold means data drift
         n_bins: number of bins
-        base: the base of the logarithm used to compute the output
+        base: the base of the logarithm used to compute the output.
+              Defaults to 2.0 so that the distance is bounded between 0 and 1.
     Returns:
         jensenshannon: calculated Jensen-Shannon distance
         test_result: whether the drift is detected
