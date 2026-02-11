@@ -2,6 +2,7 @@ import fs from 'node:fs'
 import { html } from '@remix-run/html-template'
 import AdmZip from 'adm-zip'
 import { CI_ARTIFACTS_VARS } from './ci-artifacts'
+import type { CIDescriptor } from './ci-descriptors'
 import { join } from './paths'
 
 export type TestStatistics = {
@@ -151,6 +152,27 @@ export const extractTestStatistics = (
   return { type, stats }
 }
 
+export const statusBadgeForArtifact = ({ passed }: { passed: boolean }) => {
+  const statusWithTextStyle = 'display: flex; align-items: center; gap: 0.25rem;'
+
+  if (passed) {
+    return html`<span style="${statusWithTextStyle}" title="All tests passed">✅ <span style="font-size: 0.85rem; color: var(--pico-color);">passed</span></span>`
+  }
+
+  return html`<span style="${statusWithTextStyle}" title="Some tests failed">❌ <span style="font-size: 0.85rem; color: var(--pico-color);">failed</span></span>`
+}
+
+export const statusBadgeForArtifacts = (artifacts: string[], fullPath: string) => {
+  const testResults = artifacts.map((artifact) => {
+    const htmlFilePath = join(fullPath, artifact, 'index.html')
+    return extractTestStatistics(artifact, htmlFilePath)
+  })
+
+  const passed = testResults.every((testResult) => testResult && testResult.stats.failed === 0)
+
+  return statusBadgeForArtifact({ passed })
+}
+
 export const renderArtifacts = (artifacts: string[], fullPath: string, path: string) => {
   if (artifacts.length === 0) {
     return ''
@@ -167,17 +189,12 @@ export const renderArtifacts = (artifacts: string[], fullPath: string, path: str
         const testResult = testResults[index]
         const artifactDisplayName = artifact.replaceAll(/[_-]/g, ' ').trim()
 
-        const statusWithTextStyle =
-          'display: flex; align-items: center; gap: 0.25rem; font-size: 1.1rem; margin-left: 0.5rem;'
-        const statusWithText =
-          testResult && testResult.stats.failed === 0
-            ? html`<span style="${statusWithTextStyle}" title="All tests passed">✅ <span style="font-size: 0.85rem; color: var(--pico-color);">passed</span></span>`
-            : testResult && testResult.stats.failed > 0
-              ? html`<span style="${statusWithTextStyle}" title="Some tests failed">❌ <span style="font-size: 0.85rem; color: var(--pico-color);">failed</span></span>`
-              : ''
+        const statusWithText = testResult
+          ? statusBadgeForArtifact({ passed: testResult.stats.failed === 0 })
+          : ''
 
         const typeBadge = testResult
-          ? html`<span style="display: inline-block; padding: 0.25rem 0.5rem; background-color: var(--pico-secondary-background); color: var(--pico-secondary); border-radius: var(--pico-border-radius); font-size: 0.75rem; font-weight: 500; margin-right: 0.5rem;">${TYPE_TO_BADGE_MAP[testResult.type]}</span>`
+          ? html`<span style="display: inline-block; padding: 0.25rem 0.5rem; background-color: var(--pico-secondary-background); color: var(--pico-secondary); border-radius: var(--pico-border-radius); font-size: 0.75rem; font-weight: 500;">${TYPE_TO_BADGE_MAP[testResult.type]}</span>`
           : ''
 
         const statistics = testResult
@@ -198,7 +215,7 @@ export const renderArtifacts = (artifacts: string[], fullPath: string, path: str
             <a href="./${path}/${artifact}" style="text-decoration: none; color: inherit; display: flex; flex-direction: column; height: 100%;">
               <header style="margin-bottom: 0.5rem;">
                 <hgroup style="margin-bottom: 0;">
-                  <h6 style="margin-bottom: 0; font-size: 0.9rem; color: var(--pico-primary); display: flex; align-items: center;">
+                  <h6 style="margin-bottom: 0; font-size: 0.9rem; color: var(--pico-primary); display: flex; align-items: center; gap: 0.5rem;">
                     ${typeBadge}${artifactDisplayName} <span style="margin-left: auto;">${statusWithText}</span>
                   </h6>
                 </hgroup>
@@ -222,5 +239,35 @@ export const renderArtifacts = (artifacts: string[], fullPath: string, path: str
           </article>`
       })}
     </div>
+  `
+}
+
+export const makeSectionForCIDescriptors = (args: {
+  title: string
+  ciDescriptors: CIDescriptor[]
+  includeSeparator: boolean
+}) => {
+  const { title, ciDescriptors, includeSeparator } = args
+
+  if (ciDescriptors.length === 0) {
+    return ''
+  }
+
+  return html`
+    ${includeSeparator ? html`<hr />` : ''}
+    <h4>${title}</h4>
+    ${ciDescriptors.map(
+      (d, index) =>
+        html`
+          ${index > 0 ? html`<hr />` : ''}
+          <div id="${d.path}" style="margin-bottom: 1.5rem;">
+            <div style="display: flex; justify-content: flex-start; gap: 0.5rem; align-items: center; margin-bottom: 0.5rem;">
+              <p style="margin: 0;"><strong>${d.displayName}</strong></p>
+              <strong>${statusBadgeForArtifacts(d.artifacts, d.fullPath)}</strong>
+            </div>
+            ${renderArtifacts(d.artifacts, d.fullPath, d.path)}
+          </div>
+        `
+    )}
   `
 }

@@ -1,6 +1,6 @@
 import { getCIDescriptors } from '@lib/utils/ci-descriptors'
 import { createHead, htmlToString, withHtmlFrame } from '@lib/utils/html'
-import { renderArtifacts } from '@lib/utils/test-statistics'
+import { makeSectionForCIDescriptors } from '@lib/utils/test-statistics'
 import { html } from '@remix-run/html-template'
 
 export const produceCIIndex = (): string => {
@@ -37,53 +37,11 @@ export const createBody = () => {
             <h5>Browse available CI artifacts and test reports</h5>
           </header>
           ${all.length === 0 ? html`<p>No CI reports found</p>` : ''}
-          ${
-            main
-              ? html`
-                <h4>Latest Development</h4>
-                <div id="${main.path}" style="margin-bottom: 1.5rem;">
-                  <p style="margin-bottom: 0.5rem;">
-                    <strong>${main.displayName}</strong>
-                  </p>
-                  ${renderArtifacts(main.artifacts, main.fullPath, main.path)}
-                </div>
-              `
-              : ''
-          }
-          ${
-            prs.length > 0
-              ? html`
-                <hr />
-                <h4>Pull Requests</h4>
-                ${prs.map(
-                  ({ path, displayName, artifacts, fullPath }) =>
-                    html`<div id="${path}" style="margin-bottom: 1.5rem;">
-                      <p style="margin-bottom: 0.5rem;">
-                        <strong>${displayName}</strong>
-                      </p>
-                      ${renderArtifacts(artifacts, fullPath, path)}
-                    </div>`
-                )}
-              `
-              : ''
-          }
-          ${
-            branches.length > 0
-              ? html`
-                <hr />
-                <h4>Branches</h4>
-                ${branches.map(
-                  ({ path, displayName, artifacts, fullPath }) =>
-                    html`<div id="${path}" style="margin-bottom: 1.5rem;">
-                      <p style="margin-bottom: 0.5rem;">
-                        <strong>${displayName}</strong>
-                      </p>
-                      ${renderArtifacts(artifacts, fullPath, path)}
-                    </div>`
-                )}
-              `
-              : ''
-          }
+
+          ${makeSectionForCIDescriptors({ title: 'Latest Development', ciDescriptors: [main].filter((e) => e !== null), includeSeparator: false })}
+          ${makeSectionForCIDescriptors({ title: 'Pull Requests', ciDescriptors: prs, includeSeparator: true })}
+          ${makeSectionForCIDescriptors({ title: 'Branches', ciDescriptors: branches, includeSeparator: true })}
+
         </article>
       </main>
       <script>
