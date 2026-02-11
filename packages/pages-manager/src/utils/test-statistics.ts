@@ -216,7 +216,7 @@ export const renderArtifacts = (artifacts: string[], fullPath: string, path: str
                   : ''
               }
               <div style="margin-top: 0.5rem; flex-grow: 1; display: flex; align-items: flex-start; flex-direction: column; justify-content: flex-end;">
-              <p style="margin: 0; font-size: 0.85rem; color: var(--pico-muted-color);">View report →</p>
+              <p style="text-decoration: underline; margin: 0; font-size: 0.85rem; color: var(--pico-muted-color);">View report →</p>
               </div>
             </a>
           </article>`
