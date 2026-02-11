@@ -822,7 +822,7 @@ def get_distribution_for_category_column(column: pd.Series, normalize: bool = Fa
 
 def get_distribution_for_numerical_column(
     column: pd.Series,
-    bins: Optional[Union[list, np.ndarray]] = None,
+    bins: Optional[Union[int, list, np.ndarray]] = None,
 ) -> Distribution:
     if bins is None:
         bins = histogram_bin_edges_doane(column)
@@ -835,7 +835,11 @@ def get_distribution_for_numerical_column(
 
 
 def get_distribution_for_column(
-    *, column_type: str, current: pd.Series, reference: Optional[pd.Series] = None
+    *,
+    column_type: str,
+    current: pd.Series,
+    reference: Optional[pd.Series] = None,
+    bins: Optional[Union[int, list, np.ndarray]] = None,
 ) -> Tuple[Distribution, Optional[Distribution]]:
     reference_distribution: Optional[Distribution] = None
 
@@ -847,11 +851,13 @@ def get_distribution_for_column(
 
     elif column_type == "num":
         if reference is not None:
-            bins = histogram_bin_edges_doane(pd.concat([current.dropna(), reference.dropna()]))
+            if bins is None:
+                bins = histogram_bin_edges_doane(pd.concat([current.dropna(), reference.dropna()]))
             reference_distribution = get_distribution_for_numerical_column(reference, bins)
 
         else:
-            bins = histogram_bin_edges_doane(current.dropna())
+            if bins is None:
+                bins = histogram_bin_edges_doane(current.dropna())
 
         current_distribution = get_distribution_for_numerical_column(current, bins)
 

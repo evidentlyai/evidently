@@ -540,6 +540,8 @@ class ValueDrift(ColumnMetric, SingleValueMetric):
     """Drift detection method (auto-selected if None)."""
     threshold: Optional[float] = None
     """Drift threshold (uses method default if None)."""
+    nbinsx: Optional[int] = None
+    """Number of bins for distribution histogram (uses method default if None)."""
 
 
 class ValueDriftBoundTest(BoundTest[SingleValue]):
@@ -564,6 +566,7 @@ class ValueDriftCalculation(SingleValueCalculation[ValueDrift]):
         options = DataDriftOptions(
             all_features_stattest=self.metric.method,
             all_features_threshold=self.metric.threshold,
+            nbinsx=self.metric.nbinsx,
         )
 
         drift = get_one_column_drift(

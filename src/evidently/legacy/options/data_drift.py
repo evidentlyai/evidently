@@ -45,7 +45,7 @@ class DataDriftOptions(BaseModel):
     confidence: Optional[Union[float, Dict[str, float]]] = None
     threshold: Optional[Union[float, Dict[str, float]]] = None
     drift_share: float = 0.5
-    nbinsx: Union[int, Dict[str, int]] = DEFAULT_NBINSX
+    nbinsx: Optional[Union[int, Dict[str, int]]] = None
     xbins: Optional[Dict[str, int]] = None
 
     feature_stattest_func: Optional[Union[PossibleStatTestType, Dict[str, PossibleStatTestType]]] = None
@@ -122,7 +122,18 @@ class DataDriftOptions(BaseModel):
 
         return threshold
 
+    def get_nbinsx_or_none(self, feature_name: str) -> Optional[int]:
+        if self.nbinsx is None:
+            return None
+        if isinstance(self.nbinsx, int):
+            return self.nbinsx
+        if isinstance(self.nbinsx, dict):
+            return self.nbinsx.get(feature_name)
+        raise ValueError(f"DataDriftOptions.nbinsx is incorrect type {type(self.nbinsx)}")
+
     def get_nbinsx(self, feature_name: str) -> int:
+        if self.nbinsx is None:
+            return DataDriftOptions.DEFAULT_NBINSX
         if isinstance(self.nbinsx, int):
             return self.nbinsx
         if isinstance(self.nbinsx, dict):

@@ -307,6 +307,7 @@ def get_one_column_drift(
             column_type=column_type.value,
             current=current_column,
             reference=reference_column,
+            bins=options.get_nbinsx_or_none(column_name),
         )
         if reference_distribution is None:
             raise ValueError(f"Cannot calculate reference distribution for column '{column_name}'.")
