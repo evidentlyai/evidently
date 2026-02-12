@@ -120,6 +120,10 @@ recsys_additional_data = {
 "reference_train_data": interactions_dataset
 }
 
+embeddings_df = pd.DataFrame(data={"a": list(range(1, 30)) + [31], "b": list(range(41, 70)) + [71]})
+embeddings_definition = DataDefinition(embeddings={"emb1": ["a", "b"]})
+embeddings_dataset = Dataset.from_pandas(embeddings_df, DataDefinition(embeddings={"emb1": ["a", "b"]}))
+
 SimpleCase = Tuple[Dataset, Metric, Union[TestStatus, List[TestStatus]]]
 AdditionalDataCase = Tuple[Dataset, Metric, Union[TestStatus, List[TestStatus]], Dict[str, Dataset]]
 all_metrics_test: List[Union[SimpleCase, AdditionalDataCase]] = [
@@ -1499,22 +1503,22 @@ all_metrics_test: List[Union[SimpleCase, AdditionalDataCase]] = [
     (recsys_dataset, RecallTopK(k=1, tests={"value": [not_eq(0)]}), TestStatus.SUCCESS),
     (recsys_dataset, RecallTopK(k=1, tests={"value": [not_in([1.0])]}), TestStatus.FAIL),
     (recsys_dataset, RecallTopK(k=1, tests={"value": [not_in([0])]}), TestStatus.SUCCESS),
-    (simple_dataset, EmbeddingsDrift(tests=[eq(0)]), TestStatus.FAIL),
-    (simple_dataset, EmbeddingsDrift(tests=[eq(0)]), TestStatus.SUCCESS),
-    (simple_dataset, EmbeddingsDrift(tests=[gte(0)]), TestStatus.FAIL),
-    (simple_dataset, EmbeddingsDrift(tests=[gte(0)]), TestStatus.SUCCESS),
-    (simple_dataset, EmbeddingsDrift(tests=[gt(0)]), TestStatus.FAIL),
-    (simple_dataset, EmbeddingsDrift(tests=[gt(0)]), TestStatus.SUCCESS),
-    (simple_dataset, EmbeddingsDrift(tests=[is_in([0])]), TestStatus.FAIL),
-    (simple_dataset, EmbeddingsDrift(tests=[is_in([0])]), TestStatus.SUCCESS),
-    (simple_dataset, EmbeddingsDrift(tests=[lte(0)]), TestStatus.FAIL),
-    (simple_dataset, EmbeddingsDrift(tests=[lte(0)]), TestStatus.SUCCESS),
-    (simple_dataset, EmbeddingsDrift(tests=[lt(0)]), TestStatus.FAIL),
-    (simple_dataset, EmbeddingsDrift(tests=[lt(0)]), TestStatus.SUCCESS),
-    (simple_dataset, EmbeddingsDrift(tests=[not_eq(0)]), TestStatus.FAIL),
-    (simple_dataset, EmbeddingsDrift(tests=[not_eq(0)]), TestStatus.SUCCESS),
-    (simple_dataset, EmbeddingsDrift(tests=[not_in([0])]), TestStatus.FAIL),
-    (simple_dataset, EmbeddingsDrift(tests=[not_in([0])]), TestStatus.SUCCESS),
+    (embeddings_dataset, EmbeddingsDrift(embeddings_name="emb1", tests=[eq(0)]), TestStatus.FAIL),
+    (embeddings_dataset, EmbeddingsDrift(embeddings_name="emb1", tests=[eq(ApproxValue(0.500, absolute=0.01))]), TestStatus.SUCCESS),
+    (embeddings_dataset, EmbeddingsDrift(embeddings_name="emb1", tests=[gte(555)]), TestStatus.FAIL),
+    (embeddings_dataset, EmbeddingsDrift(embeddings_name="emb1", tests=[gte(0)]), TestStatus.SUCCESS),
+    (embeddings_dataset, EmbeddingsDrift(embeddings_name="emb1", tests=[gt(555)]), TestStatus.FAIL),
+    (embeddings_dataset, EmbeddingsDrift(embeddings_name="emb1", tests=[gt(0)]), TestStatus.SUCCESS),
+    (embeddings_dataset, EmbeddingsDrift(embeddings_name="emb1", tests=[is_in([0])]), TestStatus.FAIL),
+    (embeddings_dataset, EmbeddingsDrift(embeddings_name="emb1", tests=[is_in([0.5])]), TestStatus.SUCCESS),
+    (embeddings_dataset, EmbeddingsDrift(embeddings_name="emb1", tests=[lte(0)]), TestStatus.FAIL),
+    (embeddings_dataset, EmbeddingsDrift(embeddings_name="emb1", tests=[lte(555)]), TestStatus.SUCCESS),
+    (embeddings_dataset, EmbeddingsDrift(embeddings_name="emb1", tests=[lt(0)]), TestStatus.FAIL),
+    (embeddings_dataset, EmbeddingsDrift(embeddings_name="emb1", tests=[lt(555)]), TestStatus.SUCCESS),
+    (embeddings_dataset, EmbeddingsDrift(embeddings_name="emb1", tests=[not_eq(0.5)]), TestStatus.FAIL),
+    (embeddings_dataset, EmbeddingsDrift(embeddings_name="emb1", tests=[not_eq(0)]), TestStatus.SUCCESS),
+    (embeddings_dataset, EmbeddingsDrift(embeddings_name="emb1", tests=[not_in([0.5])]), TestStatus.FAIL),
+    (embeddings_dataset, EmbeddingsDrift(embeddings_name="emb1", tests=[not_in([0])]), TestStatus.SUCCESS),
 ]
 
 # unify tuple shape
