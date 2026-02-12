@@ -107,3 +107,5 @@ register_type_alias(Metric, "evidently.metrics.recsys.Serendipity", "evidently:m
 register_type_alias(Metric, "evidently.metrics.recsys.UserBias", "evidently:metric_v2:UserBias")
 
 register_type_alias(Metric, "evidently.core.metric_types.DataframeMetric", "evidently:metric_v2:DataframeMetric")
+
+register_type_alias(Metric, "evidently.metrics.embeddings.EmbeddingsDrift", "evidently:metric_v2:EmbeddingsDrift")

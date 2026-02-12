@@ -16,7 +16,6 @@ from evidently.legacy.metrics.data_drift.embeddings_drift import EmbeddingsDrift
 from evidently.legacy.metrics.data_drift.embeddings_drift import EmbeddingsDriftMetricResults
 from evidently.legacy.model.widget import BaseWidgetInfo
 from evidently.metrics._legacy import LegacyMetricCalculation
-from evidently.metrics._legacy import TLegacyMetric
 
 
 class EmbeddingsDrift(SingleValueMetric):
@@ -34,7 +33,7 @@ class EmbeddingsDriftCalculation(
         input_data.data_definition.embeddings = context.data_definition.embeddings
         return input_data
 
-    def legacy_metric(self) -> TLegacyMetric:
+    def legacy_metric(self) -> EmbeddingsDriftMetric:
         return EmbeddingsDriftMetric(self.metric.embeddings_name, self.metric.drift_method)
 
     def calculate_value(
