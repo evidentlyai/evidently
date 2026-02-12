@@ -152,6 +152,10 @@ export const extractTestStatistics = (
   return { type, stats }
 }
 
+const isTestsPassed = (testResult: ArtifactTestResult | null) => {
+  return Boolean(testResult && testResult.stats.failed === 0 && testResult.stats.passed > 0)
+}
+
 export const statusBadgeForArtifact = ({ passed }: { passed: boolean }) => {
   const statusWithTextStyle = 'display: flex; align-items: center; gap: 0.25rem;'
 
@@ -168,9 +172,7 @@ export const statusBadgeForArtifacts = (artifacts: string[], fullPath: string) =
     return extractTestStatistics(artifact, htmlFilePath)
   })
 
-  const passed = testResults.every((testResult) => testResult && testResult.stats.failed === 0)
-
-  return statusBadgeForArtifact({ passed })
+  return statusBadgeForArtifact({ passed: testResults.every(isTestsPassed) })
 }
 
 export const renderArtifacts = (artifacts: string[], fullPath: string, path: string) => {
@@ -190,7 +192,7 @@ export const renderArtifacts = (artifacts: string[], fullPath: string, path: str
         const artifactDisplayName = artifact.replaceAll(/[_-]/g, ' ').trim()
 
         const statusWithText = testResult
-          ? statusBadgeForArtifact({ passed: testResult.stats.failed === 0 })
+          ? statusBadgeForArtifact({ passed: isTestsPassed(testResult) })
           : ''
 
         const typeBadge = testResult
