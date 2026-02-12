@@ -260,7 +260,7 @@ export const makeSectionForCIDescriptors = (args: {
     <h4>${title}</h4>
     ${ciDescriptors.map((d, index) => {
       const prUrlComponent = d.prUrl
-        ? html`<a href="${d.prUrl}" target="_blank" style="font-size: 0.85rem; text-decoration: none; color: var(--pico-primary);">🔗 View PR on GitHub</a>`
+        ? html`<a href="${d.prUrl}" target="_blank" style="font-size: 0.85rem; text-decoration: none; color: var(--pico-primary);">🔗 View PR on github</a>`
         : ''
 
       return html`
