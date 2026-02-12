@@ -81,6 +81,7 @@ from .dataset_statistics import DuplicatedRowCount
 from .dataset_statistics import EmptyColumnsCount
 from .dataset_statistics import EmptyRowsCount
 from .dataset_statistics import RowCount
+from .embeddings import EmbeddingsDrift
 from .group_by import GroupBy
 from .recsys import MAP
 from .recsys import MRR
@@ -196,4 +197,6 @@ __all__ = [
     "CorrelationMatrix",
     "DatasetCorrelations",
     "ColumnCorrelationMatrix",
+    # Embeddings
+    "EmbeddingsDrift",
 ]

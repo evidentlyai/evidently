@@ -426,6 +426,8 @@ class DataDefinition(BaseModel):
     """List of ranking/recsys task configurations (`Recsys`)."""
     special_columns: List[SpecialColumnInfo] = []
     """Additional special column configurations."""
+    embeddings: Optional[Dict[str, List[str]]] = None
+    """Embeddings columns definitions: mapping of embedding name to list of columns"""
 
     def __init__(
         self,
@@ -446,6 +448,7 @@ class DataDefinition(BaseModel):
         ranking: Optional[List[Recsys]] = None,
         service_columns: Optional[ServiceColumns] = None,
         special_columns: Optional[List[SpecialColumnInfo]] = None,
+        embeddings: Optional[Dict[str, List[str]]] = None,
     ):
         """Initialize DataDefinition with column mappings.
 
@@ -475,6 +478,7 @@ class DataDefinition(BaseModel):
         self.regression = regression
         self.llm = llm
         self.ranking = ranking
+        self.embeddings = embeddings
 
     def get_numerical_columns(self):
         """Get all numerical columns including descriptors.
