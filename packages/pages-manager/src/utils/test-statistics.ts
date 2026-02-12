@@ -258,18 +258,22 @@ export const makeSectionForCIDescriptors = (args: {
   return html`
     ${includeSeparator ? html`<hr />` : ''}
     <h4>${title}</h4>
-    ${ciDescriptors.map(
-      (d, index) =>
-        html`
-          ${index > 0 ? html`<hr />` : ''}
-          <div id="${d.path}" style="margin-bottom: 1.5rem;">
-            <div style="display: flex; justify-content: flex-start; gap: 0.5rem; align-items: center; margin-bottom: 0.5rem;">
-              <p style="margin: 0;"><strong>${d.displayName}</strong></p>
-              <strong>${statusBadgeForArtifacts(d.artifacts, d.fullPath)}</strong>
-            </div>
-            ${renderArtifacts(d.artifacts, d.fullPath, d.path)}
+    ${ciDescriptors.map((d, index) => {
+      const prUrlComponent = d.prUrl
+        ? html`<a href="${d.prUrl}" target="_blank" style="font-size: 0.85rem; text-decoration: none; color: var(--pico-primary);">🔗 View PR on GitHub</a>`
+        : ''
+
+      return html`
+        ${index > 0 ? html`<hr />` : ''}
+        <div id="${d.path}" style="margin-bottom: 1.5rem;">
+          <div style="display: flex; flex-wrap: wrap; justify-content: flex-start; gap: 0.5rem; align-items: center; margin-bottom: 0.5rem;">
+            <p style="margin: 0;"><strong>${d.displayName}</strong></p>
+            <strong>${statusBadgeForArtifacts(d.artifacts, d.fullPath)}</strong>
+            ${prUrlComponent ? html`<div style="flex: 1; display: flex; justify-content: flex-end; align-items: center;">${prUrlComponent}</div>` : ''}
           </div>
-        `
-    )}
+          ${renderArtifacts(d.artifacts, d.fullPath, d.path)}
+        </div>
+      `
+    })}
   `
 }

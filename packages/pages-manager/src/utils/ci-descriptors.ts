@@ -1,4 +1,5 @@
 import fs from 'node:fs'
+import { CONFIG } from '@lib/config'
 import { DOCS_CI_PATH, join } from './paths'
 import { extractPRNumber, getDisplayName, getReferenceType } from './reference-types'
 
@@ -9,6 +10,7 @@ export type CIDescriptor = {
   artifacts: string[]
   prNumber: number
   isPR: boolean
+  prUrl: string | null
 }
 
 export const getCIDescriptors = (): {
@@ -37,6 +39,7 @@ export const getCIDescriptors = (): {
       const isPR = type === 'pr-and-branch'
       const prNumber = extractPRNumber(name).number
       const displayName = getDisplayName(name)
+      const prUrl = isPR ? CONFIG.getLinkToGithubPR(prNumber) : null
 
       return {
         path: name,
@@ -44,7 +47,8 @@ export const getCIDescriptors = (): {
         fullPath,
         artifacts,
         prNumber,
-        isPR
+        isPR,
+        prUrl
       }
     })
 
