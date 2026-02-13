@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "evidently-ui.fullname" . }}
+  labels:
+    {{- include "evidently-ui.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  {{- if and .Values.s3.enabled (index (.Values.s3.cache | default dict) "enabled") }}
+  sessionAffinity: ClientIP
+  sessionAffinityConfig:
+    clientIP:
+      timeoutSeconds: 10800
+  {{- end }}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "evidently-ui.selectorLabels" . | nindent 4 }}
