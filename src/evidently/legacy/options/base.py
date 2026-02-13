@@ -6,16 +6,20 @@ from typing import Type
 from typing import TypeVar
 from typing import Union
 
-from evidently._pydantic_compat import BaseModel
+from pydantic import BaseModel
+
 from evidently.legacy.options import ColorOptions
 from evidently.legacy.options.agg_data import DataDefinitionOptions
 from evidently.legacy.options.agg_data import RenderOptions
 from evidently.legacy.options.option import Option
+from evidently.pydantic_utils import get_field_inner_type
 
 if TYPE_CHECKING:
-    from evidently._pydantic_compat import AbstractSetIntStr
-    from evidently._pydantic_compat import DictStrAny
-    from evidently._pydantic_compat import MappingIntStrAny
+    from typing import AbstractSet
+    from typing import Dict as DictStrAny
+    from typing import Mapping as MappingIntStrAny
+
+    AbstractSetIntStr = AbstractSet[Union[int, str]]
 TypeParam = TypeVar("TypeParam", bound=Option)
 
 
@@ -81,7 +85,7 @@ class Options(BaseModel):
         res.custom = self.custom.copy()
         for key, value in other.custom.items():
             res.custom[key] = value
-        for name in self.__fields__:
+        for name in self.model_fields:
             if name == "custom":
                 continue
             override = getattr(other, name)
@@ -92,7 +96,7 @@ class Options(BaseModel):
         return res
 
     def __hash__(self):
-        value_pairs = [(f, getattr(self, f)) for f in self.__fields__ if f != "custom"]
+        value_pairs = [(f, getattr(self, f)) for f in self.model_fields if f != "custom"]
         value_pairs.extend(sorted(list(self.custom.items())))
         return hash((type(self),) + tuple(value_pairs))
 
@@ -129,6 +133,6 @@ class Options(BaseModel):
         )
 
 
-_option_cls_mapping = {field.type_: name for name, field in Options.__fields__.items()}
+_option_cls_mapping = {get_field_inner_type(field): name for name, field in Options.model_fields.items()}
 
 AnyOptions = Union[Options, Option, dict, List[Option], None]

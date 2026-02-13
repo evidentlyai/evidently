@@ -21,8 +21,9 @@ from typing import Tuple
 from typing import Type
 from typing import TypeVar
 
-from evidently._pydantic_compat import BaseModel
-from evidently._pydantic_compat import SecretStr
+from pydantic import BaseModel
+from pydantic import SecretStr
+
 from evidently.legacy.options.base import Options
 from evidently.legacy.options.option import Option
 from evidently.legacy.utils.sync import sync_api
@@ -450,8 +451,7 @@ class LLMOptions(Option):
 
     __provider_name__: ClassVar[str]
 
-    class Config:
-        extra = "forbid"
+    model_config = {"extra": "forbid"}
 
     api_key: Optional[SecretStr] = None
     """Optional API key for the provider."""

@@ -1,4 +1,7 @@
+from typing import ClassVar
+from typing import Dict
 from typing import List
+from typing import Set
 from typing import Union
 
 from evidently.legacy.core import BaseResult
@@ -7,9 +10,8 @@ from evidently.legacy.core import get_all_fields_tags
 
 
 class A(BaseResult):
-    class Config:
-        field_tags = {"f1": {IncludeTags.Render}}
-        tags = {IncludeTags.Current}
+    __field_tags__: ClassVar[Dict[str, Set[IncludeTags]]] = {"f1": {IncludeTags.Render}}
+    __tags__: ClassVar[Set[IncludeTags]] = {IncludeTags.Current}
 
     f1: str
 
@@ -20,17 +22,15 @@ def test_get_fields_tags():
 
 def test_get_field_tags_subclass():
     class B(A):
-        class Config:
-            field_tags = {"f1": {IncludeTags.Reference}}
-            tags = {IncludeTags.Extra}
+        __field_tags__: ClassVar[Dict[str, Set[IncludeTags]]] = {"f1": {IncludeTags.Reference}}
+        __tags__: ClassVar[Set[IncludeTags]] = {IncludeTags.Extra}
 
     assert get_all_fields_tags(B) == {"f1": {IncludeTags.Reference, IncludeTags.Extra}}
 
 
 def test_get_field_tags_field_add_tag():
     class C(BaseResult):
-        class Config:
-            field_tags = {"a2": {IncludeTags.Render}}
+        __field_tags__: ClassVar[Dict[str, Set[IncludeTags]]] = {"a2": {IncludeTags.Render}}
 
         a1: A
         a2: A
@@ -40,8 +40,7 @@ def test_get_field_tags_field_add_tag():
 
 def test_get_field_tags_list_field():
     class D(BaseResult):
-        class Config:
-            field_tags = {"a2": {IncludeTags.Render}}
+        __field_tags__: ClassVar[Dict[str, Set[IncludeTags]]] = {"a2": {IncludeTags.Render}}
 
         a1: List[A]
         a2: List[A]
@@ -54,8 +53,7 @@ def test_get_field_tags_union_field():
         pass
 
     class E(BaseResult):
-        class Config:
-            field_tags = {"ac2": {IncludeTags.Render}}
+        __field_tags__: ClassVar[Dict[str, Set[IncludeTags]]] = {"ac2": {IncludeTags.Render}}
 
         ac1: Union[A, C]
         ac2: Union[A, C]
@@ -65,8 +63,7 @@ def test_get_field_tags_union_field():
 
 def test_get_field_tags_remove_tags():
     class F(A):
-        class Config:
-            field_tags = {"f1": set()}
-            tags = set()
+        __field_tags__: ClassVar[Dict[str, Set[IncludeTags]]] = {"f1": set()}
+        __tags__: ClassVar[Set[IncludeTags]] = set()
 
     assert get_all_fields_tags(F) == {"f1": set()}

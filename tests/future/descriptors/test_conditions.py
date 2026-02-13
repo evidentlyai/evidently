@@ -5,8 +5,8 @@ from typing import Tuple
 
 import pandas as pd
 import pytest
+from pydantic import parse_obj_as
 
-from evidently._pydantic_compat import parse_obj_as
 from evidently.core.datasets import ColumnCondition
 from evidently.core.datasets import ColumnTest
 from evidently.core.datasets import Dataset
@@ -22,37 +22,37 @@ from tests.conftest import load_all_subtypes
 
 all_conditions: List[Tuple[ColumnCondition, pd.Series, str, pd.Series]] = [
     (
-        GreaterEqualColumnCondition(threshold=2),
+        GreaterEqualColumnCondition(threshold=2.0),
         pd.Series([1, 2, 3], name="input"),
         "input: greater or equal to 2.0",
         pd.Series([False, True, True]),
     ),
     (
-        GreaterColumnCondition(threshold=2),
+        GreaterColumnCondition(threshold=2.0),
         pd.Series([1, 2, 3], name="input"),
         "input greater than 2.0",
         pd.Series([False, False, True]),
     ),
     (
-        LessEqualColumnCondition(threshold=2),
+        LessEqualColumnCondition(threshold=2.0),
         pd.Series([1, 2, 3], name="input"),
         "input: less or equal to 2.0",
         pd.Series([True, True, False]),
     ),
     (
-        LessColumnCondition(threshold=2),
+        LessColumnCondition(threshold=2.0),
         pd.Series([1, 2, 3], name="input"),
         "input: less than 2.0",
         pd.Series([True, False, False]),
     ),
     (
-        EqualsColumnCondition(expected=2),
+        EqualsColumnCondition(expected=2.0),
         pd.Series([1, 2, 3], name="input"),
         "input: equals 2",
         pd.Series([False, True, False]),
     ),
     (
-        NotEqualsColumnCondition(expected=2),
+        NotEqualsColumnCondition(expected=2.0),
         pd.Series([1, 2, 3], name="input"),
         "input not equals 2",
         pd.Series([True, False, True]),

@@ -10,11 +10,12 @@ from typing import Literal
 from typing import Optional
 from typing import Union
 
-from evidently._pydantic_compat import BaseModel
-from evidently._pydantic_compat import Field
-from evidently._pydantic_compat import PrivateAttr
-from evidently._pydantic_compat import ValidationError
-from evidently._pydantic_compat import parse_obj_as
+from pydantic import BaseModel
+from pydantic import Field
+from pydantic import PrivateAttr
+from pydantic import TypeAdapter
+from pydantic import ValidationError
+
 from evidently.errors import EvidentlyError
 from evidently.llm.prompts.content import PromptContent
 from evidently.llm.prompts.content import PromptContentType
@@ -111,7 +112,7 @@ class PromptVersion(BaseModel):
     ):
         if not isinstance(content, PromptContent):
             try:
-                content = parse_obj_as(PromptContent, content)  # type: ignore[type-abstract]
+                content = TypeAdapter(PromptContent).validate_python(content)  # type: ignore[type-abstract]
             except ValidationError:
                 content = PromptContent.parse(content)
         if content_type is None:

@@ -4,9 +4,10 @@ from typing import ClassVar
 from typing import Optional
 
 import pandas as pd
+from pydantic import ConfigDict
+from pydantic import PrivateAttr
 from typing_extensions import TypeAlias
 
-from evidently._pydantic_compat import PrivateAttr
 from evidently.legacy.options.base import Options
 from evidently.legacy.utils.sync import async_to_sync
 from evidently.llm.utils.blocks import SimpleBlock
@@ -29,9 +30,8 @@ class BaseDatasetGenerator(AutoAliasMixin, EvidentlyBaseModel, ABC):
 
     __alias_type__: ClassVar = "dataset_generator"
 
-    class Config:
-        is_base_type = True
-        extra = "forbid"
+    __is_base_type__: ClassVar[bool] = True
+    model_config = ConfigDict(extra="forbid")
 
     options: Options
     """Processing options."""

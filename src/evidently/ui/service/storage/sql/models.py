@@ -7,6 +7,7 @@ from typing import Dict
 from typing import List
 from typing import Optional
 
+from pydantic import TypeAdapter
 from sqlalchemy import JSON
 from sqlalchemy import ForeignKey
 from sqlalchemy import Index
@@ -17,7 +18,6 @@ from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import mapped_column
 from sqlalchemy.orm import relationship
 
-from evidently._pydantic_compat import parse_obj_as
 from evidently.core.datasets import DataDefinition
 from evidently.core.metric_types import Metric
 from evidently.core.serialization import SnapshotModel
@@ -127,7 +127,7 @@ class SnapshotSQLModel(Base):
     def load(self, blob_storage) -> SnapshotModel:
         """Load snapshot from blob storage."""
         with blob_storage.open_blob(self.blob_path) as f:
-            return parse_obj_as(SnapshotModel, json.load(f))
+            return TypeAdapter(SnapshotModel).validate_python(json.load(f))
 
     def to_snapshot_metadata(self, project: Optional[Project]) -> SnapshotMetadataModel:
         """Convert model to SnapshotMetadataModel object."""
@@ -152,7 +152,7 @@ class MetricsSQLModel(Base):
     @property
     def metric(self) -> Metric:
         """Get metric object from JSON."""
-        return parse_obj_as(Metric, json.loads(self.metric_json))  # type: ignore[type-abstract,return-value]
+        return TypeAdapter(Metric).validate_python(json.loads(self.metric_json))  # type: ignore[type-abstract,return-value]
 
 
 class PointSQLModel(Base):
@@ -240,8 +240,8 @@ class DatasetSQLModel(Base):
             project_id=self.project_id,
             author_id=self.author_id,
             all_columns=self.all_columns,
-            data_definition=parse_obj_as(DataDefinition, self.data_definition),
-            source=parse_obj_as(DataSource, self.source),
+            data_definition=TypeAdapter(DataDefinition).validate_python(self.data_definition),
+            source=TypeAdapter(DataSource).validate_python(self.source),
             created_at=self.created_at,
             updated_at=self.updated_at,
             author_name=self.author.name if self.author else "Unknown User",
@@ -250,7 +250,9 @@ class DatasetSQLModel(Base):
             origin=DatasetOrigin(self.origin),
             metadata=self.metadata_json,
             tags=self.tags,
-            tracing_params=parse_obj_as(DatasetTracingParams, self.tracing_params) if self.tracing_params else None,
+            tracing_params=TypeAdapter(DatasetTracingParams).validate_python(self.tracing_params)
+            if self.tracing_params
+            else None,
             human_feedback_custom_shortcut_labels=self.human_feedback_custom_shortcut_labels,
         )
 

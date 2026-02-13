@@ -1,17 +1,17 @@
+from typing import ClassVar
 from typing import Dict
 from typing import Optional
 
+from pydantic import Field
+from pydantic import TypeAdapter
 from sklearn.metrics import classification_report
 
-from evidently._pydantic_compat import Field
-from evidently._pydantic_compat import parse_obj_as
 from evidently.legacy.base_metric import MetricResult
 from evidently.legacy.metric_results import Label
 
 
 class ClassMetric(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:ClassMetric"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:metric_result:ClassMetric"
 
     precision: float
     recall: float
@@ -24,9 +24,7 @@ ClassesMetrics = Dict[Label, ClassMetric]
 
 
 class ClassificationReport(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:ClassificationReport"
-        smart_union = True
+    __type_alias__: ClassVar[Optional[str]] = "evidently:metric_result:ClassificationReport"
 
     classes: ClassesMetrics
     accuracy: float
@@ -60,6 +58,6 @@ class ClassificationReport(MetricResult):
             if not isinstance(v, dict):
                 continue
             v["f1"] = v.pop("f1-score")
-        class_metrics = {str(k): parse_obj_as(ClassMetric, report[str(k)]) for k in classes}
+        class_metrics = {str(k): TypeAdapter(ClassMetric).validate_python(report[str(k)]) for k in classes}
         other = {str(k): v for k, v in report.items() if k not in [str(cl) for cl in classes]}
-        return parse_obj_as(cls, {"classes": class_metrics, **other})
+        return TypeAdapter(cls).validate_python({"classes": class_metrics, **other})

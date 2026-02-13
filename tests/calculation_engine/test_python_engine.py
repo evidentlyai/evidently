@@ -1,3 +1,5 @@
+from typing import ClassVar
+
 import pandas as pd
 
 from evidently.legacy.base_metric import GenericInputData
@@ -13,8 +15,7 @@ from evidently.legacy.suite.base_suite import States
 
 
 class OldTypeSimpleMetric(Metric[int]):
-    class Config:
-        alias_required = False
+    __alias_required__: ClassVar[bool] = False
 
     value: int
 
@@ -27,8 +28,7 @@ class OldTypeSimpleMetric(Metric[int]):
 
 
 class SimpleMetric(Metric[int]):
-    class Config:
-        alias_required = False
+    __alias_required__: ClassVar[bool] = False
 
     value: int
 

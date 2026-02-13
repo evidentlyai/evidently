@@ -1,3 +1,5 @@
+from typing import ClassVar
+from typing import Optional
 from typing import Tuple
 
 from evidently.legacy.features.generated_features import FeatureDescriptor
@@ -6,8 +8,7 @@ from evidently.legacy.features.OOV_words_percentage_feature import OOVWordsPerce
 
 
 class OOV(FeatureDescriptor):
-    class Config:
-        type_alias = "evidently:descriptor:OOV"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:descriptor:OOV"
 
     ignore_words: Tuple = ()
 

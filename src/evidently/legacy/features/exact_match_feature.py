@@ -1,5 +1,6 @@
 from typing import ClassVar
 from typing import List
+from typing import Optional
 
 import pandas as pd
 
@@ -10,8 +11,7 @@ from evidently.legacy.utils.data_preprocessing import DataDefinition
 
 
 class ExactMatchFeature(GeneratedFeature):
-    class Config:
-        type_alias = "evidently:feature:ExactMatchFeature"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:feature:ExactMatchFeature"
 
     __feature_type__: ClassVar = ColumnType.Categorical
     columns: List[str]

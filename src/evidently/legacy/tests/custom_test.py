@@ -17,8 +17,7 @@ GroupingTypes.TestGroup.add_value(CUSTOM_GROUP)
 
 
 class CustomValueTest(BaseCheckValueTest):
-    class Config:
-        type_alias = "evidently:test:CustomValueTest"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:test:CustomValueTest"
 
     name: ClassVar = "Custom Value test"
     group = CUSTOM_GROUP.id
@@ -39,7 +38,6 @@ class CustomValueTest(BaseCheckValueTest):
         not_in: Optional[List[Union[Numeric, str, bool]]] = None,
         is_critical: bool = True,
     ):
-        self._metric = CustomValueMetric(func=func, title=title)
         super().__init__(
             eq=eq,
             gt=gt,
@@ -51,6 +49,7 @@ class CustomValueTest(BaseCheckValueTest):
             not_in=not_in,
             is_critical=is_critical,
         )
+        self._metric = CustomValueMetric(func=func, title=title)
         if not self.has_condition():
             raise ValueError("Specify at least one condition")
 

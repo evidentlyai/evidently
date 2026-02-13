@@ -15,8 +15,9 @@ from typing import List
 from typing import Type
 from typing import TypeVar
 
-from evidently._pydantic_compat import Field
-from evidently._pydantic_compat import PrivateAttr
+from pydantic import Field
+from pydantic import PrivateAttr
+
 from evidently.core.datasets import Descriptor
 from evidently.errors import EvidentlyError
 from evidently.sdk.artifacts import Artifact as GenericConfig

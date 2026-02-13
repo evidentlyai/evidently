@@ -6,8 +6,8 @@ from typing import List
 from typing import Optional
 
 from litestar.exceptions import HTTPException
+from pydantic import TypeAdapter
 
-from evidently._pydantic_compat import parse_obj_as
 from evidently.core.serialization import SnapshotModel
 from evidently.legacy.utils import NumpyEncoder
 from evidently.sdk.models import DashboardModel
@@ -182,7 +182,7 @@ class ProjectManager(BaseManager):
         ):
             raise ProjectNotFound()
         with self.blob_storage.open_blob(self._create_path_for_snapshot(project_id, snapshot)) as f:
-            return parse_obj_as(SnapshotModel, json.load(f))
+            return TypeAdapter(SnapshotModel).validate_python(json.load(f))
 
     async def get_snapshot_metadata(
         self, user_id: UserID, project_id: ProjectID, snapshot_id: SnapshotID

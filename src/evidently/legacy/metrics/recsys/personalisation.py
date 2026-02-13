@@ -1,4 +1,6 @@
+from typing import Annotated
 from typing import Any
+from typing import ClassVar
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -22,31 +24,29 @@ from evidently.legacy.renderers.html_widgets import counter
 from evidently.legacy.renderers.html_widgets import header_text
 from evidently.legacy.renderers.html_widgets import table_data
 from evidently.legacy.renderers.html_widgets import widget_tabs
+from evidently.pydantic_utils import StrKeyValidator
 
 
 class PersonalizationMetricResult(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:PersonalizationMetricResult"
-        pd_include = False
-
-        field_tags = {
-            "k": {IncludeTags.Parameter},
-            "current_value": {IncludeTags.Current},
-            "current_table": {IncludeTags.Current, IncludeTags.Extra},
-            "reference_value": {IncludeTags.Reference},
-            "reference_table": {IncludeTags.Reference, IncludeTags.Extra},
-        }
+    __type_alias__: ClassVar[Optional[str]] = "evidently:metric_result:PersonalizationMetricResult"
+    __pd_include__: ClassVar[bool] = False
+    __field_tags__: ClassVar[Dict[str, set]] = {
+        "k": {IncludeTags.Parameter},
+        "current_value": {IncludeTags.Current},
+        "current_table": {IncludeTags.Current, IncludeTags.Extra},
+        "reference_value": {IncludeTags.Reference},
+        "reference_table": {IncludeTags.Reference, IncludeTags.Extra},
+    }
 
     k: int
     current_value: float
-    current_table: Dict[str, int]
+    current_table: Annotated[Dict[str, int], StrKeyValidator]
     reference_value: Optional[float] = None
-    reference_table: Optional[Dict[str, int]] = None
+    reference_table: Annotated[Optional[Dict[str, int]], StrKeyValidator] = None
 
 
 class PersonalizationMetric(Metric[PersonalizationMetricResult]):
-    class Config:
-        type_alias = "evidently:metric:PersonalizationMetric"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:metric:PersonalizationMetric"
 
     """Mean Inter List"""
 

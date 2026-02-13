@@ -7,8 +7,8 @@ from typing import Optional
 import numpy as np
 import pandas as pd
 from nltk.stem.wordnet import WordNetLemmatizer
+from pydantic import PrivateAttr
 
-from evidently._pydantic_compat import PrivateAttr
 from evidently.legacy.base_metric import ColumnName
 from evidently.legacy.core import ColumnType
 from evidently.legacy.features.generated_features import ApplyColumnGeneratedFeature
@@ -45,8 +45,7 @@ def _listed_words_present(
 
 
 class WordsPresence(ApplyColumnGeneratedFeature):
-    class Config:
-        type_alias = "evidently:feature:WordsPresence"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:feature:WordsPresence"
 
     __feature_type__: ClassVar = ColumnType.Categorical
     display_name_template: ClassVar = "{column_name} words presence"
@@ -86,8 +85,7 @@ class WordsPresence(ApplyColumnGeneratedFeature):
 
 
 class IncludesWords(WordsPresence):
-    class Config:
-        type_alias = "evidently:feature:IncludesWords"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:feature:IncludesWords"
 
     def __init__(
         self,
@@ -112,8 +110,7 @@ class IncludesWords(WordsPresence):
 
 
 class ExcludesWords(WordsPresence):
-    class Config:
-        type_alias = "evidently:feature:ExcludesWords"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:feature:ExcludesWords"
 
     def __init__(
         self,
@@ -138,8 +135,7 @@ class ExcludesWords(WordsPresence):
 
 
 class RowWordPresence(GeneratedFeature):
-    class Config:
-        type_alias = "evidently:feature:RowWordPresence"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:feature:RowWordPresence"
 
     __feature_type__: ClassVar = ColumnType.Categorical
     columns: List[str]
@@ -190,8 +186,7 @@ class RowWordPresence(GeneratedFeature):
 
 
 class WordMatch(RowWordPresence):
-    class Config:
-        type_alias = "evidently:feature:WordMatch"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:feature:WordMatch"
 
     def __init__(self, columns: List[str], mode: str, lemmatize: bool, display_name: Optional[str] = None):
         super().__init__(columns=columns, mode="includes_" + mode, lemmatize=lemmatize, display_name=display_name)
@@ -204,8 +199,7 @@ class WordMatch(RowWordPresence):
 
 
 class WordNoMatch(RowWordPresence):
-    class Config:
-        type_alias = "evidently:feature:WordNoMatch"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:feature:WordNoMatch"
 
     def __init__(self, columns: List[str], mode: str, lemmatize: bool, display_name: Optional[str] = None):
         super().__init__(columns=columns, mode="excludes_" + mode, lemmatize=lemmatize, display_name=display_name)

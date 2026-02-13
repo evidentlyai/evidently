@@ -1,6 +1,6 @@
 import pytest
+from pydantic import parse_obj_as
 
-from evidently._pydantic_compat import parse_obj_as
 from evidently.core.datasets import FeatureDescriptor
 from evidently.descriptors import BeginsWith
 from evidently.descriptors import BERTScore

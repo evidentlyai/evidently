@@ -11,8 +11,8 @@ from typing import TypeVar
 from typing import Union
 
 import plotly.io as pio
+from pydantic import BaseModel
 
-from evidently._pydantic_compat import BaseModel
 from evidently.core.metric_types import BoundTest
 from evidently.core.metric_types import MetricTest
 from evidently.legacy.base_metric import ColumnName

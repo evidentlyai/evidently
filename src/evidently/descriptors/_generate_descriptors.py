@@ -9,7 +9,8 @@ from typing import Tuple
 from typing import Type
 from typing import Union
 
-from evidently._pydantic_compat import import_string
+from pydantic._internal._validators import import_string
+
 from evidently.core.datasets import Descriptor
 from evidently.core.datasets import DescriptorTest
 from evidently.core.datasets import FeatureDescriptor
@@ -61,12 +62,14 @@ def get_args_kwargs(feature_class: Type[GeneratedFeatures]) -> Tuple[Dict[str, s
     if feature_class.__dict__.get("__init__") is None:
         # get from fields
         args = {
-            key: _get_type_name(field.annotation) for key, field in feature_class.__fields__.items() if field.required
+            key: _get_type_name(field.annotation)
+            for key, field in feature_class.model_fields.items()
+            if field.is_required()
         }
         kwargs = {
             key: (_get_type_name(field.annotation), _get_value_str(field.default))
-            for key, field in feature_class.__fields__.items()
-            if not field.required and key != "type"
+            for key, field in feature_class.model_fields.items()
+            if not field.is_required() and key != "type"
         }
         return args, kwargs
     # get from constructor

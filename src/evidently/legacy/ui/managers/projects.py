@@ -5,9 +5,9 @@ from typing import Optional
 from typing import Union
 
 from litestar.params import Dependency
+from pydantic import TypeAdapter
 from typing_extensions import Annotated
 
-from evidently._pydantic_compat import parse_obj_as
 from evidently.legacy.suite.base_suite import Snapshot
 from evidently.legacy.ui.base import BlobStorage
 from evidently.legacy.ui.base import DataStorage
@@ -197,7 +197,7 @@ class ProjectManager(BaseManager):
         if isinstance(snapshot, SnapshotID):
             snapshot = await self.get_snapshot_metadata(user_id, project_id, snapshot)
         with self.blob_storage.open_blob(snapshot.blob.id) as f:
-            return parse_obj_as(Snapshot, json.load(f))
+            return TypeAdapter(Snapshot).validate_python(json.load(f))
 
     async def get_snapshot_metadata(
         self, user_id: UserID, project_id: ProjectID, snapshot_id: SnapshotID

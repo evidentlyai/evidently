@@ -17,7 +17,6 @@ from evidently.legacy.calculations.utils import relabel_data
 from evidently.legacy.core import ColumnType
 from evidently.legacy.metric_results import ColumnCorrelations
 from evidently.legacy.metric_results import DatasetColumns
-from evidently.legacy.metric_results import Distribution
 from evidently.legacy.metric_results import DistributionIncluded
 from evidently.legacy.utils.data_preprocessing import DataDefinition
 from evidently.legacy.utils.types import ColumnDistribution
@@ -421,7 +420,7 @@ def calculate_cramer_v_correlation(column_name: str, dataset: pd.DataFrame, colu
     return ColumnCorrelations(
         column_name=column_name,
         kind="cramer_v",
-        values=Distribution(x=result_x, y=result_y),
+        values=DistributionIncluded(x=result_x, y=result_y),
     )
 
 

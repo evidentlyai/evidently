@@ -3,7 +3,8 @@ from typing import Dict
 from typing import List
 from typing import Optional
 
-from evidently._pydantic_compat import BaseModel
+from pydantic import BaseModel
+
 from evidently.legacy.report import Report
 from evidently.legacy.suite.base_suite import MetadataValueType
 from evidently.legacy.suite.base_suite import SnapshotLinks

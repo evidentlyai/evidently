@@ -19,9 +19,9 @@ from typing import Union
 from typing import get_args
 
 import typing_inspect
+from pydantic import PrivateAttr
 from typing_inspect import is_classvar
 
-from evidently._pydantic_compat import PrivateAttr
 from evidently.llm.models import LLMMessage
 from evidently.llm.utils.blocks import OutputFormatBlock
 from evidently.llm.utils.blocks import PromptBlock
@@ -75,8 +75,7 @@ class PromptTemplate(AutoAliasMixin, EvidentlyBaseModel):
     __alias_type__: ClassVar = "prompt_template"
     _prepared_template: PreparedTemplate = PrivateAttr()
 
-    class Config:
-        is_base_type = True
+    __is_base_type__: ClassVar[bool] = True
 
     def render(self, values: dict) -> str:
         return self.prepared_template.render(values)

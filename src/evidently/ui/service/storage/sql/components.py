@@ -7,12 +7,12 @@ from typing import Dict
 from typing import Optional
 
 from litestar.di import Provide
+from pydantic import BaseModel
+from pydantic import Field
+from pydantic import SecretStr
 from sqlalchemy import Engine
 from sqlalchemy import create_engine
 
-from evidently._pydantic_compat import BaseModel
-from evidently._pydantic_compat import Field
-from evidently._pydantic_compat import SecretStr
 from evidently.legacy.utils.numpy_encoder import numpy_dumps
 from evidently.ui.service.base import BlobStorage
 from evidently.ui.service.base import DataStorage
@@ -41,8 +41,7 @@ from evidently.ui.service.storage.sql.utils import create_sql_project_manager
 class SQLMetadataComponent(MetadataStorageComponent):
     """SQL metadata storage component."""
 
-    class Config:
-        type_alias = "sql"
+    __type_alias__: ClassVar[Optional[str]] = "sql"
 
     def dependency_factory(self) -> Callable[..., ProjectMetadataStorage]:
         """Create SQL metadata storage factory."""
@@ -52,8 +51,7 @@ class SQLMetadataComponent(MetadataStorageComponent):
 class SQLDataComponent(DataStorageComponent):
     """SQL data storage component."""
 
-    class Config:
-        type_alias = "sql"
+    __type_alias__: ClassVar[Optional[str]] = "sql"
 
     def dependency_factory(self) -> Callable[..., DataStorage]:
         """Create SQL data storage factory."""
@@ -67,8 +65,7 @@ class SQLDataComponent(DataStorageComponent):
 class SQLBlobComponent(BlobStorageComponent):
     """SQL blob storage component."""
 
-    class Config:
-        type_alias = "sql"
+    __type_alias__: ClassVar[Optional[str]] = "sql"
 
     def dependency_factory(self) -> Callable[..., BlobStorage]:
         """Create SQL blob storage factory."""
@@ -127,8 +124,7 @@ class DatabaseComponent(Component, ABC):
 class SQLStorageComponent(StorageComponent):
     __require__: ClassVar = [DatabaseComponent]
 
-    class Config:
-        type_alias = "sql"
+    __type_alias__: ClassVar[Optional[str]] = "sql"
 
     def project_manager_provider(self) -> Callable[..., Awaitable[ProjectManager]]:
         async def project_manager_factory(engine: Engine) -> ProjectManager:
@@ -177,8 +173,7 @@ class SQLDatasetMetadataComponent(DatasetMetadataComponent):
 
     __require__: ClassVar = [DatabaseComponent]
 
-    class Config:
-        type_alias = "sql"
+    __type_alias__: ClassVar[Optional[str]] = "sql"
 
     def dependency_factory(self) -> Callable[..., DatasetMetadataStorage]:
         def sql_dataset_metadata(engine: Engine) -> DatasetMetadataStorage:
@@ -192,8 +187,7 @@ class SQLDatasetFileStorageComponent(DatasetFileStorageComponent):
 
     __require__: ClassVar = [DatabaseComponent]
 
-    class Config:
-        type_alias = "sql"
+    __type_alias__: ClassVar[Optional[str]] = "sql"
 
     def dependency_factory(self) -> Callable[..., BlobStorage]:
         def sql_dataset_file_storage(engine: Engine) -> BlobStorage:
@@ -207,8 +201,7 @@ class SQLSnapshotDatasetLinksComponent(SnapshotDatasetLinksComponent):
 
     __require__: ClassVar = [DatabaseComponent]
 
-    class Config:
-        type_alias = "sql"
+    __type_alias__: ClassVar[Optional[str]] = "sql"
 
     def dependency_factory(self) -> Callable[..., SnapshotDatasetLinksManager]:
         def sql_snapshot_dataset_links(engine: Engine) -> SnapshotDatasetLinksManager:

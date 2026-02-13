@@ -1,4 +1,6 @@
 import json
+from typing import ClassVar
+from typing import Optional
 
 import pandas as pd
 
@@ -10,8 +12,7 @@ from evidently.legacy.utils.data_preprocessing import DataDefinition
 
 
 class JSONMatch(FeatureTypeFieldMixin, GeneratedFeature):
-    class Config:
-        type_alias = "evidently:feature:JSONMatch"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:feature:JSONMatch"
 
     first_column: str
     second_column: str

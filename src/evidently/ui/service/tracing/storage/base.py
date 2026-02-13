@@ -9,9 +9,9 @@ from typing import Union
 
 import pandas as pd
 from opentelemetry.proto.collector.trace.v1 import trace_service_pb2
+from pydantic import BaseModel
 from typing_extensions import TypeAlias
 
-from evidently._pydantic_compat import BaseModel
 from evidently.core.datasets import DataDefinition
 
 

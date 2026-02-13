@@ -37,9 +37,9 @@ class SQLDashboardManager(BaseSQLStorage, DashboardManager):
                 return DashboardModel(tabs=[], panels=[])
 
             # Convert dashboard_json to DashboardModel
-            from evidently._pydantic_compat import parse_obj_as
+            from pydantic import TypeAdapter
 
-            return parse_obj_as(DashboardModel, project.dashboard_json)
+            return TypeAdapter(DashboardModel).validate_python(project.dashboard_json)
 
     async def save_dashboard(self, project_id: ProjectID, dashboard: DashboardModel) -> None:
         """Save dashboard for a project."""

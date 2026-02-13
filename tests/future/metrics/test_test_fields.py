@@ -11,11 +11,11 @@ from typing import Type
 from typing import Union
 
 import pytest
+from pydantic.fields import FieldInfo
 from typing_inspect import get_origin
 
 from evidently import Dataset
 from evidently import Report
-from evidently._pydantic_compat import ModelField
 from evidently.core.metric_types import ColumnMetric
 from evidently.core.metric_types import DataframeMetric
 from evidently.core.metric_types import Metric
@@ -67,9 +67,9 @@ load_all_subtypes(Metric)
 load_all_subtypes(MetricTest)
 
 
-def iter_type_test_fields(metric_type: Type[Metric]) -> Iterable[Tuple[str, ModelField]]:
+def iter_type_test_fields(metric_type: Type[Metric]) -> Iterable[Tuple[str, FieldInfo]]:
     for field_name, field in metric_type.__fields__.items():
-        if not _is_test_field(field):
+        if not _is_test_field(field_name, field):
             continue
         yield field_name, field
 
@@ -223,10 +223,10 @@ def test_all_metric_tested():
     assert len(missing_tests) == 0, "Missing tests for metric fields: {}".format(format_missing)
 
 
-def _is_test_field(field: ModelField) -> bool:
-    if field.outer_type_ is bool:
+def _is_test_field(field_name: str, field: FieldInfo) -> bool:
+    if field.annotation is bool:
         return False
-    return "tests" in field.name
+    return "tests" in field_name
 
 
 def _make_id(tp):

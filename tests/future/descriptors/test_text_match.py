@@ -259,7 +259,7 @@ def test_regex_multiple_patterns_error(sample_dataset):
 
 
 def test_invalid_match_type():
-    with pytest.raises(ValueError, match=".*match_type\n  unexpected value.*"):
+    with pytest.raises(ValueError, match=".*match_type\n  Input should be.*"):
         TextMatch(
             column_name="description",
             match_items=["urgent"],

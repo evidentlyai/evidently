@@ -26,11 +26,11 @@ from typing import Union
 import numpy as np
 import pandas as pd
 import typing_inspect
+from pydantic import BaseModel
+from pydantic import Field
+from pydantic import TypeAdapter
+from pydantic import field_validator
 
-from evidently._pydantic_compat import BaseModel
-from evidently._pydantic_compat import Field
-from evidently._pydantic_compat import parse_obj_as
-from evidently._pydantic_compat import validator
 from evidently.core.base_types import Label
 from evidently.legacy.model.dashboard import DashboardInfo
 from evidently.legacy.model.widget import AdditionalGraphInfo
@@ -170,8 +170,7 @@ class MetricResult(AutoAliasMixin, PolymorphicModel):
     return different result subclasses (e.g., `SingleValue`, `ByLabelValue`).
     """
 
-    class Config:
-        is_base_type = True
+    __is_base_type__: ClassVar[bool] = True
 
     __alias_type__: ClassVar[str] = "metric_result_v2"
 
@@ -436,9 +435,6 @@ class ByLabelValue(MetricResult):
     (e.g., precision per label, recall per label).
     """
 
-    class Config:
-        smart_union = True
-
     values: Dict[Label, SingleValue]
     """Dictionary mapping label to its corresponding metric value."""
 
@@ -472,15 +468,12 @@ class ByLabelValue(MetricResult):
     def to_simple_dict(self) -> object:
         return {k: v.value for k, v in self.values.items()}
 
-    @validator("values", pre=True)
+    @field_validator("values", mode="before")
     def convert_labels(cls, value):
         return {convert_types(k): v for k, v in value.items()}
 
 
 class ByLabelCountValue(MetricResult):
-    class Config:
-        smart_union = True
-
     counts: Dict[Label, SingleValue]
     shares: Dict[Label, SingleValue]
     count_display_name_template: str = "Missing label {label} count"
@@ -531,7 +524,7 @@ class ByLabelCountValue(MetricResult):
         for k, v in self.shares.items():
             v.metric_value_location = by_label_count_value_location(metric, k, False)
 
-    @validator("counts", "shares", pre=True)
+    @field_validator("counts", "shares", mode="before")
     def convert_labels(cls, value):
         return {convert_types(k): v for k, v in value.items()}
 
@@ -1012,8 +1005,7 @@ class MetricTest(AutoAliasMixin, EvidentlyBaseModel):
     bound to specific metric values and run automatically when metrics are calculated.
     """
 
-    class Config:
-        is_base_type = True
+    __is_base_type__: ClassVar[bool] = True
 
     __alias_type__: ClassVar[str] = "test_v2"
     is_critical: bool = True
@@ -1084,8 +1076,7 @@ class BoundTest(AutoAliasMixin, EvidentlyBaseModel, Generic[TResult], ABC):
     extract the relevant value from the metric result to run the test.
     """
 
-    class Config:
-        is_base_type = True
+    __is_base_type__: ClassVar[bool] = True
 
     __alias_type__: ClassVar[str] = "bound_test"
     test: MetricTest
@@ -1121,9 +1112,7 @@ class Metric(AutoAliasMixin, EvidentlyBaseModel, Generic[TCalculation]):
 
     __alias_type__: ClassVar[str] = "metric_v2"
 
-    class Config:
-        is_base_type = True
-        smart_union = True
+    __is_base_type__: ClassVar[bool] = True
 
     __calculation_type__: ClassVar[Type]
 
@@ -1274,7 +1263,7 @@ def convert_test(test: Union[MetricTest, GenericTest]) -> MetricTest:
     if isinstance(test, MetricTest):
         return test
     if isinstance(test, dict):
-        return parse_obj_as(MetricTest, test)
+        return TypeAdapter(MetricTest).validate_python(test)
     raise ValueError(f"test {test} is not a subclass of MetricTest")
 
 
@@ -1302,7 +1291,7 @@ class SingleValueMetric(Metric):
         fingerprint = self.get_fingerprint()
         return [t.bind_single(fingerprint) for t in (self.tests or [])]
 
-    @validator("tests", pre=True)
+    @field_validator("tests", mode="before")
     def validate_tests(cls, v):
         return convert_tests(v)
 
@@ -1376,7 +1365,8 @@ class ByLabelMetric(Metric):
         fingerprint = self.get_fingerprint()
         return [t.bind_by_label(fingerprint, label=label) for label, tests in (self.tests or {}).items() for t in tests]
 
-    @validator("tests", pre=True)
+    @field_validator("tests", mode="before")
+    @classmethod
     def validate_tests(cls, val):
         return {k: convert_tests(v) for k, v in val.items()} if val is not None else None
 
@@ -1514,7 +1504,8 @@ class ByLabelCountMetric(Metric):
             for t in tests
         ]
 
-    @validator("tests", "share_tests", pre=True)
+    @field_validator("tests", "share_tests", mode="before")
+    @classmethod
     def validate_tests(cls, v):
         return convert_tests(v)
 
@@ -1597,11 +1588,13 @@ class CountMetric(Metric):
             t.bind_count(fingerprint, False) for t in (self.share_tests or [])
         ]
 
-    @validator("tests", pre=True)
+    @field_validator("tests", mode="before")
+    @classmethod
     def validate_tests(cls, v):
         return convert_tests(v)
 
-    @validator("share_tests", pre=True)
+    @field_validator("share_tests", mode="before")
+    @classmethod
     def validate_share_tests(cls, v):
         return convert_tests(v)
 
@@ -1753,7 +1746,7 @@ def convert_to_mean_tests(tests: MeanStdMetricsPossibleTests) -> Optional[MeanSt
     if isinstance(tests, list):
         return MeanStdMetricTests(mean=tests)
     if isinstance(tests, dict):
-        return parse_obj_as(MeanStdMetricTests, tests)
+        return TypeAdapter(MeanStdMetricTests).validate_python(tests)
     raise ValueError(tests)
 
 
@@ -1777,11 +1770,13 @@ class MeanStdMetric(Metric):
             t.bind_mean_std(fingerprint, False) for t in (self.std_tests or [])
         ]
 
-    @validator("mean_tests", pre=True)
+    @field_validator("mean_tests", mode="before")
+    @classmethod
     def validate_mean_tests(cls, v):
         return convert_tests(v)
 
-    @validator("std_tests", pre=True)
+    @field_validator("std_tests", mode="before")
+    @classmethod
     def validate_std_tests(cls, v):
         return convert_tests(v)
 
@@ -1807,7 +1802,8 @@ class DataframeMetric(Metric):
                 bound_tests.append(test.bind_dataframe(fingerprint, column=column))
         return bound_tests
 
-    @validator("tests", pre=True)
+    @field_validator("tests", mode="before")
+    @classmethod
     def validate_tests(cls, v):
         if v is None:
             return None
@@ -1898,4 +1894,4 @@ class ColumnMetric(Metric, ABC):
     """Name of the column to compute the metric for."""
 
 
-MetricTestResult.update_forward_refs()
+MetricTestResult.model_rebuild()

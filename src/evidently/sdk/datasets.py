@@ -7,10 +7,10 @@ from typing import List
 from typing import Optional
 
 import pandas as pd
+from pydantic import BaseModel
+from pydantic import TypeAdapter
 from requests import Response
 
-from evidently._pydantic_compat import BaseModel
-from evidently._pydantic_compat import parse_obj_as
 from evidently.core.datasets import DataDefinition
 from evidently.core.datasets import Dataset
 from evidently.legacy.suite.base_suite import MetadataValueType
@@ -132,7 +132,7 @@ class RemoteDatasetsManager:
         metadata, file_content = read_multipart_response(response)
 
         df = pd.read_parquet(io.BytesIO(file_content))
-        data_def = parse_obj_as(DataDefinition, metadata["data_definition"])
+        data_def = TypeAdapter(DataDefinition).validate_python(metadata["data_definition"])
         return Dataset.from_pandas(df, data_definition=data_def)
 
     def add(

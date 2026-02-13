@@ -8,8 +8,9 @@ from typing import Literal
 from typing import Optional
 from typing import Union
 
-from evidently._pydantic_compat import BaseModel
-from evidently._pydantic_compat import PrivateAttr
+from pydantic import BaseModel
+from pydantic import PrivateAttr
+
 from evidently.ui.runner.utils import get_url_to_service_by_port
 from evidently.ui.runner.utils import is_service_running
 from evidently.ui.runner.utils import terminate_process
@@ -118,10 +119,7 @@ class RunServiceInfoVariants:
         process: subprocess.Popen
         """Subprocess handle for the running service."""
 
-        class Config:
-            """@private"""
-
-            arbitrary_types_allowed = True
+        model_config = {"arbitrary_types_allowed": True}
 
         def __str__(self) -> str:
             return f"Running on {get_url_to_service_by_port(port=self.port)}"

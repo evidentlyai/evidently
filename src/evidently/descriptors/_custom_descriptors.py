@@ -4,7 +4,8 @@ from typing import List
 from typing import Optional
 from typing import Union
 
-from evidently._pydantic_compat import PrivateAttr
+from pydantic import PrivateAttr
+
 from evidently.core.datasets import AnyDescriptorTest
 from evidently.core.datasets import Dataset
 from evidently.core.datasets import DatasetColumn
@@ -33,12 +34,13 @@ class CustomColumnDescriptor(Descriptor):
     ):
         self.column_name = column_name
         if callable(func):
-            self._func = func
+            _func = func
             func = f"{func.__module__}.{func.__name__}"
         else:
-            self._func = None
+            _func = None
         self.func = func
         super().__init__(alias=alias or f"custom_column_descriptor:{func}", tests=tests)
+        self._func = _func
 
     def generate_data(self, dataset: Dataset, options: Options) -> Union[DatasetColumn, Dict[str, DatasetColumn]]:
         """Apply custom function to column data."""
@@ -70,12 +72,13 @@ class CustomDescriptor(Descriptor):
         tests: Optional[List[AnyDescriptorTest]] = None,
     ):
         if callable(func):
-            self._func = func
+            _func = func
             func = f"{func.__module__}.{func.__name__}"
         else:
-            self._func = None
+            _func = None
         self.func = func
         super().__init__(alias=alias or f"custom_descriptor:{func}", tests=tests)
+        self._func = _func
 
     def generate_data(self, dataset: "Dataset", options: Options) -> Union[DatasetColumn, Dict[str, DatasetColumn]]:
         """Apply custom function to dataset."""

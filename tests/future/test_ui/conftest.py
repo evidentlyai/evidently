@@ -3,10 +3,10 @@ import tempfile
 
 import pytest
 from litestar.testing import TestClient
+from pydantic import BaseModel
 from sqlalchemy import create_engine
 from sqlalchemy.pool import NullPool
 
-from evidently._pydantic_compat import BaseModel
 from evidently.legacy.core import new_id
 from evidently.legacy.utils import NumpyEncoder
 from evidently.ui.service.app import create_app

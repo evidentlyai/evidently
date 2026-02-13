@@ -8,7 +8,8 @@ from typing import List
 from typing import Optional
 from typing import Union
 
-from evidently._pydantic_compat import PrivateAttr
+from pydantic import PrivateAttr
+
 from evidently.pydantic_utils import AutoAliasMixin
 from evidently.pydantic_utils import EvidentlyBaseModel
 
@@ -53,8 +54,7 @@ AnySplitter = Union[str, Splitters, "Splitter"]
 class Splitter(AutoAliasMixin, EvidentlyBaseModel, ABC):
     __alias_type__: ClassVar[str] = "splitter"
 
-    class Config:
-        is_base_type = True
+    __is_base_type__: ClassVar[bool] = True
 
     chunk_size: int
     chunk_overlap: int

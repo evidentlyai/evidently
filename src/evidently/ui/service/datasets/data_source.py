@@ -12,9 +12,9 @@ from uuid import UUID
 
 import pandas as pd
 from litestar import Response
+from pydantic import BaseModel
 from typing_extensions import TypeAlias
 
-from evidently._pydantic_compat import BaseModel
 from evidently.core.datasets import DataDefinition
 from evidently.core.metric_types import AutoAliasMixin
 from evidently.pydantic_utils import PolymorphicModel
@@ -56,9 +56,8 @@ class DataSource(AutoAliasMixin, PolymorphicModel, ABC):
     __alias_namespace__: ClassVar = "evidently"
     __alias_type__: ClassVar = "data_source"
 
-    class Config:
-        is_base_type = True
-        alias_required = True
+    __is_base_type__: ClassVar[bool] = True
+    __alias_required__: ClassVar[bool] = True
 
     async def materialize(self, dataset_manager: "DatasetManager") -> MaterializedDataset:
         """Materialize the data source into a DataFrame."""
@@ -141,15 +140,14 @@ class DatasetDataSource(SortedFilteredDataSource):
 class DataSourceDTO(AutoAliasMixin, PolymorphicModel, ABC):
     """DTO for data source serialization."""
 
-    class Config:
-        is_base_type = True
+    __is_base_type__: ClassVar[bool] = True
 
     __data_source_type__: ClassVar[Type[DataSource]]
     __alias_type__: ClassVar = "data_source_dto"
 
     def to_data_source(self, **kwargs) -> DataSource:
         """Convert DTO to data source."""
-        kwargs = {k: v for k, v in kwargs.items() if k in self.__data_source_type__.__fields__}
+        kwargs = {k: v for k, v in kwargs.items() if k in self.__data_source_type__.model_fields}
         return self.__data_source_type__(**self.__dict__, **kwargs)
 
     @staticmethod
@@ -158,8 +156,12 @@ class DataSourceDTO(AutoAliasMixin, PolymorphicModel, ABC):
     ) -> Type["DataSourceDTO"]:
         """Create a DTO type for a data source type."""
         namespace = {
-            "__annotations__": {n: f.outer_type_ for n, f in data_source_type.__fields__.items() if n not in exclude},
-            **{n: f.default for n, f in data_source_type.__fields__.items() if n not in exclude and not f.required},
+            "__annotations__": {n: f.annotation for n, f in data_source_type.model_fields.items() if n not in exclude},
+            **{
+                n: f.default
+                for n, f in data_source_type.model_fields.items()
+                if n not in exclude and not f.is_required()
+            },
         }
 
         new_dto_type: Type[DataSourceDTO] = type(f"{data_source_type.__name__}DTO", (DataSourceDTO,), namespace)

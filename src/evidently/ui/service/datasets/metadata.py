@@ -9,8 +9,9 @@ from typing import Dict
 from typing import List
 from typing import Optional
 
-from evidently._pydantic_compat import BaseModel
-from evidently._pydantic_compat import parse_obj_as
+from pydantic import BaseModel
+from pydantic import TypeAdapter
+
 from evidently.core.datasets import EVIDENTLY_DATASET_EXT
 from evidently.core.datasets import DataDefinition
 from evidently.legacy.suite.base_suite import MetadataValueType
@@ -159,7 +160,7 @@ class FileDatasetMetadataStorage(DatasetMetadataStorage):
             dataset = DatasetMetadataFull(**dataset.dict(), author_name="", created_at=now, updated_at=now)
         metadata_path = self._metadata_path(project_id, dataset.id)
         with self.location.open(metadata_path, "w") as f:
-            f.write(dataset.json(indent=2))
+            f.write(dataset.model_dump_json(indent=2))
 
         return dataset.id
 
@@ -237,7 +238,7 @@ class FileDatasetMetadataStorage(DatasetMetadataStorage):
                     metadata_dict = json.load(f)
 
                 # Convert to DatasetMetadataFull
-                return parse_obj_as(DatasetMetadataFull, metadata_dict)
+                return TypeAdapter(DatasetMetadataFull).validate_python(metadata_dict)
 
         return None
 
@@ -313,7 +314,7 @@ class FileDatasetMetadataStorage(DatasetMetadataStorage):
                     if is_draft != draft:
                         continue
 
-                dataset_metadata = parse_obj_as(DatasetMetadataFull, metadata_dict)
+                dataset_metadata = TypeAdapter(DatasetMetadataFull).validate_python(metadata_dict)
                 datasets.append(dataset_metadata)
             except Exception:
                 # Skip malformed datasets

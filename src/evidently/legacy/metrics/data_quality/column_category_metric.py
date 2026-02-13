@@ -1,3 +1,4 @@
+from typing import ClassVar
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -21,9 +22,8 @@ from evidently.legacy.renderers.html_widgets import header_text
 
 
 class CategoryStat(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:CategoryStat"
-        field_tags = {"all_num": {IncludeTags.Extra}}
+    __type_alias__: ClassVar[Optional[str]] = "evidently:metric_result:CategoryStat"
+    __field_tags__: ClassVar[Dict[str, set]] = {"all_num": {IncludeTags.Extra}}
 
     all_num: int
     category_num: int
@@ -31,24 +31,21 @@ class CategoryStat(MetricResult):
 
 
 class CountOfValues(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:CountOfValues"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:metric_result:CountOfValues"
 
     current: HistogramData
     reference: Optional[HistogramData] = None
 
 
 class ColumnCategoryMetricResult(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:ColumnCategoryMetricResult"
-        pd_exclude_fields = {"counts"}
-        field_tags = {
-            "current": {IncludeTags.Current},
-            "reference": {IncludeTags.Reference},
-            "column_name": {IncludeTags.Parameter},
-            "counts": {IncludeTags.Extra},
-        }
-        smart_union = True
+    __type_alias__: ClassVar[Optional[str]] = "evidently:metric_result:ColumnCategoryMetricResult"
+    __pd_exclude_fields__: ClassVar[set] = {"counts"}
+    __field_tags__: ClassVar[Dict[str, set]] = {
+        "current": {IncludeTags.Current},
+        "reference": {IncludeTags.Reference},
+        "column_name": {IncludeTags.Parameter},
+        "counts": {IncludeTags.Extra},
+    }
 
     def __init__(self, **data) -> None:
         """for backward compatibility"""
@@ -82,9 +79,7 @@ class ColumnCategoryMetricResult(MetricResult):
 class ColumnCategoryMetric(Metric[ColumnCategoryMetricResult]):
     """Calculates count and shares of values in the predefined values list"""
 
-    class Config:
-        type_alias = "evidently:metric:ColumnCategoryMetric"
-        smart_union = True
+    __type_alias__: ClassVar[Optional[str]] = "evidently:metric:ColumnCategoryMetric"
 
     column_name: ColumnName
     category: Union[bool, int, float, str]

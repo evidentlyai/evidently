@@ -1,5 +1,6 @@
 from itertools import repeat
 from typing import Any
+from typing import ClassVar
 from typing import List
 from typing import Optional
 from typing import Union
@@ -17,8 +18,7 @@ _legacy_models = ["gpt-3.5-turbo-instruct", "babbage-002", "davinci-002"]
 
 
 class OpenAIFeature(FeatureTypeFieldMixin, GeneratedFeature):
-    class Config:
-        type_alias = "evidently:feature:OpenAIFeature"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:feature:OpenAIFeature"
 
     column_name: str
     feature_id: str

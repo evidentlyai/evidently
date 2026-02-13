@@ -1,12 +1,14 @@
 from abc import ABC
+from typing import ClassVar
 from typing import Dict
 from typing import Optional
+from typing import Set
 from typing import Union
 
 import pytest
+from pydantic import TypeAdapter
+from pydantic import ValidationError
 
-from evidently._pydantic_compat import ValidationError
-from evidently._pydantic_compat import parse_obj_as
 from evidently.legacy.base_metric import Metric
 from evidently.legacy.base_metric import MetricResult
 from evidently.legacy.core import IncludeTags
@@ -18,22 +20,19 @@ from evidently.pydantic_utils import PolymorphicModel
 
 
 class MockMetricResultField(MetricResult):
-    class Config:
-        alias_required = False
+    __alias_required__: ClassVar[bool] = False
 
     nested_field: str
 
 
 class ExtendedMockMetricResultField(MockMetricResultField):
-    class Config:
-        alias_required = False
+    __alias_required__: ClassVar[bool] = False
 
     additional_field: str
 
 
 class MockMetricResult(MetricResult):
-    class Config:
-        alias_required = False
+    __alias_required__: ClassVar[bool] = False
 
     field1: MockMetricResultField
     field2: int
@@ -41,8 +40,7 @@ class MockMetricResult(MetricResult):
 
 def _metric_with_result(result: MetricResult):
     class MockMetric(Metric):
-        class Config:
-            alias_required = False
+        __alias_required__: ClassVar[bool] = False
 
         def get_result(self):
             return result
@@ -85,8 +83,7 @@ def test_field_path():
 
 
 class MockMetricResultWithDict(MetricResult):
-    class Config:
-        alias_required = False
+    __alias_required__: ClassVar[bool] = False
 
     d: Dict[str, MockMetricResultField]
 
@@ -128,41 +125,37 @@ def test_field_path_with_dict():
 
 def test_not_allowed_prefix():
     class SomeModel(PolymorphicModel):
-        class Config:
-            alias_required = False
+        __alias_required__: ClassVar[bool] = False
 
     with pytest.raises(ValueError):
-        parse_obj_as(SomeModel, {"type": "external.Class"})
+        TypeAdapter(SomeModel).validate_python({"type": "external.Class"})
 
 
 def test_type_alias():
     class SomeModel(PolymorphicModel):
-        class Config:
-            type_alias = "somemodel"
-            alias_required = False
+        __type_alias__: ClassVar[Optional[str]] = "somemodel"
+        __alias_required__: ClassVar[bool] = False
 
     class SomeModelSubclass(SomeModel):
         pass
 
     class SomeOtherSubclass(SomeModel):
-        class Config:
-            type_alias = "othersubclass"
+        __type_alias__: ClassVar[Optional[str]] = "othersubclass"
 
-    obj = parse_obj_as(SomeModel, {"type": "somemodel"})
+    obj = TypeAdapter(SomeModel).validate_python({"type": "somemodel"})
     assert obj.__class__ == SomeModel
 
-    obj = parse_obj_as(SomeModel, {"type": SomeModelSubclass.__get_type__()})
+    obj = TypeAdapter(SomeModel).validate_python({"type": SomeModelSubclass.__get_type__()})
     assert obj.__class__ == SomeModelSubclass
 
-    obj = parse_obj_as(SomeModel, {"type": "othersubclass"})
+    obj = TypeAdapter(SomeModel).validate_python({"type": "othersubclass"})
     assert obj.__class__ == SomeOtherSubclass
 
 
 def test_include_exclude():
     class SomeModel(MetricResult):
-        class Config:
-            field_tags = {"f1": {IncludeTags.Render}}
-            alias_required = False
+        __field_tags__: ClassVar[Dict[str, Set[IncludeTags]]] = {"f1": {IncludeTags.Render}}
+        __alias_required__: ClassVar[bool] = False
 
         f1: str
         f2: str
@@ -172,15 +165,13 @@ def test_include_exclude():
     # assert SomeModel.fields.list_nested_fields(include={IncludeTags.Render}) == ["f1"]
 
     class SomeNestedModel(MetricResult):
-        class Config:
-            tags = {IncludeTags.Render}
-            alias_required = False
+        __tags__: ClassVar[Set[IncludeTags]] = {IncludeTags.Render}
+        __alias_required__: ClassVar[bool] = False
 
         f1: str
 
     class SomeOtherModel(MetricResult):
-        class Config:
-            alias_required = False
+        __alias_required__: ClassVar[bool] = False
 
         f1: str
         f2: SomeNestedModel
@@ -195,9 +186,8 @@ def test_include_exclude():
 
 def test_get_field_tags():
     class SomeModel(MetricResult):
-        class Config:
-            field_tags = {"f1": {IncludeTags.Render}}
-            alias_required = False
+        __field_tags__: ClassVar[Dict[str, Set[IncludeTags]]] = {"f1": {IncludeTags.Render}}
+        __alias_required__: ClassVar[bool] = False
 
         f1: str
         f2: str
@@ -207,15 +197,13 @@ def test_get_field_tags():
     assert SomeModel.fields.get_field_tags(["f2"]) == set()
 
     class SomeNestedModel(MetricResult):
-        class Config:
-            tags = {IncludeTags.Render}
-            alias_required = False
+        __tags__: ClassVar[Set[IncludeTags]] = {IncludeTags.Render}
+        __alias_required__: ClassVar[bool] = False
 
         f1: str
 
     class SomeOtherModel(MetricResult):
-        class Config:
-            alias_required = False
+        __alias_required__: ClassVar[bool] = False
 
         f1: str
         f2: SomeNestedModel
@@ -232,9 +220,8 @@ def test_get_field_tags():
 
 def test_list_with_tags():
     class SomeModel(MetricResult):
-        class Config:
-            field_tags = {"f1": {IncludeTags.Render}}
-            alias_required = False
+        __field_tags__: ClassVar[Dict[str, Set[IncludeTags]]] = {"f1": {IncludeTags.Render}}
+        __alias_required__: ClassVar[bool] = False
 
         f1: str
         f2: str
@@ -246,15 +233,13 @@ def test_list_with_tags():
     ]
 
     class SomeNestedModel(MetricResult):
-        class Config:
-            tags = {IncludeTags.Render}
-            alias_required = False
+        __tags__: ClassVar[Set[IncludeTags]] = {IncludeTags.Render}
+        __alias_required__: ClassVar[bool] = False
 
         f1: str
 
     class SomeOtherModel(MetricResult):
-        class Config:
-            alias_required = False
+        __alias_required__: ClassVar[bool] = False
 
         f1: str
         f2: SomeNestedModel
@@ -273,16 +258,14 @@ def test_list_with_tags():
 
 def test_list_with_tags_with_union():
     class A(MetricResult):
-        class Config:
-            tags = {IncludeTags.Render}
-            alias_required = False
+        __tags__: ClassVar[Set[IncludeTags]] = {IncludeTags.Render}
+        __alias_required__: ClassVar[bool] = False
 
         f1: str
 
     class B(MetricResult):
-        class Config:
-            tags = {IncludeTags.Render}
-            alias_required = False
+        __tags__: ClassVar[Set[IncludeTags]] = {IncludeTags.Render}
+        __alias_required__: ClassVar[bool] = False
 
         f1: str
 
@@ -291,8 +274,7 @@ def test_list_with_tags_with_union():
     assert fp._cls == A
 
     class SomeModel(MetricResult):
-        class Config:
-            alias_required = False
+        __alias_required__: ClassVar[bool] = False
 
         f2: Union[A, B]
         f1: str
@@ -307,20 +289,17 @@ def test_list_with_tags_with_union():
 
 def test_get_field_tags_no_overwrite():
     class A(MetricResult):
-        class Config:
-            field_tags = {"f": {IncludeTags.Current}}
-            alias_required = False
+        __field_tags__: ClassVar[Dict[str, Set[IncludeTags]]] = {"f": {IncludeTags.Current}}
+        __alias_required__: ClassVar[bool] = False
 
         f: str
 
     class B(A):
-        class Config:
-            tags = {IncludeTags.Reference}
+        __tags__: ClassVar[Set[IncludeTags]] = {IncludeTags.Reference}
 
     class C(MetricResult):
-        class Config:
-            field_tags = {"f": {IncludeTags.Reference}}
-            alias_required = False
+        __field_tags__: ClassVar[Dict[str, Set[IncludeTags]]] = {"f": {IncludeTags.Reference}}
+        __alias_required__: ClassVar[bool] = False
 
         f: A
 
@@ -336,16 +315,14 @@ def test_get_field_tags_no_overwrite():
 
 def test_fingerprint_add_new_default_field():
     class A(EvidentlyBaseModel):
-        class Config:
-            alias_required = False
+        __alias_required__: ClassVar[bool] = False
 
         field1: str
 
     f1 = A(field1="123").get_fingerprint()
 
     class A(EvidentlyBaseModel):
-        class Config:
-            alias_required = False
+        __alias_required__: ClassVar[bool] = False
 
         field1: str
         field2: str = "321"
@@ -358,8 +335,7 @@ def test_fingerprint_add_new_default_field():
 
 def test_fingerprint_reorder_fields():
     class A(EvidentlyBaseModel):
-        class Config:
-            alias_required = False
+        __alias_required__: ClassVar[bool] = False
 
         field1: str
         field2: str
@@ -367,8 +343,7 @@ def test_fingerprint_reorder_fields():
     f1 = A(field1="123", field2="321").get_fingerprint()
 
     class A(EvidentlyBaseModel):
-        class Config:
-            alias_required = False
+        __alias_required__: ClassVar[bool] = False
 
         field2: str
         field1: str
@@ -381,8 +356,7 @@ def test_fingerprint_reorder_fields():
 
 def test_fingerprint_default_collision():
     class A(EvidentlyBaseModel):
-        class Config:
-            alias_required = False
+        __alias_required__: ClassVar[bool] = False
 
         field1: Optional[str] = None
         field2: Optional[str] = None
@@ -392,24 +366,22 @@ def test_fingerprint_default_collision():
 
 def test_wrong_classpath():
     class WrongClassPath(EvidentlyBaseModel):
-        class Config:
-            alias_required = False
+        __alias_required__: ClassVar[bool] = False
 
         f: str
 
     ALLOWED_TYPE_PREFIXES.append("tests.")
     a = WrongClassPath(f="asd")
-    assert parse_obj_as(WrongClassPath, a.dict()) == a
-    d = a.dict()
+    assert TypeAdapter(WrongClassPath).validate_python(a.model_dump()) == a
+    d = a.model_dump()
     d["type"] += "_"
     with pytest.raises(ValidationError):
-        parse_obj_as(WrongClassPath, d)
+        TypeAdapter(WrongClassPath).validate_python(d)
 
 
 def test_alias_requied():
     class RequiredAlias(PolymorphicModel, ABC):
-        class Config:
-            alias_required = True
+        __alias_required__: ClassVar[bool] = True
 
     with pytest.raises(ValueError):
 
@@ -417,5 +389,4 @@ def test_alias_requied():
             pass
 
     class Alias(RequiredAlias):
-        class Config:
-            type_alias = "alias"
+        __type_alias__: ClassVar[Optional[str]] = "alias"

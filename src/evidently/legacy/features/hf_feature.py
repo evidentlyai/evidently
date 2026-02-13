@@ -16,8 +16,7 @@ from evidently.legacy.utils.data_preprocessing import DataDefinition
 
 
 class HuggingFaceFeature(FeatureTypeFieldMixin, DataFeature):
-    class Config:
-        type_alias = "evidently:feature:HuggingFaceFeature"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:feature:HuggingFaceFeature"
 
     column_name: str
     model: str
@@ -43,8 +42,7 @@ class HuggingFaceFeature(FeatureTypeFieldMixin, DataFeature):
 
 
 class HuggingFaceToxicityFeature(DataFeature):
-    class Config:
-        type_alias = "evidently:feature:HuggingFaceToxicityFeature"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:feature:HuggingFaceToxicityFeature"
 
     __feature_type__: ClassVar = ColumnType.Numerical
     column_name: str

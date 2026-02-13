@@ -12,10 +12,10 @@ from typing import Type
 import uuid6
 from fsspec import AbstractFileSystem
 from fsspec import get_fs_token_paths
+from pydantic import PrivateAttr
+from pydantic import TypeAdapter
+from pydantic import ValidationError
 
-from evidently._pydantic_compat import PrivateAttr
-from evidently._pydantic_compat import ValidationError
-from evidently._pydantic_compat import parse_obj_as
 from evidently.legacy.suite.base_suite import Snapshot
 from evidently.legacy.test_suite import TestSuite
 from evidently.legacy.tests.base_test import Test
@@ -127,7 +127,7 @@ class FSSpecBlobStorage(BlobStorage):
 def load_project(location: FSLocation, path: str) -> Optional[Project]:
     try:
         with location.open(posixpath.join(path, METADATA_PATH)) as f:
-            return parse_obj_as(Project, json.load(f))
+            return TypeAdapter(Project).validate_python(json.load(f))
     except FileNotFoundError:
         return None
 
@@ -177,7 +177,7 @@ class LocalState:
         try:
             snapshot_path = posixpath.join(str(project.id), SNAPSHOTS, str(snapshot_id) + ".json")
             with self.location.open(snapshot_path) as f:
-                suite = parse_obj_as(Snapshot, json.load(f))
+                suite = TypeAdapter(Snapshot).validate_python(json.load(f))
             snapshot = SnapshotMetadata.from_snapshot(
                 suite, BlobMetadata(id=snapshot_path, size=self.location.size(snapshot_path))
             ).bind(project)

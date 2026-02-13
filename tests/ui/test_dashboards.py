@@ -1,9 +1,10 @@
 import json
+from typing import ClassVar
 from typing import Dict
 
 import pytest
+from pydantic import TypeAdapter
 
-from evidently._pydantic_compat import parse_obj_as
 from evidently.legacy.base_metric import ColumnName
 from evidently.legacy.base_metric import InputData
 from evidently.legacy.base_metric import Metric
@@ -17,15 +18,13 @@ from evidently.pydantic_utils import EvidentlyBaseModel
 
 
 class A(MetricResult):
-    class Config:
-        alias_required = False
+    __alias_required__: ClassVar[bool] = False
 
     f: str
 
 
 class B(MetricResult):
-    class Config:
-        alias_required = False
+    __alias_required__: ClassVar[bool] = False
 
     f: Dict[str, A]
     f1: A
@@ -42,16 +41,15 @@ def test_getattr_nested(obj, path: str, value):
 def test_panel_value_metric_args_ser():
     pv = PanelValue(field_path="", metric_args={"col": OOV(display_name="OOV").for_column("Review_Text")})
 
-    pl = json.dumps(pv.dict())
-    pv2 = parse_obj_as(PanelValue, json.loads(pl))
+    pl = json.dumps(pv.model_dump())
+    pv2 = TypeAdapter(PanelValue).validate_python(json.loads(pl))
 
     assert pv2 == pv
 
 
 def test_panel_value_methic_hash_filter():
     class MyMetric(Metric[A]):
-        class Config:
-            alias_required = False
+        __alias_required__: ClassVar[bool] = False
 
         arg: str
 
@@ -68,14 +66,12 @@ def test_panel_value_methic_hash_filter():
 
 def test_metric_hover_template():
     class Nested(EvidentlyBaseModel):
-        class Config:
-            alias_required = False
+        __alias_required__: ClassVar[bool] = False
 
         f: str
 
     class MyMetric(Metric[A]):
-        class Config:
-            alias_required = False
+        __alias_required__: ClassVar[bool] = False
 
         arg: str
         n: Nested
@@ -108,8 +104,7 @@ def test_metric_hover_template():
 
 def test_metric_hover_template_column_name():
     class MyMetric(Metric[A]):
-        class Config:
-            alias_required = False
+        __alias_required__: ClassVar[bool] = False
 
         column_name: ColumnName
 

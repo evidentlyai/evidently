@@ -1,4 +1,7 @@
+from typing import ClassVar
 from typing import List
+from typing import Optional
+from typing import Set
 
 from evidently.legacy.base_metric import InputData
 from evidently.legacy.base_metric import Metric
@@ -12,17 +15,15 @@ from evidently.legacy.renderers.html_widgets import text_widget
 
 
 class CommentResults(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:CommentResults"
-        dict_include = False
-        tags = {IncludeTags.Render}
+    __type_alias__: ClassVar[Optional[str]] = "evidently:metric_result:CommentResults"
+    __dict_include__: ClassVar[bool] = False
+    __tags__: ClassVar[Set[IncludeTags]] = {IncludeTags.Render}
 
     text: str
 
 
 class Comment(Metric[CommentResults]):
-    class Config:
-        type_alias = "evidently:metric:Comment"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:metric:Comment"
 
     text: str
 

@@ -9,8 +9,9 @@ from typing import Tuple
 from typing import Type
 from typing import Union
 
-from evidently._pydantic_compat import PrivateAttr
-from evidently._pydantic_compat import ValidationError
+from pydantic import PrivateAttr
+from pydantic import ValidationError
+
 from evidently.core.container import ColumnMetricContainer
 from evidently.core.container import MetricContainer
 from evidently.core.container import MetricOrContainer
@@ -79,13 +80,13 @@ class ColumnMetricGenerator(MetricContainer):
             ), "metric_type_alias must be an alias of ColumnMetric or ColumnMetricContainer subclass"
         assert metric_type_alias is not None, "metric_type_alias or metric_type must be specified"
         self.metric_type_alias = metric_type_alias
-        self._metric_type = _metric_type
         self.columns = columns
         self.column_types = column_types
         if metric_kwargs and kwargs:
             raise ValueError("only one of metric_kwargs or **kwargs may be specified")
         self.metric_kwargs = metric_kwargs or kwargs or {}
         super().__init__(include_tests=include_tests)
+        self._metric_type = _metric_type
 
     def _instantiate_metric(self, column: str) -> MetricOrContainer:
         """Create a metric instance for a specific column.

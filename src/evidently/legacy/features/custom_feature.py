@@ -1,9 +1,11 @@
 from typing import Callable
+from typing import ClassVar
+from typing import Optional
 from typing import Tuple
 
 import pandas as pd
+from pydantic import Field
 
-from evidently._pydantic_compat import Field
 from evidently.legacy.base_metric import ColumnName
 from evidently.legacy.core import ColumnType
 from evidently.legacy.core import new_id
@@ -14,8 +16,7 @@ from evidently.pydantic_utils import FingerprintPart
 
 
 class CustomFeature(FeatureTypeFieldMixin, GeneratedFeature):
-    class Config:
-        type_alias = "evidently:feature:CustomFeature"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:feature:CustomFeature"
 
     display_name: str
     name: str = Field(default_factory=lambda: str(new_id()))
@@ -31,8 +32,7 @@ class CustomFeature(FeatureTypeFieldMixin, GeneratedFeature):
 
 
 class CustomSingleColumnFeature(FeatureTypeFieldMixin, GeneratedFeature):
-    class Config:
-        type_alias = "evidently:feature:CustomSingleColumnFeature"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:feature:CustomSingleColumnFeature"
 
     display_name: str
     func: Callable[[pd.Series], pd.Series]
@@ -50,14 +50,13 @@ class CustomSingleColumnFeature(FeatureTypeFieldMixin, GeneratedFeature):
     def get_fingerprint_parts(self) -> Tuple[FingerprintPart, ...]:
         return tuple(
             (name, self.get_field_fingerprint(name))
-            for name, field in sorted(self.__fields__.items())
-            if (field.required or getattr(self, name) != field.get_default()) and field.name != "func"
+            for name, field in sorted(self.model_fields.items())
+            if (field.is_required() or getattr(self, name) != field.default) and name != "func"
         )
 
 
 class CustomPairColumnFeature(FeatureTypeFieldMixin, GeneratedFeature):
-    class Config:
-        type_alias = "evidently:feature:CustomPairColumnFeature"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:feature:CustomPairColumnFeature"
 
     display_name: str
     func: Callable[[pd.Series, pd.Series], pd.Series]

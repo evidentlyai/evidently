@@ -3,8 +3,8 @@ from typing import List
 from litestar import Router
 from litestar import get
 from litestar import post
+from pydantic import BaseModel
 
-from evidently._pydantic_compat import BaseModel
 from evidently.legacy.descriptors import BiasLLMEval
 from evidently.legacy.descriptors import CompletenessLLMEval
 from evidently.legacy.descriptors import ContextQualityLLMEval

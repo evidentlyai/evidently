@@ -1,4 +1,5 @@
 from functools import reduce
+from typing import ClassVar
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -26,16 +27,15 @@ from evidently.legacy.renderers.html_widgets import table_data
 
 
 class RecCasesTableResults(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:RecCasesTableResults"
-        pd_include = False
-        field_tags = {
-            "user_ids": {IncludeTags.Extra},
-            "current": {IncludeTags.Current, IncludeTags.Extra},
-            "reference": {IncludeTags.Reference},
-            "current_train": {IncludeTags.Current, IncludeTags.Extra},
-            "reference_train": {IncludeTags.Reference},
-        }
+    __type_alias__: ClassVar[Optional[str]] = "evidently:metric_result:RecCasesTableResults"
+    __pd_include__: ClassVar[bool] = False
+    __field_tags__: ClassVar[Dict[str, set]] = {
+        "user_ids": {IncludeTags.Extra},
+        "current": {IncludeTags.Current, IncludeTags.Extra},
+        "reference": {IncludeTags.Reference},
+        "current_train": {IncludeTags.Current, IncludeTags.Extra},
+        "reference_train": {IncludeTags.Reference},
+    }
 
     user_ids: List[str]
     current: Dict[str, pd.DataFrame]
@@ -45,12 +45,11 @@ class RecCasesTableResults(MetricResult):
 
 
 class RecCasesTable(Metric[RecCasesTableResults]):
-    class Config:
-        type_alias = "evidently:metric:RecCasesTable"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:metric:RecCasesTable"
 
-    user_ids: Optional[List[Union[int, str]]]
-    display_features: Optional[List[str]]
-    item_num: Optional[int]
+    user_ids: Optional[List[Union[int, str]]] = None
+    display_features: Optional[List[str]] = None
+    item_num: Optional[int] = None
     train_item_num: int
 
     def __init__(

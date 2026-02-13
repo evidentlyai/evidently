@@ -1,4 +1,6 @@
+from typing import ClassVar
 from typing import List
+from typing import Optional
 
 from evidently.legacy.features import words_feature
 from evidently.legacy.features.generated_features import FeatureDescriptor
@@ -6,8 +8,7 @@ from evidently.legacy.features.generated_features import GeneratedFeature
 
 
 class ExcludesWords(FeatureDescriptor):
-    class Config:
-        type_alias = "evidently:descriptor:ExcludesWords"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:descriptor:ExcludesWords"
 
     words_list: List[str]
     mode: str = "all"
@@ -24,8 +25,7 @@ class ExcludesWords(FeatureDescriptor):
 
 
 class IncludesWords(FeatureDescriptor):
-    class Config:
-        type_alias = "evidently:descriptor:IncludesWords"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:descriptor:IncludesWords"
 
     words_list: List[str]
     mode: str = "any"
@@ -42,8 +42,7 @@ class IncludesWords(FeatureDescriptor):
 
 
 class WordMatch(FeatureDescriptor):
-    class Config:
-        type_alias = "evidently:descriptor:WordMatch"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:descriptor:WordMatch"
 
     with_column: str
     mode: str = "any"
@@ -59,8 +58,7 @@ class WordMatch(FeatureDescriptor):
 
 
 class WordNoMatch(FeatureDescriptor):
-    class Config:
-        type_alias = "evidently:descriptor:WordNoMatch"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:descriptor:WordNoMatch"
 
     with_column: str
     mode: str = "any"

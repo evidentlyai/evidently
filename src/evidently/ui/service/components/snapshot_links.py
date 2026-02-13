@@ -9,8 +9,7 @@ from evidently.ui.service.datasets.snapshot_links import SnapshotDatasetLinksMan
 class SnapshotDatasetLinksComponent(FactoryComponent[SnapshotDatasetLinksManager], Component):
     """Component for snapshot dataset links manager."""
 
-    class Config:
-        is_base_type = True
+    __is_base_type__: ClassVar[bool] = True
 
     __section__: ClassVar[str] = "snapshot_dataset_links"
     dependency_name: ClassVar[str] = "snapshot_dataset_links"

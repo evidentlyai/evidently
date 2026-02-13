@@ -17,11 +17,12 @@ from typing import TypeVar
 
 import numpy as np
 import pandas as pd
+from pydantic import BaseModel
+from pydantic import ConfigDict
+from pydantic import Field
+from pydantic import PrivateAttr
 from sklearn.model_selection import train_test_split
 
-from evidently._pydantic_compat import BaseModel
-from evidently._pydantic_compat import Field
-from evidently._pydantic_compat import PrivateAttr
 from evidently.legacy.core import new_id
 from evidently.legacy.options.base import Options
 from evidently.legacy.utils.llm.wrapper import LLMWrapper
@@ -164,6 +165,8 @@ class LLMDataset(BaseModel):
     for train/val/test splits.
     """
 
+    model_config = ConfigDict(arbitrary_types_allowed=True)
+
     input_values: pd.Series
     """Input values (e.g., prompts)."""
     target: Optional[pd.Series] = None
@@ -255,6 +258,8 @@ class LLMResultDataset(BaseModel):
 
     Stores predictions, reasoning, and scores from optimization runs.
     """
+
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
     predictions: Optional[pd.Series] = None
     """Optional model predictions."""
@@ -361,8 +366,7 @@ class OptimizerConfig(AutoAliasMixin, EvidentlyBaseModel):
 
     __alias_type__: ClassVar = "optimizer_config"
 
-    class Config:
-        is_base_type = True
+    __is_base_type__: ClassVar[bool] = True
 
     provider: str = "openai"
     """LLM provider name."""
@@ -387,8 +391,7 @@ class OptimizerLog(AutoAliasMixin, EvidentlyBaseModel, ABC):
     __alias_type__: ClassVar = "optimizer_log"
     __is_step__: ClassVar[bool] = False
 
-    class Config:
-        is_base_type = True
+    __is_base_type__: ClassVar[bool] = True
 
     id: LogID = Field(default_factory=new_id)
     """Unique log identifier."""

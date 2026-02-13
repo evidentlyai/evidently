@@ -1,9 +1,13 @@
+from typing import Annotated
+from typing import ClassVar
 from typing import Dict
 from typing import List
+from typing import Optional
 from typing import Union
 
 import numpy as np
 import pandas as pd
+from pydantic import BeforeValidator
 from sklearn.metrics import pairwise_distances
 
 from evidently.legacy.base_metric import InputData
@@ -11,6 +15,8 @@ from evidently.legacy.base_metric import Metric
 from evidently.legacy.base_metric import MetricResult
 from evidently.legacy.calculations.recommender_systems import get_prediciton_name
 from evidently.legacy.core import IncludeTags
+from evidently.legacy.core import PydanticNPArray
+from evidently.legacy.core import try_int_validator
 from evidently.legacy.model.widget import BaseWidgetInfo
 from evidently.legacy.options.base import AnyOptions
 from evidently.legacy.pipeline.column_mapping import RecomType
@@ -19,18 +25,16 @@ from evidently.legacy.renderers.base_renderer import default_renderer
 
 
 class PairwiseDistanceResult(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:PairwiseDistanceResult"
-        pd_include = False
-        field_tags = {"dist_matrix": {IncludeTags.Extra}}
+    __type_alias__: ClassVar[Optional[str]] = "evidently:metric_result:PairwiseDistanceResult"
+    __pd_include__: ClassVar[bool] = False
+    __field_tags__: ClassVar[Dict[str, set]] = {"dist_matrix": {IncludeTags.Extra}}
 
-    dist_matrix: np.ndarray
-    name_dict: Dict[Union[int, str], int]
+    dist_matrix: PydanticNPArray
+    name_dict: Dict[Annotated[Union[int, str], BeforeValidator(try_int_validator)], int]
 
 
 class PairwiseDistance(Metric[PairwiseDistanceResult]):
-    class Config:
-        type_alias = "evidently:metric:PairwiseDistance"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:metric:PairwiseDistance"
 
     k: int
     item_features: List[str]

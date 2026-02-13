@@ -8,7 +8,8 @@ from typing import Optional
 from typing import Set
 from typing import Tuple
 
-from evidently._pydantic_compat import BaseModel
+from pydantic import BaseModel
+
 from evidently.legacy.ui.base import EntityType
 from evidently.legacy.ui.base import Org
 from evidently.legacy.ui.base import Team

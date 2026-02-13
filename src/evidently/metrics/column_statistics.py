@@ -275,9 +275,6 @@ class CategoryCount(ColumnMetric, CountMetric):
     ```
     """
 
-    class Config:
-        smart_union = True
-
     category: Optional[Label] = None
     """Single category value to count."""
     categories: List[Label] = []

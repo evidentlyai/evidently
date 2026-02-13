@@ -2,6 +2,7 @@ import datetime
 import json
 import typing
 import uuid
+from enum import Enum
 from functools import partial
 from typing import Callable
 from typing import Tuple
@@ -32,6 +33,7 @@ _TYPES_MAPPING = (
     ((uuid.UUID,), lambda obj: str(obj)),
     ((ColumnType,), lambda obj: obj.value),
     ((pd.Period,), lambda obj: str(obj)),
+    ((Enum,), lambda obj: obj.value),
 )
 
 

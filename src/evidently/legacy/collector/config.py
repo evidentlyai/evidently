@@ -3,16 +3,17 @@ import json
 import time
 import warnings
 from typing import Any
+from typing import ClassVar
 from typing import Dict
 from typing import List
 from typing import Optional
 from typing import Union
 
 import pandas as pd
+from pydantic import BaseModel
+from pydantic import Field
+from pydantic import TypeAdapter
 
-from evidently._pydantic_compat import BaseModel
-from evidently._pydantic_compat import Field
-from evidently._pydantic_compat import parse_obj_as
 from evidently.legacy.base_metric import Metric
 from evidently.legacy.collector.storage import CollectorStorage
 from evidently.legacy.collector.storage import InMemoryStorage
@@ -35,7 +36,7 @@ class Config(BaseModel):
     @classmethod
     def load(cls, path: str):
         with open(path) as f:
-            return parse_obj_as(cls, json.load(f))
+            return TypeAdapter(cls).validate_python(json.load(f))
 
     def save(self, path: str):
         with open(path, "w") as f:
@@ -43,8 +44,7 @@ class Config(BaseModel):
 
 
 class CollectorTrigger(PolymorphicModel):
-    class Config:
-        is_base_type = True
+    __is_base_type__: ClassVar[bool] = True
 
     @abc.abstractmethod
     def is_ready(self, config: "CollectorConfig", storage: "CollectorStorage") -> bool:
@@ -53,8 +53,7 @@ class CollectorTrigger(PolymorphicModel):
 
 @autoregister
 class IntervalTrigger(CollectorTrigger):
-    class Config:
-        type_alias = "evidently:collector_trigger:IntervalTrigger"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:collector_trigger:IntervalTrigger"
 
     interval: float = Field(gt=0)
     last_triggered: float = 0
@@ -69,8 +68,7 @@ class IntervalTrigger(CollectorTrigger):
 
 @autoregister
 class RowsCountTrigger(CollectorTrigger):
-    class Config:
-        type_alias = "evidently:collector_trigger:RowsCountTrigger"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:collector_trigger:RowsCountTrigger"
 
     rows_count: int = Field(default=1, gt=0)
 
@@ -81,8 +79,7 @@ class RowsCountTrigger(CollectorTrigger):
 
 @autoregister
 class RowsCountOrIntervalTrigger(CollectorTrigger):
-    class Config:
-        type_alias = "evidently:collector_trigger:RowsCountOrIntervalTrigger"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:collector_trigger:RowsCountOrIntervalTrigger"
 
     rows_count_trigger: RowsCountTrigger
     interval_trigger: IntervalTrigger
@@ -135,13 +132,10 @@ class ReportConfig(Config):
 
 
 class CollectorConfig(Config):
-    class Config:
-        underscore_attrs_are_private = True
-
     id: str = ""
     trigger: CollectorTrigger
     report_config: ReportConfig
-    reference_path: Optional[str]
+    reference_path: Optional[str] = None
 
     project_id: str
     api_url: str = "http://localhost:8000"

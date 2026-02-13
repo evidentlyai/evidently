@@ -2,6 +2,7 @@ from collections import defaultdict
 from typing import ClassVar
 from typing import Dict
 from typing import List
+from typing import Optional
 
 import numpy as np
 import pandas as pd
@@ -13,8 +14,7 @@ from evidently.legacy.utils.data_preprocessing import DataDefinition
 
 
 class BERTScoreFeature(GeneratedFeature):
-    class Config:
-        type_alias = "evidently:feature:BERTScoreFeature"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:feature:BERTScoreFeature"
 
     __feature_type__: ClassVar = ColumnType.Numerical
     columns: List[str]

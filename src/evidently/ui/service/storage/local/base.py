@@ -12,11 +12,11 @@ from typing import Set
 from typing import Union
 
 import uuid6
+from pydantic import BaseModel
+from pydantic import PrivateAttr
+from pydantic import TypeAdapter
+from pydantic import ValidationError
 
-from evidently._pydantic_compat import BaseModel
-from evidently._pydantic_compat import PrivateAttr
-from evidently._pydantic_compat import ValidationError
-from evidently._pydantic_compat import parse_obj_as
 from evidently.core.metric_types import ByLabelCountValue
 from evidently.core.metric_types import ByLabelValue
 from evidently.core.metric_types import CountValue
@@ -98,7 +98,7 @@ class FSSpecBlobStorage(BlobStorage):
 def load_project(location: FSLocation, path: str) -> Optional[Project]:
     try:
         with location.open(posixpath.join(path, METADATA_PATH)) as f:
-            return parse_obj_as(Project, json.load(f))
+            return TypeAdapter(Project).validate_python(json.load(f))
     except FileNotFoundError:
         return None
 
@@ -154,7 +154,7 @@ class LocalState(WorkspaceLocalState):
         try:
             snapshot_path = posixpath.join(str(project.id), SNAPSHOTS, str(snapshot_id) + ".json")
             with self.location.open(snapshot_path) as f:
-                model = parse_obj_as(SnapshotModel, json.load(f))
+                model = TypeAdapter(SnapshotModel).validate_python(json.load(f))
             self.snapshots[project.id][snapshot_id] = model
             for callback in self.callbacks:
                 callback(project.id, snapshot_id, model)

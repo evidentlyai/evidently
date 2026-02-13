@@ -4,7 +4,8 @@ from typing import Dict
 from typing import List
 from typing import Optional
 
-from evidently._pydantic_compat import BaseModel
+from pydantic import BaseModel
+
 from evidently.legacy.core import new_id
 from evidently.sdk.artifacts import Artifact
 from evidently.sdk.artifacts import ArtifactID

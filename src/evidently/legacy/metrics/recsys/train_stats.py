@@ -1,3 +1,5 @@
+from typing import ClassVar
+from typing import Dict
 from typing import List
 from typing import Optional
 
@@ -14,14 +16,13 @@ from evidently.legacy.renderers.base_renderer import default_renderer
 
 
 class TrainStatsResult(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:TrainStatsResult"
-        field_tags = {
-            "current": {IncludeTags.Current},
-            "current_n_users": {IncludeTags.Current},
-            "reference": {IncludeTags.Reference},
-            "reference_n_users": {IncludeTags.Reference},
-        }
+    __type_alias__: ClassVar[Optional[str]] = "evidently:metric_result:TrainStatsResult"
+    __field_tags__: ClassVar[Dict[str, set]] = {
+        "current": {IncludeTags.Current},
+        "current_n_users": {IncludeTags.Current},
+        "reference": {IncludeTags.Reference},
+        "reference_n_users": {IncludeTags.Reference},
+    }
 
     current: pd.Series
     current_n_users: int
@@ -30,8 +31,7 @@ class TrainStatsResult(MetricResult):
 
 
 class TrainStats(Metric[TrainStatsResult]):
-    class Config:
-        type_alias = "evidently:metric:TrainStats"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:metric:TrainStats"
 
     """Calculates the number of times each item has been rated in the training set"""
 

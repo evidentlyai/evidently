@@ -16,10 +16,11 @@ from typing import Type
 from typing import TypeVar
 from typing import Union
 
-from evidently._pydantic_compat import BaseModel
-from evidently._pydantic_compat import Field
-from evidently._pydantic_compat import PrivateAttr
-from evidently._pydantic_compat import parse_obj_as
+from pydantic import BaseModel
+from pydantic import Field
+from pydantic import PrivateAttr
+from pydantic import TypeAdapter
+
 from evidently.errors import EvidentlyError
 from evidently.pydantic_utils import AutoAliasMixin
 from evidently.pydantic_utils import EvidentlyBaseModel
@@ -68,9 +69,7 @@ class ArtifactContent(AutoAliasMixin, EvidentlyBaseModel, Generic[TArtifactValue
     __alias_type__: ClassVar = "artifact_content"
     __value_class__: ClassVar[Type[TArtifactValue]]
     __value_type__: ClassVar[ArtifactContentType]
-
-    class Config:
-        is_base_type = True
+    __is_base_type__: ClassVar[bool] = True
 
     data: Any
     """Raw data stored in the artifact."""
@@ -81,7 +80,7 @@ class ArtifactContent(AutoAliasMixin, EvidentlyBaseModel, Generic[TArtifactValue
         Returns:
         * Typed value parsed from the stored data.
         """
-        return parse_obj_as(self.__value_class__, self.data)
+        return TypeAdapter(self.__value_class__).validate_python(self.data)
 
     def get_type(self) -> ArtifactContentType:
         """Get the content type.
@@ -105,7 +104,8 @@ class ArtifactContent(AutoAliasMixin, EvidentlyBaseModel, Generic[TArtifactValue
         raise NotImplementedError()
 
     def __init_subclass__(cls):
-        _CONTENT_TYPE_MAPPING[cls.__value_class__] = cls
+        if "__value_class__" in cls.__dict__:
+            _CONTENT_TYPE_MAPPING[cls.__value_class__] = cls
         super().__init_subclass__()
 
 
@@ -201,7 +201,7 @@ class ArtifactVersion(BaseModel):
     ):
         if not isinstance(content, ArtifactContent):
             try:
-                content = parse_obj_as(ArtifactContent, content)  # type: ignore[type-abstract]
+                content = TypeAdapter(ArtifactContent).validate_python(content)  # type: ignore[type-abstract]
             except ValueError:
                 content = _parse_any_to_content(content)
 

@@ -1,4 +1,5 @@
 import json
+from typing import ClassVar
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -33,14 +34,13 @@ from evidently.legacy.utils.data_preprocessing import DataDefinition
 
 
 class ClassificationQualityByFeatureTableResults(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:ClassificationQualityByFeatureTableResults"
-        field_tags = {
-            "current": {IncludeTags.Current},
-            "reference": {IncludeTags.Reference},
-            "target_name": {IncludeTags.Parameter},
-            "columns": {IncludeTags.Parameter},
-        }
+    __type_alias__: ClassVar[Optional[str]] = "evidently:metric_result:ClassificationQualityByFeatureTableResults"
+    __field_tags__: ClassVar[Dict[str, set]] = {
+        "current": {IncludeTags.Current},
+        "reference": {IncludeTags.Reference},
+        "target_name": {IncludeTags.Parameter},
+        "columns": {IncludeTags.Parameter},
+    }
 
     current: StatsByFeature
     reference: Optional[StatsByFeature]
@@ -50,11 +50,10 @@ class ClassificationQualityByFeatureTableResults(MetricResult):
 
 
 class ClassificationQualityByFeatureTable(UsesRawDataMixin, Metric[ClassificationQualityByFeatureTableResults]):
-    class Config:
-        type_alias = "evidently:metric:ClassificationQualityByFeatureTable"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:metric:ClassificationQualityByFeatureTable"
 
-    columns: Optional[List[str]]
-    descriptors: Optional[Dict[str, Dict[str, FeatureDescriptor]]]
+    columns: Optional[List[str]] = None
+    descriptors: Optional[Dict[str, Dict[str, FeatureDescriptor]]] = None
     _text_features_gen: Optional[Dict[str, Dict[str, GeneratedFeature]]]
 
     def __init__(
@@ -64,9 +63,9 @@ class ClassificationQualityByFeatureTable(UsesRawDataMixin, Metric[Classificatio
         options: AnyOptions = None,
     ):
         self.columns = columns
-        self._text_features_gen = None
         self.descriptors = descriptors
         super().__init__(options=options)
+        self._text_features_gen = None
 
     def required_features(self, data_definition: DataDefinition):
         if len(data_definition.get_columns(ColumnType.Text, features_only=True)) > 0:

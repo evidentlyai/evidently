@@ -14,9 +14,6 @@ InValueType = Union[int, str, float, ApproxValue]
 
 
 class IsInMetricTest(MetricTest):
-    class Config:
-        smart_union = True
-
     values: List[InValueType]
 
     def to_test(self) -> SingleValueTest:
@@ -35,9 +32,6 @@ class IsInMetricTest(MetricTest):
 
 
 class NotInMetricTest(MetricTest):
-    class Config:
-        smart_union = True
-
     values: List[InValueType]
 
     def to_test(self) -> SingleValueTest:

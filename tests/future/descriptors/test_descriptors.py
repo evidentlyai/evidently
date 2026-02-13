@@ -9,9 +9,9 @@ from typing import Union
 
 import pandas as pd
 import pytest
+from pydantic import parse_obj_as
 
 from evidently import ColumnType
-from evidently._pydantic_compat import parse_obj_as
 from evidently.core.datasets import ColumnTest
 from evidently.core.datasets import Dataset
 from evidently.core.datasets import DatasetColumn

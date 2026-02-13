@@ -23,8 +23,7 @@ from evidently.ui.service.storage.local.snapshot_links import FileSnapshotDatase
 
 
 class FSSpecBlobComponent(BlobStorageComponent):
-    class Config:
-        type_alias = "fsspec"
+    __type_alias__: ClassVar[Optional[str]] = "fsspec"
 
     path: str
 
@@ -36,8 +35,7 @@ class FSSpecBlobComponent(BlobStorageComponent):
 
 
 class JsonMetadataComponent(MetadataStorageComponent):
-    class Config:
-        type_alias = "json_file"
+    __type_alias__: ClassVar[Optional[str]] = "json_file"
 
     path: str
 
@@ -49,8 +47,7 @@ class JsonMetadataComponent(MetadataStorageComponent):
 
 
 class InmemoryDataComponent(DataStorageComponent):
-    class Config:
-        type_alias = "inmemory"
+    __type_alias__: ClassVar[Optional[str]] = "inmemory"
 
     path: str
 
@@ -74,8 +71,7 @@ class LocalStateComponent(FactoryComponent[LocalState]):
 class JsonDatasetMetadataComponent(DatasetMetadataComponent):
     """JSON file-based dataset metadata storage component."""
 
-    class Config:
-        type_alias = "json_file"
+    __type_alias__: ClassVar[Optional[str]] = "json_file"
 
     path: str = "workspace"
 
@@ -89,8 +85,7 @@ class JsonDatasetMetadataComponent(DatasetMetadataComponent):
 class FSSpecDatasetFileStorageComponent(DatasetFileStorageComponent):
     """FSSpec-based dataset file storage component."""
 
-    class Config:
-        type_alias = "fsspec"
+    __type_alias__: ClassVar[Optional[str]] = "fsspec"
 
     path: str = "workspace"
 
@@ -104,8 +99,7 @@ class FSSpecDatasetFileStorageComponent(DatasetFileStorageComponent):
 class FileSnapshotDatasetLinksComponent(SnapshotDatasetLinksComponent):
     """File-based snapshot dataset links component."""
 
-    class Config:
-        type_alias = "file"
+    __type_alias__: ClassVar[Optional[str]] = "file"
 
     path: str = "workspace"
 

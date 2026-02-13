@@ -10,7 +10,7 @@ from evidently.legacy.base_metric import InputData
 from evidently.legacy.base_metric import Metric
 from evidently.legacy.base_metric import MetricResult
 from evidently.legacy.core import IncludeTags
-from evidently.legacy.metrics.data_integrity.dataset_missing_values_metric import MissingValue
+from evidently.legacy.metrics.data_integrity.dataset_missing_values_metric import MissingValueType
 from evidently.legacy.model.widget import BaseWidgetInfo
 from evidently.legacy.options.base import AnyOptions
 from evidently.legacy.renderers.base_renderer import MetricRenderer
@@ -26,15 +26,17 @@ from evidently.legacy.renderers.html_widgets import widget_tabs
 class ColumnMissingValues(MetricResult):
     """Statistics about missing values in a column"""
 
-    class Config:
-        type_alias = "evidently:metric_result:ColumnMissingValues"
-        pd_exclude_fields = {"different_missing_values"}
-        field_tags = {"number_of_rows": {IncludeTags.Extra}, "different_missing_values": {IncludeTags.Extra}}
+    __type_alias__: ClassVar[Optional[str]] = "evidently:metric_result:ColumnMissingValues"
+    __pd_exclude_fields__: ClassVar[set] = {"different_missing_values"}
+    __field_tags__: ClassVar[Dict[str, set]] = {
+        "number_of_rows": {IncludeTags.Extra},
+        "different_missing_values": {IncludeTags.Extra},
+    }
 
     # count of rows in the column
     number_of_rows: int
     # set of different missed values in the column
-    different_missing_values: Dict[MissingValue, int]
+    different_missing_values: Dict[MissingValueType, int]
     # number of different missed values in the column
     number_of_different_missing_values: int
     # count of missed values in the column
@@ -44,13 +46,12 @@ class ColumnMissingValues(MetricResult):
 
 
 class ColumnMissingValuesMetricResult(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:ColumnMissingValuesMetricResult"
-        field_tags = {
-            "current": {IncludeTags.Current},
-            "reference": {IncludeTags.Reference},
-            "column_name": {IncludeTags.Parameter},
-        }
+    __type_alias__: ClassVar[Optional[str]] = "evidently:metric_result:ColumnMissingValuesMetricResult"
+    __field_tags__: ClassVar[Dict[str, set]] = {
+        "current": {IncludeTags.Current},
+        "reference": {IncludeTags.Reference},
+        "column_name": {IncludeTags.Parameter},
+    }
 
     column_name: str
     current: ColumnMissingValues
@@ -58,8 +59,7 @@ class ColumnMissingValuesMetricResult(MetricResult):
 
 
 class ColumnMissingValuesMetric(Metric[ColumnMissingValuesMetricResult]):
-    class Config:
-        type_alias = "evidently:metric:ColumnMissingValuesMetric"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:metric:ColumnMissingValuesMetric"
 
     """Count missing values in a column.
 

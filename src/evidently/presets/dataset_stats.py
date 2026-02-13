@@ -7,8 +7,9 @@ from typing import Optional
 from typing import Sequence
 from typing import Tuple
 
-from evidently._pydantic_compat import PrivateAttr
-from evidently._pydantic_compat import validator
+from pydantic import PrivateAttr
+from pydantic.v1 import validator
+
 from evidently.core.base_types import Label
 from evidently.core.container import ColumnMetricContainer
 from evidently.core.container import MetricContainer

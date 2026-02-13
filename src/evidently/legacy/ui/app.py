@@ -2,8 +2,8 @@ import os
 from typing import Optional
 
 import uvicorn
+from pydantic import SecretStr
 
-from evidently._pydantic_compat import SecretStr
 from evidently.legacy.ui.components.base import AppBuilder
 from evidently.legacy.ui.components.storage import LocalStorageComponent
 from evidently.legacy.ui.config import AppConfig

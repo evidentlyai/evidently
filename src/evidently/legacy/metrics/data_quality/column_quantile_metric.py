@@ -1,3 +1,5 @@
+from typing import ClassVar
+from typing import Dict
 from typing import List
 from typing import Optional
 from typing import Union
@@ -27,8 +29,7 @@ from evidently.legacy.utils.visualizations import plot_distr_with_cond_perc_butt
 
 
 class QuantileStats(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:QuantileStats"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:metric_result:QuantileStats"
 
     value: float
     # calculated value of the quantile
@@ -37,13 +38,12 @@ class QuantileStats(MetricResult):
 
 
 class ColumnQuantileMetricResult(ColumnMetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:ColumnQuantileMetricResult"
-        field_tags = {
-            "current": {IncludeTags.Current},
-            "reference": {IncludeTags.Reference},
-            "quantile": {IncludeTags.Parameter},
-        }
+    __type_alias__: ClassVar[Optional[str]] = "evidently:metric_result:ColumnQuantileMetricResult"
+    __field_tags__: ClassVar[Dict[str, set]] = {
+        "current": {IncludeTags.Current},
+        "reference": {IncludeTags.Reference},
+        "quantile": {IncludeTags.Parameter},
+    }
 
     # range of the quantile (from 0 to 1)
     quantile: float
@@ -52,8 +52,7 @@ class ColumnQuantileMetricResult(ColumnMetricResult):
 
 
 class ColumnQuantileMetric(Metric[ColumnQuantileMetricResult]):
-    class Config:
-        type_alias = "evidently:metric:ColumnQuantileMetric"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:metric:ColumnQuantileMetric"
 
     """Calculates quantile with specified range"""
 

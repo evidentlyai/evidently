@@ -1,7 +1,10 @@
+from typing import Annotated
+from typing import ClassVar
 from typing import Dict
 from typing import Iterable
 from typing import List
 from typing import Optional
+from typing import Set
 
 import numpy as np
 import pandas as pd
@@ -19,24 +22,25 @@ from evidently.legacy.renderers.html_widgets import GraphData
 from evidently.legacy.renderers.html_widgets import WidgetSize
 from evidently.legacy.renderers.html_widgets import plotly_graph_tabs
 from evidently.legacy.utils.data_operations import process_columns
+from evidently.pydantic_utils import StrKeyValidator
 
 
 class ClassificationProbDistributionResults(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:ClassificationProbDistributionResults"
-        dict_include = False
-        pd_include = False
-        tags = {IncludeTags.Render}
+    __type_alias__: ClassVar[Optional[str]] = "evidently:metric_result:ClassificationProbDistributionResults"
+    __dict_include__: ClassVar[bool] = False
+    __pd_include__: ClassVar[bool] = False
+    __tags__: ClassVar[Set[IncludeTags]] = {IncludeTags.Render}
+    __field_tags__: ClassVar[Dict[str, set]] = {
+        "current_distribution": {IncludeTags.Current},
+        "reference_distribution": {IncludeTags.Reference},
+    }
 
-        field_tags = {"current_distribution": {IncludeTags.Current}, "reference_distribution": {IncludeTags.Reference}}
-
-    current_distribution: Optional[Dict[str, list]]  # todo use DistributionField?
-    reference_distribution: Optional[Dict[str, list]]
+    current_distribution: Annotated[Optional[Dict[str, list]], StrKeyValidator]  # todo use DistributionField?
+    reference_distribution: Annotated[Optional[Dict[str, list]], StrKeyValidator]
 
 
 class ClassificationProbDistribution(Metric[ClassificationProbDistributionResults]):
-    class Config:
-        type_alias = "evidently:metric:ClassificationProbDistribution"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:metric:ClassificationProbDistribution"
 
     @staticmethod
     def get_distribution(dataset: pd.DataFrame, target_name: str, prediction_labels: Iterable) -> Dict[str, list]:

@@ -33,8 +33,8 @@ def _cleanup_data(data: pd.DataFrame, dataset_columns: DatasetColumns) -> pd.Dat
 
 
 class ThresholdClassificationMetric(Metric[TResult], Generic[TResult], ABC):
-    probas_threshold: Optional[float]
-    k: Optional[int]
+    probas_threshold: Optional[float] = None
+    k: Optional[int] = None
 
     def __init__(self, probas_threshold: Optional[float], k: Optional[int], options: AnyOptions = None):
         if probas_threshold is not None and k is not None:

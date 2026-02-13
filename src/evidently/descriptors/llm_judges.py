@@ -7,10 +7,10 @@ from typing import Union
 from typing import cast
 
 import pandas as pd
+from pydantic import PrivateAttr
 
 from evidently import ColumnType
 from evidently import Dataset
-from evidently._pydantic_compat import PrivateAttr
 from evidently.core.datasets import AnyDescriptorTest
 from evidently.core.datasets import DatasetColumn
 from evidently.core.datasets import Descriptor

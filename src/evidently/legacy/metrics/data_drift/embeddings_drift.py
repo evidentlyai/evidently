@@ -1,3 +1,5 @@
+from typing import ClassVar
+from typing import Dict
 from typing import List
 from typing import Optional
 
@@ -26,19 +28,14 @@ SAMPLE_CONSTANT = 2500
 
 
 class EmbeddingsDriftMetricResults(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:EmbeddingsDriftMetricResults"
-        dict_exclude_fields = {
-            "reference",
-            "current",
-        }
-
-        field_tags = {
-            "current": {IncludeTags.Current, IncludeTags.Render},
-            "reference": {IncludeTags.Reference, IncludeTags.Render},
-            "embeddings_name": {IncludeTags.Parameter},
-            "method_name": {IncludeTags.Parameter},
-        }
+    __type_alias__: ClassVar[Optional[str]] = "evidently:metric_result:EmbeddingsDriftMetricResults"
+    __dict_exclude_fields__: ClassVar[set] = {"reference", "current"}
+    __field_tags__: ClassVar[Dict[str, set]] = {
+        "current": {IncludeTags.Current, IncludeTags.Render},
+        "reference": {IncludeTags.Reference, IncludeTags.Render},
+        "embeddings_name": {IncludeTags.Parameter},
+        "method_name": {IncludeTags.Parameter},
+    }
 
     embeddings_name: str
     drift_score: float
@@ -49,8 +46,7 @@ class EmbeddingsDriftMetricResults(MetricResult):
 
 
 class EmbeddingsDriftMetric(Metric[EmbeddingsDriftMetricResults]):
-    class Config:
-        type_alias = "evidently:metric:EmbeddingsDriftMetric"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:metric:EmbeddingsDriftMetric"
 
     embeddings_name: str
     drift_method: Optional[DriftMethod]

@@ -1,5 +1,6 @@
 import json
 from typing import Any
+from typing import ClassVar
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -36,38 +37,36 @@ from evidently.legacy.utils.visualizations import plot_num_num_rel
 
 
 class ColumnInteractionPlotResults(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:ColumnInteractionPlotResults"
-        dict_include = False
-        pd_include = False
-        tags = {IncludeTags.Render}
-        field_tags = {
-            "current": {IncludeTags.Current},
-            "reference": {IncludeTags.Reference},
-            "current_scatter": {IncludeTags.Current},
-            "current_contour": {IncludeTags.Current},
-            "current_boxes": {IncludeTags.Current},
-            "reference_scatter": {IncludeTags.Reference},
-            "reference_contour": {IncludeTags.Reference},
-            "reference_boxes": {IncludeTags.Reference},
-        }
+    __type_alias__: ClassVar[Optional[str]] = "evidently:metric_result:ColumnInteractionPlotResults"
+    __dict_include__: ClassVar[bool] = False
+    __pd_include__: ClassVar[bool] = False
+    __tags__: ClassVar[set] = {IncludeTags.Render}
+    __field_tags__: ClassVar[Dict[str, set]] = {
+        "current": {IncludeTags.Current},
+        "reference": {IncludeTags.Reference},
+        "current_scatter": {IncludeTags.Current},
+        "current_contour": {IncludeTags.Current},
+        "current_boxes": {IncludeTags.Current},
+        "reference_scatter": {IncludeTags.Reference},
+        "reference_contour": {IncludeTags.Reference},
+        "reference_boxes": {IncludeTags.Reference},
+    }
 
     y_type: ColumnType
     x_type: ColumnType
-    current_scatter: Optional[ColumnScatter]
-    current_contour: Optional[ContourData]
-    current_boxes: Optional[Dict[str, Union[list, np.ndarray]]]
-    current: Optional[pd.DataFrame]
-    reference_scatter: Optional[ColumnScatter]
-    reference_contour: Optional[ContourData]
-    reference_boxes: Optional[Dict[str, Union[list, np.ndarray]]]
-    reference: Optional[pd.DataFrame]
+    current_scatter: Optional[ColumnScatter] = None
+    current_contour: Optional[ContourData] = None
+    current_boxes: Optional[Dict[str, Union[list, np.ndarray]]] = None
+    current: Optional[pd.DataFrame] = None
+    reference_scatter: Optional[ColumnScatter] = None
+    reference_contour: Optional[ContourData] = None
+    reference_boxes: Optional[Dict[str, Union[list, np.ndarray]]] = None
+    reference: Optional[pd.DataFrame] = None
     prefix: Optional[str] = None
 
 
 class ColumnInteractionPlot(UsesRawDataMixin, Metric[ColumnInteractionPlotResults]):
-    class Config:
-        type_alias = "evidently:metric:ColumnInteractionPlot"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:metric:ColumnInteractionPlot"
 
     x_column: str
     y_column: str

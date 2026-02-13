@@ -21,12 +21,12 @@ from litestar.params import Body
 from litestar.params import Dependency
 from litestar.params import Parameter
 from litestar.response.base import ASGIResponse
+from pydantic import BaseModel
+from pydantic import ConfigDict
+from pydantic import TypeAdapter
+from pydantic import ValidationError
 from typing_extensions import Annotated
 
-from evidently._pydantic_compat import BaseModel
-from evidently._pydantic_compat import Extra
-from evidently._pydantic_compat import ValidationError
-from evidently._pydantic_compat import parse_obj_as
 from evidently.core.datasets import DataDefinition
 from evidently.core.datasets import Dataset
 from evidently.legacy.suite.base_suite import MetadataValueType
@@ -49,9 +49,7 @@ from evidently.ui.service.type_aliases import SnapshotID
 class UploadDatasetRequest(BaseModel):
     """Request for uploading a dataset."""
 
-    class Config:
-        extra = Extra.forbid
-        arbitrary_types_allowed = True
+    model_config = ConfigDict(extra="forbid", arbitrary_types_allowed=True)
 
     name: str
     file: UploadFile
@@ -65,20 +63,20 @@ class UploadDatasetRequest(BaseModel):
         """Parse metadata from string."""
         if not self.metadata_str:
             return {}
-        return parse_obj_as(Dict[str, MetadataValueType], json.loads(self.metadata_str))
+        return TypeAdapter(Dict[str, MetadataValueType]).validate_python(json.loads(self.metadata_str))
 
     @property
     def tags(self) -> List[str]:
         """Parse tags from string."""
         if not self.tags_str:
             return []
-        return parse_obj_as(List[str], json.loads(self.tags_str))
+        return TypeAdapter(List[str]).validate_python(json.loads(self.tags_str))
 
     @property
     def data_definition(self) -> Optional[DataDefinition]:
         """Parse data definition from string."""
         if self.data_definition_str:
-            return parse_obj_as(DataDefinition, json.loads(self.data_definition_str))
+            return TypeAdapter(DataDefinition).validate_python(json.loads(self.data_definition_str))
         return None
 
 
@@ -193,7 +191,9 @@ async def get_dataset(
     """Get a dataset with pagination."""
 
     try:
-        filter_queries = [parse_obj_as(FilterBy, json.loads(_filter)) for _filter in filters] if filters else None
+        filter_queries = (
+            [TypeAdapter(FilterBy).validate_python(json.loads(_filter)) for _filter in filters] if filters else None
+        )
     except (ValidationError, JSONDecodeError) as e:
         raise ValidationException(str(e)) from e
 
@@ -272,7 +272,7 @@ class DatasetMetadataResponse(EvidentlyAPIModel):
     @classmethod
     def from_dataset_metadata(cls, dataset: DatasetMetadataFull):
         """Create from DatasetMetadataFull."""
-        return cls(**{k: v for k, v in dataset.__dict__.items() if k in cls.__fields__})
+        return cls(**{k: v for k, v in dataset.__dict__.items() if k in cls.model_fields})
 
 
 class ListDatasetResponse(EvidentlyAPIModel):
@@ -344,9 +344,7 @@ class AddTracingDatasetRequest(BaseModel):
     """Request for creating a tracing dataset."""
 
     name: str
-
-    class Config:
-        extra = "forbid"
+    model_config = ConfigDict(extra="forbid")
 
 
 class AddTracingDatasetResponse(EvidentlyAPIModel):

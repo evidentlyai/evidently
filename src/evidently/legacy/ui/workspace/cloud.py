@@ -13,10 +13,10 @@ from typing import Union
 from typing import overload
 
 import pandas as pd
+from pydantic import TypeAdapter
 from requests import HTTPError
 from requests import Response
 
-from evidently._pydantic_compat import parse_obj_as
 from evidently.core.datasets import DataDefinition
 from evidently.core.datasets import Dataset
 from evidently.legacy.pipeline.column_mapping import ColumnMapping
@@ -245,7 +245,7 @@ class CloudMetadataStorage(RemoteProjectMetadataStorage):
         metadata, file_content = read_multipart_response(response)
 
         df = pd.read_parquet(BytesIO(file_content))
-        data_def = parse_obj_as(DataDefinition, metadata["data_definition"])
+        data_def = TypeAdapter(DataDefinition).validate_python(metadata["data_definition"])
         return Dataset.from_pandas(df, data_definition=data_def)
 
 

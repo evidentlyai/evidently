@@ -1,10 +1,11 @@
 import json
+from typing import ClassVar
 from typing import List
 from typing import Optional
 
 import pandas as pd
+from pydantic import parse_obj_as
 
-from evidently._pydantic_compat import parse_obj_as
 from evidently.core.datasets import Dataset
 from evidently.core.datasets import Descriptor
 from evidently.core.datasets import FeatureDescriptor
@@ -16,8 +17,7 @@ from evidently.legacy.utils.data_preprocessing import DataDefinition
 
 
 class MockGeneratedFeature(GeneratedFeatures):
-    class Config:
-        type_alias = "mock_generated_feature"
+    __type_alias__: ClassVar[Optional[str]] = "mock_generated_feature"
 
     column: str
     field: str

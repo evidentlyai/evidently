@@ -1,3 +1,4 @@
+from typing import ClassVar
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -9,15 +10,15 @@ from typing import TypeVar
 from typing import Union
 from typing import overload
 
-import numpy as np
 import pandas as pd
+from pydantic import TypeAdapter
+from pydantic.v1 import validator
 from typing_extensions import Literal
 
-from evidently._pydantic_compat import parse_obj_as
-from evidently._pydantic_compat import validator
 from evidently.legacy.base_metric import MetricResult
 from evidently.legacy.core import IncludeTags
 from evidently.legacy.core import Label
+from evidently.legacy.core import PydanticNPArray
 from evidently.legacy.core import pydantic_type_validator
 from evidently.legacy.pipeline.column_mapping import TargetNames
 
@@ -47,7 +48,7 @@ def label_key_valudator(value):
 
 
 ScatterData = Union[pd.Series]
-ContourData = Tuple[np.ndarray, List[float], List[float]]
+ContourData = Tuple[PydanticNPArray, List[float], List[float]]
 ColumnScatter = Dict[LabelKey, ScatterData]
 
 ScatterAggData = Union[pd.DataFrame]
@@ -65,44 +66,37 @@ ColumnScatterOrAgg = Union[_ColumnScatterOrAggType, ColumnScatter, ColumnAggScat
 def column_scatter_valudator(value):
     if any(isinstance(o, dict) for o in value.values()):
         # dict -> dataframe -> agg
-        return parse_obj_as(ColumnAggScatter, value)
+        return TypeAdapter(ColumnAggScatter).validate_python(value)
     if any(isinstance(o, (pd.DataFrame, pd.Series)) for o in value.values()):
         return value
-    return parse_obj_as(ColumnScatter, value)
+    return TypeAdapter(ColumnScatter).validate_python(value)
 
 
 class Distribution(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:Distribution"
-        pd_include = False
-        tags = {IncludeTags.Render}
-        smart_union = True
-        extract_as_obj = True
+    __pd_include__: ClassVar[bool] = False
+    __tags__: ClassVar[Set[IncludeTags]] = {IncludeTags.Render}
+    __extract_as_obj__: ClassVar[bool] = True
+    __type_alias__: ClassVar[Optional[str]] = "evidently:metric_result:Distribution"
 
-    x: Union[np.ndarray, list, pd.Categorical, pd.Series]
-    y: Union[np.ndarray, list, pd.Categorical, pd.Series]
+    x: Union[PydanticNPArray, list, pd.Categorical, pd.Series]
+    y: Union[PydanticNPArray, list, pd.Categorical, pd.Series]
 
 
 class ConfusionMatrix(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:ConfusionMatrix"
-        smart_union = True
-
-        field_tags = {"labels": {IncludeTags.Parameter}}
+    __field_tags__: ClassVar[Dict[str, set]] = {"labels": {IncludeTags.Parameter}}
+    __type_alias__: ClassVar[Optional[str]] = "evidently:metric_result:ConfusionMatrix"
 
     labels: Sequence[Label]
     values: list  # todo better typing
 
 
 class PredictionData(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:PredictionData"
-        dict_include = False
-        smart_union = True
+    __dict_include__: ClassVar[bool] = False
+    __type_alias__: ClassVar[Optional[str]] = "evidently:metric_result:PredictionData"
 
     predictions: pd.Series
     labels: LabelList
-    prediction_probas: Optional[pd.DataFrame]
+    prediction_probas: Optional[pd.DataFrame] = None
 
     @validator("prediction_probas")
     def validate_prediction_probas(cls, value: pd.DataFrame, values):
@@ -125,42 +119,38 @@ class PredictionData(MetricResult):
 
 
 class StatsByFeature(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:StatsByFeature"
-        dict_include = False
-        pd_include = False
-        tags = {IncludeTags.Render}
+    __dict_include__: ClassVar[bool] = False
+    __pd_include__: ClassVar[bool] = False
+    __tags__: ClassVar[Set[IncludeTags]] = {IncludeTags.Render}
+    __type_alias__: ClassVar[Optional[str]] = "evidently:metric_result:StatsByFeature"
 
     plot_data: pd.DataFrame  # todo what type of plot?
-    predictions: Optional[PredictionData]
+    predictions: Optional[PredictionData] = None
 
 
 class DatasetUtilityColumns(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:DatasetUtilityColumns"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:metric_result:DatasetUtilityColumns"
 
-    date: Optional[str]
-    id: Optional[str]
-    target: Optional[str]
-    prediction: Optional[Union[str, Sequence[str]]]
+    date: Optional[str] = None
+    id: Optional[str] = None
+    target: Optional[str] = None
+    prediction: Optional[Union[str, Sequence[str]]] = None
 
 
 class DatasetColumns(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:DatasetColumns"
-        dict_exclude_fields = {"task", "target_type"}
-        pd_include = False
-        tags = {IncludeTags.Parameter}
-        smart_union = True
+    __dict_exclude_fields__: ClassVar[set] = {"task", "target_type"}
+    __pd_include__: ClassVar[bool] = False
+    __tags__: ClassVar[Set[IncludeTags]] = {IncludeTags.Parameter}
+    __type_alias__: ClassVar[Optional[str]] = "evidently:metric_result:DatasetColumns"
 
     utility_columns: DatasetUtilityColumns
-    target_type: Optional[str]
+    target_type: Optional[str] = None
     num_feature_names: List[str]
     cat_feature_names: List[str]
     text_feature_names: List[str]
     datetime_feature_names: List[str]
-    target_names: Optional[TargetNames]
-    task: Optional[str]
+    target_names: Optional[TargetNames] = None
+    task: Optional[str] = None
 
     @property
     def target_names_list(self) -> Optional[List]:
@@ -244,13 +234,10 @@ def column_scatter_from_df(df: Optional[pd.DataFrame], with_index: bool) -> Opti
 
 
 class ScatterAggField(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:ScatterAggField"
-        smart_union = True
-        dict_include = False
-        pd_include = False
-
-        tags = {IncludeTags.Render}
+    __dict_include__: ClassVar[bool] = False
+    __pd_include__: ClassVar[bool] = False
+    __tags__: ClassVar[Set[IncludeTags]] = {IncludeTags.Render}
+    __type_alias__: ClassVar[Optional[str]] = "evidently:metric_result:ScatterAggField"
 
     scatter: ColumnAggScatter
     x_name: str
@@ -258,13 +245,10 @@ class ScatterAggField(MetricResult):
 
 
 class ScatterField(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:ScatterField"
-        smart_union = True
-        dict_include = False
-        pd_include = False
-
-        tags = {IncludeTags.Render}
+    __dict_include__: ClassVar[bool] = False
+    __pd_include__: ClassVar[bool] = False
+    __tags__: ClassVar[Set[IncludeTags]] = {IncludeTags.Render}
+    __type_alias__: ClassVar[Optional[str]] = "evidently:metric_result:ScatterField"
 
     scatter: ColumnScatter
     x_name: str
@@ -272,39 +256,34 @@ class ScatterField(MetricResult):
 
 
 class ColumnScatterResult(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:ColumnScatterResult"
-        smart_union = True
-        dict_include = False
-        pd_include = False
-
-        tags = {IncludeTags.Render}
-        field_tags = {"current": {IncludeTags.Current}, "reference": {IncludeTags.Reference}}
+    __dict_include__: ClassVar[bool] = False
+    __pd_include__: ClassVar[bool] = False
+    __tags__: ClassVar[Set[IncludeTags]] = {IncludeTags.Render}
+    __field_tags__: ClassVar[Dict[str, set]] = {"current": {IncludeTags.Current}, "reference": {IncludeTags.Reference}}
+    __type_alias__: ClassVar[Optional[str]] = "evidently:metric_result:ColumnScatterResult"
 
     current: ColumnScatter
-    reference: Optional[ColumnScatter]
+    reference: Optional[ColumnScatter] = None
     x_name: str
     x_name_ref: Optional[str] = None
 
 
 class ColumnAggScatterResult(ColumnScatterResult):
-    class Config:
-        type_alias = "evidently:metric_result:ColumnAggScatterResult"
-        field_tags = {"current": {IncludeTags.Current}, "reference": {IncludeTags.Reference}}
+    __field_tags__: ClassVar[Dict[str, set]] = {"current": {IncludeTags.Current}, "reference": {IncludeTags.Reference}}
+    __type_alias__: ClassVar[Optional[str]] = "evidently:metric_result:ColumnAggScatterResult"
 
     # TODO: fix type collision with super type
     current: ColumnAggScatter  # type: ignore[assignment]
-    reference: Optional[ColumnAggScatter]  # type: ignore[assignment]
+    reference: Optional[ColumnAggScatter] = None  # type: ignore[assignment]
 
 
 PlotData = List[float]
 
 
 class Boxes(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:Boxes"
-        dict_include = False
-        tags = {IncludeTags.Render}
+    __dict_include__: ClassVar[bool] = False
+    __tags__: ClassVar[Set[IncludeTags]] = {IncludeTags.Render}
+    __type_alias__: ClassVar[Optional[str]] = "evidently:metric_result:Boxes"
 
     mins: PlotData
     lowers: PlotData
@@ -314,10 +293,9 @@ class Boxes(MetricResult):
 
 
 class RatesPlotData(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:RatesPlotData"
-        dict_include = False
-        tags = {IncludeTags.Render}
+    __dict_include__: ClassVar[bool] = False
+    __tags__: ClassVar[Set[IncludeTags]] = {IncludeTags.Render}
+    __type_alias__: ClassVar[Optional[str]] = "evidently:metric_result:RatesPlotData"
 
     thrs: PlotData
     tpr: PlotData
@@ -327,10 +305,9 @@ class RatesPlotData(MetricResult):
 
 
 class PRCurveData(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:PRCurveData"
-        dict_include = False
-        tags = {IncludeTags.Render}
+    __dict_include__: ClassVar[bool] = False
+    __tags__: ClassVar[Set[IncludeTags]] = {IncludeTags.Render}
+    __type_alias__: ClassVar[Optional[str]] = "evidently:metric_result:PRCurveData"
 
     pr: PlotData
     rcl: PlotData
@@ -341,10 +318,9 @@ PRCurve = Dict[Label, PRCurveData]
 
 
 class ROCCurveData(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:ROCCurveData"
-        dict_include = False
-        tags = {IncludeTags.Render}
+    __dict_include__: ClassVar[bool] = False
+    __tags__: ClassVar[Set[IncludeTags]] = {IncludeTags.Render}
+    __type_alias__: ClassVar[Optional[str]] = "evidently:metric_result:ROCCurveData"
 
     fpr: PlotData
     tpr: PlotData
@@ -355,10 +331,9 @@ ROCCurve = Dict[Label, ROCCurveData]
 
 
 class LiftCurveData(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:LiftCurveData"
-        dict_include = False
-        tags = {IncludeTags.Render}
+    __dict_include__: ClassVar[bool] = False
+    __tags__: ClassVar[Set[IncludeTags]] = {IncludeTags.Render}
+    __type_alias__: ClassVar[Optional[str]] = "evidently:metric_result:LiftCurveData"
 
     lift: PlotData
     top: PlotData
@@ -378,11 +353,10 @@ LiftCurve = Dict[Label, LiftCurveData]
 
 
 class HistogramData(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:HistogramData"
-        dict_include = False
-        tags = {IncludeTags.Render}
-        extract_as_obj = True
+    __dict_include__: ClassVar[bool] = False
+    __tags__: ClassVar[Set[IncludeTags]] = {IncludeTags.Render}
+    __extract_as_obj__: ClassVar[bool] = True
+    __type_alias__: ClassVar[Optional[str]] = "evidently:metric_result:HistogramData"
 
     x: pd.Series
     count: pd.Series
@@ -421,23 +395,22 @@ class HistogramData(MetricResult):
         raise NotImplementedError(f"Cannot create {cls.__name__} from {value.__class__.__name__}")
 
     def to_df(self):
-        return pd.DataFrame.from_dict(self.dict(include={"x", "count"}))
+        return pd.DataFrame.from_dict(self.model_dump(include={"x", "count"}))
 
 
 class Histogram(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:Histogram"
-        dict_include = False
-        tags = {IncludeTags.Render}
-        field_tags = {
-            "current": {IncludeTags.Current},
-            "reference": {IncludeTags.Reference},
-            "current_log": {IncludeTags.Current},
-            "reference_log": {IncludeTags.Reference},
-        }
+    __dict_include__: ClassVar[bool] = False
+    __tags__: ClassVar[Set[IncludeTags]] = {IncludeTags.Render}
+    __field_tags__: ClassVar[Dict[str, set]] = {
+        "current": {IncludeTags.Current},
+        "reference": {IncludeTags.Reference},
+        "current_log": {IncludeTags.Current},
+        "reference_log": {IncludeTags.Reference},
+    }
+    __type_alias__: ClassVar[Optional[str]] = "evidently:metric_result:Histogram"
 
     current: HistogramData
-    reference: Optional[HistogramData]
+    reference: Optional[HistogramData] = None
 
     current_log: Optional[HistogramData] = None
     reference_log: Optional[HistogramData] = None
@@ -445,17 +418,15 @@ class Histogram(MetricResult):
 
 # todo need better config overriding logic in metricresult
 class DistributionIncluded(Distribution):
-    class Config:
-        type_alias = "evidently:metric_result:DistributionIncluded"
-        tags: Set[IncludeTags] = set()
-        dict_include = True
-        field_tags = {"x": {IncludeTags.Extra}}
+    __tags__: ClassVar[Set[IncludeTags]] = set()
+    __dict_include__: ClassVar[bool] = True
+    __field_tags__: ClassVar[Dict[str, set]] = {"x": {IncludeTags.Extra}}
+    __type_alias__: ClassVar[Optional[str]] = "evidently:metric_result:DistributionIncluded"
 
 
 class ColumnCorrelations(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:ColumnCorrelations"
-        field_tags = {"column_name": {IncludeTags.Parameter}, "kind": {IncludeTags.Parameter}}
+    __field_tags__: ClassVar[Dict[str, set]] = {"column_name": {IncludeTags.Parameter}, "kind": {IncludeTags.Parameter}}
+    __type_alias__: ClassVar[Optional[str]] = "evidently:metric_result:ColumnCorrelations"
 
     column_name: str
     kind: str
@@ -471,8 +442,7 @@ class ColumnCorrelations(MetricResult):
 
 
 class DatasetClassificationQuality(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:DatasetClassificationQuality"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:metric_result:DatasetClassificationQuality"
 
     accuracy: float
     precision: float

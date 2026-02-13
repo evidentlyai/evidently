@@ -1,4 +1,5 @@
 import json
+from typing import ClassVar
 from typing import Dict
 
 import numpy as np
@@ -47,8 +48,7 @@ from evidently.legacy.tests.base_test import Test
 
 
 class ErrorTest(Test):
-    class Config:
-        alias_required = False
+    __alias_required__: ClassVar[bool] = False
 
     name = "Error Test"
     group = "example"

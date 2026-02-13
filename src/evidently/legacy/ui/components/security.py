@@ -1,6 +1,7 @@
 from abc import ABC
 from typing import ClassVar
 from typing import Dict
+from typing import Optional
 
 import uuid6
 from litestar import Request
@@ -11,8 +12,8 @@ from litestar.types import ASGIApp
 from litestar.types import Receive
 from litestar.types import Scope
 from litestar.types import Send
+from pydantic import SecretStr
 
-from evidently._pydantic_compat import SecretStr
 from evidently.legacy.ui.components.base import Component
 from evidently.legacy.ui.components.base import ComponentContext
 from evidently.legacy.ui.errors import NotEnoughPermissions
@@ -27,8 +28,7 @@ from evidently.pydantic_utils import register_type_alias
 class SecurityComponent(Component, ABC):
     add_security_middleware: ClassVar[bool] = True
 
-    class Config:
-        is_base_type = True
+    __is_base_type__: ClassVar[bool] = True
 
     def get_security(self) -> SecurityService:
         raise NotImplementedError
@@ -87,8 +87,7 @@ class SimpleSecurity(SecurityComponent):
 
 
 class NoSecurityComponent(SimpleSecurity):
-    class Config:
-        type_alias = "none"
+    __type_alias__: ClassVar[Optional[str]] = "none"
 
     dummy_user_id: UserID = uuid6.UUID(int=1, version=7)
     dummy_org_id: OrgID = uuid6.UUID(int=2, version=7)
@@ -100,8 +99,7 @@ class NoSecurityComponent(SimpleSecurity):
 
 
 class TokenSecurityComponent(SimpleSecurity):
-    class Config:
-        type_alias = "token"
+    __type_alias__: ClassVar[Optional[str]] = "token"
 
     token: SecretStr
 

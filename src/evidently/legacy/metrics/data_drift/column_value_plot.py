@@ -1,3 +1,5 @@
+from typing import ClassVar
+from typing import Dict
 from typing import List
 from typing import Optional
 from typing import Union
@@ -31,12 +33,11 @@ from evidently.legacy.utils.visualizations import prepare_df_for_time_index_plot
 
 
 class ColumnValuePlotResults(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:ColumnValuePlotResults"
-        dict_include = False
-        pd_include = False
-        tags = {IncludeTags.Render}
-        field_tags = {"current": {IncludeTags.Current}, "reference": {IncludeTags.Reference}}
+    __type_alias__: ClassVar[Optional[str]] = "evidently:metric_result:ColumnValuePlotResults"
+    __dict_include__: ClassVar[bool] = False
+    __pd_include__: ClassVar[bool] = False
+    __tags__: ClassVar[set] = {IncludeTags.Render}
+    __field_tags__: ClassVar[Dict[str, set]] = {"current": {IncludeTags.Current}, "reference": {IncludeTags.Reference}}
 
     column_name: str
     datetime_column_name: Optional[str]
@@ -49,8 +50,7 @@ class ColumnValuePlotResults(MetricResult):
 
 
 class ColumnValuePlot(UsesRawDataMixin, Metric[ColumnValuePlotResults]):
-    class Config:
-        type_alias = "evidently:metric:ColumnValuePlot"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:metric:ColumnValuePlot"
 
     column_name: str
 

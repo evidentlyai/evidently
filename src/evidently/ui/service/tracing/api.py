@@ -14,8 +14,8 @@ from litestar.exceptions import HTTPException
 from litestar.exceptions import NotFoundException
 from litestar.params import Dependency
 from opentelemetry.proto.collector.trace.v1 import trace_service_pb2
+from pydantic import BaseModel
 
-from evidently._pydantic_compat import BaseModel
 from evidently.core.datasets import ServiceColumns
 from evidently.legacy.ui.type_aliases import UserID
 from evidently.ui.service.datasets.metadata import DatasetTracingParams

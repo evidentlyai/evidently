@@ -3,8 +3,8 @@ from inspect import isabstract
 from typing import List
 
 import pytest
+from pydantic import parse_obj_as
 
-from evidently._pydantic_compat import parse_obj_as
 from evidently.core.container import MetricContainer
 from evidently.core.datasets import TestSummaryInfo
 from evidently.generators import ColumnMetricGenerator

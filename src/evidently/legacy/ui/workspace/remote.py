@@ -15,11 +15,11 @@ from typing import Union
 from typing import overload
 from urllib.error import HTTPError
 
+from pydantic import TypeAdapter
 from requests import Request
 from requests import Response
 from requests import Session
 
-from evidently._pydantic_compat import parse_obj_as
 from evidently.errors import EvidentlyError
 from evidently.legacy.suite.base_suite import Snapshot
 from evidently.legacy.ui.api.service import EVIDENTLY_APPLICATION_NAME
@@ -139,7 +139,7 @@ class RemoteBase:
                 pass
         response.raise_for_status()
         if response_model is not None:
-            return parse_obj_as(response_model, response.json())
+            return TypeAdapter(response_model).validate_python(response.json())
         return response
 
 

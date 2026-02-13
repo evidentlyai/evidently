@@ -1,4 +1,6 @@
 from typing import Any
+from typing import ClassVar
+from typing import Dict
 from typing import List
 from typing import Optional
 
@@ -11,7 +13,6 @@ from plotly.subplots import make_subplots
 
 from evidently.legacy.base_metric import InputData
 from evidently.legacy.base_metric import MetricResult
-from evidently.legacy.core import AllDict
 from evidently.legacy.core import IncludeTags
 from evidently.legacy.metric_results import DatasetColumns
 from evidently.legacy.metrics.classification_performance.base_classification_metric import ThresholdClassificationMetric
@@ -28,27 +29,24 @@ from evidently.legacy.utils.data_operations import process_columns
 
 
 class ClassificationQuality(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:ClassificationQuality"
-        smart_union = True
+    __type_alias__: ClassVar[Optional[str]] = "evidently:metric_result:ClassificationQuality"
 
     metrics: ClassesMetrics
     roc_aucs: Optional[List[float]]
 
     @property
     def metrics_dict(self):
-        return self.dict(include={"metrics"}, exclude={"metrics": AllDict({"type"})})["metrics"]
+        return self.model_dump(include={"metrics"}, exclude={"metrics": {"__all__": {"type"}}})["metrics"]
+        # return self.dict(include={"metrics"}, exclude={"metrics": AllDict({"type"})})["metrics"]
 
 
 class ClassificationQualityByClassResult(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:ClassificationQualityByClassResult"
-        field_tags = {
-            "current": {IncludeTags.Current},
-            "reference": {IncludeTags.Reference},
-            "columns": {IncludeTags.Parameter},
-        }
-        smart_union = True
+    __type_alias__: ClassVar[Optional[str]] = "evidently:metric_result:ClassificationQualityByClassResult"
+    __field_tags__: ClassVar[Dict[str, set]] = {
+        "current": {IncludeTags.Current},
+        "reference": {IncludeTags.Reference},
+        "columns": {IncludeTags.Parameter},
+    }
 
     columns: DatasetColumns
     current: ClassificationQuality
@@ -69,8 +67,7 @@ class ClassificationQualityByClassResult(MetricResult):
 
 
 class ClassificationQualityByClass(ThresholdClassificationMetric[ClassificationQualityByClassResult]):
-    class Config:
-        type_alias = "evidently:metric:ClassificationQualityByClass"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:metric:ClassificationQualityByClass"
 
     def __init__(
         self,

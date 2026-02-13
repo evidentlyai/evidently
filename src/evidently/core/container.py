@@ -32,8 +32,7 @@ class MetricContainer(AutoAliasMixin, EvidentlyBaseModel, abc.ABC):
 
     __alias_type__: ClassVar[str] = "metric_container"
 
-    class Config:
-        is_base_type = True
+    __is_base_type__: ClassVar[bool] = True
 
     include_tests: bool = True
     """Whether to include default tests for generated metrics."""

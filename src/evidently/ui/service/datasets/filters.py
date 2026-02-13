@@ -3,106 +3,92 @@ from typing import List
 from typing import Optional
 
 import pandas as pd
+from pydantic import ConfigDict
 
-from evidently._pydantic_compat import Extra
 from evidently.pydantic_utils import PolymorphicModel
 
 
 class FilterBy(PolymorphicModel):
-    column: str
+    model_config = ConfigDict(extra="forbid")
+    __type_alias__: str = "filter_by"
+    __is_base_type__: bool = True
 
-    class Config:
-        is_base_type = True
-        type_alias = "filter_by"
-        extra = Extra.forbid
+    column: str
 
     def condition(self, df: pd.DataFrame) -> pd.Series:
         raise NotImplementedError
 
 
 class FilterByString(FilterBy):
+    __type_alias__: str = "filter_by_string"
+    __is_base_type__: bool = True
     value: str
-
-    class Config:
-        is_base_type = True
-        type_alias = "filter_by_string"
 
 
 class FilterByNumber(FilterBy):
+    __type_alias__: str = "filter_by_number"
+    __is_base_type__: bool = True
     value: float
-
-    class Config:
-        is_base_type = True
-        type_alias = "filter_by_number"
 
 
 class ContainsStrFilter(FilterByString):
-    class Config:
-        type_alias = "contains"
+    __type_alias__: str = "contains"
 
     def condition(self, df: pd.DataFrame) -> pd.Series:
         return df[self.column].str.contains(self.value, na=False)
 
 
 class StartsWithFilter(FilterByString):
-    class Config:
-        type_alias = "starts_with"
+    __type_alias__: str = "starts_with"
 
     def condition(self, df: pd.DataFrame) -> pd.Series:
         return df[self.column].str.startswith(self.value, na=False)
 
 
 class EndsWithFilter(FilterByString):
-    class Config:
-        type_alias = "ends_with"
+    __type_alias__: str = "ends_with"
 
     def condition(self, df: pd.DataFrame) -> pd.Series:
         return df[self.column].str.endswith(self.value, na=False)
 
 
 class EqualFilter(FilterByNumber):
-    class Config:
-        type_alias = "eq"
+    __type_alias__: str = "eq"
 
     def condition(self, df: pd.DataFrame) -> pd.Series:
         return df[self.column] == self.value
 
 
 class NotEqualFilter(FilterByNumber):
-    class Config:
-        type_alias = "not_eq"
+    __type_alias__: str = "not_eq"
 
     def condition(self, df: pd.DataFrame) -> pd.Series:
         return df[self.column] != self.value
 
 
 class GTFilter(FilterByNumber):
-    class Config:
-        type_alias = "gt"
+    __type_alias__: str = "gt"
 
     def condition(self, df: pd.DataFrame) -> pd.Series:
         return df[self.column] > self.value
 
 
 class GTEFilter(FilterByNumber):
-    class Config:
-        type_alias = "gte"
+    __type_alias__: str = "gte"
 
     def condition(self, df: pd.DataFrame) -> pd.Series:
         return df[self.column] >= self.value
 
 
 class LTFilter(FilterByNumber):
-    class Config:
-        type_alias = "lt"
+    __type_alias__: str = "lt"
 
     def condition(self, df: pd.DataFrame) -> pd.Series:
         return df[self.column] < self.value
 
 
 class LTEFilter(FilterByNumber):
-    class Config:
-        type_alias = "lte"
+    __type_alias__: str = "lte"
 
     def condition(self, df: pd.DataFrame) -> pd.Series:
         return df[self.column] <= self.value

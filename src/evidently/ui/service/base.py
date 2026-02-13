@@ -16,10 +16,10 @@ from typing import TypeVar
 from typing import Union
 
 import uuid6
+from pydantic import BaseModel
+from pydantic import Field
+from pydantic import PrivateAttr
 
-from evidently._pydantic_compat import BaseModel
-from evidently._pydantic_compat import Field
-from evidently._pydantic_compat import PrivateAttr
 from evidently.core.report import Snapshot as SnapshotV2
 from evidently.core.serialization import SnapshotModel
 from evidently.legacy.core import new_id
@@ -129,9 +129,6 @@ def _default_dashboard():
 
 class Project(Entity):
     entity_type: ClassVar[EntityType] = EntityType.Project
-
-    class Config:
-        underscore_attrs_are_private = True
 
     id: ProjectID = Field(default_factory=new_id)
     name: str

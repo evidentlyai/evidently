@@ -10,8 +10,8 @@ from typing import List
 from typing import Optional
 
 import numpy as np
+from pydantic import PrivateAttr
 
-from evidently._pydantic_compat import PrivateAttr
 from evidently.llm.rag.splitter import AnySplitter
 from evidently.llm.rag.splitter import Chunk
 from evidently.llm.rag.splitter import Splitter
@@ -30,8 +30,7 @@ DEFAULT_CHUNK_OVERLAP = 20
 class DataCollectionProvider(AutoAliasMixin, EvidentlyBaseModel, ABC):
     __alias_type__: ClassVar = "data_collection_provider"
 
-    class Config:
-        is_base_type = True
+    __is_base_type__: ClassVar[bool] = True
 
     chunk_size: int = DEFAULT_CHUNK_SIZE
     chunk_overlap: int = DEFAULT_CHUNK_OVERLAP
@@ -75,8 +74,7 @@ class ChunksDataCollectionProvider(DataCollectionProvider):
 
 
 class FileDataCollectionProvider(DataCollectionProvider):
-    class Config:
-        type_alias = "evidently:data_collection_provider:FileDataCollectionProvider"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:data_collection_provider:FileDataCollectionProvider"
 
     path: str
     recursive: bool = False

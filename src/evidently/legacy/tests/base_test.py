@@ -12,8 +12,10 @@ from typing import Type
 from typing import TypeVar
 from typing import Union
 
-from evidently._pydantic_compat import BaseModel
-from evidently._pydantic_compat import Field
+from pydantic import BaseModel
+from pydantic import ConfigDict
+from pydantic import Field
+
 from evidently.legacy.base_metric import BaseResult
 from evidently.legacy.base_metric import Metric
 from evidently.legacy.base_metric import MetricResult
@@ -94,17 +96,14 @@ class TestStatus(str, Enum):
     SKIPPED = "SKIPPED"  # the test was skipped
 
 
-class TestParameters(EvidentlyBaseModel, BaseResult):  # type: ignore[misc] # pydantic Config
-    class Config:
-        type_alias = "evidently:test_parameters:TestParameters"
-        field_tags = {"type": {IncludeTags.TypeField}}
-        is_base_type = True
+class TestParameters(EvidentlyBaseModel, BaseResult):  # type: ignore[misc]
+    __type_alias__: ClassVar[Optional[str]] = "evidently:test_parameters:TestParameters"
+    __is_base_type__: ClassVar[bool] = True
+    __field_tags__: ClassVar[Dict[str, set]] = {"type": {IncludeTags.TypeField}}
 
 
 class TestResult(EnumValueMixin, MetricResult):  # todo: create common base class
-    # short name/title from the test class
-    class Config:
-        type_alias = "evidently:metric_result:TestResult"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:metric_result:TestResult"
 
     name: str
     # what was checked, what threshold (current value 13 is not ok with condition less than 5)
@@ -113,7 +112,7 @@ class TestResult(EnumValueMixin, MetricResult):  # todo: create common base clas
     status: TestStatus
     # grouping parameters
     group: str
-    parameters: Optional[TestParameters]
+    parameters: Optional[TestParameters] = None
     _exception: Optional[BaseException] = None
 
     @property
@@ -143,8 +142,7 @@ class TestResult(EnumValueMixin, MetricResult):  # todo: create common base clas
 
 
 class Test(WithTestAndMetricDependencies):
-    class Config:
-        is_base_type = True
+    __is_base_type__: ClassVar[bool] = True
 
     """
     all fields in test class with type that is subclass of Metric would be used as dependencies of test.
@@ -195,10 +193,7 @@ class TestValueCondition(ExcludeNoneMixin):
     An object of the class stores specified conditions and can be used for checking a value by them.
     """
 
-    class Config:
-        arbitrary_types_allowed = True
-        use_enum_values = True
-        smart_union = True
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
     eq: Optional[NumericApprox] = None
     gt: Optional[NumericApprox] = None
@@ -278,8 +273,7 @@ class TestValueCondition(ExcludeNoneMixin):
 
 
 class ConditionTestParameters(TestParameters):
-    class Config:
-        type_alias = "evidently:test_parameters:ConditionTestParameters"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:test_parameters:ConditionTestParameters"
 
     condition: TestValueCondition
 
@@ -289,11 +283,7 @@ class BaseConditionsTest(Test, TestValueCondition, ABC):
     Base class for all tests with a condition
     """
 
-    class Config:
-        arbitrary_types_allowed = True
-        use_enum_values = True
-        smart_union = True
-        underscore_attrs_are_private = True
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
     # condition: TestValueCondition
 
@@ -312,15 +302,13 @@ class BaseConditionsTest(Test, TestValueCondition, ABC):
 
 
 class CheckValueParameters(ConditionTestParameters):
-    class Config:
-        type_alias = "evidently:test_parameters:CheckValueParameters"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:test_parameters:CheckValueParameters"
 
     value: Optional[Numeric]
 
 
 class ColumnCheckValueParameters(CheckValueParameters):
-    class Config:
-        type_alias = "evidently:test_parameters:ColumnCheckValueParameters"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:test_parameters:ColumnCheckValueParameters"
 
     column_name: str
 

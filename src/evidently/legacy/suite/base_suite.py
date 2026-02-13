@@ -16,10 +16,10 @@ from typing import TypeVar
 from typing import Union
 
 import ujson
+from pydantic import BaseModel
+from pydantic import TypeAdapter
 
 import evidently
-from evidently._pydantic_compat import BaseModel
-from evidently._pydantic_compat import parse_obj_as
 from evidently.legacy.base_metric import ErrorResult
 from evidently.legacy.base_metric import GenericInputData
 from evidently.legacy.base_metric import Metric
@@ -168,7 +168,7 @@ class ContextPayload(BaseModel):
     tests: List[Test]
     test_results: List[TestResult]
     options: Options = Options()
-    data_definition: Optional[DataDefinition]
+    data_definition: Optional[DataDefinition] = None
     run_metadata: RunMetadata = RunMetadata()
 
     @classmethod
@@ -525,7 +525,7 @@ class Snapshot(BaseModel):
     @classmethod
     def load(cls, filename):
         with open(filename, "r") as f:
-            return parse_obj_as(Snapshot, json.load(f))
+            return TypeAdapter(Snapshot).validate_python(json.load(f))
 
     @property
     def is_report(self):

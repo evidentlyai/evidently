@@ -16,11 +16,11 @@ from typing import TypeVar
 from typing import Union
 
 import pandas as pd
-import typing_inspect
+from pydantic import ConfigDict
+from pydantic import Field
+from pydantic import PrivateAttr
+from pydantic._internal._model_construction import ModelMetaclass
 
-from evidently._pydantic_compat import Field
-from evidently._pydantic_compat import ModelMetaclass
-from evidently._pydantic_compat import PrivateAttr
 from evidently.legacy.core import BaseResult
 from evidently.legacy.core import ColumnType
 from evidently.legacy.core import IncludeTags
@@ -49,17 +49,15 @@ class WithFieldsPathMetaclass(ModelMetaclass):
         return FieldPath([], cls)
 
 
-class MetricResult(PolymorphicModel, BaseResult, metaclass=WithFieldsPathMetaclass):  # type: ignore[misc] # pydantic Config
-    class Config:
-        type_alias = "evidently:metric_result:MetricResult"
-        field_tags = {"type": {IncludeTags.TypeField}}
-        is_base_type = True
-        alias_required = True
+class MetricResult(PolymorphicModel, BaseResult, metaclass=WithFieldsPathMetaclass):  # type: ignore[misc]
+    __type_alias__: ClassVar[Optional[str]] = "evidently:metric_result:MetricResult"
+    __is_base_type__: ClassVar[bool] = True
+    __alias_required__: ClassVar[bool] = True
+    __field_tags__: ClassVar[Dict[str, set]] = {"type": {IncludeTags.TypeField}}
 
 
 class ErrorResult(BaseResult):
-    class Config:
-        underscore_attrs_are_private = True
+    model_config = ConfigDict()
 
     _exception: Optional[BaseException] = None  # todo: fix serialization of exceptions
 
@@ -82,8 +80,7 @@ DisplayName = str
 
 @autoregister
 class ColumnName(EnumValueMixin, EvidentlyBaseModel):
-    class Config:
-        type_alias = "evidently:base:ColumnName"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:base:ColumnName"
 
     name: str
     display_name: DisplayName
@@ -93,8 +90,8 @@ class ColumnName(EnumValueMixin, EvidentlyBaseModel):
     def __init__(
         self, name: str, display_name: str, dataset: DatasetType, feature_class: Optional["GeneratedFeatures"] = None
     ):
-        self._feature_class = feature_class
         super().__init__(name=name, display_name=display_name, dataset=dataset)
+        self._feature_class = feature_class
 
     def is_main_dataset(self):
         return self.dataset == DatasetType.MAIN
@@ -117,8 +114,8 @@ class ColumnName(EnumValueMixin, EvidentlyBaseModel):
     def get_fingerprint_parts(self) -> Tuple[FingerprintPart, ...]:
         return tuple(
             (name, self.get_field_fingerprint(name))
-            for name, field in sorted(self.__fields__.items())
-            if field.required or getattr(self, name) != field.get_default() and field.name != "display_name"
+            for name, field in sorted(self.model_fields.items())
+            if field.is_required() or getattr(self, name) != field.default and name != "display_name"
         )
 
 
@@ -226,21 +223,28 @@ class FieldsDescriptor:
 
 class WithResultFieldPathMetaclass(FrozenBaseMeta):
     def result_type(cls) -> Type[MetricResult]:
-        return typing_inspect.get_args(
-            next(b for b in cls.__orig_bases__ if typing_inspect.is_generic_type(b))  # type: ignore[attr-defined]
-        )[0]
+        for parent_cls in cls.mro():
+            generic_metadata = getattr(parent_cls, "__pydantic_generic_metadata__", None)
+            if generic_metadata is None:
+                continue
+            origin = generic_metadata["origin"]
+            if not isinstance(origin, type) or not issubclass(origin, Metric):
+                continue
+            for arg in generic_metadata["args"]:
+                if not isinstance(arg, type) or not issubclass(arg, MetricResult):
+                    continue
+                return arg
+        raise TypeError(f"No result type found for {cls.__module__}.{cls.__name__}")
 
 
 class BasePreset(EvidentlyBaseModel):
-    class Config:
-        type_alias = "evidently:base:BasePreset"
-        transitive_aliases = True
-        is_base_type = True
+    __type_alias__: ClassVar[Optional[str]] = "evidently:base:BasePreset"
+    __transitive_aliases__: ClassVar[bool] = True
+    __is_base_type__: ClassVar[bool] = True
 
 
 class Metric(WithTestAndMetricDependencies, Generic[TResult], metaclass=WithResultFieldPathMetaclass):
-    class Config:
-        is_base_type = True
+    __is_base_type__: ClassVar[bool] = True
 
     _context: Optional["Context"] = None
 
@@ -330,12 +334,11 @@ class UsesRawDataMixin:
 
 
 class ColumnMetricResult(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:ColumnMetricResult"
-        field_tags = {
-            "column_name": {IncludeTags.Parameter},
-            "column_type": {IncludeTags.Parameter},
-        }
+    __type_alias__: ClassVar[Optional[str]] = "evidently:metric_result:ColumnMetricResult"
+    __field_tags__: ClassVar[Dict[str, set]] = {
+        "column_name": {IncludeTags.Parameter},
+        "column_type": {IncludeTags.Parameter},
+    }
 
     column_name: str
     # todo: use enum

@@ -18,9 +18,6 @@ ColumnDistribution = Dict[Any, Numeric]
 class ApproxValue(FrozenBaseModel, ExcludeNoneMixin):
     """Class for approximate scalar value calculations"""
 
-    class Config:
-        smart_union = True
-
     DEFAULT_RELATIVE: ClassVar = 1e-6
     DEFAULT_ABSOLUTE: ClassVar = 1e-12
 
@@ -28,7 +25,11 @@ class ApproxValue(FrozenBaseModel, ExcludeNoneMixin):
     relative: Numeric
     absolute: Numeric
 
-    def __init__(self, value: Numeric, relative: Optional[Numeric] = None, absolute: Optional[Numeric] = None):
+    def __init__(
+        self, value: Numeric, relative: Optional[Numeric] = None, absolute: Optional[Numeric] = None, **kwargs
+    ):
+        # if kwargs:
+        #     print(kwargs)
         if relative is not None and relative <= 0:
             raise ValueError("Relative value for approx should be greater than 0")
 
@@ -66,6 +67,9 @@ class ApproxValue(FrozenBaseModel, ExcludeNoneMixin):
 
     def __ge__(self, other):
         return self.value + self.tolerance >= other
+
+    def __hash__(self):
+        return hash(f"{self.value} {self.absolute} {self.relative}")
 
 
 NumericApprox = Union[int, float, ApproxValue]

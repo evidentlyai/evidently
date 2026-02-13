@@ -7,8 +7,7 @@ from evidently.legacy.features.generated_features import ApplyColumnGeneratedFea
 
 
 class IsValidSQL(ApplyColumnGeneratedFeature):
-    class Config:
-        type_alias = "evidently:feature:IsValidSQL"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:feature:IsValidSQL"
 
     __feature_type__: ClassVar = ColumnType.Categorical
     display_name_template: ClassVar = "SQL Validity Check for {column_name}"

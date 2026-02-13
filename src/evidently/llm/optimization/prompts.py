@@ -14,11 +14,11 @@ from typing import Sequence
 from typing import Union
 
 import pandas as pd
+from pydantic import BaseModel
+from pydantic import PrivateAttr
 
 from evidently import ColumnType
 from evidently import Dataset
-from evidently._pydantic_compat import BaseModel
-from evidently._pydantic_compat import PrivateAttr
 from evidently.core.datasets import FeatureDescriptor
 from evidently.core.datasets import LLMClassification
 from evidently.legacy.features.llm_judge import BinaryClassificationPromptTemplate
@@ -97,8 +97,7 @@ class PromptOptimizerStrategy(BaseArgTypeRegistry, AutoAliasMixin, EvidentlyBase
 
     __alias_type__: ClassVar = "prompt_optimizer_strategy"
 
-    class Config:
-        is_base_type = True
+    __is_base_type__: ClassVar[bool] = True
 
     @abstractmethod
     def get_default_scorer(self) -> "OptimizationScorer":
@@ -216,8 +215,7 @@ class PromptExecutor(AutoAliasMixin, EvidentlyBaseModel, InitContextMixin, ABC):
 
     __alias_type__: ClassVar = "prompt_executor"
 
-    class Config:
-        is_base_type = True
+    __is_base_type__: ClassVar[bool] = True
 
     @abstractmethod
     def execute(self, prompt: str, run: OptimizerRun) -> PromptExecutionLog:

@@ -1,5 +1,6 @@
 from abc import abstractmethod
 from enum import Enum
+from typing import ClassVar
 from typing import Dict
 from typing import Iterator
 from typing import List
@@ -10,8 +11,8 @@ from typing import Tuple
 from typing import Union
 
 import pandas as pd
+from pydantic import Field
 
-from evidently._pydantic_compat import Field
 from evidently.core.datasets import ColumnType
 from evidently.llm.models import LLMMessage
 from evidently.llm.utils.blocks import PromptBlock
@@ -28,8 +29,7 @@ class BaseLLMPromptTemplate(BlockPromptTemplate):
     or generation tasks.
     """
 
-    class Config:
-        is_base_type = True
+    __is_base_type__: ClassVar[bool] = True
 
     def iterate_messages(self, data: pd.DataFrame, input_columns: Dict[str, str]) -> Iterator[LLMRequest[dict]]:
         """Generate LLM requests for each row in the data.

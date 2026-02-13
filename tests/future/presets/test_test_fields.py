@@ -12,11 +12,11 @@ from typing import get_origin
 
 import pandas as pd
 import pytest
+from pydantic.fields import FieldInfo
 
 from evidently import BinaryClassification
 from evidently import DataDefinition
 from evidently import Dataset
-from evidently._pydantic_compat import ModelField
 from evidently.core.container import MetricContainer
 from evidently.core.metric_types import MeanStdMetric
 from evidently.core.metric_types import MeanStdMetricTests
@@ -245,17 +245,17 @@ def test_all_presets_tested():
     assert len(missing_test_fields) == 0, "Missing tests for preset fields: {}".format(format_missing)
 
 
-def _is_test_field(field: ModelField) -> bool:
-    if field.outer_type_ is bool:
+def _is_test_field(field_name: str, field: FieldInfo) -> bool:
+    if field.annotation is bool:
         return False
-    return "tests" in field.name
+    return "tests" in field_name
 
 
 def _get_test_field_instance(
-    field: ModelField, check: Union[GenericTest, MetricTest], preset_type: Type[MetricContainer]
+    field: FieldInfo, check: Union[GenericTest, MetricTest], preset_type: Type[MetricContainer]
 ):
-    if get_origin(field.outer_type_) == dict:
-        if field.type_ is ValueStatsTests:
+    if get_origin(field.annotation) == dict:
+        if field.annotation is ValueStatsTests:
             col = "text_length"
             return {
                 col: ValueStatsTests(
@@ -268,16 +268,16 @@ def _get_test_field_instance(
                 )
             }
         return {"a": [check]}
-    if get_origin(field.outer_type_) == list:
+    if get_origin(field.annotation) == list:
         return [check]
-    if field.outer_type_ is MeanStdMetricTests:
+    if field.annotation is MeanStdMetricTests:
         return MeanStdMetricTests(mean=[check], std=[check])
-    return NotImplementedError(f"Not implemented for {field.outer_type_}")
+    return NotImplementedError(f"Not implemented for {field.annotation}")
 
 
-def iter_type_test_fields(preset_type: Type[MetricContainer]) -> Iterable[Tuple[str, ModelField]]:
+def iter_type_test_fields(preset_type: Type[MetricContainer]) -> Iterable[Tuple[str, FieldInfo]]:
     for field_name, field in preset_type.__fields__.items():
-        if not _is_test_field(field):
+        if not _is_test_field(field_name, field):
             continue
         yield field_name, field
 

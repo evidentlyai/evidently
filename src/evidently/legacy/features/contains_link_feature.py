@@ -10,8 +10,7 @@ from evidently.legacy.features.generated_features import ApplyColumnGeneratedFea
 
 
 class ContainsLink(ApplyColumnGeneratedFeature):
-    class Config:
-        type_alias = "evidently:feature:ContainsLink"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:feature:ContainsLink"
 
     __feature_type__: ClassVar = ColumnType.Categorical
     display_name_template: ClassVar = "{column_name} contains link"

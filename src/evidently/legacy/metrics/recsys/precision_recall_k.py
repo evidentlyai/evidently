@@ -1,4 +1,5 @@
 import warnings
+from typing import ClassVar
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -29,21 +30,19 @@ def safe_pd_column_expanding_and_sum(df: pd.DataFrame):
 
 
 class PrecisionRecallCalculationResult(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:PrecisionRecallCalculationResult"
-        pd_include = False
-        field_tags = {"current": {IncludeTags.Current}, "reference": {IncludeTags.Reference}}
+    __type_alias__: ClassVar[Optional[str]] = "evidently:metric_result:PrecisionRecallCalculationResult"
+    __pd_include__: ClassVar[bool] = False
+    __field_tags__: ClassVar[Dict[str, set]] = {"current": {IncludeTags.Current}, "reference": {IncludeTags.Reference}}
 
     current: Dict[str, list]
     reference: Optional[Dict[str, list]] = None
 
 
 class PrecisionRecallCalculation(Metric[PrecisionRecallCalculationResult]):
-    class Config:
-        type_alias = "evidently:metric:PrecisionRecallCalculation"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:metric:PrecisionRecallCalculation"
 
     max_k: int
-    min_rel_score: Optional[int]
+    min_rel_score: Optional[int] = None
 
     def __init__(self, max_k: int, min_rel_score: Optional[int] = None, options: AnyOptions = None) -> None:
         self.max_k = max_k

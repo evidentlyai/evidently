@@ -13,10 +13,10 @@ from dynaconf import LazySettings
 from dynaconf.utils.boxing import DynaBox
 from litestar import Litestar
 from litestar.di import Provide
+from pydantic import BaseModel
+from pydantic import PrivateAttr
+from pydantic import TypeAdapter
 
-from evidently._pydantic_compat import BaseModel
-from evidently._pydantic_compat import PrivateAttr
-from evidently._pydantic_compat import parse_obj_as
 from evidently.ui.service.components.base import SECTION_COMPONENT_TYPE_MAPPING
 from evidently.ui.service.components.base import AppBuilder
 from evidently.ui.service.components.base import Component
@@ -130,14 +130,16 @@ def load_config(config_type: Type[TConfig], box: dict) -> TConfig:
             continue
         if section == "additional_components":
             for subsection, compoennt_subdict in component_dict.items():
-                component = parse_obj_as(SECTION_COMPONENT_TYPE_MAPPING.get(subsection, Component), compoennt_subdict)
+                component = TypeAdapter(SECTION_COMPONENT_TYPE_MAPPING.get(subsection, Component)).validate_python(
+                    compoennt_subdict
+                )
                 components[subsection] = component
         elif section in config_type.__fields__:
             type_ = config_type.__fields__[section].type_
-            component = parse_obj_as(type_, component_dict)
+            component = TypeAdapter(type_).validate_python(component_dict)
             named_components[section] = component
         elif section in SECTION_COMPONENT_TYPE_MAPPING:
-            component = parse_obj_as(SECTION_COMPONENT_TYPE_MAPPING[section], component_dict)
+            component = TypeAdapter(SECTION_COMPONENT_TYPE_MAPPING[section]).validate_python(component_dict)
             components[section] = component
         else:
             raise ValueError(f"unknown config section {section}")

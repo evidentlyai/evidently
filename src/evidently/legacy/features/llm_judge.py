@@ -5,8 +5,8 @@ from typing import Optional
 from typing import Union
 
 import pandas as pd
+from pydantic import PrivateAttr
 
-from evidently._pydantic_compat import PrivateAttr
 from evidently.legacy.base_metric import ColumnName
 from evidently.legacy.core import ColumnType
 from evidently.legacy.features.generated_features import GeneratedFeatures
@@ -22,8 +22,7 @@ from evidently.llm.utils.wrapper import get_llm_wrapper
 
 
 class LLMJudge(GeneratedFeatures):
-    class Config:
-        type_alias = "evidently:feature:LLMJudge"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:feature:LLMJudge"
 
     """Generic LLM judge generated features"""
 

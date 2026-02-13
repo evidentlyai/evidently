@@ -3,7 +3,8 @@ from typing import Optional
 from typing import Sequence
 from typing import Tuple
 
-from evidently._pydantic_compat import PrivateAttr
+from pydantic import PrivateAttr
+
 from evidently.core.container import MetricContainer
 from evidently.core.container import MetricOrContainer
 from evidently.core.metric_types import GenericSingleValueMetricTests

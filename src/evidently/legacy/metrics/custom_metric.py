@@ -1,9 +1,11 @@
 from typing import Callable
+from typing import ClassVar
 from typing import List
 from typing import Optional
 from typing import Union
 
-from evidently._pydantic_compat import PrivateAttr
+from pydantic import PrivateAttr
+
 from evidently.legacy.base_metric import InputData
 from evidently.legacy.base_metric import Metric
 from evidently.legacy.base_metric import MetricResult
@@ -17,8 +19,7 @@ from evidently.legacy.renderers.html_widgets import counter
 
 
 class CustomCallableMetricResult(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:CustomCallableMetricResult"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:metric_result:CustomCallableMetricResult"
 
     value: float
 
@@ -27,8 +28,7 @@ CustomCallableType = Callable[[InputData], float]
 
 
 class CustomValueMetric(Metric[CustomCallableMetricResult]):
-    class Config:
-        type_alias = "evidently:metric:CustomValueMetric"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:metric:CustomValueMetric"
 
     func: str
     title: Optional[str] = None
@@ -45,14 +45,15 @@ class CustomValueMetric(Metric[CustomCallableMetricResult]):
         **data,
     ):
         if callable(func):
-            self._func = func
+            _func = func
             self.func = f"{func.__module__}.{func.__name__}"
         else:
-            self._func = None
+            _func = None
             self.func = func
         self.title = title
         self.size = size
         super().__init__(options, **data)
+        self._func = _func
 
     def calculate(self, data: InputData) -> CustomCallableMetricResult:
         if self._func is None:

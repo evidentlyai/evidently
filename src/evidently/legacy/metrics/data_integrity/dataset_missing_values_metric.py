@@ -1,20 +1,20 @@
+from typing import Annotated
 from typing import Any
 from typing import ClassVar
 from typing import Dict
 from typing import FrozenSet
 from typing import List
 from typing import Optional
-from typing import Union
 
 import numpy as np
 import pandas as pd
+from pydantic import BeforeValidator
 
 from evidently.legacy.base_metric import InputData
 from evidently.legacy.base_metric import Metric
 from evidently.legacy.base_metric import MetricResult
 from evidently.legacy.calculations.data_quality import get_rows_count
 from evidently.legacy.core import IncludeTags
-from evidently.legacy.core import pydantic_type_validator
 from evidently.legacy.model.widget import BaseWidgetInfo
 from evidently.legacy.options.base import AnyOptions
 from evidently.legacy.renderers.base_renderer import MetricRenderer
@@ -28,50 +28,63 @@ from evidently.legacy.renderers.html_widgets import histogram
 from evidently.legacy.renderers.html_widgets import table_data
 from evidently.legacy.renderers.html_widgets import widget_tabs
 
-NoneKey = type("NoneKey", tuple(), {})
+# NoneKey = type("NoneKey", tuple(), {})
 
 
-@pydantic_type_validator(NoneKey)
-def null_valudator(value):
+# @pydantic_type_validator(NoneKey)
+# def null_valudator(value):
+#     if value is None or value == "null":
+#         return None
+#     raise ValueError("not a None")
+#
+#
+# MissingValue = Union[PydanticNPDouble, NoneKey, Any]  # type: ignore[valid-type]
+
+
+def missing_value_validator(value):
     if value is None or value == "null":
         return None
-    raise ValueError("not a None")
+    if value == "":
+        return ""
+    try:
+        return float(value)
+    except ValueError:
+        pass
+    return value
 
 
-MissingValue = Union[np.double, NoneKey, Any]  # type: ignore[valid-type]
+MissingValueType = Annotated[Any, BeforeValidator(missing_value_validator)]
 
 
 class DatasetMissingValues(MetricResult):
     """Statistics about missed values in a dataset"""
 
-    class Config:
-        type_alias = "evidently:metric_result:DatasetMissingValues"
-        pd_exclude_fields = {
-            "different_missing_values_by_column",
-            "different_missing_values",
-            "number_of_different_missing_values_by_column",
-            "number_of_missing_values_by_column",
-            "share_of_missing_values_by_column",
-            "columns_with_missing_values",
-        }
-
-        field_tags = {
-            "different_missing_values": {IncludeTags.Extra},
-            "different_missing_values_by_column": {IncludeTags.Extra},
-            "number_of_different_missing_values_by_column": {IncludeTags.Extra},
-            "number_of_missing_values_by_column": {IncludeTags.Extra},
-            "share_of_missing_values_by_column": {IncludeTags.Extra},
-            "number_of_rows": {IncludeTags.Extra},
-            "number_of_columns": {IncludeTags.Extra},
-            "columns_with_missing_values": {IncludeTags.Extra},
-        }
+    __type_alias__: ClassVar[Optional[str]] = "evidently:metric_result:DatasetMissingValues"
+    __pd_exclude_fields__: ClassVar[set] = {
+        "different_missing_values_by_column",
+        "different_missing_values",
+        "number_of_different_missing_values_by_column",
+        "number_of_missing_values_by_column",
+        "share_of_missing_values_by_column",
+        "columns_with_missing_values",
+    }
+    __field_tags__: ClassVar[Dict[str, set]] = {
+        "different_missing_values": {IncludeTags.Extra},
+        "different_missing_values_by_column": {IncludeTags.Extra},
+        "number_of_different_missing_values_by_column": {IncludeTags.Extra},
+        "number_of_missing_values_by_column": {IncludeTags.Extra},
+        "share_of_missing_values_by_column": {IncludeTags.Extra},
+        "number_of_rows": {IncludeTags.Extra},
+        "number_of_columns": {IncludeTags.Extra},
+        "columns_with_missing_values": {IncludeTags.Extra},
+    }
 
     # set of different missing values in the dataset
-    different_missing_values: Dict[MissingValue, int]
+    different_missing_values: Dict[MissingValueType, int]
     # number of different missing values in the dataset
     number_of_different_missing_values: int
     # set of different missing values for each column
-    different_missing_values_by_column: Dict[str, Dict[MissingValue, int]]
+    different_missing_values_by_column: Dict[str, Dict[MissingValueType, int]]
     # count of different missing values for each column
     number_of_different_missing_values_by_column: Dict[str, int]
     # count of missing values in all dataset
@@ -99,17 +112,15 @@ class DatasetMissingValues(MetricResult):
 
 
 class DatasetMissingValuesMetricResult(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:DatasetMissingValuesMetricResult"
-        field_tags = {"current": {IncludeTags.Current}, "reference": {IncludeTags.Reference}}
+    __type_alias__: ClassVar[Optional[str]] = "evidently:metric_result:DatasetMissingValuesMetricResult"
+    __field_tags__: ClassVar[Dict[str, set]] = {"current": {IncludeTags.Current}, "reference": {IncludeTags.Reference}}
 
     current: DatasetMissingValues
     reference: Optional[DatasetMissingValues] = None
 
 
 class DatasetMissingValuesMetric(Metric[DatasetMissingValuesMetricResult]):
-    class Config:
-        type_alias = "evidently:metric:DatasetMissingValuesMetric"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:metric:DatasetMissingValuesMetric"
 
     """Count missing values in a dataset.
 
@@ -127,7 +138,7 @@ class DatasetMissingValuesMetric(Metric[DatasetMissingValuesMetricResult]):
 
     # default missing values list
     DEFAULT_MISSING_VALUES: ClassVar = ["", np.inf, -np.inf, None]
-    missing_values: FrozenSet[MissingValue]
+    missing_values: FrozenSet[MissingValueType]
 
     def __init__(self, missing_values: Optional[list] = None, replace: bool = True, options: AnyOptions = None) -> None:
         _missing_values: list
