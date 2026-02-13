@@ -2,11 +2,10 @@ import pandas as pd
 import pytest
 
 from evidently import Report
-from evidently.metrics import ColumnSummaryMetric
 
 
 def test_report_run_fails_on_empty_current_data():
-    report = Report(metrics=[ColumnSummaryMetric(column_name="x")])
+    report = Report(metrics=[])
 
     empty_df = pd.DataFrame()
 
