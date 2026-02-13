@@ -1,11 +1,13 @@
+import pandas as pd
 import pytest
 
-from evidently.report import Report
+from evidently.core.report import Report
 
 
-def test_report_invalid_metrics_type():
-    """
-    Report should raise an error when metrics is not a list.
-    """
-    with pytest.raises(Exception):
-        Report(metrics="not_a_list")
+def test_report_run_fails_on_empty_current_data():
+    report = Report(metrics=[])
+
+    empty_df = pd.DataFrame()
+
+    with pytest.raises(ValueError):
+        report.run(current_data=empty_df)
