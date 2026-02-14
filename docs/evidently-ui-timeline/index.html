@@ -1,0 +1,1723 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Visual Screens History</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: #0f1117; color: #e1e4e8; display: flex; height: 100vh; overflow: hidden; }
+
+  /* Sidebar */
+  .sidebar { width: 280px; min-width: 280px; background: #161b22; border-right: 1px solid #30363d; overflow-y: auto; padding: 16px 0; transition: width 0.2s, min-width 0.2s, padding 0.2s; }
+  .sidebar.collapsed { width: 0; min-width: 0; padding: 0; overflow: hidden; border-right: none; }
+  .sidebar h2 { padding: 0 16px 12px; font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px; color: #8b949e; font-weight: 600; }
+  .toggle-sidebar { background: #21262d; border: 1px solid #30363d; color: #c9d1d9; width: 32px; height: 32px; border-radius: 6px; cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; transition: all 0.15s; flex-shrink: 0; }
+  .toggle-sidebar:hover { background: #30363d; color: #f0f6fc; }
+  .sidebar-item { padding: 10px 16px; cursor: pointer; font-size: 13px; color: #c9d1d9; border-left: 3px solid transparent; transition: all 0.15s;}
+  .sidebar-item:hover { background: #1c2128; color: #f0f6fc; }
+  .sidebar-item.active { background: #1c2128; border-left-color: #58a6ff; color: #f0f6fc; font-weight: 500; }
+  .sidebar-item .count { font-size: 11px; color: #8b949e; margin-left: 4px; }
+  .sidebar #screenList {white-space: nowrap;}
+
+  /* Main */
+  .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+
+  /* Header */
+  .header { padding: 16px 24px; background: #161b22; border-bottom: 1px solid #30363d; display: flex; align-items: center; justify-content: space-between; min-height: 64px; }
+  .header h1 { font-size: 18px; font-weight: 600; color: #f0f6fc; }
+
+  /* Controls */
+  .controls { display: flex; align-items: center; gap: 12px; padding: 12px 24px; background: #161b22; border-bottom: 1px solid #30363d; }
+  .controls button { background: #21262d; border: 1px solid #30363d; color: #c9d1d9; padding: 6px 16px; border-radius: 6px; cursor: pointer; font-size: 13px; transition: all 0.15s; }
+  .controls button:hover:not(:disabled) { background: #30363d; color: #f0f6fc; }
+  .controls button:disabled { opacity: 0.4; cursor: default; }
+  .controls button.play { background: #238636; border-color: #2ea043; color: #fff; }
+  .controls button.play:hover { background: #2ea043; }
+  .controls button.play.playing { background: #da3633; border-color: #f85149; }
+  .controls button.play.playing:hover { background: #f85149; }
+  .slider-container { flex: 1; display: flex; align-items: center; gap: 12px; }
+  .slider-container input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    flex: 1;
+    height: 24px;
+    background: transparent;
+    cursor: pointer;
+  }
+  .slider-container input[type="range"]::-webkit-slider-runnable-track {
+    width: 100%;
+    height: 6px;
+    background: #30363d;
+    border-radius: 3px;
+  }
+  .slider-container input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    height: 28px;
+    width: 28px;
+    background: #58a6ff;
+    border-radius: 50%;
+    margin-top: -11px;
+    border: 3px solid #161b22;
+  }
+  .slider-container input[type="range"]:focus {
+    outline: none;
+  }
+  .slider-container input[type="range"]:focus::-webkit-slider-thumb {
+    box-shadow: 0 0 0 3px #1f6feb;
+  }
+  .slider-container input[type="range"]::-moz-range-track {
+    width: 100%;
+    height: 6px;
+    background: #30363d;
+    border-radius: 3px;
+  }
+  .slider-container input[type="range"]::-moz-range-thumb {
+    height: 28px;
+    width: 28px;
+    background: #58a6ff;
+    border-radius: 50%;
+    border: 3px solid #161b22;
+  }
+  .slider-label { font-size: 13px; color: #8b949e; white-space: nowrap; min-width: 50px; text-align: center; }
+  .speed-control { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #8b949e; }
+  .speed-control select { background: #21262d; border: 1px solid #30363d; color: #c9d1d9; padding: 4px 8px; border-radius: 4px; font-size: 12px; }
+
+  /* Info bar */
+  .info-bar { padding: 10px 24px; background: #1c2128; border-bottom: 1px solid #30363d; display: flex; gap: 24px; align-items: center; font-size: 13px; flex-wrap: wrap; }
+  .info-bar .info-item { display: flex; align-items: center; gap: 6px; }
+  .info-bar .info-label { color: #8b949e; }
+  .info-bar .info-value { color: #c9d1d9; }
+  .info-bar .info-value.commit { font-family: "SFMono-Regular", Consolas, monospace; font-size: 12px; color: #58a6ff; }
+
+  /* Image viewer */
+  .viewer { flex: 1; overflow: auto; display: flex; align-items: flex-start; justify-content: center; padding: 24px; background: #0d1117; }
+  .viewer img { max-width: 100%; height: auto; border-radius: 8px; border: 1px solid #30363d; box-shadow: 0 4px 24px rgba(0,0,0,0.4); }
+  .viewer.fit { overflow: hidden; align-items: center; }
+  .viewer.fit img { max-width: 100%; max-height: 100%; object-fit: contain; }
+  .viewer .no-image { color: #8b949e; font-size: 15px; margin-top: 100px; }
+  .info-bar .loading-label { color: #8b949e; font-style: italic; }
+  .viewer .text-view { display: none; width: 100%; max-width: 800px; font-family: "SFMono-Regular", Consolas, monospace; font-size: 13px; color: #c9d1d9; }
+  .viewer .text-view .text-entry { padding: 12px 16px; border: 1px solid #30363d; border-radius: 6px; background: #161b22; margin-bottom: 8px; display: flex; gap: 16px; align-items: center; cursor: pointer; }
+  .viewer .text-view .text-entry.current { border-color: #58a6ff; background: #1c2128; }
+  .viewer .text-view .text-entry .rev-index { color: #8b949e; min-width: 36px; }
+  .viewer .text-view .text-entry .rev-date { color: #8b949e; min-width: 180px; }
+  .viewer .text-view .text-entry .rev-subject { color: #c9d1d9; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .viewer .text-view .text-entry .rev-hash { color: #58a6ff; min-width: 90px; }
+  .viewer.text-mode img { display: none !important; }
+  .viewer.text-mode .text-view { display: block; }
+
+</style>
+</head>
+<body>
+
+<div class="sidebar">
+  <h2>Screens</h2>
+  <div id="screenList"></div>
+</div>
+
+<div class="main">
+  <div class="header">
+    <div style="display:flex;align-items:center;gap:12px;">
+      <button class="toggle-sidebar" id="toggleSidebar" title="Toggle sidebar">&#9776;</button>
+      <h1 id="screenTitle">Select a screen</h1>
+    </div>
+  </div>
+  <div class="controls">
+    <button id="prevBtn" disabled>&larr; Prev</button>
+    <button id="playBtn" class="play">&#9654; Play</button>
+    <button id="nextBtn" disabled>Next &rarr;</button>
+    <div class="slider-container">
+      <input type="range" id="slider" min="0" max="0" value="0">
+      <span class="slider-label" id="sliderLabel">0 / 0</span>
+    </div>
+    <div class="speed-control">
+      <label for="speed">Speed:</label>
+      <select id="speed">
+        <option value="2000">0.5x</option>
+        <option value="1000" selected>1x</option>
+        <option value="500">2x</option>
+        <option value="250">4x</option>
+      </select>
+    </div>
+    <div class="speed-control">
+      <label for="viewMode">View:</label>
+      <select id="viewMode">
+        <option value="scroll">Scroll</option>
+        <option value="fit">Fit</option>
+        <option value="text">Text</option>
+      </select>
+    </div>
+  </div>
+  <div class="info-bar" id="infoBar"></div>
+  <div class="viewer">
+    <img id="screenImg" src="" alt="" style="display:none;">
+    <div id="textView" class="text-view"></div>
+    <div id="noImage" class="no-image">Choose a screen from the sidebar to begin</div>
+  </div>
+</div>
+
+<script>
+const DATA = [
+  {
+    "screenName": "Dashboard-Demo-project---Bikes-1-chromium-linux.png",
+    "displayName": "Dashboard Demo project / Bikes",
+    "entries": [
+      {
+        "folder": "1-d4540a7b",
+        "path": "1-d4540a7b/images/Dashboard-Demo-project---Bikes-1-chromium-linux.png",
+        "commit": "d4540a7bf87e8665361b94f9ce07243b6402b08b",
+        "date": "2024-03-12 23:41:28 +0400",
+        "author": "Dmitry Khorkin",
+        "subject": "UI: Better panels (#1022)"
+      },
+      {
+        "folder": "2-02b5ba51",
+        "path": "2-02b5ba51/images/Dashboard-Demo-project---Bikes-1-chromium-linux.png",
+        "commit": "02b5ba518ef3350d1d5ab55710fd89a531db53b4",
+        "date": "2024-03-15 17:07:07 +0400",
+        "author": "Dmitry Khorkin",
+        "subject": "remove nbextension (#1027)"
+      },
+      {
+        "folder": "3-d0688695",
+        "path": "3-d0688695/images/Dashboard-Demo-project---Bikes-1-chromium-linux.png",
+        "commit": "d06886957a6aa947a1440884584c6ea9705fd6f6",
+        "date": "2024-04-01 20:15:09 +0400",
+        "author": "Dmitry Khorkin",
+        "subject": "ui fix font weight (#1048)"
+      },
+      {
+        "folder": "4-cc51acc0",
+        "path": "4-cc51acc0/images/Dashboard-Demo-project---Bikes-1-chromium-linux.png",
+        "commit": "cc51acc04979dca63d077cb8a89f3ca7a30b55c5",
+        "date": "2024-04-05 17:30:17 +0400",
+        "author": "Dmitry Khorkin",
+        "subject": "UI: remove hardcore color (#1053)"
+      },
+      {
+        "folder": "5-1092751a",
+        "path": "5-1092751a/images/Dashboard-Demo-project---Bikes-1-chromium-linux.png",
+        "commit": "1092751a27994ddc2d78f3d614ee82c07c5c1e84",
+        "date": "2024-04-08 17:42:39 +0400",
+        "author": "Dmitry Khorkin",
+        "subject": "UI new theme and better error handling (#1063)"
+      },
+      {
+        "folder": "6-d7d2af02",
+        "path": "6-d7d2af02/images/Dashboard-Demo-project---Bikes-1-chromium-linux.png",
+        "commit": "d7d2af02db953499a0c9226385707039544a4ee0",
+        "date": "2024-04-18 23:26:20 +0400",
+        "author": "Dmitry Khorkin",
+        "subject": "UI: code refactor and small improvements (#1079)"
+      },
+      {
+        "folder": "7-43fb8f0e",
+        "path": "7-43fb8f0e/images/Dashboard-Demo-project---Bikes-1-chromium-linux.png",
+        "commit": "43fb8f0efde27d8348466b2bd9754efb06ab4114",
+        "date": "2024-06-24 20:03:04 +0400",
+        "author": "Dmitry Khorkin",
+        "subject": "UI(feature): dashboard filter - hide dates (#1166)"
+      },
+      {
+        "folder": "8-98e41efc",
+        "path": "8-98e41efc/images/Dashboard-Demo-project---Bikes-1-chromium-linux.png",
+        "commit": "98e41efccd5628ecc803756415cb15ad07639a73",
+        "date": "2024-06-24 22:25:58 +0400",
+        "author": "Dmitry Khorkin",
+        "subject": "Update DashboardDateFilter.tsx (#1171)"
+      },
+      {
+        "folder": "9-d7f50a6c",
+        "path": "9-d7f50a6c/images/Dashboard-Demo-project---Bikes-1-chromium-linux.png",
+        "commit": "d7f50a6cfe1253f8a575b2ab413291eee2243412",
+        "date": "2024-07-03 18:17:51 +0400",
+        "author": "Dmitry Khorkin",
+        "subject": "UI(feature): delete snapshot button (#1185)"
+      },
+      {
+        "folder": "10-ab9ea179",
+        "path": "10-ab9ea179/images/Dashboard-Demo-project---Bikes-1-chromium-linux.png",
+        "commit": "ab9ea17919d119bf0b125a2ac2aabd3f6c97ab37",
+        "date": "2024-07-08 22:21:20 +0400",
+        "author": "Dmitry Khorkin",
+        "subject": "UI: deterministic uuid generation in UI tests (#1168)"
+      },
+      {
+        "folder": "11-29f48930",
+        "path": "11-29f48930/images/Dashboard-Demo-project---Bikes-1-chromium-linux.png",
+        "commit": "29f489303b8486efdda8e0d6d54f826bec61ca15",
+        "date": "2024-07-30 17:45:35 +0400",
+        "author": "Dmitry Khorkin",
+        "subject": "UI(refactor): snapshots list slots (#1229)"
+      },
+      {
+        "folder": "12-71c62ac8",
+        "path": "12-71c62ac8/images/Dashboard-Demo-project---Bikes-1-chromium-linux.png",
+        "commit": "71c62ac8f84fa11c5e0a32b5fff10d231cb0e8c7",
+        "date": "2024-07-31 20:36:54 +0400",
+        "author": "Mikhail Sveshnikov",
+        "subject": "Multi-column descriptors (#1222)"
+      },
+      {
+        "folder": "13-db682763",
+        "path": "13-db682763/images/Dashboard-Demo-project---Bikes-1-chromium-linux.png",
+        "commit": "db6827637a7d0696d57b2361f4cc49e1c3503678",
+        "date": "2024-08-23 18:11:24 +0200",
+        "author": "Vyacheslav Morov",
+        "subject": "Remove top version boundary for nltk. (#1261)"
+      },
+      {
+        "folder": "14-55f49ad8",
+        "path": "14-55f49ad8/images/Dashboard-Demo-project---Bikes-1-chromium-linux.png",
+        "commit": "55f49ad8f64e8f34de6506a5b361076f0e67032b",
+        "date": "2024-09-25 19:48:14 +0400",
+        "author": "Dmitry Khorkin",
+        "subject": "UI: Replace github icon to discord icon (#1322)"
+      },
+      {
+        "folder": "15-975fb0f4",
+        "path": "15-975fb0f4/images/Dashboard-Demo-project---Bikes-1-chromium-linux.png",
+        "commit": "975fb0f4ef1010df4c7d97a5339ffae0ed222d82",
+        "date": "2024-10-28 18:52:52 +0400",
+        "author": "Dmitry Khorkin",
+        "subject": "UI: dark mode (#1355)"
+      },
+      {
+        "folder": "16-beec1e52",
+        "path": "16-beec1e52/images/Dashboard-Demo-project---Bikes-1-chromium-linux.png",
+        "commit": "beec1e5236be3cbcb704f0cfb995ed81c9d0b461",
+        "date": "2025-01-10 18:51:49 +0000",
+        "author": "Vyacheslav Morov",
+        "subject": "Metrics redesign (#1389)"
+      },
+      {
+        "folder": "17-c6056c73",
+        "path": "17-c6056c73/images/Dashboard-Demo-project---Bikes-1-chromium-linux.png",
+        "commit": "c6056c736114b2ab056d0ce45b5db0c79c7da7a4",
+        "date": "2025-02-18 14:14:45 +0400",
+        "author": "Dmitry Khorkin",
+        "subject": "UI: huge refactor (#1384)"
+      },
+      {
+        "folder": "18-5a830f4b",
+        "path": "18-5a830f4b/images/Dashboard-Demo-project---Bikes-1-chromium-linux.png",
+        "commit": "5a830f4bd0a7ca3db0b7b2b6ee74e4d0d60391fa",
+        "date": "2025-04-15 13:43:42 +0100",
+        "author": "Mikhail Sveshnikov",
+        "subject": "add py3.13 (#1548)"
+      },
+      {
+        "folder": "19-ce920789",
+        "path": "19-ce920789/images/Dashboard-Demo-project---Bikes-1-chromium-linux.png",
+        "commit": "ce920789c0b7e801395dd100afa64892d477fe02",
+        "date": "2025-08-14 20:41:31 +0400",
+        "author": "Dmitry Khorkin",
+        "subject": "UI: remove v1 stuff (#1697)"
+      },
+      {
+        "folder": "20-2942f87a",
+        "path": "20-2942f87a/images/Dashboard-Demo-project---Bikes-1-chromium-linux.png",
+        "commit": "2942f87a1e74b67aad352c33eef21deac950e9cb",
+        "date": "2025-11-10 22:44:10 +0000",
+        "author": "Mikhail Sveshnikov",
+        "subject": "Dataset support (#1736)"
+      },
+      {
+        "folder": "21-cb6c9fc4",
+        "path": "21-cb6c9fc4/images/Dashboard-Demo-project---Bikes-1-chromium-linux.png",
+        "commit": "cb6c9fc45f9d2e309ef80df217ef4a65bca09aa8",
+        "date": "2025-11-11 20:51:22 +0400",
+        "author": "Dmitry Khorkin",
+        "subject": "UI: fix datasets (#1739)"
+      },
+      {
+        "folder": "22-ef0b389a",
+        "path": "22-ef0b389a/images/Dashboard-Demo-project---Bikes-1-chromium-linux.png",
+        "commit": "ef0b389ad2cb8574cc9ee1687fe63cf31c824fdd",
+        "date": "2025-11-20 17:30:53 +0000",
+        "author": "Mikhail Sveshnikov",
+        "subject": "Tracing support (#1743)"
+      },
+      {
+        "folder": "23-ad1d3ba3",
+        "path": "23-ad1d3ba3/images/Dashboard-Demo-project---Bikes-1-chromium-linux.png",
+        "commit": "ad1d3ba394510f130893d2aca9969e68c396dc95",
+        "date": "2025-12-01 15:08:19 +0000",
+        "author": "Mikhail Sveshnikov",
+        "subject": "Versioned artefacts (unified prompts and configs) (#1750)"
+      },
+      {
+        "folder": "24-83a109ae",
+        "path": "24-83a109ae/images/Dashboard-Demo-project---Bikes-1-chromium-linux.png",
+        "commit": "83a109ae6dc6f5137f13c1daadbe872bd1342e35",
+        "date": "2026-01-22 18:46:52 +0400",
+        "author": "Dmitry Khorkin",
+        "subject": "UI: snapshots pagination bit changes (#1804)"
+      }
+    ]
+  },
+  {
+    "screenName": "Home-1-chromium-linux.png",
+    "displayName": "Home",
+    "entries": [
+      {
+        "folder": "1-d4540a7b",
+        "path": "1-d4540a7b/images/Home-1-chromium-linux.png",
+        "commit": "d4540a7bf87e8665361b94f9ce07243b6402b08b",
+        "date": "2024-03-12 23:41:28 +0400",
+        "author": "Dmitry Khorkin",
+        "subject": "UI: Better panels (#1022)"
+      },
+      {
+        "folder": "2-02b5ba51",
+        "path": "2-02b5ba51/images/Home-1-chromium-linux.png",
+        "commit": "02b5ba518ef3350d1d5ab55710fd89a531db53b4",
+        "date": "2024-03-15 17:07:07 +0400",
+        "author": "Dmitry Khorkin",
+        "subject": "remove nbextension (#1027)"
+      },
+      {
+        "folder": "3-d0688695",
+        "path": "3-d0688695/images/Home-1-chromium-linux.png",
+        "commit": "d06886957a6aa947a1440884584c6ea9705fd6f6",
+        "date": "2024-04-01 20:15:09 +0400",
+        "author": "Dmitry Khorkin",
+        "subject": "ui fix font weight (#1048)"
+      },
+      {
+        "folder": "4-cc51acc0",
+        "path": "4-cc51acc0/images/Home-1-chromium-linux.png",
+        "commit": "cc51acc04979dca63d077cb8a89f3ca7a30b55c5",
+        "date": "2024-04-05 17:30:17 +0400",
+        "author": "Dmitry Khorkin",
+        "subject": "UI: remove hardcore color (#1053)"
+      },
+      {
+        "folder": "5-1092751a",
+        "path": "5-1092751a/images/Home-1-chromium-linux.png",
+        "commit": "1092751a27994ddc2d78f3d614ee82c07c5c1e84",
+        "date": "2024-04-08 17:42:39 +0400",
+        "author": "Dmitry Khorkin",
+        "subject": "UI new theme and better error handling (#1063)"
+      },
+      {
+        "folder": "6-d7d2af02",
+        "path": "6-d7d2af02/images/Home-1-chromium-linux.png",
+        "commit": "d7d2af02db953499a0c9226385707039544a4ee0",
+        "date": "2024-04-18 23:26:20 +0400",
+        "author": "Dmitry Khorkin",
+        "subject": "UI: code refactor and small improvements (#1079)"
+      },
+      {
+        "folder": "7-43fb8f0e",
+        "path": "7-43fb8f0e/images/Home-1-chromium-linux.png",
+        "commit": "43fb8f0efde27d8348466b2bd9754efb06ab4114",
+        "date": "2024-06-24 20:03:04 +0400",
+        "author": "Dmitry Khorkin",
+        "subject": "UI(feature): dashboard filter - hide dates (#1166)"
+      },
+      {
+        "folder": "8-98e41efc",
+        "path": "8-98e41efc/images/Home-1-chromium-linux.png",
+        "commit": "98e41efccd5628ecc803756415cb15ad07639a73",
+        "date": "2024-06-24 22:25:58 +0400",
+        "author": "Dmitry Khorkin",
+        "subject": "Update DashboardDateFilter.tsx (#1171)"
+      },
+      {
+        "folder": "9-d7f50a6c",
+        "path": "9-d7f50a6c/images/Home-1-chromium-linux.png",
+        "commit": "d7f50a6cfe1253f8a575b2ab413291eee2243412",
+        "date": "2024-07-03 18:17:51 +0400",
+        "author": "Dmitry Khorkin",
+        "subject": "UI(feature): delete snapshot button (#1185)"
+      },
+      {
+        "folder": "10-ab9ea179",
+        "path": "10-ab9ea179/images/Home-1-chromium-linux.png",
+        "commit": "ab9ea17919d119bf0b125a2ac2aabd3f6c97ab37",
+        "date": "2024-07-08 22:21:20 +0400",
+        "author": "Dmitry Khorkin",
+        "subject": "UI: deterministic uuid generation in UI tests (#1168)"
+      },
+      {
+        "folder": "11-29f48930",
+        "path": "11-29f48930/images/Home-1-chromium-linux.png",
+        "commit": "29f489303b8486efdda8e0d6d54f826bec61ca15",
+        "date": "2024-07-30 17:45:35 +0400",
+        "author": "Dmitry Khorkin",
+        "subject": "UI(refactor): snapshots list slots (#1229)"
+      },
+      {
+        "folder": "12-71c62ac8",
+        "path": "12-71c62ac8/images/Home-1-chromium-linux.png",
+        "commit": "71c62ac8f84fa11c5e0a32b5fff10d231cb0e8c7",
+        "date": "2024-07-31 20:36:54 +0400",
+        "author": "Mikhail Sveshnikov",
+        "subject": "Multi-column descriptors (#1222)"
+      },
+      {
+        "folder": "13-db682763",
+        "path": "13-db682763/images/Home-1-chromium-linux.png",
+        "commit": "db6827637a7d0696d57b2361f4cc49e1c3503678",
+        "date": "2024-08-23 18:11:24 +0200",
+        "author": "Vyacheslav Morov",
+        "subject": "Remove top version boundary for nltk. (#1261)"
+      },
+      {
+        "folder": "14-55f49ad8",
+        "path": "14-55f49ad8/images/Home-1-chromium-linux.png",
+        "commit": "55f49ad8f64e8f34de6506a5b361076f0e67032b",
+        "date": "2024-09-25 19:48:14 +0400",
+        "author": "Dmitry Khorkin",
+        "subject": "UI: Replace github icon to discord icon (#1322)"
+      },
+      {
+        "folder": "15-975fb0f4",
+        "path": "15-975fb0f4/images/Home-1-chromium-linux.png",
+        "commit": "975fb0f4ef1010df4c7d97a5339ffae0ed222d82",
+        "date": "2024-10-28 18:52:52 +0400",
+        "author": "Dmitry Khorkin",
+        "subject": "UI: dark mode (#1355)"
+      },
+      {
+        "folder": "16-beec1e52",
+        "path": "16-beec1e52/images/Home-1-chromium-linux.png",
+        "commit": "beec1e5236be3cbcb704f0cfb995ed81c9d0b461",
+        "date": "2025-01-10 18:51:49 +0000",
+        "author": "Vyacheslav Morov",
+        "subject": "Metrics redesign (#1389)"
+      },
+      {
+        "folder": "17-c6056c73",
+        "path": "17-c6056c73/images/Home-1-chromium-linux.png",
+        "commit": "c6056c736114b2ab056d0ce45b5db0c79c7da7a4",
+        "date": "2025-02-18 14:14:45 +0400",
+        "author": "Dmitry Khorkin",
+        "subject": "UI: huge refactor (#1384)"
+      },
+      {
+        "folder": "18-5a830f4b",
+        "path": "18-5a830f4b/images/Home-1-chromium-linux.png",
+        "commit": "5a830f4bd0a7ca3db0b7b2b6ee74e4d0d60391fa",
+        "date": "2025-04-15 13:43:42 +0100",
+        "author": "Mikhail Sveshnikov",
+        "subject": "add py3.13 (#1548)"
+      },
+      {
+        "folder": "19-ce920789",
+        "path": "19-ce920789/images/Home-1-chromium-linux.png",
+        "commit": "ce920789c0b7e801395dd100afa64892d477fe02",
+        "date": "2025-08-14 20:41:31 +0400",
+        "author": "Dmitry Khorkin",
+        "subject": "UI: remove v1 stuff (#1697)"
+      },
+      {
+        "folder": "20-2942f87a",
+        "path": "20-2942f87a/images/Home-1-chromium-linux.png",
+        "commit": "2942f87a1e74b67aad352c33eef21deac950e9cb",
+        "date": "2025-11-10 22:44:10 +0000",
+        "author": "Mikhail Sveshnikov",
+        "subject": "Dataset support (#1736)"
+      },
+      {
+        "folder": "21-cb6c9fc4",
+        "path": "21-cb6c9fc4/images/Home-1-chromium-linux.png",
+        "commit": "cb6c9fc45f9d2e309ef80df217ef4a65bca09aa8",
+        "date": "2025-11-11 20:51:22 +0400",
+        "author": "Dmitry Khorkin",
+        "subject": "UI: fix datasets (#1739)"
+      },
+      {
+        "folder": "22-ef0b389a",
+        "path": "22-ef0b389a/images/Home-1-chromium-linux.png",
+        "commit": "ef0b389ad2cb8574cc9ee1687fe63cf31c824fdd",
+        "date": "2025-11-20 17:30:53 +0000",
+        "author": "Mikhail Sveshnikov",
+        "subject": "Tracing support (#1743)"
+      },
+      {
+        "folder": "23-ad1d3ba3",
+        "path": "23-ad1d3ba3/images/Home-1-chromium-linux.png",
+        "commit": "ad1d3ba394510f130893d2aca9969e68c396dc95",
+        "date": "2025-12-01 15:08:19 +0000",
+        "author": "Mikhail Sveshnikov",
+        "subject": "Versioned artefacts (unified prompts and configs) (#1750)"
+      },
+      {
+        "folder": "24-83a109ae",
+        "path": "24-83a109ae/images/Home-1-chromium-linux.png",
+        "commit": "83a109ae6dc6f5137f13c1daadbe872bd1342e35",
+        "date": "2026-01-22 18:46:52 +0400",
+        "author": "Dmitry Khorkin",
+        "subject": "UI: snapshots pagination bit changes (#1804)"
+      }
+    ]
+  },
+  {
+    "screenName": "Report-Demo-project---Bikes-1-chromium-linux.png",
+    "displayName": "Report Demo project / Bikes",
+    "entries": [
+      {
+        "folder": "1-d4540a7b",
+        "path": "1-d4540a7b/images/Report-Demo-project---Bikes-1-chromium-linux.png",
+        "commit": "d4540a7bf87e8665361b94f9ce07243b6402b08b",
+        "date": "2024-03-12 23:41:28 +0400",
+        "author": "Dmitry Khorkin",
+        "subject": "UI: Better panels (#1022)"
+      },
+      {
+        "folder": "2-02b5ba51",
+        "path": "2-02b5ba51/images/Report-Demo-project---Bikes-1-chromium-linux.png",
+        "commit": "02b5ba518ef3350d1d5ab55710fd89a531db53b4",
+        "date": "2024-03-15 17:07:07 +0400",
+        "author": "Dmitry Khorkin",
+        "subject": "remove nbextension (#1027)"
+      },
+      {
+        "folder": "3-d0688695",
+        "path": "3-d0688695/images/Report-Demo-project---Bikes-1-chromium-linux.png",
+        "commit": "d06886957a6aa947a1440884584c6ea9705fd6f6",
+        "date": "2024-04-01 20:15:09 +0400",
+        "author": "Dmitry Khorkin",
+        "subject": "ui fix font weight (#1048)"
+      },
+      {
+        "folder": "4-cc51acc0",
+        "path": "4-cc51acc0/images/Report-Demo-project---Bikes-1-chromium-linux.png",
+        "commit": "cc51acc04979dca63d077cb8a89f3ca7a30b55c5",
+        "date": "2024-04-05 17:30:17 +0400",
+        "author": "Dmitry Khorkin",
+        "subject": "UI: remove hardcore color (#1053)"
+      },
+      {
+        "folder": "5-1092751a",
+        "path": "5-1092751a/images/Report-Demo-project---Bikes-1-chromium-linux.png",
+        "commit": "1092751a27994ddc2d78f3d614ee82c07c5c1e84",
+        "date": "2024-04-08 17:42:39 +0400",
+        "author": "Dmitry Khorkin",
+        "subject": "UI new theme and better error handling (#1063)"
+      },
+      {
+        "folder": "6-d7d2af02",
+        "path": "6-d7d2af02/images/Report-Demo-project---Bikes-1-chromium-linux.png",
+        "commit": "d7d2af02db953499a0c9226385707039544a4ee0",
+        "date": "2024-04-18 23:26:20 +0400",
+        "author": "Dmitry Khorkin",
+        "subject": "UI: code refactor and small improvements (#1079)"
+      },
+      {
+        "folder": "7-43fb8f0e",
+        "path": "7-43fb8f0e/images/Report-Demo-project---Bikes-1-chromium-linux.png",
+        "commit": "43fb8f0efde27d8348466b2bd9754efb06ab4114",
+        "date": "2024-06-24 20:03:04 +0400",
+        "author": "Dmitry Khorkin",
+        "subject": "UI(feature): dashboard filter - hide dates (#1166)"
+      },
+      {
+        "folder": "8-98e41efc",
+        "path": "8-98e41efc/images/Report-Demo-project---Bikes-1-chromium-linux.png",
+        "commit": "98e41efccd5628ecc803756415cb15ad07639a73",
+        "date": "2024-06-24 22:25:58 +0400",
+        "author": "Dmitry Khorkin",
+        "subject": "Update DashboardDateFilter.tsx (#1171)"
+      },
+      {
+        "folder": "9-d7f50a6c",
+        "path": "9-d7f50a6c/images/Report-Demo-project---Bikes-1-chromium-linux.png",
+        "commit": "d7f50a6cfe1253f8a575b2ab413291eee2243412",
+        "date": "2024-07-03 18:17:51 +0400",
+        "author": "Dmitry Khorkin",
+        "subject": "UI(feature): delete snapshot button (#1185)"
+      },
+      {
+        "folder": "10-ab9ea179",
+        "path": "10-ab9ea179/images/Report-Demo-project---Bikes-1-chromium-linux.png",
+        "commit": "ab9ea17919d119bf0b125a2ac2aabd3f6c97ab37",
+        "date": "2024-07-08 22:21:20 +0400",
+        "author": "Dmitry Khorkin",
+        "subject": "UI: deterministic uuid generation in UI tests (#1168)"
+      },
+      {
+        "folder": "11-29f48930",
+        "path": "11-29f48930/images/Report-Demo-project---Bikes-1-chromium-linux.png",
+        "commit": "29f489303b8486efdda8e0d6d54f826bec61ca15",
+        "date": "2024-07-30 17:45:35 +0400",
+        "author": "Dmitry Khorkin",
+        "subject": "UI(refactor): snapshots list slots (#1229)"
+      },
+      {
+        "folder": "12-71c62ac8",
+        "path": "12-71c62ac8/images/Report-Demo-project---Bikes-1-chromium-linux.png",
+        "commit": "71c62ac8f84fa11c5e0a32b5fff10d231cb0e8c7",
+        "date": "2024-07-31 20:36:54 +0400",
+        "author": "Mikhail Sveshnikov",
+        "subject": "Multi-column descriptors (#1222)"
+      },
+      {
+        "folder": "13-db682763",
+        "path": "13-db682763/images/Report-Demo-project---Bikes-1-chromium-linux.png",
+        "commit": "db6827637a7d0696d57b2361f4cc49e1c3503678",
+        "date": "2024-08-23 18:11:24 +0200",
+        "author": "Vyacheslav Morov",
+        "subject": "Remove top version boundary for nltk. (#1261)"
+      },
+      {
+        "folder": "14-55f49ad8",
+        "path": "14-55f49ad8/images/Report-Demo-project---Bikes-1-chromium-linux.png",
+        "commit": "55f49ad8f64e8f34de6506a5b361076f0e67032b",
+        "date": "2024-09-25 19:48:14 +0400",
+        "author": "Dmitry Khorkin",
+        "subject": "UI: Replace github icon to discord icon (#1322)"
+      },
+      {
+        "folder": "15-975fb0f4",
+        "path": "15-975fb0f4/images/Report-Demo-project---Bikes-1-chromium-linux.png",
+        "commit": "975fb0f4ef1010df4c7d97a5339ffae0ed222d82",
+        "date": "2024-10-28 18:52:52 +0400",
+        "author": "Dmitry Khorkin",
+        "subject": "UI: dark mode (#1355)"
+      },
+      {
+        "folder": "16-beec1e52",
+        "path": "16-beec1e52/images/Report-Demo-project---Bikes-1-chromium-linux.png",
+        "commit": "beec1e5236be3cbcb704f0cfb995ed81c9d0b461",
+        "date": "2025-01-10 18:51:49 +0000",
+        "author": "Vyacheslav Morov",
+        "subject": "Metrics redesign (#1389)"
+      },
+      {
+        "folder": "17-c6056c73",
+        "path": "17-c6056c73/images/Report-Demo-project---Bikes-1-chromium-linux.png",
+        "commit": "c6056c736114b2ab056d0ce45b5db0c79c7da7a4",
+        "date": "2025-02-18 14:14:45 +0400",
+        "author": "Dmitry Khorkin",
+        "subject": "UI: huge refactor (#1384)"
+      },
+      {
+        "folder": "18-5a830f4b",
+        "path": "18-5a830f4b/images/Report-Demo-project---Bikes-1-chromium-linux.png",
+        "commit": "5a830f4bd0a7ca3db0b7b2b6ee74e4d0d60391fa",
+        "date": "2025-04-15 13:43:42 +0100",
+        "author": "Mikhail Sveshnikov",
+        "subject": "add py3.13 (#1548)"
+      },
+      {
+        "folder": "19-ce920789",
+        "path": "19-ce920789/images/Report-Demo-project---Bikes-1-chromium-linux.png",
+        "commit": "ce920789c0b7e801395dd100afa64892d477fe02",
+        "date": "2025-08-14 20:41:31 +0400",
+        "author": "Dmitry Khorkin",
+        "subject": "UI: remove v1 stuff (#1697)"
+      },
+      {
+        "folder": "20-2942f87a",
+        "path": "20-2942f87a/images/Report-Demo-project---Bikes-1-chromium-linux.png",
+        "commit": "2942f87a1e74b67aad352c33eef21deac950e9cb",
+        "date": "2025-11-10 22:44:10 +0000",
+        "author": "Mikhail Sveshnikov",
+        "subject": "Dataset support (#1736)"
+      },
+      {
+        "folder": "21-cb6c9fc4",
+        "path": "21-cb6c9fc4/images/Report-Demo-project---Bikes-1-chromium-linux.png",
+        "commit": "cb6c9fc45f9d2e309ef80df217ef4a65bca09aa8",
+        "date": "2025-11-11 20:51:22 +0400",
+        "author": "Dmitry Khorkin",
+        "subject": "UI: fix datasets (#1739)"
+      },
+      {
+        "folder": "22-ef0b389a",
+        "path": "22-ef0b389a/images/Report-Demo-project---Bikes-1-chromium-linux.png",
+        "commit": "ef0b389ad2cb8574cc9ee1687fe63cf31c824fdd",
+        "date": "2025-11-20 17:30:53 +0000",
+        "author": "Mikhail Sveshnikov",
+        "subject": "Tracing support (#1743)"
+      },
+      {
+        "folder": "23-ad1d3ba3",
+        "path": "23-ad1d3ba3/images/Report-Demo-project---Bikes-1-chromium-linux.png",
+        "commit": "ad1d3ba394510f130893d2aca9969e68c396dc95",
+        "date": "2025-12-01 15:08:19 +0000",
+        "author": "Mikhail Sveshnikov",
+        "subject": "Versioned artefacts (unified prompts and configs) (#1750)"
+      },
+      {
+        "folder": "24-83a109ae",
+        "path": "24-83a109ae/images/Report-Demo-project---Bikes-1-chromium-linux.png",
+        "commit": "83a109ae6dc6f5137f13c1daadbe872bd1342e35",
+        "date": "2026-01-22 18:46:52 +0400",
+        "author": "Dmitry Khorkin",
+        "subject": "UI: snapshots pagination bit changes (#1804)"
+      }
+    ]
+  },
+  {
+    "screenName": "Reports-List-Demo-project---Bikes-1-chromium-linux.png",
+    "displayName": "Reports List Demo project / Bikes",
+    "entries": [
+      {
+        "folder": "1-d4540a7b",
+        "path": "1-d4540a7b/images/Reports-List-Demo-project---Bikes-1-chromium-linux.png",
+        "commit": "d4540a7bf87e8665361b94f9ce07243b6402b08b",
+        "date": "2024-03-12 23:41:28 +0400",
+        "author": "Dmitry Khorkin",
+        "subject": "UI: Better panels (#1022)"
+      },
+      {
+        "folder": "2-02b5ba51",
+        "path": "2-02b5ba51/images/Reports-List-Demo-project---Bikes-1-chromium-linux.png",
+        "commit": "02b5ba518ef3350d1d5ab55710fd89a531db53b4",
+        "date": "2024-03-15 17:07:07 +0400",
+        "author": "Dmitry Khorkin",
+        "subject": "remove nbextension (#1027)"
+      },
+      {
+        "folder": "3-d0688695",
+        "path": "3-d0688695/images/Reports-List-Demo-project---Bikes-1-chromium-linux.png",
+        "commit": "d06886957a6aa947a1440884584c6ea9705fd6f6",
+        "date": "2024-04-01 20:15:09 +0400",
+        "author": "Dmitry Khorkin",
+        "subject": "ui fix font weight (#1048)"
+      },
+      {
+        "folder": "4-cc51acc0",
+        "path": "4-cc51acc0/images/Reports-List-Demo-project---Bikes-1-chromium-linux.png",
+        "commit": "cc51acc04979dca63d077cb8a89f3ca7a30b55c5",
+        "date": "2024-04-05 17:30:17 +0400",
+        "author": "Dmitry Khorkin",
+        "subject": "UI: remove hardcore color (#1053)"
+      },
+      {
+        "folder": "5-1092751a",
+        "path": "5-1092751a/images/Reports-List-Demo-project---Bikes-1-chromium-linux.png",
+        "commit": "1092751a27994ddc2d78f3d614ee82c07c5c1e84",
+        "date": "2024-04-08 17:42:39 +0400",
+        "author": "Dmitry Khorkin",
+        "subject": "UI new theme and better error handling (#1063)"
+      },
+      {
+        "folder": "6-d7d2af02",
+        "path": "6-d7d2af02/images/Reports-List-Demo-project---Bikes-1-chromium-linux.png",
+        "commit": "d7d2af02db953499a0c9226385707039544a4ee0",
+        "date": "2024-04-18 23:26:20 +0400",
+        "author": "Dmitry Khorkin",
+        "subject": "UI: code refactor and small improvements (#1079)"
+      },
+      {
+        "folder": "7-43fb8f0e",
+        "path": "7-43fb8f0e/images/Reports-List-Demo-project---Bikes-1-chromium-linux.png",
+        "commit": "43fb8f0efde27d8348466b2bd9754efb06ab4114",
+        "date": "2024-06-24 20:03:04 +0400",
+        "author": "Dmitry Khorkin",
+        "subject": "UI(feature): dashboard filter - hide dates (#1166)"
+      },
+      {
+        "folder": "8-98e41efc",
+        "path": "8-98e41efc/images/Reports-List-Demo-project---Bikes-1-chromium-linux.png",
+        "commit": "98e41efccd5628ecc803756415cb15ad07639a73",
+        "date": "2024-06-24 22:25:58 +0400",
+        "author": "Dmitry Khorkin",
+        "subject": "Update DashboardDateFilter.tsx (#1171)"
+      },
+      {
+        "folder": "9-d7f50a6c",
+        "path": "9-d7f50a6c/images/Reports-List-Demo-project---Bikes-1-chromium-linux.png",
+        "commit": "d7f50a6cfe1253f8a575b2ab413291eee2243412",
+        "date": "2024-07-03 18:17:51 +0400",
+        "author": "Dmitry Khorkin",
+        "subject": "UI(feature): delete snapshot button (#1185)"
+      },
+      {
+        "folder": "10-ab9ea179",
+        "path": "10-ab9ea179/images/Reports-List-Demo-project---Bikes-1-chromium-linux.png",
+        "commit": "ab9ea17919d119bf0b125a2ac2aabd3f6c97ab37",
+        "date": "2024-07-08 22:21:20 +0400",
+        "author": "Dmitry Khorkin",
+        "subject": "UI: deterministic uuid generation in UI tests (#1168)"
+      },
+      {
+        "folder": "11-29f48930",
+        "path": "11-29f48930/images/Reports-List-Demo-project---Bikes-1-chromium-linux.png",
+        "commit": "29f489303b8486efdda8e0d6d54f826bec61ca15",
+        "date": "2024-07-30 17:45:35 +0400",
+        "author": "Dmitry Khorkin",
+        "subject": "UI(refactor): snapshots list slots (#1229)"
+      },
+      {
+        "folder": "12-71c62ac8",
+        "path": "12-71c62ac8/images/Reports-List-Demo-project---Bikes-1-chromium-linux.png",
+        "commit": "71c62ac8f84fa11c5e0a32b5fff10d231cb0e8c7",
+        "date": "2024-07-31 20:36:54 +0400",
+        "author": "Mikhail Sveshnikov",
+        "subject": "Multi-column descriptors (#1222)"
+      },
+      {
+        "folder": "13-db682763",
+        "path": "13-db682763/images/Reports-List-Demo-project---Bikes-1-chromium-linux.png",
+        "commit": "db6827637a7d0696d57b2361f4cc49e1c3503678",
+        "date": "2024-08-23 18:11:24 +0200",
+        "author": "Vyacheslav Morov",
+        "subject": "Remove top version boundary for nltk. (#1261)"
+      },
+      {
+        "folder": "14-55f49ad8",
+        "path": "14-55f49ad8/images/Reports-List-Demo-project---Bikes-1-chromium-linux.png",
+        "commit": "55f49ad8f64e8f34de6506a5b361076f0e67032b",
+        "date": "2024-09-25 19:48:14 +0400",
+        "author": "Dmitry Khorkin",
+        "subject": "UI: Replace github icon to discord icon (#1322)"
+      },
+      {
+        "folder": "15-975fb0f4",
+        "path": "15-975fb0f4/images/Reports-List-Demo-project---Bikes-1-chromium-linux.png",
+        "commit": "975fb0f4ef1010df4c7d97a5339ffae0ed222d82",
+        "date": "2024-10-28 18:52:52 +0400",
+        "author": "Dmitry Khorkin",
+        "subject": "UI: dark mode (#1355)"
+      },
+      {
+        "folder": "16-beec1e52",
+        "path": "16-beec1e52/images/Reports-List-Demo-project---Bikes-1-chromium-linux.png",
+        "commit": "beec1e5236be3cbcb704f0cfb995ed81c9d0b461",
+        "date": "2025-01-10 18:51:49 +0000",
+        "author": "Vyacheslav Morov",
+        "subject": "Metrics redesign (#1389)"
+      },
+      {
+        "folder": "17-c6056c73",
+        "path": "17-c6056c73/images/Reports-List-Demo-project---Bikes-1-chromium-linux.png",
+        "commit": "c6056c736114b2ab056d0ce45b5db0c79c7da7a4",
+        "date": "2025-02-18 14:14:45 +0400",
+        "author": "Dmitry Khorkin",
+        "subject": "UI: huge refactor (#1384)"
+      },
+      {
+        "folder": "18-5a830f4b",
+        "path": "18-5a830f4b/images/Reports-List-Demo-project---Bikes-1-chromium-linux.png",
+        "commit": "5a830f4bd0a7ca3db0b7b2b6ee74e4d0d60391fa",
+        "date": "2025-04-15 13:43:42 +0100",
+        "author": "Mikhail Sveshnikov",
+        "subject": "add py3.13 (#1548)"
+      },
+      {
+        "folder": "19-ce920789",
+        "path": "19-ce920789/images/Reports-List-Demo-project---Bikes-1-chromium-linux.png",
+        "commit": "ce920789c0b7e801395dd100afa64892d477fe02",
+        "date": "2025-08-14 20:41:31 +0400",
+        "author": "Dmitry Khorkin",
+        "subject": "UI: remove v1 stuff (#1697)"
+      },
+      {
+        "folder": "20-2942f87a",
+        "path": "20-2942f87a/images/Reports-List-Demo-project---Bikes-1-chromium-linux.png",
+        "commit": "2942f87a1e74b67aad352c33eef21deac950e9cb",
+        "date": "2025-11-10 22:44:10 +0000",
+        "author": "Mikhail Sveshnikov",
+        "subject": "Dataset support (#1736)"
+      },
+      {
+        "folder": "21-cb6c9fc4",
+        "path": "21-cb6c9fc4/images/Reports-List-Demo-project---Bikes-1-chromium-linux.png",
+        "commit": "cb6c9fc45f9d2e309ef80df217ef4a65bca09aa8",
+        "date": "2025-11-11 20:51:22 +0400",
+        "author": "Dmitry Khorkin",
+        "subject": "UI: fix datasets (#1739)"
+      },
+      {
+        "folder": "22-ef0b389a",
+        "path": "22-ef0b389a/images/Reports-List-Demo-project---Bikes-1-chromium-linux.png",
+        "commit": "ef0b389ad2cb8574cc9ee1687fe63cf31c824fdd",
+        "date": "2025-11-20 17:30:53 +0000",
+        "author": "Mikhail Sveshnikov",
+        "subject": "Tracing support (#1743)"
+      },
+      {
+        "folder": "23-ad1d3ba3",
+        "path": "23-ad1d3ba3/images/Reports-List-Demo-project---Bikes-1-chromium-linux.png",
+        "commit": "ad1d3ba394510f130893d2aca9969e68c396dc95",
+        "date": "2025-12-01 15:08:19 +0000",
+        "author": "Mikhail Sveshnikov",
+        "subject": "Versioned artefacts (unified prompts and configs) (#1750)"
+      },
+      {
+        "folder": "24-83a109ae",
+        "path": "24-83a109ae/images/Reports-List-Demo-project---Bikes-1-chromium-linux.png",
+        "commit": "83a109ae6dc6f5137f13c1daadbe872bd1342e35",
+        "date": "2026-01-22 18:46:52 +0400",
+        "author": "Dmitry Khorkin",
+        "subject": "UI: snapshots pagination bit changes (#1804)"
+      }
+    ]
+  },
+  {
+    "screenName": "Dashboard-Demo-project---Reviews-1-chromium-linux.png",
+    "displayName": "Dashboard Demo project / Reviews",
+    "entries": [
+      {
+        "folder": "1-d4540a7b",
+        "path": "1-d4540a7b/images/Dashboard-Demo-project---Reviews-1-chromium-linux.png",
+        "commit": "d4540a7bf87e8665361b94f9ce07243b6402b08b",
+        "date": "2024-03-12 23:41:28 +0400",
+        "author": "Dmitry Khorkin",
+        "subject": "UI: Better panels (#1022)"
+      },
+      {
+        "folder": "2-02b5ba51",
+        "path": "2-02b5ba51/images/Dashboard-Demo-project---Reviews-1-chromium-linux.png",
+        "commit": "02b5ba518ef3350d1d5ab55710fd89a531db53b4",
+        "date": "2024-03-15 17:07:07 +0400",
+        "author": "Dmitry Khorkin",
+        "subject": "remove nbextension (#1027)"
+      },
+      {
+        "folder": "3-d0688695",
+        "path": "3-d0688695/images/Dashboard-Demo-project---Reviews-1-chromium-linux.png",
+        "commit": "d06886957a6aa947a1440884584c6ea9705fd6f6",
+        "date": "2024-04-01 20:15:09 +0400",
+        "author": "Dmitry Khorkin",
+        "subject": "ui fix font weight (#1048)"
+      },
+      {
+        "folder": "4-cc51acc0",
+        "path": "4-cc51acc0/images/Dashboard-Demo-project---Reviews-1-chromium-linux.png",
+        "commit": "cc51acc04979dca63d077cb8a89f3ca7a30b55c5",
+        "date": "2024-04-05 17:30:17 +0400",
+        "author": "Dmitry Khorkin",
+        "subject": "UI: remove hardcore color (#1053)"
+      },
+      {
+        "folder": "5-1092751a",
+        "path": "5-1092751a/images/Dashboard-Demo-project---Reviews-1-chromium-linux.png",
+        "commit": "1092751a27994ddc2d78f3d614ee82c07c5c1e84",
+        "date": "2024-04-08 17:42:39 +0400",
+        "author": "Dmitry Khorkin",
+        "subject": "UI new theme and better error handling (#1063)"
+      },
+      {
+        "folder": "6-d7d2af02",
+        "path": "6-d7d2af02/images/Dashboard-Demo-project---Reviews-1-chromium-linux.png",
+        "commit": "d7d2af02db953499a0c9226385707039544a4ee0",
+        "date": "2024-04-18 23:26:20 +0400",
+        "author": "Dmitry Khorkin",
+        "subject": "UI: code refactor and small improvements (#1079)"
+      },
+      {
+        "folder": "7-43fb8f0e",
+        "path": "7-43fb8f0e/images/Dashboard-Demo-project---Reviews-1-chromium-linux.png",
+        "commit": "43fb8f0efde27d8348466b2bd9754efb06ab4114",
+        "date": "2024-06-24 20:03:04 +0400",
+        "author": "Dmitry Khorkin",
+        "subject": "UI(feature): dashboard filter - hide dates (#1166)"
+      },
+      {
+        "folder": "8-98e41efc",
+        "path": "8-98e41efc/images/Dashboard-Demo-project---Reviews-1-chromium-linux.png",
+        "commit": "98e41efccd5628ecc803756415cb15ad07639a73",
+        "date": "2024-06-24 22:25:58 +0400",
+        "author": "Dmitry Khorkin",
+        "subject": "Update DashboardDateFilter.tsx (#1171)"
+      },
+      {
+        "folder": "9-d7f50a6c",
+        "path": "9-d7f50a6c/images/Dashboard-Demo-project---Reviews-1-chromium-linux.png",
+        "commit": "d7f50a6cfe1253f8a575b2ab413291eee2243412",
+        "date": "2024-07-03 18:17:51 +0400",
+        "author": "Dmitry Khorkin",
+        "subject": "UI(feature): delete snapshot button (#1185)"
+      },
+      {
+        "folder": "10-ab9ea179",
+        "path": "10-ab9ea179/images/Dashboard-Demo-project---Reviews-1-chromium-linux.png",
+        "commit": "ab9ea17919d119bf0b125a2ac2aabd3f6c97ab37",
+        "date": "2024-07-08 22:21:20 +0400",
+        "author": "Dmitry Khorkin",
+        "subject": "UI: deterministic uuid generation in UI tests (#1168)"
+      },
+      {
+        "folder": "11-29f48930",
+        "path": "11-29f48930/images/Dashboard-Demo-project---Reviews-1-chromium-linux.png",
+        "commit": "29f489303b8486efdda8e0d6d54f826bec61ca15",
+        "date": "2024-07-30 17:45:35 +0400",
+        "author": "Dmitry Khorkin",
+        "subject": "UI(refactor): snapshots list slots (#1229)"
+      },
+      {
+        "folder": "12-71c62ac8",
+        "path": "12-71c62ac8/images/Dashboard-Demo-project---Reviews-1-chromium-linux.png",
+        "commit": "71c62ac8f84fa11c5e0a32b5fff10d231cb0e8c7",
+        "date": "2024-07-31 20:36:54 +0400",
+        "author": "Mikhail Sveshnikov",
+        "subject": "Multi-column descriptors (#1222)"
+      },
+      {
+        "folder": "13-db682763",
+        "path": "13-db682763/images/Dashboard-Demo-project---Reviews-1-chromium-linux.png",
+        "commit": "db6827637a7d0696d57b2361f4cc49e1c3503678",
+        "date": "2024-08-23 18:11:24 +0200",
+        "author": "Vyacheslav Morov",
+        "subject": "Remove top version boundary for nltk. (#1261)"
+      },
+      {
+        "folder": "14-55f49ad8",
+        "path": "14-55f49ad8/images/Dashboard-Demo-project---Reviews-1-chromium-linux.png",
+        "commit": "55f49ad8f64e8f34de6506a5b361076f0e67032b",
+        "date": "2024-09-25 19:48:14 +0400",
+        "author": "Dmitry Khorkin",
+        "subject": "UI: Replace github icon to discord icon (#1322)"
+      },
+      {
+        "folder": "15-975fb0f4",
+        "path": "15-975fb0f4/images/Dashboard-Demo-project---Reviews-1-chromium-linux.png",
+        "commit": "975fb0f4ef1010df4c7d97a5339ffae0ed222d82",
+        "date": "2024-10-28 18:52:52 +0400",
+        "author": "Dmitry Khorkin",
+        "subject": "UI: dark mode (#1355)"
+      },
+      {
+        "folder": "16-beec1e52",
+        "path": "16-beec1e52/images/Dashboard-Demo-project---Reviews-1-chromium-linux.png",
+        "commit": "beec1e5236be3cbcb704f0cfb995ed81c9d0b461",
+        "date": "2025-01-10 18:51:49 +0000",
+        "author": "Vyacheslav Morov",
+        "subject": "Metrics redesign (#1389)"
+      },
+      {
+        "folder": "17-c6056c73",
+        "path": "17-c6056c73/images/Dashboard-Demo-project---Reviews-1-chromium-linux.png",
+        "commit": "c6056c736114b2ab056d0ce45b5db0c79c7da7a4",
+        "date": "2025-02-18 14:14:45 +0400",
+        "author": "Dmitry Khorkin",
+        "subject": "UI: huge refactor (#1384)"
+      },
+      {
+        "folder": "18-5a830f4b",
+        "path": "18-5a830f4b/images/Dashboard-Demo-project---Reviews-1-chromium-linux.png",
+        "commit": "5a830f4bd0a7ca3db0b7b2b6ee74e4d0d60391fa",
+        "date": "2025-04-15 13:43:42 +0100",
+        "author": "Mikhail Sveshnikov",
+        "subject": "add py3.13 (#1548)"
+      }
+    ]
+  },
+  {
+    "screenName": "Report-Demo-project---Reviews-1-chromium-linux.png",
+    "displayName": "Report Demo project / Reviews",
+    "entries": [
+      {
+        "folder": "1-d4540a7b",
+        "path": "1-d4540a7b/images/Report-Demo-project---Reviews-1-chromium-linux.png",
+        "commit": "d4540a7bf87e8665361b94f9ce07243b6402b08b",
+        "date": "2024-03-12 23:41:28 +0400",
+        "author": "Dmitry Khorkin",
+        "subject": "UI: Better panels (#1022)"
+      },
+      {
+        "folder": "2-02b5ba51",
+        "path": "2-02b5ba51/images/Report-Demo-project---Reviews-1-chromium-linux.png",
+        "commit": "02b5ba518ef3350d1d5ab55710fd89a531db53b4",
+        "date": "2024-03-15 17:07:07 +0400",
+        "author": "Dmitry Khorkin",
+        "subject": "remove nbextension (#1027)"
+      },
+      {
+        "folder": "3-d0688695",
+        "path": "3-d0688695/images/Report-Demo-project---Reviews-1-chromium-linux.png",
+        "commit": "d06886957a6aa947a1440884584c6ea9705fd6f6",
+        "date": "2024-04-01 20:15:09 +0400",
+        "author": "Dmitry Khorkin",
+        "subject": "ui fix font weight (#1048)"
+      },
+      {
+        "folder": "4-cc51acc0",
+        "path": "4-cc51acc0/images/Report-Demo-project---Reviews-1-chromium-linux.png",
+        "commit": "cc51acc04979dca63d077cb8a89f3ca7a30b55c5",
+        "date": "2024-04-05 17:30:17 +0400",
+        "author": "Dmitry Khorkin",
+        "subject": "UI: remove hardcore color (#1053)"
+      },
+      {
+        "folder": "5-1092751a",
+        "path": "5-1092751a/images/Report-Demo-project---Reviews-1-chromium-linux.png",
+        "commit": "1092751a27994ddc2d78f3d614ee82c07c5c1e84",
+        "date": "2024-04-08 17:42:39 +0400",
+        "author": "Dmitry Khorkin",
+        "subject": "UI new theme and better error handling (#1063)"
+      },
+      {
+        "folder": "6-d7d2af02",
+        "path": "6-d7d2af02/images/Report-Demo-project---Reviews-1-chromium-linux.png",
+        "commit": "d7d2af02db953499a0c9226385707039544a4ee0",
+        "date": "2024-04-18 23:26:20 +0400",
+        "author": "Dmitry Khorkin",
+        "subject": "UI: code refactor and small improvements (#1079)"
+      },
+      {
+        "folder": "7-43fb8f0e",
+        "path": "7-43fb8f0e/images/Report-Demo-project---Reviews-1-chromium-linux.png",
+        "commit": "43fb8f0efde27d8348466b2bd9754efb06ab4114",
+        "date": "2024-06-24 20:03:04 +0400",
+        "author": "Dmitry Khorkin",
+        "subject": "UI(feature): dashboard filter - hide dates (#1166)"
+      },
+      {
+        "folder": "8-98e41efc",
+        "path": "8-98e41efc/images/Report-Demo-project---Reviews-1-chromium-linux.png",
+        "commit": "98e41efccd5628ecc803756415cb15ad07639a73",
+        "date": "2024-06-24 22:25:58 +0400",
+        "author": "Dmitry Khorkin",
+        "subject": "Update DashboardDateFilter.tsx (#1171)"
+      },
+      {
+        "folder": "9-d7f50a6c",
+        "path": "9-d7f50a6c/images/Report-Demo-project---Reviews-1-chromium-linux.png",
+        "commit": "d7f50a6cfe1253f8a575b2ab413291eee2243412",
+        "date": "2024-07-03 18:17:51 +0400",
+        "author": "Dmitry Khorkin",
+        "subject": "UI(feature): delete snapshot button (#1185)"
+      },
+      {
+        "folder": "10-ab9ea179",
+        "path": "10-ab9ea179/images/Report-Demo-project---Reviews-1-chromium-linux.png",
+        "commit": "ab9ea17919d119bf0b125a2ac2aabd3f6c97ab37",
+        "date": "2024-07-08 22:21:20 +0400",
+        "author": "Dmitry Khorkin",
+        "subject": "UI: deterministic uuid generation in UI tests (#1168)"
+      },
+      {
+        "folder": "11-29f48930",
+        "path": "11-29f48930/images/Report-Demo-project---Reviews-1-chromium-linux.png",
+        "commit": "29f489303b8486efdda8e0d6d54f826bec61ca15",
+        "date": "2024-07-30 17:45:35 +0400",
+        "author": "Dmitry Khorkin",
+        "subject": "UI(refactor): snapshots list slots (#1229)"
+      },
+      {
+        "folder": "12-71c62ac8",
+        "path": "12-71c62ac8/images/Report-Demo-project---Reviews-1-chromium-linux.png",
+        "commit": "71c62ac8f84fa11c5e0a32b5fff10d231cb0e8c7",
+        "date": "2024-07-31 20:36:54 +0400",
+        "author": "Mikhail Sveshnikov",
+        "subject": "Multi-column descriptors (#1222)"
+      },
+      {
+        "folder": "13-db682763",
+        "path": "13-db682763/images/Report-Demo-project---Reviews-1-chromium-linux.png",
+        "commit": "db6827637a7d0696d57b2361f4cc49e1c3503678",
+        "date": "2024-08-23 18:11:24 +0200",
+        "author": "Vyacheslav Morov",
+        "subject": "Remove top version boundary for nltk. (#1261)"
+      },
+      {
+        "folder": "14-55f49ad8",
+        "path": "14-55f49ad8/images/Report-Demo-project---Reviews-1-chromium-linux.png",
+        "commit": "55f49ad8f64e8f34de6506a5b361076f0e67032b",
+        "date": "2024-09-25 19:48:14 +0400",
+        "author": "Dmitry Khorkin",
+        "subject": "UI: Replace github icon to discord icon (#1322)"
+      },
+      {
+        "folder": "15-975fb0f4",
+        "path": "15-975fb0f4/images/Report-Demo-project---Reviews-1-chromium-linux.png",
+        "commit": "975fb0f4ef1010df4c7d97a5339ffae0ed222d82",
+        "date": "2024-10-28 18:52:52 +0400",
+        "author": "Dmitry Khorkin",
+        "subject": "UI: dark mode (#1355)"
+      },
+      {
+        "folder": "16-beec1e52",
+        "path": "16-beec1e52/images/Report-Demo-project---Reviews-1-chromium-linux.png",
+        "commit": "beec1e5236be3cbcb704f0cfb995ed81c9d0b461",
+        "date": "2025-01-10 18:51:49 +0000",
+        "author": "Vyacheslav Morov",
+        "subject": "Metrics redesign (#1389)"
+      },
+      {
+        "folder": "17-c6056c73",
+        "path": "17-c6056c73/images/Report-Demo-project---Reviews-1-chromium-linux.png",
+        "commit": "c6056c736114b2ab056d0ce45b5db0c79c7da7a4",
+        "date": "2025-02-18 14:14:45 +0400",
+        "author": "Dmitry Khorkin",
+        "subject": "UI: huge refactor (#1384)"
+      },
+      {
+        "folder": "18-5a830f4b",
+        "path": "18-5a830f4b/images/Report-Demo-project---Reviews-1-chromium-linux.png",
+        "commit": "5a830f4bd0a7ca3db0b7b2b6ee74e4d0d60391fa",
+        "date": "2025-04-15 13:43:42 +0100",
+        "author": "Mikhail Sveshnikov",
+        "subject": "add py3.13 (#1548)"
+      }
+    ]
+  },
+  {
+    "screenName": "Test-Suite-Demo-project---Bikes-1-chromium-linux.png",
+    "displayName": "Test Suite Demo project / Bikes",
+    "entries": [
+      {
+        "folder": "1-d4540a7b",
+        "path": "1-d4540a7b/images/Test-Suite-Demo-project---Bikes-1-chromium-linux.png",
+        "commit": "d4540a7bf87e8665361b94f9ce07243b6402b08b",
+        "date": "2024-03-12 23:41:28 +0400",
+        "author": "Dmitry Khorkin",
+        "subject": "UI: Better panels (#1022)"
+      },
+      {
+        "folder": "2-02b5ba51",
+        "path": "2-02b5ba51/images/Test-Suite-Demo-project---Bikes-1-chromium-linux.png",
+        "commit": "02b5ba518ef3350d1d5ab55710fd89a531db53b4",
+        "date": "2024-03-15 17:07:07 +0400",
+        "author": "Dmitry Khorkin",
+        "subject": "remove nbextension (#1027)"
+      },
+      {
+        "folder": "3-d0688695",
+        "path": "3-d0688695/images/Test-Suite-Demo-project---Bikes-1-chromium-linux.png",
+        "commit": "d06886957a6aa947a1440884584c6ea9705fd6f6",
+        "date": "2024-04-01 20:15:09 +0400",
+        "author": "Dmitry Khorkin",
+        "subject": "ui fix font weight (#1048)"
+      },
+      {
+        "folder": "4-cc51acc0",
+        "path": "4-cc51acc0/images/Test-Suite-Demo-project---Bikes-1-chromium-linux.png",
+        "commit": "cc51acc04979dca63d077cb8a89f3ca7a30b55c5",
+        "date": "2024-04-05 17:30:17 +0400",
+        "author": "Dmitry Khorkin",
+        "subject": "UI: remove hardcore color (#1053)"
+      },
+      {
+        "folder": "5-1092751a",
+        "path": "5-1092751a/images/Test-Suite-Demo-project---Bikes-1-chromium-linux.png",
+        "commit": "1092751a27994ddc2d78f3d614ee82c07c5c1e84",
+        "date": "2024-04-08 17:42:39 +0400",
+        "author": "Dmitry Khorkin",
+        "subject": "UI new theme and better error handling (#1063)"
+      },
+      {
+        "folder": "6-d7d2af02",
+        "path": "6-d7d2af02/images/Test-Suite-Demo-project---Bikes-1-chromium-linux.png",
+        "commit": "d7d2af02db953499a0c9226385707039544a4ee0",
+        "date": "2024-04-18 23:26:20 +0400",
+        "author": "Dmitry Khorkin",
+        "subject": "UI: code refactor and small improvements (#1079)"
+      },
+      {
+        "folder": "7-43fb8f0e",
+        "path": "7-43fb8f0e/images/Test-Suite-Demo-project---Bikes-1-chromium-linux.png",
+        "commit": "43fb8f0efde27d8348466b2bd9754efb06ab4114",
+        "date": "2024-06-24 20:03:04 +0400",
+        "author": "Dmitry Khorkin",
+        "subject": "UI(feature): dashboard filter - hide dates (#1166)"
+      },
+      {
+        "folder": "8-98e41efc",
+        "path": "8-98e41efc/images/Test-Suite-Demo-project---Bikes-1-chromium-linux.png",
+        "commit": "98e41efccd5628ecc803756415cb15ad07639a73",
+        "date": "2024-06-24 22:25:58 +0400",
+        "author": "Dmitry Khorkin",
+        "subject": "Update DashboardDateFilter.tsx (#1171)"
+      },
+      {
+        "folder": "9-d7f50a6c",
+        "path": "9-d7f50a6c/images/Test-Suite-Demo-project---Bikes-1-chromium-linux.png",
+        "commit": "d7f50a6cfe1253f8a575b2ab413291eee2243412",
+        "date": "2024-07-03 18:17:51 +0400",
+        "author": "Dmitry Khorkin",
+        "subject": "UI(feature): delete snapshot button (#1185)"
+      },
+      {
+        "folder": "10-ab9ea179",
+        "path": "10-ab9ea179/images/Test-Suite-Demo-project---Bikes-1-chromium-linux.png",
+        "commit": "ab9ea17919d119bf0b125a2ac2aabd3f6c97ab37",
+        "date": "2024-07-08 22:21:20 +0400",
+        "author": "Dmitry Khorkin",
+        "subject": "UI: deterministic uuid generation in UI tests (#1168)"
+      },
+      {
+        "folder": "11-29f48930",
+        "path": "11-29f48930/images/Test-Suite-Demo-project---Bikes-1-chromium-linux.png",
+        "commit": "29f489303b8486efdda8e0d6d54f826bec61ca15",
+        "date": "2024-07-30 17:45:35 +0400",
+        "author": "Dmitry Khorkin",
+        "subject": "UI(refactor): snapshots list slots (#1229)"
+      },
+      {
+        "folder": "12-71c62ac8",
+        "path": "12-71c62ac8/images/Test-Suite-Demo-project---Bikes-1-chromium-linux.png",
+        "commit": "71c62ac8f84fa11c5e0a32b5fff10d231cb0e8c7",
+        "date": "2024-07-31 20:36:54 +0400",
+        "author": "Mikhail Sveshnikov",
+        "subject": "Multi-column descriptors (#1222)"
+      },
+      {
+        "folder": "13-db682763",
+        "path": "13-db682763/images/Test-Suite-Demo-project---Bikes-1-chromium-linux.png",
+        "commit": "db6827637a7d0696d57b2361f4cc49e1c3503678",
+        "date": "2024-08-23 18:11:24 +0200",
+        "author": "Vyacheslav Morov",
+        "subject": "Remove top version boundary for nltk. (#1261)"
+      },
+      {
+        "folder": "14-55f49ad8",
+        "path": "14-55f49ad8/images/Test-Suite-Demo-project---Bikes-1-chromium-linux.png",
+        "commit": "55f49ad8f64e8f34de6506a5b361076f0e67032b",
+        "date": "2024-09-25 19:48:14 +0400",
+        "author": "Dmitry Khorkin",
+        "subject": "UI: Replace github icon to discord icon (#1322)"
+      },
+      {
+        "folder": "15-975fb0f4",
+        "path": "15-975fb0f4/images/Test-Suite-Demo-project---Bikes-1-chromium-linux.png",
+        "commit": "975fb0f4ef1010df4c7d97a5339ffae0ed222d82",
+        "date": "2024-10-28 18:52:52 +0400",
+        "author": "Dmitry Khorkin",
+        "subject": "UI: dark mode (#1355)"
+      },
+      {
+        "folder": "16-beec1e52",
+        "path": "16-beec1e52/images/Test-Suite-Demo-project---Bikes-1-chromium-linux.png",
+        "commit": "beec1e5236be3cbcb704f0cfb995ed81c9d0b461",
+        "date": "2025-01-10 18:51:49 +0000",
+        "author": "Vyacheslav Morov",
+        "subject": "Metrics redesign (#1389)"
+      },
+      {
+        "folder": "17-c6056c73",
+        "path": "17-c6056c73/images/Test-Suite-Demo-project---Bikes-1-chromium-linux.png",
+        "commit": "c6056c736114b2ab056d0ce45b5db0c79c7da7a4",
+        "date": "2025-02-18 14:14:45 +0400",
+        "author": "Dmitry Khorkin",
+        "subject": "UI: huge refactor (#1384)"
+      },
+      {
+        "folder": "18-5a830f4b",
+        "path": "18-5a830f4b/images/Test-Suite-Demo-project---Bikes-1-chromium-linux.png",
+        "commit": "5a830f4bd0a7ca3db0b7b2b6ee74e4d0d60391fa",
+        "date": "2025-04-15 13:43:42 +0100",
+        "author": "Mikhail Sveshnikov",
+        "subject": "add py3.13 (#1548)"
+      }
+    ]
+  },
+  {
+    "screenName": "Test-Suites-List-Demo-project---Bikes-1-chromium-linux.png",
+    "displayName": "Test Suites List Demo project / Bikes",
+    "entries": [
+      {
+        "folder": "1-d4540a7b",
+        "path": "1-d4540a7b/images/Test-Suites-List-Demo-project---Bikes-1-chromium-linux.png",
+        "commit": "d4540a7bf87e8665361b94f9ce07243b6402b08b",
+        "date": "2024-03-12 23:41:28 +0400",
+        "author": "Dmitry Khorkin",
+        "subject": "UI: Better panels (#1022)"
+      },
+      {
+        "folder": "2-02b5ba51",
+        "path": "2-02b5ba51/images/Test-Suites-List-Demo-project---Bikes-1-chromium-linux.png",
+        "commit": "02b5ba518ef3350d1d5ab55710fd89a531db53b4",
+        "date": "2024-03-15 17:07:07 +0400",
+        "author": "Dmitry Khorkin",
+        "subject": "remove nbextension (#1027)"
+      },
+      {
+        "folder": "3-d0688695",
+        "path": "3-d0688695/images/Test-Suites-List-Demo-project---Bikes-1-chromium-linux.png",
+        "commit": "d06886957a6aa947a1440884584c6ea9705fd6f6",
+        "date": "2024-04-01 20:15:09 +0400",
+        "author": "Dmitry Khorkin",
+        "subject": "ui fix font weight (#1048)"
+      },
+      {
+        "folder": "4-cc51acc0",
+        "path": "4-cc51acc0/images/Test-Suites-List-Demo-project---Bikes-1-chromium-linux.png",
+        "commit": "cc51acc04979dca63d077cb8a89f3ca7a30b55c5",
+        "date": "2024-04-05 17:30:17 +0400",
+        "author": "Dmitry Khorkin",
+        "subject": "UI: remove hardcore color (#1053)"
+      },
+      {
+        "folder": "5-1092751a",
+        "path": "5-1092751a/images/Test-Suites-List-Demo-project---Bikes-1-chromium-linux.png",
+        "commit": "1092751a27994ddc2d78f3d614ee82c07c5c1e84",
+        "date": "2024-04-08 17:42:39 +0400",
+        "author": "Dmitry Khorkin",
+        "subject": "UI new theme and better error handling (#1063)"
+      },
+      {
+        "folder": "6-d7d2af02",
+        "path": "6-d7d2af02/images/Test-Suites-List-Demo-project---Bikes-1-chromium-linux.png",
+        "commit": "d7d2af02db953499a0c9226385707039544a4ee0",
+        "date": "2024-04-18 23:26:20 +0400",
+        "author": "Dmitry Khorkin",
+        "subject": "UI: code refactor and small improvements (#1079)"
+      },
+      {
+        "folder": "7-43fb8f0e",
+        "path": "7-43fb8f0e/images/Test-Suites-List-Demo-project---Bikes-1-chromium-linux.png",
+        "commit": "43fb8f0efde27d8348466b2bd9754efb06ab4114",
+        "date": "2024-06-24 20:03:04 +0400",
+        "author": "Dmitry Khorkin",
+        "subject": "UI(feature): dashboard filter - hide dates (#1166)"
+      },
+      {
+        "folder": "8-98e41efc",
+        "path": "8-98e41efc/images/Test-Suites-List-Demo-project---Bikes-1-chromium-linux.png",
+        "commit": "98e41efccd5628ecc803756415cb15ad07639a73",
+        "date": "2024-06-24 22:25:58 +0400",
+        "author": "Dmitry Khorkin",
+        "subject": "Update DashboardDateFilter.tsx (#1171)"
+      },
+      {
+        "folder": "9-d7f50a6c",
+        "path": "9-d7f50a6c/images/Test-Suites-List-Demo-project---Bikes-1-chromium-linux.png",
+        "commit": "d7f50a6cfe1253f8a575b2ab413291eee2243412",
+        "date": "2024-07-03 18:17:51 +0400",
+        "author": "Dmitry Khorkin",
+        "subject": "UI(feature): delete snapshot button (#1185)"
+      },
+      {
+        "folder": "10-ab9ea179",
+        "path": "10-ab9ea179/images/Test-Suites-List-Demo-project---Bikes-1-chromium-linux.png",
+        "commit": "ab9ea17919d119bf0b125a2ac2aabd3f6c97ab37",
+        "date": "2024-07-08 22:21:20 +0400",
+        "author": "Dmitry Khorkin",
+        "subject": "UI: deterministic uuid generation in UI tests (#1168)"
+      },
+      {
+        "folder": "11-29f48930",
+        "path": "11-29f48930/images/Test-Suites-List-Demo-project---Bikes-1-chromium-linux.png",
+        "commit": "29f489303b8486efdda8e0d6d54f826bec61ca15",
+        "date": "2024-07-30 17:45:35 +0400",
+        "author": "Dmitry Khorkin",
+        "subject": "UI(refactor): snapshots list slots (#1229)"
+      },
+      {
+        "folder": "12-71c62ac8",
+        "path": "12-71c62ac8/images/Test-Suites-List-Demo-project---Bikes-1-chromium-linux.png",
+        "commit": "71c62ac8f84fa11c5e0a32b5fff10d231cb0e8c7",
+        "date": "2024-07-31 20:36:54 +0400",
+        "author": "Mikhail Sveshnikov",
+        "subject": "Multi-column descriptors (#1222)"
+      },
+      {
+        "folder": "13-db682763",
+        "path": "13-db682763/images/Test-Suites-List-Demo-project---Bikes-1-chromium-linux.png",
+        "commit": "db6827637a7d0696d57b2361f4cc49e1c3503678",
+        "date": "2024-08-23 18:11:24 +0200",
+        "author": "Vyacheslav Morov",
+        "subject": "Remove top version boundary for nltk. (#1261)"
+      },
+      {
+        "folder": "14-55f49ad8",
+        "path": "14-55f49ad8/images/Test-Suites-List-Demo-project---Bikes-1-chromium-linux.png",
+        "commit": "55f49ad8f64e8f34de6506a5b361076f0e67032b",
+        "date": "2024-09-25 19:48:14 +0400",
+        "author": "Dmitry Khorkin",
+        "subject": "UI: Replace github icon to discord icon (#1322)"
+      },
+      {
+        "folder": "15-975fb0f4",
+        "path": "15-975fb0f4/images/Test-Suites-List-Demo-project---Bikes-1-chromium-linux.png",
+        "commit": "975fb0f4ef1010df4c7d97a5339ffae0ed222d82",
+        "date": "2024-10-28 18:52:52 +0400",
+        "author": "Dmitry Khorkin",
+        "subject": "UI: dark mode (#1355)"
+      },
+      {
+        "folder": "16-beec1e52",
+        "path": "16-beec1e52/images/Test-Suites-List-Demo-project---Bikes-1-chromium-linux.png",
+        "commit": "beec1e5236be3cbcb704f0cfb995ed81c9d0b461",
+        "date": "2025-01-10 18:51:49 +0000",
+        "author": "Vyacheslav Morov",
+        "subject": "Metrics redesign (#1389)"
+      },
+      {
+        "folder": "17-c6056c73",
+        "path": "17-c6056c73/images/Test-Suites-List-Demo-project---Bikes-1-chromium-linux.png",
+        "commit": "c6056c736114b2ab056d0ce45b5db0c79c7da7a4",
+        "date": "2025-02-18 14:14:45 +0400",
+        "author": "Dmitry Khorkin",
+        "subject": "UI: huge refactor (#1384)"
+      },
+      {
+        "folder": "18-5a830f4b",
+        "path": "18-5a830f4b/images/Test-Suites-List-Demo-project---Bikes-1-chromium-linux.png",
+        "commit": "5a830f4bd0a7ca3db0b7b2b6ee74e4d0d60391fa",
+        "date": "2025-04-15 13:43:42 +0100",
+        "author": "Mikhail Sveshnikov",
+        "subject": "add py3.13 (#1548)"
+      }
+    ]
+  }
+];
+
+let currentScreen = null;
+let currentIndex = 0;
+let playing = false;
+let playTimer = null;
+
+// Build sidebar
+const listEl = document.getElementById('screenList');
+DATA.forEach((screen, i) => {
+  const el = document.createElement('div');
+  el.className = 'sidebar-item';
+  el.innerHTML = screen.displayName + ' <span class="count">(' + screen.entries.length + ')</span>';
+  el.addEventListener('click', () => selectScreen(i));
+  listEl.appendChild(el);
+});
+
+function selectScreen(idx) {
+  stopPlay();
+  const prevEntry = currentScreen ? currentScreen.entries[currentIndex] : null;
+  currentScreen = DATA[idx];
+
+  // Try to keep the same revision (by folder name) when switching screens,
+  // otherwise clamp previous index to valid range
+  let newIndex = Math.min(currentIndex, currentScreen.entries.length - 1);
+  if (prevEntry) {
+    const matchIdx = currentScreen.entries.findIndex(e => e.folder === prevEntry.folder);
+    if (matchIdx !== -1) newIndex = matchIdx;
+  }
+  currentIndex = newIndex;
+
+  document.querySelectorAll('.sidebar-item').forEach((el, i) => {
+    el.classList.toggle('active', i === idx);
+  });
+
+  document.getElementById('screenTitle').textContent = currentScreen.displayName;
+
+  const slider = document.getElementById('slider');
+  slider.max = currentScreen.entries.length - 1;
+  slider.value = currentIndex;
+
+  // Preload all images for this screen
+  currentScreen.entries.forEach(e => { const img = new Image(); img.src = e.path; });
+
+  render();
+}
+
+function render() {
+  if (!currentScreen) return;
+  const entry = currentScreen.entries[currentIndex];
+  const img = document.getElementById('screenImg');
+  const noImg = document.getElementById('noImage');
+  const slider = document.getElementById('slider');
+  const label = document.getElementById('sliderLabel');
+
+  noImg.style.display = 'none';
+  img.style.display = 'block';
+  img.onload = () => { const el = document.getElementById('loadingLabel'); if (el) el.remove(); };
+  img.src = entry.path;
+  img.alt = currentScreen.screenName;
+
+  slider.value = currentIndex;
+  label.textContent = (currentIndex + 1) + ' / ' + currentScreen.entries.length;
+
+  document.getElementById('prevBtn').disabled = currentIndex === 0;
+  document.getElementById('nextBtn').disabled = currentIndex === currentScreen.entries.length - 1;
+
+  // Info bar
+  const infoBar = document.getElementById('infoBar');
+  infoBar.innerHTML = [
+    '<div class="info-item"><span class="info-label">Revision:</span><span class="info-value">' + entry.folder + '</span></div>',
+    '<div class="info-item"><span class="info-label">Date:</span><span class="info-value">' + entry.date + '</span></div>',
+    '<div class="info-item"><span class="info-label">Author:</span><span class="info-value">' + entry.author + '</span></div>',
+    '<div class="info-item"><span class="info-label">Commit:</span><span class="info-value commit">' + entry.commit.slice(0, 12) + '</span></div>',
+    '<div class="info-item"><span class="info-label">Subject:</span><span class="info-value">' + entry.subject + '</span></div>',
+    '<span class="loading-label" id="loadingLabel">Loading...</span>',
+  ].join('');
+
+  // Text view
+  const textView = document.getElementById('textView');
+  textView.innerHTML = currentScreen.entries.map((e, i) =>
+    '<div class="text-entry' + (i === currentIndex ? ' current' : '') + '" data-idx="' + i + '">' +
+      '<span class="rev-index">#' + (i + 1) + '</span>' +
+      '<span class="rev-hash">' + e.commit.slice(0, 10) + '</span>' +
+      '<span class="rev-date">' + e.date + '</span>' +
+      '<span class="rev-subject">' + e.subject + '</span>' +
+    '</div>'
+  ).join('');
+  textView.querySelectorAll('.text-entry').forEach(el => {
+    el.addEventListener('click', () => {
+      currentIndex = parseInt(el.dataset.idx);
+      render();
+    });
+  });
+  // Scroll current entry into view in text mode
+  const cur = textView.querySelector('.text-entry.current');
+  if (cur) cur.scrollIntoView({ block: 'nearest' });
+}
+
+// Controls
+document.getElementById('prevBtn').addEventListener('click', () => {
+  if (currentIndex > 0) { currentIndex--; render(); }
+});
+document.getElementById('nextBtn').addEventListener('click', () => {
+  if (currentScreen && currentIndex < currentScreen.entries.length - 1) { currentIndex++; render(); }
+});
+document.getElementById('slider').addEventListener('input', (e) => {
+  currentIndex = parseInt(e.target.value);
+  render();
+});
+
+// Play/pause
+const playBtn = document.getElementById('playBtn');
+function startPlay() {
+  if (!currentScreen) return;
+  playing = true;
+  playBtn.classList.add('playing');
+  playBtn.innerHTML = '&#9632; Stop';
+  tick();
+}
+function stopPlay() {
+  playing = false;
+  playBtn.classList.remove('playing');
+  playBtn.innerHTML = '&#9654; Play';
+  clearTimeout(playTimer);
+}
+function tick() {
+  if (!playing || !currentScreen) return;
+  if (currentIndex < currentScreen.entries.length - 1) {
+    currentIndex++;
+    render();
+    playTimer = setTimeout(tick, parseInt(document.getElementById('speed').value));
+  } else {
+    stopPlay();
+  }
+}
+playBtn.addEventListener('click', () => {
+  if (playing) { stopPlay(); } else {
+    if (currentScreen && currentIndex >= currentScreen.entries.length - 1) { currentIndex = 0; }
+    startPlay();
+  }
+});
+
+// Keyboard (skip when slider is focused to avoid double-step)
+document.addEventListener('keydown', (e) => {
+  if (document.activeElement === document.getElementById('slider')) return;
+  if (e.key === 'ArrowLeft') { if (currentIndex > 0) { currentIndex--; render(); } }
+  if (e.key === 'ArrowRight') { if (currentScreen && currentIndex < currentScreen.entries.length - 1) { currentIndex++; render(); } }
+  if (e.key === ' ') { e.preventDefault(); playBtn.click(); }
+});
+
+// View mode toggle
+function setViewMode(mode) {
+  const viewer = document.querySelector('.viewer');
+  viewer.classList.remove('fit', 'text-mode');
+  if (mode === 'fit') viewer.classList.add('fit');
+  if (mode === 'text') viewer.classList.add('text-mode');
+}
+document.getElementById('viewMode').addEventListener('change', (e) => setViewMode(e.target.value));
+
+// Sidebar toggle
+document.getElementById('toggleSidebar').addEventListener('click', () => {
+  document.querySelector('.sidebar').classList.toggle('collapsed');
+});
+
+// Auto-select first screen
+if (DATA.length > 0) selectScreen(0);
+</script>
+</body>
+</html>
