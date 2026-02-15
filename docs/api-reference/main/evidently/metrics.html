@@ -107,6 +107,9 @@
                         <li>
                                 <a class="variable" href="#ValueDrift.threshold">threshold</a>
                         </li>
+                        <li>
+                                <a class="variable" href="#ValueDrift.nbinsx">nbinsx</a>
+                        </li>
                 </ul>
 
             </li>
@@ -845,6 +848,18 @@
                 </ul>
 
             </li>
+            <li>
+                    <a class="class" href="#EmbeddingsDrift">EmbeddingsDrift</a>
+                            <ul class="memberlist">
+                        <li>
+                                <a class="variable" href="#EmbeddingsDrift.embeddings_name">embeddings_name</a>
+                        </li>
+                        <li>
+                                <a class="variable" href="#EmbeddingsDrift.drift_method">drift_method</a>
+                        </li>
+                </ul>
+
+            </li>
     </ul>
 
 
@@ -1297,6 +1312,19 @@ Requires reference data to compute drift.</p>
     <a class="headerlink" href="#ValueDrift.threshold"></a>
     
             <div class="docstring"><p>Drift threshold (uses method default if None).</p>
+</div>
+
+
+                            </div>
+                            <div id="ValueDrift.nbinsx" class="classattr">
+                                <div class="attr variable">
+            <span class="name">nbinsx</span><span class="annotation">: Optional[int]</span>
+
+        
+    </div>
+    <a class="headerlink" href="#ValueDrift.nbinsx"></a>
+    
+            <div class="docstring"><p>Number of bins for distribution histogram (uses method default if None).</p>
 </div>
 
 
@@ -5660,6 +5688,64 @@ the specified method. Returns a dataframe with correlation values.</p>
                 <dd id="ColumnCorrelationMatrix.get_metric_id" class="function"><a href="core/metric_types.html#Metric.get_metric_id">get_metric_id</a></dd>
                 <dd id="ColumnCorrelationMatrix.metric_id" class="variable"><a href="core/metric_types.html#Metric.metric_id">metric_id</a></dd>
                 <dd id="ColumnCorrelationMatrix.call" class="function"><a href="core/metric_types.html#Metric.call">call</a></dd>
+
+            </div>
+                                </dl>
+                            </div>
+                </section>
+                <section id="EmbeddingsDrift">
+                    <div class="attr class">
+            
+    <span class="def">class</span>
+    <span class="name">EmbeddingsDrift</span><wbr>(<span class="base">evidently.pydantic_utils.AutoAliasMixin</span>, <span class="base">evidently.pydantic_utils.EvidentlyBaseModel</span>, <span class="base">typing.Generic[~TCalculation]</span>):
+
+        
+    </div>
+    <a class="headerlink" href="#EmbeddingsDrift"></a>
+    
+            <div class="docstring"><p>Base class for metrics that return a single numeric value.</p>
+
+<p>Metrics that compute a single scalar result (e.g., mean, accuracy, MAE)
+should inherit from this class.</p>
+</div>
+
+
+                            <div id="EmbeddingsDrift.embeddings_name" class="classattr">
+                                <div class="attr variable">
+            <span class="name">embeddings_name</span><span class="annotation">: str</span>
+
+        
+    </div>
+    <a class="headerlink" href="#EmbeddingsDrift.embeddings_name"></a>
+    
+    
+
+                            </div>
+                            <div id="EmbeddingsDrift.drift_method" class="classattr">
+                                <div class="attr variable">
+            <span class="name">drift_method</span><span class="annotation">: Optional[evidently.legacy.metrics.data_drift.embedding_drift_methods.DriftMethod]</span>
+
+        
+    </div>
+    <a class="headerlink" href="#EmbeddingsDrift.drift_method"></a>
+    
+    
+
+                            </div>
+                            <div class="inherited">
+                                <h5>Inherited Members</h5>
+                                <dl>
+                                    <div><dt><a href="core/metric_types.html#SingleValueMetric">evidently.core.metric_types.SingleValueMetric</a></dt>
+                                <dd id="EmbeddingsDrift.tests" class="variable"><a href="core/metric_types.html#SingleValueMetric.tests">tests</a></dd>
+                <dd id="EmbeddingsDrift.get_bound_tests" class="function"><a href="core/metric_types.html#SingleValueMetric.get_bound_tests">get_bound_tests</a></dd>
+                <dd id="EmbeddingsDrift.validate_tests" class="function"><a href="core/metric_types.html#SingleValueMetric.validate_tests">validate_tests</a></dd>
+
+            </div>
+            <div><dt><a href="core/metric_types.html#Metric">evidently.core.metric_types.Metric</a></dt>
+                                <dd id="EmbeddingsDrift.to_calculation" class="function"><a href="core/metric_types.html#Metric.to_calculation">to_calculation</a></dd>
+                <dd id="EmbeddingsDrift.get_metric_id" class="function"><a href="core/metric_types.html#Metric.get_metric_id">get_metric_id</a></dd>
+                <dd id="EmbeddingsDrift.metric_id" class="variable"><a href="core/metric_types.html#Metric.metric_id">metric_id</a></dd>
+                <dd id="EmbeddingsDrift.call" class="function"><a href="core/metric_types.html#Metric.call">call</a></dd>
 
             </div>
                                 </dl>
