@@ -191,7 +191,7 @@ async def get_dataset(
     """Get a dataset with pagination."""
 
     try:
-        filter_queries = (
+        filter_queries: Optional[List[FilterBy]] = (
             [TypeAdapter(FilterBy).validate_python(json.loads(_filter)) for _filter in filters] if filters else None
         )
     except (ValidationError, JSONDecodeError) as e:

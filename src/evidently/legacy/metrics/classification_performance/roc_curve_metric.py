@@ -2,7 +2,6 @@ from typing import ClassVar
 from typing import Dict
 from typing import List
 from typing import Optional
-from typing import Union
 
 import numpy as np
 import pandas as pd
@@ -13,6 +12,7 @@ from evidently.legacy.base_metric import Metric
 from evidently.legacy.base_metric import MetricResult
 from evidently.legacy.calculations.classification_performance import get_prediction_data
 from evidently.legacy.core import IncludeTags
+from evidently.legacy.core import Label
 from evidently.legacy.metric_results import PredictionData
 from evidently.legacy.metric_results import ROCCurve
 from evidently.legacy.metric_results import ROCCurveData
@@ -74,7 +74,7 @@ class ClassificationRocCurve(Metric[ClassificationRocCurveResults]):
         target_names: Optional[TargetNames],
     ) -> ROCCurve:
         labels = prediction.labels
-        tn: Dict[Union[int, str, None], str] = {}
+        tn: Dict[Label, str] = {}
         if target_names is None:
             tn = {}
         elif isinstance(target_names, list):

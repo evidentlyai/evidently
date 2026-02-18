@@ -255,13 +255,19 @@ class RemoteArtifact(Artifact):
         self.__api__ = api
         return self
 
+    @property
+    def _api(self) -> "ArtifactAPI":
+        if self.__api__ is None:
+            raise RuntimeError("RemoteArtifact not bound to API; call bind() first")
+        return self.__api__
+
     def list_versions(self) -> List[ArtifactVersion]:
         """List all versions of this artifact.
 
         Returns:
         * List of `ArtifactVersion` objects.
         """
-        return self.__api__.list_versions(self.id)
+        return self._api.list_versions(self.id)
 
     def get_version(self, version: VersionOrLatest = "latest") -> ArtifactVersion:
         """Get a specific version of this artifact.
@@ -272,7 +278,7 @@ class RemoteArtifact(Artifact):
         Returns:
         * `ArtifactVersion` for the specified version.
         """
-        return self.__api__.get_version(self.id, version)
+        return self._api.get_version(self.id, version)
 
     def bump_version(self, content: Any):
         """Create a new version with the given content.
@@ -283,7 +289,7 @@ class RemoteArtifact(Artifact):
         Returns:
         * New `ArtifactVersion` with incremented version number.
         """
-        return self.__api__.bump_artifact_version(self.id, content)
+        return self._api.bump_artifact_version(self.id, content)
 
     def delete(self):
         """Delete this artifact and all its versions.
@@ -291,7 +297,7 @@ class RemoteArtifact(Artifact):
         This operation is irreversible and will permanently remove the artifact
         and all associated versions from the workspace.
         """
-        return self.__api__.delete_artifact(self.id)
+        return self._api.delete_artifact(self.id)
 
     def delete_version(self, version_id: ArtifactVersionID):
         """Delete a specific version.
@@ -301,14 +307,14 @@ class RemoteArtifact(Artifact):
         Args:
         * `version_id`: ID of the version to delete.
         """
-        return self.__api__.delete_version(version_id)
+        return self._api.delete_version(version_id)
 
     def save(self):
         """Save changes to this artifact's metadata to the remote workspace.
 
         Updates the artifact's name and metadata fields. Does not affect versions.
         """
-        self.__api__.update_artifact(self)
+        self._api.update_artifact(self)
 
 
 class ArtifactAPI(ABC):

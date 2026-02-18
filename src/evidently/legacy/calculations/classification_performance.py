@@ -28,7 +28,7 @@ if TYPE_CHECKING:
 
 
 def calculate_confusion_by_classes(
-    confusion_matrix: np.ndarray, class_names: Sequence[Union[str, int, None]]
+    confusion_matrix: np.ndarray, class_names: Sequence[Label]
 ) -> Dict[Label, Dict[str, int]]:
     """Calculate metrics:
     - TP (true positive)
@@ -59,7 +59,7 @@ def calculate_confusion_by_classes(
     false_positive = confusion_matrix.sum(axis=0) - np.diag(confusion_matrix)
     false_negative = confusion_matrix.sum(axis=1) - np.diag(confusion_matrix)
     true_negative = confusion_matrix.sum() - (false_positive + false_negative + true_positive)
-    confusion_by_classes = {}
+    confusion_by_classes: Dict[Label, Dict[str, int]] = {}
 
     for idx, class_name in enumerate(class_names):
         confusion_by_classes[class_name] = {

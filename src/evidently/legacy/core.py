@@ -11,6 +11,7 @@ from typing import Set
 from typing import Type
 from typing import TypeVar
 from typing import Union
+from typing import cast
 from typing import get_args
 from typing import get_origin
 
@@ -153,7 +154,12 @@ class BaseResult(BaseModel):
         exclude_tags = {IncludeTags.TypeField}
         if not include_render:
             exclude_tags.add(IncludeTags.Render)
-        return self.model_dump(include=include or self._build_include(exclude_tags=exclude_tags), exclude=exclude)
+        dump_include = include or self._build_include(exclude_tags=exclude_tags)
+        dump_exclude = exclude
+        return self.model_dump(
+            include=cast(Optional[Union[Set[int], Set[str], Dict[str, Any], Dict[int, Any]]], dump_include),
+            exclude=cast(Optional[Union[Set[int], Set[str], Dict[str, Any], Dict[int, Any]]], dump_exclude),
+        )
 
     def _build_include(
         self,
@@ -290,7 +296,10 @@ def get_field_tags(cls: Type[BaseModel], field_name: str) -> Set[IncludeTags]:
         break
 
     field = cls.model_fields[field_name]
-    field_type = _get_actual_type(field.annotation)
+    field_annotation = field.annotation
+    if field_annotation is None:
+        field_annotation = type(None)
+    field_type = _get_actual_type(field_annotation)
     self_tags = set() if not issubclass(cls, BaseResult) else (cls.__tags__ or set())
     cls_tags = get_cls_tags(field_type)
     return self_tags.union(field_tags).union(cls_tags)

@@ -327,7 +327,7 @@ async def add_snapshot(
     log_event: Annotated[Callable, Dependency()],
     user_id: UserID,
 ) -> AddSnapshotResponse:
-    model = TypeAdapter(SnapshotModel).validate_python(json.loads(body))
+    model: SnapshotModel = TypeAdapter(SnapshotModel).validate_python(json.loads(body))
     snapshot_id = await project_manager.add_snapshot(user_id, project.id, model)
     log_event("add_snapshot")
     return AddSnapshotResponse(snapshot_id=snapshot_id)

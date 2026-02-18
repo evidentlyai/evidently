@@ -45,10 +45,13 @@ NAME_MAPPING = {
 SKIP_CLASSES = {CustomFeature, CustomPairColumnFeature, CustomSingleColumnFeature, TextLength}
 
 
-def _get_type_name(tp: Type):
-    if tp.__module__.startswith("typing"):
+def _get_type_name(tp: Optional[Type[Any]]) -> str:
+    if tp is None:
+        return "Any"
+    module = getattr(tp, "__module__", "")
+    if module and str(module).startswith("typing"):
         return str(tp).replace("typing.", "")
-    return tp.__name__
+    return getattr(tp, "__name__", str(tp))
     # return str(tp)
 
 

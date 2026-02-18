@@ -446,7 +446,7 @@ class OptimizerRun(BaseModel):
     """Random seed used for this run."""
     start_time: datetime.datetime = Field(default_factory=datetime.datetime.now)
     """Timestamp when the run started."""
-    __context__: Optional["OptimizerContext"] = None
+    __context__: "OptimizerContext"
 
     def bind(self, context: "OptimizerContext") -> "OptimizerRun":
         """Bind this run to an optimizer context.
@@ -467,6 +467,8 @@ class OptimizerRun(BaseModel):
         Returns:
         * `OptimizerContext` associated with this run.
         """
+        if not hasattr(self, "__context__"):
+            raise RuntimeError("Optimizer context not initialized; call bind() first")
         return self.__context__
 
     def add_log(self, log: OptimizerLog):
@@ -475,7 +477,8 @@ class OptimizerRun(BaseModel):
         Args:
         * `log`: `OptimizerLog` to add.
         """
-        if self.__context__.config.verbose:
+        ctx = self.context
+        if ctx.config.verbose:
             print(f"[{self.run_id}]", log.message())
         self.logs[log.id] = log
 

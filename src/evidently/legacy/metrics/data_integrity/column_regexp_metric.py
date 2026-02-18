@@ -80,7 +80,7 @@ class ColumnRegExpMetric(Metric[DataIntegrityValueByRegexpMetricResult]):
     reg_exp: str
     top: int
     # compiled regular expression for speed optimization
-    __reg_exp_compiled__: Optional[Pattern] = None
+    __reg_exp_compiled__: Pattern
 
     def __init__(self, column_name: str, reg_exp: str, top: int = 10, options: AnyOptions = None):
         self.top = top

@@ -1,4 +1,5 @@
 import contextlib
+from typing import Any
 from typing import Dict
 from typing import Iterator
 from typing import List
@@ -107,8 +108,8 @@ TConfig = TypeVar("TConfig", bound=Config)
 
 def load_config(config_type: Type[TConfig], box: dict) -> TConfig:
     new_box = _convert_keys(box)
-    components = {}
-    named_components = {}
+    components: Dict[str, Component] = {}
+    named_components: Dict[str, Any] = {}
     for section, component_dict in new_box.items():
         # todo
         if not isinstance(component_dict, dict):
@@ -118,10 +119,9 @@ def load_config(config_type: Type[TConfig], box: dict) -> TConfig:
         if section in ("renamed_vars", "dict_itemiterator"):
             continue
         if section == "additional_components":
-            for subsection, compoennt_subdict in component_dict.items():
-                component = TypeAdapter(
-                    SECTION_COMPONENT_TYPE_MAPPING.get(subsection).validate_python(Component), compoennt_subdict
-                )
+            for subsection, component_subdict in component_dict.items():
+                subsection_type = SECTION_COMPONENT_TYPE_MAPPING.get(subsection, Component)
+                component: Component = TypeAdapter(subsection_type).validate_python(component_subdict)
                 components[subsection] = component
         elif section in config_type.__fields__:
             type_ = config_type.__fields__[section].type_

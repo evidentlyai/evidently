@@ -129,16 +129,16 @@ def load_config(config_type: Type[TConfig], box: dict) -> TConfig:
             continue
         if section == "additional_components":
             for subsection, compoennt_subdict in component_dict.items():
-                component = TypeAdapter(SECTION_COMPONENT_TYPE_MAPPING.get(subsection, Component)).validate_python(
-                    compoennt_subdict
-                )
+                component: Component = TypeAdapter(
+                    SECTION_COMPONENT_TYPE_MAPPING.get(subsection, Component)
+                ).validate_python(compoennt_subdict)
                 components[subsection] = component
         elif section in config_type.__fields__:
             type_ = config_type.__fields__[section].type_
-            component = TypeAdapter(type_).validate_python(component_dict)
+            component: Component = TypeAdapter(type_).validate_python(component_dict)
             named_components[section] = component
         elif section in SECTION_COMPONENT_TYPE_MAPPING:
-            component = TypeAdapter(SECTION_COMPONENT_TYPE_MAPPING[section]).validate_python(component_dict)
+            component: Component = TypeAdapter(SECTION_COMPONENT_TYPE_MAPPING[section]).validate_python(component_dict)
             components[section] = component
         else:
             raise ValueError(f"unknown config section {section}")
