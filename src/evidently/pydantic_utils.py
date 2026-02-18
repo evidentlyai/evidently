@@ -19,7 +19,6 @@ from typing import Iterable
 from typing import List
 from typing import Literal
 from typing import Optional
-from typing import Self
 from typing import Set
 from typing import Tuple
 from typing import Type
@@ -45,6 +44,7 @@ from pydantic_core import PydanticCustomError
 from pydantic_core import core_schema
 from pydantic_core.core_schema import SerializationInfo
 from pydantic_core.core_schema import SerializerFunctionWrapHandler
+from typing_extensions import Self
 from typing_inspect import is_union_type
 
 if TYPE_CHECKING:
