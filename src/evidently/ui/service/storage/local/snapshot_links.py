@@ -33,7 +33,9 @@ class FileSnapshotDatasetLinksManager(SnapshotDatasetLinksManager):
 
         with self.location.open(links_path, "r") as f:
             links_data = json.load(f)
-            input_output_links = TypeAdapter(DatasetInputOutputLinks).validate_python(links_data)
+            input_output_links: DatasetInputOutputLinks = TypeAdapter(DatasetInputOutputLinks).validate_python(
+                links_data
+            )
 
         return SnapshotLinks(datasets=input_output_links)
 
@@ -55,7 +57,9 @@ class FileSnapshotDatasetLinksManager(SnapshotDatasetLinksManager):
         if self.location.exists(links_path):
             with self.location.open(links_path, "r") as f:
                 links_data = json.load(f)
-                input_output_links = TypeAdapter(DatasetInputOutputLinks).validate_python(links_data)
+                input_output_links: DatasetInputOutputLinks = TypeAdapter(DatasetInputOutputLinks).validate_python(
+                    links_data
+                )
         else:
             input_output_links = DatasetInputOutputLinks()
 

@@ -244,8 +244,9 @@ class PolymorphicModel(BaseModel):
 
     @classmethod
     def __get_type__(cls) -> str:
-        if cls.__dict__.get("__type_alias__") is not None:
-            return cls.__type_alias__
+        type_alias = cls.__dict__.get("__type_alias__")
+        if type_alias is not None:
+            return str(type_alias)
         if cls.__alias_required__ and is_not_abstract(cls):
             raise ValueError(f"Alias is required for {cls.__name__}")
         return cls.__get_classpath__()
@@ -311,11 +312,7 @@ class PolymorphicModel(BaseModel):
         return super().model_validate(value, strict=strict, from_attributes=from_attributes, context=context)
 
     @model_validator(mode="wrap")
-    def _delegate_validation(cls, data: dict, handler) -> Any:
-        # if isinstance(data, cls):
-        #     return data
-        # if not isinstance(data, dict):
-        #     raise ValueError(f"{data!r} is not a dict")
+    def _delegate_validation(cls, data, handler) -> Any:
         if "type" in data and data["type"] != cls.__get_type__():
             return cls.model_validate(data)
         typename = data.pop("type", None) if isinstance(data, dict) else None
@@ -716,8 +713,9 @@ class AutoAliasMixin:
 
     @classmethod
     def __get_type__(cls) -> str:
-        if cls.__dict__.get("__type_alias__") is not None:
-            return cls.__type_alias__
+        type_alias = cls.__dict__.get("__type_alias__")
+        if type_alias is not None:
+            return str(type_alias)
         if not hasattr(cls, "__alias_type__"):
             raise TypeError(f"{cls.__name__} `__alias_type__` is not defined")
         return f"evidently:{cls.__alias_type__}:{cls.__name__}"
@@ -748,6 +746,8 @@ def get_field_inner_type(field: PydanticFieldInfo) -> Type:
             typ = args[1]
             break
         break
+    if typ is None:
+        raise TypeError(f"{field.__name__} does not have correct type annotation")
     return typ
 
 
@@ -757,6 +757,8 @@ def get_field_outer_type(field: PydanticFieldInfo) -> Type:
         args = get_args(typ)
         if len(args) == 2 and type(None) in args:
             typ = [a for a in args if a is not type(None)][0]
+    if typ is None:
+        raise TypeError(f"{field.__name__} does not have correct type annotation")
     return typ
 
 

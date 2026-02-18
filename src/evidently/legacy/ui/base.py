@@ -211,15 +211,15 @@ class Project(Entity):
         if reload_snapshots:
             await self.project_manager.reload_snapshots(self.__user_id__, self.id)  # type: ignore[arg-type]
 
-    save = sync_api(save_async)
-    load_snapshot = sync_api(load_snapshot_async)
-    delete_snapshot = sync_api(delete_snapshot_async)
-    list_snapshots = sync_api(list_snapshots_async)
-    show_dashboard = sync_api(show_dashboard_async)
-    build_dashboard_info = sync_api(build_dashboard_info_async)
-    get_snapshot_metadata = sync_api(get_snapshot_metadata_async)
-    add_snapshot = sync_api(add_snapshot_async)
-    reload = sync_api(reload_async)
+    save = sync_api(save_async)  # type: ignore[pydantic-field]
+    load_snapshot = sync_api(load_snapshot_async)  # type: ignore[pydantic-field]
+    delete_snapshot = sync_api(delete_snapshot_async)  # type: ignore[pydantic-field]
+    list_snapshots = sync_api(list_snapshots_async)  # type: ignore[pydantic-field]
+    show_dashboard = sync_api(show_dashboard_async)  # type: ignore[pydantic-field]
+    build_dashboard_info = sync_api(build_dashboard_info_async)  # type: ignore[pydantic-field]
+    get_snapshot_metadata = sync_api(get_snapshot_metadata_async)  # type: ignore[pydantic-field]
+    add_snapshot = sync_api(add_snapshot_async)  # type: ignore[pydantic-field]
+    reload = sync_api(reload_async)  # type: ignore[pydantic-field]
 
 
 class ProjectMetadataStorage(ABC):

@@ -158,7 +158,7 @@ class SimpleClassificationTestTopK(SimpleClassificationTest, ClassificationConfu
 class TestAccuracyScore(SimpleClassificationTestTopK):
     __type_alias__: ClassVar[Optional[str]] = "evidently:test:TestAccuracyScore"
 
-    name = "Accuracy Score"
+    name: ClassVar[str] = "Accuracy Score"
 
     def get_value(self, result: DatasetClassificationQuality):
         return result.accuracy
@@ -181,7 +181,7 @@ class TestAccuracyScoreRenderer(TestRenderer):
 class TestPrecisionScore(SimpleClassificationTestTopK):
     __type_alias__: ClassVar[Optional[str]] = "evidently:test:TestPrecisionScore"
 
-    name = "Precision Score"
+    name: ClassVar[str] = "Precision Score"
 
     def get_value(self, result: DatasetClassificationQuality):
         return result.precision
@@ -227,7 +227,7 @@ class TestF1ScoreRenderer(TestRenderer):
 class TestRecallScore(SimpleClassificationTestTopK):
     __type_alias__: ClassVar[Optional[str]] = "evidently:test:TestRecallScore"
 
-    name = "Recall Score"
+    name: ClassVar[str] = "Recall Score"
 
     def get_value(self, result: DatasetClassificationQuality):
         return result.recall
@@ -312,7 +312,7 @@ class TestLogLoss(SimpleClassificationTest):
     __type_alias__: ClassVar[Optional[str]] = "evidently:test:TestLogLoss"
 
     condition_arg = "lt"
-    name = "Logarithmic Loss"
+    name: ClassVar[str] = "Logarithmic Loss"
 
     def get_value(self, result: DatasetClassificationQuality):
         return result.log_loss
@@ -348,7 +348,7 @@ class TestLogLossRenderer(TestRenderer):
 class TestTPR(SimpleClassificationTestTopK):
     __type_alias__: ClassVar[Optional[str]] = "evidently:test:TestTPR"
 
-    name = "True Positive Rate"
+    name: ClassVar[str] = "True Positive Rate"
 
     def get_value(self, result: DatasetClassificationQuality):
         return result.tpr
@@ -386,7 +386,7 @@ class TestTPRRenderer(TestRenderer):
 class TestTNR(SimpleClassificationTestTopK):
     __type_alias__: ClassVar[Optional[str]] = "evidently:test:TestTNR"
 
-    name = "True Negative Rate"
+    name: ClassVar[str] = "True Negative Rate"
 
     def get_value(self, result: DatasetClassificationQuality):
         return result.tnr
@@ -425,7 +425,7 @@ class TestFPR(SimpleClassificationTestTopK):
     __type_alias__: ClassVar[Optional[str]] = "evidently:test:TestFPR"
 
     condition_arg: ClassVar = "lt"
-    name = "False Positive Rate"
+    name: ClassVar[str] = "False Positive Rate"
 
     def get_value(self, result: DatasetClassificationQuality):
         return result.fpr
@@ -464,7 +464,7 @@ class TestFNR(SimpleClassificationTestTopK):
     __type_alias__: ClassVar[Optional[str]] = "evidently:test:TestFNR"
 
     condition_arg: ClassVar = "lt"
-    name = "False Negative Rate"
+    name: ClassVar[str] = "False Negative Rate"
 
     def get_value(self, result: DatasetClassificationQuality):
         return result.fnr

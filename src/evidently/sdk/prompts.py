@@ -164,13 +164,19 @@ class RemotePrompt(Prompt):
         self.__api__ = api
         return self
 
+    @property
+    def _api(self) -> "PromptAPI":
+        if self.__api__ is None:
+            raise ValueError("api was not initialized")
+        return self.__api__
+
     def list_versions(self) -> List[PromptVersion]:
         """List all versions of this prompt.
 
         Returns:
         * List of `PromptVersion` objects.
         """
-        return self.__api__.list_versions(self.id)
+        return self._api.list_versions(self.id)
 
     def get_version(self, version: VersionOrLatest = "latest") -> PromptVersion:
         """Get a specific version of this prompt.
@@ -181,7 +187,7 @@ class RemotePrompt(Prompt):
         Returns:
         * `PromptVersion` for the specified version.
         """
-        return self.__api__.get_version(self.id, version)
+        return self._api.get_version(self.id, version)
 
     def bump_version(self, content: Any):
         """Create a new version with the given content.
@@ -192,7 +198,7 @@ class RemotePrompt(Prompt):
         Returns:
         * New `PromptVersion` with incremented version number.
         """
-        return self.__api__.bump_prompt_version(self.id, content)
+        return self._api.bump_prompt_version(self.id, content)
 
     def delete(self):
         """Delete this prompt and all its versions.
@@ -200,7 +206,7 @@ class RemotePrompt(Prompt):
         This operation is irreversible and will permanently remove the prompt
         and all associated versions from the workspace.
         """
-        return self.__api__.delete_prompt(self.id)
+        return self._api.delete_prompt(self.id)
 
     def delete_version(self, version_id: PromptVersionID):
         """Delete a specific version.
@@ -210,14 +216,14 @@ class RemotePrompt(Prompt):
         Args:
         * `version_id`: ID of the version to delete.
         """
-        return self.__api__.delete_version(version_id)
+        return self._api.delete_version(version_id)
 
     def save(self):
         """Save changes to this prompt's metadata to the remote workspace.
 
         Updates the prompt's name and metadata fields. Does not affect versions.
         """
-        self.__api__.update_prompt(self)
+        self._api.update_prompt(self)
 
 
 class PromptAPI(ABC):
