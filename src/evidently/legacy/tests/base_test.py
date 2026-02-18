@@ -113,11 +113,11 @@ class TestResult(EnumValueMixin, MetricResult):  # todo: create common base clas
     # grouping parameters
     group: str
     parameters: Optional[TestParameters] = None
-    _exception: Optional[BaseException] = None
+    __exception__: Optional[BaseException] = None
 
     @property
     def exception(self):
-        return self._exception
+        return self.__exception__
 
     def set_status(self, status: TestStatus, description: Optional[str] = None) -> None:
         self.status = status
@@ -151,19 +151,19 @@ class Test(WithTestAndMetricDependencies):
     name: ClassVar[str]
     group: ClassVar[str]
     is_critical: bool = True
-    _context: Optional["Context"] = None
+    __context__: Optional["Context"] = None
 
     @abc.abstractmethod
     def check(self) -> TestResult:
         raise NotImplementedError
 
     def set_context(self, context: "Context"):
-        self._context = context
+        self.__context__ = context
 
     def get_result(self) -> TestResult:
-        if self._context is None:
+        if self.__context__ is None:
             raise ValueError("No context is set")
-        result = self._context.test_results.get(self, None)
+        result = self.__context__.test_results.get(self, None)
         if result is None:
             raise ValueError(f"No result found for metric {self} of type {type(self).__name__}")
         return result  # type: ignore[return-value]

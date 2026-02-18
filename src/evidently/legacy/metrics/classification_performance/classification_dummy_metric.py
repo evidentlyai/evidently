@@ -51,7 +51,7 @@ class ClassificationDummyMetricResults(MetricResult):
 class ClassificationDummyMetric(ThresholdClassificationMetric[ClassificationDummyMetricResults]):
     __type_alias__: ClassVar[Optional[str]] = "evidently:metric:ClassificationDummyMetric"
 
-    _quality_metric: ClassificationQualityMetric
+    __quality_metric__: ClassificationQualityMetric = None  # type: ignore[assignment]
 
     def __init__(
         self,
@@ -62,7 +62,7 @@ class ClassificationDummyMetric(ThresholdClassificationMetric[ClassificationDumm
         self.probas_threshold = probas_threshold
         self.k = k
         super().__init__(probas_threshold, k, options)
-        self._quality_metric = ClassificationQualityMetric()
+        self.__quality_metric__ = ClassificationQualityMetric()
 
     def calculate(self, data: InputData) -> ClassificationDummyMetricResults:
         quality_metric: Optional[ClassificationQualityMetric]
@@ -75,7 +75,7 @@ class ClassificationDummyMetric(ThresholdClassificationMetric[ClassificationDumm
         if prediction_name is None:
             quality_metric = None
         else:
-            quality_metric = self._quality_metric
+            quality_metric = self.__quality_metric__
 
         #  dummy by current
         labels_ratio = data.current_data[target_name].value_counts(normalize=True)

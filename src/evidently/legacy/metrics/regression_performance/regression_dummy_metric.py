@@ -41,15 +41,15 @@ class RegressionDummyMetricResults(MetricResult):
 class RegressionDummyMetric(Metric[RegressionDummyMetricResults]):
     __type_alias__: ClassVar[Optional[str]] = "evidently:metric:RegressionDummyMetric"
 
-    _quality_metric: RegressionQualityMetric
+    __quality_metric__: RegressionQualityMetric = None  # type: ignore[assignment]
 
     def __init__(self, options: AnyOptions = None):
         super().__init__(options=options)
-        self._quality_metric = RegressionQualityMetric()
+        self.__quality_metric__ = RegressionQualityMetric()
 
     @property
     def quality_metric(self):
-        return self._quality_metric
+        return self.__quality_metric__
 
     def calculate(self, data: InputData) -> RegressionDummyMetricResults:
         quality_metric: Optional[RegressionQualityMetric]

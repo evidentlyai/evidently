@@ -144,8 +144,8 @@ class CollectorConfig(Config):
     is_cloud: Optional[bool] = None  # None means autodetect
     save_datasets: bool = False
 
-    _reference: Any = None
-    _workspace: Optional[WorkspaceView] = None
+    __reference__: Any = None
+    __workspace__: Optional[WorkspaceView] = None
 
     @property
     def is_cloud_resolved(self) -> bool:
@@ -153,16 +153,16 @@ class CollectorConfig(Config):
 
     @property
     def workspace(self) -> WorkspaceView:
-        if self._workspace is None:
+        if self.__workspace__ is None:
             if self.is_cloud_resolved:
                 if self.api_secret is None:
                     raise ValueError("Please provide token and org_id for CloudWorkspace")
-                self._workspace = CloudWorkspace(token=self.api_secret, url=self.api_url)
+                self.__workspace__ = CloudWorkspace(token=self.api_secret, url=self.api_url)
             else:
                 if self.save_datasets:
                     warnings.warn("'save_datasets' is not supported for self-hosted Evidently UI")
-                self._workspace = RemoteWorkspace(base_url=self.api_url, secret=self.api_secret)
-        return self._workspace
+                self.__workspace__ = RemoteWorkspace(base_url=self.api_url, secret=self.api_secret)
+        return self.__workspace__
 
     def _read_reference(self):
         return pd.read_parquet(self.reference_path)
@@ -171,12 +171,12 @@ class CollectorConfig(Config):
     def reference(self):
         if self.reference_path is None:
             return None
-        if self._reference is not None:
-            return self._reference
+        if self.__reference__ is not None:
+            return self.__reference__
         if not self.cache_reference:
             return self._read_reference()
-        self._reference = self._read_reference()
-        return self._reference
+        self.__reference__ = self._read_reference()
+        return self.__reference__
 
 
 class CollectorServiceConfig(Config):

@@ -7,7 +7,6 @@ from typing import Optional
 import numpy as np
 import pandas as pd
 from nltk.stem.wordnet import WordNetLemmatizer
-from pydantic import PrivateAttr
 
 from evidently.legacy.base_metric import ColumnName
 from evidently.legacy.core import ColumnType
@@ -53,7 +52,7 @@ class WordsPresence(ApplyColumnGeneratedFeature):
     words_list: List[str]
     mode: str
     lemmatize: bool = True
-    _lem: Optional[WordNetLemmatizer] = PrivateAttr(None)
+    __lem__: Optional[WordNetLemmatizer] = None
 
     def __init__(
         self,
@@ -73,12 +72,12 @@ class WordsPresence(ApplyColumnGeneratedFeature):
 
     @property
     def lem(self):
-        if self._lem is None:
+        if self.__lem__ is None:
             import nltk
 
             nltk.download("wordnet", quiet=True)
-            self._lem = WordNetLemmatizer()
-        return self._lem
+            self.__lem__ = WordNetLemmatizer()
+        return self.__lem__
 
     def apply(self, value: Any):
         return _listed_words_present(value, self.mode, self.lem, self.words_list, self.lemmatize)
@@ -141,7 +140,7 @@ class RowWordPresence(GeneratedFeature):
     columns: List[str]
     mode: str = "any"
     lemmatize: bool = True
-    _lem: Optional[WordNetLemmatizer] = PrivateAttr(None)
+    __lem__: Optional[WordNetLemmatizer] = None
 
     def __init__(self, columns: List[str], mode: str, lemmatize: bool, display_name: Optional[str] = None):
         self.columns = columns
@@ -174,12 +173,12 @@ class RowWordPresence(GeneratedFeature):
 
     @property
     def lem(self):
-        if self._lem is None:
+        if self.__lem__ is None:
             import nltk
 
             nltk.download("wordnet", quiet=True)
-            self._lem = WordNetLemmatizer()
-        return self._lem
+            self.__lem__ = WordNetLemmatizer()
+        return self.__lem__
 
     def _feature_name(self):
         return "_".join(["RowWordPresence", self.columns[0], self.columns[1], str(self.lemmatize), str(self.mode)])

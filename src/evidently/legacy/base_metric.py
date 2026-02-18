@@ -18,7 +18,6 @@ from typing import Union
 import pandas as pd
 from pydantic import ConfigDict
 from pydantic import Field
-from pydantic import PrivateAttr
 from pydantic._internal._model_construction import ModelMetaclass
 
 from evidently.legacy.core import BaseResult
@@ -59,15 +58,15 @@ class MetricResult(PolymorphicModel, BaseResult, metaclass=WithFieldsPathMetacla
 class ErrorResult(BaseResult):
     model_config = ConfigDict()
 
-    _exception: Optional[BaseException] = None  # todo: fix serialization of exceptions
+    __exception__: Optional[BaseException] = None  # todo: fix serialization of exceptions
 
     def __init__(self, exception: Optional[BaseException]):
         super().__init__()
-        self._exception = exception
+        self.__exception__ = exception
 
     @property
     def exception(self):
-        return self._exception
+        return self.__exception__
 
 
 class DatasetType(Enum):
@@ -85,13 +84,13 @@ class ColumnName(EnumValueMixin, EvidentlyBaseModel):
     name: str
     display_name: DisplayName
     dataset: DatasetType
-    _feature_class: Optional["GeneratedFeatures"] = PrivateAttr(None)
+    __feature_class__: Optional["GeneratedFeatures"] = None
 
     def __init__(
         self, name: str, display_name: str, dataset: DatasetType, feature_class: Optional["GeneratedFeatures"] = None
     ):
         super().__init__(name=name, display_name=display_name, dataset=dataset)
-        self._feature_class = feature_class
+        self.__feature_class__ = feature_class
 
     def is_main_dataset(self):
         return self.dataset == DatasetType.MAIN
@@ -109,7 +108,7 @@ class ColumnName(EnumValueMixin, EvidentlyBaseModel):
 
     @property
     def feature_class(self) -> Optional["GeneratedFeatures"]:
-        return self._feature_class
+        return self.__feature_class__
 
     def get_fingerprint_parts(self) -> Tuple[FingerprintPart, ...]:
         return tuple(
@@ -246,7 +245,7 @@ class BasePreset(EvidentlyBaseModel):
 class Metric(WithTestAndMetricDependencies, Generic[TResult], metaclass=WithResultFieldPathMetaclass):
     __is_base_type__: ClassVar[bool] = True
 
-    _context: Optional["Context"] = None
+    __context__: Optional["Context"] = None
 
     options: Optional[Options] = Field(default=None)
 
@@ -273,12 +272,12 @@ class Metric(WithTestAndMetricDependencies, Generic[TResult], metaclass=WithResu
         raise NotImplementedError()
 
     def set_context(self, context):
-        self._context = context
+        self.__context__ = context
 
     def get_result(self) -> TResult:
-        if not hasattr(self, "_context") or self._context is None:
+        if not hasattr(self, "__context__") or self.__context__ is None:
             raise ValueError("No context is set")
-        result = self._context.metric_results.get(self, None)
+        result = self.__context__.metric_results.get(self, None)
         if isinstance(result, ErrorResult):
             raise result.exception
         if result is None:
@@ -288,7 +287,7 @@ class Metric(WithTestAndMetricDependencies, Generic[TResult], metaclass=WithResu
     def get_parameters(self) -> Optional[tuple]:
         attributes = []
         for field, value in sorted(self.__dict__.items(), key=lambda x: x[0]):
-            if field in ["_context"]:
+            if field in ["__context__"]:
                 continue
             if isinstance(value, list):
                 attributes.append(tuple(value))
@@ -313,8 +312,8 @@ class Metric(WithTestAndMetricDependencies, Generic[TResult], metaclass=WithResu
 
     def get_options(self):
         options = self.options if hasattr(self, "options") else Options()
-        if self._context is not None:
-            options = self._context.options.override(options)
+        if self.__context__ is not None:
+            options = self.__context__.options.override(options)
         return options
 
     def get_field_fingerprint(self, field: str) -> FingerprintPart:

@@ -14,7 +14,6 @@ from dynaconf.utils.boxing import DynaBox
 from litestar import Litestar
 from litestar.di import Provide
 from pydantic import BaseModel
-from pydantic import PrivateAttr
 from pydantic import TypeAdapter
 
 from evidently.ui.service.components.base import SECTION_COMPONENT_TYPE_MAPPING
@@ -90,12 +89,12 @@ class ConfigContext(ComponentContext):
 class Config(BaseModel):
     additional_components: Dict[str, Component] = {}
 
-    _components: List[Component] = PrivateAttr(default_factory=list)
-    _ctx: ComponentContext = PrivateAttr()
+    __components__: Optional[List[Component]] = None  # not a model field, internal only
+    __ctx__: Optional[ComponentContext] = None
 
     @property
     def components(self) -> List[Component]:
-        return [getattr(self, name) for name in self.__fields__ if isinstance(getattr(self, name), Component)] + list(
+        return [getattr(self, name) for name in self.model_fields if isinstance(getattr(self, name), Component)] + list(
             self.additional_components.values()
         )
 
@@ -103,9 +102,9 @@ class Config(BaseModel):
     def context(self) -> Iterator[ConfigContext]:
         ctx = ConfigContext(self, {type(c): c for c in self.components})
         ctx.validate()
-        self._ctx = ctx
+        self.__ctx__ = ctx
         yield ctx
-        del self._ctx
+        del self.__ctx__
 
 
 class AppConfig(Config):

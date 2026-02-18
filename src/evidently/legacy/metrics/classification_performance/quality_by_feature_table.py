@@ -54,7 +54,7 @@ class ClassificationQualityByFeatureTable(UsesRawDataMixin, Metric[Classificatio
 
     columns: Optional[List[str]] = None
     descriptors: Optional[Dict[str, Dict[str, FeatureDescriptor]]] = None
-    _text_features_gen: Optional[Dict[str, Dict[str, GeneratedFeature]]]
+    __text_features_gen__: Optional[Dict[str, Dict[str, GeneratedFeature]]] = None
 
     def __init__(
         self,
@@ -65,7 +65,7 @@ class ClassificationQualityByFeatureTable(UsesRawDataMixin, Metric[Classificatio
         self.columns = columns
         self.descriptors = descriptors
         super().__init__(options=options)
-        self._text_features_gen = None
+        self.__text_features_gen__ = None
 
     def required_features(self, data_definition: DataDefinition):
         if len(data_definition.get_columns(ColumnType.Text, features_only=True)) > 0:
@@ -87,7 +87,7 @@ class ClassificationQualityByFeatureTable(UsesRawDataMixin, Metric[Classificatio
 
                 text_features_gen_result += list(col_dict.values())
                 text_features_gen[col] = col_dict
-            self._text_features_gen = text_features_gen
+            self.__text_features_gen__ = text_features_gen
 
             return text_features_gen_result
         else:
@@ -137,8 +137,8 @@ class ClassificationQualityByFeatureTable(UsesRawDataMixin, Metric[Classificatio
 
         # process text columns
 
-        if self._text_features_gen is not None:
-            for column, features in self._text_features_gen.items():
+        if self.__text_features_gen__ is not None:
+            for column, features in self.__text_features_gen__.items():
                 columns.remove(column)
                 columns += list(features.keys())
                 curr_text_df = pd.concat([data.get_current_column(x.as_column()) for x in features.values()], axis=1)

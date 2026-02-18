@@ -14,7 +14,7 @@ def test_generator_renders():
 
 
 def test_generator_kwargs():
-    generator = ColumnMetricGenerator(ValueStats, columns=["a", "b"], metric_kwargs={"tests": [gt(0)]})
-    generator2 = ColumnMetricGenerator(ValueStats, columns=["a", "b"], tests=[gt(0)])
+    generator = ColumnMetricGenerator(ValueStats, columns=["a", "b"], metric_kwargs={"min_tests": [gt(0)]})
+    generator2 = ColumnMetricGenerator(ValueStats, columns=["a", "b"], min_tests=[gt(0)])
 
     assert generator.dict() == generator2.dict()

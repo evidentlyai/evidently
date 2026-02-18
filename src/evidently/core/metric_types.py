@@ -30,6 +30,7 @@ from pydantic import BaseModel
 from pydantic import Field
 from pydantic import TypeAdapter
 from pydantic import field_validator
+from pydantic import model_validator
 
 from evidently.core.base_types import Label
 from evidently.legacy.model.dashboard import DashboardInfo
@@ -1014,6 +1015,12 @@ class MetricTest(AutoAliasMixin, EvidentlyBaseModel):
     """Optional custom name for this test instance."""
     label_filters: Optional[Dict[str, str]] = None
     """Optional filters for DataFrame metrics to select specific rows by label values."""
+
+    @model_validator(mode="wrap")
+    def from_generic_test(self, nxt, info):
+        if isinstance(self, GenericTest):
+            return nxt(self.metric)
+        return nxt(self)
 
     @abstractmethod
     def to_test(self) -> MetricTestProto:

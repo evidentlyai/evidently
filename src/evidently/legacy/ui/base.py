@@ -18,7 +18,6 @@ from typing import Union
 import uuid6
 from pydantic import BaseModel
 from pydantic import Field
-from pydantic import PrivateAttr
 from pydantic import TypeAdapter
 
 from evidently.core.report import Snapshot as SnapshotV2
@@ -74,23 +73,23 @@ class SnapshotMetadata(BaseModel):
     blob: "BlobMetadata"
     links: SnapshotLinks = SnapshotLinks()  # links to datasets and stuff
 
-    _project: "Project" = PrivateAttr(None)
-    _dashboard_info: "DashboardInfo" = PrivateAttr(None)
-    _additional_graphs: Dict[str, dict] = PrivateAttr(None)
+    __project__: Optional["Project"] = None
+    __dashboard_info__: Optional["DashboardInfo"] = None
+    __additional_graphs__: Optional[Dict[str, dict]] = None
 
     @property
     def project(self):
-        return self._project
+        return self.__project__
 
     async def load(self) -> Snapshot:
-        return await self.project.project_manager.load_snapshot(self.project._user_id, self.project.id, self.id)
+        return await self.project.project_manager.load_snapshot(self.project.__user_id__, self.project.id, self.id)
 
     async def as_report_base(self) -> ReportBase:
         value = await self.load()
         return value.as_report() if value.is_report else value.as_test_suite()
 
     def bind(self, project: "Project"):
-        self._project = project
+        self.__project__ = project
         return self
 
     @classmethod
@@ -106,16 +105,16 @@ class SnapshotMetadata(BaseModel):
         )
 
     async def get_dashboard_info(self):
-        if self._dashboard_info is None:
+        if self.__dashboard_info__ is None:
             report = await self.as_report_base()
-            _, self._dashboard_info, self._additional_graphs = report._build_dashboard_info()
-        return self._dashboard_info
+            _, self.__dashboard_info__, self.__additional_graphs__ = report._build_dashboard_info()
+        return self.__dashboard_info__
 
     async def get_additional_graphs(self):
-        if self._additional_graphs is None:
+        if self.__additional_graphs__ is None:
             report = await self.as_report_base()
-            _, self._dashboard_info, self._additional_graphs = report._build_dashboard_info()
-        return self._additional_graphs
+            _, self.__dashboard_info__, self.__additional_graphs__ = report._build_dashboard_info()
+        return self.__additional_graphs__
 
 
 class Project(Entity):
@@ -135,46 +134,48 @@ class Project(Entity):
     version: str = "1"
     # Field(default=datetime.datetime.fromisoformat("1900-01-01T00:00:00"))
 
-    _project_manager: Optional["ProjectManager"] = PrivateAttr(default=None)
-    _user_id: Optional[UserID] = PrivateAttr(default=None)
+    __project_manager__: Optional["ProjectManager"] = None
+    __user_id__: Optional[UserID] = None
 
     def bind(self, project_manager: Optional["ProjectManager"], user_id: Optional[UserID]):
-        self._project_manager = project_manager
-        self._user_id = user_id
+        self.__project_manager__ = project_manager
+        self.__user_id__ = user_id
         return self
 
     @property
     def project_manager(self) -> "ProjectManager":
-        if self._project_manager is None:
+        if self.__project_manager__ is None:
             raise ValueError("Project is not binded")
-        return self._project_manager
+        return self.__project_manager__
 
     async def save_async(self):
-        await self.project_manager.update_project(self._user_id, self)  # type: ignore[arg-type]
+        await self.project_manager.update_project(self.__user_id__, self)  # type: ignore[arg-type]
         return self
 
     async def load_snapshot_async(self, snapshot_id: SnapshotID) -> Snapshot:
-        return await self.project_manager.load_snapshot(self._user_id, self.id, snapshot_id)  # type: ignore[arg-type]
+        return await self.project_manager.load_snapshot(self.__user_id__, self.id, snapshot_id)  # type: ignore[arg-type]
 
     async def add_snapshot_async(self, snapshot: AnySnapshot):
         if not isinstance(snapshot, Snapshot):
             from evidently.ui.backport import snapshot_v2_to_v1
 
             snapshot = snapshot_v2_to_v1(snapshot)
-        await self.project_manager.add_snapshot(self._user_id, self.id, snapshot)  # type: ignore[arg-type]
+        await self.project_manager.add_snapshot(self.__user_id__, self.id, snapshot)  # type: ignore[arg-type]
 
     async def delete_snapshot_async(self, snapshot_id: Union[str, SnapshotID]):
         if isinstance(snapshot_id, str):
             snapshot_id = uuid6.UUID(snapshot_id)
-        await self.project_manager.delete_snapshot(self._user_id, self.id, snapshot_id)  # type: ignore[arg-type]
+        await self.project_manager.delete_snapshot(self.__user_id__, self.id, snapshot_id)  # type: ignore[arg-type]
 
     async def list_snapshots_async(
         self, include_reports: bool = True, include_test_suites: bool = True
     ) -> List[SnapshotMetadata]:
-        return await self.project_manager.list_snapshots(self._user_id, self.id, include_reports, include_test_suites)  # type: ignore[arg-type]
+        return await self.project_manager.list_snapshots(
+            self.__user_id__, self.id, include_reports, include_test_suites
+        )  # type: ignore[arg-type]
 
     async def get_snapshot_metadata_async(self, id: SnapshotID) -> SnapshotMetadata:
-        return await self.project_manager.get_snapshot_metadata(self._user_id, self.id, id)  # type: ignore[arg-type]
+        return await self.project_manager.get_snapshot_metadata(self.__user_id__, self.id, id)  # type: ignore[arg-type]
 
     async def build_dashboard_info_async(
         self,
@@ -204,11 +205,11 @@ class Project(Entity):
 
     async def reload_async(self, reload_snapshots: bool = False):
         # fixme: reload snapshots
-        project = await self.project_manager.get_project(self._user_id, self.id)  # type: ignore[arg-type]
+        project = await self.project_manager.get_project(self.__user_id__, self.id)  # type: ignore[arg-type]
         self.__dict__.update(project.__dict__)
 
         if reload_snapshots:
-            await self.project_manager.reload_snapshots(self._user_id, self.id)  # type: ignore[arg-type]
+            await self.project_manager.reload_snapshots(self.__user_id__, self.id)  # type: ignore[arg-type]
 
     save = sync_api(save_async)
     load_snapshot = sync_api(load_snapshot_async)

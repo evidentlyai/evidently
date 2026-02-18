@@ -46,13 +46,13 @@ class ReportPopper:
 class CollectorStorage(PolymorphicModel):
     __is_base_type__: ClassVar[bool] = True
 
-    _locks: Dict[str, Lock] = {}
+    __locks__: Dict[str, Lock] = {}
 
     def lock(self, id: str):
-        return self._locks[id]
+        return self.__locks__[id]
 
     def init(self, id: str):
-        self._locks[id] = Lock()
+        self.__locks__[id] = Lock()
 
     def init_all(self, config):
         for id in config.collectors:

@@ -80,14 +80,14 @@ class ColumnRegExpMetric(Metric[DataIntegrityValueByRegexpMetricResult]):
     reg_exp: str
     top: int
     # compiled regular expression for speed optimization
-    _reg_exp_compiled: Pattern
+    __reg_exp_compiled__: Optional[Pattern] = None
 
     def __init__(self, column_name: str, reg_exp: str, top: int = 10, options: AnyOptions = None):
         self.top = top
         self.reg_exp = reg_exp
         self.column_name = column_name
         super().__init__(options=options)
-        self._reg_exp_compiled = re.compile(reg_exp)
+        self.__reg_exp_compiled__ = re.compile(reg_exp)
 
     def _calculate_stats_by_regexp(self, column: pd.Series) -> DataIntegrityValueByRegexpStat:
         number_of_matched = 0
@@ -103,7 +103,7 @@ class ColumnRegExpMetric(Metric[DataIntegrityValueByRegexpMetricResult]):
 
             item = str(item)
 
-            if bool(self._reg_exp_compiled.match(str(item))):
+            if bool(self.__reg_exp_compiled__.match(str(item))):
                 number_of_matched += 1
                 table_of_matched[item] += 1
 

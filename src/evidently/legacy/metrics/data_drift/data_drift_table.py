@@ -59,7 +59,7 @@ class DataDriftTable(UsesRawDataMixin, WithDriftOptions[DataDriftTableResults]):
 
     columns: Optional[List[str]] = None
     feature_importance: Optional[bool] = None
-    _feature_importance_metric: Optional[FeatureImportanceMetric]
+    __feature_importance_metric__: Optional[FeatureImportanceMetric] = None
 
     def __init__(
         self,
@@ -105,9 +105,9 @@ class DataDriftTable(UsesRawDataMixin, WithDriftOptions[DataDriftTableResults]):
             per_feature_threshold=per_column_stattest_threshold,
         )
         if feature_importance:
-            self._feature_importance_metric = FeatureImportanceMetric()
+            self.__feature_importance_metric__ = FeatureImportanceMetric()
         else:
-            self._feature_importance_metric = None
+            self.__feature_importance_metric__ = None
 
     def get_parameters(self) -> tuple:
         return (None if self.columns is None else tuple(self.columns), self.feature_importance, self.drift_options)
@@ -133,8 +133,8 @@ class DataDriftTable(UsesRawDataMixin, WithDriftOptions[DataDriftTableResults]):
         current_fi: Optional[Dict[str, float]] = None
         reference_fi: Optional[Dict[str, float]] = None
 
-        if self._feature_importance_metric is not None:
-            res = self._feature_importance_metric.get_result()
+        if self.__feature_importance_metric__ is not None:
+            res = self.__feature_importance_metric__.get_result()
             current_fi = res.current
             reference_fi = res.reference
 

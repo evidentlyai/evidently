@@ -143,7 +143,9 @@ class FrozenBaseModel(BaseModel, metaclass=FrozenBaseMeta):
 
     def __hash__(self):
         try:
-            return hash(self.__class__) + hash(tuple(self._field_hash(v) for v in self.__dict__.values()))
+            return hash(self.__class__) + hash(
+                tuple(self._field_hash(v) for k, v in self.__dict__.items() if k in self.model_fields)
+            )
         except TypeError:
             raise
 
@@ -746,6 +748,15 @@ def get_field_inner_type(field: PydanticFieldInfo) -> Type:
             typ = args[1]
             break
         break
+    return typ
+
+
+def get_field_outer_type(field: PydanticFieldInfo) -> Type:
+    typ = field.annotation
+    if get_origin(typ) is Union:
+        args = get_args(typ)
+        if len(args) == 2 and type(None) in args:
+            typ = [a for a in args if a is not type(None)][0]
     return typ
 
 

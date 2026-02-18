@@ -81,16 +81,16 @@ class DatasetCorrelationsMetric(Metric[DatasetCorrelationsMetricResult]):
 
     """Calculate different correlations with target, predictions and features"""
 
-    _text_features_gen: Optional[
+    __text_features_gen__: Optional[
         Dict[
             str,
             Dict[str, Union[TextLength, NonLetterCharacterPercentage, OOVWordsPercentage]],
         ]
-    ]
+    ] = None
 
     def __init__(self, options: AnyOptions = None):
         super().__init__(options=options)
-        self._text_features_gen = None
+        self.__text_features_gen__ = None
 
     def required_features(self, data_definition: DataDefinition):
         if len(data_definition.get_columns(ColumnType.Text, features_only=True)) > 0:
@@ -112,7 +112,7 @@ class DatasetCorrelationsMetric(Metric[DatasetCorrelationsMetricResult]):
                     col_dict[f"{col}: OOV %"],
                 ]
                 text_features_gen[col] = col_dict
-            self._text_features_gen = text_features_gen
+            self.__text_features_gen__ = text_features_gen
 
             return text_features_gen_result
         else:
@@ -261,13 +261,13 @@ class DatasetCorrelationsMetric(Metric[DatasetCorrelationsMetricResult]):
 
         # process text columns
         text_columns = []
-        if self._text_features_gen is not None:
-            for col in list(self._text_features_gen.keys()):
+        if self.__text_features_gen__ is not None:
+            for col in list(self.__text_features_gen__.keys()):
                 curr_text_df = pd.concat(
-                    [data.get_current_column(x.as_column()) for x in list(self._text_features_gen[col].values())],
+                    [data.get_current_column(x.as_column()) for x in list(self.__text_features_gen__[col].values())],
                     axis=1,
                 )
-                curr_text_df.columns = pd.Index(list(self._text_features_gen[col].keys()))
+                curr_text_df.columns = pd.Index(list(self.__text_features_gen__[col].keys()))
                 text_columns.append(list(curr_text_df.columns))
                 curr_df = pd.concat(
                     [
@@ -279,10 +279,13 @@ class DatasetCorrelationsMetric(Metric[DatasetCorrelationsMetricResult]):
 
                 if ref_df is not None:
                     ref_text_df = pd.concat(
-                        [data.get_reference_column(x.as_column()) for x in list(self._text_features_gen[col].values())],
+                        [
+                            data.get_reference_column(x.as_column())
+                            for x in list(self.__text_features_gen__[col].values())
+                        ],
                         axis=1,
                     )
-                    ref_text_df.columns = pd.Index(list(self._text_features_gen[col].keys()))
+                    ref_text_df.columns = pd.Index(list(self.__text_features_gen__[col].keys()))
                     ref_df = pd.concat(
                         [
                             ref_df.copy().reset_index(drop=True),

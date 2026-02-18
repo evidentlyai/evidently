@@ -7,7 +7,6 @@ from typing import Union
 from typing import cast
 
 import pandas as pd
-from pydantic import PrivateAttr
 
 from evidently import ColumnType
 from evidently import Dataset
@@ -42,7 +41,7 @@ class GenericLLMDescriptor(Descriptor):
     prompt: PromptContent
     """Prompt template or messages to send to LLM."""
 
-    _llm_wrapper: Optional[LLMWrapper] = PrivateAttr(None)
+    __llm_wrapper__: Optional[LLMWrapper] = None
     """Internal cached LLM wrapper."""
 
     def __init__(
@@ -63,9 +62,9 @@ class GenericLLMDescriptor(Descriptor):
 
     def get_llm_wrapper(self, options: Options) -> LLMWrapper:
         """Get or create LLM wrapper instance."""
-        if self._llm_wrapper is None:
-            self._llm_wrapper = get_llm_wrapper(self.provider, self.model, options)
-        return self._llm_wrapper
+        if self.__llm_wrapper__ is None:
+            self.__llm_wrapper__ = get_llm_wrapper(self.provider, self.model, options)
+        return self.__llm_wrapper__
 
     def _fmt_messages(self, values: Dict[str, Any]) -> List[LegacyLLMMessage]:
         """Format prompt messages with column values."""

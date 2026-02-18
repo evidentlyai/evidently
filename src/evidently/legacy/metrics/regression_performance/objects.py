@@ -47,27 +47,27 @@ class IntervalSeries(MetricResult):
     bins: List[float]
     values: List[float]
 
-    _data: pd.Series
+    __data__: Optional[pd.Series] = None
 
     @property
     def data(self):
-        if not hasattr(self, "_data"):
-            self._data = pd.Series(
+        if not hasattr(self, "__data__") or self.__data__ is None:
+            self.__data__ = pd.Series(
                 self.values, index=[Interval(a, b, closed="right") for a, b in zip(self.bins, self.bins[1:])]
             )
-        return self._data
+        return self.__data__
 
     @classmethod
     def from_data(cls, data: pd.Series):
         index: List[Interval] = list(data.index)
         interval_series = cls(values=list(data), bins=[i.left for i in index] + [index[-1].right])
-        interval_series._data = data
+        interval_series.__data__ = data
         return interval_series
 
     def __mul__(self, other: float):
         series = IntervalSeries(bins=self.bins, values=[v * other for v in self.values])
-        if hasattr(self, "_data"):
-            series._data = self._data * other
+        if hasattr(self, "__data__") and self.__data__ is not None:
+            series.__data__ = self.__data__ * other
         return series
 
 

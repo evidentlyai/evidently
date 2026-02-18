@@ -66,4 +66,5 @@ def test_all_presets_tested():
 def test_all_presets_json_serialization(preset):
     payload = json.loads(preset.json())
     preset2 = parse_obj_as(MetricContainer, payload)
+    assert json.loads(preset2.json()) == payload
     assert preset2 == preset

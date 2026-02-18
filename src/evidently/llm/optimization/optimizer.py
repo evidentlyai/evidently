@@ -20,7 +20,6 @@ import pandas as pd
 from pydantic import BaseModel
 from pydantic import ConfigDict
 from pydantic import Field
-from pydantic import PrivateAttr
 from sklearn.model_selection import train_test_split
 
 from evidently.legacy.core import new_id
@@ -447,7 +446,7 @@ class OptimizerRun(BaseModel):
     """Random seed used for this run."""
     start_time: datetime.datetime = Field(default_factory=datetime.datetime.now)
     """Timestamp when the run started."""
-    _context: "OptimizerContext" = PrivateAttr()
+    __context__: Optional["OptimizerContext"] = None
 
     def bind(self, context: "OptimizerContext") -> "OptimizerRun":
         """Bind this run to an optimizer context.
@@ -458,7 +457,7 @@ class OptimizerRun(BaseModel):
         Returns:
         * Self for method chaining.
         """
-        self._context = context
+        self.__context__ = context
         return self
 
     @property
@@ -468,7 +467,7 @@ class OptimizerRun(BaseModel):
         Returns:
         * `OptimizerContext` associated with this run.
         """
-        return self._context
+        return self.__context__
 
     def add_log(self, log: OptimizerLog):
         """Add a log entry to the context and log its message.
@@ -476,7 +475,7 @@ class OptimizerRun(BaseModel):
         Args:
         * `log`: `OptimizerLog` to add.
         """
-        if self._context.config.verbose:
+        if self.__context__.config.verbose:
             print(f"[{self.run_id}]", log.message())
         self.logs[log.id] = log
 

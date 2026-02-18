@@ -1,4 +1,5 @@
 import dataclasses
+import traceback
 from inspect import isabstract
 from typing import Any
 from typing import Callable
@@ -85,6 +86,8 @@ from evidently.presets import RegressionQuality
 from evidently.presets import TextEvals
 from evidently.presets.dataset_stats import ValueStatsTests
 from evidently.presets.special import TestSummaryInfoPreset
+from evidently.pydantic_utils import get_field_inner_type
+from evidently.pydantic_utils import get_field_outer_type
 from evidently.tests import eq
 from tests.conftest import load_all_subtypes
 
@@ -254,8 +257,10 @@ def _is_test_field(field_name: str, field: FieldInfo) -> bool:
 def _get_test_field_instance(
     field: FieldInfo, check: Union[GenericTest, MetricTest], preset_type: Type[MetricContainer]
 ):
-    if get_origin(field.annotation) == dict:
-        if field.annotation is ValueStatsTests:
+    outer_type = get_field_outer_type(field)
+    inner_type = get_field_inner_type(field)
+    if get_origin(outer_type) == dict:
+        if inner_type is ValueStatsTests:
             col = "text_length"
             return {
                 col: ValueStatsTests(
@@ -268,11 +273,11 @@ def _get_test_field_instance(
                 )
             }
         return {"a": [check]}
-    if get_origin(field.annotation) == list:
+    if get_origin(outer_type) == list:
         return [check]
-    if field.annotation is MeanStdMetricTests:
+    if inner_type is MeanStdMetricTests:
         return MeanStdMetricTests(mean=[check], std=[check])
-    return NotImplementedError(f"Not implemented for {field.annotation}")
+    raise NotImplementedError(f"Not implemented for {field.annotation}")
 
 
 def iter_type_test_fields(preset_type: Type[MetricContainer]) -> Iterable[Tuple[str, FieldInfo]]:
@@ -292,6 +297,7 @@ def test_preset_type_test_fields(preset_type: Type[MetricContainer], check: Unio
         try:
             instance = preset_type(**{field_name: field_instance})
         except Exception as e:
+            traceback.print_exc()
             errors[field_name] = e
             continue
         dataset = Dataset.from_pandas(

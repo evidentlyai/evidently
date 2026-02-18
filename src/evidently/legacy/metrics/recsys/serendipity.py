@@ -51,7 +51,7 @@ class SerendipityMetric(Metric[SerendipityMetricResult]):
 
     """unusualness * relevance"""
 
-    _pairwise_distance: PairwiseDistance
+    __pairwise_distance__: PairwiseDistance = None  # type: ignore[assignment]
     k: int
     item_features: List[str]
     min_rel_score: Optional[int] = None
@@ -63,7 +63,7 @@ class SerendipityMetric(Metric[SerendipityMetricResult]):
         self.item_features = item_features
         self.min_rel_score = min_rel_score
         super().__init__(options=options)
-        self._pairwise_distance = PairwiseDistance(k=k, item_features=item_features)
+        self.__pairwise_distance__ = PairwiseDistance(k=k, item_features=item_features)
 
     def get_serendipity(
         self,
@@ -101,7 +101,7 @@ class SerendipityMetric(Metric[SerendipityMetricResult]):
         return distr_data, value
 
     def calculate(self, data: InputData) -> SerendipityMetricResult:
-        result = self._pairwise_distance.get_result()
+        result = self.__pairwise_distance__.get_result()
         dist_matrix = result.dist_matrix
         name_dict = result.name_dict
         target = data.data_definition.get_target_column()

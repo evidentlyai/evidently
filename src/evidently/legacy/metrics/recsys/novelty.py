@@ -50,12 +50,12 @@ class NoveltyMetric(Metric[NoveltyMetricResult]):
     """Mean Inverse User Frequency"""
 
     k: int
-    _train_stats: TrainStats
+    __train_stats__: TrainStats = None  # type: ignore[assignment]
 
     def __init__(self, k: int, options: AnyOptions = None) -> None:
         self.k = k
         super().__init__(options=options)
-        self._train_stats = TrainStats()
+        self.__train_stats__ = TrainStats()
 
     def get_miuf(
         self, df, k, recommendations_type: Optional[RecomType], user_name, item_name, prediction_name, interactions
@@ -71,7 +71,7 @@ class NoveltyMetric(Metric[NoveltyMetricResult]):
         return distr, value
 
     def calculate(self, data: InputData) -> NoveltyMetricResult:
-        train_result = self._train_stats.get_result()
+        train_result = self.__train_stats__.get_result()
         curr_user_interacted = train_result.current
         ref_user_interacted = train_result.reference
         current_n_users = train_result.current_n_users

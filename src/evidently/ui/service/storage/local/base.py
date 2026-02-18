@@ -13,7 +13,6 @@ from typing import Union
 
 import uuid6
 from pydantic import BaseModel
-from pydantic import PrivateAttr
 from pydantic import TypeAdapter
 from pydantic import ValidationError
 
@@ -59,17 +58,17 @@ UUID_REGEX = re.compile("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-
 class FSSpecBlobStorage(BlobStorage):
     base_path: str
 
-    _location: Optional[FSLocation] = PrivateAttr(default=None)
+    __location__: Optional[FSLocation] = None
 
     def __init__(self, base_path: str):
         self.base_path = base_path
-        self._location = FSLocation(self.base_path)
+        self.__location__ = FSLocation(self.base_path)
 
     @property
     def location(self) -> FSLocation:
-        if self._location is None:
-            self._location = FSLocation(self.base_path)
-        return self._location
+        if self.__location__ is None:
+            self.__location__ = FSLocation(self.base_path)
+        return self.__location__
 
     def get_snapshot_blob_id(self, project_id: ProjectID, snapshot: Snapshot) -> BlobID:
         return posixpath.join(str(project_id), SNAPSHOTS, str(snapshot.id)) + ".json"
@@ -166,17 +165,17 @@ class LocalState(WorkspaceLocalState):
 class JsonFileProjectMetadataStorage(ProjectMetadataStorage):
     path: str
 
-    _state: Optional[LocalState] = PrivateAttr(default=None)
+    __state__: Optional[LocalState] = None
 
     def __init__(self, path: str, local_state: Optional[LocalState] = None):
         self.path = path
-        self._state = local_state or LocalState.load(self.path, None)
+        self.__state__ = local_state or LocalState.load(self.path, None)
 
     @property
     def state(self) -> LocalState:
-        if self._state is None:
-            self._state = LocalState.load(self.path, None)
-        return self._state
+        if self.__state__ is None:
+            self.__state__ = LocalState.load(self.path, None)
+        return self.__state__
 
     async def add_project(self, project: Project, user: User, org_id: Optional[OrgID] = None) -> Project:
         project_id = str(project.id)
@@ -274,31 +273,31 @@ class MetricItem(BaseModel):
 class InMemoryDataStorage(DataStorage):
     path: str
 
-    _state: Optional[LocalState] = PrivateAttr(default=None)
-    _metrics_points: Optional[Dict[uuid.UUID, Dict[uuid.UUID, List[MetricItem]]]] = PrivateAttr(default=None)
+    __state__: Optional[LocalState] = None
+    __metrics_points__: Optional[Dict[uuid.UUID, Dict[uuid.UUID, List[MetricItem]]]] = None
 
     def __init__(self, path: str, local_state: Optional[LocalState] = None):
         self.path = path
-        self._state = local_state or LocalState.load(self.path, None)
-        self._metrics_points = {}
-        for project_id, snapshots in self._state.snapshots.items():
+        self.__state__ = local_state or LocalState.load(self.path, None)
+        self.__metrics_points__ = {}
+        for project_id, snapshots in self.__state__.snapshots.items():
             for snapshot_id, snapshot in snapshots.items():
                 self._add_snapshot_points_sync(project_id, snapshot_id, snapshot)
-        self._state.register_new_snapshot_callback(self._add_snapshot_points_sync)
+        self.__state__.register_new_snapshot_callback(self._add_snapshot_points_sync)
 
     @property
     def state(self):
-        if self._state is None:
-            self._state = LocalState.load(self.path, None)
-        return self._state
+        if self.__state__ is None:
+            self.__state__ = LocalState.load(self.path, None)
+        return self.__state__
 
     async def add_snapshot_points(self, project_id: ProjectID, snapshot_id: SnapshotID, snapshot: SnapshotModel):
         return self._add_snapshot_points_sync(project_id, snapshot_id, snapshot)
 
     def _add_snapshot_points_sync(self, project_id: ProjectID, snapshot_id: SnapshotID, snapshot: SnapshotModel):
-        if self._metrics_points is None:
-            self._metrics_points = {}
-        points = self._metrics_points
+        if self.__metrics_points__ is None:
+            self.__metrics_points__ = {}
+        points = self.__metrics_points__
         if project_id in points and snapshot_id in points[project_id]:
             points[project_id][snapshot_id] = []
         for result in snapshot.metric_results.values():
@@ -342,9 +341,9 @@ class InMemoryDataStorage(DataStorage):
             if k in ["type", "tests", "count_tests", "share_tests", "mean_tests", "std_tests"]:
                 continue
             params[k] = str(v)
-        if self._metrics_points is None:
-            self._metrics_points = {}
-        points = self._metrics_points
+        if self.__metrics_points__ is None:
+            self.__metrics_points__ = {}
+        points = self.__metrics_points__
         if project_id not in points:
             points[project_id] = {}
         if snapshot_id not in points[project_id]:
@@ -427,7 +426,7 @@ class InMemoryDataStorage(DataStorage):
         last_snapshot = None
         series_filters_map: Dict[tuple, int] = {}
         index = 0
-        points = self._metrics_points if self._metrics_points is not None else {}
+        points = self.__metrics_points__ if self.__metrics_points__ is not None else {}
         for snapshot_id, timestamp, snapshot in matching_snapshots:
             for item in points.get(project_id, {}).get(snapshot_id, []):
                 metric_type = item.metric_type

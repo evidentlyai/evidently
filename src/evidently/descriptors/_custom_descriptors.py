@@ -4,8 +4,6 @@ from typing import List
 from typing import Optional
 from typing import Union
 
-from pydantic import PrivateAttr
-
 from evidently.core.datasets import AnyDescriptorTest
 from evidently.core.datasets import Dataset
 from evidently.core.datasets import DatasetColumn
@@ -22,7 +20,7 @@ class CustomColumnDescriptor(Descriptor):
     """Name of the column to process."""
     func: str
     """Function name or callable to apply to column data."""
-    _func: Optional[CustomColumnCallable] = PrivateAttr(None)
+    __func__: Optional[CustomColumnCallable] = None
     """Internal cached callable."""
 
     def __init__(
@@ -40,14 +38,14 @@ class CustomColumnDescriptor(Descriptor):
             _func = None
         self.func = func
         super().__init__(alias=alias or f"custom_column_descriptor:{func}", tests=tests)
-        self._func = _func
+        self.__func__ = _func
 
     def generate_data(self, dataset: Dataset, options: Options) -> Union[DatasetColumn, Dict[str, DatasetColumn]]:
         """Apply custom function to column data."""
-        if self._func is None:
+        if self.__func__ is None:
             raise ValueError("CustomColumnDescriptor is not configured with callable func")
         column_data = dataset.column(self.column_name)
-        return self._func(column_data)
+        return self.__func__(column_data)
 
     def list_input_columns(self) -> Optional[List[str]]:
         """Return list of required input column names."""
@@ -62,7 +60,7 @@ class CustomDescriptor(Descriptor):
 
     func: str
     """Function name or callable to apply to dataset."""
-    _func: Optional[CustomDescriptorCallable] = PrivateAttr(None)
+    __func__: Optional[CustomDescriptorCallable] = None
     """Internal cached callable."""
 
     def __init__(
@@ -78,10 +76,10 @@ class CustomDescriptor(Descriptor):
             _func = None
         self.func = func
         super().__init__(alias=alias or f"custom_descriptor:{func}", tests=tests)
-        self._func = _func
+        self.__func__ = _func
 
     def generate_data(self, dataset: "Dataset", options: Options) -> Union[DatasetColumn, Dict[str, DatasetColumn]]:
         """Apply custom function to dataset."""
-        if self._func is None:
+        if self.__func__ is None:
             raise ValueError("CustomDescriptor is not configured with callable func")
-        return self._func(dataset)
+        return self.__func__(dataset)

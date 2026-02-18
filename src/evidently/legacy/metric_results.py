@@ -1,3 +1,4 @@
+from typing import Annotated
 from typing import ClassVar
 from typing import Dict
 from typing import List
@@ -10,7 +11,9 @@ from typing import TypeVar
 from typing import Union
 from typing import overload
 
+import numpy as np
 import pandas as pd
+from pydantic import BeforeValidator
 from pydantic import TypeAdapter
 from pydantic.v1 import validator
 from typing_extensions import Literal
@@ -72,14 +75,25 @@ def column_scatter_valudator(value):
     return TypeAdapter(ColumnScatter).validate_python(value)
 
 
+def distribution_field_validator(value):
+    if isinstance(value, (np.ndarray, list, pd.Categorical, pd.Series)):
+        return value
+    return np.array(value)
+
+
 class Distribution(MetricResult):
     __pd_include__: ClassVar[bool] = False
     __tags__: ClassVar[Set[IncludeTags]] = {IncludeTags.Render}
     __extract_as_obj__: ClassVar[bool] = True
     __type_alias__: ClassVar[Optional[str]] = "evidently:metric_result:Distribution"
 
-    x: Union[PydanticNPArray, list, pd.Categorical, pd.Series]
-    y: Union[PydanticNPArray, list, pd.Categorical, pd.Series]
+    x: Annotated[Union[PydanticNPArray, list, pd.Categorical, pd.Series], BeforeValidator(distribution_field_validator)]
+    y: Annotated[Union[PydanticNPArray, list, pd.Categorical, pd.Series], BeforeValidator(distribution_field_validator)]
+
+    def __eq__(self, other):
+        if not isinstance(other, Distribution):
+            return False
+        return np.array_equal(self.x, other.x) and np.array_equal(self.y, other.y)
 
 
 class ConfusionMatrix(MetricResult):

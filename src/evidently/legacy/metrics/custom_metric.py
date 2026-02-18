@@ -4,8 +4,6 @@ from typing import List
 from typing import Optional
 from typing import Union
 
-from pydantic import PrivateAttr
-
 from evidently.legacy.base_metric import InputData
 from evidently.legacy.base_metric import Metric
 from evidently.legacy.base_metric import MetricResult
@@ -34,7 +32,7 @@ class CustomValueMetric(Metric[CustomCallableMetricResult]):
     title: Optional[str] = None
     size: Optional[WidgetSize] = None
 
-    _func: Optional[CustomCallableType] = PrivateAttr(None)
+    __func__: Optional[CustomCallableType] = None
 
     def __init__(
         self,
@@ -53,12 +51,12 @@ class CustomValueMetric(Metric[CustomCallableMetricResult]):
         self.title = title
         self.size = size
         super().__init__(options, **data)
-        self._func = _func
+        self.__func__ = _func
 
     def calculate(self, data: InputData) -> CustomCallableMetricResult:
-        if self._func is None:
+        if self.__func__ is None:
             raise ValueError("CustomCallableMetric is not configured with callable func")
-        return CustomCallableMetricResult(value=self._func(data))
+        return CustomCallableMetricResult(value=self.__func__(data))
 
 
 @default_renderer(wrap_type=CustomValueMetric)

@@ -10,7 +10,6 @@ from typing import List
 from typing import Optional
 
 import numpy as np
-from pydantic import PrivateAttr
 
 from evidently.llm.rag.splitter import AnySplitter
 from evidently.llm.rag.splitter import Chunk
@@ -35,13 +34,13 @@ class DataCollectionProvider(AutoAliasMixin, EvidentlyBaseModel, ABC):
     chunk_size: int = DEFAULT_CHUNK_SIZE
     chunk_overlap: int = DEFAULT_CHUNK_OVERLAP
     splitter: AnySplitter = "llama_index"
-    _data_collection_cache: "DataCollection" = PrivateAttr()
+    __data_collection_cache__: Optional["DataCollection"] = None
 
     def get_data_collection(self, use_cache: bool = True) -> "DataCollection":
-        if use_cache and hasattr(self, "_data_collection_cache"):
-            return self._data_collection_cache
-        self._data_collection_cache = self._get_data_collection()
-        return self._data_collection_cache
+        if use_cache and self.__data_collection_cache__ is not None:
+            return self.__data_collection_cache__
+        self.__data_collection_cache__ = self._get_data_collection()
+        return self.__data_collection_cache__
 
     @abstractmethod
     def _get_data_collection(self) -> "DataCollection":

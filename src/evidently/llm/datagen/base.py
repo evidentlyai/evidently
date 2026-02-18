@@ -5,7 +5,6 @@ from typing import Optional
 
 import pandas as pd
 from pydantic import ConfigDict
-from pydantic import PrivateAttr
 from typing_extensions import TypeAlias
 
 from evidently.legacy.options.base import Options
@@ -67,7 +66,7 @@ class BaseLLMDatasetGenerator(BaseDatasetGenerator, ABC):
     """LLM provider name."""
     model: str
     """LLM model name."""
-    _llm_wrapper: Optional[LLMWrapper] = PrivateAttr(None)
+    __llm_wrapper__: Optional[LLMWrapper] = None
 
     def get_llm_wrapper(self, options: Options) -> LLMWrapper:
         """Get or create the LLM wrapper for this generator.
@@ -78,9 +77,9 @@ class BaseLLMDatasetGenerator(BaseDatasetGenerator, ABC):
         Returns:
         * `LLMWrapper` instance for the configured provider/model.
         """
-        if self._llm_wrapper is None:
-            self._llm_wrapper = get_llm_wrapper(self.provider, self.model, options)
-        return self._llm_wrapper
+        if self.__llm_wrapper__ is None:
+            self.__llm_wrapper__ = get_llm_wrapper(self.provider, self.model, options)
+        return self.__llm_wrapper__
 
     @property
     def wrapper(self):

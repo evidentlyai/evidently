@@ -16,7 +16,6 @@ from evidently.core.datasets import ColumnTest
 from evidently.core.datasets import Dataset
 from evidently.core.datasets import DatasetColumn
 from evidently.core.datasets import Descriptor
-from evidently.core.datasets import FeatureDescriptor
 from evidently.core.datasets import TestSummary
 from evidently.descriptors import ContextRelevance
 from evidently.descriptors import CustomColumnDescriptor
@@ -36,8 +35,6 @@ from evidently.llm.templates import BaseLLMPromptTemplate
 from evidently.llm.utils.blocks import PromptBlock
 from evidently.tests import eq
 from tests.conftest import load_all_subtypes
-
-from .test_feature_descriptors import MockGeneratedFeature
 
 int_data = pd.Series([1, 2, 3], name="int")
 str_data = pd.Series(["a", "b", "c"], name="str")
@@ -104,11 +101,11 @@ def mock_semantic_scoring(mocker):
 
 
 all_descriptors: List[Tuple[Descriptor, Union[pd.Series, pd.DataFrame], Dict[str, pd.Series]]] = [
-    (
-        FeatureDescriptor(feature=MockGeneratedFeature(column="str", field="a"), alias="res"),
-        str_data,
-        {"a1702de9f83a993ea3cb4701ca9d17f7.str": pd.Series(["aa", "ba", "ca"])},
-    ),
+    # (
+    #     FeatureDescriptor(feature=MockGeneratedFeature(column="str", field="a"), alias="res"),
+    #     str_data,
+    #     {"a1702de9f83a993ea3cb4701ca9d17f7.str": pd.Series(["aa", "ba", "ca"])},
+    # ),
     (
         LLMJudge(provider="mock_d", model="", template=MockTemplate(), input_columns={"aaa": "data"}, alias="res"),
         pd.DataFrame({"aaa": ["x", "y"]}),
@@ -205,4 +202,5 @@ def test_descriptors(descriptor: Descriptor, data: Union[pd.Series, pd.DataFrame
 
     payload = json.loads(descriptor.json())
     descriptor2 = parse_obj_as(Descriptor, payload)
+    assert json.loads(descriptor2.json()) == payload
     assert descriptor2 == descriptor

@@ -46,13 +46,13 @@ all_conditions: List[Tuple[ColumnCondition, pd.Series, str, pd.Series]] = [
         pd.Series([True, False, False]),
     ),
     (
-        EqualsColumnCondition(expected=2.0),
+        EqualsColumnCondition(expected=2),
         pd.Series([1, 2, 3], name="input"),
         "input: equals 2",
         pd.Series([False, True, False]),
     ),
     (
-        NotEqualsColumnCondition(expected=2.0),
+        NotEqualsColumnCondition(expected=2),
         pd.Series([1, 2, 3], name="input"),
         "input not equals 2",
         pd.Series([True, False, True]),

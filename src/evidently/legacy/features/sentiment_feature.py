@@ -4,7 +4,6 @@ from typing import Optional
 
 import numpy as np
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
-from pydantic import PrivateAttr
 
 from evidently.legacy.core import ColumnType
 from evidently.legacy.features.generated_features import ApplyColumnGeneratedFeature
@@ -17,7 +16,7 @@ class Sentiment(ApplyColumnGeneratedFeature):
     display_name_template: ClassVar = "Sentiment for {column_name}"
     column_name: str
 
-    _sid: Optional[SentimentIntensityAnalyzer] = PrivateAttr(None)
+    __sid__: Optional[SentimentIntensityAnalyzer] = None
 
     def __init__(self, column_name: str, display_name: Optional[str] = None):
         self.display_name = display_name
@@ -25,12 +24,12 @@ class Sentiment(ApplyColumnGeneratedFeature):
 
     @property
     def sid(self):
-        if self._sid is None:
+        if self.__sid__ is None:
             import nltk
 
             nltk.download("vader_lexicon", quiet=True)
-            self._sid = SentimentIntensityAnalyzer()
-        return self._sid
+            self.__sid__ = SentimentIntensityAnalyzer()
+        return self.__sid__
 
     def apply(self, value: Any):
         if value is None or (isinstance(value, float) and np.isnan(value)):
