@@ -3,7 +3,6 @@ from typing import Dict
 from typing import List
 from typing import Optional
 
-import numpy as np
 import pandas as pd
 from sklearn.manifold import TSNE
 
@@ -11,6 +10,7 @@ from evidently.legacy.base_metric import InputData
 from evidently.legacy.base_metric import Metric
 from evidently.legacy.base_metric import MetricResult
 from evidently.legacy.core import IncludeTags
+from evidently.legacy.core import PydanticNPArray
 from evidently.legacy.metrics.data_drift.embedding_drift_methods import DriftMethod
 from evidently.legacy.metrics.data_drift.embedding_drift_methods import model
 from evidently.legacy.model.widget import BaseWidgetInfo
@@ -41,15 +41,15 @@ class EmbeddingsDriftMetricResults(MetricResult):
     drift_score: float
     drift_detected: bool
     method_name: str
-    reference: np.ndarray
-    current: np.ndarray
+    reference: PydanticNPArray
+    current: PydanticNPArray
 
 
 class EmbeddingsDriftMetric(Metric[EmbeddingsDriftMetricResults]):
     __type_alias__: ClassVar[Optional[str]] = "evidently:metric:EmbeddingsDriftMetric"
 
     embeddings_name: str
-    drift_method: Optional[DriftMethod]
+    drift_method: Optional[DriftMethod] = None
 
     def __init__(self, embeddings_name: str, drift_method: Optional[DriftMethod] = None, options: AnyOptions = None):
         self.embeddings_name = embeddings_name

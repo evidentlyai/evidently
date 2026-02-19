@@ -43,7 +43,7 @@ class ClassificationQualityByFeatureTableResults(MetricResult):
     }
 
     current: StatsByFeature
-    reference: Optional[StatsByFeature]
+    reference: Optional[StatsByFeature] = None
 
     target_name: str
     columns: List[str]

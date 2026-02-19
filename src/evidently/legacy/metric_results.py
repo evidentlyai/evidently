@@ -15,12 +15,13 @@ import numpy as np
 import pandas as pd
 from pydantic import BeforeValidator
 from pydantic import TypeAdapter
-from pydantic.v1 import validator
+from pydantic import field_validator
 from typing_extensions import Literal
 
 from evidently.legacy.base_metric import MetricResult
 from evidently.legacy.core import IncludeTags
 from evidently.legacy.core import Label
+from evidently.legacy.core import LabelIntStr
 from evidently.legacy.core import PydanticNPArray
 from evidently.legacy.core import pydantic_type_validator
 from evidently.legacy.pipeline.column_mapping import TargetNames
@@ -32,30 +33,15 @@ except AttributeError:  # since python 3.12
 
     _caches[List.__getitem__.__wrapped__].cache_clear()  # type: ignore[attr-defined]
 
-LabelList = List[Label]
-
-
-class _LabelKeyType(int):
-    pass
-
-
-LabelKey = Union[_LabelKeyType, Label]  # type: ignore[valid-type]
-
-
-@pydantic_type_validator(_LabelKeyType)
-def label_key_valudator(value):
-    try:
-        return int(value)
-    except ValueError:
-        return value
+LabelList = List[LabelIntStr]
 
 
 ScatterData = Union[pd.Series]
 ContourData = Tuple[PydanticNPArray, List[float], List[float]]
-ColumnScatter = Dict[LabelKey, ScatterData]
+ColumnScatter = Dict[LabelIntStr, ScatterData]
 
 ScatterAggData = Union[pd.DataFrame]
-ColumnAggScatter = Dict[LabelKey, ScatterAggData]
+ColumnAggScatter = Dict[LabelIntStr, ScatterAggData]
 
 
 class _ColumnScatterOrAggType:
@@ -112,12 +98,12 @@ class PredictionData(MetricResult):
     labels: LabelList
     prediction_probas: Optional[pd.DataFrame] = None
 
-    @validator("prediction_probas")
-    def validate_prediction_probas(cls, value: pd.DataFrame, values):
+    @field_validator("prediction_probas")
+    def validate_prediction_probas(cls, value: pd.DataFrame, info):
         """Align label types"""
         if value is None:
             return None
-        labels = values["labels"]
+        labels = info.data["labels"]
         for col in list(value.columns):
             if col not in labels:
                 if str(col) in labels:

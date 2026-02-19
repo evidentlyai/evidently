@@ -60,7 +60,7 @@ class PanelValue(BaseModel):
     field_path: Union[str, FieldPath]
     metric_id: Optional[str] = None
     metric_fingerprint: Optional[str] = None
-    metric_args: Dict[str, Union[EvidentlyBaseModel, Any]] = {}
+    metric_args: Dict[str, Any] = {}
     legend: Optional[str] = None
 
     def __init__(

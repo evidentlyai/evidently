@@ -1328,7 +1328,7 @@ class BaseDataQualityValueListMetricsTest(BaseCheckValueTest, ABC):
     group: ClassVar = DATA_QUALITY_GROUP.id
     _metric: ColumnValueListMetric
     column_name: str
-    values: Optional[list]
+    values: Optional[list] = None
 
     def __init__(
         self,

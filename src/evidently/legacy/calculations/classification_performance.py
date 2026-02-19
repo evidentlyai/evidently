@@ -237,7 +237,7 @@ def get_prediction_data(
     )
 
 
-def _check_pos_labels(pos_label: Optional[Union[str, int]], labels: List[str]) -> Union[str, int]:
+def _check_pos_labels(pos_label: Optional[Label], labels: List[str]) -> Label:
     if pos_label is None:
         raise ValueError("Undefined pos_label.")
 

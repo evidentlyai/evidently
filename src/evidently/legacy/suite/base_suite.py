@@ -615,7 +615,7 @@ class ReportBase(Display, Runnable):
 
     def save(self, filename) -> None:
         """Save state to file (experimental)"""
-        self._get_snapshot().save(filename)
+        self.to_snapshot().save(filename)
 
     @classmethod
     def load(cls: Type[T], filename) -> T:

@@ -7,6 +7,7 @@ from typing import ClassVar
 from typing import Dict
 from typing import Generic
 from typing import List
+from typing import Literal
 from typing import Optional
 from typing import Type
 from typing import TypeVar
@@ -100,6 +101,7 @@ class TestParameters(EvidentlyBaseModel, BaseResult):  # type: ignore[misc]
     __type_alias__: ClassVar[Optional[str]] = "evidently:test_parameters:TestParameters"
     __is_base_type__: ClassVar[bool] = True
     __field_tags__: ClassVar[Dict[str, set]] = {"type": {IncludeTags.TypeField}}
+    type: Literal["evidently:test_parameters:TestParameters"] = "evidently:test_parameters:TestParameters"
 
 
 class TestResult(EnumValueMixin, MetricResult):  # todo: create common base class
