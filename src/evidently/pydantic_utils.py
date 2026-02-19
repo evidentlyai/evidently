@@ -743,7 +743,7 @@ def get_field_inner_type(field: PydanticFieldInfo) -> Type:
             break
         break
     if typ is None:
-        raise TypeError(f"{field.__name__} does not have correct type annotation")
+        raise TypeError(f"Field {field} does not have correct type annotation ")
     return typ
 
 
@@ -754,7 +754,7 @@ def get_field_outer_type(field: PydanticFieldInfo) -> Type:
         if len(args) == 2 and type(None) in args:
             typ = [a for a in args if a is not type(None)][0]
     if typ is None:
-        raise TypeError(f"{field.__name__} does not have correct type annotation")
+        raise TypeError(f"Field {field} does not have correct type annotation")
     return typ
 
 

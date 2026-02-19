@@ -88,7 +88,7 @@ def k_probability_threshold(
 
 
 def get_prediction_data(
-    data: pd.DataFrame, data_columns: DatasetColumns, pos_label: Optional[Union[str, int]], threshold: float = 0.5
+    data: pd.DataFrame, data_columns: DatasetColumns, pos_label: Optional[Label], threshold: float = 0.5
 ) -> PredictionData:
     """Get predicted values and optional prediction probabilities from source data.
     Also take into account a threshold value - if a probability is less than the value, do not take it into account.

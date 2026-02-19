@@ -492,7 +492,10 @@ class ClassificationPreset(MetricContainer):
         if classification is None:
             raise ValueError("Cannot use ClassificationPreset without a classification configration")
         quality_metrics = self.__quality__.metrics(context)
-        self.__roc_auc__ = next((m for m in quality_metrics if isinstance(m, RocAuc)), None)
+        roc_auc = next((m for m in quality_metrics if isinstance(m, RocAuc)), None)
+        if roc_auc is None:
+            raise ValueError("Cannot use ClassificationPreset without a ROC AUC metric")
+        self.__roc_auc__ = roc_auc
         return quality_metrics + self.__quality_by_label__.metrics(context)
 
     def render(
