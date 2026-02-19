@@ -133,6 +133,6 @@ class Options(BaseModel):
         )
 
 
-_option_cls_mapping = {get_field_inner_type(field): name for name, field in Options.model_fields.items()}
+_option_cls_mapping = {get_field_inner_type(field): name for name, field in Options.model_fields.items()}  # type: ignore[attr-defined]
 
 AnyOptions = Union[Options, Option, dict, List[Option], None]

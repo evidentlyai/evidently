@@ -58,6 +58,6 @@ class CustomValueTest(BaseCheckValueTest):
 
     def get_description(self, value: Numeric) -> str:
         return (
-            f"Custom function '{self._metric.title or '<unnamed>'}' value is {self._value or None}. "
+            f"Custom function '{self._metric.title or '<unnamed>'}' value is {self.__value__ or None}. "
             f"The test threshold is {self.get_condition()}"
         )

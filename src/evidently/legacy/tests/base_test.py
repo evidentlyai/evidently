@@ -318,7 +318,7 @@ class BaseCheckValueTest(BaseConditionsTest):
     Base class for all tests with checking a value condition
     """
 
-    _value: Numeric
+    __value__: Numeric
 
     @abc.abstractmethod
     def calculate_value_for_test(self) -> Optional[Any]:
@@ -342,7 +342,7 @@ class BaseCheckValueTest(BaseConditionsTest):
         return {}
 
     def get_parameters(self) -> CheckValueParameters:
-        return CheckValueParameters(condition=self.get_condition(), value=self._value)
+        return CheckValueParameters(condition=self.get_condition(), value=self.__value__)
 
     def check(self):
         result = TestResult(
@@ -353,7 +353,7 @@ class BaseCheckValueTest(BaseConditionsTest):
             parameters=None,
         )
         value = self.calculate_value_for_test()
-        self._value = value
+        self.__value__ = value
         result.description = self.get_description(value)
         result.parameters = self.get_parameters()
 

@@ -412,11 +412,11 @@ class ClassificationPreset(MetricContainer):
     classification_name: str = "default"
     """Name of the classification task."""
 
-    __quality__: Optional[ClassificationQuality] = None
+    __quality__: ClassificationQuality
     """Internal classification quality preset."""
-    __quality_by_label__: Optional[ClassificationQualityByLabel] = None
+    __quality_by_label__: ClassificationQualityByLabel
     """Internal classification quality by label preset."""
-    __roc_auc__: Optional[RocAuc] = None
+    __roc_auc__: RocAuc
     """Internal ROC AUC metric."""
 
     def __init__(
@@ -485,7 +485,7 @@ class ClassificationPreset(MetricContainer):
             include_tests=include_tests,
             classification_name=classification_name,
         )
-        self.__roc_auc__ = None
+        # self.__roc_auc__ = None
 
     def generate_metrics(self, context: "Context") -> Sequence[MetricOrContainer]:
         classification = context.data_definition.get_classification(self.classification_name)

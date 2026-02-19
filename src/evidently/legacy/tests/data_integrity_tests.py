@@ -610,7 +610,7 @@ class TestColumnShareOfMissingValues(BaseIntegrityColumnMissingValuesTest):
 
     def get_parameters(self):
         return ColumnCheckValueParameters(
-            condition=self.get_condition(), value=self._value, column_name=self.column_name
+            condition=self.get_condition(), value=self.__value__, column_name=self.column_name
         )
 
 

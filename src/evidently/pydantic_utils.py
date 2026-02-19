@@ -8,7 +8,6 @@ import warnings
 from abc import ABC
 from enum import Enum
 from functools import lru_cache
-from typing import TYPE_CHECKING
 from typing import Annotated
 from typing import Any
 from typing import Callable
@@ -46,9 +45,6 @@ from pydantic_core.core_schema import SerializationInfo
 from pydantic_core.core_schema import SerializerFunctionWrapHandler
 from typing_extensions import Self
 from typing_inspect import is_union_type
-
-if TYPE_CHECKING:
-    from pydantic import DictStrAny
 
 
 def _is_dict_annotation(annotation: Any) -> bool:
@@ -332,16 +328,16 @@ class PolymorphicModel(BaseModel):
     @model_serializer(mode="wrap")
     def _delegate_serialization(self, nxt: SerializerFunctionWrapHandler, info: SerializationInfo):
         if f"serializer={self.__class__.__name__}" not in str(nxt):
-            return self.model_dump(
+            return self.model_dump(  # type: ignore[call-arg]
                 mode=info.mode,
-                include=info.include,
-                exclude=info.exclude,
+                include=info.include,  # type: ignore[arg-type]
+                exclude=info.exclude,  # type: ignore[arg-type]
                 context=info.context,
                 by_alias=info.by_alias,
                 exclude_unset=info.exclude_unset,
                 exclude_none=info.exclude_none,
                 exclude_defaults=info.exclude_defaults,
-                round_trip=info.round_trip,
+                round_trip=info.round_trip,  # type: ignore[arg-type]
                 serialize_as_any=info.serialize_as_any,
             )
         return nxt(self)
@@ -481,7 +477,7 @@ class EnumValueMixin(BaseModel):
             return {v.value if isinstance(v, Enum) else v for v in value}
         return value.value if isinstance(value, Enum) else value
 
-    def model_dump(self, *args, **kwargs) -> "DictStrAny":
+    def model_dump(self, *args, **kwargs) -> dict[str, Any]:
         res = super().model_dump(*args, **kwargs)
         return {k: self._to_enum_value(k, v) for k, v in res.items()}
 
@@ -543,7 +539,7 @@ class FieldPath:
         if self.has_instance and self._is_mapping and isinstance(self._instance, dict):
             return list(self._instance.keys())
         if isinstance(self._cls, type) and issubclass(self._cls, BaseModel):
-            return list(self._cls.model_fields)
+            return list(self._cls.model_fields)  # type: ignore[call-overload]
         return []
 
     def __getattr__(self, item) -> "FieldPath":
@@ -560,9 +556,9 @@ class FieldPath:
             return FieldPath(self._path + [item], self._cls)
         if not issubclass(self._cls, BaseModel):
             raise AttributeError(f"{self._cls} does not have fields")
-        if item not in self._cls.model_fields:
+        if item not in self._cls.model_fields:  # type: ignore[operator]
             raise AttributeError(f"{self._cls} type does not have '{item}' field")
-        field = self._cls.model_fields[item]
+        field = self._cls.model_fields[item]  # type: ignore[index]
         field_value = get_field_inner_type(field)
         is_mapping = _is_dict_annotation(field.annotation)
         if self.has_instance:
@@ -575,7 +571,7 @@ class FieldPath:
         if not isinstance(self._cls, type) or not issubclass(self._cls, BaseModel):
             return [repr(self)]
         res = []
-        for name, field in self._cls.model_fields.items():
+        for name, field in self._cls.model_fields.items():  # type: ignore[attr-defined]
             field_value = field.annotation
             # todo: do something with recursive imports
             from evidently.legacy.core import get_field_tags
@@ -619,7 +615,7 @@ class FieldPath:
         if issubclass(self._cls, ByLabelCountValueV1):
             res.append((self._path + ["counts"], current_tags.union({IncludeTags.Render})))
             res.append((self._path + ["shares"], current_tags.union({IncludeTags.Render})))
-        for name, field in self._cls.model_fields.items():
+        for name, field in self._cls.model_fields.items():  # type: ignore[attr-defined]
             field_value = field.annotation
 
             # todo: do something with recursive imports
@@ -656,7 +652,7 @@ class FieldPath:
             raise ValueError("Empty path provided")
         if len(path) == 1:
             if isinstance(self._cls, type) and issubclass(self._cls, BaseModel):
-                return self._cls.model_fields[path[0]].annotation
+                return self._cls.model_fields[path[0]].annotation  # type: ignore[index]
             if self.has_instance:
                 # fixme: tmp fix
                 # in case of field like f: Dict[str, A] we wont know that value was type annotated with A when we get to it

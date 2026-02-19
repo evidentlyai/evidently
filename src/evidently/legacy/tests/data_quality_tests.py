@@ -470,7 +470,7 @@ class BaseFeatureDataQualityMetricsTest(BaseDataQualityMetricsValueTest, ABC):
     def check(self):
         result = super().check()
 
-        if self._value is None:
+        if self.__value__ is None:
             result.mark_as_error(f"No value for the feature '{self.column_name}'")
             return result
 
@@ -821,7 +821,7 @@ class TestMostCommonValueShare(BaseFeatureDataQualityMetricsTest):
 
     def get_parameters(self) -> ColumnCheckValueParameters:
         return ColumnCheckValueParameters(
-            column_name=self.column_name.display_name, condition=self.get_condition(), value=self._value
+            column_name=self.column_name.display_name, condition=self.get_condition(), value=self.__value__
         )
 
 
@@ -1115,10 +1115,10 @@ class TestValueRangeRenderer(TestRenderer):
 
 class BaseDataQualityValueRangeMetricsTest(BaseCheckValueTest, ABC):
     group: ClassVar = DATA_QUALITY_GROUP.id
-    _metric: ColumnValueRangeMetric
+    __metric__: ColumnValueRangeMetric
     column_name: ColumnName
-    left: Optional[float]
-    right: Optional[float]
+    left: Optional[float] = None
+    right: Optional[float] = None
 
     def __init__(
         self,
@@ -1150,7 +1150,7 @@ class BaseDataQualityValueRangeMetricsTest(BaseCheckValueTest, ABC):
             not_in=not_in,
             is_critical=is_critical,
         )
-        self._metric = ColumnValueRangeMetric(column_name=self.column_name, left=self.left, right=self.right)
+        self.__metric__ = ColumnValueRangeMetric(column_name=self.column_name, left=self.left, right=self.right)
 
     def groups(self) -> Dict[str, str]:
         return {GroupingTypes.ByFeature.id: self.column_name.display_name}
@@ -1162,7 +1162,7 @@ class BaseDataQualityValueRangeMetricsTest(BaseCheckValueTest, ABC):
 
     @property
     def metric(self):
-        return self._metric
+        return self.__metric__
 
 
 class TestNumberOfOutRangeValues(BaseDataQualityValueRangeMetricsTest):
@@ -1205,7 +1205,7 @@ class TestShareOfOutRangeValues(BaseDataQualityValueRangeMetricsTest):
 
     def get_parameters(self) -> ShareOfOutRangeParameters:
         return ShareOfOutRangeParameters(
-            condition=self.get_condition(), value=self._value, left=self.left, right=self.right
+            condition=self.get_condition(), value=self.__value__, left=self.left, right=self.right
         )
 
 
@@ -1415,7 +1415,7 @@ class TestShareOfOutListValues(BaseDataQualityValueListMetricsTest):
         )
 
     def get_parameters(self) -> CheckValueParameters:
-        return ValueListParameters(condition=self.get_condition(), value=self._value, values=self.values)
+        return ValueListParameters(condition=self.get_condition(), value=self.__value__, values=self.values)
 
 
 class TestCatColumnsOutOfListValues(BaseGenerator):
@@ -1647,7 +1647,7 @@ class TestCategoryShare(BaseDataQualityCategoryMetricsTest):
         )
 
     def get_parameters(self) -> CheckValueParameters:
-        return ValueListParameters(condition=self.get_condition(), value=self._value, category=self.category)
+        return ValueListParameters(condition=self.get_condition(), value=self.__value__, category=self.category)
 
 
 class TestCategoryCount(BaseDataQualityCategoryMetricsTest):
@@ -1673,7 +1673,7 @@ class TestCategoryCount(BaseDataQualityCategoryMetricsTest):
         )
 
     def get_parameters(self) -> CheckValueParameters:
-        return ValueListParameters(condition=self.get_condition(), value=self._value, category=self.category)
+        return ValueListParameters(condition=self.get_condition(), value=self.__value__, category=self.category)
 
 
 @default_renderer(wrap_type=TestCategoryCount)

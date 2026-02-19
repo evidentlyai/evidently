@@ -66,12 +66,12 @@ def get_args_kwargs(feature_class: Type[GeneratedFeatures]) -> Tuple[Dict[str, s
         # get from fields
         args = {
             key: _get_type_name(field.annotation)
-            for key, field in feature_class.model_fields.items()
+            for key, field in feature_class.model_fields.items()  # type: ignore[attr-defined]
             if field.is_required()
         }
         kwargs = {
             key: (_get_type_name(field.annotation), _get_value_str(field.default))
-            for key, field in feature_class.model_fields.items()
+            for key, field in feature_class.model_fields.items()  # type: ignore[attr-defined]
             if not field.is_required() and key != "type"
         }
         return args, kwargs

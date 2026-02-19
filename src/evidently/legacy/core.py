@@ -295,7 +295,7 @@ def get_field_tags(cls: Type[BaseModel], field_name: str) -> Set[IncludeTags]:
         field_tags = ft[field_name]
         break
 
-    field = cls.model_fields[field_name]
+    field = cls.model_fields[field_name]  # type: ignore[index]
     field_annotation = field.annotation
     if field_annotation is None:
         field_annotation = type(None)
@@ -306,7 +306,7 @@ def get_field_tags(cls: Type[BaseModel], field_name: str) -> Set[IncludeTags]:
 
 
 def get_all_fields_tags(cls: Type[BaseResult]) -> Dict[str, Set[IncludeTags]]:
-    return {field_name: get_field_tags(cls, field_name) for field_name in cls.model_fields}
+    return {field_name: get_field_tags(cls, field_name) for field_name in cls.model_fields}  # type: ignore[attr-defined]
 
 
 def new_id() -> uuid.UUID:

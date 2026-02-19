@@ -99,9 +99,9 @@ class ColumnsDriftParameters(ConditionTestParameters):
 
 class BaseDataDriftMetricsTest(BaseCheckValueTest, WithDriftOptionsFields, ABC):
     group: ClassVar = DATA_DRIFT_GROUP.id
-    _metric: DataDriftTable
-    columns: Optional[List[str]]
-    feature_importance: Optional[bool]
+    __metric__: DataDriftTable
+    columns: Optional[List[str]] = None
+    feature_importance: Optional[bool] = None
 
     def __init__(
         self,
@@ -150,7 +150,7 @@ class BaseDataDriftMetricsTest(BaseCheckValueTest, WithDriftOptionsFields, ABC):
             per_column_stattest_threshold=per_column_stattest_threshold,
             feature_importance=feature_importance,
         )
-        self._metric = DataDriftTable(
+        self.__metric__ = DataDriftTable(
             columns=self.columns,
             stattest=self.stattest,
             cat_stattest=self.cat_stattest,
@@ -167,7 +167,7 @@ class BaseDataDriftMetricsTest(BaseCheckValueTest, WithDriftOptionsFields, ABC):
 
     @property
     def metric(self):
-        return self._metric
+        return self.__metric__
 
     def check(self):
         result = super().check()

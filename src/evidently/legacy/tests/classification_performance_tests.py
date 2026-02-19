@@ -52,8 +52,8 @@ class SimpleClassificationTest(BaseCheckValueTest):
 
     group: ClassVar = CLASSIFICATION_GROUP.id
     name: ClassVar[str]
-    _metric: ClassificationQualityMetric
-    _dummy_metric: ClassificationDummyMetric
+    __metric__: ClassificationQualityMetric
+    __dummy_metric__: ClassificationDummyMetric
 
     def __init__(
         self,
@@ -78,16 +78,16 @@ class SimpleClassificationTest(BaseCheckValueTest):
             not_in=not_in,
             is_critical=is_critical,
         )
-        self._metric = ClassificationQualityMetric()
-        self._dummy_metric = ClassificationDummyMetric()
+        self.__metric__ = ClassificationQualityMetric()
+        self.__dummy_metric__ = ClassificationDummyMetric()
 
     @property
     def metric(self):
-        return self._metric
+        return self.__metric__
 
     @property
     def dummy_metric(self):
-        return self._dummy_metric
+        return self.__dummy_metric__
 
     def calculate_value_for_test(self) -> Optional[Any]:
         return self.get_value(self.metric.get_result().current)
@@ -112,7 +112,7 @@ class SimpleClassificationTest(BaseCheckValueTest):
 
 
 class SimpleClassificationTestTopK(SimpleClassificationTest, ClassificationConfusionMatrixParameters, ABC):
-    _conf_matrix: ClassificationConfusionMatrix
+    __conf_matrix__: ClassificationConfusionMatrix
 
     def __init__(
         self,
@@ -143,16 +143,16 @@ class SimpleClassificationTestTopK(SimpleClassificationTest, ClassificationConfu
             not_in=not_in,
             is_critical=is_critical,
         )
-        self._dummy_metric = ClassificationDummyMetric(probas_threshold=self.probas_threshold, k=self.k)
-        self._metric = ClassificationQualityMetric(probas_threshold=self.probas_threshold, k=self.k)
-        self._conf_matrix = self.confusion_matric_metric()
+        self.__dummy_metric__ = ClassificationDummyMetric(probas_threshold=self.probas_threshold, k=self.k)
+        self.__metric__ = ClassificationQualityMetric(probas_threshold=self.probas_threshold, k=self.k)
+        self.__conf_matrix__ = self.confusion_matric_metric()
 
     def calculate_value_for_test(self) -> Optional[Any]:
         return self.get_value(self.metric.get_result().current)
 
     @property
     def conf_matrix(self):
-        return self._conf_matrix
+        return self.__conf_matrix__
 
 
 class TestAccuracyScore(SimpleClassificationTestTopK):
@@ -594,7 +594,7 @@ class ByClassClassificationTest(BaseCheckValueTest, ABC):
         raise NotImplementedError()
 
     def get_parameters(self) -> ByClassParameters:
-        return ByClassParameters(condition=self.get_condition(), value=self._value, label=self.label)
+        return ByClassParameters(condition=self.get_condition(), value=self.__value__, label=self.label)
 
 
 class TestPrecisionByClass(ByClassClassificationTest):

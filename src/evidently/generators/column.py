@@ -94,7 +94,7 @@ class ColumnMetricGenerator(MetricContainer):
     ) -> Dict[str, Any]:
         validated = {}
         for field_name, field_value in metric_kwargs.items():
-            field_info = metric_type.model_fields.get(field_name, None)
+            field_info = metric_type.model_fields.get(field_name, None)  # type: ignore[attr-defined]
             if field_info is None:
                 raise ValueError(f"Metric {metric_type.__name__} does not have field {field_name}")
             validated[field_name] = TypeAdapter(field_info.annotation).validate_python(field_value)

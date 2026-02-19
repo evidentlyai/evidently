@@ -38,8 +38,8 @@ class ClassificationConfusionMatrixResult(MetricResult):
 
 
 class ClassificationConfusionMatrixParameters(BaseModel):
-    probas_threshold: Optional[float]
-    k: Optional[int]
+    probas_threshold: Optional[float] = None
+    k: Optional[int] = None
 
     def confusion_matric_metric(self):
         return ClassificationConfusionMatrix(probas_threshold=self.probas_threshold, k=self.k)

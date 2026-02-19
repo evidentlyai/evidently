@@ -272,7 +272,7 @@ class DatasetMetadataResponse(EvidentlyAPIModel):
     @classmethod
     def from_dataset_metadata(cls, dataset: DatasetMetadataFull):
         """Create from DatasetMetadataFull."""
-        return cls(**{k: v for k, v in dataset.__dict__.items() if k in cls.model_fields})
+        return cls(**{k: v for k, v in dataset.__dict__.items() if k in cls.model_fields})  # type: ignore[operator]
 
 
 class ListDatasetResponse(EvidentlyAPIModel):

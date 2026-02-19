@@ -147,7 +147,7 @@ class DataSourceDTO(AutoAliasMixin, PolymorphicModel, ABC):
 
     def to_data_source(self, **kwargs) -> DataSource:
         """Convert DTO to data source."""
-        kwargs = {k: v for k, v in kwargs.items() if k in self.__data_source_type__.model_fields}
+        kwargs = {k: v for k, v in kwargs.items() if k in self.__data_source_type__.model_fields}  # type: ignore[operator]
         return self.__data_source_type__(**self.__dict__, **kwargs)
 
     @staticmethod
@@ -156,10 +156,10 @@ class DataSourceDTO(AutoAliasMixin, PolymorphicModel, ABC):
     ) -> Type["DataSourceDTO"]:
         """Create a DTO type for a data source type."""
         namespace = {
-            "__annotations__": {n: f.annotation for n, f in data_source_type.model_fields.items() if n not in exclude},
+            "__annotations__": {n: f.annotation for n, f in data_source_type.model_fields.items() if n not in exclude},  # type: ignore[attr-defined]
             **{
                 n: f.default
-                for n, f in data_source_type.model_fields.items()
+                for n, f in data_source_type.model_fields.items()  # type: ignore[attr-defined]
                 if n not in exclude and not f.is_required()
             },
         }
