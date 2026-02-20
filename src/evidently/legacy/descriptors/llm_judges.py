@@ -51,8 +51,7 @@ class BaseLLMEval(FeatureDescriptor, ABC):
 
 
 class LLMEval(BaseLLMEval):
-    class Config:
-        type_alias = "evidently:descriptor:LLMEval"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:descriptor:LLMEval"
 
     name: ClassVar[str] = "LLMEval"
 
@@ -67,8 +66,7 @@ class LLMEval(BaseLLMEval):
 
 
 class BinaryClassificationLLMEval(BaseLLMEval):
-    class Config:
-        type_alias = "evidently:descriptor:BinaryClassificationLLMEval"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:descriptor:BinaryClassificationLLMEval"
 
     template: ClassVar[BinaryClassificationPromptTemplate]
     include_category: Optional[bool] = None
@@ -90,8 +88,7 @@ class BinaryClassificationLLMEval(BaseLLMEval):
 
 
 class NegativityLLMEval(BinaryClassificationLLMEval):
-    class Config:
-        type_alias = "evidently:descriptor:NegativityLLMEval"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:descriptor:NegativityLLMEval"
 
     name: ClassVar[str] = "Negativity"
     template: ClassVar[BinaryClassificationPromptTemplate] = BinaryClassificationPromptTemplate(
@@ -114,8 +111,7 @@ class NegativityLLMEval(BinaryClassificationLLMEval):
 
 
 class PIILLMEval(BinaryClassificationLLMEval):
-    class Config:
-        type_alias = "evidently:descriptor:PIILLMEval"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:descriptor:PIILLMEval"
 
     name: ClassVar[str] = "PII"
     template: ClassVar[BinaryClassificationPromptTemplate] = BinaryClassificationPromptTemplate(
@@ -139,8 +135,7 @@ class PIILLMEval(BinaryClassificationLLMEval):
 
 
 class DeclineLLMEval(BinaryClassificationLLMEval):
-    class Config:
-        type_alias = "evidently:descriptor:DeclineLLMEval"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:descriptor:DeclineLLMEval"
 
     name: ClassVar[str] = "Decline"
     template: ClassVar[BinaryClassificationPromptTemplate] = BinaryClassificationPromptTemplate(
@@ -161,8 +156,7 @@ class DeclineLLMEval(BinaryClassificationLLMEval):
 
 
 class ContextQualityLLMEval(BinaryClassificationLLMEval):
-    class Config:
-        type_alias = "evidently:descriptor:ContextQualityLLMEval"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:descriptor:ContextQualityLLMEval"
 
     name: ClassVar[str] = "ContextQuality"
 
@@ -200,8 +194,7 @@ class ContextQualityLLMEval(BinaryClassificationLLMEval):
 
 
 class BiasLLMEval(BinaryClassificationLLMEval):
-    class Config:
-        type_alias = "evidently:descriptor:BiasLLMEval"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:descriptor:BiasLLMEval"
 
     name: ClassVar[str] = "Bias"
     template: ClassVar[BinaryClassificationPromptTemplate] = BinaryClassificationPromptTemplate(
@@ -227,8 +220,7 @@ class BiasLLMEval(BinaryClassificationLLMEval):
 
 
 class ToxicityLLMEval(BinaryClassificationLLMEval):
-    class Config:
-        type_alias = "evidently:descriptor:ToxicityLLMEval"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:descriptor:ToxicityLLMEval"
 
     name: ClassVar[str] = "Toxicity"
     template: ClassVar[BinaryClassificationPromptTemplate] = BinaryClassificationPromptTemplate(
@@ -254,8 +246,7 @@ class ToxicityLLMEval(BinaryClassificationLLMEval):
 
 
 class CorrectnessLLMEval(BinaryClassificationLLMEval):
-    class Config:
-        type_alias = "evidently:descriptor:CorrectnessLLMEval"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:descriptor:CorrectnessLLMEval"
 
     name: ClassVar[str] = "Correctness"
     target_output: str
@@ -303,8 +294,7 @@ class CorrectnessLLMEval(BinaryClassificationLLMEval):
 
 
 class FaithfulnessLLMEval(BinaryClassificationLLMEval):
-    class Config:
-        type_alias = "evidently:descriptor:FaithfulnessLLMEval"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:descriptor:FaithfulnessLLMEval"
 
     name: ClassVar[str] = "Faithfulness"
     context: str
@@ -352,8 +342,7 @@ class FaithfulnessLLMEval(BinaryClassificationLLMEval):
 
 
 class CompletenessLLMEval(BinaryClassificationLLMEval):
-    class Config:
-        type_alias = "evidently:descriptor:CompletenessLLMEval"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:descriptor:CompletenessLLMEval"
 
     name: ClassVar[str] = "Completeness"
     context: str
@@ -401,8 +390,7 @@ class CompletenessLLMEval(BinaryClassificationLLMEval):
 
 
 class MulticlassClassificationLLMEval(BaseLLMEval):
-    class Config:
-        type_alias = "evidently:descriptor:MulticlassClassificationLLMEval"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:descriptor:MulticlassClassificationLLMEval"
 
     template: ClassVar[MulticlassClassificationPromptTemplate]
     include_category: Optional[bool] = None

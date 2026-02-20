@@ -6,7 +6,8 @@ from typing import List
 from typing import Optional
 from typing import Tuple
 
-from evidently._pydantic_compat import BaseModel
+from pydantic import BaseModel
+
 from evidently.legacy.base_metric import MetricResult
 from evidently.legacy.core import BaseResult
 from evidently.legacy.utils import NumpyEncoder
@@ -43,7 +44,7 @@ def iterate_obj_fields(
     if isinstance(obj, dict):
         yield from (r for key, value in obj.items() for r in iterate_obj_fields(value, paths + [str(key)], early_stop))
         return
-    if isinstance(obj, BaseResult) and obj.__config__.extract_as_obj:
+    if isinstance(obj, BaseResult) and obj.__extract_as_obj__:
         yield ".".join(paths), obj
         return
     if isinstance(obj, BaseModel):
@@ -61,7 +62,7 @@ def iterate_obj_float_fields(obj: Any, paths: List[str]) -> Iterator[Tuple[str, 
         if isinstance(value, dict):
             yield path, json.dumps(value, cls=NumpyEncoder)
             continue
-        if isinstance(value, BaseResult) and value.__config__.extract_as_obj:
+        if isinstance(value, BaseResult) and value.__extract_as_obj__:
             yield path, json.dumps(value.dict(), cls=NumpyEncoder)
             continue
         try:

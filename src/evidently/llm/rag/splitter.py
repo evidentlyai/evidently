@@ -2,13 +2,13 @@ import re
 from abc import ABC
 from abc import abstractmethod
 from enum import Enum
+from typing import Any
 from typing import ClassVar
 from typing import Iterator
 from typing import List
 from typing import Optional
 from typing import Union
 
-from evidently._pydantic_compat import PrivateAttr
 from evidently.pydantic_utils import AutoAliasMixin
 from evidently.pydantic_utils import EvidentlyBaseModel
 
@@ -53,8 +53,7 @@ AnySplitter = Union[str, Splitters, "Splitter"]
 class Splitter(AutoAliasMixin, EvidentlyBaseModel, ABC):
     __alias_type__: ClassVar[str] = "splitter"
 
-    class Config:
-        is_base_type = True
+    __is_base_type__: ClassVar[bool] = True
 
     chunk_size: int
     chunk_overlap: int
@@ -108,21 +107,21 @@ class SimpleSplitter(Splitter):
 class LlamaIndexSplitter(Splitter):
     separator: str = " "
     paragraph_separator: Optional[str] = None
-    _splitter = PrivateAttr(None)
+    __splitter__: Optional[Any] = None
 
     @property
     def splitter(self):
-        if self._splitter is None:
+        if self.__splitter__ is None:
             from llama_index.core.node_parser import SentenceSplitter
             from llama_index.core.node_parser.text.sentence import DEFAULT_PARAGRAPH_SEP
 
-            self._splitter = SentenceSplitter(
+            self.__splitter__ = SentenceSplitter(
                 chunk_size=self.chunk_size,
                 chunk_overlap=self.chunk_overlap,
                 separator=self.separator,
                 paragraph_separator=self.paragraph_separator or DEFAULT_PARAGRAPH_SEP,
             )
-        return self._splitter
+        return self.__splitter__
 
     def split_text(self, text: TextSource) -> Iterator[Chunk]:
         yield from self.splitter.split_text(text.get_text())

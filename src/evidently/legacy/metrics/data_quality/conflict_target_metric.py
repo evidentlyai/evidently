@@ -1,3 +1,5 @@
+from typing import ClassVar
+from typing import Dict
 from typing import List
 from typing import Optional
 
@@ -15,14 +17,13 @@ from evidently.legacy.utils.data_operations import process_columns
 
 
 class ConflictTargetMetricResults(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:ConflictTargetMetricResults"
-        field_tags = {
-            "number_not_stable_target": {IncludeTags.Current},
-            "share_not_stable_target": {IncludeTags.Current},
-            "number_not_stable_target_ref": {IncludeTags.Reference},
-            "share_not_stable_target_ref": {IncludeTags.Reference},
-        }
+    __type_alias__: ClassVar[Optional[str]] = "evidently:metric_result:ConflictTargetMetricResults"
+    __field_tags__: ClassVar[Dict[str, set]] = {
+        "number_not_stable_target": {IncludeTags.Current},
+        "share_not_stable_target": {IncludeTags.Current},
+        "number_not_stable_target_ref": {IncludeTags.Reference},
+        "share_not_stable_target_ref": {IncludeTags.Reference},
+    }
 
     number_not_stable_target: int
     share_not_stable_target: float
@@ -31,8 +32,7 @@ class ConflictTargetMetricResults(MetricResult):
 
 
 class ConflictTargetMetric(Metric[ConflictTargetMetricResults]):
-    class Config:
-        type_alias = "evidently:metric:ConflictTargetMetric"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:metric:ConflictTargetMetric"
 
     def calculate(self, data: InputData) -> ConflictTargetMetricResults:
         dataset_columns = process_columns(data.current_data, data.column_mapping)

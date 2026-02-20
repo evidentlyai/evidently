@@ -3,8 +3,9 @@ import posixpath
 import re
 from typing import List
 
-from evidently._pydantic_compat import BaseModel
-from evidently._pydantic_compat import parse_obj_as
+from pydantic import BaseModel
+from pydantic import TypeAdapter
+
 from evidently.core.serialization import SnapshotModel
 from evidently.legacy.utils import NumpyEncoder
 from evidently.sdk.models import DashboardModel
@@ -51,7 +52,7 @@ class LocalState:
 
     def read_project(self, project_id: STR_UUID) -> ProjectModel:
         with self.location.open(self._project_path(project_id)) as f:
-            return parse_obj_as(ProjectModel, json.load(f))
+            return TypeAdapter(ProjectModel).validate_python(json.load(f))
 
     def write_project(self, project: ProjectModel) -> ProjectModel:
         self.location.makedirs(str(project.id))
@@ -66,7 +67,7 @@ class LocalState:
 
     def read_snapshot(self, project_id: STR_UUID, snapshot_id: STR_UUID) -> SnapshotModel:
         with self.location.open(self._snapshot_path(project_id, snapshot_id)) as f:
-            return parse_obj_as(SnapshotModel, json.load(f))
+            return TypeAdapter(SnapshotModel).validate_python(json.load(f))
 
     def list_projects(self) -> List[ProjectID]:
         projects = []
@@ -99,4 +100,4 @@ class LocalState:
         if not self.location.exists(self._dashboard_path(project_id)):
             return DashboardModel(tabs=[], panels=[])
         with self.location.open(self._dashboard_path(project_id)) as f:
-            return parse_obj_as(DashboardModel, json.load(f))
+            return TypeAdapter(DashboardModel).validate_python(json.load(f))

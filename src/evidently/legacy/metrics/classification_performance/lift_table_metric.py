@@ -1,21 +1,18 @@
-from typing import TYPE_CHECKING
-from typing import Any
+from typing import ClassVar
 from typing import Dict
 from typing import List
 from typing import Optional
-from typing import Type
 from typing import Union
 
 import pandas as pd
 
-from evidently._pydantic_compat import BaseModel
 from evidently.legacy.base_metric import InputData
 from evidently.legacy.base_metric import Metric
 from evidently.legacy.base_metric import MetricResult
 from evidently.legacy.calculations.classification_performance import calculate_lift_table
 from evidently.legacy.calculations.classification_performance import get_prediction_data
 from evidently.legacy.core import IncludeTags
-from evidently.legacy.metric_results import Label
+from evidently.legacy.core import LabelIntStr
 from evidently.legacy.metric_results import PredictionData
 from evidently.legacy.model.widget import BaseWidgetInfo
 from evidently.legacy.options.base import AnyOptions
@@ -27,32 +24,17 @@ from evidently.legacy.renderers.html_widgets import table_data
 from evidently.legacy.renderers.html_widgets import widget_tabs
 from evidently.legacy.utils.data_operations import process_columns
 
-if TYPE_CHECKING:
-    from evidently._pydantic_compat import Model
-
-
-class LabelModel(BaseModel):
-    __root__: Union[int, str]
-
-    def validate(cls: Type["Model"], value: Any):  # type: ignore[override, misc]
-        try:
-            return int(value)
-        except TypeError:
-            return value
-
-
-LiftTable = Dict[Union[LabelModel, Label], List[List[Union[float, int]]]]
+LiftTable = Dict[LabelIntStr, List[List[Union[float, int]]]]
 
 
 class ClassificationLiftTableResults(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:ClassificationLiftTableResults"
-        pd_include = False
-        field_tags = {
-            "current_lift_table": {IncludeTags.Current},
-            "reference_lift_table": {IncludeTags.Reference},
-            "top": {IncludeTags.Parameter},
-        }
+    __type_alias__: ClassVar[Optional[str]] = "evidently:metric_result:ClassificationLiftTableResults"
+    __pd_include__: ClassVar[bool] = False
+    __field_tags__: ClassVar[Dict[str, set]] = {
+        "current_lift_table": {IncludeTags.Current},
+        "reference_lift_table": {IncludeTags.Reference},
+        "top": {IncludeTags.Parameter},
+    }
 
     current_lift_table: Optional[LiftTable] = None
     reference_lift_table: Optional[LiftTable] = None
@@ -60,8 +42,7 @@ class ClassificationLiftTableResults(MetricResult):
 
 
 class ClassificationLiftTable(Metric[ClassificationLiftTableResults]):
-    class Config:
-        type_alias = "evidently:metric:ClassificationLiftTable"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:metric:ClassificationLiftTable"
 
     """
     Evidently metric with inherited behaviour, provides data for lift analysis

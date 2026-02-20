@@ -11,8 +11,7 @@ from evidently.ui.service.tracing.storage.base import TracingStorage
 class TracingStorageComponent(FactoryComponent[TracingStorage], ABC):
     """Base component for tracing storage."""
 
-    class Config:
-        is_base_type = True
+    __is_base_type__: ClassVar[bool] = True
 
     __section__: ClassVar[str] = "tracing_storage"
     dependency_name: ClassVar[str] = "tracing_storage"

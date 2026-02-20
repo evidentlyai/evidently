@@ -178,6 +178,9 @@ class ApproxValueNoDict(ApproxValue):
     def dict(self, *args, **kwargs):
         return self
 
+    def model_dump(self, *args, **kwargs):
+        return self
+
 
 # some monkeing for np asserts to work with ApproxValue
 np.core.numeric.ScalarType = np.core.numeric.ScalarType + (ApproxValue, ApproxValueNoDict)  # type: ignore[attr-defined]

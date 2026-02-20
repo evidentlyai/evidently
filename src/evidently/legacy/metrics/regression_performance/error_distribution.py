@@ -1,3 +1,5 @@
+from typing import ClassVar
+from typing import Dict
 from typing import List
 from typing import Optional
 
@@ -19,20 +21,20 @@ from evidently.legacy.utils.visualizations import plot_distr_with_perc_button
 
 
 class RegressionErrorDistributionResults(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:RegressionErrorDistributionResults"
-        dict_exclude_fields = {"current_bins", "reference_bins"}
-        pd_exclude_fields = {"current_bins", "reference_bins"}
-
-        field_tags = {"current_bins": {IncludeTags.Current}, "reference_bins": {IncludeTags.Reference}}
+    __type_alias__: ClassVar[Optional[str]] = "evidently:metric_result:RegressionErrorDistributionResults"
+    __dict_exclude_fields__: ClassVar[set] = {"current_bins", "reference_bins"}
+    __pd_exclude_fields__: ClassVar[set] = {"current_bins", "reference_bins"}
+    __field_tags__: ClassVar[Dict[str, set]] = {
+        "current_bins": {IncludeTags.Current},
+        "reference_bins": {IncludeTags.Reference},
+    }
 
     current_bins: HistogramData
     reference_bins: Optional[HistogramData]
 
 
 class RegressionErrorDistribution(Metric[RegressionErrorDistributionResults]):
-    class Config:
-        type_alias = "evidently:metric:RegressionErrorDistribution"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:metric:RegressionErrorDistribution"
 
     def calculate(self, data: InputData) -> RegressionErrorDistributionResults:
         dataset_columns = process_columns(data.current_data, data.column_mapping)

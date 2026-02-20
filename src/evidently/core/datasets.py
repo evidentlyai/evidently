@@ -19,9 +19,9 @@ from typing import Union
 
 import numpy as np
 import pandas as pd
+from pydantic import BaseModel
+from pydantic import TypeAdapter
 
-from evidently._pydantic_compat import BaseModel
-from evidently._pydantic_compat import parse_obj_as
 from evidently.core.base_types import Label
 from evidently.core.tests import GenericTest
 from evidently.legacy.base_metric import DisplayName
@@ -321,8 +321,7 @@ class SpecialColumnInfo(AutoAliasMixin, EvidentlyBaseModel):
     __alias_type__: ClassVar = "special_column_info"
     """Alias type for serialization."""
 
-    class Config:
-        is_base_type = True
+    __is_base_type__: ClassVar[bool] = True
 
     def get_metrics(self) -> List["MetricOrContainer"]:
         """Get metrics associated with this special column.
@@ -663,8 +662,7 @@ class ColumnCondition(AutoAliasMixin, EvidentlyBaseModel, abc.ABC):
     __alias_type__: ClassVar[str] = "column_condition"
     """Alias type for serialization."""
 
-    class Config:
-        is_base_type = True
+    __is_base_type__: ClassVar[bool] = True
 
     @abstractmethod
     def check(self, value: Any) -> bool:
@@ -742,8 +740,7 @@ class Descriptor(AutoAliasMixin, EvidentlyBaseModel, abc.ABC):
     computed features for evaluation.
     """
 
-    class Config:
-        is_base_type = True
+    __is_base_type__: ClassVar[bool] = True
 
     __alias_type__: ClassVar = "descriptor_v2"
     """Alias type for serialization."""
@@ -826,7 +823,7 @@ class ColumnTest(SingleInputDescriptor):
     ) -> None:
         self.column = column
         if isinstance(condition, dict):
-            condition = parse_obj_as(ColumnCondition, condition)  # type: ignore[type-abstract]
+            condition = TypeAdapter(ColumnCondition).validate_python(condition)  # type: ignore[type-abstract]
         descriptor_condition: ColumnCondition = (
             condition if isinstance(condition, ColumnCondition) else condition.for_descriptor().condition
         )
@@ -1086,7 +1083,11 @@ class FeatureDescriptor(Descriptor):
         self, feature: GeneratedFeatures, alias: Optional[str] = None, tests: Optional[List[AnyDescriptorTest]] = None
     ):
         # this is needed because we try to access it before super call
-        feature = feature if isinstance(feature, GeneratedFeatures) else parse_obj_as(GeneratedFeatures, feature)  # type: ignore[type-abstract]
+        feature = (
+            feature
+            if isinstance(feature, GeneratedFeatures)
+            else TypeAdapter(GeneratedFeatures).validate_python(feature)
+        )  # type: ignore[type-abstract]
         feature_columns = feature.list_columns()
         super().__init__(feature=feature, alias=alias or f"{feature_columns[0].display_name}", tests=tests)
 

@@ -52,8 +52,8 @@ class SimpleClassificationTest(BaseCheckValueTest):
 
     group: ClassVar = CLASSIFICATION_GROUP.id
     name: ClassVar[str]
-    _metric: ClassificationQualityMetric
-    _dummy_metric: ClassificationDummyMetric
+    __metric__: ClassificationQualityMetric
+    __dummy_metric__: ClassificationDummyMetric
 
     def __init__(
         self,
@@ -78,16 +78,16 @@ class SimpleClassificationTest(BaseCheckValueTest):
             not_in=not_in,
             is_critical=is_critical,
         )
-        self._metric = ClassificationQualityMetric()
-        self._dummy_metric = ClassificationDummyMetric()
+        self.__metric__ = ClassificationQualityMetric()
+        self.__dummy_metric__ = ClassificationDummyMetric()
 
     @property
     def metric(self):
-        return self._metric
+        return self.__metric__
 
     @property
     def dummy_metric(self):
-        return self._dummy_metric
+        return self.__dummy_metric__
 
     def calculate_value_for_test(self) -> Optional[Any]:
         return self.get_value(self.metric.get_result().current)
@@ -112,7 +112,7 @@ class SimpleClassificationTest(BaseCheckValueTest):
 
 
 class SimpleClassificationTestTopK(SimpleClassificationTest, ClassificationConfusionMatrixParameters, ABC):
-    _conf_matrix: ClassificationConfusionMatrix
+    __conf_matrix__: ClassificationConfusionMatrix
 
     def __init__(
         self,
@@ -143,23 +143,22 @@ class SimpleClassificationTestTopK(SimpleClassificationTest, ClassificationConfu
             not_in=not_in,
             is_critical=is_critical,
         )
-        self._dummy_metric = ClassificationDummyMetric(probas_threshold=self.probas_threshold, k=self.k)
-        self._metric = ClassificationQualityMetric(probas_threshold=self.probas_threshold, k=self.k)
-        self._conf_matrix = self.confusion_matric_metric()
+        self.__dummy_metric__ = ClassificationDummyMetric(probas_threshold=self.probas_threshold, k=self.k)
+        self.__metric__ = ClassificationQualityMetric(probas_threshold=self.probas_threshold, k=self.k)
+        self.__conf_matrix__ = self.confusion_matric_metric()
 
     def calculate_value_for_test(self) -> Optional[Any]:
         return self.get_value(self.metric.get_result().current)
 
     @property
     def conf_matrix(self):
-        return self._conf_matrix
+        return self.__conf_matrix__
 
 
 class TestAccuracyScore(SimpleClassificationTestTopK):
-    class Config:
-        type_alias = "evidently:test:TestAccuracyScore"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:test:TestAccuracyScore"
 
-    name = "Accuracy Score"
+    name: ClassVar[str] = "Accuracy Score"
 
     def get_value(self, result: DatasetClassificationQuality):
         return result.accuracy
@@ -180,10 +179,9 @@ class TestAccuracyScoreRenderer(TestRenderer):
 
 
 class TestPrecisionScore(SimpleClassificationTestTopK):
-    class Config:
-        type_alias = "evidently:test:TestPrecisionScore"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:test:TestPrecisionScore"
 
-    name = "Precision Score"
+    name: ClassVar[str] = "Precision Score"
 
     def get_value(self, result: DatasetClassificationQuality):
         return result.precision
@@ -204,8 +202,7 @@ class TestPrecisionScoreRenderer(TestRenderer):
 
 
 class TestF1Score(SimpleClassificationTestTopK):
-    class Config:
-        type_alias = "evidently:test:TestF1Score"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:test:TestF1Score"
 
     name: ClassVar = "F1 Score"
 
@@ -228,10 +225,9 @@ class TestF1ScoreRenderer(TestRenderer):
 
 
 class TestRecallScore(SimpleClassificationTestTopK):
-    class Config:
-        type_alias = "evidently:test:TestRecallScore"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:test:TestRecallScore"
 
-    name = "Recall Score"
+    name: ClassVar[str] = "Recall Score"
 
     def get_value(self, result: DatasetClassificationQuality):
         return result.recall
@@ -252,8 +248,7 @@ class TestRecallScoreRenderer(TestRenderer):
 
 
 class TestRocAuc(SimpleClassificationTest):
-    class Config:
-        type_alias = "evidently:test:TestRocAuc"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:test:TestRocAuc"
 
     name: ClassVar = "ROC AUC Score"
     _roc_curve: ClassificationRocCurve
@@ -270,7 +265,6 @@ class TestRocAuc(SimpleClassificationTest):
         not_in: Optional[List[Union[Numeric, str, bool]]] = None,
         is_critical: bool = True,
     ):
-        self._roc_curve = ClassificationRocCurve()
         super().__init__(
             eq=eq,
             gt=gt,
@@ -282,6 +276,7 @@ class TestRocAuc(SimpleClassificationTest):
             not_in=not_in,
             is_critical=is_critical,
         )
+        self._roc_curve = ClassificationRocCurve()
 
     def get_value(self, result: DatasetClassificationQuality):
         return result.roc_auc
@@ -314,11 +309,10 @@ class TestRocAucRenderer(TestRenderer):
 
 
 class TestLogLoss(SimpleClassificationTest):
-    class Config:
-        type_alias = "evidently:test:TestLogLoss"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:test:TestLogLoss"
 
     condition_arg = "lt"
-    name = "Logarithmic Loss"
+    name: ClassVar[str] = "Logarithmic Loss"
 
     def get_value(self, result: DatasetClassificationQuality):
         return result.log_loss
@@ -352,10 +346,9 @@ class TestLogLossRenderer(TestRenderer):
 
 
 class TestTPR(SimpleClassificationTestTopK):
-    class Config:
-        type_alias = "evidently:test:TestTPR"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:test:TestTPR"
 
-    name = "True Positive Rate"
+    name: ClassVar[str] = "True Positive Rate"
 
     def get_value(self, result: DatasetClassificationQuality):
         return result.tpr
@@ -391,10 +384,9 @@ class TestTPRRenderer(TestRenderer):
 
 
 class TestTNR(SimpleClassificationTestTopK):
-    class Config:
-        type_alias = "evidently:test:TestTNR"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:test:TestTNR"
 
-    name = "True Negative Rate"
+    name: ClassVar[str] = "True Negative Rate"
 
     def get_value(self, result: DatasetClassificationQuality):
         return result.tnr
@@ -430,11 +422,10 @@ class TestTNRRenderer(TestRenderer):
 
 
 class TestFPR(SimpleClassificationTestTopK):
-    class Config:
-        type_alias = "evidently:test:TestFPR"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:test:TestFPR"
 
     condition_arg: ClassVar = "lt"
-    name = "False Positive Rate"
+    name: ClassVar[str] = "False Positive Rate"
 
     def get_value(self, result: DatasetClassificationQuality):
         return result.fpr
@@ -470,11 +461,10 @@ class TestFPRRenderer(TestRenderer):
 
 
 class TestFNR(SimpleClassificationTestTopK):
-    class Config:
-        type_alias = "evidently:test:TestFNR"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:test:TestFNR"
 
     condition_arg: ClassVar = "lt"
-    name = "False Negative Rate"
+    name: ClassVar[str] = "False Negative Rate"
 
     def get_value(self, result: DatasetClassificationQuality):
         return result.fnr
@@ -510,8 +500,7 @@ class TestFNRRenderer(TestRenderer):
 
 
 class ByClassParameters(CheckValueParameters):
-    class Config:
-        type_alias = "evidently:test_parameters:ByClassParameters"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:test_parameters:ByClassParameters"
 
     label: Label
 
@@ -605,12 +594,11 @@ class ByClassClassificationTest(BaseCheckValueTest, ABC):
         raise NotImplementedError()
 
     def get_parameters(self) -> ByClassParameters:
-        return ByClassParameters(condition=self.get_condition(), value=self._value, label=self.label)
+        return ByClassParameters(condition=self.get_condition(), value=self.__value__, label=self.label)
 
 
 class TestPrecisionByClass(ByClassClassificationTest):
-    class Config:
-        type_alias = "evidently:test:TestPrecisionByClass"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:test:TestPrecisionByClass"
 
     name: ClassVar[str] = "Precision Score by Class"
 
@@ -636,8 +624,7 @@ class TestPrecisionByClassRenderer(TestRenderer):
 
 
 class TestRecallByClass(ByClassClassificationTest):
-    class Config:
-        type_alias = "evidently:test:TestRecallByClass"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:test:TestRecallByClass"
 
     name: ClassVar[str] = "Recall Score by Class"
 
@@ -663,8 +650,7 @@ class TestRecallByClassRenderer(TestRenderer):
 
 
 class TestF1ByClass(ByClassClassificationTest):
-    class Config:
-        type_alias = "evidently:test:TestF1ByClass"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:test:TestF1ByClass"
 
     name: ClassVar[str] = "F1 Score by Class"
 

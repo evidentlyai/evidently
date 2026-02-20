@@ -5,10 +5,10 @@ from typing import List
 from typing import Optional
 
 import uuid6
+from pydantic import BaseModel
+from pydantic import Field
+from pydantic.v1 import validator
 
-from evidently._pydantic_compat import BaseModel
-from evidently._pydantic_compat import Field
-from evidently._pydantic_compat import validator
 from evidently.legacy.core import new_id
 from evidently.legacy.suite.base_suite import SnapshotLinks
 from evidently.legacy.ui.type_aliases import OrgID

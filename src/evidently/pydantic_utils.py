@@ -8,7 +8,7 @@ import warnings
 from abc import ABC
 from enum import Enum
 from functools import lru_cache
-from typing import TYPE_CHECKING
+from typing import Annotated
 from typing import Any
 from typing import Callable
 from typing import ClassVar
@@ -24,21 +24,46 @@ from typing import Type
 from typing import TypeVar
 from typing import Union
 from typing import get_args
+from typing import get_origin
 
 import numpy as np
 import yaml
+from pydantic import BaseModel
+from pydantic import BeforeValidator
+from pydantic import ConfigDict
+from pydantic import Field
+from pydantic import GetCoreSchemaHandler
+from pydantic import TypeAdapter
+from pydantic import model_serializer
+from pydantic import model_validator
+from pydantic._internal._model_construction import ModelMetaclass
+from pydantic._internal._validators import import_string
+from pydantic.fields import FieldInfo as PydanticFieldInfo
+from pydantic_core import PydanticCustomError
+from pydantic_core import core_schema
+from pydantic_core.core_schema import SerializationInfo
+from pydantic_core.core_schema import SerializerFunctionWrapHandler
+from typing_extensions import Self
 from typing_inspect import is_union_type
 
-from evidently._pydantic_compat import SHAPE_DICT
-from evidently._pydantic_compat import BaseConfig
-from evidently._pydantic_compat import BaseModel
-from evidently._pydantic_compat import Field
-from evidently._pydantic_compat import ModelMetaclass
-from evidently._pydantic_compat import import_string
-from evidently._pydantic_compat import parse_obj_as
 
-if TYPE_CHECKING:
-    from evidently._pydantic_compat import DictStrAny
+def _is_dict_annotation(annotation: Any) -> bool:
+    """True if the field annotation is dict-like (Dict, dict, Mapping)."""
+    origin = get_origin(annotation)
+    if origin is None:
+        return annotation is dict
+    return origin is dict or (hasattr(origin, "__origin__") and origin.__name__ == "Mapping")
+
+
+def _get_dict_value_type(annotation: Any) -> Any:
+    """Get the value type from a Dict[K, V] annotation, unwrapping Annotated if needed."""
+    while get_origin(annotation) is Annotated:
+        annotation = get_args(annotation)[0]
+    args = get_args(annotation)
+    if len(args) >= 2:
+        return args[1]
+    return None
+
 
 md5_kwargs = {"usedforsecurity": False}
 
@@ -46,31 +71,39 @@ md5_kwargs = {"usedforsecurity": False}
 T = TypeVar("T")
 
 
-def pydantic_type_validator(type_: Type[Any], prioritize: bool = False):
-    def decorator(f):
-        from evidently._pydantic_compat import _VALIDATORS
+def pydantic_type_validator(type_: Type[Any]):
+    """
+    Decorator to register a validator function for a type in Pydantic v2.
 
-        for cls, validators in _VALIDATORS:
-            if cls is type_:
-                if prioritize:
-                    validators.insert(0, f)
-                else:
-                    validators.append(f)
-                return
-        if prioritize:
-            _VALIDATORS.insert(0, (type_, [f]))
-        else:
-            _VALIDATORS.append(
-                (type_, [f]),
-            )
+    Args:
+        type_: The type to register the validator for (e.g., pd.Series)
+
+    Example:
+        @pydantic_type_validator(pd.Series)
+        def validate_series(v: Any) -> pd.Series:
+            if isinstance(v, pd.Series):
+                return v
+            if isinstance(v, list):
+                return pd.Series(v)
+            raise ValueError(f"Cannot convert {type(v)} to pd.Series")
+    """
+
+    def decorator(validator_func: Callable[[Any], Any]):
+        def _get_pydantic_core_schema(cls, source_type: Any, handler: GetCoreSchemaHandler) -> core_schema.CoreSchema:
+            return core_schema.no_info_plain_validator_function(validator_func)
+
+        # Monkey-patch the type
+        type_.__get_pydantic_core_schema__ = classmethod(_get_pydantic_core_schema)
+
+        return validator_func
 
     return decorator
 
 
 class FrozenBaseMeta(ModelMetaclass):
     def __new__(mcs, name, bases, namespace, **kwargs):
-        res = super().__new__(mcs, name, bases, namespace, **kwargs)
-        res.__config__.frozen = True
+        res: Type[BaseModel] = super().__new__(mcs, name, bases, namespace, **kwargs)
+        res.model_config["frozen"] = True
         return res
 
 
@@ -79,8 +112,7 @@ object_delattr = object.__delattr__
 
 
 class FrozenBaseModel(BaseModel, metaclass=FrozenBaseMeta):
-    class Config:
-        underscore_attrs_are_private = True
+    model_config = ConfigDict()
 
     _init_values: Optional[Dict]
 
@@ -99,7 +131,7 @@ class FrozenBaseModel(BaseModel, metaclass=FrozenBaseMeta):
 
     def __setattr__(self, key, value):
         if self.__init_values__ is not None:
-            if key not in self.__fields__ and key not in self.__private_attributes__:
+            if key not in self.model_fields and key not in self.__private_attributes__:
                 raise AttributeError(f"{self.__class__.__name__} has no attribute {key}")
             self.__init_values__[key] = value
             return
@@ -107,7 +139,9 @@ class FrozenBaseModel(BaseModel, metaclass=FrozenBaseMeta):
 
     def __hash__(self):
         try:
-            return hash(self.__class__) + hash(tuple(self._field_hash(v) for v in self.__dict__.values()))
+            return hash(self.__class__) + hash(
+                tuple(self._field_hash(v) for k, v in self.__dict__.items() if k in self.model_fields)
+            )
         except TypeError:
             raise
 
@@ -144,7 +178,7 @@ def register_type_alias(base_class: Type["PolymorphicModel"], classpath: str, al
         if base_class is PolymorphicModel:
             break
         base_class = get_base_class(base_class, ensure_parent=True)  # type: ignore[arg-type]
-        if not base_class.__config__.transitive_aliases:
+        if not getattr(base_class, "__transitive_aliases__", False):
             break
 
 
@@ -174,8 +208,7 @@ def get_base_class(cls: Type["PolymorphicModel"], ensure_parent: bool = False) -
             continue
         if not issubclass(cls_, PolymorphicModel):
             continue
-        config = cls_.__dict__.get("Config")
-        if config is not None and config.__dict__.get("is_base_type", False):
+        if cls_.__dict__.get("__is_base_type__", False):
             return cls_
     return PolymorphicModel
 
@@ -195,25 +228,22 @@ def is_not_abstract(cls):
 
 
 class PolymorphicModel(BaseModel):
-    class Config(BaseConfig):
-        # value to put into "type" field
-        type_alias: ClassVar[Optional[str]] = None
-        # flag to mark alias required. If not required, classpath is used by default
-        alias_required: ClassVar[bool] = True
-        # flag to register aliaes for grand-parent base type
-        # eg PolymorphicModel -> A -> B -> C, where A and B are base types. only if A has this flag, C can be parsed as both A and B.
-        transitive_aliases: ClassVar[bool] = False
-        # flag to mark type as base. This means it will be possible to parse all subclasses of it as this type
-        is_base_type: ClassVar[bool] = False
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
-    __config__: ClassVar[Type[Config]] = Config
+    # Configuration values
+    __type_alias__: ClassVar[Optional[str]] = None
+    __alias_required__: ClassVar[bool] = True
+    # __transitive_aliases__: ClassVar[bool] = False
+    __is_base_type__: ClassVar[bool] = False
+
+    type: str = Field(default="")
 
     @classmethod
     def __get_type__(cls) -> str:
-        config = cls.__dict__.get("Config")
-        if config is not None and config.__dict__.get("type_alias") is not None:
-            return config.type_alias
-        if cls.__config__.alias_required and is_not_abstract(cls):
+        type_alias = cls.__dict__.get("__type_alias__")
+        if type_alias is not None:
+            return str(type_alias)
+        if cls.__alias_required__ and is_not_abstract(cls):
             raise ValueError(f"Alias is required for {cls.__name__}")
         return cls.__get_classpath__()
 
@@ -221,58 +251,103 @@ class PolymorphicModel(BaseModel):
     def __get_classpath__(cls):
         return get_classpath(cls)
 
-    type: str = Field("")
+    @classmethod
+    def __subtypes__(cls) -> Tuple[Type["PolymorphicModel"], ...]:
+        return tuple(all_subclasses(cls))
+
+    @classmethod
+    def __get_is_base_type__(cls) -> bool:
+        return cls.__dict__.get("__is_base_type__", False)
 
     def __init_subclass__(cls):
         super().__init_subclass__()
-        if cls == PolymorphicModel:
+        if cls == PolymorphicModel or cls.__get_is_base_type__():
             return
 
         typename = cls.__get_type__()
         literal_typename = Literal[typename]
 
-        type_field = cls.__fields__["type"]
-        type_field.default = typename
-        type_field.field_info.default = typename
-        type_field.type_ = type_field.outer_type_ = literal_typename
+        cls.__annotations__["type"] = literal_typename
+        if "type" not in cls.__dict__:
+            cls.type = typename
 
         base_class = get_base_class(cls)
         if (base_class, typename) not in LOADED_TYPE_ALIASES:
             register_loaded_alias(base_class, cls, typename)
         if base_class != cls:
-            base_typefield = base_class.__fields__["type"]
-            base_typefield_type = base_typefield.type_
-            if is_union_type(base_typefield_type):
-                subclass_literals = get_args(base_typefield_type) + (literal_typename,)
-            else:
-                subclass_literals = (base_typefield_type, literal_typename)
-            base_typefield.type_ = base_typefield.outer_type_ = Union[subclass_literals]
+            base_typefield = base_class.model_fields.get("type")
+            if base_typefield is not None:
+                base_typefield_type = base_typefield.annotation
+                if is_union_type(base_typefield_type):
+                    subclass_literals = get_args(base_typefield_type) + (literal_typename,)
+                else:
+                    subclass_literals = (base_typefield_type, literal_typename)
+                base_class.__annotations__["type"] = Union[subclass_literals]
+
+    def __str__(self):
+        return f"{self.__class__.__name__}[{self.__get_type__()}]({super().__str__()})"
 
     @classmethod
-    def __subtypes__(cls: Type[TPM]) -> Tuple[Type["TPM"], ...]:
-        return tuple(all_subclasses(cls))
-
-    @classmethod
-    def __is_base_type__(cls) -> bool:
-        config = cls.__dict__.get("Config")
-        if config is not None and config.__dict__.get("is_base_type") is not None:
-            return config.is_base_type
-        return False
-
-    @classmethod
-    def validate(cls: Type[TPM], value: Any) -> TPM:
+    def model_validate(
+        cls,
+        value: Any,
+        *,
+        strict: bool | None = None,
+        from_attributes: bool | None = None,
+        context: Any | None = None,
+    ) -> Self:
         if isinstance(value, dict) and "type" in value:
             typename = value.pop("type")
             try:
                 subcls = cls.load_alias(typename)
-                return subcls.validate(value)  # type: ignore[return-value]
+                return subcls.model_validate(
+                    value, strict=strict, from_attributes=from_attributes, context=context
+                )  # Pydantic v2 uses model_validate
             finally:
                 value["type"] = typename
-        return super().validate(value)  # type: ignore[misc]
+        return super().model_validate(value, strict=strict, from_attributes=from_attributes, context=context)
+
+    @model_validator(mode="wrap")
+    def _delegate_validation(cls, data, handler) -> Any:
+        if not isinstance(data, dict):
+            return handler(data)
+        if "type" in data and data["type"] != cls.__get_type__():
+            return cls.model_validate(data)
+        typename = data.pop("type", None) if isinstance(data, dict) else None
+        try:
+            return handler(data)
+        finally:
+            if typename is not None:
+                data["type"] = typename
+
+        # if "type" in data and data["type"] != cls.__get_type__():
+        #     return cls.model_validate(data)
+        # try:
+        #     return handler(data)
+        # except TypeError as e:
+        #     raise
+
+    @model_serializer(mode="wrap")
+    def _delegate_serialization(self, nxt: SerializerFunctionWrapHandler, info: SerializationInfo):
+        if f"serializer={self.__class__.__name__}" not in str(nxt):
+            return self.model_dump(  # type: ignore[call-arg]
+                mode=info.mode,
+                include=info.include,  # type: ignore[arg-type]
+                exclude=info.exclude,  # type: ignore[arg-type]
+                context=info.context,
+                by_alias=info.by_alias,
+                exclude_unset=info.exclude_unset,
+                exclude_none=info.exclude_none,
+                exclude_defaults=info.exclude_defaults,
+                round_trip=info.round_trip,  # type: ignore[arg-type]
+                serialize_as_any=info.serialize_as_any,
+            )
+        return nxt(self)
 
     @classmethod
-    def load_alias(cls, typename):
-        key = (get_base_class(cls), typename)  # type: ignore[arg-type]
+    def load_alias(cls, typename: str):
+        key = (get_base_class(cls), typename)
+
         if key in LOADED_TYPE_ALIASES:
             subcls = LOADED_TYPE_ALIASES[key]
         else:
@@ -280,14 +355,14 @@ class PolymorphicModel(BaseModel):
                 classpath = TYPE_ALIASES[key]
             else:
                 if "." not in typename:
-                    raise ValueError(f'Unknown alias "{typename}"')
+                    raise PydanticCustomError("unknown_alias", f'Unknown alias "{typename}"')
                 classpath = typename
             if not any(classpath.startswith(p) for p in ALLOWED_TYPE_PREFIXES):
-                raise ValueError(f"{classpath} does not match any allowed prefixes")
+                raise PydanticCustomError("invalid_prefix", f"{classpath} does not match any allowed prefixes")
             try:
                 subcls = import_string(classpath)
             except ImportError as e:
-                raise ValueError(f"Error importing subclass from '{classpath}' {e.args[0]}") from e
+                raise PydanticCustomError("import_error", f"Error importing subclass from '{classpath}'") from e
         return subcls
 
 
@@ -297,7 +372,7 @@ def get_value_fingerprint(value: Any) -> FingerprintPart:
     if isinstance(value, np.int64):
         return int(value)
     if isinstance(value, BaseModel):
-        return get_value_fingerprint(value.dict())
+        return get_value_fingerprint(value.model_dump())
     if dataclasses.is_dataclass(value):
         return get_value_fingerprint(dataclasses.asdict(value))
     if isinstance(value, Enum):
@@ -329,10 +404,9 @@ def _is_yaml_fmt(path: str, fmt: Literal["yaml", "json", None]) -> bool:
 
 
 class EvidentlyBaseModel(FrozenBaseModel, PolymorphicModel):
-    class Config:
-        type_alias = "evidently:base:EvidentlyBaseModel"
-        alias_required = True
-        is_base_type = True
+    __type_alias__: ClassVar[Optional[str]] = "evidently:base:EvidentlyBaseModel"
+    __alias_required__: ClassVar[bool] = True
+    __is_base_type__: ClassVar[bool] = True
 
     def get_fingerprint(self) -> Fingerprint:
         classpath = self.__get_classpath__()
@@ -343,8 +417,8 @@ class EvidentlyBaseModel(FrozenBaseModel, PolymorphicModel):
     def get_fingerprint_parts(self) -> Tuple[FingerprintPart, ...]:
         return tuple(
             (name, self.get_field_fingerprint(name))
-            for name, field in sorted(self.__fields__.items())
-            if field.required or getattr(self, name) != field.get_default()
+            for name, field in sorted(self.model_fields.items())
+            if field.is_required() or getattr(self, name) != field.default
         )
 
     def get_field_fingerprint(self, field: str) -> FingerprintPart:
@@ -352,7 +426,7 @@ class EvidentlyBaseModel(FrozenBaseModel, PolymorphicModel):
         return get_value_fingerprint(value)
 
     def update(self: EBM, **kwargs) -> EBM:
-        data = self.dict()
+        data = self.model_dump()
         data.update(kwargs)
         return self.__class__(**data)
 
@@ -363,20 +437,19 @@ class EvidentlyBaseModel(FrozenBaseModel, PolymorphicModel):
                 data = yaml.safe_load(f)
             else:
                 data = json.load(f)
-            return parse_obj_as(cls, data)
+            return TypeAdapter(cls).validate_python(data)
 
     def dump(self, path: str, fmt: Literal["json", "yaml", None] = None):
         with open(path, "w") as f:
             if _is_yaml_fmt(path, fmt):
-                yaml.safe_dump(json.loads(self.json()), f)
+                yaml.safe_dump(json.loads(self.model_dump_json()), f)
             else:
-                f.write(self.json(indent=2, ensure_ascii=False))
+                f.write(self.model_dump_json(indent=2))
 
 
 @autoregister
 class WithTestAndMetricDependencies(EvidentlyBaseModel):
-    class Config:
-        type_alias = "evidently:test:WithTestAndMetricDependencies"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:test:WithTestAndMetricDependencies"
 
     def __evidently_dependencies__(self):
         from evidently.legacy.base_metric import Metric
@@ -391,8 +464,9 @@ class WithTestAndMetricDependencies(EvidentlyBaseModel):
 
 class EnumValueMixin(BaseModel):
     def _to_enum_value(self, key, value):
-        field = self.__fields__[key]
-        if isinstance(field.type_, type) and not issubclass(field.type_, Enum):
+        field = self.model_fields[key]
+        ann = field.annotation
+        if isinstance(ann, type) and not issubclass(ann, Enum):
             return value
 
         if isinstance(value, list):
@@ -405,15 +479,27 @@ class EnumValueMixin(BaseModel):
             return {v.value if isinstance(v, Enum) else v for v in value}
         return value.value if isinstance(value, Enum) else value
 
-    def dict(self, *args, **kwargs) -> "DictStrAny":
-        res = super().dict(*args, **kwargs)
+    def model_dump(self, *args, **kwargs) -> dict[str, Any]:
+        res = super().model_dump(*args, **kwargs)
         return {k: self._to_enum_value(k, v) for k, v in res.items()}
+
+    @model_serializer(mode="wrap")
+    def _delegate_serialization(self, nxt: SerializerFunctionWrapHandler, info: SerializationInfo):
+        try:
+            res = super()._delegate_serialization(nxt, info)
+        except AttributeError:
+            res = nxt(self)
+        return {k: self._to_enum_value(k, v) for k, v in res.items()}  # type: ignore[call-arg]
 
 
 class ExcludeNoneMixin(BaseModel):
-    def dict(self, *args, **kwargs) -> "DictStrAny":
-        kwargs["exclude_none"] = True
-        return super().dict(*args, **kwargs)
+    @model_serializer(mode="wrap")
+    def _delegate_serialization(self, nxt: SerializerFunctionWrapHandler, info: SerializationInfo):
+        try:
+            res = super()._delegate_serialization(nxt, info)
+        except AttributeError:
+            res = nxt(self)
+        return {k: v for k, v in res.items() if v is not None}
 
 
 class FieldTags(Enum):
@@ -429,8 +515,7 @@ IncludeTags = FieldTags  # fixme: tmp for compatibility, remove in separate PR
 
 
 class FieldInfo(EnumValueMixin):
-    class Config:
-        frozen = True
+    model_config = ConfigDict(frozen=True)
 
     path: str
     tags: FrozenSet[FieldTags]
@@ -467,7 +552,7 @@ class FieldPath:
         if self.has_instance and self._is_mapping and isinstance(self._instance, dict):
             return list(self._instance.keys())
         if isinstance(self._cls, type) and issubclass(self._cls, BaseModel):
-            return list(self._cls.__fields__)
+            return list(self._cls.model_fields)  # type: ignore[call-overload]
         return []
 
     def __getattr__(self, item) -> "FieldPath":
@@ -477,14 +562,18 @@ class FieldPath:
         if self._is_mapping:
             if self.has_instance and isinstance(self._instance, dict):
                 return FieldPath(self._path + [item], self._instance[item])
+            if not self.has_instance and _is_dict_annotation(self._cls):
+                value_type = _get_dict_value_type(self._cls)
+                if value_type is not None:
+                    return FieldPath(self._path + [item], value_type)
             return FieldPath(self._path + [item], self._cls)
         if not issubclass(self._cls, BaseModel):
             raise AttributeError(f"{self._cls} does not have fields")
-        if item not in self._cls.__fields__:
+        if item not in self._cls.model_fields:  # type: ignore[operator]
             raise AttributeError(f"{self._cls} type does not have '{item}' field")
-        field = self._cls.__fields__[item]
-        field_value = field.type_
-        is_mapping = field.shape == SHAPE_DICT
+        field = self._cls.model_fields[item]  # type: ignore[index]
+        field_value = get_field_inner_type(field)
+        is_mapping = _is_dict_annotation(field.annotation)
         if self.has_instance:
             field_value = getattr(self._instance, item)
             if is_mapping:
@@ -495,15 +584,15 @@ class FieldPath:
         if not isinstance(self._cls, type) or not issubclass(self._cls, BaseModel):
             return [repr(self)]
         res = []
-        for name, field in self._cls.__fields__.items():
-            field_value = field.type_
+        for name, field in self._cls.model_fields.items():  # type: ignore[attr-defined]
+            field_value = field.annotation
             # todo: do something with recursive imports
             from evidently.legacy.core import get_field_tags
 
             field_tags = get_field_tags(self._cls, name)
             if field_tags is not None and (exclude is not None and any(t in exclude for t in field_tags)):
                 continue
-            is_mapping = field.shape == SHAPE_DICT
+            is_mapping = _is_dict_annotation(field.annotation)
             if self.has_instance:
                 field_value = getattr(self._instance, name)
                 if is_mapping and isinstance(field_value, dict):
@@ -512,7 +601,14 @@ class FieldPath:
                     continue
             else:
                 if is_mapping:
-                    name = f"{name}.*"
+                    value_type = _get_dict_value_type(field.annotation)
+                    if value_type is not None:
+                        res.extend(
+                            FieldPath(self._path + [f"{name}.*"], value_type).list_nested_fields(exclude=exclude)
+                        )
+                    else:
+                        res.append(_to_path(self._path + [f"{name}.*"]))
+                    continue
             res.extend(FieldPath(self._path + [name], field_value).list_nested_fields(exclude=exclude))
         return res
 
@@ -521,7 +617,7 @@ class FieldPath:
             return [(self._path, current_tags)]
         from evidently.legacy.core import BaseResult
 
-        if issubclass(self._cls, BaseResult) and self._cls.__config__.extract_as_obj:
+        if issubclass(self._cls, BaseResult) and self._cls.model_config.get("extract_as_obj", False):
             return [(self._path, current_tags)]
         res = []
         from evidently.ui.backport import ByLabelCountValueV1
@@ -532,15 +628,15 @@ class FieldPath:
         if issubclass(self._cls, ByLabelCountValueV1):
             res.append((self._path + ["counts"], current_tags.union({IncludeTags.Render})))
             res.append((self._path + ["shares"], current_tags.union({IncludeTags.Render})))
-        for name, field in self._cls.__fields__.items():
-            field_value = field.type_
+        for name, field in self._cls.model_fields.items():  # type: ignore[attr-defined]
+            field_value = field.annotation
 
             # todo: do something with recursive imports
             from evidently.legacy.core import get_field_tags
 
             field_tags = get_field_tags(self._cls, name)
 
-            is_mapping = field.shape == SHAPE_DICT
+            is_mapping = _is_dict_annotation(field.annotation)
             if self.has_instance:
                 field_value = getattr(self._instance, name)
                 if is_mapping and isinstance(field_value, dict):
@@ -569,7 +665,7 @@ class FieldPath:
             raise ValueError("Empty path provided")
         if len(path) == 1:
             if isinstance(self._cls, type) and issubclass(self._cls, BaseModel):
-                return self._cls.__fields__[path[0]].outer_type_
+                return self._cls.model_fields[path[0]].annotation  # type: ignore[index]
             if self.has_instance:
                 # fixme: tmp fix
                 # in case of field like f: Dict[str, A] we wont know that value was type annotated with A when we get to it
@@ -596,7 +692,7 @@ class FieldPath:
 
         if not isinstance(self._cls, type) or not issubclass(self._cls, BaseResult):
             return None
-        self_tags = self._cls.__config__.tags
+        self_tags = self._cls.__tags__ or set()
         if len(path) == 0:
             return self_tags
         field_name, *path = path
@@ -608,7 +704,7 @@ class FieldPath:
 
 
 @pydantic_type_validator(FieldPath)
-def series_validator(value):
+def field_path_validator(value):
     return value.get_path()
 
 
@@ -616,16 +712,69 @@ def get_object_hash_deprecated(obj: Union[BaseModel, dict]):
     from evidently.legacy.utils import NumpyEncoder
 
     if isinstance(obj, BaseModel):
-        obj = obj.dict()
+        obj = obj.model_dump()
     return hashlib.md5(json.dumps(obj, cls=NumpyEncoder).encode("utf8"), **md5_kwargs).hexdigest()  # nosec: B324
 
 
 class AutoAliasMixin:
     __alias_type__: ClassVar[str]
+    __type_alias__: ClassVar[Optional[str]] = None
 
     @classmethod
     def __get_type__(cls) -> str:
-        config = cls.__dict__.get("Config")
-        if config is not None and config.__dict__.get("type_alias") is not None:
-            return config.type_alias
+        type_alias = cls.__dict__.get("__type_alias__")
+        if type_alias is not None:
+            return str(type_alias)
+        if not hasattr(cls, "__alias_type__"):
+            raise TypeError(f"{cls.__name__} `__alias_type__` is not defined")
         return f"evidently:{cls.__alias_type__}:{cls.__name__}"
+
+
+def get_field_inner_type(field: PydanticFieldInfo) -> Type:
+    """Return the inner type of a Pydantic field, unwrapping containers like Optional, List, etc."""
+    typ = field.annotation
+    while True:
+        origin = get_origin(typ)
+        args = get_args(typ)
+        # Unwrap Annotated
+        if origin is Annotated:
+            typ = args[0]
+            continue
+        # Unwrap Optional/Union[T, None]
+        if origin is Union:
+            non_none = [t for t in args if t is not type(None)]
+            if len(non_none) == 1:
+                typ = non_none[0]
+                continue
+        # Unwrap list, set, tuple, etc.
+        if origin in (list, set, tuple):
+            if args:
+                typ = args[0]
+                continue
+        if origin is dict:
+            typ = args[1]
+            break
+        break
+    if typ is None:
+        raise TypeError(f"Field {field} does not have correct type annotation ")
+    return typ
+
+
+def get_field_outer_type(field: PydanticFieldInfo) -> Type:
+    typ = field.annotation
+    if get_origin(typ) is Union:
+        args = get_args(typ)
+        if len(args) == 2 and type(None) in args:
+            typ = [a for a in args if a is not type(None)][0]
+    if typ is None:
+        raise TypeError(f"Field {field} does not have correct type annotation")
+    return typ
+
+
+def force_keys_to_str(value: Optional[dict[Any, Any]]) -> Optional[dict[str, Any]]:
+    if value is None:
+        return None
+    return {str(k): v for k, v in value.items()}
+
+
+StrKeyValidator = BeforeValidator(force_keys_to_str)

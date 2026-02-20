@@ -4,8 +4,9 @@ from typing import List
 from typing import Optional
 from typing import TypeVar
 
-from evidently._pydantic_compat import BaseModel
-from evidently._pydantic_compat import Extra
+from pydantic import BaseModel
+from pydantic import ConfigDict
+
 from evidently.legacy.base_metric import Metric
 from evidently.legacy.model.dashboard import DashboardInfo
 from evidently.legacy.model.widget import BaseWidgetInfo
@@ -30,8 +31,7 @@ from evidently.legacy.ui.type_aliases import UserID
 
 class EvidentlyAPIModel(BaseModel):
     # todo: migrate all models to this base
-    class Config:
-        extra = Extra.forbid
+    model_config = ConfigDict(extra="forbid")
 
 
 class MetricModel(BaseModel):
@@ -180,7 +180,7 @@ class UserModel(BaseModel):
         return UserModel(id=user.id, name=user.name, email=user.email)
 
     def merge(self: UT, other: "UserModel") -> UT:
-        kwargs = {f: getattr(other, f, None) or getattr(self, f) for f in self.__fields__}
+        kwargs = {f: getattr(other, f, None) or getattr(self, f) for f in self.model_fields}
         return self.__class__(**kwargs)
 
 

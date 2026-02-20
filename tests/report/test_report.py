@@ -1,4 +1,5 @@
 import json
+from typing import ClassVar
 from typing import List
 
 import pandas as pd
@@ -14,9 +15,8 @@ from evidently.legacy.report import Report
 
 
 class MockMetricResult(MetricResult):
-    class Config:
-        alias_required = False
-        dict_exclude_fields = {"series"}
+    __alias_required__: ClassVar[bool] = False
+    __dict_exclude_fields__: ClassVar[set] = {"series"}
 
     value: str
     series: pd.Series
@@ -24,8 +24,7 @@ class MockMetricResult(MetricResult):
 
 
 class MockMetric(Metric[MockMetricResult]):
-    class Config:
-        alias_required = False
+    __alias_required__: ClassVar[bool] = False
 
     def calculate(self, data: InputData) -> MockMetricResult:
         return MockMetricResult(value="a", series=pd.Series([0]), distribution=Distribution(x=[1, 1], y=[0, 0]))

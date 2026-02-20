@@ -1,4 +1,6 @@
+from typing import ClassVar
 from typing import Dict
+from typing import Optional
 
 from evidently.legacy.features import json_schema_match_feature
 from evidently.legacy.features.generated_features import FeatureDescriptor
@@ -6,8 +8,7 @@ from evidently.legacy.features.generated_features import GeneratedFeature
 
 
 class JSONSchemaMatch(FeatureDescriptor):
-    class Config:
-        type_alias = "evidently:descriptor:JSONSchemaMatch"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:descriptor:JSONSchemaMatch"
 
     expected_schema: Dict[str, type]
     validate_types: bool = False

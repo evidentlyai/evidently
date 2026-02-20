@@ -1,5 +1,6 @@
 import collections
 import re
+from typing import ClassVar
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -27,15 +28,13 @@ from evidently.legacy.renderers.html_widgets import widget_tabs
 class DataIntegrityValueByRegexpStat(MetricResult):
     """Statistics about matched by a regular expression values in a column for one dataset"""
 
-    class Config:
-        type_alias = "evidently:metric_result:DataIntegrityValueByRegexpStat"
-        pd_exclude_fields = {"table_of_matched", "table_of_not_matched"}
-
-        field_tags = {
-            "number_of_rows": {IncludeTags.Extra},
-            "table_of_matched": {IncludeTags.Extra},
-            "table_of_not_matched": {IncludeTags.Extra},
-        }
+    __type_alias__: ClassVar[Optional[str]] = "evidently:metric_result:DataIntegrityValueByRegexpStat"
+    __pd_exclude_fields__: ClassVar[set] = {"table_of_matched", "table_of_not_matched"}
+    __field_tags__: ClassVar[Dict[str, set]] = {
+        "number_of_rows": {IncludeTags.Extra},
+        "table_of_matched": {IncludeTags.Extra},
+        "table_of_not_matched": {IncludeTags.Extra},
+    }
 
     # count of matched values in the column, without NaNs
     number_of_matched: int
@@ -50,15 +49,14 @@ class DataIntegrityValueByRegexpStat(MetricResult):
 
 
 class DataIntegrityValueByRegexpMetricResult(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:DataIntegrityValueByRegexpMetricResult"
-        field_tags = {
-            "current": {IncludeTags.Current},
-            "reference": {IncludeTags.Reference},
-            "column_name": {IncludeTags.Parameter},
-            "reg_exp": {IncludeTags.Parameter},
-            "top": {IncludeTags.Parameter},
-        }
+    __type_alias__: ClassVar[Optional[str]] = "evidently:metric_result:DataIntegrityValueByRegexpMetricResult"
+    __field_tags__: ClassVar[Dict[str, set]] = {
+        "current": {IncludeTags.Current},
+        "reference": {IncludeTags.Reference},
+        "column_name": {IncludeTags.Parameter},
+        "reg_exp": {IncludeTags.Parameter},
+        "top": {IncludeTags.Parameter},
+    }
 
     # name of the column that we check by the regular expression
     column_name: str
@@ -72,8 +70,7 @@ class DataIntegrityValueByRegexpMetricResult(MetricResult):
 
 
 class ColumnRegExpMetric(Metric[DataIntegrityValueByRegexpMetricResult]):
-    class Config:
-        type_alias = "evidently:metric:ColumnRegExpMetric"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:metric:ColumnRegExpMetric"
 
     """Count number of values in a column matched or not by a regular expression (regexp)"""
 
@@ -83,14 +80,14 @@ class ColumnRegExpMetric(Metric[DataIntegrityValueByRegexpMetricResult]):
     reg_exp: str
     top: int
     # compiled regular expression for speed optimization
-    _reg_exp_compiled: Pattern
+    __reg_exp_compiled__: Pattern
 
     def __init__(self, column_name: str, reg_exp: str, top: int = 10, options: AnyOptions = None):
         self.top = top
         self.reg_exp = reg_exp
         self.column_name = column_name
-        self._reg_exp_compiled = re.compile(reg_exp)
         super().__init__(options=options)
+        self.__reg_exp_compiled__ = re.compile(reg_exp)
 
     def _calculate_stats_by_regexp(self, column: pd.Series) -> DataIntegrityValueByRegexpStat:
         number_of_matched = 0
@@ -106,7 +103,7 @@ class ColumnRegExpMetric(Metric[DataIntegrityValueByRegexpMetricResult]):
 
             item = str(item)
 
-            if bool(self._reg_exp_compiled.match(str(item))):
+            if bool(self.__reg_exp_compiled__.match(str(item))):
                 number_of_matched += 1
                 table_of_matched[item] += 1
 

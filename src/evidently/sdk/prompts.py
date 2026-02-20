@@ -10,11 +10,11 @@ from typing import Literal
 from typing import Optional
 from typing import Union
 
-from evidently._pydantic_compat import BaseModel
-from evidently._pydantic_compat import Field
-from evidently._pydantic_compat import PrivateAttr
-from evidently._pydantic_compat import ValidationError
-from evidently._pydantic_compat import parse_obj_as
+from pydantic import BaseModel
+from pydantic import Field
+from pydantic import TypeAdapter
+from pydantic import ValidationError
+
 from evidently.errors import EvidentlyError
 from evidently.llm.prompts.content import PromptContent
 from evidently.llm.prompts.content import PromptContentType
@@ -111,7 +111,7 @@ class PromptVersion(BaseModel):
     ):
         if not isinstance(content, PromptContent):
             try:
-                content = parse_obj_as(PromptContent, content)  # type: ignore[type-abstract]
+                content = TypeAdapter(PromptContent).validate_python(content)  # type: ignore[type-abstract]
             except ValidationError:
                 content = PromptContent.parse(content)
         if content_type is None:
@@ -141,7 +141,7 @@ class RemotePrompt(Prompt):
     and manage remote prompts.
     """
 
-    _api: "PromptAPI" = PrivateAttr()
+    __api__: Optional["PromptAPI"] = None
 
     id: PromptID = ZERO_UUID
     """Unique prompt identifier."""
@@ -161,8 +161,14 @@ class RemotePrompt(Prompt):
         Returns:
         * Self for method chaining.
         """
-        self._api = api
+        self.__api__ = api
         return self
+
+    @property
+    def _api(self) -> "PromptAPI":
+        if self.__api__ is None:
+            raise ValueError("api was not initialized")
+        return self.__api__
 
     def list_versions(self) -> List[PromptVersion]:
         """List all versions of this prompt.

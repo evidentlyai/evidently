@@ -6,7 +6,6 @@ from typing import Union
 
 import pandas as pd
 
-from evidently._pydantic_compat import PrivateAttr
 from evidently.legacy.base_metric import ColumnName
 from evidently.legacy.core import ColumnType
 from evidently.legacy.features.generated_features import GeneratedFeatures
@@ -22,8 +21,7 @@ from evidently.llm.utils.wrapper import get_llm_wrapper
 
 
 class LLMJudge(GeneratedFeatures):
-    class Config:
-        type_alias = "evidently:feature:LLMJudge"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:feature:LLMJudge"
 
     """Generic LLM judge generated features"""
 
@@ -36,12 +34,12 @@ class LLMJudge(GeneratedFeatures):
     input_columns: Optional[Dict[str, str]] = None
     template: BaseLLMPromptTemplate
 
-    _llm_wrapper: Optional[LLMWrapper] = PrivateAttr(None)
+    __llm_wrapper__: Optional[LLMWrapper] = None
 
     def get_llm_wrapper(self, options: Options) -> LLMWrapper:
-        if self._llm_wrapper is None:
-            self._llm_wrapper = get_llm_wrapper(self.provider, self.model, options)
-        return self._llm_wrapper
+        if self.__llm_wrapper__ is None:
+            self.__llm_wrapper__ = get_llm_wrapper(self.provider, self.model, options)
+        return self.__llm_wrapper__
 
     def get_input_columns(self):
         if self.input_column is None:

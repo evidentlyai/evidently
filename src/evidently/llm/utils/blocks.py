@@ -12,6 +12,8 @@ from typing import Tuple
 from typing import TypeVar
 from typing import Union
 
+from pydantic import ConfigDict
+
 from evidently.llm.utils.errors import LLMResponseParseError
 from evidently.llm.utils.parsing import get_tags
 from evidently.pydantic_utils import AutoAliasMixin
@@ -21,9 +23,8 @@ from evidently.pydantic_utils import EvidentlyBaseModel
 class PromptBlock(AutoAliasMixin, EvidentlyBaseModel):
     __alias_type__: ClassVar[str] = "prompt_block"
 
-    class Config:
-        is_base_type = True
-        extra = "forbid"
+    __is_base_type__: ClassVar[bool] = True
+    model_config = ConfigDict(extra="forbid")
 
     def _get_class_doc(self):
         doc = inspect.getdoc(self.__class__)

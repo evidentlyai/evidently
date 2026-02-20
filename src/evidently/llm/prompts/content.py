@@ -25,8 +25,7 @@ class PromptContent(AutoAliasMixin, EvidentlyBaseModel):
     __alias_type__: ClassVar = "prompt_content"
     __parse_priority__: ClassVar[float] = 0
 
-    class Config:
-        is_base_type = True
+    __is_base_type__: ClassVar[bool] = True
 
     @abstractmethod
     def as_text(self) -> str:

@@ -3,8 +3,8 @@ from inspect import isabstract
 from typing import List
 
 import pytest
+from pydantic import parse_obj_as
 
-from evidently._pydantic_compat import parse_obj_as
 from evidently.core.container import MetricContainer
 from evidently.core.datasets import TestSummaryInfo
 from evidently.generators import ColumnMetricGenerator
@@ -66,4 +66,5 @@ def test_all_presets_tested():
 def test_all_presets_json_serialization(preset):
     payload = json.loads(preset.json())
     preset2 = parse_obj_as(MetricContainer, payload)
+    assert json.loads(preset2.json()) == payload
     assert preset2 == preset

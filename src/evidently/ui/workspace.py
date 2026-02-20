@@ -15,10 +15,10 @@ from typing import Union
 from typing import overload
 from urllib.parse import urljoin
 
+from pydantic import BaseModel
 from requests import HTTPError
 from requests import Response
 
-from evidently._pydantic_compat import BaseModel
 from evidently.core.datasets import Dataset
 from evidently.core.report import Snapshot
 from evidently.core.serialization import SnapshotModel

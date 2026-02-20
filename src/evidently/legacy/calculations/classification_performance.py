@@ -3,7 +3,6 @@ from typing import Dict
 from typing import List
 from typing import Optional
 from typing import Sequence
-from typing import Union
 
 import numpy as np
 import pandas as pd
@@ -28,7 +27,7 @@ if TYPE_CHECKING:
 
 
 def calculate_confusion_by_classes(
-    confusion_matrix: np.ndarray, class_names: Sequence[Union[str, int, None]]
+    confusion_matrix: np.ndarray, class_names: Sequence[Label]
 ) -> Dict[Label, Dict[str, int]]:
     """Calculate metrics:
     - TP (true positive)
@@ -59,7 +58,7 @@ def calculate_confusion_by_classes(
     false_positive = confusion_matrix.sum(axis=0) - np.diag(confusion_matrix)
     false_negative = confusion_matrix.sum(axis=1) - np.diag(confusion_matrix)
     true_negative = confusion_matrix.sum() - (false_positive + false_negative + true_positive)
-    confusion_by_classes = {}
+    confusion_by_classes: Dict[Label, Dict[str, int]] = {}
 
     for idx, class_name in enumerate(class_names):
         confusion_by_classes[class_name] = {
@@ -88,7 +87,7 @@ def k_probability_threshold(
 
 
 def get_prediction_data(
-    data: pd.DataFrame, data_columns: DatasetColumns, pos_label: Optional[Union[str, int]], threshold: float = 0.5
+    data: pd.DataFrame, data_columns: DatasetColumns, pos_label: Optional[Label], threshold: float = 0.5
 ) -> PredictionData:
     """Get predicted values and optional prediction probabilities from source data.
     Also take into account a threshold value - if a probability is less than the value, do not take it into account.
@@ -237,7 +236,7 @@ def get_prediction_data(
     )
 
 
-def _check_pos_labels(pos_label: Optional[Union[str, int]], labels: List[str]) -> Union[str, int]:
+def _check_pos_labels(pos_label: Optional[Label], labels: List[str]) -> Label:
     if pos_label is None:
         raise ValueError("Undefined pos_label.")
 
@@ -248,7 +247,7 @@ def _check_pos_labels(pos_label: Optional[Union[str, int]], labels: List[str]) -
 
 
 def threshold_probability_labels(
-    prediction_probas: pd.DataFrame, pos_label: Union[str, int], neg_label: Union[str, int], threshold: float
+    prediction_probas: pd.DataFrame, pos_label: Label, neg_label: Label, threshold: float
 ) -> pd.Series:
     """Get prediction values by probabilities with the threshold apply"""
     return prediction_probas[pos_label].apply(lambda x: pos_label if x >= threshold else neg_label)

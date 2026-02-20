@@ -12,10 +12,9 @@ from typing import Type
 import uuid6
 from fsspec import AbstractFileSystem
 from fsspec import get_fs_token_paths
+from pydantic import TypeAdapter
+from pydantic import ValidationError
 
-from evidently._pydantic_compat import PrivateAttr
-from evidently._pydantic_compat import ValidationError
-from evidently._pydantic_compat import parse_obj_as
 from evidently.legacy.suite.base_suite import Snapshot
 from evidently.legacy.test_suite import TestSuite
 from evidently.legacy.tests.base_test import Test
@@ -94,17 +93,17 @@ class FSLocation:
 class FSSpecBlobStorage(BlobStorage):
     base_path: str
 
-    _location: FSLocation = PrivateAttr(None)
+    __location__: Optional[FSLocation] = None
 
     def __init__(self, base_path: str):
         self.base_path = base_path
-        self._location = FSLocation(self.base_path)
+        self.__location__ = FSLocation(self.base_path)
 
     @property
     def location(self) -> FSLocation:
-        if self._location is None:
-            self._location = FSLocation(self.base_path)
-        return self._location
+        if self.__location__ is None:
+            self.__location__ = FSLocation(self.base_path)
+        return self.__location__
 
     def get_snapshot_blob_id(self, project_id: ProjectID, snapshot: Snapshot) -> BlobID:
         return posixpath.join(str(project_id), SNAPSHOTS, str(snapshot.id)) + ".json"
@@ -127,7 +126,8 @@ class FSSpecBlobStorage(BlobStorage):
 def load_project(location: FSLocation, path: str) -> Optional[Project]:
     try:
         with location.open(posixpath.join(path, METADATA_PATH)) as f:
-            return parse_obj_as(Project, json.load(f))
+            data = json.load(f)
+            return TypeAdapter(Project).validate_python(data)
     except FileNotFoundError:
         return None
 
@@ -177,7 +177,7 @@ class LocalState:
         try:
             snapshot_path = posixpath.join(str(project.id), SNAPSHOTS, str(snapshot_id) + ".json")
             with self.location.open(snapshot_path) as f:
-                suite = parse_obj_as(Snapshot, json.load(f))
+                suite = TypeAdapter(Snapshot).validate_python(json.load(f))
             snapshot = SnapshotMetadata.from_snapshot(
                 suite, BlobMetadata(id=snapshot_path, size=self.location.size(snapshot_path))
             ).bind(project)
@@ -191,17 +191,17 @@ class LocalState:
 class JsonFileProjectMetadataStorage(ProjectMetadataStorage):
     path: str
 
-    _state: LocalState = PrivateAttr(None)
+    __state__: Optional[LocalState] = None
 
     def __init__(self, path: str, local_state: Optional[LocalState] = None):
         self.path = path
-        self._state = local_state or LocalState.load(self.path, None)
+        self.__state__ = local_state or LocalState.load(self.path, None)
 
     @property
     def state(self):
-        if self._state is None:
-            self._state = LocalState.load(self.path, None)
-        return self._state
+        if self.__state__ is None:
+            self.__state__ = LocalState.load(self.path, None)
+        return self.__state__
 
     async def add_project(
         self, project: Project, user: User, team: Optional[Team], org_id: Optional[OrgID] = None
@@ -275,17 +275,17 @@ class JsonFileProjectMetadataStorage(ProjectMetadataStorage):
 class InMemoryDataStorage(DataStorage):
     path: str
 
-    _state: LocalState = PrivateAttr(None)
+    __state__: Optional[LocalState] = None
 
     def __init__(self, path: str, local_state: Optional[LocalState] = None):
         self.path = path
-        self._state = local_state or LocalState.load(self.path, None)
+        self.__state__ = local_state or LocalState.load(self.path, None)
 
     @property
     def state(self):
-        if self._state is None:
-            self._state = LocalState.load(self.path, None)
-        return self._state
+        if self.__state__ is None:
+            self.__state__ = LocalState.load(self.path, None)
+        return self.__state__
 
     async def extract_points(self, project_id: ProjectID, snapshot: Snapshot):
         pass

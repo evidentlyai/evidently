@@ -3,7 +3,6 @@ from typing import Optional
 from typing import Sequence
 from typing import Tuple
 
-from evidently._pydantic_compat import PrivateAttr
 from evidently.core.container import MetricContainer
 from evidently.core.container import MetricOrContainer
 from evidently.core.metric_types import GenericSingleValueMetricTests
@@ -219,7 +218,7 @@ class RegressionPreset(MetricContainer):
     abs_max_error_tests: SingleValueMetricTests = None
     """Optional test conditions for absolute max error."""
 
-    _quality: Optional[RegressionQuality] = PrivateAttr(None)
+    __quality__: Optional[RegressionQuality] = None
     """Internal regression quality preset."""
     regression_name: str = "default"
     """Name of the regression task."""
@@ -235,7 +234,6 @@ class RegressionPreset(MetricContainer):
         regression_name: str = "default",
         include_tests: bool = True,
     ):
-        self._quality = None
         self.mean_error_tests = convert_to_mean_tests(mean_error_tests) or MeanStdMetricTests()
         self.mape_tests = convert_to_mean_tests(mape_tests) or MeanStdMetricTests()
         self.rmse_tests = convert_tests(rmse_tests)
@@ -244,9 +242,10 @@ class RegressionPreset(MetricContainer):
         self.abs_max_error_tests = convert_tests(abs_max_error_tests)
         self.regression_name = regression_name
         super().__init__(include_tests=include_tests)
+        self.__quality__ = None
 
     def generate_metrics(self, context: Context) -> Sequence[MetricOrContainer]:
-        self._quality = RegressionQuality(
+        self.__quality__ = RegressionQuality(
             True,
             True,
             True,
@@ -260,7 +259,7 @@ class RegressionPreset(MetricContainer):
             regression_name=self.regression_name,
         )
         return (
-            self._quality.metrics(context)
+            self.__quality__.metrics(context)
             + [
                 # MAPE(mean_tests=self._get_tests(self.mape_tests.mean), std_tests=self._get_tests(self.mape_tests.std)),
                 # AbsMaxError(tests=self._get_tests(self.abs_max_error_tests)),
@@ -273,10 +272,10 @@ class RegressionPreset(MetricContainer):
         context: "Context",
         child_widgets: Optional[List[Tuple[Optional[MetricId], List[BaseWidgetInfo]]]] = None,
     ) -> List[BaseWidgetInfo]:
-        if self._quality is None:
-            raise ValueError("No _quality set in preset, something went wrong.")
+        if self.__quality__ is None:
+            raise ValueError("No __quality__ set in preset, something went wrong.")
         return (
-            self._quality.render(context)
+            self.__quality__.render(context)
             + context.get_metric_result(
                 MAPE(
                     regression_name=self.regression_name,

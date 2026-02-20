@@ -1,7 +1,7 @@
+from typing import ClassVar
 from typing import Dict
 from typing import List
 from typing import Optional
-from typing import Union
 
 import numpy as np
 import pandas as pd
@@ -12,6 +12,7 @@ from evidently.legacy.base_metric import Metric
 from evidently.legacy.base_metric import MetricResult
 from evidently.legacy.calculations.classification_performance import get_prediction_data
 from evidently.legacy.core import IncludeTags
+from evidently.legacy.core import Label
 from evidently.legacy.metric_results import PredictionData
 from evidently.legacy.metric_results import ROCCurve
 from evidently.legacy.metric_results import ROCCurveData
@@ -29,19 +30,19 @@ ROC_CURVE_MAX_POINTS = 1000
 
 
 class ClassificationRocCurveResults(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:ClassificationRocCurveResults"
-        pd_include = False
-
-        field_tags = {"current_roc_curve": {IncludeTags.Current}, "reference_roc_curve": {IncludeTags.Reference}}
+    __type_alias__: ClassVar[Optional[str]] = "evidently:metric_result:ClassificationRocCurveResults"
+    __pd_include__: ClassVar[bool] = False
+    __field_tags__: ClassVar[Dict[str, set]] = {
+        "current_roc_curve": {IncludeTags.Current},
+        "reference_roc_curve": {IncludeTags.Reference},
+    }
 
     current_roc_curve: Optional[ROCCurve] = None
     reference_roc_curve: Optional[ROCCurve] = None
 
 
 class ClassificationRocCurve(Metric[ClassificationRocCurveResults]):
-    class Config:
-        type_alias = "evidently:metric:ClassificationRocCurve"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:metric:ClassificationRocCurve"
 
     def calculate(self, data: InputData) -> ClassificationRocCurveResults:
         dataset_columns = process_columns(data.current_data, data.column_mapping)
@@ -73,7 +74,7 @@ class ClassificationRocCurve(Metric[ClassificationRocCurveResults]):
         target_names: Optional[TargetNames],
     ) -> ROCCurve:
         labels = prediction.labels
-        tn: Dict[Union[int, str, None], str] = {}
+        tn: Dict[Label, str] = {}
         if target_names is None:
             tn = {}
         elif isinstance(target_names, list):

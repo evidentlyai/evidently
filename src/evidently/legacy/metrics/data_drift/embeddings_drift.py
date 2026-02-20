@@ -1,7 +1,8 @@
+from typing import ClassVar
+from typing import Dict
 from typing import List
 from typing import Optional
 
-import numpy as np
 import pandas as pd
 from sklearn.manifold import TSNE
 
@@ -9,6 +10,7 @@ from evidently.legacy.base_metric import InputData
 from evidently.legacy.base_metric import Metric
 from evidently.legacy.base_metric import MetricResult
 from evidently.legacy.core import IncludeTags
+from evidently.legacy.core import PydanticNPArray
 from evidently.legacy.metrics.data_drift.embedding_drift_methods import DriftMethod
 from evidently.legacy.metrics.data_drift.embedding_drift_methods import model
 from evidently.legacy.model.widget import BaseWidgetInfo
@@ -26,34 +28,28 @@ SAMPLE_CONSTANT = 2500
 
 
 class EmbeddingsDriftMetricResults(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:EmbeddingsDriftMetricResults"
-        dict_exclude_fields = {
-            "reference",
-            "current",
-        }
-
-        field_tags = {
-            "current": {IncludeTags.Current, IncludeTags.Render},
-            "reference": {IncludeTags.Reference, IncludeTags.Render},
-            "embeddings_name": {IncludeTags.Parameter},
-            "method_name": {IncludeTags.Parameter},
-        }
+    __type_alias__: ClassVar[Optional[str]] = "evidently:metric_result:EmbeddingsDriftMetricResults"
+    __dict_exclude_fields__: ClassVar[set] = {"reference", "current"}
+    __field_tags__: ClassVar[Dict[str, set]] = {
+        "current": {IncludeTags.Current, IncludeTags.Render},
+        "reference": {IncludeTags.Reference, IncludeTags.Render},
+        "embeddings_name": {IncludeTags.Parameter},
+        "method_name": {IncludeTags.Parameter},
+    }
 
     embeddings_name: str
     drift_score: float
     drift_detected: bool
     method_name: str
-    reference: np.ndarray
-    current: np.ndarray
+    reference: PydanticNPArray
+    current: PydanticNPArray
 
 
 class EmbeddingsDriftMetric(Metric[EmbeddingsDriftMetricResults]):
-    class Config:
-        type_alias = "evidently:metric:EmbeddingsDriftMetric"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:metric:EmbeddingsDriftMetric"
 
     embeddings_name: str
-    drift_method: Optional[DriftMethod]
+    drift_method: Optional[DriftMethod] = None
 
     def __init__(self, embeddings_name: str, drift_method: Optional[DriftMethod] = None, options: AnyOptions = None):
         self.embeddings_name = embeddings_name

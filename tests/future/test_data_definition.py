@@ -4,8 +4,8 @@ import random
 
 import pandas as pd
 import pytest
+from pydantic import parse_obj_as
 
-from evidently._pydantic_compat import parse_obj_as
 from evidently.core.datasets import DEFAULT_TRACE_LINK_COLUMN
 from evidently.core.datasets import DataDefinition
 from evidently.core.datasets import Dataset

@@ -28,8 +28,7 @@ from evidently.ui.service.tracing.storage.base import TracingStorage
 
 
 class DatasetMetadataComponent(FactoryComponent[DatasetMetadataStorage], ABC):
-    class Config:
-        is_base_type = True
+    __is_base_type__: ClassVar[bool] = True
 
     __section__: ClassVar[str] = "dataset_metadata"
     dependency_name: ClassVar[str] = "dataset_metadata"
@@ -40,8 +39,7 @@ class DatasetMetadataComponent(FactoryComponent[DatasetMetadataStorage], ABC):
 
 
 class DatasetFileStorageComponent(FactoryComponent[BlobStorage], ABC):
-    class Config:
-        is_base_type = True
+    __is_base_type__: ClassVar[bool] = True
 
     __section__: ClassVar[str] = "dataset_storage"
     dependency_name: ClassVar[str] = "dataset_blob_storage"
@@ -53,8 +51,7 @@ class DatasetFileStorageComponent(FactoryComponent[BlobStorage], ABC):
 
 
 class StorageComponent(Component, ABC):
-    class Config:
-        is_base_type = True
+    __is_base_type__: ClassVar[bool] = True
 
     dependency_name: ClassVar = "project_manager"
     use_cache: ClassVar[bool] = True
@@ -100,8 +97,7 @@ class StorageComponent(Component, ABC):
 
 
 class LocalStorageComponent(StorageComponent):
-    class Config:
-        type_alias = "local"
+    __type_alias__: ClassVar[Optional[str]] = "local"
 
     path: str = "workspace"
     autorefresh: bool = True
@@ -148,8 +144,7 @@ class LocalStorageComponent(StorageComponent):
 
 
 class MetadataStorageComponent(FactoryComponent[ProjectMetadataStorage], ABC):
-    class Config:
-        is_base_type = True
+    __is_base_type__: ClassVar[bool] = True
 
     __section__: ClassVar = "metadata"
     dependency_name: ClassVar = "project_metadata"
@@ -158,8 +153,7 @@ class MetadataStorageComponent(FactoryComponent[ProjectMetadataStorage], ABC):
 
 
 class DataStorageComponent(FactoryComponent[DataStorage], ABC):
-    class Config:
-        is_base_type = True
+    __is_base_type__: ClassVar[bool] = True
 
     __section__: ClassVar = "data"
 
@@ -169,8 +163,7 @@ class DataStorageComponent(FactoryComponent[DataStorage], ABC):
 
 
 class BlobStorageComponent(FactoryComponent[BlobStorage], ABC):
-    class Config:
-        is_base_type = True
+    __is_base_type__: ClassVar[bool] = True
 
     __section__: ClassVar = "blob"
 

@@ -1,7 +1,9 @@
 import contextlib
+from typing import Any
 from typing import Dict
 from typing import Iterator
 from typing import List
+from typing import Optional
 from typing import Type
 from typing import TypeVar
 
@@ -10,10 +12,9 @@ from dynaconf import LazySettings
 from dynaconf.utils.boxing import DynaBox
 from litestar import Litestar
 from litestar.di import Provide
+from pydantic import BaseModel
+from pydantic import TypeAdapter
 
-from evidently._pydantic_compat import BaseModel
-from evidently._pydantic_compat import PrivateAttr
-from evidently._pydantic_compat import parse_obj_as
 from evidently.legacy.ui.components.base import SECTION_COMPONENT_TYPE_MAPPING
 from evidently.legacy.ui.components.base import AppBuilder
 from evidently.legacy.ui.components.base import Component
@@ -79,12 +80,12 @@ class ConfigContext(ComponentContext):
 class Config(BaseModel):
     additional_components: Dict[str, Component] = {}
 
-    _components: List[Component] = PrivateAttr(default_factory=list)
-    _ctx: ComponentContext = PrivateAttr()
+    __components__: Optional[List[Component]] = None  # not a model field, internal only
+    __ctx__: Optional[ComponentContext] = None
 
     @property
     def components(self) -> List[Component]:
-        return [getattr(self, name) for name in self.__fields__ if isinstance(getattr(self, name), Component)] + list(
+        return [getattr(self, name) for name in self.model_fields if isinstance(getattr(self, name), Component)] + list(
             self.additional_components.values()
         )
 
@@ -92,9 +93,9 @@ class Config(BaseModel):
     def context(self) -> Iterator[ConfigContext]:
         ctx = ConfigContext(self, {type(c): c for c in self.components})
         ctx.validate()
-        self._ctx = ctx
+        self.__ctx__ = ctx
         yield ctx
-        del self._ctx
+        del self.__ctx__
 
 
 class AppConfig(Config):
@@ -107,8 +108,8 @@ TConfig = TypeVar("TConfig", bound=Config)
 
 def load_config(config_type: Type[TConfig], box: dict) -> TConfig:
     new_box = _convert_keys(box)
-    components = {}
-    named_components = {}
+    components: Dict[str, Component] = {}
+    named_components: Dict[str, Any] = {}
     for section, component_dict in new_box.items():
         # todo
         if not isinstance(component_dict, dict):
@@ -118,15 +119,16 @@ def load_config(config_type: Type[TConfig], box: dict) -> TConfig:
         if section in ("renamed_vars", "dict_itemiterator"):
             continue
         if section == "additional_components":
-            for subsection, compoennt_subdict in component_dict.items():
-                component = parse_obj_as(SECTION_COMPONENT_TYPE_MAPPING.get(subsection, Component), compoennt_subdict)
+            for subsection, component_subdict in component_dict.items():
+                subsection_type = SECTION_COMPONENT_TYPE_MAPPING.get(subsection, Component)
+                component: Component = TypeAdapter(subsection_type).validate_python(component_subdict)
                 components[subsection] = component
         elif section in config_type.__fields__:
             type_ = config_type.__fields__[section].type_
-            component = parse_obj_as(type_, component_dict)
+            component = TypeAdapter(type_).validate_python(component_dict)
             named_components[section] = component
         elif section in SECTION_COMPONENT_TYPE_MAPPING:
-            component = parse_obj_as(SECTION_COMPONENT_TYPE_MAPPING[section], component_dict)
+            component = TypeAdapter(SECTION_COMPONENT_TYPE_MAPPING[section]).validate_python(component_dict)
             components[section] = component
         else:
             raise ValueError(f"unknown config section {section}")

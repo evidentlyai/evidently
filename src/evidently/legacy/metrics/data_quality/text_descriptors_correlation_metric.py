@@ -1,3 +1,4 @@
+from typing import ClassVar
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -29,14 +30,13 @@ from evidently.legacy.utils.data_preprocessing import DataDefinition
 
 
 class TextDescriptorsCorrelationMetricResult(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:TextDescriptorsCorrelationMetricResult"
-        pd_include = False
-        field_tags = {
-            "current": {IncludeTags.Current},
-            "reference": {IncludeTags.Reference},
-            "column_name": {IncludeTags.Parameter},
-        }
+    __type_alias__: ClassVar[Optional[str]] = "evidently:metric_result:TextDescriptorsCorrelationMetricResult"
+    __pd_include__: ClassVar[bool] = False
+    __field_tags__: ClassVar[Dict[str, set]] = {
+        "current": {IncludeTags.Current},
+        "reference": {IncludeTags.Reference},
+        "column_name": {IncludeTags.Parameter},
+    }
 
     column_name: str
     current: Dict[str, Dict[str, ColumnCorrelations]]
@@ -44,8 +44,7 @@ class TextDescriptorsCorrelationMetricResult(MetricResult):
 
 
 class TextDescriptorsCorrelationMetric(Metric[TextDescriptorsCorrelationMetricResult]):
-    class Config:
-        type_alias = "evidently:metric:TextDescriptorsCorrelationMetric"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:metric:TextDescriptorsCorrelationMetric"
 
     """Calculates correlations between each auto-generated text feature for column_name and other dataset columns"""
 

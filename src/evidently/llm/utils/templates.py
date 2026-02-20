@@ -21,7 +21,6 @@ from typing import get_args
 import typing_inspect
 from typing_inspect import is_classvar
 
-from evidently._pydantic_compat import PrivateAttr
 from evidently.llm.models import LLMMessage
 from evidently.llm.utils.blocks import OutputFormatBlock
 from evidently.llm.utils.blocks import PromptBlock
@@ -73,10 +72,9 @@ def _get_genric_arg(cls: Type):
 
 class PromptTemplate(AutoAliasMixin, EvidentlyBaseModel):
     __alias_type__: ClassVar = "prompt_template"
-    _prepared_template: PreparedTemplate = PrivateAttr()
+    __prepared_template__: PreparedTemplate
 
-    class Config:
-        is_base_type = True
+    __is_base_type__: ClassVar[bool] = True
 
     def render(self, values: dict) -> str:
         return self.prepared_template.render(values)
@@ -91,13 +89,13 @@ class PromptTemplate(AutoAliasMixin, EvidentlyBaseModel):
 
     @property
     def prepared_template(self) -> PreparedTemplate:
-        if not hasattr(self, "_prepared_template"):
-            self._prepared_template = self.prepare()
-        return self._prepared_template
+        if not hasattr(self, "__prepared_template__"):
+            self.__prepared_template__ = self.prepare()
+        return self.__prepared_template__
 
     def clear_prepared_template(self):
         try:
-            delattr(self, "_prepared_template")
+            delattr(self, "__prepared_template__")
         except AttributeError:
             pass
 
@@ -183,7 +181,7 @@ def smart_isinstance(value, type_) -> bool:
 class StrPromptTemplate(PromptTemplate):
     prompt_template: Optional[str] = None
     _contract: ClassVar[Callable]
-    _context_vars: Dict[str, Any] = PrivateAttr()
+    __context_vars__: Optional[Dict[str, Any]] = None
 
     def __init_subclass__(cls):
         super().__init_subclass__()
@@ -206,18 +204,18 @@ class StrPromptTemplate(PromptTemplate):
     def _set_context_variable(self, name: str, value: Any):
         context_vars = self._get_context_variables()
         context_vars[name] = value
-        self._context_vars = context_vars
+        self.__context_vars__ = context_vars
 
     def _set_context_variables(self, variables: Dict[str, Any]):
-        self._context_vars = variables
+        self.__context_vars__ = variables
 
     def _get_context_variables(self) -> Dict[str, Any]:
-        if not hasattr(self, "_context_vars"):
+        if not hasattr(self, "__context_vars__") or self.__context_vars__ is None:
             return {}
-        return self._context_vars
+        return self.__context_vars__
 
     def _delete_context_variables(self):
-        delattr(self, "_context_vars")
+        delattr(self, "__context_vars__")
 
     @contextlib.contextmanager
     def with_context(self, **variables: Any):

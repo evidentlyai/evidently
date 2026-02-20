@@ -1,4 +1,6 @@
 from typing import Callable
+from typing import ClassVar
+from typing import Optional
 from typing import Union
 
 import pandas as pd
@@ -13,8 +15,7 @@ from evidently.legacy.features.generated_features import GeneratedFeature
 
 
 class CustomColumnEval(FeatureDescriptor):
-    class Config:
-        type_alias = "evidently:descriptor:CustomColumnEval"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:descriptor:CustomColumnEval"
 
     func: Callable[[pd.Series], pd.Series]
     display_name: str
@@ -32,8 +33,7 @@ class CustomColumnEval(FeatureDescriptor):
 
 
 class CustomPairColumnEval(GeneralDescriptor):
-    class Config:
-        type_alias = "evidently:descriptor:CustomPairColumnEval"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:descriptor:CustomPairColumnEval"
 
     func: Callable[[pd.Series, pd.Series], pd.Series]
     display_name: str

@@ -7,9 +7,9 @@ from typing import TypeVar
 from typing import Union
 
 import requests
+from pydantic import BaseModel
+from pydantic import TypeAdapter
 
-from evidently._pydantic_compat import BaseModel
-from evidently._pydantic_compat import parse_obj_as
 from evidently.legacy.ui.storage.common import SECRET_HEADER_NAME
 from evidently.legacy.utils import NumpyEncoder
 
@@ -42,7 +42,7 @@ class RemoteClientBase:
         )
         response.raise_for_status()
         if response_model is not None:
-            return parse_obj_as(response_model, response.json())
+            return TypeAdapter(response_model).validate_python(response.json())
         return response
 
 

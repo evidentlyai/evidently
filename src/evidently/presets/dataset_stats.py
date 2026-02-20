@@ -7,8 +7,8 @@ from typing import Optional
 from typing import Sequence
 from typing import Tuple
 
-from evidently._pydantic_compat import PrivateAttr
-from evidently._pydantic_compat import validator
+from pydantic.v1 import validator
+
 from evidently.core.base_types import Label
 from evidently.core.container import ColumnMetricContainer
 from evidently.core.container import MetricContainer
@@ -599,9 +599,9 @@ class DataSummaryPreset(MetricContainer):
     column_tests: Optional[Dict[str, ValueStatsTests]] = None
     """Optional dictionary mapping column names to ValueStatsTests configurations."""
 
-    _dataset_stats: Optional[DatasetStats] = PrivateAttr(None)
+    __dataset_stats__: Optional[DatasetStats] = None
     """Internal dataset stats preset."""
-    _text_evals: Optional[TextEvals] = PrivateAttr(None)
+    __text_evals__: Optional[TextEvals] = None
     """Internal text evals preset."""
 
     def __init__(
@@ -636,7 +636,7 @@ class DataSummaryPreset(MetricContainer):
 
     def generate_metrics(self, context: Context) -> Sequence[MetricOrContainer]:
         columns_ = context.data_definition.get_categorical_columns() + context.data_definition.get_numerical_columns()
-        self._dataset_stats = DatasetStats(
+        self.__dataset_stats__ = DatasetStats(
             row_count_tests=self.row_count_tests,
             column_count_tests=self.column_count_tests,
             duplicated_row_count_tests=self.duplicated_row_count_tests,
@@ -649,16 +649,16 @@ class DataSummaryPreset(MetricContainer):
             dataset_missing_value_count_tests=self.dataset_missing_value_count_tests,
             include_tests=self.include_tests,
         )
-        self._text_evals = TextEvals(
+        self.__text_evals__ = TextEvals(
             self.columns or columns_, column_tests=self.column_tests, include_tests=self.include_tests
         )
-        return self._dataset_stats.metrics(context) + self._text_evals.metrics(context)
+        return self.__dataset_stats__.metrics(context) + self.__text_evals__.metrics(context)
 
     def render(
         self,
         context: "Context",
         child_widgets: Optional[List[Tuple[Optional[MetricId], List[BaseWidgetInfo]]]] = None,
     ) -> List[BaseWidgetInfo]:
-        if self._dataset_stats is None or self._text_evals is None:
+        if self.__dataset_stats__ is None or self.__text_evals__ is None:
             raise ValueError("Inconsistent internal state for DataSummaryPreset")
-        return self._dataset_stats.render(context) + self._text_evals.render(context)
+        return self.__dataset_stats__.render(context) + self.__text_evals__.render(context)

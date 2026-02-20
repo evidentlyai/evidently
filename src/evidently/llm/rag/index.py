@@ -11,7 +11,6 @@ from typing import Optional
 
 import numpy as np
 
-from evidently._pydantic_compat import PrivateAttr
 from evidently.llm.rag.splitter import AnySplitter
 from evidently.llm.rag.splitter import Chunk
 from evidently.llm.rag.splitter import Splitter
@@ -30,19 +29,18 @@ DEFAULT_CHUNK_OVERLAP = 20
 class DataCollectionProvider(AutoAliasMixin, EvidentlyBaseModel, ABC):
     __alias_type__: ClassVar = "data_collection_provider"
 
-    class Config:
-        is_base_type = True
+    __is_base_type__: ClassVar[bool] = True
 
     chunk_size: int = DEFAULT_CHUNK_SIZE
     chunk_overlap: int = DEFAULT_CHUNK_OVERLAP
     splitter: AnySplitter = "llama_index"
-    _data_collection_cache: "DataCollection" = PrivateAttr()
+    __data_collection_cache__: Optional["DataCollection"] = None
 
     def get_data_collection(self, use_cache: bool = True) -> "DataCollection":
-        if use_cache and hasattr(self, "_data_collection_cache"):
-            return self._data_collection_cache
-        self._data_collection_cache = self._get_data_collection()
-        return self._data_collection_cache
+        if use_cache and self.__data_collection_cache__ is not None:
+            return self.__data_collection_cache__
+        self.__data_collection_cache__ = self._get_data_collection()
+        return self.__data_collection_cache__
 
     @abstractmethod
     def _get_data_collection(self) -> "DataCollection":
@@ -75,8 +73,7 @@ class ChunksDataCollectionProvider(DataCollectionProvider):
 
 
 class FileDataCollectionProvider(DataCollectionProvider):
-    class Config:
-        type_alias = "evidently:data_collection_provider:FileDataCollectionProvider"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:data_collection_provider:FileDataCollectionProvider"
 
     path: str
     recursive: bool = False

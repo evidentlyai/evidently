@@ -1,4 +1,6 @@
 import abc
+from typing import ClassVar
+from typing import Dict
 from typing import List
 from typing import Optional
 
@@ -21,13 +23,12 @@ from evidently.legacy.utils.visualizations import plot_metric_k
 
 
 class TopKMetricResult(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:TopKMetricResult"
-        field_tags = {
-            "current": {IncludeTags.Current},
-            "reference": {IncludeTags.Reference},
-            "k": {IncludeTags.Parameter},
-        }
+    __type_alias__: ClassVar[Optional[str]] = "evidently:metric_result:TopKMetricResult"
+    __field_tags__: ClassVar[Dict[str, set]] = {
+        "current": {IncludeTags.Current},
+        "reference": {IncludeTags.Reference},
+        "k": {IncludeTags.Parameter},
+    }
 
     k: int
     current: pd.Series
@@ -56,7 +57,7 @@ class TopKMetricResult(MetricResult):
 class TopKMetric(Metric[TopKMetricResult], abc.ABC):
     _precision_recall_calculation: PrecisionRecallCalculation
     k: int
-    min_rel_score: Optional[int]
+    min_rel_score: Optional[int] = None
     no_feedback_users: bool
 
     def __init__(
@@ -65,8 +66,8 @@ class TopKMetric(Metric[TopKMetricResult], abc.ABC):
         self.k = k
         self.min_rel_score = min_rel_score
         self.no_feedback_users = no_feedback_users
-        self._precision_recall_calculation = PrecisionRecallCalculation(max(k, 10), min_rel_score)
         super().__init__(options=options)
+        self._precision_recall_calculation = PrecisionRecallCalculation(max(k, 10), min_rel_score)
 
     def calculate(self, data: InputData) -> TopKMetricResult:
         result = self._precision_recall_calculation.get_result()

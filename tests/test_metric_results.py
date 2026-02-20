@@ -2,19 +2,21 @@ import glob
 import os
 from enum import Enum
 from importlib import import_module
+from typing import ClassVar
 from typing import Dict
 from typing import List
 from typing import Set
 from typing import Type
 
 import pytest
+from pydantic import BaseModel
+from pydantic import Field
+from pydantic import TypeAdapter
 
 import evidently
-from evidently._pydantic_compat import BaseModel
-from evidently._pydantic_compat import Field
-from evidently._pydantic_compat import parse_obj_as
 from evidently.legacy.base_metric import MetricResult
 from evidently.legacy.tests.base_test import EnumValueMixin
+from tests.conftest import pydantic_v2_not_supported
 
 
 @pytest.fixture
@@ -37,7 +39,7 @@ def all_metric_results():
 def test_metric_result_fields_config(all_metric_results: Set[Type[MetricResult]]):
     errors = []
     for cls in all_metric_results:
-        field_names = set(cls.__fields__)
+        field_names = set(cls.model_fields)
         for config_field in (
             "pd_name_mapping",
             "dict_include_fields",
@@ -45,7 +47,7 @@ def test_metric_result_fields_config(all_metric_results: Set[Type[MetricResult]]
             "pd_include_fields",
             "pd_exclude_fields",
         ):
-            field_value = getattr(cls.__config__, config_field)
+            field_value = getattr(cls, f"__{config_field}__", None)
             if field_value is None:
                 continue
             for field_name in field_value:
@@ -56,16 +58,14 @@ def test_metric_result_fields_config(all_metric_results: Set[Type[MetricResult]]
 
 
 class SimpleField(MetricResult):
-    class Config:
-        alias_required = False
+    __alias_required__: ClassVar[bool] = False
 
     f1: str
 
 
 class ExcludeModel(MetricResult):
-    class Config:
-        alias_required = False
-        dict_exclude_fields = {"simple"}
+    __dict_exclude_fields__: ClassVar[set] = {"simple"}
+    __alias_required__: ClassVar[bool] = False
 
     simple: SimpleField
 
@@ -76,43 +76,38 @@ def test_default_json(obj: MetricResult, expected):
 
 
 class FieldExclude(MetricResult):
-    class Config:
-        alias_required = False
-        dict_exclude_fields = {"f2"}
+    __dict_exclude_fields__: ClassVar[set] = {"f2"}
+    __alias_required__: ClassVar[bool] = False
 
     f1: str
     f2: List[int]
 
 
 class FieldInclude(MetricResult):
-    class Config:
-        alias_required = False
-        dict_include_fields = {"f1"}
+    __dict_include_fields__: ClassVar[set] = {"f1"}
+    __alias_required__: ClassVar[bool] = False
 
     f1: str
     f2: List[int]
 
 
 class DictExclude(MetricResult):
-    class Config:
-        alias_required = False
-        dict_include = False
+    __dict_include__: ClassVar[bool] = False
+    __alias_required__: ClassVar[bool] = False
 
     f1: List[int]
     f2: List[int]
 
 
 class NestedExclude(MetricResult):
-    class Config:
-        alias_required = False
+    __alias_required__: ClassVar[bool] = False
 
     f: str
     nested: DictExclude
 
 
 class Model(MetricResult):
-    class Config:
-        alias_required = False
+    __alias_required__: ClassVar[bool] = False
 
     no: NestedExclude = Field(..., include={"nested": {"f1"}})
     fe: FieldExclude
@@ -138,18 +133,19 @@ def model():
 @pytest.mark.parametrize(
     "include,exclude,expected",
     [
-        (
-            None,
-            None,
-            {
-                "fe": {"f1": "a"},
-                "feo": {"f1": "a", "f2": []},
-                "fi": {"f1": "a"},
-                "deo": {"f1": [], "f2": []},
-                "n": {"f": "a"},
-                "no": {"nested": {"f1": []}},
-            },
-        ),
+        # skip - pydantic v2 does not support Field(include=...)
+        # (
+        #     None,
+        #     None,
+        #     {
+        #         "fe": {"f1": "a"},
+        #         "feo": {"f1": "a", "f2": []},
+        #         "fi": {"f1": "a"},
+        #         "deo": {"f1": [], "f2": []},
+        #         "n": {"f": "a"},
+        #         "no": {"nested": {"f1": []}},
+        #     },
+        # ),
         ({"n": {"f"}}, None, {"n": {"f": "a"}}),
         (None, {"n", "no", "deo", "feo"}, {"fe": {"f1": "a"}, "fi": {"f1": "a"}}),
     ],
@@ -159,8 +155,7 @@ def test_include_exclude(model: Model, include, exclude, expected):
 
 
 class DictModel(MetricResult):
-    class Config:
-        alias_required = False
+    __alias_required__: ClassVar[bool] = False
 
     de: Dict[str, DictExclude]
     deo: Dict[str, DictExclude] = Field(..., include=True)
@@ -179,6 +174,7 @@ def dict_model():
     return DictModel(de=de, deo=de)
 
 
+@pydantic_v2_not_supported("pydantic v2 does not support Field(include=...)")
 @pytest.mark.parametrize(
     "include,exclude,expected",
     [
@@ -197,34 +193,29 @@ def test_include_exclude_dict(dict_model: DictModel, include, exclude, expected)
 
 def test_polymorphic():
     class Parent(MetricResult):
-        class Config:
-            alias_required = False
+        __alias_required__: ClassVar[bool] = False
 
     class A(Parent):
-        class Config:
-            dict_include_fields = {"f1"}
-            alias_required = False
+        __dict_include_fields__: ClassVar[set] = {"f1"}
+        __alias_required__: ClassVar[bool] = False
 
         f1: str
         f2: str
 
     class B(Parent):
-        class Config:
-            dict_exclude_fields = {"b"}
-            alias_required = False
+        __dict_exclude_fields__: ClassVar[set] = {"b"}
+        __alias_required__: ClassVar[bool] = False
 
         a: str
         b: str
 
     class PModel(MetricResult):
-        class Config:
-            alias_required = False
+        __alias_required__: ClassVar[bool] = False
 
         vals: Dict[str, Parent]
 
-    assert PModel(vals={"a": A(f1="a", f2="b"), "b": B(a="a", b="b")}).get_dict() == {
-        "vals": {"a": {"f1": "a"}, "b": {"a": "a"}}
-    }
+    p_model = PModel(vals={"a": A(f1="a", f2="b"), "b": B(a="a", b="b")})
+    assert p_model.get_dict() == {"vals": {"a": {"f1": "a"}, "b": {"a": "a"}}}
 
 
 def test_model_enum():
@@ -237,24 +228,31 @@ def test_model_enum():
 
     obj = Container(value=MyEnum.A)
     assert obj.value == MyEnum.A
-    d = obj.dict()
+    d = obj.model_dump()
     assert d == {"value": "a"}
-    obj2 = parse_obj_as(Container, d)
+    obj2 = TypeAdapter(Container).validate_python(d)
     assert obj2.value == MyEnum.A
     assert obj2 == obj
 
 
+def test_skip_type():
+    class A(MetricResult):
+        __alias_required__: ClassVar[bool] = False
+        field: str
+
+    res = A(field="aaa").get_dict()
+    assert "type" not in res
+
+
 def test_model_list():
     class SimpleField(MetricResult):
-        class Config:
-            alias_required = False
+        __alias_required__: ClassVar[bool] = False
 
         field: str
         field2: str
 
     class Container(MetricResult):
-        class Config:
-            alias_required = False
+        __alias_required__: ClassVar[bool] = False
 
         field: List[SimpleField]
 

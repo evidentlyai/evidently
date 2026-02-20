@@ -6,6 +6,8 @@ from typing import List
 from typing import Tuple
 from typing import Type
 from typing import Union
+from typing import get_args
+from typing import get_origin
 from typing import no_type_check
 
 import litestar
@@ -18,14 +20,11 @@ from litestar.contrib.pydantic import PydanticSchemaPlugin
 from litestar.openapi.spec import Schema
 from litestar.serialization import get_serializer
 from litestar.typing import FieldDefinition
+from pydantic import create_model
+from pydantic._internal._validators import import_string
+from pydantic.fields import FieldInfo
 from typing_inspect import is_generic_type
 
-from evidently._pydantic_compat import SHAPE_DICT
-from evidently._pydantic_compat import SHAPE_LIST
-from evidently._pydantic_compat import SHAPE_SINGLETON
-from evidently._pydantic_compat import ModelField
-from evidently._pydantic_compat import create_model
-from evidently._pydantic_compat import import_string
 from evidently.pydantic_utils import TYPE_ALIASES
 from evidently.pydantic_utils import PolymorphicModel
 from evidently.pydantic_utils import is_not_abstract
@@ -38,14 +37,17 @@ from evidently.ui.service.managers.base import replace_signature
 
 
 @no_type_check
-def _with_shape(cls: Type, model_field: ModelField):
-    if model_field.shape == SHAPE_SINGLETON:
+def _with_shape(cls: Type, field_info: FieldInfo):
+    ann = field_info.annotation
+    origin = get_origin(ann)
+    if origin is None:
         return cls
-    if model_field.shape == SHAPE_LIST:
+    if origin is list:
         return List[cls]
-    if model_field.shape == SHAPE_DICT:
-        return Dict[model_field.key_field.type_, cls]
-    raise NotImplementedError(f"Not implemented for shape {model_field.shape}")
+    if origin is dict:
+        args = get_args(ann)
+        return Dict[args[0], cls] if args else Dict[str, cls]
+    raise NotImplementedError(f"Not implemented for annotation {ann}")
 
 
 def nonabstract_subtypes(cls: Type[PolymorphicModel]) -> Tuple[Type[PolymorphicModel], ...]:
@@ -61,7 +63,7 @@ class PolymorphicPydanticSchemaPlugin(PydanticSchemaPlugin):
 
         if is_generic_type(ann):
             ann = typing_inspect.get_origin(ann) or ann
-        if isinstance(ann, type) and issubclass(ann, PolymorphicModel) and ann.__is_base_type__():
+        if isinstance(ann, type) and issubclass(ann, PolymorphicModel) and ann.__get_is_base_type__():
             subtypes = nonabstract_subtypes(ann)
             if len(subtypes) > 0:
                 return schema_creator.for_field_definition(FieldDefinition.from_annotation(Union[subtypes]))

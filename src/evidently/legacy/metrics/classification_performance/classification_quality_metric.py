@@ -1,3 +1,5 @@
+from typing import ClassVar
+from typing import Dict
 from typing import List
 from typing import Optional
 
@@ -19,22 +21,20 @@ from evidently.legacy.utils.data_operations import process_columns
 
 
 class ClassificationQualityMetricResult(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:ClassificationQualityMetricResult"
-        field_tags = {
-            "current": {IncludeTags.Current},
-            "reference": {IncludeTags.Reference},
-            "target_name": {IncludeTags.Parameter},
-        }
+    __type_alias__: ClassVar[Optional[str]] = "evidently:metric_result:ClassificationQualityMetricResult"
+    __field_tags__: ClassVar[Dict[str, set]] = {
+        "current": {IncludeTags.Current},
+        "reference": {IncludeTags.Reference},
+        "target_name": {IncludeTags.Parameter},
+    }
 
     current: DatasetClassificationQuality
-    reference: Optional[DatasetClassificationQuality]
+    reference: Optional[DatasetClassificationQuality] = None
     target_name: str
 
 
 class ClassificationQualityMetric(ThresholdClassificationMetric[ClassificationQualityMetricResult]):
-    class Config:
-        type_alias = "evidently:metric:ClassificationQualityMetric"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:metric:ClassificationQualityMetric"
 
     _confusion_matrix_metric: ClassificationConfusionMatrix
 
@@ -44,8 +44,8 @@ class ClassificationQualityMetric(ThresholdClassificationMetric[ClassificationQu
         k: Optional[int] = None,
         options: AnyOptions = None,
     ):
-        self._confusion_matrix_metric = ClassificationConfusionMatrix(probas_threshold=probas_threshold, k=k)
         super().__init__(probas_threshold=probas_threshold, k=k, options=options)
+        self._confusion_matrix_metric = ClassificationConfusionMatrix(probas_threshold=probas_threshold, k=k)
 
     def calculate(self, data: InputData) -> ClassificationQualityMetricResult:
         dataset_columns = process_columns(data.current_data, data.column_mapping)

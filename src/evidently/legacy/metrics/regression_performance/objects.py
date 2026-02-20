@@ -1,3 +1,4 @@
+from typing import ClassVar
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -12,8 +13,7 @@ from evidently.legacy.metric_results import ScatterData
 
 
 class PredActualScatter(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:PredActualScatter"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:metric_result:PredActualScatter"
 
     predicted: ScatterData
     actual: ScatterData
@@ -30,12 +30,11 @@ def scatter_as_dict(scatter: Optional[PredActualScatter]) -> Optional[Dict[str, 
 def scatter_as_dict(scatter: Optional[PredActualScatter]) -> Optional[Dict[str, ScatterData]]:
     if scatter is None:
         return None
-    return scatter.dict()
+    return scatter.model_dump()
 
 
 class RegressionScatter(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:RegressionScatter"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:metric_result:RegressionScatter"
 
     underestimation: PredActualScatter
     majority: PredActualScatter
@@ -43,42 +42,38 @@ class RegressionScatter(MetricResult):
 
 
 class IntervalSeries(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:IntervalSeries"
-        underscore_attrs_are_private = True
+    __type_alias__: ClassVar[Optional[str]] = "evidently:metric_result:IntervalSeries"
 
     bins: List[float]
     values: List[float]
 
-    _data: pd.Series
+    __data__: Optional[pd.Series] = None
 
     @property
     def data(self):
-        if not hasattr(self, "_data"):
-            self._data = pd.Series(
+        if not hasattr(self, "__data__") or self.__data__ is None:
+            self.__data__ = pd.Series(
                 self.values, index=[Interval(a, b, closed="right") for a, b in zip(self.bins, self.bins[1:])]
             )
-        return self._data
+        return self.__data__
 
     @classmethod
     def from_data(cls, data: pd.Series):
         index: List[Interval] = list(data.index)
         interval_series = cls(values=list(data), bins=[i.left for i in index] + [index[-1].right])
-        interval_series._data = data
+        interval_series.__data__ = data
         return interval_series
 
     def __mul__(self, other: float):
         series = IntervalSeries(bins=self.bins, values=[v * other for v in self.values])
-        if hasattr(self, "_data"):
-            series._data = self._data * other
+        if hasattr(self, "__data__") and self.__data__ is not None:
+            series.__data__ = self.__data__ * other
         return series
 
 
 class RegressionMetricScatter(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:RegressionMetricScatter"
-        smart_union = True
-        field_tags = {"current": {IncludeTags.Current}, "reference": {IncludeTags.Reference}}
+    __type_alias__: ClassVar[Optional[str]] = "evidently:metric_result:RegressionMetricScatter"
+    __field_tags__: ClassVar[Dict[str, set]] = {"current": {IncludeTags.Current}, "reference": {IncludeTags.Reference}}
 
     current: IntervalSeries
     reference: Optional[IntervalSeries] = None
@@ -90,8 +85,7 @@ class RegressionMetricScatter(MetricResult):
 
 
 class RegressionMetricsScatter(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:RegressionMetricsScatter"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:metric_result:RegressionMetricsScatter"
 
     r2_score: RegressionMetricScatter
     rmse: RegressionMetricScatter

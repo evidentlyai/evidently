@@ -30,7 +30,7 @@ from evidently.tests.numerical_tests import ThresholdType
 
 AnyTest = Union[GenericTest, MetricTest, DescriptorTest]
 
-GenericTest.update_forward_refs(MetricTest=MetricTest, DescriptorTest=DescriptorTest)
+GenericTest.model_rebuild()
 
 
 @overload

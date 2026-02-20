@@ -1,9 +1,9 @@
 import numpy as np
 import pandas as pd
 import pytest
+from pydantic import BaseModel
+from pydantic._internal._validators import import_string
 
-from evidently._pydantic_compat import BaseModel
-from evidently._pydantic_compat import import_string
 from evidently.legacy.utils.types import ApproxValue
 from evidently.pydantic_utils import TYPE_ALIASES
 from evidently.pydantic_utils import PolymorphicModel
@@ -26,10 +26,10 @@ def smart_assert_equal(actual, expected, path=""):
         )
     ):
         ignore_not_set = hasattr(expected, "__ignore_not_set__") and expected.__ignore_not_set__
-        for field in actual.__fields__.values():
-            if ignore_not_set and getattr(expected, field.name) is None:
+        for name in actual.model_fields:
+            if ignore_not_set and getattr(expected, name) is None:
                 continue
-            smart_assert_equal(getattr(actual, field.name), getattr(expected, field.name), path=f"{path}.{field.name}")
+            smart_assert_equal(getattr(actual, name), getattr(expected, name), path=f"{path}.{name}")
         return
     if isinstance(actual, pd.Series):
         try:
@@ -58,6 +58,10 @@ def smart_assert_equal(actual, expected, path=""):
 
 
 slow = pytest.mark.slow
+
+
+def pydantic_v2_not_supported(reason):
+    return pytest.mark.skipif(True, reason=reason)
 
 
 def load_all_subtypes(base_class):

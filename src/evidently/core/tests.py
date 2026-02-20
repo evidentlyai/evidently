@@ -5,8 +5,9 @@ from typing import Optional
 from typing import Union
 from typing import get_args
 
-from evidently._pydantic_compat import BaseModel
-from evidently._pydantic_compat import Field
+from pydantic import BaseModel
+from pydantic import Field
+
 from evidently.core.base_types import Label
 from evidently.legacy.utils.types import ApproxValue
 from evidently.pydantic_utils import Fingerprint

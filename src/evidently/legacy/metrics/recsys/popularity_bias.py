@@ -1,3 +1,5 @@
+from typing import ClassVar
+from typing import Dict
 from typing import List
 from typing import Optional
 
@@ -26,20 +28,19 @@ from evidently.legacy.utils.visualizations import plot_distr_with_perc_button
 
 
 class PopularityBiasResult(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:PopularityBiasResult"
-        field_tags = {
-            "k": {IncludeTags.Parameter},
-            "normalize_arp": {IncludeTags.Parameter},
-            "current_apr": {IncludeTags.Current},
-            "current_coverage": {IncludeTags.Current},
-            "current_gini": {IncludeTags.Current},
-            "current_distr": {IncludeTags.Current},
-            "reference_apr": {IncludeTags.Reference},
-            "reference_coverage": {IncludeTags.Reference},
-            "reference_gini": {IncludeTags.Reference},
-            "reference_distr": {IncludeTags.Reference},
-        }
+    __type_alias__: ClassVar[Optional[str]] = "evidently:metric_result:PopularityBiasResult"
+    __field_tags__: ClassVar[Dict[str, set]] = {
+        "k": {IncludeTags.Parameter},
+        "normalize_arp": {IncludeTags.Parameter},
+        "current_apr": {IncludeTags.Current},
+        "current_coverage": {IncludeTags.Current},
+        "current_gini": {IncludeTags.Current},
+        "current_distr": {IncludeTags.Current},
+        "reference_apr": {IncludeTags.Reference},
+        "reference_coverage": {IncludeTags.Reference},
+        "reference_gini": {IncludeTags.Reference},
+        "reference_distr": {IncludeTags.Reference},
+    }
 
     k: int
     normalize_arp: bool
@@ -54,8 +55,7 @@ class PopularityBiasResult(MetricResult):
 
 
 class PopularityBias(Metric[PopularityBiasResult]):
-    class Config:
-        type_alias = "evidently:metric:PopularityBias"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:metric:PopularityBias"
 
     """
     Average Recommendation Popularity
@@ -70,8 +70,8 @@ class PopularityBias(Metric[PopularityBiasResult]):
     def __init__(self, k: int, normalize_arp: bool = False, options: AnyOptions = None) -> None:
         self.k = k
         self.normalize_arp = normalize_arp
-        self._train_stats = TrainStats()
         super().__init__(options=options)
+        self._train_stats = TrainStats()
 
     def get_apr(
         self,

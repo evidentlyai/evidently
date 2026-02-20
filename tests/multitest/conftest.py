@@ -6,19 +6,25 @@ from importlib import import_module
 from inspect import isabstract
 from typing import Any
 from typing import Callable
+from typing import ClassVar
 from typing import Dict
 from typing import Optional
 from typing import Type
 from typing import TypeVar
 from typing import Union
+from typing import get_args
+from typing import get_origin
+
+from pydantic import BaseModel
+from pydantic import model_validator
 
 import evidently
-from evidently._pydantic_compat import BaseModel
 from evidently.legacy.base_metric import Metric
 from evidently.legacy.base_metric import MetricResult
 from evidently.legacy.report import Report
 from evidently.legacy.utils.types import ApproxValue
 from evidently.pydantic_utils import PolymorphicModel
+from evidently.pydantic_utils import get_field_inner_type
 from tests.conftest import smart_assert_equal
 
 
@@ -106,19 +112,25 @@ def find_all_subclasses(
 T = TypeVar("T", bound=BaseModel)
 
 
-def make_approx_type(cls: Type[T], ignore_not_set: bool = False) -> Type[T]:
-    class ApproxFields(cls):
-        class Config:
-            alias_required = False
+def make_approx_type(original_cls: Type[T], ignore_not_set: bool = False) -> Type[T]:
+    optional = False
+    if get_origin(original_cls) is Optional:
+        original_cls = get_args(original_cls)[0]
+        optional = True
+
+    class ApproxFields(original_cls):
+        __alias_required__: ClassVar[bool] = False
+        if isinstance(original_cls, type) and issubclass(original_cls, PolymorphicModel):
+            __type_alias__: ClassVar[str] = original_cls.__get_type__()
 
         __ignore_not_set__ = ignore_not_set
         __annotations__ = {
-            k: Union[ApproxValue, f.type_]
-            if not isinstance(f.type_, type) or not issubclass(f.type_, BaseModel)
-            else make_approx_type(f.type_)
-            for k, f in cls.__fields__.items()
+            k: Union[ApproxValue, f.annotation]
+            if not isinstance(get_field_inner_type(f), type) or not issubclass(get_field_inner_type(f), BaseModel)
+            else make_approx_type(get_field_inner_type(f))
+            for k, f in original_cls.__fields__.items()
         }
-        locals().update({k: f.default for k, f in cls.__fields__.items()})
+        locals().update({k: f.default for k, f in original_cls.__fields__.items()})
 
         def __eq__(self, other):
             if ignore_not_set:
@@ -127,8 +139,14 @@ def make_approx_type(cls: Type[T], ignore_not_set: bool = False) -> Type[T]:
                 return d == d2
             return super().__eq__(other)
 
-    if issubclass(cls, PolymorphicModel):
-        ApproxFields.__fields__["type"].default = cls.__fields__["type"].default
+        @model_validator(mode="before")
+        def allow_parent(cls, value):
+            if isinstance(value, original_cls):
+                value = value.model_dump()
+            return value
 
-    ApproxFields.__name__ = f"Approx{cls.__name__}"
-    return ApproxFields
+    if issubclass(original_cls, PolymorphicModel):
+        ApproxFields.__fields__["type"].default = original_cls.__fields__["type"].default
+
+    ApproxFields.__name__ = f"Approx{original_cls.__name__}"
+    return ApproxFields if not optional else Optional[ApproxFields]

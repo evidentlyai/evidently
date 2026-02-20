@@ -6,7 +6,7 @@ from evidently.legacy.calculations.data_quality import calculate_column_distribu
 from evidently.legacy.calculations.data_quality import calculate_cramer_v_correlation
 from evidently.legacy.calculations.data_quality import get_rows_count
 from evidently.legacy.metric_results import ColumnCorrelations
-from evidently.legacy.metric_results import Distribution
+from evidently.legacy.metric_results import DistributionIncluded
 
 
 @pytest.mark.parametrize(
@@ -47,7 +47,7 @@ def test_calculate_cramer_v_correlations():
     assert calculate_cramer_v_correlation("test1", data, ["test2", "test3", "test4"]) == ColumnCorrelations(
         column_name="test1",
         kind="cramer_v",
-        values=Distribution(
+        values=DistributionIncluded(
             x=["test2", "test3", "test4"],
             y=[1.0, 1.0, 1.0],
         ),

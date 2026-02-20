@@ -15,8 +15,8 @@ from typing import List
 from typing import Type
 from typing import TypeVar
 
-from evidently._pydantic_compat import Field
-from evidently._pydantic_compat import PrivateAttr
+from pydantic import Field
+
 from evidently.core.datasets import Descriptor
 from evidently.errors import EvidentlyError
 from evidently.sdk.artifacts import Artifact as GenericConfig
@@ -48,7 +48,7 @@ class RemoteGenericConfig(GenericConfig):
     and manage remote configs.
     """
 
-    _api: "ConfigAPI" = PrivateAttr()
+    __api__: "ConfigAPI"
 
     id: ArtifactID = ZERO_UUID
     """Unique config identifier."""
@@ -68,7 +68,7 @@ class RemoteGenericConfig(GenericConfig):
         Returns:
         * Self for method chaining.
         """
-        self._api = api
+        self.__api__ = api
         return self
 
     def list_versions(self) -> List[ConfigVersion]:
@@ -77,7 +77,7 @@ class RemoteGenericConfig(GenericConfig):
         Returns:
         * List of `ConfigVersion` objects.
         """
-        return self._api.list_versions(self.id)
+        return self.__api__.list_versions(self.id)
 
     def get_version(self, version: VersionOrLatest = "latest") -> ConfigVersion:
         """Get a specific version of this config.
@@ -88,7 +88,7 @@ class RemoteGenericConfig(GenericConfig):
         Returns:
         * `ConfigVersion` for the specified version.
         """
-        return self._api.get_version(self.id, version)
+        return self.__api__.get_version(self.id, version)
 
     def bump_version(self, content: Any):
         """Create a new version with the given content.
@@ -99,7 +99,7 @@ class RemoteGenericConfig(GenericConfig):
         Returns:
         * New `ConfigVersion` with incremented version number.
         """
-        return self._api.bump_config_version(self.id, content)
+        return self.__api__.bump_config_version(self.id, content)
 
     def delete(self):
         """Delete this config and all its versions.
@@ -107,7 +107,7 @@ class RemoteGenericConfig(GenericConfig):
         This operation is irreversible and will permanently remove the config
         and all associated versions from the workspace.
         """
-        return self._api.delete_config(self.id)
+        return self.__api__.delete_config(self.id)
 
     def delete_version(self, version_id: ConfigVersionID):
         """Delete a specific version.
@@ -117,14 +117,14 @@ class RemoteGenericConfig(GenericConfig):
         Args:
         * `version_id`: ID of the version to delete.
         """
-        return self._api.delete_version(version_id)
+        return self.__api__.delete_version(version_id)
 
     def save(self):
         """Save changes to this config's metadata to the remote workspace.
 
         Updates the config's name and metadata fields. Does not affect versions.
         """
-        self._api.update_config(self)
+        self.__api__.update_config(self)
 
 
 class DescriptorContent(ConfigContent[Descriptor]):

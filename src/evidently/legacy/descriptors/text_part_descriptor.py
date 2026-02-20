@@ -1,11 +1,13 @@
+from typing import ClassVar
+from typing import Optional
+
 from evidently.legacy.features import text_part_feature
 from evidently.legacy.features.generated_features import FeatureDescriptor
 from evidently.legacy.features.generated_features import GeneratedFeature
 
 
 class BeginsWith(FeatureDescriptor):
-    class Config:
-        type_alias = "evidently:descriptor:BeginsWith"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:descriptor:BeginsWith"
 
     prefix: str
     case_sensitive: bool = True
@@ -20,8 +22,7 @@ class BeginsWith(FeatureDescriptor):
 
 
 class EndsWith(FeatureDescriptor):
-    class Config:
-        type_alias = "evidently:descriptor:EndsWith"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:descriptor:EndsWith"
 
     suffix: str
     case_sensitive: bool = True

@@ -16,11 +16,10 @@ from typing import Type
 from typing import Union
 
 import uuid6
+from pydantic import BaseModel
+from pydantic import Field
+from pydantic import TypeAdapter
 
-from evidently._pydantic_compat import BaseModel
-from evidently._pydantic_compat import Field
-from evidently._pydantic_compat import PrivateAttr
-from evidently._pydantic_compat import parse_obj_as
 from evidently.core.report import Snapshot as SnapshotV2
 from evidently.legacy.core import new_id
 from evidently.legacy.model.dashboard import DashboardInfo
@@ -74,23 +73,23 @@ class SnapshotMetadata(BaseModel):
     blob: "BlobMetadata"
     links: SnapshotLinks = SnapshotLinks()  # links to datasets and stuff
 
-    _project: "Project" = PrivateAttr(None)
-    _dashboard_info: "DashboardInfo" = PrivateAttr(None)
-    _additional_graphs: Dict[str, dict] = PrivateAttr(None)
+    __project__: Optional["Project"] = None
+    __dashboard_info__: Optional["DashboardInfo"] = None
+    __additional_graphs__: Optional[Dict[str, dict]] = None
 
     @property
     def project(self):
-        return self._project
+        return self.__project__
 
     async def load(self) -> Snapshot:
-        return await self.project.project_manager.load_snapshot(self.project._user_id, self.project.id, self.id)
+        return await self.project.project_manager.load_snapshot(self.project.__user_id__, self.project.id, self.id)
 
     async def as_report_base(self) -> ReportBase:
         value = await self.load()
         return value.as_report() if value.is_report else value.as_test_suite()
 
     def bind(self, project: "Project"):
-        self._project = project
+        self.__project__ = project
         return self
 
     @classmethod
@@ -106,23 +105,20 @@ class SnapshotMetadata(BaseModel):
         )
 
     async def get_dashboard_info(self):
-        if self._dashboard_info is None:
+        if self.__dashboard_info__ is None:
             report = await self.as_report_base()
-            _, self._dashboard_info, self._additional_graphs = report._build_dashboard_info()
-        return self._dashboard_info
+            _, self.__dashboard_info__, self.__additional_graphs__ = report._build_dashboard_info()
+        return self.__dashboard_info__
 
     async def get_additional_graphs(self):
-        if self._additional_graphs is None:
+        if self.__additional_graphs__ is None:
             report = await self.as_report_base()
-            _, self._dashboard_info, self._additional_graphs = report._build_dashboard_info()
-        return self._additional_graphs
+            _, self.__dashboard_info__, self.__additional_graphs__ = report._build_dashboard_info()
+        return self.__additional_graphs__
 
 
 class Project(Entity):
     entity_type: ClassVar[EntityType] = EntityType.Project
-
-    class Config:
-        underscore_attrs_are_private = True
 
     id: ProjectID = Field(default_factory=new_id)
     name: str
@@ -138,19 +134,25 @@ class Project(Entity):
     version: str = "1"
     # Field(default=datetime.datetime.fromisoformat("1900-01-01T00:00:00"))
 
-    _project_manager: Optional["ProjectManager"] = PrivateAttr(default=None)
-    _user_id: Optional[UserID] = PrivateAttr(default=None)
+    __project_manager__: Optional["ProjectManager"] = None
+    __user_id__: Optional[UserID] = None
 
     def bind(self, project_manager: Optional["ProjectManager"], user_id: Optional[UserID]):
-        self._project_manager = project_manager
-        self._user_id = user_id
+        self.__project_manager__ = project_manager
+        self.__user_id__ = user_id
         return self
 
     @property
     def project_manager(self) -> "ProjectManager":
-        if self._project_manager is None:
+        if self.__project_manager__ is None:
             raise ValueError("Project is not binded")
-        return self._project_manager
+        return self.__project_manager__
+
+    @property
+    def _user_id(self) -> UserID:
+        if self.__user_id__ is None:
+            raise ValueError("Project is not binded")
+        return self.__user_id__
 
     async def save_async(self):
         await self.project_manager.update_project(self._user_id, self)  # type: ignore[arg-type]
@@ -213,15 +215,15 @@ class Project(Entity):
         if reload_snapshots:
             await self.project_manager.reload_snapshots(self._user_id, self.id)  # type: ignore[arg-type]
 
-    save = sync_api(save_async)
-    load_snapshot = sync_api(load_snapshot_async)
-    delete_snapshot = sync_api(delete_snapshot_async)
-    list_snapshots = sync_api(list_snapshots_async)
-    show_dashboard = sync_api(show_dashboard_async)
-    build_dashboard_info = sync_api(build_dashboard_info_async)
-    get_snapshot_metadata = sync_api(get_snapshot_metadata_async)
-    add_snapshot = sync_api(add_snapshot_async)
-    reload = sync_api(reload_async)
+    save = sync_api(save_async)  # type: ignore[pydantic-field]
+    load_snapshot = sync_api(load_snapshot_async)  # type: ignore[pydantic-field]
+    delete_snapshot = sync_api(delete_snapshot_async)  # type: ignore[pydantic-field]
+    list_snapshots = sync_api(list_snapshots_async)  # type: ignore[pydantic-field]
+    show_dashboard = sync_api(show_dashboard_async)  # type: ignore[pydantic-field]
+    build_dashboard_info = sync_api(build_dashboard_info_async)  # type: ignore[pydantic-field]
+    get_snapshot_metadata = sync_api(get_snapshot_metadata_async)  # type: ignore[pydantic-field]
+    add_snapshot = sync_api(add_snapshot_async)  # type: ignore[pydantic-field]
+    reload = sync_api(reload_async)  # type: ignore[pydantic-field]
 
 
 class ProjectMetadataStorage(ABC):
@@ -320,7 +322,7 @@ class DataStorage(ABC):
             return value
         if isinstance(value, str):
             value = json.loads(value)
-        return parse_obj_as(cls, value)
+        return TypeAdapter(cls).validate_python(value)
 
     @abstractmethod
     async def load_test_results(

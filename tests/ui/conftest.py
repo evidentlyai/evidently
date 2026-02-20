@@ -7,8 +7,9 @@ from litestar import Litestar
 from litestar import get
 from litestar.datastructures import State
 from litestar.testing import TestClient
+from pydantic import BaseModel
+from pydantic import ConfigDict
 
-from evidently._pydantic_compat import BaseModel
 from evidently.legacy.ui.app import create_app
 from evidently.legacy.ui.base import Project
 from evidently.legacy.ui.components.base import Component
@@ -26,8 +27,7 @@ os.environ["DO_NOT_TRACK"] = "1"
 
 
 class TestsSetupComponent(Component):
-    class Config:
-        arbitrary_types_allowed = True
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
     app: Optional[Litestar] = None
 

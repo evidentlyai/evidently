@@ -1,4 +1,5 @@
 import copy
+from typing import ClassVar
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -33,14 +34,13 @@ from evidently.legacy.utils.data_preprocessing import PredictionColumns
 
 
 class CorrelationStats(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:CorrelationStats"
-        field_tags = {
-            "abs_max_target_features_correlation": {IncludeTags.Extra},
-            "abs_max_prediction_features_correlation": {IncludeTags.Extra},
-            "abs_max_correlation": {IncludeTags.Extra},
-            "abs_max_features_correlation": {IncludeTags.Extra},
-        }
+    __type_alias__: ClassVar[Optional[str]] = "evidently:metric_result:CorrelationStats"
+    __field_tags__: ClassVar[Dict[str, set]] = {
+        "abs_max_target_features_correlation": {IncludeTags.Extra},
+        "abs_max_prediction_features_correlation": {IncludeTags.Extra},
+        "abs_max_correlation": {IncludeTags.Extra},
+        "abs_max_features_correlation": {IncludeTags.Extra},
+    }
 
     target_prediction_correlation: Optional[float] = None
     abs_max_target_features_correlation: Optional[float] = None
@@ -50,13 +50,11 @@ class CorrelationStats(MetricResult):
 
 
 class DatasetCorrelation(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:DatasetCorrelation"
-        dict_exclude_fields = {"correlation", "correlations_calculate"}
-        pd_include = False
-        pd_exclude_fields = {"correlation", "correlations_calculate"}
-
-        field_tags = {"correlations_calculate": {IncludeTags.Extra}}
+    __type_alias__: ClassVar[Optional[str]] = "evidently:metric_result:DatasetCorrelation"
+    __dict_exclude_fields__: ClassVar[set] = {"correlation", "correlations_calculate"}
+    __pd_include__: ClassVar[bool] = False
+    __pd_exclude_fields__: ClassVar[set] = {"correlation", "correlations_calculate"}
+    __field_tags__: ClassVar[Dict[str, set]] = {"correlations_calculate": {IncludeTags.Extra}}
 
     correlation: Dict[str, pd.DataFrame]
     stats: Dict[str, CorrelationStats]
@@ -64,15 +62,14 @@ class DatasetCorrelation(MetricResult):
 
 
 class DatasetCorrelationsMetricResult(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:DatasetCorrelationsMetricResult"
-        dict_exclude_fields = {"target_correlation"}
-        pd_exclude_fields = {"target_correlation"}
-        field_tags = {
-            "current": {IncludeTags.Current},
-            "reference": {IncludeTags.Reference},
-            "target_correlation": {IncludeTags.Parameter},
-        }
+    __type_alias__: ClassVar[Optional[str]] = "evidently:metric_result:DatasetCorrelationsMetricResult"
+    __dict_exclude_fields__: ClassVar[set] = {"target_correlation"}
+    __pd_exclude_fields__: ClassVar[set] = {"target_correlation"}
+    __field_tags__: ClassVar[Dict[str, set]] = {
+        "current": {IncludeTags.Current},
+        "reference": {IncludeTags.Reference},
+        "target_correlation": {IncludeTags.Parameter},
+    }
 
     current: DatasetCorrelation
     reference: Optional[DatasetCorrelation]
@@ -80,21 +77,20 @@ class DatasetCorrelationsMetricResult(MetricResult):
 
 
 class DatasetCorrelationsMetric(Metric[DatasetCorrelationsMetricResult]):
-    class Config:
-        type_alias = "evidently:metric:DatasetCorrelationsMetric"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:metric:DatasetCorrelationsMetric"
 
     """Calculate different correlations with target, predictions and features"""
 
-    _text_features_gen: Optional[
+    __text_features_gen__: Optional[
         Dict[
             str,
             Dict[str, Union[TextLength, NonLetterCharacterPercentage, OOVWordsPercentage]],
         ]
-    ]
+    ] = None
 
     def __init__(self, options: AnyOptions = None):
-        self._text_features_gen = None
         super().__init__(options=options)
+        self.__text_features_gen__ = None
 
     def required_features(self, data_definition: DataDefinition):
         if len(data_definition.get_columns(ColumnType.Text, features_only=True)) > 0:
@@ -116,7 +112,7 @@ class DatasetCorrelationsMetric(Metric[DatasetCorrelationsMetricResult]):
                     col_dict[f"{col}: OOV %"],
                 ]
                 text_features_gen[col] = col_dict
-            self._text_features_gen = text_features_gen
+            self.__text_features_gen__ = text_features_gen
 
             return text_features_gen_result
         else:
@@ -265,13 +261,13 @@ class DatasetCorrelationsMetric(Metric[DatasetCorrelationsMetricResult]):
 
         # process text columns
         text_columns = []
-        if self._text_features_gen is not None:
-            for col in list(self._text_features_gen.keys()):
+        if self.__text_features_gen__ is not None:
+            for col in list(self.__text_features_gen__.keys()):
                 curr_text_df = pd.concat(
-                    [data.get_current_column(x.as_column()) for x in list(self._text_features_gen[col].values())],
+                    [data.get_current_column(x.as_column()) for x in list(self.__text_features_gen__[col].values())],
                     axis=1,
                 )
-                curr_text_df.columns = pd.Index(list(self._text_features_gen[col].keys()))
+                curr_text_df.columns = pd.Index(list(self.__text_features_gen__[col].keys()))
                 text_columns.append(list(curr_text_df.columns))
                 curr_df = pd.concat(
                     [
@@ -283,10 +279,13 @@ class DatasetCorrelationsMetric(Metric[DatasetCorrelationsMetricResult]):
 
                 if ref_df is not None:
                     ref_text_df = pd.concat(
-                        [data.get_reference_column(x.as_column()) for x in list(self._text_features_gen[col].values())],
+                        [
+                            data.get_reference_column(x.as_column())
+                            for x in list(self.__text_features_gen__[col].values())
+                        ],
                         axis=1,
                     )
-                    ref_text_df.columns = pd.Index(list(self._text_features_gen[col].keys()))
+                    ref_text_df.columns = pd.Index(list(self.__text_features_gen__[col].keys()))
                     ref_df = pd.concat(
                         [
                             ref_df.copy().reset_index(drop=True),

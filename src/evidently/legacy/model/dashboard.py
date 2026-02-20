@@ -3,7 +3,8 @@
 
 from typing import List
 
-from evidently._pydantic_compat import BaseModel
+from pydantic import BaseModel
+
 from evidently.legacy.model.widget import BaseWidgetInfo
 
 

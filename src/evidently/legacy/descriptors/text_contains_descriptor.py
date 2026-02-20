@@ -1,4 +1,6 @@
+from typing import ClassVar
 from typing import List
+from typing import Optional
 
 from evidently.legacy.features import text_contains_feature
 from evidently.legacy.features.generated_features import FeatureDescriptor
@@ -6,8 +8,7 @@ from evidently.legacy.features.generated_features import GeneratedFeature
 
 
 class Contains(FeatureDescriptor):
-    class Config:
-        type_alias = "evidently:descriptor:Contains"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:descriptor:Contains"
 
     items: List[str]
     mode: str = "any"
@@ -24,8 +25,7 @@ class Contains(FeatureDescriptor):
 
 
 class DoesNotContain(FeatureDescriptor):
-    class Config:
-        type_alias = "evidently:descriptor:DoesNotContain"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:descriptor:DoesNotContain"
 
     items: List[str]
     mode: str = "all"
@@ -42,8 +42,7 @@ class DoesNotContain(FeatureDescriptor):
 
 
 class ItemMatch(FeatureDescriptor):
-    class Config:
-        type_alias = "evidently:descriptor:ItemMatch"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:descriptor:ItemMatch"
 
     with_column: str
     mode: str = "any"
@@ -59,8 +58,7 @@ class ItemMatch(FeatureDescriptor):
 
 
 class ItemNoMatch(FeatureDescriptor):
-    class Config:
-        type_alias = "evidently:descriptor:ItemNoMatch"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:descriptor:ItemNoMatch"
 
     with_column: str
     mode: str = "any"

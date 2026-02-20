@@ -1,8 +1,10 @@
+from typing import ClassVar
 from typing import Dict
 from typing import List
 from typing import Optional
 
-from evidently._pydantic_compat import BaseModel
+from pydantic import BaseModel
+
 from evidently.legacy.base_metric import InputData
 from evidently.legacy.base_metric import MetricResult
 from evidently.legacy.calculations.classification_performance import calculate_matrix
@@ -23,23 +25,21 @@ DEFAULT_THRESHOLD = 0.5
 
 
 class ClassificationConfusionMatrixResult(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:ClassificationConfusionMatrixResult"
-        field_tags = {
-            "current_matrix": {IncludeTags.Current},
-            "reference_matrix": {IncludeTags.Reference},
-            "target_names": {IncludeTags.Parameter},
-        }
-        smart_union = True
+    __type_alias__: ClassVar[Optional[str]] = "evidently:metric_result:ClassificationConfusionMatrixResult"
+    __field_tags__: ClassVar[Dict[str, set]] = {
+        "current_matrix": {IncludeTags.Current},
+        "reference_matrix": {IncludeTags.Reference},
+        "target_names": {IncludeTags.Parameter},
+    }
 
     current_matrix: ConfusionMatrix
-    reference_matrix: Optional[ConfusionMatrix]
+    reference_matrix: Optional[ConfusionMatrix] = None
     target_names: Optional[TargetNames] = None
 
 
 class ClassificationConfusionMatrixParameters(BaseModel):
-    probas_threshold: Optional[float]
-    k: Optional[int]
+    probas_threshold: Optional[float] = None
+    k: Optional[int] = None
 
     def confusion_matric_metric(self):
         return ClassificationConfusionMatrix(probas_threshold=self.probas_threshold, k=self.k)
@@ -48,8 +48,7 @@ class ClassificationConfusionMatrixParameters(BaseModel):
 class ClassificationConfusionMatrix(
     ThresholdClassificationMetric[ClassificationConfusionMatrixResult], ClassificationConfusionMatrixParameters
 ):
-    class Config:
-        type_alias = "evidently:metric:ClassificationConfusionMatrix"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:metric:ClassificationConfusionMatrix"
 
     def __init__(
         self,

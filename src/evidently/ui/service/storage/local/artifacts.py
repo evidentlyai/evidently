@@ -4,7 +4,8 @@ from typing import Dict
 from typing import List
 from typing import Optional
 
-from evidently._pydantic_compat import BaseModel
+from pydantic import BaseModel
+
 from evidently.legacy.core import new_id
 from evidently.sdk.artifacts import Artifact
 from evidently.sdk.artifacts import ArtifactID
@@ -27,7 +28,7 @@ class ArtifactStorageState(BaseModel):
 
 class FileArtifactStorage(ArtifactStorage):
     base_path: str
-    _location: Optional[FSLocation] = None
+    __location__: Optional[FSLocation] = None
 
     def __init__(self, base_path: str):
         self.base_path = base_path
@@ -35,9 +36,9 @@ class FileArtifactStorage(ArtifactStorage):
 
     @property
     def location(self) -> FSLocation:
-        if self._location is None:
-            self._location = FSLocation(self.base_path)
-        return self._location
+        if self.__location__ is None:
+            self.__location__ = FSLocation(self.base_path)
+        return self.__location__
 
     def _get_artifact_metadata_path(self, project_id: ProjectID, artifact_id: ArtifactID) -> str:
         return posixpath.join(str(project_id), ARTIFACTS_DIR, str(artifact_id), "metadata.json")

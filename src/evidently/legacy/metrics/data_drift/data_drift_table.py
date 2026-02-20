@@ -1,3 +1,4 @@
+from typing import ClassVar
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -36,13 +37,12 @@ from evidently.legacy.utils.visualizations import plot_scatter_for_data_drift
 
 
 class DataDriftTableResults(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:DataDriftTableResults"
-        dict_exclude_fields = {"dataset_columns"}
-        field_tags = {
-            "current_fi": {IncludeTags.Extra, IncludeTags.Current},
-            "reference_fi": {IncludeTags.Extra, IncludeTags.Reference},
-        }
+    __type_alias__: ClassVar[Optional[str]] = "evidently:metric_result:DataDriftTableResults"
+    __dict_exclude_fields__: ClassVar[set] = {"dataset_columns"}
+    __field_tags__: ClassVar[Dict[str, set]] = {
+        "current_fi": {IncludeTags.Extra, IncludeTags.Current},
+        "reference_fi": {IncludeTags.Extra, IncludeTags.Reference},
+    }
 
     number_of_columns: int
     number_of_drifted_columns: int
@@ -55,12 +55,11 @@ class DataDriftTableResults(MetricResult):
 
 
 class DataDriftTable(UsesRawDataMixin, WithDriftOptions[DataDriftTableResults]):
-    class Config:
-        type_alias = "evidently:metric:DataDriftTable"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:metric:DataDriftTable"
 
-    columns: Optional[List[str]]
-    feature_importance: Optional[bool]
-    _feature_importance_metric: Optional[FeatureImportanceMetric]
+    columns: Optional[List[str]] = None
+    feature_importance: Optional[bool] = None
+    __feature_importance_metric__: Optional[FeatureImportanceMetric] = None
 
     def __init__(
         self,
@@ -106,9 +105,9 @@ class DataDriftTable(UsesRawDataMixin, WithDriftOptions[DataDriftTableResults]):
             per_feature_threshold=per_column_stattest_threshold,
         )
         if feature_importance:
-            self._feature_importance_metric = FeatureImportanceMetric()
+            self.__feature_importance_metric__ = FeatureImportanceMetric()
         else:
-            self._feature_importance_metric = None
+            self.__feature_importance_metric__ = None
 
     def get_parameters(self) -> tuple:
         return (None if self.columns is None else tuple(self.columns), self.feature_importance, self.drift_options)
@@ -134,8 +133,8 @@ class DataDriftTable(UsesRawDataMixin, WithDriftOptions[DataDriftTableResults]):
         current_fi: Optional[Dict[str, float]] = None
         reference_fi: Optional[Dict[str, float]] = None
 
-        if self._feature_importance_metric is not None:
-            res = self._feature_importance_metric.get_result()
+        if self.__feature_importance_metric__ is not None:
+            res = self.__feature_importance_metric__.get_result()
             current_fi = res.current
             reference_fi = res.reference
 

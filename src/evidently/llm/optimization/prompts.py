@@ -14,11 +14,10 @@ from typing import Sequence
 from typing import Union
 
 import pandas as pd
+from pydantic import BaseModel
 
 from evidently import ColumnType
 from evidently import Dataset
-from evidently._pydantic_compat import BaseModel
-from evidently._pydantic_compat import PrivateAttr
 from evidently.core.datasets import FeatureDescriptor
 from evidently.core.datasets import LLMClassification
 from evidently.legacy.features.llm_judge import BinaryClassificationPromptTemplate
@@ -97,8 +96,7 @@ class PromptOptimizerStrategy(BaseArgTypeRegistry, AutoAliasMixin, EvidentlyBase
 
     __alias_type__: ClassVar = "prompt_optimizer_strategy"
 
-    class Config:
-        is_base_type = True
+    __is_base_type__: ClassVar[bool] = True
 
     @abstractmethod
     def get_default_scorer(self) -> "OptimizationScorer":
@@ -216,8 +214,7 @@ class PromptExecutor(AutoAliasMixin, EvidentlyBaseModel, InitContextMixin, ABC):
 
     __alias_type__: ClassVar = "prompt_executor"
 
-    class Config:
-        is_base_type = True
+    __is_base_type__: ClassVar[bool] = True
 
     @abstractmethod
     def execute(self, prompt: str, run: OptimizerRun) -> PromptExecutionLog:
@@ -377,7 +374,7 @@ class CallablePromptExecutor(PromptExecutor):
     """Prompt executor that wraps a callable function."""
 
     func: str
-    _func: Optional[CustomExecutorCallable] = PrivateAttr(None)
+    __func__: Optional[CustomExecutorCallable] = None
     task: Optional[str] = None
 
     def __init__(
@@ -385,17 +382,17 @@ class CallablePromptExecutor(PromptExecutor):
         func: Union[str, CustomExecutorCallable],
     ):
         if callable(func):
-            self._func = func
+            self.__func__ = func
             func = f"{func.__module__}.{func.__name__}"
         else:
-            self._func = None
+            self.__func__ = None
         self.func = func
         super().__init__()
 
     def execute(self, prompt: str, run: OptimizerRun) -> PromptExecutionLog:
-        if self._func is None:
+        if self.__func__ is None:
             raise OptimizationConfigurationError(f"No function set for CallablePromptExecutor: {self.func}")
-        result = self._func(prompt, run.context)
+        result = self.__func__(prompt, run.context)
         if not isinstance(result, PromptExecutionLog):
             result = PromptExecutionLog(
                 prompt=prompt,
@@ -411,14 +408,14 @@ class CallablePromptExecutor(PromptExecutor):
     def get_task(self) -> str:
         if self.task is not None:
             return self.task
-        doc = self._func.__doc__
+        doc = self.__func__.__doc__
         if doc is None:
             warnings.warn(f"Please add docstring to {self.func} describing task you are trying to optimize.")
         return doc or ""
 
     def get_best_result(self, prompt: str, context: OptimizerContext):
         def best_result():
-            return self._func(prompt, context)
+            return self.__func__(prompt, context)
 
         return best_result
 
@@ -507,7 +504,7 @@ class BlankLLMJudge(PromptExecutor):
         """
         return self.sub_executor.get_best_result(prompt, context)
 
-    _sub_executor: Optional[LLMJudgePromptExecutor] = PrivateAttr(default=None)
+    __sub_executor__: Optional[LLMJudgePromptExecutor] = None
 
     @property
     def sub_executor(self) -> LLMJudgePromptExecutor:
@@ -519,9 +516,9 @@ class BlankLLMJudge(PromptExecutor):
         Raises:
         * `OptimizationRuntimeError`: If sub-executor hasn't been initialized.
         """
-        if self._sub_executor is None:
+        if self.__sub_executor__ is None:
             raise OptimizationRuntimeError("Sub executor is not set for BlankLLMJudge")
-        return self._sub_executor
+        return self.__sub_executor__
 
     async def start(self, run: OptimizerRun):
         """Initialize the sub-executor by building the judge.
@@ -537,9 +534,9 @@ class BlankLLMJudge(PromptExecutor):
         Args:
         * `run`: `OptimizerRun` to use for building the judge.
         """
-        if self._sub_executor is None:
+        if self.__sub_executor__ is None:
             judge = await self._build_judge(run)
-            self._sub_executor = LLMJudgePromptExecutor(judge=judge)
+            self.__sub_executor__ = LLMJudgePromptExecutor(judge=judge)
 
     async def _build_judge(self, run: OptimizerRun) -> LLMJudge:
         """Build an LLM judge based on the dataset labels.

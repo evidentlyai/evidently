@@ -57,7 +57,7 @@ from tests.conftest import smart_assert_equal
                 "drift_by_columns.a.reference.correlations": lambda x: None,
                 "drift_by_columns.b.current.correlations": lambda x: None,
                 "drift_by_columns.b.reference.correlations": lambda x: None,
-                # todo
+                # # todo
                 "dataset_columns": lambda x: DatasetColumns(
                     utility_columns=DatasetUtilityColumns(),
                     target_type=None,
@@ -67,7 +67,7 @@ from tests.conftest import smart_assert_equal
                     datetime_feature_names=[],
                     target_names=[],
                     task=None,
-                ),
+                ).dict(),
             },
         ),
         (
@@ -90,7 +90,7 @@ from tests.conftest import smart_assert_equal
                     datetime_feature_names=[],
                     target_names=[],
                     task=None,
-                ),
+                ).dict(),
             },
         ),
     ],

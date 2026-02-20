@@ -1,13 +1,15 @@
 import abc
 from asyncio import Lock
 from typing import Any
+from typing import ClassVar
 from typing import Dict
 from typing import List
+from typing import Optional
 from typing import Sequence
 
 import pandas as pd
+from pydantic import BaseModel
 
-from evidently._pydantic_compat import BaseModel
 from evidently.legacy.suite.base_suite import ReportBase
 from evidently.pydantic_utils import PolymorphicModel
 from evidently.pydantic_utils import autoregister
@@ -42,17 +44,15 @@ class ReportPopper:
 
 
 class CollectorStorage(PolymorphicModel):
-    class Config:
-        underscore_attrs_are_private = True
-        is_base_type = True
+    __is_base_type__: ClassVar[bool] = True
 
-    _locks: Dict[str, Lock] = {}
+    __locks__: Dict[str, Lock] = {}
 
     def lock(self, id: str):
-        return self._locks[id]
+        return self.__locks__[id]
 
     def init(self, id: str):
-        self._locks[id] = Lock()
+        self.__locks__[id] = Lock()
 
     def init_all(self, config):
         for id in config.collectors:
@@ -89,8 +89,7 @@ class CollectorStorage(PolymorphicModel):
 
 @autoregister
 class InMemoryStorage(CollectorStorage):
-    class Config:
-        type_alias = "evidently:collector_storage:InMemoryStorage"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:collector_storage:InMemoryStorage"
 
     max_log_events: int = 10
 

@@ -3,13 +3,14 @@ import json
 import os
 import time
 from copy import deepcopy
+from typing import ClassVar
 from typing import List
 
 import pytest
 from litestar.testing import TestClient
+from pydantic import parse_obj_as
 
 import evidently
-from evidently._pydantic_compat import parse_obj_as
 from evidently.legacy.base_metric import InputData
 from evidently.legacy.base_metric import Metric
 from evidently.legacy.base_metric import MetricResult
@@ -123,8 +124,7 @@ async def test_delete_project(test_client: TestClient, project_manager: ProjectM
 
 
 class MockMetricResult(MetricResult):
-    class Config:
-        alias_required = False
+    __alias_required__: ClassVar[bool] = False
 
     value: float
 
@@ -134,8 +134,7 @@ class MockMetricResult(MetricResult):
 
 
 class MockMetric(Metric[MockMetricResult]):
-    class Config:
-        alias_required = False
+    __alias_required__: ClassVar[bool] = False
 
     def calculate(self, data: InputData) -> MockMetricResult:
         return MockMetricResult.create(1)

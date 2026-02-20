@@ -1,3 +1,4 @@
+from typing import ClassVar
 from typing import List
 from typing import Optional
 from typing import Union
@@ -24,8 +25,7 @@ from evidently.legacy.utils.visualizations import prepare_df_for_time_index_plot
 
 
 class RegressionAbsPercentageErrorPlot(UsesRawDataMixin, Metric[ColumnScatterResult]):
-    class Config:
-        type_alias = "evidently:metric:RegressionAbsPercentageErrorPlot"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:metric:RegressionAbsPercentageErrorPlot"
 
     def __init__(self, options: AnyOptions = None):
         super().__init__(options=options)

@@ -1,3 +1,5 @@
+from typing import ClassVar
+from typing import Dict
 from typing import List
 from typing import Optional
 from typing import Union
@@ -31,9 +33,8 @@ from evidently.legacy.utils.visualizations import plot_distr_with_cond_perc_butt
 
 
 class ValuesInRangeStat(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:ValuesInRangeStat"
-        field_tags = {"number_of_values": {IncludeTags.Extra}}
+    __type_alias__: ClassVar[Optional[str]] = "evidently:metric_result:ValuesInRangeStat"
+    __field_tags__: ClassVar[Dict[str, set]] = {"number_of_values": {IncludeTags.Extra}}
 
     number_in_range: int
     number_not_in_range: int
@@ -45,15 +46,14 @@ class ValuesInRangeStat(MetricResult):
 
 
 class ColumnValueRangeMetricResult(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:ColumnValueRangeMetricResult"
-        field_tags = {
-            "current": {IncludeTags.Current},
-            "reference": {IncludeTags.Reference},
-            "column_name": {IncludeTags.Parameter},
-            "left": {IncludeTags.Parameter},
-            "right": {IncludeTags.Parameter},
-        }
+    __type_alias__: ClassVar[Optional[str]] = "evidently:metric_result:ColumnValueRangeMetricResult"
+    __field_tags__: ClassVar[Dict[str, set]] = {
+        "current": {IncludeTags.Current},
+        "reference": {IncludeTags.Reference},
+        "column_name": {IncludeTags.Parameter},
+        "left": {IncludeTags.Parameter},
+        "right": {IncludeTags.Parameter},
+    }
 
     column_name: str
     left: Numeric
@@ -63,14 +63,13 @@ class ColumnValueRangeMetricResult(MetricResult):
 
 
 class ColumnValueRangeMetric(Metric[ColumnValueRangeMetricResult]):
-    class Config:
-        type_alias = "evidently:metric:ColumnValueRangeMetric"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:metric:ColumnValueRangeMetric"
 
     """Calculates count and shares of values in the predefined values range"""
 
     column_name: ColumnName
-    left: Optional[Numeric]
-    right: Optional[Numeric]
+    left: Optional[float] = None
+    right: Optional[float] = None
 
     def __init__(
         self,

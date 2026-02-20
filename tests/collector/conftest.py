@@ -102,6 +102,9 @@ class ReportConfigMock(ReportConfig):
     def to_report_base(self):
         return ReportBaseMock()
 
+    def __eq__(self, other):
+        return isinstance(other, ReportConfig) and self.model_dump() == other.model_dump()
+
 
 @pytest.fixture()
 def mock_collector_config() -> CollectorConfig:

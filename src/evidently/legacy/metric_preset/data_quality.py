@@ -1,4 +1,5 @@
 from typing import Any
+from typing import ClassVar
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -13,8 +14,7 @@ from evidently.legacy.utils.data_preprocessing import DataDefinition
 
 
 class DataQualityPreset(MetricPreset):
-    class Config:
-        type_alias = "evidently:metric_preset:DataQualityPreset"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:metric_preset:DataQualityPreset"
 
     """Metric preset for Data Quality analysis.
 

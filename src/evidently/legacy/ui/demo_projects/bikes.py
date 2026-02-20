@@ -5,9 +5,9 @@ from datetime import datetime
 from datetime import time
 from datetime import timedelta
 from itertools import cycle
+from pathlib import Path
 
 import pandas as pd
-import requests
 from dateutil.relativedelta import relativedelta
 from sklearn import ensemble
 
@@ -26,24 +26,18 @@ from evidently.legacy.ui.dashboards import ReportFilter
 from evidently.legacy.ui.demo_projects import DemoProject
 from evidently.legacy.ui.workspace.base import WorkspaceBase
 
+test_data_path = Path(__file__).parent.parent.parent.parent.parent.parent / "test_data"
+
 
 def create_data():
     if os.path.exists("Bike-Sharing-Dataset.zip"):
         with open("Bike-Sharing-Dataset.zip", "rb") as f:
             content = f.read()
-    elif os.path.exists("../../../../../test_data/bike_sharing_dataset.zip"):
-        with open("../../../../../test_data/bike_sharing_dataset.zip", "rb") as f:
+    elif os.path.exists(test_data_path / "bike_sharing_dataset.zip"):
+        with open(test_data_path / "bike_sharing_dataset.zip", "rb") as f:
             content = f.read()
     else:
-        response = requests.get(
-            "https://archive.ics.uci.edu/static/public/275/bike+sharing+dataset.zip",
-            verify=False,
-        )
-        if response.status_code != 200:
-            raise ValueError(f"Could not download bike sharing dataset. {response.text}")
-        if response.status_code == 200 and response.headers["content-type"] != "application/zip":
-            raise ValueError(f"Invalid bike sharing dataset content type: {response.headers['content-type']}.")
-        content = response.content
+        raise FileNotFoundError("Bike-Sharing-Dataset.zip not found")
     with zipfile.ZipFile(io.BytesIO(content)) as arc:
         raw_data = pd.read_csv(
             arc.open("hour.csv"),

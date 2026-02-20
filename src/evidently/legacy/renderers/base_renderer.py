@@ -11,9 +11,9 @@ from typing import Union
 
 import pandas as pd
 import uuid6
+from pydantic import BaseModel
+from pydantic import Field
 
-from evidently._pydantic_compat import BaseModel
-from evidently._pydantic_compat import Field
 from evidently.legacy.model.widget import AdditionalGraphInfo
 from evidently.legacy.model.widget import BaseWidgetInfo
 from evidently.legacy.model.widget import PlotlyGraphInfo
@@ -44,7 +44,7 @@ TMetric = TypeVar("TMetric", bound="Metric")
 class MetricRenderer(Generic[TMetric], BaseRenderer):
     def render_pandas(self, obj: TMetric) -> pd.DataFrame:
         result = obj.get_result()
-        if not result.__config__.pd_include:
+        if not result.__pd_include__:
             warnings.warn(
                 f"{obj.get_id()} metric does not support as_dataframe yet. Please submit an issue to https://github.com/evidentlyai/evidently/issues"
             )

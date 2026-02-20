@@ -3,7 +3,6 @@ from typing import Optional
 from typing import Sequence
 from typing import Tuple
 
-from evidently._pydantic_compat import PrivateAttr
 from evidently.core.container import MetricContainer
 from evidently.core.container import MetricOrContainer
 from evidently.core.datasets import BinaryClassification
@@ -413,11 +412,11 @@ class ClassificationPreset(MetricContainer):
     classification_name: str = "default"
     """Name of the classification task."""
 
-    _quality: ClassificationQuality = PrivateAttr()
+    __quality__: ClassificationQuality
     """Internal classification quality preset."""
-    _quality_by_label: ClassificationQualityByLabel = PrivateAttr()
+    __quality_by_label__: ClassificationQualityByLabel
     """Internal classification quality by label preset."""
-    _roc_auc: Optional[RocAuc] = PrivateAttr()
+    __roc_auc__: RocAuc
     """Internal ROC AUC metric."""
 
     def __init__(
@@ -459,7 +458,7 @@ class ClassificationPreset(MetricContainer):
             rocauc_by_label_tests=convert_tests(rocauc_by_label_tests),
             classification_name=classification_name,
         )
-        self._quality = ClassificationQuality(
+        self.__quality__ = ClassificationQuality(
             probas_threshold=probas_threshold,
             conf_matrix=True,
             pr_curve=True,
@@ -477,7 +476,7 @@ class ClassificationPreset(MetricContainer):
             include_tests=include_tests,
             classification_name=classification_name,
         )
-        self._quality_by_label = ClassificationQualityByLabel(
+        self.__quality_by_label__ = ClassificationQualityByLabel(
             probas_threshold=probas_threshold,
             f1score_tests=f1score_by_label_tests,
             precision_tests=precision_by_label_tests,
@@ -486,15 +485,18 @@ class ClassificationPreset(MetricContainer):
             include_tests=include_tests,
             classification_name=classification_name,
         )
-        self._roc_auc = None
+        # self.__roc_auc__ = None
 
     def generate_metrics(self, context: "Context") -> Sequence[MetricOrContainer]:
         classification = context.data_definition.get_classification(self.classification_name)
         if classification is None:
             raise ValueError("Cannot use ClassificationPreset without a classification configration")
-        quality_metrics = self._quality.metrics(context)
-        self._roc_auc = next((m for m in quality_metrics if isinstance(m, RocAuc)), None)
-        return quality_metrics + self._quality_by_label.metrics(context)
+        quality_metrics = self.__quality__.metrics(context)
+        roc_auc = next((m for m in quality_metrics if isinstance(m, RocAuc)), None)
+        if roc_auc is None:
+            raise ValueError("Cannot use ClassificationPreset without a ROC AUC metric")
+        self.__roc_auc__ = roc_auc
+        return quality_metrics + self.__quality_by_label__.metrics(context)
 
     def render(
         self,
@@ -502,7 +504,7 @@ class ClassificationPreset(MetricContainer):
         child_widgets: Optional[List[Tuple[Optional[MetricId], List[BaseWidgetInfo]]]] = None,
     ) -> List[BaseWidgetInfo]:
         return (
-            self._quality.render(context)
-            + self._quality_by_label.render(context)
-            + ([] if self._roc_auc is None else context.get_metric_result(self._roc_auc).get_widgets())
+            self.__quality__.render(context)
+            + self.__quality_by_label__.render(context)
+            + ([] if self.__roc_auc__ is None else context.get_metric_result(self.__roc_auc__).get_widgets())
         )

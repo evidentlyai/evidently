@@ -9,8 +9,9 @@ from typing import Tuple
 from typing import Type
 from typing import Union
 
-from evidently._pydantic_compat import PrivateAttr
-from evidently._pydantic_compat import ValidationError
+from pydantic import TypeAdapter
+from pydantic import ValidationError
+
 from evidently.core.container import ColumnMetricContainer
 from evidently.core.container import MetricContainer
 from evidently.core.container import MetricOrContainer
@@ -43,7 +44,7 @@ class ColumnMetricGenerator(MetricContainer):
 
     metric_type_alias: str
     """Alias string identifying the metric type."""
-    _metric_type: Union[Type[ColumnMetric], Type[ColumnMetricContainer]] = PrivateAttr()
+    __metric_type__: Optional[Union[Type[ColumnMetric], Type[ColumnMetricContainer]]] = None
     """The metric class to instantiate for each column."""
     columns: Optional[List[str]] = None
     """Optional list of specific column names to generate metrics for."""
@@ -79,13 +80,25 @@ class ColumnMetricGenerator(MetricContainer):
             ), "metric_type_alias must be an alias of ColumnMetric or ColumnMetricContainer subclass"
         assert metric_type_alias is not None, "metric_type_alias or metric_type must be specified"
         self.metric_type_alias = metric_type_alias
-        self._metric_type = _metric_type
         self.columns = columns
         self.column_types = column_types
         if metric_kwargs and kwargs:
             raise ValueError("only one of metric_kwargs or **kwargs may be specified")
-        self.metric_kwargs = metric_kwargs or kwargs or {}
+        self.metric_kwargs = self.validate_metric_kwargs(_metric_type, metric_kwargs or kwargs or {})
         super().__init__(include_tests=include_tests)
+        self.__metric_type__ = _metric_type
+
+    @classmethod
+    def validate_metric_kwargs(
+        cls, metric_type: Union[Type[ColumnMetric], Type[ColumnMetricContainer]], metric_kwargs: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        validated = {}
+        for field_name, field_value in metric_kwargs.items():
+            field_info = metric_type.model_fields.get(field_name, None)  # type: ignore[attr-defined]
+            if field_info is None:
+                raise ValueError(f"Metric {metric_type.__name__} does not have field {field_name}")
+            validated[field_name] = TypeAdapter(field_info.annotation).validate_python(field_value)
+        return validated
 
     def _instantiate_metric(self, column: str) -> MetricOrContainer:
         """Create a metric instance for a specific column.
@@ -96,7 +109,7 @@ class ColumnMetricGenerator(MetricContainer):
         Returns:
         * `Metric` or `MetricContainer` instance.
         """
-        return self._metric_type(column=column, **self.metric_kwargs)
+        return self.__metric_type__(column=column, **self.metric_kwargs)
 
     def generate_metrics(self, context: "Context") -> Sequence[MetricOrContainer]:
         """Generate metric instances for matching columns.

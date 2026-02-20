@@ -17,11 +17,11 @@ from typing import TypeVar
 
 import numpy as np
 import pandas as pd
+from pydantic import BaseModel
+from pydantic import ConfigDict
+from pydantic import Field
 from sklearn.model_selection import train_test_split
 
-from evidently._pydantic_compat import BaseModel
-from evidently._pydantic_compat import Field
-from evidently._pydantic_compat import PrivateAttr
 from evidently.legacy.core import new_id
 from evidently.legacy.options.base import Options
 from evidently.legacy.utils.llm.wrapper import LLMWrapper
@@ -164,6 +164,8 @@ class LLMDataset(BaseModel):
     for train/val/test splits.
     """
 
+    model_config = ConfigDict(arbitrary_types_allowed=True)
+
     input_values: pd.Series
     """Input values (e.g., prompts)."""
     target: Optional[pd.Series] = None
@@ -255,6 +257,8 @@ class LLMResultDataset(BaseModel):
 
     Stores predictions, reasoning, and scores from optimization runs.
     """
+
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
     predictions: Optional[pd.Series] = None
     """Optional model predictions."""
@@ -361,8 +365,7 @@ class OptimizerConfig(AutoAliasMixin, EvidentlyBaseModel):
 
     __alias_type__: ClassVar = "optimizer_config"
 
-    class Config:
-        is_base_type = True
+    __is_base_type__: ClassVar[bool] = True
 
     provider: str = "openai"
     """LLM provider name."""
@@ -387,8 +390,7 @@ class OptimizerLog(AutoAliasMixin, EvidentlyBaseModel, ABC):
     __alias_type__: ClassVar = "optimizer_log"
     __is_step__: ClassVar[bool] = False
 
-    class Config:
-        is_base_type = True
+    __is_base_type__: ClassVar[bool] = True
 
     id: LogID = Field(default_factory=new_id)
     """Unique log identifier."""
@@ -444,7 +446,7 @@ class OptimizerRun(BaseModel):
     """Random seed used for this run."""
     start_time: datetime.datetime = Field(default_factory=datetime.datetime.now)
     """Timestamp when the run started."""
-    _context: "OptimizerContext" = PrivateAttr()
+    __context__: "OptimizerContext"
 
     def bind(self, context: "OptimizerContext") -> "OptimizerRun":
         """Bind this run to an optimizer context.
@@ -455,7 +457,7 @@ class OptimizerRun(BaseModel):
         Returns:
         * Self for method chaining.
         """
-        self._context = context
+        self.__context__ = context
         return self
 
     @property
@@ -465,7 +467,9 @@ class OptimizerRun(BaseModel):
         Returns:
         * `OptimizerContext` associated with this run.
         """
-        return self._context
+        if not hasattr(self, "__context__"):
+            raise RuntimeError("Optimizer context not initialized; call bind() first")
+        return self.__context__
 
     def add_log(self, log: OptimizerLog):
         """Add a log entry to the context and log its message.
@@ -473,7 +477,8 @@ class OptimizerRun(BaseModel):
         Args:
         * `log`: `OptimizerLog` to add.
         """
-        if self._context.config.verbose:
+        ctx = self.context
+        if ctx.config.verbose:
             print(f"[{self.run_id}]", log.message())
         self.logs[log.id] = log
 

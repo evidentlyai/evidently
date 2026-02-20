@@ -11,8 +11,8 @@ from typing import Union
 
 import pandas as pd
 import pandas.api.types
+from pydantic import BaseModel
 
-from evidently._pydantic_compat import BaseModel
 from evidently.legacy.core import ColumnType
 from evidently.legacy.pipeline.column_mapping import ColumnMapping
 from evidently.legacy.pipeline.column_mapping import RecomType
@@ -73,18 +73,18 @@ def _check_filter(
 
 class DataDefinition(EnumValueMixin):
     columns: Dict[str, ColumnDefinition]
-    target: Optional[ColumnDefinition]
-    prediction_columns: Optional[PredictionColumns]
-    id_column: Optional[ColumnDefinition]
-    datetime_column: Optional[ColumnDefinition]
-    embeddings: Optional[Dict[str, List[str]]]
-    user_id: Optional[ColumnDefinition]
-    item_id: Optional[ColumnDefinition]
+    target: Optional[ColumnDefinition] = None
+    prediction_columns: Optional[PredictionColumns] = None
+    id_column: Optional[ColumnDefinition] = None
+    datetime_column: Optional[ColumnDefinition] = None
+    embeddings: Optional[Dict[str, List[str]]] = None
+    user_id: Optional[ColumnDefinition] = None
+    item_id: Optional[ColumnDefinition] = None
 
-    task: Optional[str]
-    classification_labels: Optional[TargetNames]
+    task: Optional[str] = None
+    classification_labels: Optional[TargetNames] = None
     reference_present: bool
-    recommendations_type: Optional[RecomType]
+    recommendations_type: Optional[RecomType] = None
 
     def get_column(self, column_name: str) -> ColumnDefinition:
         return self.columns[column_name]

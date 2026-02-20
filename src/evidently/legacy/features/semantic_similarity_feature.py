@@ -1,5 +1,6 @@
 from typing import ClassVar
 from typing import List
+from typing import Optional
 
 import numpy as np
 import pandas as pd
@@ -11,8 +12,7 @@ from evidently.legacy.utils.data_preprocessing import DataDefinition
 
 
 class SemanticSimilarityFeature(GeneratedFeature):
-    class Config:
-        type_alias = "evidently:feature:SemanticSimilarityFeature"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:feature:SemanticSimilarityFeature"
 
     __feature_type__: ClassVar = ColumnType.Numerical
     columns: List[str]

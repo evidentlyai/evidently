@@ -35,7 +35,7 @@ class ColumnMapping:
     datetime_features: Optional[List[str]] = None
     target_names: Optional[TargetNames] = None
     task: Optional[str] = None
-    pos_label: Optional[Union[str, int]] = 1
+    pos_label: Optional[Label] = 1
     text_features: Optional[List[str]] = None
     embeddings: Optional[Embeddings] = None
     user_id: Optional[str] = "user_id"

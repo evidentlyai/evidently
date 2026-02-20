@@ -3,7 +3,8 @@ import os
 from typing import Dict
 from typing import Optional
 
-from evidently._pydantic_compat import ValidationError
+from pydantic import ValidationError
+
 from evidently.legacy.suite.base_suite import Snapshot
 from evidently.legacy.ui.type_aliases import SnapshotID
 

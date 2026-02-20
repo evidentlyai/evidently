@@ -7,13 +7,16 @@ from typing import ClassVar
 from typing import Dict
 from typing import Generic
 from typing import List
+from typing import Literal
 from typing import Optional
 from typing import Type
 from typing import TypeVar
 from typing import Union
 
-from evidently._pydantic_compat import BaseModel
-from evidently._pydantic_compat import Field
+from pydantic import BaseModel
+from pydantic import ConfigDict
+from pydantic import Field
+
 from evidently.legacy.base_metric import BaseResult
 from evidently.legacy.base_metric import Metric
 from evidently.legacy.base_metric import MetricResult
@@ -94,17 +97,15 @@ class TestStatus(str, Enum):
     SKIPPED = "SKIPPED"  # the test was skipped
 
 
-class TestParameters(EvidentlyBaseModel, BaseResult):  # type: ignore[misc] # pydantic Config
-    class Config:
-        type_alias = "evidently:test_parameters:TestParameters"
-        field_tags = {"type": {IncludeTags.TypeField}}
-        is_base_type = True
+class TestParameters(EvidentlyBaseModel, BaseResult):  # type: ignore[misc]
+    __type_alias__: ClassVar[Optional[str]] = "evidently:test_parameters:TestParameters"
+    __is_base_type__: ClassVar[bool] = True
+    __field_tags__: ClassVar[Dict[str, set]] = {"type": {IncludeTags.TypeField}}
+    type: Literal["evidently:test_parameters:TestParameters"] = "evidently:test_parameters:TestParameters"
 
 
 class TestResult(EnumValueMixin, MetricResult):  # todo: create common base class
-    # short name/title from the test class
-    class Config:
-        type_alias = "evidently:metric_result:TestResult"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:metric_result:TestResult"
 
     name: str
     # what was checked, what threshold (current value 13 is not ok with condition less than 5)
@@ -113,12 +114,12 @@ class TestResult(EnumValueMixin, MetricResult):  # todo: create common base clas
     status: TestStatus
     # grouping parameters
     group: str
-    parameters: Optional[TestParameters]
-    _exception: Optional[BaseException] = None
+    parameters: Optional[TestParameters] = None
+    __exception__: Optional[BaseException] = None
 
     @property
     def exception(self):
-        return self._exception
+        return self.__exception__
 
     def set_status(self, status: TestStatus, description: Optional[str] = None) -> None:
         self.status = status
@@ -143,8 +144,7 @@ class TestResult(EnumValueMixin, MetricResult):  # todo: create common base clas
 
 
 class Test(WithTestAndMetricDependencies):
-    class Config:
-        is_base_type = True
+    __is_base_type__: ClassVar[bool] = True
 
     """
     all fields in test class with type that is subclass of Metric would be used as dependencies of test.
@@ -153,19 +153,19 @@ class Test(WithTestAndMetricDependencies):
     name: ClassVar[str]
     group: ClassVar[str]
     is_critical: bool = True
-    _context: Optional["Context"] = None
+    __context__: Optional["Context"] = None
 
     @abc.abstractmethod
     def check(self) -> TestResult:
         raise NotImplementedError
 
     def set_context(self, context: "Context"):
-        self._context = context
+        self.__context__ = context
 
     def get_result(self) -> TestResult:
-        if self._context is None:
+        if self.__context__ is None:
             raise ValueError("No context is set")
-        result = self._context.test_results.get(self, None)
+        result = self.__context__.test_results.get(self, None)
         if result is None:
             raise ValueError(f"No result found for metric {self} of type {type(self).__name__}")
         return result  # type: ignore[return-value]
@@ -195,10 +195,7 @@ class TestValueCondition(ExcludeNoneMixin):
     An object of the class stores specified conditions and can be used for checking a value by them.
     """
 
-    class Config:
-        arbitrary_types_allowed = True
-        use_enum_values = True
-        smart_union = True
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
     eq: Optional[NumericApprox] = None
     gt: Optional[NumericApprox] = None
@@ -278,8 +275,7 @@ class TestValueCondition(ExcludeNoneMixin):
 
 
 class ConditionTestParameters(TestParameters):
-    class Config:
-        type_alias = "evidently:test_parameters:ConditionTestParameters"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:test_parameters:ConditionTestParameters"
 
     condition: TestValueCondition
 
@@ -289,11 +285,7 @@ class BaseConditionsTest(Test, TestValueCondition, ABC):
     Base class for all tests with a condition
     """
 
-    class Config:
-        arbitrary_types_allowed = True
-        use_enum_values = True
-        smart_union = True
-        underscore_attrs_are_private = True
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
     # condition: TestValueCondition
 
@@ -312,15 +304,13 @@ class BaseConditionsTest(Test, TestValueCondition, ABC):
 
 
 class CheckValueParameters(ConditionTestParameters):
-    class Config:
-        type_alias = "evidently:test_parameters:CheckValueParameters"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:test_parameters:CheckValueParameters"
 
     value: Optional[Numeric]
 
 
 class ColumnCheckValueParameters(CheckValueParameters):
-    class Config:
-        type_alias = "evidently:test_parameters:ColumnCheckValueParameters"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:test_parameters:ColumnCheckValueParameters"
 
     column_name: str
 
@@ -330,7 +320,7 @@ class BaseCheckValueTest(BaseConditionsTest):
     Base class for all tests with checking a value condition
     """
 
-    _value: Numeric
+    __value__: Numeric
 
     @abc.abstractmethod
     def calculate_value_for_test(self) -> Optional[Any]:
@@ -354,7 +344,7 @@ class BaseCheckValueTest(BaseConditionsTest):
         return {}
 
     def get_parameters(self) -> CheckValueParameters:
-        return CheckValueParameters(condition=self.get_condition(), value=self._value)
+        return CheckValueParameters(condition=self.get_condition(), value=self.__value__)
 
     def check(self):
         result = TestResult(
@@ -365,7 +355,7 @@ class BaseCheckValueTest(BaseConditionsTest):
             parameters=None,
         )
         value = self.calculate_value_for_test()
-        self._value = value
+        self.__value__ = value
         result.description = self.get_description(value)
         result.parameters = self.get_parameters()
 

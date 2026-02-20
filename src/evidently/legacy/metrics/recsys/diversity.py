@@ -1,4 +1,5 @@
 from itertools import combinations
+from typing import ClassVar
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -28,15 +29,14 @@ from evidently.legacy.utils.visualizations import plot_distr_with_perc_button
 
 
 class DiversityMetricResult(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:DiversityMetricResult"
-        field_tags = {
-            "k": {IncludeTags.Parameter},
-            "current_value": {IncludeTags.Current},
-            "current_distr": {IncludeTags.Current},
-            "reference_value": {IncludeTags.Reference},
-            "reference_distr": {IncludeTags.Reference},
-        }
+    __type_alias__: ClassVar[Optional[str]] = "evidently:metric_result:DiversityMetricResult"
+    __field_tags__: ClassVar[Dict[str, set]] = {
+        "k": {IncludeTags.Parameter},
+        "current_value": {IncludeTags.Current},
+        "current_distr": {IncludeTags.Current},
+        "reference_value": {IncludeTags.Reference},
+        "reference_distr": {IncludeTags.Reference},
+    }
 
     k: int
     current_value: float
@@ -46,8 +46,7 @@ class DiversityMetricResult(MetricResult):
 
 
 class DiversityMetric(Metric[DiversityMetricResult]):
-    class Config:
-        type_alias = "evidently:metric:DiversityMetric"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:metric:DiversityMetric"
 
     """Intra list diversity"""
 
@@ -58,8 +57,8 @@ class DiversityMetric(Metric[DiversityMetricResult]):
     def __init__(self, k: int, item_features: List[str], options: AnyOptions = None) -> None:
         self.k = k
         self.item_features = item_features
-        self._pairwise_distance = PairwiseDistance(k=k, item_features=item_features)
         super().__init__(options=options)
+        self._pairwise_distance = PairwiseDistance(k=k, item_features=item_features)
 
     def get_ild(
         self,

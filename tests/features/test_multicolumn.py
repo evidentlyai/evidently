@@ -1,9 +1,10 @@
+from typing import ClassVar
 from typing import List
 from typing import Optional
 
 import pandas as pd
+from pydantic import PrivateAttr
 
-from evidently._pydantic_compat import PrivateAttr
 from evidently.legacy.base_metric import ColumnName
 from evidently.legacy.core import ColumnType
 from evidently.legacy.features.feature_generator import FeatureGenerator
@@ -15,8 +16,7 @@ from evidently.legacy.utils.data_preprocessing import DataDefinition
 
 
 class MultiColumnFeature(GeneratedFeatures):
-    class Config:
-        alias_required = False
+    __alias_required__: ClassVar[bool] = False
 
     source_column: str
     _called_count: int = PrivateAttr(0)

@@ -61,52 +61,45 @@ if TYPE_CHECKING:
 
 
 class MetricResultV2Adapter(MetricResultV1):
-    class Config:
-        type_alias = "evidently:metric_result:MetricResultV2Adapter"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:metric_result:MetricResultV2Adapter"
 
     widget: List[dict]
 
 
 class PresetMetricValueV1(MetricResultV2Adapter):
-    class Config:
-        type_alias = "evidently:metric_result:PresetMetricValueV1"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:metric_result:PresetMetricValueV1"
 
 
 class SingleValueV1(MetricResultV2Adapter):
-    class Config:
-        type_alias = "evidently:metric_result:SingleValueV1"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:metric_result:SingleValueV1"
 
     value: Union[float, int, str]
 
 
 class ByLabelValueV1(MetricResultV2Adapter):
-    class Config:
-        type_alias = "evidently:metric_result:ByLabelValueV1"
-        field_tags = {"values": {IncludeTags.Render}}
+    __type_alias__: ClassVar[Optional[str]] = "evidently:metric_result:ByLabelValueV1"
+    __field_tags__: ClassVar[Dict[str, set]] = {"values": {IncludeTags.Render}}
 
     values: Dict[Label, Union[float, int, bool, str]]
 
 
 class ByLabelCountValueV1(MetricResultV2Adapter):
-    class Config:
-        type_alias = "evidently:metric_result:ByLabelCountValueV1"
-        field_tags = {"values": {IncludeTags.Render}}
+    __type_alias__: ClassVar[Optional[str]] = "evidently:metric_result:ByLabelCountValueV1"
+    __field_tags__: ClassVar[Dict[str, set]] = {"values": {IncludeTags.Render}}
 
     counts: Dict[Label, int]
     shares: Dict[Label, float]
 
 
 class CountValueV1(MetricResultV2Adapter):
-    class Config:
-        type_alias = "evidently:metric_result:CountValueV1"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:metric_result:CountValueV1"
 
     count: int
     share: float
 
 
 class MeanStdValueV1(MetricResultV2Adapter):
-    class Config:
-        type_alias = "evidently:metric_result:MeanStdValueV1"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:metric_result:MeanStdValueV1"
 
     mean: float
     std: float
@@ -152,8 +145,7 @@ def metric_result_v2_to_v1(metric_result: MetricResultV2, ignore_widget: bool = 
 
 
 class MetricV2Adapter(MetricV1[MetricResultV2Adapter]):
-    class Config:
-        type_alias = "evidently:metric:MetricV2Adapter"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:metric:MetricV2Adapter"
 
     metric: Union[MetricV2, dict]
     fingerprint: Fingerprint = ""
@@ -169,8 +161,7 @@ class MetricV2Adapter(MetricV1[MetricResultV2Adapter]):
 
 
 class MetricV2PresetAdapter(MetricV1[MetricResultV2Adapter]):
-    class Config:
-        type_alias = "evidently:metric:MetricV2PresetAdapter"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:metric:MetricV2PresetAdapter"
 
     id: str
 
@@ -341,13 +332,11 @@ def snapshot_v2_to_v1(snapshot: SnapshotV2) -> SnapshotV1:
 
 
 class DashboardPanelV2(DashboardPanel):
-    class Config:
-        type_alias = "evidently:dashboard_panel:DashboardPanelV2"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:dashboard_panel:DashboardPanelV2"
 
 
 class SingleValueDashboardPanel(DashboardPanelV2):
-    class Config:
-        type_alias = "evidently:dashboard_panel:SingleValueDashboardPanel"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:dashboard_panel:SingleValueDashboardPanel"
 
     title: str = ""
     filter: ReportFilter = ReportFilter(metadata_values={}, tag_values=[], include_test_suites=True)
@@ -366,8 +355,7 @@ class SingleValueDashboardPanel(DashboardPanelV2):
 
 
 class TestV2Adapter(TestV1):
-    class Config:
-        type_alias = "evidently:test:TestV2Adapter"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:test:TestV2Adapter"
 
     name: ClassVar[str] = "TestV2Adapter"
     group: ClassVar[str] = "TestV2Adapter"
@@ -382,8 +370,7 @@ class TestV2Adapter(TestV1):
 
 
 class TestV2Parameters(TestParameters):
-    class Config:
-        type_alias = "evidently:test_parameters:TestV2Parameters"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:test_parameters:TestV2Parameters"
 
 
 class TestsConfig(MetricV2):

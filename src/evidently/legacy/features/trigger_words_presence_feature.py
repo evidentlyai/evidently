@@ -7,20 +7,18 @@ from typing import Optional
 import numpy as np
 from nltk.stem.wordnet import WordNetLemmatizer
 
-from evidently._pydantic_compat import PrivateAttr
 from evidently.legacy.core import ColumnType
 from evidently.legacy.features.generated_features import ApplyColumnGeneratedFeature
 
 
 class TriggerWordsPresent(ApplyColumnGeneratedFeature):
-    class Config:
-        type_alias = "evidently:feature:TriggerWordsPresent"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:feature:TriggerWordsPresent"
 
     __feature_type__: ClassVar = ColumnType.Categorical
     column_name: str
     words_list: List[str]
     lemmatize: bool = True
-    _lem: Optional[WordNetLemmatizer] = PrivateAttr(None)
+    __lem__: Optional[WordNetLemmatizer] = None
 
     def __init__(
         self,
@@ -36,12 +34,12 @@ class TriggerWordsPresent(ApplyColumnGeneratedFeature):
 
     @property
     def lem(self):
-        if self._lem is None:
+        if self.__lem__ is None:
             import nltk
 
             nltk.download("wordnet", quiet=True)
-            self._lem = WordNetLemmatizer()
-        return self._lem
+            self.__lem__ = WordNetLemmatizer()
+        return self.__lem__
 
     def apply(self, value: Any):
         if value is None or (isinstance(value, float) and np.isnan(value)):

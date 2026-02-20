@@ -1,4 +1,5 @@
 import json
+from typing import ClassVar
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -33,29 +34,27 @@ from evidently.legacy.utils.data_preprocessing import DataDefinition
 
 
 class ClassificationQualityByFeatureTableResults(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:ClassificationQualityByFeatureTableResults"
-        field_tags = {
-            "current": {IncludeTags.Current},
-            "reference": {IncludeTags.Reference},
-            "target_name": {IncludeTags.Parameter},
-            "columns": {IncludeTags.Parameter},
-        }
+    __type_alias__: ClassVar[Optional[str]] = "evidently:metric_result:ClassificationQualityByFeatureTableResults"
+    __field_tags__: ClassVar[Dict[str, set]] = {
+        "current": {IncludeTags.Current},
+        "reference": {IncludeTags.Reference},
+        "target_name": {IncludeTags.Parameter},
+        "columns": {IncludeTags.Parameter},
+    }
 
     current: StatsByFeature
-    reference: Optional[StatsByFeature]
+    reference: Optional[StatsByFeature] = None
 
     target_name: str
     columns: List[str]
 
 
 class ClassificationQualityByFeatureTable(UsesRawDataMixin, Metric[ClassificationQualityByFeatureTableResults]):
-    class Config:
-        type_alias = "evidently:metric:ClassificationQualityByFeatureTable"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:metric:ClassificationQualityByFeatureTable"
 
-    columns: Optional[List[str]]
-    descriptors: Optional[Dict[str, Dict[str, FeatureDescriptor]]]
-    _text_features_gen: Optional[Dict[str, Dict[str, GeneratedFeature]]]
+    columns: Optional[List[str]] = None
+    descriptors: Optional[Dict[str, Dict[str, FeatureDescriptor]]] = None
+    __text_features_gen__: Optional[Dict[str, Dict[str, GeneratedFeature]]] = None
 
     def __init__(
         self,
@@ -64,9 +63,9 @@ class ClassificationQualityByFeatureTable(UsesRawDataMixin, Metric[Classificatio
         options: AnyOptions = None,
     ):
         self.columns = columns
-        self._text_features_gen = None
         self.descriptors = descriptors
         super().__init__(options=options)
+        self.__text_features_gen__ = None
 
     def required_features(self, data_definition: DataDefinition):
         if len(data_definition.get_columns(ColumnType.Text, features_only=True)) > 0:
@@ -88,7 +87,7 @@ class ClassificationQualityByFeatureTable(UsesRawDataMixin, Metric[Classificatio
 
                 text_features_gen_result += list(col_dict.values())
                 text_features_gen[col] = col_dict
-            self._text_features_gen = text_features_gen
+            self.__text_features_gen__ = text_features_gen
 
             return text_features_gen_result
         else:
@@ -138,8 +137,8 @@ class ClassificationQualityByFeatureTable(UsesRawDataMixin, Metric[Classificatio
 
         # process text columns
 
-        if self._text_features_gen is not None:
-            for column, features in self._text_features_gen.items():
+        if self.__text_features_gen__ is not None:
+            for column, features in self.__text_features_gen__.items():
                 columns.remove(column)
                 columns += list(features.keys())
                 curr_text_df = pd.concat([data.get_current_column(x.as_column()) for x in features.values()], axis=1)

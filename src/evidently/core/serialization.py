@@ -4,7 +4,8 @@ from typing import List
 from typing import Optional
 from typing import Union
 
-from evidently._pydantic_compat import BaseModel
+from pydantic import BaseModel
+
 from evidently.core.metric_types import MetricId
 from evidently.core.metric_types import MetricResult
 from evidently.legacy.model.widget import BaseWidgetInfo

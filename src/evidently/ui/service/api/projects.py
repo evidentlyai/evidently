@@ -18,10 +18,10 @@ from litestar.di import Provide
 from litestar.exceptions import HTTPException
 from litestar.params import Dependency
 from litestar.params import Parameter
+from pydantic import BaseModel
+from pydantic import TypeAdapter
 from typing_extensions import Annotated
 
-from evidently._pydantic_compat import BaseModel
-from evidently._pydantic_compat import parse_obj_as
 from evidently.core.report import Snapshot
 from evidently.core.serialization import SnapshotModel
 from evidently.legacy.model.dashboard import DashboardInfo
@@ -327,7 +327,7 @@ async def add_snapshot(
     log_event: Annotated[Callable, Dependency()],
     user_id: UserID,
 ) -> AddSnapshotResponse:
-    model = parse_obj_as(SnapshotModel, json.loads(body))
+    model: SnapshotModel = TypeAdapter(SnapshotModel).validate_python(json.loads(body))
     snapshot_id = await project_manager.add_snapshot(user_id, project.id, model)
     log_event("add_snapshot")
     return AddSnapshotResponse(snapshot_id=snapshot_id)

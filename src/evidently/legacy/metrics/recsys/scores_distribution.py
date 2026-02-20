@@ -1,3 +1,5 @@
+from typing import ClassVar
+from typing import Dict
 from typing import List
 from typing import Optional
 from typing import Tuple
@@ -27,17 +29,16 @@ from evidently.legacy.utils.visualizations import plot_4_distr
 
 
 class ScoreDistributionResult(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:ScoreDistributionResult"
-        field_tags = {
-            "k": {IncludeTags.Parameter},
-            "current_top_k_distr": {IncludeTags.Current},
-            "current_other_distr": {IncludeTags.Current},
-            "current_entropy": {IncludeTags.Current},
-            "reference_top_k_distr": {IncludeTags.Reference},
-            "reference_other_distr": {IncludeTags.Reference},
-            "reference_entropy": {IncludeTags.Reference},
-        }
+    __type_alias__: ClassVar[Optional[str]] = "evidently:metric_result:ScoreDistributionResult"
+    __field_tags__: ClassVar[Dict[str, set]] = {
+        "k": {IncludeTags.Parameter},
+        "current_top_k_distr": {IncludeTags.Current},
+        "current_other_distr": {IncludeTags.Current},
+        "current_entropy": {IncludeTags.Current},
+        "reference_top_k_distr": {IncludeTags.Reference},
+        "reference_other_distr": {IncludeTags.Reference},
+        "reference_entropy": {IncludeTags.Reference},
+    }
 
     k: int
     current_top_k_distr: Distribution
@@ -49,8 +50,7 @@ class ScoreDistributionResult(MetricResult):
 
 
 class ScoreDistribution(Metric[ScoreDistributionResult]):
-    class Config:
-        type_alias = "evidently:metric:ScoreDistribution"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:metric:ScoreDistribution"
 
     k: int
 

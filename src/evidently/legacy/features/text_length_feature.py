@@ -9,8 +9,7 @@ from evidently.legacy.features.generated_features import ApplyColumnGeneratedFea
 
 
 class TextLength(ApplyColumnGeneratedFeature):
-    class Config:
-        type_alias = "evidently:feature:TextLength"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:feature:TextLength"
 
     __feature_type__: ClassVar = ColumnType.Numerical
     display_name_template: ClassVar = "Text Length for {column_name}"

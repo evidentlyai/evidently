@@ -9,9 +9,9 @@ from typing import Type
 from typing import TypeVar
 
 import pytest
+from pydantic.v1.utils import import_string
 
 import evidently
-from evidently._pydantic_compat import import_string
 from evidently.core import registries
 from evidently.core.container import MetricContainer
 from evidently.core.datasets import ColumnCondition
@@ -88,6 +88,9 @@ def find_all_subclasses(
             continue
         module = import_module(mod_name)
         for key, value in module.__dict__.items():
+            if "[" in key:
+                # pydantic auto-generated generic subclasses
+                continue
             if isinstance(value, type) and value is not base and issubclass(value, base):
                 if not isabstract(value) or include_abstract:
                     classes.add(value)
@@ -145,7 +148,7 @@ def test_all_aliases_registered():
     not_registered = []
 
     for cls in find_all_subclasses(PolymorphicModel, include_abstract=True):
-        if cls.__is_base_type__():
+        if cls.__get_is_base_type__():
             continue
         classpath = cls.__get_classpath__()
         typename = cls.__get_type__()
@@ -235,7 +238,7 @@ def test_all_aliases_correct():
             continue
         for base_class, base_type in base_class_type_mapping.items():
             if issubclass(cls, base_class):
-                # alias = getattr(cls.__config__, "type_alias")
+                # alias = getattr(cls, "__type_alias__", None)
                 alias = cls.__get_type__()
                 assert alias is not None, f"{cls.__name__} has no alias ({alias})"
                 assert alias == f"evidently:{base_type}:{cls.__name__}", f"wrong alias for {cls.__name__}"

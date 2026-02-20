@@ -8,9 +8,10 @@ from typing import Type
 from typing import TypeVar
 from typing import Union
 
+from pydantic import BaseModel
+from pydantic import TypeAdapter
+
 from evidently import Dataset
-from evidently._pydantic_compat import BaseModel
-from evidently._pydantic_compat import parse_obj_as
 from evidently.core.report import Snapshot
 from evidently.legacy.ui.type_aliases import DatasetID
 from evidently.legacy.ui.type_aliases import ProjectID
@@ -92,7 +93,7 @@ class _Config(BaseModel):
     @classmethod
     def load(cls: Type[T], path: str) -> "T":
         with open(path) as f:
-            return parse_obj_as(cls, json.load(f))
+            return TypeAdapter(cls).validate_python(json.load(f))
 
     def save(self, path: str) -> None:
         with open(path, "w") as f:

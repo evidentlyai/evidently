@@ -42,8 +42,7 @@ class OptimizationScorer(BaseArgTypeRegistry, AutoAliasMixin, EvidentlyBaseModel
 
     __alias_type__: ClassVar = "optimizer_scorer"
 
-    class Config:
-        is_base_type = True
+    __is_base_type__: ClassVar[bool] = True
 
     def get_name(self) -> str:
         """Get the name of this scorer.

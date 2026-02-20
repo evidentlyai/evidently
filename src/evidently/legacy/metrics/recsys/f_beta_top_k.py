@@ -1,3 +1,4 @@
+from typing import ClassVar
 from typing import Optional
 
 import numpy as np
@@ -13,14 +14,13 @@ from evidently.legacy.renderers.base_renderer import default_renderer
 
 
 class FBetaTopKMetric(TopKMetric):
-    class Config:
-        type_alias = "evidently:metric:FBetaTopKMetric"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:metric:FBetaTopKMetric"
 
     k: int
-    beta: Optional[float]
-    min_rel_score: Optional[int]
+    beta: Optional[float] = None
+    min_rel_score: Optional[int] = None
     no_feedback_users: bool
-    _precision_recall_calculation: PrecisionRecallCalculation
+    __precision_recall_calculation__: PrecisionRecallCalculation = None  # type: ignore[assignment]
 
     def __init__(
         self,
@@ -34,13 +34,13 @@ class FBetaTopKMetric(TopKMetric):
         self.beta = beta
         self.min_rel_score = min_rel_score
         self.no_feedback_users = no_feedback_users
-        self._precision_recall_calculation = PrecisionRecallCalculation(max(k, 10), min_rel_score)
         super().__init__(
             options=options,
             k=k,
             min_rel_score=min_rel_score,
             no_feedback_users=no_feedback_users,
         )
+        self.__precision_recall_calculation__ = PrecisionRecallCalculation(max(k, 10), min_rel_score)
 
     def calculate(self, data: InputData) -> TopKMetricResult:
         if self.no_feedback_users:
@@ -49,7 +49,7 @@ class FBetaTopKMetric(TopKMetric):
         else:
             pr_key = "precision"
             rc_key = "recall"
-        result = self._precision_recall_calculation.get_result()
+        result = self.__precision_recall_calculation__.get_result()
         current = pd.Series(data=self.fbeta(result.current[pr_key], result.current[rc_key]))
         ref_data = result.reference
         reference: Optional[pd.Series] = None

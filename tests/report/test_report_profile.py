@@ -27,6 +27,7 @@ def test_report_loading(data):
     report = Report(metrics=[ClassificationPreset(probas_threshold=0.7)])
 
     report.run(reference_data=ref, current_data=curr)
+    report._inner_suite.raise_for_error()
 
     report.save("profile.json")
 

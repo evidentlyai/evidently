@@ -1,3 +1,5 @@
+from typing import ClassVar
+from typing import Dict
 from typing import List
 from typing import Optional
 
@@ -32,12 +34,13 @@ from evidently.legacy.utils.data_operations import process_columns
 
 
 class ClassificationDummyMetricResults(MetricResult):
-    class Config:
-        type_alias = "evidently:metric_result:ClassificationDummyMetricResults"
-        dict_exclude_fields = {"metrics_matrix"}
-        pd_exclude_fields = {"metrics_matrix"}
-
-        field_tags = {"by_reference_dummy": {IncludeTags.Reference}, "metrics_matrix": {IncludeTags.Extra}}
+    __type_alias__: ClassVar[Optional[str]] = "evidently:metric_result:ClassificationDummyMetricResults"
+    __dict_exclude_fields__: ClassVar[set] = {"metrics_matrix"}
+    __pd_exclude_fields__: ClassVar[set] = {"metrics_matrix"}
+    __field_tags__: ClassVar[Dict[str, set]] = {
+        "by_reference_dummy": {IncludeTags.Reference},
+        "metrics_matrix": {IncludeTags.Extra},
+    }
 
     dummy: DatasetClassificationQuality
     by_reference_dummy: Optional[DatasetClassificationQuality]
@@ -46,10 +49,9 @@ class ClassificationDummyMetricResults(MetricResult):
 
 
 class ClassificationDummyMetric(ThresholdClassificationMetric[ClassificationDummyMetricResults]):
-    class Config:
-        type_alias = "evidently:metric:ClassificationDummyMetric"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:metric:ClassificationDummyMetric"
 
-    _quality_metric: ClassificationQualityMetric
+    __quality_metric__: ClassificationQualityMetric = None  # type: ignore[assignment]
 
     def __init__(
         self,
@@ -60,7 +62,7 @@ class ClassificationDummyMetric(ThresholdClassificationMetric[ClassificationDumm
         self.probas_threshold = probas_threshold
         self.k = k
         super().__init__(probas_threshold, k, options)
-        self._quality_metric = ClassificationQualityMetric()
+        self.__quality_metric__ = ClassificationQualityMetric()
 
     def calculate(self, data: InputData) -> ClassificationDummyMetricResults:
         quality_metric: Optional[ClassificationQualityMetric]
@@ -73,7 +75,7 @@ class ClassificationDummyMetric(ThresholdClassificationMetric[ClassificationDumm
         if prediction_name is None:
             quality_metric = None
         else:
-            quality_metric = self._quality_metric
+            quality_metric = self.__quality_metric__
 
         #  dummy by current
         labels_ratio = data.current_data[target_name].value_counts(normalize=True)

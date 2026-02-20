@@ -3,16 +3,17 @@ import json
 import time
 import warnings
 from typing import Any
+from typing import ClassVar
 from typing import Dict
 from typing import List
 from typing import Optional
 from typing import Union
 
 import pandas as pd
+from pydantic import BaseModel
+from pydantic import Field
+from pydantic import TypeAdapter
 
-from evidently._pydantic_compat import BaseModel
-from evidently._pydantic_compat import Field
-from evidently._pydantic_compat import parse_obj_as
 from evidently.legacy.base_metric import Metric
 from evidently.legacy.collector.storage import CollectorStorage
 from evidently.legacy.collector.storage import InMemoryStorage
@@ -35,7 +36,7 @@ class Config(BaseModel):
     @classmethod
     def load(cls, path: str):
         with open(path) as f:
-            return parse_obj_as(cls, json.load(f))
+            return TypeAdapter(cls).validate_python(json.load(f))
 
     def save(self, path: str):
         with open(path, "w") as f:
@@ -43,8 +44,7 @@ class Config(BaseModel):
 
 
 class CollectorTrigger(PolymorphicModel):
-    class Config:
-        is_base_type = True
+    __is_base_type__: ClassVar[bool] = True
 
     @abc.abstractmethod
     def is_ready(self, config: "CollectorConfig", storage: "CollectorStorage") -> bool:
@@ -53,8 +53,7 @@ class CollectorTrigger(PolymorphicModel):
 
 @autoregister
 class IntervalTrigger(CollectorTrigger):
-    class Config:
-        type_alias = "evidently:collector_trigger:IntervalTrigger"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:collector_trigger:IntervalTrigger"
 
     interval: float = Field(gt=0)
     last_triggered: float = 0
@@ -69,8 +68,7 @@ class IntervalTrigger(CollectorTrigger):
 
 @autoregister
 class RowsCountTrigger(CollectorTrigger):
-    class Config:
-        type_alias = "evidently:collector_trigger:RowsCountTrigger"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:collector_trigger:RowsCountTrigger"
 
     rows_count: int = Field(default=1, gt=0)
 
@@ -81,8 +79,7 @@ class RowsCountTrigger(CollectorTrigger):
 
 @autoregister
 class RowsCountOrIntervalTrigger(CollectorTrigger):
-    class Config:
-        type_alias = "evidently:collector_trigger:RowsCountOrIntervalTrigger"
+    __type_alias__: ClassVar[Optional[str]] = "evidently:collector_trigger:RowsCountOrIntervalTrigger"
 
     rows_count_trigger: RowsCountTrigger
     interval_trigger: IntervalTrigger
@@ -135,13 +132,10 @@ class ReportConfig(Config):
 
 
 class CollectorConfig(Config):
-    class Config:
-        underscore_attrs_are_private = True
-
     id: str = ""
     trigger: CollectorTrigger
     report_config: ReportConfig
-    reference_path: Optional[str]
+    reference_path: Optional[str] = None
 
     project_id: str
     api_url: str = "http://localhost:8000"
@@ -150,8 +144,8 @@ class CollectorConfig(Config):
     is_cloud: Optional[bool] = None  # None means autodetect
     save_datasets: bool = False
 
-    _reference: Any = None
-    _workspace: Optional[WorkspaceView] = None
+    __reference__: Any = None
+    __workspace__: Optional[WorkspaceView] = None
 
     @property
     def is_cloud_resolved(self) -> bool:
@@ -159,16 +153,16 @@ class CollectorConfig(Config):
 
     @property
     def workspace(self) -> WorkspaceView:
-        if self._workspace is None:
+        if self.__workspace__ is None:
             if self.is_cloud_resolved:
                 if self.api_secret is None:
                     raise ValueError("Please provide token and org_id for CloudWorkspace")
-                self._workspace = CloudWorkspace(token=self.api_secret, url=self.api_url)
+                self.__workspace__ = CloudWorkspace(token=self.api_secret, url=self.api_url)
             else:
                 if self.save_datasets:
                     warnings.warn("'save_datasets' is not supported for self-hosted Evidently UI")
-                self._workspace = RemoteWorkspace(base_url=self.api_url, secret=self.api_secret)
-        return self._workspace
+                self.__workspace__ = RemoteWorkspace(base_url=self.api_url, secret=self.api_secret)
+        return self.__workspace__
 
     def _read_reference(self):
         return pd.read_parquet(self.reference_path)
@@ -177,12 +171,12 @@ class CollectorConfig(Config):
     def reference(self):
         if self.reference_path is None:
             return None
-        if self._reference is not None:
-            return self._reference
+        if self.__reference__ is not None:
+            return self.__reference__
         if not self.cache_reference:
             return self._read_reference()
-        self._reference = self._read_reference()
-        return self._reference
+        self.__reference__ = self._read_reference()
+        return self.__reference__
 
 
 class CollectorServiceConfig(Config):

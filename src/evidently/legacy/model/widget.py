@@ -9,9 +9,9 @@ from typing import Optional
 from typing import Union
 
 import uuid6
+from pydantic import BaseModel
+from pydantic import Field
 
-from evidently._pydantic_compat import BaseModel
-from evidently._pydantic_compat import Field
 from evidently.pydantic_utils import EvidentlyBaseModel
 from evidently.pydantic_utils import Fingerprint
 
@@ -53,8 +53,7 @@ class Alert(BaseModel):
 
 
 class AdditionalGraphInfo(BaseModel):
-    class Config:
-        extra = "forbid"
+    model_config = {"extra": "forbid"}
 
     id: str
     params: dict
@@ -79,9 +78,6 @@ class WidgetType(Enum):
 
 # @dataclass
 class BaseWidgetInfo(BaseModel):
-    class Config:
-        smart_union = True
-
     type: str
     title: str
     size: int
@@ -138,4 +134,4 @@ class TabInfo(BaseModel):
     widget: BaseWidgetInfo
 
 
-BaseWidgetInfo.update_forward_refs()
+BaseWidgetInfo.model_rebuild()
