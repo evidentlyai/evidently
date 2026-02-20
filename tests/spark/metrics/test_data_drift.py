@@ -1,3 +1,4 @@
+import sys
 from typing import Callable
 from typing import List
 
@@ -20,10 +21,10 @@ from tests.conftest import smart_assert_equal
 
 
 @slow
-# @pytest.mark.skipif(
-#     sys.platform.startswith("win") or sys.platform == "darwin",
-#     reason="skip spark on Windows and MacOS",
-# )
+@pytest.mark.skipif(
+    sys.platform.startswith("win") or sys.platform == "darwin",
+    reason="skip spark on Windows and MacOS",
+)
 @pytest.mark.parametrize(
     "metric,column_mapping,result_adjust",
     [
