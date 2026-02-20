@@ -14,7 +14,7 @@ import uuid6
 from pydantic import BaseModel
 from pydantic import ConfigDict
 from pydantic import Field
-from pydantic.v1 import validator
+from pydantic import field_validator
 
 from evidently.legacy.base_metric import Metric
 from evidently.legacy.core import new_id
@@ -60,7 +60,7 @@ class PanelValue(BaseModel):
     field_path: Union[str, FieldPath]
     metric_id: Optional[str] = None
     metric_fingerprint: Optional[str] = None
-    metric_args: Dict[str, Any] = {}
+    metric_args: Dict[str, Union[EvidentlyBaseModel, Any]] = {}
     legend: Optional[str] = None
 
     def __init__(
@@ -75,7 +75,7 @@ class PanelValue(BaseModel):
     ):
         # this __init__ is needed to support old-style metric_hash arg
         if metric_hash is not None:
-            warnings.warn("metric_hash arg is deperecated, please use metric_fingerprint")
+            warnings.warn("metric_hash arg is deprecated, please use metric_fingerprint")
             metric_fingerprint = metric_hash
         super().__init__(
             field_path=field_path,
@@ -91,7 +91,7 @@ class PanelValue(BaseModel):
             return self.field_path.get_path()
         return self.field_path
 
-    @validator("field_path")
+    @field_validator("field_path")
     def validate_field_path(cls, value):
         if isinstance(value, FieldPath):
             value = value.get_path()

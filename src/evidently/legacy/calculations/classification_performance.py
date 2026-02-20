@@ -3,7 +3,6 @@ from typing import Dict
 from typing import List
 from typing import Optional
 from typing import Sequence
-from typing import Union
 
 import numpy as np
 import pandas as pd
@@ -248,7 +247,7 @@ def _check_pos_labels(pos_label: Optional[Label], labels: List[str]) -> Label:
 
 
 def threshold_probability_labels(
-    prediction_probas: pd.DataFrame, pos_label: Union[str, int], neg_label: Union[str, int], threshold: float
+    prediction_probas: pd.DataFrame, pos_label: Label, neg_label: Label, threshold: float
 ) -> pd.Series:
     """Get prediction values by probabilities with the threshold apply"""
     return prediction_probas[pos_label].apply(lambda x: pos_label if x >= threshold else neg_label)

@@ -309,6 +309,8 @@ class PolymorphicModel(BaseModel):
 
     @model_validator(mode="wrap")
     def _delegate_validation(cls, data, handler) -> Any:
+        if not isinstance(data, dict):
+            return handler(data)
         if "type" in data and data["type"] != cls.__get_type__():
             return cls.model_validate(data)
         typename = data.pop("type", None) if isinstance(data, dict) else None
@@ -481,11 +483,22 @@ class EnumValueMixin(BaseModel):
         res = super().model_dump(*args, **kwargs)
         return {k: self._to_enum_value(k, v) for k, v in res.items()}
 
+    @model_serializer(mode="wrap")
+    def _delegate_serialization(self, nxt: SerializerFunctionWrapHandler, info: SerializationInfo):
+        try:
+            res = super()._delegate_serialization(nxt, info)
+        except AttributeError:
+            res = nxt(self)
+        return {k: self._to_enum_value(k, v) for k, v in res.items()}
+
 
 class ExcludeNoneMixin(BaseModel):
     @model_serializer(mode="wrap")
-    def exclude_none(self, nxt: SerializerFunctionWrapHandler):
-        res = nxt(self)
+    def _delegate_serialization(self, nxt: SerializerFunctionWrapHandler, info: SerializationInfo):
+        try:
+            res = super()._delegate_serialization(nxt, info)
+        except AttributeError:
+            res = nxt(self)
         return {k: v for k, v in res.items() if v is not None}
 
 

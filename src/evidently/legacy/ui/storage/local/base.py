@@ -126,7 +126,8 @@ class FSSpecBlobStorage(BlobStorage):
 def load_project(location: FSLocation, path: str) -> Optional[Project]:
     try:
         with location.open(posixpath.join(path, METADATA_PATH)) as f:
-            return TypeAdapter(Project).validate_python(json.load(f))
+            data = json.load(f)
+            return TypeAdapter(Project).validate_python(data)
     except FileNotFoundError:
         return None
 
