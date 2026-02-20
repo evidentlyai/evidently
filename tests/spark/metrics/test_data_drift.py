@@ -1,4 +1,3 @@
-import sys
 from typing import Callable
 from typing import List
 
@@ -21,10 +20,10 @@ from tests.conftest import smart_assert_equal
 
 
 @slow
-@pytest.mark.skipif(
-    sys.platform.startswith("win") or sys.platform == "darwin",
-    reason="skip spark on Windows and MacOS",
-)
+# @pytest.mark.skipif(
+#     sys.platform.startswith("win") or sys.platform == "darwin",
+#     reason="skip spark on Windows and MacOS",
+# )
 @pytest.mark.parametrize(
     "metric,column_mapping,result_adjust",
     [
@@ -57,7 +56,7 @@ from tests.conftest import smart_assert_equal
                 "drift_by_columns.a.reference.correlations": lambda x: None,
                 "drift_by_columns.b.current.correlations": lambda x: None,
                 "drift_by_columns.b.reference.correlations": lambda x: None,
-                # todo
+                # # todo
                 "dataset_columns": lambda x: DatasetColumns(
                     utility_columns=DatasetUtilityColumns(),
                     target_type=None,
@@ -67,7 +66,7 @@ from tests.conftest import smart_assert_equal
                     datetime_feature_names=[],
                     target_names=[],
                     task=None,
-                ),
+                ).dict(),
             },
         ),
         (
@@ -90,7 +89,7 @@ from tests.conftest import smart_assert_equal
                     datetime_feature_names=[],
                     target_names=[],
                     task=None,
-                ),
+                ).dict(),
             },
         ),
     ],

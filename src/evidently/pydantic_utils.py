@@ -489,7 +489,7 @@ class EnumValueMixin(BaseModel):
             res = super()._delegate_serialization(nxt, info)
         except AttributeError:
             res = nxt(self)
-        return {k: self._to_enum_value(k, v) for k, v in res.items()}
+        return {k: self._to_enum_value(k, v) for k, v in res.items()}  # type: ignore[call-arg]
 
 
 class ExcludeNoneMixin(BaseModel):
