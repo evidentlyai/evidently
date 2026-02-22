@@ -168,3 +168,56 @@ def test_run_snapshot_with_llm_judge():
             }
         ]
     }
+
+
+def test_fluency_llm_eval():
+    """FluencyLLMEval should run without a reference column and produce a 'category' column."""
+    from evidently.legacy.descriptors.llm_judges import FluencyLLMEval as FluencyLLMEvalV1
+
+    fluency_eval = FluencyLLMEvalV1(
+        provider="mock",
+        model="",
+        template=BinaryClassificationPromptTemplate(
+            target_category="FLUENT",
+            non_target_category="NOT_FLUENT",
+        ),
+    )
+    judge = fluency_eval.feature("text")
+
+    data = pd.DataFrame({"text": ["FLUENT", "NOT_FLUENT"]})
+    dd = DataDefinition(columns={}, reference_present=False)
+    fts = judge.generate_features(data, dd, Options())
+
+    # MockLLMWrapper echoes first character of the input text captured by the regex
+    assert "category" in fts.columns
+    assert len(fts) == 2
+
+
+def test_coherence_llm_eval():
+    """CoherenceLLMEval should run without a reference column and produce a 'category' column."""
+    from evidently.legacy.descriptors.llm_judges import CoherenceLLMEval as CoherenceLLMEvalV1
+
+    coherence_eval = CoherenceLLMEvalV1(
+        provider="mock",
+        model="",
+        template=BinaryClassificationPromptTemplate(
+            target_category="COHERENT",
+            non_target_category="INCOHERENT",
+        ),
+    )
+    judge = coherence_eval.feature("text")
+
+    data = pd.DataFrame({"text": ["COHERENT", "INCOHERENT"]})
+    dd = DataDefinition(columns={}, reference_present=False)
+    fts = judge.generate_features(data, dd, Options())
+
+    # MockLLMWrapper echoes first character of the input text captured by the regex
+    assert "category" in fts.columns
+    assert len(fts) == 2
+
+
+def test_reference_free_evals_importable():
+    """Both new descriptors should be importable from the public evidently.descriptors module."""
+    from evidently.descriptors import CoherenceLLMEval  # noqa: F401
+    from evidently.descriptors import FluencyLLMEval  # noqa: F401
+

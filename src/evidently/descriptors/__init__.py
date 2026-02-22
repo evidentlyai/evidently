@@ -38,6 +38,7 @@ from .generated_descriptors import BeginsWith
 from .generated_descriptors import BERTScore
 from .generated_descriptors import BiasLLMEval
 from .generated_descriptors import BinaryClassificationLLMEval
+from .generated_descriptors import CoherenceLLMEval
 from .generated_descriptors import CompletenessLLMEval
 from .generated_descriptors import ContainsLink
 from .generated_descriptors import ContextQualityLLMEval
@@ -46,6 +47,7 @@ from .generated_descriptors import DeclineLLMEval
 from .generated_descriptors import EndsWith
 from .generated_descriptors import ExactMatch
 from .generated_descriptors import FaithfulnessLLMEval
+from .generated_descriptors import FluencyLLMEval
 from .generated_descriptors import HuggingFace
 from .generated_descriptors import HuggingFaceToxicity
 from .generated_descriptors import IsValidJSON
@@ -84,6 +86,7 @@ __all__ = [
     "BeginsWith",
     "BiasLLMEval",
     "BinaryClassificationLLMEval",
+    "CoherenceLLMEval",
     "ColumnTest",
     "CompletenessLLMEval",
     "Contains",
@@ -99,6 +102,7 @@ __all__ = [
     "ExactMatch",
     "ExcludesWords",
     "FaithfulnessLLMEval",
+    "FluencyLLMEval",
     "HuggingFace",
     "HuggingFaceToxicity",
     "IncludesWords",

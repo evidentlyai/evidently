@@ -400,6 +400,68 @@ class CompletenessLLMEval(BinaryClassificationLLMEval):
         return input_columns
 
 
+class FluencyLLMEval(BinaryClassificationLLMEval):
+    class Config:
+        type_alias = "evidently:descriptor:FluencyLLMEval"
+
+    name: ClassVar = "Fluency"
+    template: ClassVar = BinaryClassificationPromptTemplate(
+        criteria=textwrap.dedent(
+            """
+        A "FLUENT" response is written in clear, natural, grammatically correct language that reads easily and smoothly.
+        It uses proper sentence structure, appropriate vocabulary, and flows naturally without awkward phrasing, excessive repetition,
+        or confusing constructions.
+
+        A "NOT_FLUENT" response contains significant grammatical errors, broken or incomplete sentences, highly unnatural phrasing,
+        or is otherwise difficult to read and understand due to language quality issues — regardless of the accuracy of its content.
+        """  # noqa: E501
+        ).strip(),
+        target_category="FLUENT",
+        non_target_category="NOT_FLUENT",
+        uncertainty=Uncertainty.UNKNOWN,
+        include_reasoning=True,
+        pre_messages=[
+            LLMMessage.system(
+                "You are an impartial expert evaluator. You will be given a text. "
+                "Your task is to evaluate the fluency of the text.",
+            )
+        ],
+    )
+    provider = "openai"
+    model = "gpt-4o-mini"
+
+
+class CoherenceLLMEval(BinaryClassificationLLMEval):
+    class Config:
+        type_alias = "evidently:descriptor:CoherenceLLMEval"
+
+    name: ClassVar = "Coherence"
+    template: ClassVar = BinaryClassificationPromptTemplate(
+        criteria=textwrap.dedent(
+            """
+        A "COHERENT" response presents ideas in a logically organized, consistent, and easy-to-follow manner.
+        Its arguments or statements flow naturally from one to the next, and the overall structure makes sense.
+        It does not contradict itself and stays on topic.
+
+        An "INCOHERENT" response is one that is difficult to follow due to logical inconsistencies, abrupt topic changes,
+        self-contradictions, or a disorganized structure — even if individual sentences are grammatically correct.
+        """  # noqa: E501
+        ).strip(),
+        target_category="COHERENT",
+        non_target_category="INCOHERENT",
+        uncertainty=Uncertainty.UNKNOWN,
+        include_reasoning=True,
+        pre_messages=[
+            LLMMessage.system(
+                "You are an impartial expert evaluator. You will be given a text. "
+                "Your task is to evaluate the logical coherence and organization of the text.",
+            )
+        ],
+    )
+    provider = "openai"
+    model = "gpt-4o-mini"
+
+
 class MulticlassClassificationLLMEval(BaseLLMEval):
     class Config:
         type_alias = "evidently:descriptor:MulticlassClassificationLLMEval"
