@@ -43,6 +43,7 @@ export const createHead = (args: CreateHeadArgs) => {
       href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css"
     />
     <script src="https://cdn.jsdelivr.net/npm/anchor-js@5.0.0/anchor.min.js"></script>
+    <style>@view-transition {navigation: auto;}</style>
     <title>${title}</title>
   </head>
   `
