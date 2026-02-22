@@ -1,3 +1,7 @@
+@view-transition {
+    navigation: auto;
+}
+
 nav.pdoc {
     box-shadow: none;
     background: var(--pdoc-nav-background);
