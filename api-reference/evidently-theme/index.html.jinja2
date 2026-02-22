@@ -1,3 +1,14 @@
+{% if root_module_name %}
+{# Redirect index: add @view-transition so cross-document transitions work when navigating to evidently.html #}
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <style>@view-transition{navigation:auto;}</style>
+    <meta http-equiv="refresh" content="0; url=./{{ root_module_name.replace(".","/") }}.html"/>
+</head>
+</html>
+{% else %}
 {% extends "default/index.html.jinja2" %}
 
 {% block nav %}
@@ -11,3 +22,4 @@
         {% endfor %}
     </ul>
 {% endblock %}
+{% endif %}
