@@ -349,6 +349,8 @@ class MAPECalculation(LegacyRegressionMeanStdMetric[MAPE]):
             )
             if cur_near_zero_values + ref_near_zero_values > 0:
                 regression = context.data_definition.get_regression(self.task_name())
+                if regression is None:
+                    raise ValueError(f"Missing regression '{self.task_name()}' configuration")
                 handling = self.metric.zero_handling or "replace"
                 perc_error_plot_widgets[0].insights.append(
                     Insight(
