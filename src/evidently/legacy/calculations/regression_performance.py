@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from typing import Dict
+from typing import Optional
 
 import numpy as np
 import pandas as pd
@@ -45,7 +46,15 @@ def _calculate_error_normality(error: ErrorWithQuantiles):
     }
 
 
-def _calculate_quality_metrics(dataset, prediction_column, target_column, conf_interval_n_sigmas=1):
+def _calculate_quality_metrics(
+    dataset,
+    prediction_column,
+    target_column,
+    conf_interval_n_sigmas=1,
+    mape_zero_handling: str = "none",
+    mape_replace_value: float = 1.0,
+    mape_epsilon: Optional[float] = None,
+):
     me = np.mean(dataset[prediction_column] - dataset[target_column])
     sde = np.std(dataset[prediction_column] - dataset[target_column], ddof=1)
 
@@ -54,10 +63,20 @@ def _calculate_quality_metrics(dataset, prediction_column, target_column, conf_i
     mae = np.mean(abs_err)
     sdae = np.std(abs_err, ddof=1)
 
-    epsilon = np.finfo(np.float64).eps
-    abs_perc_err = np.abs(dataset[prediction_column] - dataset[target_column]) / np.maximum(
-        dataset[target_column], epsilon
-    )
+    data = dataset[[prediction_column, target_column]]
+
+    if mape_epsilon is None:
+        epsilon = np.finfo(np.float64).eps
+    else:
+        epsilon = mape_epsilon
+
+    epsilon_values = data[~(abs(data[target_column]) > epsilon)]
+    if mape_zero_handling == "drop":
+        data.drop(epsilon_values.index, inplace=True)
+
+    abs_perc_err = np.abs(data[prediction_column] - data[target_column]) / np.maximum(data[target_column], epsilon)
+    if mape_zero_handling == "replace" and epsilon_values.size > 0:
+        abs_perc_err[epsilon_values.index] = mape_replace_value
     mape = 100.0 * np.mean(abs_perc_err)
     sdape = np.std(abs_perc_err, ddof=1)
 
@@ -69,6 +88,7 @@ def _calculate_quality_metrics(dataset, prediction_column, target_column, conf_i
         "error_std": conf_interval_n_sigmas * float(sde),
         "abs_error_std": conf_interval_n_sigmas * float(sdae),
         "abs_perc_error_std": conf_interval_n_sigmas * float(sdape),
+        "near_zero_values": epsilon_values.size,
     }
 
 
@@ -207,10 +227,16 @@ class RegressionPerformanceMetrics:
     error_normality: dict
     underperformance: dict
     error_bias: dict
+    near_zero_values: int
 
 
 def calculate_regression_performance(
-    dataset: pd.DataFrame, columns: DatasetColumns, error_bias_prefix: str
+    dataset: pd.DataFrame,
+    columns: DatasetColumns,
+    error_bias_prefix: str,
+    mape_zero_handling: str = "none",
+    mape_replace_value: float = 0.0,
+    mape_epsilon: Optional[float] = None,
 ) -> RegressionPerformanceMetrics:
     target_column = columns.utility_columns.target
     prediction_column = columns.utility_columns.prediction
@@ -223,7 +249,14 @@ def calculate_regression_performance(
 
     _prepare_dataset(dataset, target_column, prediction_column)
     # calculate quality metrics
-    quality_metrics = _calculate_quality_metrics(dataset, prediction_column, target_column)
+    quality_metrics = _calculate_quality_metrics(
+        dataset,
+        prediction_column,
+        target_column,
+        mape_zero_handling=mape_zero_handling,
+        mape_replace_value=mape_replace_value,
+        mape_epsilon=mape_epsilon,
+    )
     # error normality
     err_quantiles = error_with_quantiles(dataset, prediction_column, target_column, quantile=0.05)
     quality_metrics["error_normality"] = _calculate_error_normality(err_quantiles)

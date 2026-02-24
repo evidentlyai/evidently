@@ -98,7 +98,10 @@ class RegressionPerformanceMetrics(Metric[RegressionPerformanceMetricsResults]):
         columns = process_columns(data.current_data, data.column_mapping)
 
         current_metrics = calculate_regression_performance(
-            dataset=data.current_data, columns=columns, error_bias_prefix="current_"
+            dataset=data.current_data,
+            columns=columns,
+            error_bias_prefix="current_",
+            mape_zero_handling="none",
         )
         error_bias = current_metrics.error_bias
         reference_metrics = None
@@ -109,6 +112,7 @@ class RegressionPerformanceMetrics(Metric[RegressionPerformanceMetricsResults]):
                 dataset=data.reference_data,
                 columns=ref_columns,
                 error_bias_prefix="ref_",
+                mape_zero_handling="none",
             )
 
             if reference_metrics is not None and reference_metrics.error_bias:

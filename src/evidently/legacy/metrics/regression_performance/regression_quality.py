@@ -40,6 +40,7 @@ class MoreRegressionMetrics(RegressionMetrics):
     error_std: float
     abs_error_std: float
     abs_perc_error_std: float
+    near_zero_values: Optional[int] = None
 
 
 class RegressionQualityMetricResults(MetricResult):
@@ -76,6 +77,10 @@ class RegressionQualityMetricResults(MetricResult):
 
 
 class RegressionQualityMetric(Metric[RegressionQualityMetricResults]):
+    mape_zero_handling: Optional[str] = None
+    mape_replace_value: Optional[float] = None
+    mape_epsilon: Optional[float] = None
+
     class Config:
         type_alias = "evidently:metric:RegressionQualityMetric"
 
@@ -92,6 +97,9 @@ class RegressionQualityMetric(Metric[RegressionQualityMetricResults]):
             dataset=data.current_data,
             columns=dataset_columns,
             error_bias_prefix="current_",
+            mape_zero_handling=self.mape_zero_handling or "drop",
+            mape_replace_value=self.mape_replace_value or 1.0,
+            mape_epsilon=self.mape_epsilon,
         )
         error_bias = current_metrics.error_bias
         reference_metrics = None
@@ -102,6 +110,9 @@ class RegressionQualityMetric(Metric[RegressionQualityMetricResults]):
                 dataset=data.reference_data,
                 columns=ref_columns,
                 error_bias_prefix="ref_",
+                mape_zero_handling=self.mape_zero_handling or "drop",
+                mape_replace_value=self.mape_replace_value or 1.0,
+                mape_epsilon=self.mape_epsilon,
             )
 
             if reference_metrics is not None and reference_metrics.error_bias:
@@ -245,6 +256,7 @@ class RegressionQualityMetric(Metric[RegressionQualityMetricResults]):
                 rmse=rmse_ref,
                 r2_score=r2_score_ref,
                 abs_error_max=abs_error_max_ref,
+                near_zero_values=reference_metrics.near_zero_values,
             )
 
         return RegressionQualityMetricResults(
@@ -260,6 +272,7 @@ class RegressionQualityMetric(Metric[RegressionQualityMetricResults]):
                 abs_error_std=current_metrics.abs_error_std,
                 abs_perc_error_std=current_metrics.abs_perc_error_std,
                 underperformance=current_metrics.underperformance,
+                near_zero_values=current_metrics.near_zero_values,
             ),
             reference=reference,
             rmse_default=rmse_default,

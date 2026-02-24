@@ -12,6 +12,8 @@ from evidently.core.metric_types import MeanStdValue
 from evidently.core.metric_types import SingleValue
 from evidently.core.metric_types import SingleValueCalculation
 from evidently.core.metric_types import SingleValueMetric
+from evidently.core.metric_types import get_default_render
+from evidently.core.metric_types import get_default_render_ref
 from evidently.core.report import Context
 from evidently.core.report import _default_input_data_generator
 from evidently.legacy.base_metric import InputData
@@ -26,6 +28,7 @@ from evidently.legacy.metrics.regression_performance.regression_dummy_metric imp
 from evidently.legacy.metrics.regression_performance.regression_quality import RegressionQualityMetric
 from evidently.legacy.metrics.regression_performance.regression_quality import RegressionQualityMetricResults
 from evidently.legacy.model.widget import BaseWidgetInfo
+from evidently.legacy.model.widget import Insight
 from evidently.legacy.utils.data_preprocessing import create_data_definition
 from evidently.metrics._legacy import LegacyMetricCalculation
 from evidently.tests import Reference
@@ -282,6 +285,20 @@ class MAPE(MeanStdRegressionMetric):
     """Whether to show percentage error plot."""
     error_distr: bool = False
     """Whether to show error distribution."""
+    zero_handling: Optional[str] = None
+    """Strategy for handling rows where the target or prediction value is close to zero.
+    Available options:
+        'none' - compute MAPE without any special handling
+        'drop' - exclude rows where either target or prediction is within ±epsilon of zero
+        'replace' - compute MAPE normally, but replace the resulting MAPE value for such rows with 'replace_value'
+    """
+    replace_value: Optional[float] = None
+    """Value used when zero_handling is 'replace'.
+     For rows where the target or prediction is within ±epsilon of zero, the calculated MAPE contribution is
+      replaced with this value instead of using the standard percentage error.
+    """
+    epsilon: Optional[float] = None
+    """Threshold used to determine whether a value is considered near zero."""
 
     def __init__(self, **kwargs):
         if "tests" in kwargs:
@@ -300,11 +317,61 @@ class MAPECalculation(LegacyRegressionMeanStdMetric[MAPE]):
     def calculate_value(
         self, context: Context, legacy_result: RegressionQualityMetricResults, render: List[BaseWidgetInfo]
     ):
+        current_result = self.result(
+            legacy_result.current.mean_abs_perc_error,
+            legacy_result.current.abs_perc_error_std,
+        )
+        cur_near_zero_values = legacy_result.current.near_zero_values or 0
+        ref_near_zero_values = 0
+        reference_near_zero_message = ""
+        if legacy_result.reference is not None:
+            reference_result = self.result(
+                legacy_result.reference.mean_abs_perc_error, legacy_result.reference.abs_perc_error_std
+            )
+            current_result.widget = get_default_render_ref(self.display_name(), current_result, reference_result)
+            ref_near_zero_values = legacy_result.reference.near_zero_values or 0
+            reference_near_zero_message = f", reference: {ref_near_zero_values}"
+        else:
+            reference_result = None
+            current_result.widget = get_default_render(self.display_name(), current_result)
+        if self.metric.error_distr:
+            _, error_distr_widgets = context.get_legacy_metric(
+                ADDITIONAL_WIDGET_MAPPING["error_distr"],
+                _gen_regression_input_data,
+                self.task_name(),
+            )
+            current_result.widget += error_distr_widgets
+        if self.metric.perc_error_plot:
+            _, perc_error_plot_widgets = context.get_legacy_metric(
+                ADDITIONAL_WIDGET_MAPPING["perc_error_plot"],
+                _gen_regression_input_data,
+                self.task_name(),
+            )
+
+            perc_error_plot_widgets[0].insights.append(
+                Insight(
+                    title="",
+                    severity="warning",
+                    text=f"Near-zero values detected (|value| ≤ epsilon)."
+                    f" Applied zero_handling='{self.metric.zero_handling}'."
+                    f" Affected rows — current: {cur_near_zero_values}"
+                    f"{reference_near_zero_message}.",
+                )
+            )
+            current_result.widget += perc_error_plot_widgets
         return (
-            self.result(legacy_result.current.mean_abs_perc_error, legacy_result.current.abs_perc_error_std),
-            None
-            if legacy_result.reference is None
-            else self.result(legacy_result.reference.mean_abs_perc_error, legacy_result.reference.abs_perc_error_std),
+            current_result,
+            reference_result,
+        )
+
+    def get_additional_widgets(self, context: "Context") -> List[BaseWidgetInfo]:
+        return []
+
+    def legacy_metric(self) -> RegressionQualityMetric:
+        return RegressionQualityMetric(
+            mape_zero_handling=self.metric.zero_handling,
+            mape_replace_value=self.metric.replace_value,
+            mape_epsilon=self.metric.epsilon,
         )
 
     def display_name(self) -> str:
