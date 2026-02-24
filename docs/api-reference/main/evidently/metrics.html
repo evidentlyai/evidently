@@ -515,6 +515,15 @@
                         <li>
                                 <a class="variable" href="#MAPE.error_distr">error_distr</a>
                         </li>
+                        <li>
+                                <a class="variable" href="#MAPE.zero_handling">zero_handling</a>
+                        </li>
+                        <li>
+                                <a class="variable" href="#MAPE.replace_value">replace_value</a>
+                        </li>
+                        <li>
+                                <a class="variable" href="#MAPE.epsilon">epsilon</a>
+                        </li>
                 </ul>
 
             </li>
@@ -3723,6 +3732,51 @@ scale-independent. Returns both mean and standard deviation. Lower values are be
     <a class="headerlink" href="#MAPE.error_distr"></a>
     
             <div class="docstring"><p>Whether to show error distribution.</p>
+</div>
+
+
+                            </div>
+                            <div id="MAPE.zero_handling" class="classattr">
+                                <div class="attr variable">
+            <span class="name">zero_handling</span><span class="annotation">: Optional[str]</span>
+
+        
+    </div>
+    <a class="headerlink" href="#MAPE.zero_handling"></a>
+    
+            <div class="docstring"><p>Strategy for handling rows where the target or prediction value is close to zero.
+Available options:
+    'none' - compute MAPE without any special handling
+    'drop' - exclude rows where either target or prediction is within ±epsilon of zero
+    'replace' - compute MAPE normally, but replace the resulting MAPE value for such rows with 'replace_value'</p>
+</div>
+
+
+                            </div>
+                            <div id="MAPE.replace_value" class="classattr">
+                                <div class="attr variable">
+            <span class="name">replace_value</span><span class="annotation">: Optional[float]</span>
+
+        
+    </div>
+    <a class="headerlink" href="#MAPE.replace_value"></a>
+    
+            <div class="docstring"><p>Value used when zero_handling is 'replace'.
+For rows where the target or prediction is within ±epsilon of zero, the calculated MAPE contribution is
+ replaced with this value instead of using the standard percentage error.</p>
+</div>
+
+
+                            </div>
+                            <div id="MAPE.epsilon" class="classattr">
+                                <div class="attr variable">
+            <span class="name">epsilon</span><span class="annotation">: Optional[float]</span>
+
+        
+    </div>
+    <a class="headerlink" href="#MAPE.epsilon"></a>
+    
+            <div class="docstring"><p>Threshold used to determine whether a value is considered near zero.</p>
 </div>
 
 
