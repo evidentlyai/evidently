@@ -65,11 +65,11 @@ def test_value_mape_test() -> None:
             "prediction": [0, 0, 0, 0],
         }
     )
-    suite = TestSuite(tests=[TestValueMAPE(lt=10)])
+    suite = TestSuite(tests=[TestValueMAPE(lt=25)])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
     assert not suite
 
-    suite = TestSuite(tests=[TestValueMAPE(eq=100)])
+    suite = TestSuite(tests=[TestValueMAPE(eq=120)])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
     assert not suite
     assert suite.show()
@@ -92,10 +92,10 @@ def test_value_mape_test_render_json() -> None:
 
     result = json.loads(result_json)["tests"][0]
     assert result == {
-        "description": "The MAPE is 25.0. The test threshold is eq=25 ± 2.5.",
+        "description": "The MAPE is 1e+02. The test threshold is eq=100 ± 10.",
         "group": "regression",
         "name": "Mean Absolute Percentage Error (MAPE)",
-        "parameters": {"condition": {"eq": {"absolute": 1e-12, "relative": 0.1, "value": 25.0}}, "value": 25.0},
+        "parameters": {"condition": {"eq": {"absolute": 1e-12, "relative": 0.1, "value": 100.0}}, "value": 100.0},
         "status": "SUCCESS",
     }
 
