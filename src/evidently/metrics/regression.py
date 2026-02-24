@@ -347,17 +347,19 @@ class MAPECalculation(LegacyRegressionMeanStdMetric[MAPE]):
                 _gen_regression_input_data,
                 self.task_name(),
             )
-
-            perc_error_plot_widgets[0].insights.append(
-                Insight(
-                    title="",
-                    severity="warning",
-                    text=f"Near-zero values detected (|value| ≤ epsilon)."
-                    f" Applied zero_handling='{self.metric.zero_handling}'."
-                    f" Affected rows — current: {cur_near_zero_values}"
-                    f"{reference_near_zero_message}.",
+            if cur_near_zero_values + ref_near_zero_values > 0:
+                regression = context.data_definition.get_regression(self.task_name())
+                handling = self.metric.zero_handling or "replace"
+                perc_error_plot_widgets[0].insights.append(
+                    Insight(
+                        title="",
+                        severity="warning",
+                        text=f"Near-zero values detected (|{regression.target}| ≤ epsilon)."
+                        f" Applied zero_handling='{handling}'."
+                        f" Affected rows — current: {cur_near_zero_values}"
+                        f"{reference_near_zero_message}.",
+                    )
                 )
-            )
             current_result.widget += perc_error_plot_widgets
         return (
             current_result,

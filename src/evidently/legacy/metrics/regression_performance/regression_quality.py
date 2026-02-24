@@ -97,7 +97,7 @@ class RegressionQualityMetric(Metric[RegressionQualityMetricResults]):
             dataset=data.current_data,
             columns=dataset_columns,
             error_bias_prefix="current_",
-            mape_zero_handling=self.mape_zero_handling or "drop",
+            mape_zero_handling=self.mape_zero_handling or "replace",
             mape_replace_value=self.mape_replace_value or 1.0,
             mape_epsilon=self.mape_epsilon,
         )
