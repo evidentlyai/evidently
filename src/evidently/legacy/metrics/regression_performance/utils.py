@@ -1,3 +1,5 @@
+import pandas as pd
+
 from evidently.legacy.metrics.regression_performance.objects import IntervalSeries
 from evidently.legacy.metrics.regression_performance.objects import RegressionMetricScatter
 
@@ -12,14 +14,16 @@ def apply_func_to_binned_data(
 
     reference = None
     if is_ref_data:
-        reference = IntervalSeries.from_data(
-            df_for_bins[df_for_bins.data == "ref"].groupby("target_binned", observed=False).apply(_apply)
+        data = pd.Series(
+            {g: _apply(v) for g, v in df_for_bins[df_for_bins.data == "ref"].groupby("target_binned", observed=False)}
         )
+        reference = IntervalSeries.from_data(data)
 
+    data = pd.Series(
+        {g: _apply(v) for g, v in df_for_bins[df_for_bins.data == "curr"].groupby("target_binned", observed=False)}
+    )
     result = RegressionMetricScatter(
-        current=IntervalSeries.from_data(
-            df_for_bins[df_for_bins.data == "curr"].groupby("target_binned", observed=False).apply(_apply)
-        ),
+        current=IntervalSeries.from_data(data),
         reference=reference,
     )
 
