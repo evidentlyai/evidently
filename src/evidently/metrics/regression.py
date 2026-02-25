@@ -347,12 +347,13 @@ class MAPECalculation(LegacyRegressionMeanStdMetric[MAPE]):
                 _gen_regression_input_data,
                 self.task_name(),
             )
+            widgets = [x.copy(deep=True) for x in perc_error_plot_widgets]
             if cur_near_zero_values + ref_near_zero_values > 0:
                 regression = context.data_definition.get_regression(self.task_name())
                 if regression is None:
                     raise ValueError(f"Missing regression '{self.task_name()}' configuration")
                 handling = self.metric.zero_handling or "replace"
-                perc_error_plot_widgets[0].insights.append(
+                widgets[0].insights.append(
                     Insight(
                         title="",
                         severity="warning",
@@ -362,7 +363,7 @@ class MAPECalculation(LegacyRegressionMeanStdMetric[MAPE]):
                         f"{reference_near_zero_message}.",
                     )
                 )
-            current_result.widget += perc_error_plot_widgets
+            current_result.widget += widgets
         return (
             current_result,
             reference_result,
