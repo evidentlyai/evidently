@@ -329,7 +329,7 @@ class CategoryCountCalculation(CountCalculation[CategoryCount]):
                 value = 0
                 for cat in self.metric.categories:
                     if cat in counts:
-                        value += counts[cat]
+                        value += counts[cat]  # type: ignore[index]
         except KeyError:
             value = 0
         total = column.data.count()
