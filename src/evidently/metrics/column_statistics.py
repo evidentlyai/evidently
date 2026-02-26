@@ -326,7 +326,10 @@ class CategoryCountCalculation(CountCalculation[CategoryCount]):
                 #  only one boolean label is possible here
                 value = counts[self.metric.categories[0]]  # type: ignore[index]
             else:
-                value = counts.loc[self.metric.categories].sum()  # type: ignore[index]
+                value = 0
+                for cat in self.metric.categories:
+                    if cat in counts:
+                        value += counts[cat]
         except KeyError:
             value = 0
         total = column.data.count()
