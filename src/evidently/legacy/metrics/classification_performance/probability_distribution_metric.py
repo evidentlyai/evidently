@@ -13,6 +13,7 @@ from evidently.legacy.base_metric import MetricResult
 from evidently.legacy.calculations.classification_performance import get_prediction_data
 from evidently.legacy.core import IncludeTags
 from evidently.legacy.model.widget import BaseWidgetInfo
+from evidently.legacy.pipeline.column_mapping import TargetNames
 from evidently.legacy.renderers.base_renderer import MetricRenderer
 from evidently.legacy.renderers.base_renderer import default_renderer
 from evidently.legacy.renderers.html_widgets import GraphData
@@ -32,6 +33,7 @@ class ClassificationProbDistributionResults(MetricResult):
 
     current_distribution: Optional[Dict[str, list]]  # todo use DistributionField?
     reference_distribution: Optional[Dict[str, list]]
+    target_names: Optional[TargetNames] = None
 
 
 class ClassificationProbDistribution(Metric[ClassificationProbDistributionResults]):
@@ -93,19 +95,29 @@ class ClassificationProbDistribution(Metric[ClassificationProbDistributionResult
         return ClassificationProbDistributionResults(
             current_distribution=current_distribution,
             reference_distribution=reference_distribution,
+            target_names=columns.target_names,
         )
 
 
 @default_renderer(wrap_type=ClassificationProbDistribution)
 class ClassificationProbDistributionRenderer(MetricRenderer):
-    def _plot(self, distribution: Dict[str, list]):
+    @staticmethod
+    def _resolve_target_name(label, target_names: Optional[TargetNames]) -> str:
+        if target_names is not None and isinstance(target_names, dict):
+            resolved = target_names.get(label) or target_names.get(int(label)) if isinstance(label, str) else target_names.get(label)  # type: ignore[arg-type]
+            if resolved is not None:
+                return str(resolved)
+        return str(label)
+
+    def _plot(self, distribution: Dict[str, list], target_names: Optional[TargetNames] = None):
         # plot distributions
         graphs = []
 
         for label in distribution:
+            display_name = self._resolve_target_name(label, target_names)
             pred_distr = ff.create_distplot(
                 distribution[label],
-                [str(label), "other"],
+                [display_name, "other"],
                 colors=[
                     self.color_options.primary_color,
                     self.color_options.secondary_color,
@@ -123,7 +135,7 @@ class ClassificationProbDistributionRenderer(MetricRenderer):
             pred_distr_json = pred_distr.to_plotly_json()
             graphs.append(
                 {
-                    "title": str(label),
+                    "title": display_name,
                     "data": pred_distr_json["data"],
                     "layout": pred_distr_json["layout"],
                 }
@@ -134,6 +146,7 @@ class ClassificationProbDistributionRenderer(MetricRenderer):
         metric_result = obj.get_result()
         reference_distribution = metric_result.reference_distribution
         current_distribution = metric_result.current_distribution
+        target_names = metric_result.target_names
         result = []
         size = WidgetSize.FULL
 
@@ -147,7 +160,7 @@ class ClassificationProbDistributionRenderer(MetricRenderer):
                     size=size,
                     figures=[
                         GraphData(graph["title"], graph["data"], graph["layout"])
-                        for graph in self._plot(current_distribution)
+                        for graph in self._plot(current_distribution, target_names)
                     ],
                 )
             )
@@ -159,7 +172,7 @@ class ClassificationProbDistributionRenderer(MetricRenderer):
                     size=size,
                     figures=[
                         GraphData(graph["title"], graph["data"], graph["layout"])
-                        for graph in self._plot(reference_distribution)
+                        for graph in self._plot(reference_distribution, target_names)
                     ],
                 )
             )
