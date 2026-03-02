@@ -17,5 +17,5 @@ class SparkJensenShannon(SparkStatTestImpl):
         ref = data.reference_data
         column_name = data.column_name
         reference_percents, current_percents = get_binned_data(ref, cur, column_name, feature_type, False)
-        jensenshannon_value = distance.jensenshannon(reference_percents, current_percents, base=None)
+        jensenshannon_value = distance.jensenshannon(reference_percents, current_percents, base=2.0)
         return jensenshannon_value, jensenshannon_value >= threshold
