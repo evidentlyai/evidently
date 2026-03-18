@@ -396,7 +396,7 @@ jobs:
     name: UI html visual tests
     runs-on: ubuntu-22.04
     needs: changed_files
-    if: ${{ needs.changed_files.outputs.evidently_any_modified == 'true' }}
+    if: ${{ needs.changed_files.outputs.evidently_any_modified == 'true' && vars.ENABLE_VISUAL_TESTS == 'true' }}
 
     steps:
       - name: ⬇️ Checkout repo
