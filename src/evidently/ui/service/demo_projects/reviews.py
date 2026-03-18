@@ -207,7 +207,7 @@ def create_project(workspace: WorkspaceBase, name: str):
                 values=[
                     PanelMetric(
                         metric="evidently:metric_v2:Precision",
-                        legend="precision\nvalue type: {{value_type}}",
+                        legend="precision",
                     ),
                 ],
                 size="full",
