@@ -335,6 +335,8 @@ def _cramer_v(x: pd.Series, y: pd.Series) -> float:
         Value of the Cramér's V
     """
     arr = pd.crosstab(x, y).values
+    if arr.size == 0:
+        return np.nan
     chi2_stat = chi2_contingency(arr, correction=False)
     phi2 = chi2_stat[0] / arr.sum()
     n_rows, n_cols = arr.shape
