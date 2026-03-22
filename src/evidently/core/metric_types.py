@@ -564,8 +564,18 @@ def convert_types(val):
         return int(val)
     if isinstance(val, str):
         return val
-    if val is None or np.isnan(val):
-        return val
+    if val is None:
+        return None
+    try:
+        if np.isnan(val):
+            return val
+    except (TypeError, ValueError):
+        pass
+    try:
+        if pd.isna(val):
+            return None
+    except (TypeError, ValueError):
+        pass
     raise ValueError(f"type {type(val)} not supported as Label")
 
 
