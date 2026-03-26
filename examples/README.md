@@ -7,12 +7,15 @@ This folder contains examples of how to use Evidently to evaluate, test, and mon
 If you are new to Evidently, start with these three top-level tutorials:
 
 **1. [Agentic Systems: Tracing and Evaluation](./agentic_systems_tracing.ipynb)**
+
 Learn how to trace multi-step agentic workflows, inspect intermediate steps, and evaluate agent behavior end to end.
 
 **2. [LLM Validation: Input and Output Quality](./llm_input_output_validation.ipynb)**
+
 Learn how to evaluate the quality of LLM application inputs and outputs, inspect results, and build validation workflows for LLM-powered systems.
 
 **3. [Classic ML Validation: Data Quality and Drift](./classic_ml_validation.ipynb)**
+
 Learn how to validate datasets for traditional ML workflows, detect data quality issues, and analyze data drift between reference and current data.
 
 ## Folder structure
