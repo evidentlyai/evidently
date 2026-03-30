@@ -37,6 +37,11 @@ register_type_alias(
 )
 register_type_alias(
     FeatureDescriptor,
+    "evidently.legacy.descriptors.llm_judges.QualityLLMEval",
+    "evidently:descriptor:QualityLLMEval",
+)
+register_type_alias(
+    FeatureDescriptor,
     "evidently.legacy.descriptors.llm_judges.ContextQualityLLMEval",
     "evidently:descriptor:ContextQualityLLMEval",
 )
