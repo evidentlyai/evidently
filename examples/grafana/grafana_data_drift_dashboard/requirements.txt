@@ -11,3 +11,4 @@ numpy
 scikit-learn
 jupyter
 matplotlib
+evidently==0.7.21
