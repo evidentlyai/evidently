@@ -16,13 +16,15 @@ def plot_error_bias_colored_scatter(
     curr_scatter_data: RegressionScatter,
     ref_scatter_data: Optional[RegressionScatter],
     color_options: ColorOptions,
+    current_name: str = "current",
+    reference_name: str = "reference",
 ):
     cols = 1
     subplot_titles: Union[list, str] = ""
 
     if ref_scatter_data is not None:
         cols = 2
-        subplot_titles = ["current", "reference"]
+        subplot_titles = [current_name, reference_name]
 
     fig = make_subplots(rows=1, cols=cols, shared_yaxes=True, subplot_titles=subplot_titles)
 
@@ -79,6 +81,8 @@ def regression_perf_plot(
     curr_metric: float,
     ref_metric: float = None,
     color_options: ColorOptions,
+    current_name: str = "current",
+    reference_name: str = "reference",
 ):
     current_color = color_options.get_current_data_color()
     reference_color = color_options.get_reference_data_color()
@@ -92,7 +96,7 @@ def regression_perf_plot(
     df = hist_for_plot.current.to_df().sort_values("x")
     x = [str(x) for x in df.x]
     y = list(df["count"])
-    trace = go.Bar(name="current", x=x, y=y, marker_color=current_color)
+    trace = go.Bar(name=current_name, x=x, y=y, marker_color=current_color)
     fig.add_trace(trace, 2, 1)
 
     if hist_for_plot.reference is not None:
@@ -106,15 +110,15 @@ def regression_perf_plot(
         df = hist_for_plot.reference.to_df().sort_values("x")
         x = [str(x) for x in df.x]
         y = list(df["count"])
-        trace = go.Bar(name="reference", x=x, y=y, marker_color=reference_color)
+        trace = go.Bar(name=reference_name, x=x, y=y, marker_color=reference_color)
         fig.add_trace(trace, 2, 1)
 
     fig.update_yaxes(title_text=name, row=1, col=1)
     fig.update_yaxes(title_text="count", row=2, col=1)
-    title = f"current {name}: {np.round(curr_metric, 3)}"
+    title = f"{current_name} {name}: {np.round(curr_metric, 3)}"
 
     if hist_for_plot.reference is not None:
-        title += f", reference {name}: {np.round(ref_metric, 3) if ref_metric is not None else '--'}"
+        title += f", {reference_name} {name}: {np.round(ref_metric, 3) if ref_metric is not None else '--'}"
 
     fig.update_layout(title=title)
     return fig

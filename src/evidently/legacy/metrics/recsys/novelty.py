@@ -121,9 +121,9 @@ class NoveltyMetric(Metric[NoveltyMetricResult]):
 class NoveltyMetricRenderer(MetricRenderer):
     def render_html(self, obj: NoveltyMetric) -> List[BaseWidgetInfo]:
         metric_result = obj.get_result()
-        counters = [CounterData.float(label="current", value=metric_result.current_value, precision=4)]
+        counters = [CounterData.float(label=self.render_options.current_name, value=metric_result.current_value, precision=4)]
         if metric_result.reference_value is not None:
-            counters.append(CounterData.float(label="reference", value=metric_result.reference_value, precision=4))
+            counters.append(CounterData.float(label=self.render_options.reference_name, value=metric_result.reference_value, precision=4))
 
         distr_fig = plot_distr_with_perc_button(
             hist_curr=HistogramData.from_distribution(metric_result.current_distr),

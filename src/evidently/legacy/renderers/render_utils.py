@@ -8,13 +8,19 @@ from evidently.legacy.options import ColorOptions
 
 
 def plot_distr(
-    *, hist_curr: HistogramData, hist_ref: Optional[HistogramData] = None, orientation="v", color_options: ColorOptions
+    *,
+    hist_curr: HistogramData,
+    hist_ref: Optional[HistogramData] = None,
+    orientation="v",
+    color_options: ColorOptions,
+    current_name: str = "current",
+    reference_name: str = "reference",
 ):
     fig = go.Figure()
 
     fig.add_trace(
         go.Bar(
-            name="current",
+            name=current_name,
             x=hist_curr.x,
             y=hist_curr.count,
             marker_color=color_options.get_current_data_color(),
@@ -24,7 +30,7 @@ def plot_distr(
     if hist_ref is not None:
         fig.add_trace(
             go.Bar(
-                name="reference",
+                name=reference_name,
                 x=hist_ref.x,
                 y=hist_ref.count,
                 marker_color=color_options.get_reference_data_color(),
@@ -41,11 +47,13 @@ def get_distribution_plot_figure(
     reference_distribution: Optional[Distribution],
     color_options: ColorOptions,
     orientation: str = "v",
+    current_name: str = "current",
+    reference_name: str = "reference",
 ) -> go.Figure:
     fig = go.Figure()
     fig.add_trace(
         go.Bar(
-            name="current",
+            name=current_name,
             x=current_distribution.x,
             y=current_distribution.y,
             marker_color=color_options.get_current_data_color(),
@@ -55,7 +63,7 @@ def get_distribution_plot_figure(
     if reference_distribution is not None:
         fig.add_trace(
             go.Bar(
-                name="reference",
+                name=reference_name,
                 x=reference_distribution.x,
                 y=reference_distribution.y,
                 marker_color=color_options.get_reference_data_color(),

@@ -216,12 +216,14 @@ class TestSuite(ReportBase):
         total_tests = len(self._inner_suite.context.test_results)
         by_status = {}
         color_options = self.options.color_options
+        render_options = self.options.render_options
 
         generator = WidgetIdGenerator("")
         for test, test_result in self._inner_suite.context.test_results.items():
             generator.base_id = test.get_id()
             renderer = find_test_renderer(type(test), self._inner_suite.context.renderers)
             renderer.color_options = color_options
+            renderer.render_options = render_options
             by_status[test_result.status] = by_status.get(test_result.status, 0) + 1
             html = renderer.render_html(test)
             set_source_fingerprint((di.info for di in html.details), test)
