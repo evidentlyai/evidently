@@ -579,8 +579,8 @@ def get_histogram_for_distribution(
     xaxis_title: Optional[str] = None,
     yaxis_title: Optional[str] = None,
     color_options: ColorOptions,
-    current_name: str = "current",
-    reference_name: str = "reference",
+    current_name: str = "Current",
+    reference_name: str = "Reference",
 ):
     current_histogram = HistogramData(
         name=current_name,
@@ -674,8 +674,8 @@ def get_roc_auc_tab_data(
     curr_roc_curve: ROCCurve,
     ref_roc_curve: Optional[ROCCurve],
     color_options: ColorOptions,
-    current_name: str = "current",
-    reference_name: str = "reference",
+    current_name: str = "Current",
+    reference_name: str = "Reference",
 ) -> List[Tuple[str, BaseWidgetInfo]]:
     additional_plots = []
     cols = 1
@@ -723,8 +723,8 @@ def get_pr_rec_plot_data(
     current_pr_curve: PRCurve,
     reference_pr_curve: Optional[PRCurve],
     color_options: ColorOptions,
-    current_name: str = "current",
-    reference_name: str = "reference",
+    current_name: str = "Current",
+    reference_name: str = "Reference",
 ) -> List[Tuple[str, BaseWidgetInfo]]:
     additional_plots = []
     cols = 1
@@ -772,8 +772,8 @@ def get_lift_plot_data(
     current_lift_curve: LiftCurve,
     reference_lift_curve: Optional[LiftCurve],
     color_options: ColorOptions,
-    current_name: str = "current",
-    reference_name: str = "reference",
+    current_name: str = "Current",
+    reference_name: str = "Reference",
 ) -> List[Tuple[str, BaseWidgetInfo]]:
     """
     Forms plot data for lift metric visualization
@@ -904,8 +904,8 @@ def get_class_separation_plot_data(
     reference_plot: Optional[pd.DataFrame],
     target_name: str,
     color_options: ColorOptions,
-    current_name: str = "current",
-    reference_name: str = "reference",
+    current_name: str = "Current",
+    reference_name: str = "Reference",
 ) -> List[Tuple[str, BaseWidgetInfo]]:
     additional_plots = []
     cols = 1
@@ -937,8 +937,8 @@ def get_class_separation_plot_data_agg(
     reference_plot: Optional[Dict[Label, pd.DataFrame]],
     target_name: str,
     color_options: ColorOptions,
-    current_name: str = "current",
-    reference_name: str = "reference",
+    current_name: str = "Current",
+    reference_name: str = "Reference",
 ) -> List[Tuple[str, BaseWidgetInfo]]:
     additional_plots = []
     cols = 1

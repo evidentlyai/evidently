@@ -12,8 +12,8 @@ from evidently.legacy.options import ColorOptions
 
 def test_render_options_defaults():
     opts = RenderOptions()
-    assert opts.current_name == "current"
-    assert opts.reference_name == "reference"
+    assert opts.current_name == "Current"
+    assert opts.reference_name == "Reference"
 
 
 def test_render_options_custom_names():
@@ -31,20 +31,20 @@ def test_options_dict_initialization():
 def test_options_dict_partial():
     opts = Options(**{"render": {"current_name": "Testing"}})
     assert opts.render_options.current_name == "Testing"
-    assert opts.render_options.reference_name == "reference"
+    assert opts.render_options.reference_name == "Reference"
 
 
 def test_options_default_backwards_compat():
     opts = Options()
-    assert opts.render_options.current_name == "current"
-    assert opts.render_options.reference_name == "reference"
+    assert opts.render_options.current_name == "Current"
+    assert opts.render_options.reference_name == "Reference"
 
 
 def test_base_renderer_has_render_options():
     renderer = BaseRenderer()
     assert renderer.render_options is not None
-    assert renderer.render_options.current_name == "current"
-    assert renderer.render_options.reference_name == "reference"
+    assert renderer.render_options.current_name == "Current"
+    assert renderer.render_options.reference_name == "Reference"
 
 
 def test_plot_distr_custom_names():
@@ -78,7 +78,7 @@ def test_plot_distr_default_names():
     fig = plot_distr(hist_curr=hist_curr, color_options=color_options)
 
     trace_names = [t.name for t in fig.data]
-    assert "current" in trace_names
+    assert "Current" in trace_names
 
 
 def test_get_distribution_plot_figure_custom_names():

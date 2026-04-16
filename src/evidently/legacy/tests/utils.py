@@ -251,7 +251,7 @@ def plot_dicts_to_table(
     )
 
 
-def plot_correlations(current_correlations, reference_correlations, current_name="current", reference_name="reference"):
+def plot_correlations(current_correlations, reference_correlations, current_name="Current", reference_name="Reference"):
     columns = current_correlations.columns
     heatmap_text = None
     heatmap_texttemplate = None
@@ -299,7 +299,7 @@ def plot_correlations(current_correlations, reference_correlations, current_name
 
 
 # todo typing: ConfusionMatrix
-def plot_conf_mtrx(curr_mtrx, ref_mtrx, current_name="current", reference_name="reference"):
+def plot_conf_mtrx(curr_mtrx, ref_mtrx, current_name="Current", reference_name="Reference"):
     if ref_mtrx is not None:
         cols = 2
         subplot_titles = [current_name, reference_name]
@@ -333,7 +333,7 @@ def plot_conf_mtrx(curr_mtrx, ref_mtrx, current_name="current", reference_name="
 
 def plot_roc_auc(
     *, curr_roc_curve: dict, ref_roc_curve: Optional[dict], color_options: ColorOptions,
-    current_name: str = "current", reference_name: str = "reference",
+    current_name: str = "Current", reference_name: str = "Reference",
 ) -> List[Tuple[str, BaseWidgetInfo]]:
     additional_plots = []
     cols = 1
@@ -382,7 +382,7 @@ def plot_roc_auc(
 
 
 def plot_boxes(*, curr_for_plots: Boxes, ref_for_plots: Optional[Boxes], color_options: ColorOptions,
-               current_name: str = "current", reference_name: str = "reference"):
+               current_name: str = "Current", reference_name: str = "Reference"):
     current_color = color_options.get_current_data_color()
     reference_color = color_options.get_reference_data_color()
     fig = go.Figure()
@@ -421,8 +421,8 @@ def plot_rates(
     curr_rate_plots_data: RatesPlotData,
     ref_rate_plots_data: Optional[RatesPlotData] = None,
     color_options: ColorOptions,
-    current_name: str = "current",
-    reference_name: str = "reference",
+    current_name: str = "Current",
+    reference_name: str = "Reference",
 ):
     if ref_rate_plots_data is not None:
         cols = 2

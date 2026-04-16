@@ -13,8 +13,8 @@ def plot_distr(
     hist_ref: Optional[HistogramData] = None,
     orientation="v",
     color_options: ColorOptions,
-    current_name: str = "current",
-    reference_name: str = "reference",
+    current_name: str = "Current",
+    reference_name: str = "Reference",
 ):
     fig = go.Figure()
 
@@ -47,8 +47,8 @@ def get_distribution_plot_figure(
     reference_distribution: Optional[Distribution],
     color_options: ColorOptions,
     orientation: str = "v",
-    current_name: str = "current",
-    reference_name: str = "reference",
+    current_name: str = "Current",
+    reference_name: str = "Reference",
 ) -> go.Figure:
     fig = go.Figure()
     fig.add_trace(

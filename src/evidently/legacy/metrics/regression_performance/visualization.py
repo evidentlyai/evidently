@@ -16,8 +16,8 @@ def plot_error_bias_colored_scatter(
     curr_scatter_data: RegressionScatter,
     ref_scatter_data: Optional[RegressionScatter],
     color_options: ColorOptions,
-    current_name: str = "current",
-    reference_name: str = "reference",
+    current_name: str = "Current",
+    reference_name: str = "Reference",
 ):
     cols = 1
     subplot_titles: Union[list, str] = ""
@@ -81,8 +81,8 @@ def regression_perf_plot(
     curr_metric: float,
     ref_metric: float = None,
     color_options: ColorOptions,
-    current_name: str = "current",
-    reference_name: str = "reference",
+    current_name: str = "Current",
+    reference_name: str = "Reference",
 ):
     current_color = color_options.get_current_data_color()
     reference_color = color_options.get_reference_data_color()
