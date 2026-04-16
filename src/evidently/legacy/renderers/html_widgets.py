@@ -579,16 +579,18 @@ def get_histogram_for_distribution(
     xaxis_title: Optional[str] = None,
     yaxis_title: Optional[str] = None,
     color_options: ColorOptions,
+    current_name: str = "current",
+    reference_name: str = "reference",
 ):
     current_histogram = HistogramData(
-        name="current",
+        name=current_name,
         x=pd.Series(current_distribution.x),
         count=pd.Series(current_distribution.y),
     )
 
     if reference_distribution is not None:
         reference_histogram: Optional[HistogramData] = HistogramData(
-            name="reference",
+            name=reference_name,
             x=pd.Series(reference_distribution.x),
             count=pd.Series(reference_distribution.y),
         )
@@ -669,14 +671,18 @@ def get_heatmaps_widget(
 
 
 def get_roc_auc_tab_data(
-    curr_roc_curve: ROCCurve, ref_roc_curve: Optional[ROCCurve], color_options: ColorOptions
+    curr_roc_curve: ROCCurve,
+    ref_roc_curve: Optional[ROCCurve],
+    color_options: ColorOptions,
+    current_name: str = "current",
+    reference_name: str = "reference",
 ) -> List[Tuple[str, BaseWidgetInfo]]:
     additional_plots = []
     cols = 1
     subplot_titles = [""]
     if ref_roc_curve is not None:
         cols = 2
-        subplot_titles = ["current", "reference"]
+        subplot_titles = [current_name, reference_name]
     for label in curr_roc_curve.keys():
         fig = make_subplots(rows=1, cols=cols, subplot_titles=subplot_titles, shared_yaxes=True)
         trace = go.Scatter(
@@ -714,14 +720,18 @@ def get_roc_auc_tab_data(
 
 
 def get_pr_rec_plot_data(
-    current_pr_curve: PRCurve, reference_pr_curve: Optional[PRCurve], color_options: ColorOptions
+    current_pr_curve: PRCurve,
+    reference_pr_curve: Optional[PRCurve],
+    color_options: ColorOptions,
+    current_name: str = "current",
+    reference_name: str = "reference",
 ) -> List[Tuple[str, BaseWidgetInfo]]:
     additional_plots = []
     cols = 1
     subplot_titles = [""]
     if reference_pr_curve is not None:
         cols = 2
-        subplot_titles = ["current", "reference"]
+        subplot_titles = [current_name, reference_name]
     for label in current_pr_curve.keys():
         fig = make_subplots(rows=1, cols=cols, subplot_titles=subplot_titles, shared_yaxes=True)
         trace = go.Scatter(
@@ -762,6 +772,8 @@ def get_lift_plot_data(
     current_lift_curve: LiftCurve,
     reference_lift_curve: Optional[LiftCurve],
     color_options: ColorOptions,
+    current_name: str = "current",
+    reference_name: str = "reference",
 ) -> List[Tuple[str, BaseWidgetInfo]]:
     """
     Forms plot data for lift metric visualization
@@ -785,7 +797,7 @@ def get_lift_plot_data(
     subplot_titles = [""]
     if reference_lift_curve is not None:
         cols = 2
-        subplot_titles = ["current", "reference"]
+        subplot_titles = [current_name, reference_name]
     for label in current_lift_curve.keys():
         fig = make_subplots(rows=1, cols=cols, subplot_titles=subplot_titles, shared_yaxes=True)
         trace = go.Scatter(
@@ -888,14 +900,19 @@ def class_separation_traces_agg(df, label, color_options):
 
 
 def get_class_separation_plot_data(
-    current_plot: pd.DataFrame, reference_plot: Optional[pd.DataFrame], target_name: str, color_options: ColorOptions
+    current_plot: pd.DataFrame,
+    reference_plot: Optional[pd.DataFrame],
+    target_name: str,
+    color_options: ColorOptions,
+    current_name: str = "current",
+    reference_name: str = "reference",
 ) -> List[Tuple[str, BaseWidgetInfo]]:
     additional_plots = []
     cols = 1
     subplot_titles = [""]
     if reference_plot is not None:
         cols = 2
-        subplot_titles = ["current", "reference"]
+        subplot_titles = [current_name, reference_name]
     for label in current_plot.columns.drop(target_name):
         fig = make_subplots(rows=1, cols=cols, subplot_titles=subplot_titles, shared_yaxes=True)
         traces = class_separation_traces_raw(current_plot, label, target_name, color_options)
@@ -920,13 +937,15 @@ def get_class_separation_plot_data_agg(
     reference_plot: Optional[Dict[Label, pd.DataFrame]],
     target_name: str,
     color_options: ColorOptions,
+    current_name: str = "current",
+    reference_name: str = "reference",
 ) -> List[Tuple[str, BaseWidgetInfo]]:
     additional_plots = []
     cols = 1
     subplot_titles = [""]
     if reference_plot is not None:
         cols = 2
-        subplot_titles = ["current", "reference"]
+        subplot_titles = [current_name, reference_name]
     for label in current_plot.keys():
         fig = make_subplots(rows=1, cols=cols, subplot_titles=subplot_titles, shared_yaxes=True)
         traces = class_separation_traces_agg(current_plot[label], label, color_options)

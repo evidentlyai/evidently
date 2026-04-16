@@ -319,10 +319,10 @@ class DatasetMissingValuesMetricRenderer(MetricRenderer):
         result = [
             header_text(label="Dataset Missing Values"),
             self._get_overall_missing_values_info(metric_result),
-            self._get_table_stat(dataset_name="current", stats=metric_result.current),
+            self._get_table_stat(dataset_name=self.render_options.current_name, stats=metric_result.current),
         ]
 
         if metric_result.reference is not None:
-            result.append(self._get_table_stat(dataset_name="reference", stats=metric_result.reference))
+            result.append(self._get_table_stat(dataset_name=self.render_options.reference_name, stats=metric_result.reference))
 
         return result
