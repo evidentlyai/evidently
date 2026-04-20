@@ -37,7 +37,7 @@ def sigma_median(dist: np.ndarray) -> float:
             # "ndarray[Any, Any]", "int", "str"  [call-overload]
             a=dist.flatten(),
             q=50,
-            interpolation="nearest",  # type: ignore[call-overload]
+            method="nearest",  # type: ignore[call-overload]
         )
     ) ** 0.5
     if sigma == 0:
