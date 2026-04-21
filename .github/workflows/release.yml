@@ -20,10 +20,11 @@ jobs:
       - name: Check _version.py was updated
         env:
           PYTHONPATH: ./src
+          REF_NAME: ${{ github.ref_name }}
         run: |-
           VERSION_TO_RELEASE=v$(python "./src/evidently/_version.py")
-          if [ "${{ github.ref_name }}" != "$VERSION_TO_RELEASE" ]; then
-            echo "Release triggered for tag ${{ github.ref_name }} but version.py contains $VERSION_TO_RELEASE"
+          if [ "$REF_NAME" != "$VERSION_TO_RELEASE" ]; then
+            echo "Release triggered for tag $REF_NAME but version.py contains $VERSION_TO_RELEASE"
             exit 1
           fi
 
@@ -121,7 +122,7 @@ jobs:
       - name: 📚 Generate and upload API reference
         uses: ./.github/share-actions/generate-api-reference
         with:
-          flags: --git-revision ${{ github.ref_name }}
+          git-revision: ${{ github.ref_name }}
 
       - name: Upload documentation artifact
         uses: actions/upload-artifact@v4

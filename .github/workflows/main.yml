@@ -73,28 +73,37 @@ jobs:
 
       - name: Run step if evidently_python file(s) change
         if: steps.changed-files.outputs.evidently_python_any_modified == 'true'
+        env:
+          CHANGED_FILES: ${{ steps.changed-files.outputs.evidently_python_all_changed_and_modified_files }}
         run: |
           echo "One or more evidently_python file(s) has changed."
-          echo "List all the files that have changed: ${{ steps.changed-files.outputs.evidently_python_all_changed_and_modified_files }}"
+          echo "List all the files that have changed: $CHANGED_FILES"
 
       - name: Run step if UI file(s) changed
         if: steps.changed-files.outputs.ui_any_modified == 'true'
+        env:
+          CHANGED_FILES: ${{ steps.changed-files.outputs.ui_all_changed_and_modified_files }}
         run: |
           echo "One or more ui file(s) has changed."
-          echo "List all the files that have changed: ${{ steps.changed-files.outputs.ui_all_changed_and_modified_files }}"
+          echo "List all the files that have changed: $CHANGED_FILES"
 
       - name: Run step if API reference file(s) changed
         if: steps.changed-files.outputs.api_reference_any_modified == 'true'
+        env:
+          CHANGED_FILES: ${{ steps.changed-files.outputs.api_reference_all_changed_and_modified_files }}
         run: |
           echo "One or more api reference file(s) has changed."
-          echo "List all the files that have changed: ${{ steps.changed-files.outputs.api_reference_all_changed_and_modified_files }}"
+          echo "List all the files that have changed: $CHANGED_FILES"
 
       - name: Run step if UI service tests need to be run
         if: steps.changed-files.outputs.evidently_python_any_modified == 'true' || steps.changed-files.outputs.ui_build_any_modified == 'true'
+        env:
+          UI_BUILD_FILES: ${{ steps.changed-files.outputs.ui_build_all_changed_and_modified_files }}
+          EVIDENTLY_PYTHON_FILES: ${{ steps.changed-files.outputs.evidently_python_all_changed_and_modified_files }}
         run: |
           echo "UI service tests need to be run."
-          echo "List all the files that have changed: ${{ steps.changed-files.outputs.ui_build_all_changed_and_modified_files }}"
-          echo "List all the files that have changed: ${{ steps.changed-files.outputs.evidently_python_all_changed_and_modified_files }}"
+          echo "List all the files that have changed: $UI_BUILD_FILES"
+          echo "List all the files that have changed: $EVIDENTLY_PYTHON_FILES"
 
   linter:
     # The type of runner that the job will run on
@@ -168,11 +177,12 @@ jobs:
         run: pip install -e .[dev,spark,fsspec,llm,sql]
       - name: Run Tests
         shell: bash
+        env:
+          BRANCH_NAME: ${{ github.event.pull_request.head.ref || github.ref_name }}
         run: |
-          BRANCH_NAME="${{ github.event.pull_request.head.ref || github.ref_name }}"
           BRANCH_NAME="${BRANCH_NAME//\//-}"
           python -m pytest --durations=50 \
-            --html="pytest-reports/${{ env.ARTIFACT_PREFIX }}${BRANCH_NAME}/index.html" \
+            --html="pytest-reports/${ARTIFACT_PREFIX}${BRANCH_NAME}/index.html" \
             --self-contained-html
 
       - name: Upload HTML test report
@@ -268,11 +278,10 @@ jobs:
       - name: 📚 Generate and upload API reference
         uses: ./.github/share-actions/generate-api-reference
         with:
-          flags: >-
-            --local-source-code
-            --github-repo ${{ github.event.pull_request.head.repo.full_name || github.repository }}
-            --git-revision ${{ github.event.pull_request.head.ref || github.ref_name }}
-            --output-prefix '${{ env.ARTIFACT_PREFIX }}'
+          local-source-code: 'true'
+          github-repo: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
+          git-revision: ${{ github.event.pull_request.head.ref || github.ref_name }}
+          output-prefix: ${{ env.ARTIFACT_PREFIX }}
 
       - name: Upload documentation artifact
         uses: actions/upload-artifact@v4
@@ -380,10 +389,11 @@ jobs:
       - name: Run Service Playwright tests
         working-directory: ui/service
         shell: bash
+        env:
+          BRANCH_NAME: ${{ github.event.pull_request.head.ref || github.ref_name }}
         run: |
-          BRANCH_NAME="${{ github.event.pull_request.head.ref || github.ref_name }}"
           BRANCH_NAME="${BRANCH_NAME//\//-}"
-          PLAYWRIGHT_HTML_REPORT="playwright-report/${{ env.ARTIFACT_PREFIX }}${BRANCH_NAME}" pnpm test
+          PLAYWRIGHT_HTML_REPORT="playwright-report/${ARTIFACT_PREFIX}${BRANCH_NAME}" pnpm test
 
       - uses: actions/upload-artifact@v4
         if: always()
@@ -437,10 +447,11 @@ jobs:
       - name: Run Service Playwright tests
         working-directory: ui/html-visual-testing
         shell: bash
+        env:
+          BRANCH_NAME: ${{ github.event.pull_request.head.ref || github.ref_name }}
         run: |
-          BRANCH_NAME="${{ github.event.pull_request.head.ref || github.ref_name }}"
           BRANCH_NAME="${BRANCH_NAME//\//-}"
-          PLAYWRIGHT_HTML_REPORT="playwright-report/${{ env.ARTIFACT_PREFIX }}${BRANCH_NAME}" pnpm test
+          PLAYWRIGHT_HTML_REPORT="playwright-report/${ARTIFACT_PREFIX}${BRANCH_NAME}" pnpm test
 
       - uses: actions/upload-artifact@v4
         if: always()

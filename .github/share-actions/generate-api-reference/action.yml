@@ -1,8 +1,21 @@
 name: Generate docs and upload artifact
 inputs:
-  flags:
-    description: 'Flags to pass to the generate.py script'
-    required: true
+  local-source-code:
+    description: 'Whether to generate docs from the locally checked out source code'
+    required: false
+    default: 'false'
+  github-repo:
+    description: 'GitHub repository (owner/name) used for source links in generated docs'
+    required: false
+    default: ''
+  git-revision:
+    description: 'Git revision (branch or tag) used for source links in generated docs'
+    required: false
+    default: ''
+  output-prefix:
+    description: 'Output prefix for generated artifacts'
+    required: false
+    default: ''
 runs:
   using: "composite"
   steps:
@@ -12,6 +25,24 @@ runs:
         python-version: "3.11"
 
     - name: Generate documentation
+      env:
+        LOCAL_SOURCE_CODE: ${{ inputs.local-source-code }}
+        GITHUB_REPO: ${{ inputs.github-repo }}
+        GIT_REVISION: ${{ inputs.git-revision }}
+        OUTPUT_PREFIX: ${{ inputs.output-prefix }}
       run: |
-        ./api-reference/generate.py --api-reference-index-href "/evidently/api-reference" ${{ inputs.flags }}
+        args=()
+        if [ "$LOCAL_SOURCE_CODE" = "true" ]; then
+          args+=(--local-source-code)
+        fi
+        if [ -n "$GITHUB_REPO" ]; then
+          args+=(--github-repo "$GITHUB_REPO")
+        fi
+        if [ -n "$GIT_REVISION" ]; then
+          args+=(--git-revision "$GIT_REVISION")
+        fi
+        if [ -n "$OUTPUT_PREFIX" ]; then
+          args+=(--output-prefix "$OUTPUT_PREFIX")
+        fi
+        ./api-reference/generate.py --api-reference-index-href "/evidently/api-reference" "${args[@]}"
       shell: bash

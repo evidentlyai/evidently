@@ -66,9 +66,10 @@ jobs:
         id: link
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPOSITORY: ${{ github.repository }}
+          BRANCH_NAME: ${{ github.event.workflow_run.head_branch }}
         run: |
-          BRANCH_NAME="${{ github.event.workflow_run.head_branch }}"
-          PR_NUMBER=$(gh pr list --repo "${{ github.repository }}" --head "$BRANCH_NAME" --json number --jq '.[0].number')
+          PR_NUMBER=$(gh pr list --repo "$REPOSITORY" --head "$BRANCH_NAME" --json number --jq '.[0].number')
           BRANCH_NAME="${BRANCH_NAME//\//-}"
 
           if [ -n "$PR_NUMBER" ]; then
