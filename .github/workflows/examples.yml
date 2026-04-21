@@ -22,7 +22,7 @@ jobs:
         minimal: [false]
       fail-fast: false
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4.3.1
 
       - name: 🔍 Get bikes dataset cached
         uses: ./.github/share-actions/get-bikes-dataset-cached
@@ -30,7 +30,7 @@ jobs:
       - name: Prepare Bikes dataset
         run: unzip Bike-Sharing-Dataset.zip -d Bike-Sharing-Dataset
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v5.6.0
         with:
           python-version: ${{ matrix.python }}
           architecture: "x64"

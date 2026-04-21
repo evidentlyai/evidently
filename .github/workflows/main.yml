@@ -38,11 +38,13 @@ jobs:
       ui_any_modified: ${{ steps.changed-files.outputs.ui_any_modified == 'true' }}
       ui_service_tests_need_run: ${{ steps.changed-files.outputs.evidently_python_any_modified == 'true' || steps.changed-files.outputs.ui_build_any_modified == 'true' }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4.3.1
 
       - name: Get all files that have changed
         id: changed-files
-        uses: tj-actions/changed-files@v42
+        # SHA-pinned (not just tag-pinned) because this action was the target
+        # of a March 2025 supply-chain attack where version tags were force-pushed.
+        uses: tj-actions/changed-files@aa08304bd477b800d468db44fe10f6c61f7f7b11 # v42.1.0
         with:
           files_yaml: |
             api_reference:
@@ -104,8 +106,8 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v4.3.1
+      - uses: actions/setup-python@v5.6.0
         with:
           python-version: "3.10"
           architecture: "x64"
@@ -127,7 +129,7 @@ jobs:
     needs: changed_files
     if: ${{ needs.changed_files.outputs.evidently_any_modified == 'true' }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4.3.1
       - name: 🔍 Get bikes dataset cached
         uses: ./.github/share-actions/get-bikes-dataset-cached
       - name: 🔍 Get scipy dataset cached
@@ -146,8 +148,8 @@ jobs:
       EVIDENTLY_TEST_ENVIRONMENT: 1
       SCIKIT_LEARN_DATA: scikit_learn_data
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v4.3.1
+      - uses: actions/setup-python@v5.6.0
         with:
           python-version: "3.10"
           architecture: "x64"
@@ -177,7 +179,7 @@ jobs:
 
       - name: Upload HTML test report
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4.6.2
         with:
           name: pytest-html-report
           path: pytest-reports
@@ -202,8 +204,8 @@ jobs:
             python: "3.13"
       fail-fast: false
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v4.3.1
+      - uses: actions/setup-python@v5.6.0
         with:
           python-version: ${{ matrix.python }}
           cache: "pip"
@@ -228,8 +230,8 @@ jobs:
     needs: changed_files
     if: ${{ needs.changed_files.outputs.evidently_any_modified == 'true' }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v4.3.1
+      - uses: actions/setup-python@v5.6.0
         with:
           python-version: "3.10"
           architecture: "x64"
@@ -243,11 +245,11 @@ jobs:
       - name: Install wheel
         run: pip install wheel
       - name: Install uv
-        uses: astral-sh/setup-uv@v4
+        uses: astral-sh/setup-uv@v4.2.0
       - name: Build package
         run: uv build
       - name: Archive built package
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4.6.2
         with:
           name: evidently-package-build-artifact
           path: dist/
@@ -264,7 +266,7 @@ jobs:
         )
       }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4.3.1
       - name: 📚 Generate and upload API reference
         uses: ./.github/share-actions/generate-api-reference
         with:
@@ -275,7 +277,7 @@ jobs:
             --output-prefix '${{ env.ARTIFACT_PREFIX }}'
 
       - name: Upload documentation artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4.6.2
         with:
           name: api-reference
           path: api-reference/dist
@@ -289,7 +291,7 @@ jobs:
 
     steps:
       - name: ⬇️ Checkout repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.3.1
 
       - name: 📥 Install ui dependencies
         uses: ./.github/share-actions/ui-node-pnpm-install
@@ -307,7 +309,7 @@ jobs:
 
     steps:
       - name: ⬇️ Checkout repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.3.1
 
       - name: 📥 Install ui dependencies
         uses: ./.github/share-actions/ui-node-pnpm-install
@@ -331,13 +333,13 @@ jobs:
 
     steps:
       - name: ⬇️ Checkout repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.3.1
         with:
           sparse-checkout: |
             ui
             .dvc
             .github
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v5.6.0
         with:
           python-version: "3.11"
           architecture: "x64"
@@ -385,7 +387,7 @@ jobs:
           BRANCH_NAME="${BRANCH_NAME//\//-}"
           PLAYWRIGHT_HTML_REPORT="playwright-report/${{ env.ARTIFACT_PREFIX }}${BRANCH_NAME}" pnpm test
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v4.6.2
         if: always()
         with:
           name: ui-service-playwright-report
@@ -400,7 +402,7 @@ jobs:
 
     steps:
       - name: ⬇️ Checkout repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.3.1
       - name: Install dvc
         run: pip install 'pathspec<1' 'dvc[gs]==3.50.1'
 
@@ -410,7 +412,7 @@ jobs:
       - name: 📥 Install ui dependencies
         uses: ./.github/share-actions/ui-node-pnpm-install
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v5.6.0
         with:
           python-version: "3.10"
           cache: "pip"
@@ -442,7 +444,7 @@ jobs:
           BRANCH_NAME="${BRANCH_NAME//\//-}"
           PLAYWRIGHT_HTML_REPORT="playwright-report/${{ env.ARTIFACT_PREFIX }}${BRANCH_NAME}" pnpm test
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v4.6.2
         if: always()
         with:
           name: ui-html-visual-testing-playwright-report

@@ -12,9 +12,9 @@ jobs:
 
     steps:
       - name: Checking out sources
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.3.1
       - name: Set up Python 3.11
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v5.6.0
         with:
           python-version: "3.11"
       - name: Check _version.py was updated
@@ -34,17 +34,17 @@ jobs:
       - check
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4.3.1
       - name: Set up Python 3.11
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v5.6.0
         with:
           python-version: "3.11"
       - name: Install uv
-        uses: astral-sh/setup-uv@v4
+        uses: astral-sh/setup-uv@v4.2.0
       - name: Build a binary wheel and a source tarball
         run: uv build
       - name: Store the distribution packages
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4.6.2
         with:
           name: python-package-distributions
           path: dist/
@@ -64,12 +64,12 @@ jobs:
 
     steps:
       - name: Download all the dists
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v4.3.0
         with:
           name: python-package-distributions
           path: dist/
       - name: Publish to PyPi
-        uses: pypa/gh-action-pypi-publish@release/v1
+        uses: pypa/gh-action-pypi-publish@v1.14.0
 
   build_and_publish_docker:
     name: Build Docker image and publish it to DockerHub
@@ -83,17 +83,17 @@ jobs:
     steps:
       - id: checkout
         name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.3.1
       - id: login
         name: Login to Docker Hub
-        uses: docker/login-action@v3
+        uses: docker/login-action@v3.7.0
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v3.12.0
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
+        uses: docker/setup-qemu-action@v3.7.0
       - id: generate-tag
         name: Santize branch name the same way normalize function of argo-cd works
         run: |
@@ -102,7 +102,7 @@ jobs:
 
       - id: docker-push-tagged
         name: Tag Docker image and push to DockerHub
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v5.4.0
         with:
           file: docker/Dockerfile.service
           platforms: linux/amd64,linux/arm64
@@ -117,14 +117,14 @@ jobs:
       - publish_to_pypi
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4.3.1
       - name: 📚 Generate and upload API reference
         uses: ./.github/share-actions/generate-api-reference
         with:
           flags: --git-revision ${{ github.ref_name }}
 
       - name: Upload documentation artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4.6.2
         with:
           name: api-reference
           path: api-reference/dist
@@ -140,13 +140,13 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4.3.1
         with:
           ref: gh-pages
           fetch-depth: 0
 
       - name: 📥 Download API reference artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v4.3.0
         with:
           name: api-reference
           path: ./artifacts/api-reference
@@ -165,15 +165,15 @@ jobs:
       contents: write
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4.3.1
       - name: Download all the dists
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v4.3.0
         with:
           name: python-package-distributions
           path: dist/
       - id: create_release
         name: Create Release for the Tag
-        uses: ncipollo/release-action@v1
+        uses: ncipollo/release-action@v1.21.0
         with:
           artifacts: "dist/*"
           generateReleaseNotes: true

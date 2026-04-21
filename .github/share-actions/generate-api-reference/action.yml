@@ -7,7 +7,7 @@ runs:
   using: "composite"
   steps:
     - name: Install uv
-      uses: astral-sh/setup-uv@v7
+      uses: astral-sh/setup-uv@v7.6.0
       with:
         python-version: "3.11"
 
