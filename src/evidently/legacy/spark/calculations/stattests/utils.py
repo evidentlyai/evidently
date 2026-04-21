@@ -52,19 +52,11 @@ def get_binned_data(
         current_percents = current_percents / current_percents.sum()
 
     if fill_zeroes:
-        np.place(
-            reference_percents,
-            reference_percents == 0,
-            min(reference_percents[reference_percents != 0]) / 10**6
-            if min(reference_percents[reference_percents != 0]) <= 0.0001
-            else 0.0001,
-        )
-        np.place(
-            current_percents,
-            current_percents == 0,
-            min(current_percents[current_percents != 0]) / 10**6
-            if min(current_percents[current_percents != 0]) <= 0.0001
-            else 0.0001,
-        )
+        ref_nonzero = reference_percents[reference_percents != 0]
+        cur_nonzero = current_percents[current_percents != 0]
+        if len(ref_nonzero) > 0:
+            np.place(reference_percents, reference_percents == 0, min(ref_nonzero) / 10)
+        if len(cur_nonzero) > 0:
+            np.place(current_percents, current_percents == 0, min(cur_nonzero) / 10)
 
     return reference_percents, current_percents
