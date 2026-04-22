@@ -364,10 +364,10 @@ class OptimizerConfig(AutoAliasMixin, EvidentlyBaseModel):
     class Config:
         is_base_type = True
 
-    provider: str = "openai"
-    """LLM provider name."""
-    model: str = "gpt-4o-mini"
-    """LLM model name."""
+    provider: Optional[str] = None
+    """LLM provider name. When None, inherited from the executor's judge if available."""
+    model: Optional[str] = None
+    """LLM model name. When None, inherited from the executor's judge if available."""
     verbose: bool = False
     """Whether to print optimization progress."""
     seed: Optional[int] = None
@@ -586,14 +586,38 @@ class OptimizerContext(BaseModel):
             self.runs.append(run)
             return run
 
+    def resolve_provider_model(self) -> Tuple[str, str]:
+        """Resolve the effective LLM provider and model for this context.
+
+        When provider or model are not set on the config, falls back to the
+        provider/model of the executor's judge (if it has one). This lets
+        PromptOptimizer inherit the provider used by an LLMJudge-based executor
+        without requiring the user to duplicate that configuration.
+
+        Returns:
+        * Tuple of (provider, model) as concrete strings.
+        """
+        provider = self.config.provider
+        model = self.config.model
+        if provider is None or model is None:
+            executor = self.params.get(Params.Executor)
+            if executor is not None and hasattr(executor, "judge"):
+                judge = executor.judge
+                if provider is None and hasattr(judge, "provider"):
+                    provider = judge.provider
+                if model is None and hasattr(judge, "model"):
+                    model = judge.model
+        return provider or "openai", model or "gpt-4o-mini"
+
     @property
     def llm_wrapper(self) -> LLMWrapper:
         """Get the LLM wrapper for this context.
 
         Returns:
-        * `LLMWrapper` configured with the context's provider and model.
+        * `LLMWrapper` configured with the resolved provider and model.
         """
-        return get_llm_wrapper(self.config.provider, self.config.model, self.params[Params.Options])
+        provider, model = self.resolve_provider_model()
+        return get_llm_wrapper(provider, model, self.params[Params.Options])
 
     @property
     def options(self) -> Options:
