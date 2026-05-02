@@ -271,7 +271,7 @@ class ClassificationQualityByFeatureTableRenderer(MetricRenderer):
 
                 if reference_data is not None:
                     cols = 2
-                    subplot_titles = ["current", "reference"]
+                    subplot_titles = [self.render_options.current_name, self.render_options.reference_name]
                 else:
                     cols = 1
                     subplot_titles = [""]

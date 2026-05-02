@@ -81,8 +81,8 @@ def distribution(
         color_options=ColorOptions(),
         subplots=False,
         to_json=False,
-        current_name="current",
-        reference_name="reference",
+        current_name="Current",
+        reference_name="Reference",
     )
 
     return [

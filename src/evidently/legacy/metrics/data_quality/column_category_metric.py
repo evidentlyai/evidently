@@ -145,7 +145,7 @@ class ColumnCategoryMetricRenderer(MetricRenderer):
         result = [header_text(label=f"Column '{metric_result.column_name}'. Сategory '{metric_result.category}'.")]
         counters = [
             CounterData.string(
-                label="current",
+                label=self.render_options.current_name,
                 value=self._get_count_info(metric_result.current),
             ),
         ]
@@ -153,7 +153,7 @@ class ColumnCategoryMetricRenderer(MetricRenderer):
         if metric_result.reference is not None:
             counters.append(
                 CounterData.string(
-                    label="reference",
+                    label=self.render_options.reference_name,
                     value=self._get_count_info(metric_result.reference),
                 ),
             )
