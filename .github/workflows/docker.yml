@@ -14,7 +14,7 @@ jobs:
     steps:
       - name: Login to docker.io
         run: echo ${{ secrets.DOCKER_PWD }} | docker login -u ${{ secrets.DOCKER_LOGIN }} --password-stdin
-      - uses: actions/checkout@master
+      - uses: actions/checkout@v4.3.1
       - name: setup builder
         run: docker buildx create --name mybuilder --bootstrap --use
       - name: Build and release latest image
