@@ -2,7 +2,7 @@ name: Get bikes dataset cached
 runs:
   using: "composite"
   steps:
-    - uses: actions/cache@v4
+    - uses: actions/cache@v4.3.0
       id: cache-bikes-dataset
       env:
         cache-name: cache-bikes-dataset

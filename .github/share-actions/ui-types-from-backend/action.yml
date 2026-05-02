@@ -4,13 +4,13 @@ runs:
   steps:
     - name: Cache UI types
       id: cache-ui-types
-      uses: actions/cache@v4
+      uses: actions/cache@v4.3.0
       with:
         path: |
           ui/packages/evidently-ui-lib/src/api/types/endpoints.d.ts
         key: ui-types-${{ runner.os }}-${{ hashFiles('./.github/**', './src/evidently/**', '!src/evidently/**/ui/**/assets/**', '!src/evidently/nbextension/**') }}
 
-    - uses: actions/setup-python@v5
+    - uses: actions/setup-python@v5.6.0
       if: steps.cache-ui-types.outputs.cache-hit != 'true'
       with:
         python-version: "3.11"
