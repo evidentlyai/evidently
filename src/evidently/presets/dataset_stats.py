@@ -556,13 +556,14 @@ class TextEvals(MetricContainer):
     ) -> List[BaseWidgetInfo]:
         value_stats = self.get_value_stats(context)
         result = list(chain(*([RowTestSummary().render(context)] + [vs.render(context) for vs in value_stats])))
+        test_summary_render = []
         for column_info in context.data_definition.special_columns:
             for metric in column_info.get_metrics():
                 if isinstance(metric, MetricContainer):
-                    result.extend(metric.render(context))
+                    test_summary_render.extend(metric.render(context))
                 else:
-                    result.extend(context.get_metric_result(metric).widget or [])
-        return result
+                    test_summary_render.extend(context.get_metric_result(metric).widget or [])
+        return test_summary_render + result
 
 
 class DataSummaryPreset(MetricContainer):
