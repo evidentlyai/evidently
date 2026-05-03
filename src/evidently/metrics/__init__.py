@@ -109,6 +109,7 @@ from .regression import DummyRMSE
 from .regression import MeanError
 from .regression import R2Score
 from .row_test_summary import RowTestSummary
+from .text_evals import RougeScoreMetric
 
 __all__ = [
     "GroupBy",
@@ -199,4 +200,6 @@ __all__ = [
     "ColumnCorrelationMatrix",
     # Embeddings
     "EmbeddingsDrift",
+    # Text evals
+    "RougeScoreMetric",
 ]
