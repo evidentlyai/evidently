@@ -2,4 +2,3 @@ metrics:
   - type: evidently:metric_v2:RowCount
   - type: evidently:metric_v2:MeanValue
     column: age
-    name: avg_age

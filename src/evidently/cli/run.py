@@ -69,9 +69,9 @@ def _add_custom_module_prefix(module_path: str) -> None:
 
 @app.command("run")
 def run_command(
-    config_path: str = Argument(..., help="Path to YAML/JSON configuration file"),
-    current: str = Option(..., "--current", "-c", help="Path to current dataset CSV file"),
-    reference: Optional[str] = Option(None, "--reference", "-r", help="Path to reference dataset CSV file"),
+    config: str = Option(..., "--config", "-c", help="Path to YAML/JSON configuration file"),
+    current: str = Option(..., "--current", help="Path to current dataset CSV file"),
+    reference: Optional[str] = Option(None, "--reference", help="Path to reference dataset CSV file"),
     output: Optional[str] = Option(None, "--output", "-o", help="Output path for snapshot (JSON)"),
     output_html: Optional[str] = Option(None, "--output-html", help="Output path for HTML report"),
 ):
@@ -80,10 +80,10 @@ def run_command(
     Example:
         evidently run --config config.yaml --current data.csv --reference reference.csv
     """
-    typer.echo(f"Loading configuration from: {config_path}")
+    typer.echo(f"Loading configuration from: {config}")
     
-    config_dir = os.path.dirname(os.path.abspath(config_path))
-    data = RunConfig._load_data(config_path)
+    config_dir = os.path.dirname(os.path.abspath(config))
+    data = RunConfig._load_data(config)
     
     modules = data.get("modules", [])
     if modules:
@@ -92,8 +92,8 @@ def run_command(
             _add_custom_module_prefix(module_path)
         _import_modules(modules, config_dir)
     
-    config = parse_obj_as(RunConfig, data)
-    report = config.to_report()
+    config_obj = parse_obj_as(RunConfig, data)
+    report = config_obj.to_report()
     
     typer.echo(f"Loading current dataset: {current}")
     current_data = Dataset.load(current)

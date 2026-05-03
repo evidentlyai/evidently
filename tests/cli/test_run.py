@@ -137,7 +137,7 @@ tags:
         
         result = runner.invoke(app, [
             "run",
-            str(config_path),
+            "--config", str(config_path),
             "--current", str(current_path),
             "--output", str(output_path),
         ])
@@ -162,7 +162,7 @@ include_tests: true
         
         result = runner.invoke(app, [
             "run",
-            str(config_path),
+            "--config", str(config_path),
             "--current", str(current_path),
             "--reference", str(reference_path),
             "--output", str(output_path),
@@ -186,7 +186,7 @@ metrics:
         
         result = runner.invoke(app, [
             "run",
-            str(config_path),
+            "--config", str(config_path),
             "--current", str(current_path),
             "--output-html", str(html_path),
         ])
