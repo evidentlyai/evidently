@@ -1,0 +1,64 @@
+# Evidently YAML Configuration Example
+# This file demonstrates how to configure Evidently reports using YAML
+
+# Optional: List of custom Python modules to import for custom metrics
+# These modules can define custom metrics that will be available in the metrics list
+modules: []
+#  - ./custom_metric.py  # Uncomment to load custom metrics from this file
+
+# List of metrics to compute
+# Each metric is specified with its type alias and optional parameters
+metrics:
+  # Basic row and column counts
+  - type: evidently:metric_v2:RowCount
+  
+  - type: evidently:metric_v2:ColumnCount
+  
+  # Column statistics
+  - type: evidently:metric_v2:MeanValue
+    column: "age"  # Replace with your column name
+  
+  - type: evidently:metric_v2:MinValue
+    column: "age"
+  
+  - type: evidently:metric_v2:MaxValue
+    column: "age"
+  
+  - type: evidently:metric_v2:StdValue
+    column: "age"
+  
+  # Data quality metrics
+  - type: evidently:metric_v2:MissingValueCount
+    column: "age"
+  
+  - type: evidently:metric_v2:UniqueValueCount
+    column: "category"  # Replace with your categorical column name
+  
+  # Data quality preset (uncomment to use)
+  # - type: evidently:metric_container:DataSummaryPreset
+
+# Optional metadata for the report
+metadata:
+  model_id: "my_model_v1"
+  version: "1.0.0"
+  environment: "production"
+
+# Optional tags for categorization
+tags:
+  - "data_quality"
+  - "monitoring"
+  - "production"
+
+# Whether to include automatic tests for metrics
+include_tests: true
+
+# ============================================
+# Example with custom metric (uncomment below)
+# ============================================
+# modules:
+#   - ./custom_metric.py
+# 
+# metrics:
+#   - type: evidently:metric_v2:RowCount
+#   - type: evidently:metric_v2:CustomAverageMetric  # Custom metric from custom_metric.py
+#     column: "age"

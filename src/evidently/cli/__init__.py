@@ -7,6 +7,8 @@ from evidently.cli.main import app
 from evidently.cli.migrate import migrate
 from evidently.cli.migrate import migrate_status
 from evidently.cli.report import run_report
+from evidently.cli.run import run_command
+from evidently.cli.run import validate_config
 from evidently.cli.ui import ui
 
 __all__ = [
@@ -15,6 +17,8 @@ __all__ = [
     "legacy_ui",
     "generate_demo_project",
     "run_report",
+    "run_command",
+    "validate_config",
     "migrate",
     "migrate_status",
 ]

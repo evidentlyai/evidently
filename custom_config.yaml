@@ -1,0 +1,6 @@
+modules:
+  - ./custom_metric.py
+
+metrics:
+  - type: evidently:metric_v2:CustomAverageMetric
+    column: age

@@ -3,10 +3,15 @@ import json
 import os.path
 from importlib import import_module
 from pathlib import Path
+from typing import Any
+from typing import Dict
+from typing import List
 from typing import Optional
 from typing import Type
 from typing import TypeVar
 from typing import Union
+
+import yaml
 
 from evidently import Dataset
 from evidently._pydantic_compat import BaseModel
@@ -17,6 +22,64 @@ from evidently.legacy.ui.type_aliases import ProjectID
 from evidently.legacy.utils import NumpyEncoder
 from evidently.ui.workspace import CloudWorkspace
 from evidently.ui.workspace import RemoteWorkspace
+
+
+def _is_yaml_file(path: str) -> bool:
+    return path.endswith(".yml") or path.endswith(".yaml")
+
+
+def _import_module_from_file(module_path: str) -> Any:
+    """Import a Python module from a file path.
+    
+    Args:
+        module_path: Path to the Python file or module name.
+        
+    Returns:
+        The imported module.
+        
+    Raises:
+        ImportError: If the module cannot be imported.
+    """
+    if os.path.exists(module_path):
+        path = Path(module_path)
+        if path.is_dir():
+            module_name = path.name
+            init_file = path / "__init__.py"
+            if init_file.exists():
+                module_path = str(init_file)
+            else:
+                raise ImportError(f"Directory {module_path} is not a valid Python package (missing __init__.py)")
+        else:
+            module_name = path.stem
+        
+        spec = importlib.util.spec_from_file_location(module_name, module_path)
+        if spec is None:
+            raise ImportError(f"Could not load spec for {module_path}")
+        
+        module = importlib.util.module_from_spec(spec)
+        if spec.loader is None:
+            raise ImportError(f"No loader for spec {spec}")
+        
+        spec.loader.exec_module(module)
+        return module
+    else:
+        return import_module(module_path)
+
+
+def _import_modules(modules: List[str], config_dir: Optional[str] = None) -> None:
+    """Import a list of modules from file paths or module names.
+    
+    Args:
+        modules: List of module paths or names to import.
+        config_dir: Optional directory to resolve relative paths from.
+        
+    Raises:
+        ImportError: If any module cannot be imported.
+    """
+    for module_path in modules:
+        if config_dir and not os.path.isabs(module_path):
+            module_path = os.path.join(config_dir, module_path)
+        _import_module_from_file(module_path)
 
 
 class _URI:
@@ -90,13 +153,23 @@ T = TypeVar("T", bound="_Config")
 
 class _Config(BaseModel):
     @classmethod
+    def _load_data(cls, path: str) -> Dict[str, Any]:
+        with open(path, encoding="utf-8") as f:
+            if _is_yaml_file(path):
+                return yaml.safe_load(f)
+            return json.load(f)
+
+    @classmethod
     def load(cls: Type[T], path: str) -> "T":
-        with open(path) as f:
-            return parse_obj_as(cls, json.load(f))
+        data = cls._load_data(path)
+        return parse_obj_as(cls, data)
 
     def save(self, path: str) -> None:
-        with open(path, "w") as f:
-            f.write(self.json(indent=2, ensure_ascii=False))
+        with open(path, "w", encoding="utf-8") as f:
+            if _is_yaml_file(path):
+                yaml.safe_dump(self.dict(), f, default_flow_style=False, allow_unicode=True)
+            else:
+                f.write(self.json(indent=2, ensure_ascii=False))
 
 
 def _load_config_from_python(config_type: Type[T], path_or_module: str) -> T:
