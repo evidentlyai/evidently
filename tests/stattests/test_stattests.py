@@ -15,6 +15,7 @@ from evidently.legacy.calculations.stattests.g_stattest import g_test
 from evidently.legacy.calculations.stattests.hellinger_distance import hellinger_stat_test
 from evidently.legacy.calculations.stattests.mann_whitney_urank_stattest import mann_whitney_u_stat_test
 from evidently.legacy.calculations.stattests.mmd_stattest import empirical_mmd
+from evidently.legacy.calculations.stattests.mmd_stattest import sigma_median
 from evidently.legacy.calculations.stattests.t_test import t_test
 from evidently.legacy.calculations.stattests.tvd_stattest import tvd_test
 from evidently.legacy.core import ColumnType
@@ -119,6 +120,14 @@ def test_cramer_von_mises() -> None:
     reference = pd.Series(stats.norm.rvs(size=100, random_state=0))
     current = pd.Series(stats.norm.rvs(size=100, random_state=1))
     assert cramer_von_mises.func(reference, current, "num", 0.001) == (approx(0.8076839, abs=1e-3), False)
+
+
+def test_sigma_median_numpy_compat() -> None:
+    # np.percentile dropped the 'interpolation' kwarg in NumPy 2.4 (replaced by 'method').
+    # This test ensures sigma_median does not raise TypeError on NumPy >= 2.4.
+    dist = np.array([[0.0, 1.0, 4.0], [1.0, 0.0, 1.0], [4.0, 1.0, 0.0]])
+    result = sigma_median(dist)
+    assert result == approx((0.5 * 1.0) ** 0.5, abs=1e-9)
 
 
 @pytest.mark.parametrize(

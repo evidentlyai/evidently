@@ -70,7 +70,7 @@ class LocalState:
 
     def list_projects(self) -> List[ProjectID]:
         projects = []
-        for p in self.location.listdir("."):
+        for p in self.location.listdir(""):
             if not UUID_REGEX.match(p):
                 continue
             projects.append(ProjectID(p))

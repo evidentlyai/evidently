@@ -33,16 +33,14 @@ def sigma_median(dist: np.ndarray) -> float:
     sigma = (
         0.5
         * np.percentile(
-            # error: No overload variant of "percentile" matches argument types
-            # "ndarray[Any, Any]", "int", "str"  [call-overload]
             a=dist.flatten(),
             q=50,
-            interpolation="nearest",  # type: ignore[call-overload]
+            method="nearest",
         )
     ) ** 0.5
     if sigma == 0:
         return (0.5 * 1) ** 0.5
-    return sigma
+    return float(sigma)
 
 
 def rbf(x: np.ndarray, y: np.ndarray, pass_sigma: Optional[float]) -> Tuple[np.ndarray, float]:
