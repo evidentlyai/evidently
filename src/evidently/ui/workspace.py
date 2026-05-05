@@ -1198,7 +1198,10 @@ class RemoteWorkspace(RemoteBase, WorkspaceBase):  # todo: reuse cloud ws
         Raises:
         * NotImplementedError (snapshot API not yet implemented)
         """
-        raise NotImplementedError  # todo: snapshot api
+        raise NotImplementedError(
+            "The Snapshot API is not yet implemented for RemoteWorkspace. "
+            "Please use a local Workspace instead."
+        )  # todo: snapshot api
 
     def get_run(self, project_id: STR_UUID, snapshot_id: STR_UUID) -> Optional[SnapshotModel]:
         """Get a snapshot (run) by ID.
@@ -1213,7 +1216,10 @@ class RemoteWorkspace(RemoteBase, WorkspaceBase):  # todo: reuse cloud ws
         Raises:
         * NotImplementedError (snapshot API not yet implemented)
         """
-        raise NotImplementedError  # todo: snapshot api
+        raise NotImplementedError(
+            "The Snapshot API is not yet implemented for RemoteWorkspace. "
+            "Please use a local Workspace instead."
+        )  # todo: snapshot api
 
     def list_runs(self, project_id: STR_UUID) -> Sequence[SnapshotID]:
         """List all snapshots (runs) for a project.
@@ -1227,7 +1233,10 @@ class RemoteWorkspace(RemoteBase, WorkspaceBase):  # todo: reuse cloud ws
         Raises:
         * NotImplementedError (snapshot API not yet implemented)
         """
-        raise NotImplementedError  # todo: snapshot api
+        raise NotImplementedError(
+            "The Snapshot API is not yet implemented for RemoteWorkspace. "
+            "Please use a local Workspace instead."
+        )  # todo: snapshot api
 
     def search_project(self, project_name: str, org_id: Optional[OrgID] = None) -> Sequence[Project]:
         """Search for projects by name.
