@@ -321,7 +321,10 @@ def calculate_lift_table(binded):
 
 
 def calculate_matrix(target: pd.Series, prediction: pd.Series, labels: List[Label]) -> ConfusionMatrix:
-    sorted_labels = sorted(labels)  # type: ignore[type-var]
+    # Use str() as sort key to avoid TypeError when labels contain mixed int/str types.
+    # This happens when string labels like '101' are coerced to int by label_key_valudator
+    # while other labels (e.g. 'foo') remain as strings.
+    sorted_labels = sorted(labels, key=str)
     matrix = metrics.confusion_matrix(target, prediction, labels=sorted_labels)
     return ConfusionMatrix(labels=sorted_labels, values=[row.tolist() for row in matrix])
 
