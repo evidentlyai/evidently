@@ -18,6 +18,7 @@ from evidently.legacy.metric_results import df_from_column_scatter
 from evidently.legacy.metric_results import raw_agg_properties
 from evidently.legacy.model.widget import BaseWidgetInfo
 from evidently.legacy.options.base import AnyOptions
+from evidently.legacy.pipeline.column_mapping import TargetNames
 from evidently.legacy.renderers.base_renderer import MetricRenderer
 from evidently.legacy.renderers.base_renderer import default_renderer
 from evidently.legacy.renderers.html_widgets import TabData
@@ -40,6 +41,7 @@ class ClassificationClassSeparationPlotResults(MetricResult):
         }
 
     target_name: str
+    target_names: Optional[TargetNames] = None
 
     current: Optional[ColumnScatterOrAgg] = None
     current_raw, current_agg = raw_agg_properties("current", ColumnScatter, ColumnAggScatter, True)
@@ -107,6 +109,7 @@ class ClassificationClassSeparationPlot(UsesRawDataMixin, Metric[ClassificationC
                 current=column_scatter_from_df(current_plot, True),
                 reference=column_scatter_from_df(reference_plot, True),
                 target_name=target_name,
+                target_names=dataset_columns.target_names,
             )
         current_plot = prepare_box_data(current_plot, target_name, prediction_names.tolist())
         if reference_plot is not None:
@@ -115,7 +118,16 @@ class ClassificationClassSeparationPlot(UsesRawDataMixin, Metric[ClassificationC
             current=current_plot,
             reference=reference_plot,
             target_name=target_name,
+            target_names=dataset_columns.target_names,
         )
+
+
+def _resolve_target_name(label, target_names: Optional[TargetNames]) -> str:
+    if target_names is not None and isinstance(target_names, dict):
+        resolved = target_names.get(label) or target_names.get(int(label)) if isinstance(label, str) else target_names.get(label)  # type: ignore[arg-type]
+        if resolved is not None:
+            return str(resolved)
+    return str(label)
 
 
 @default_renderer(wrap_type=ClassificationClassSeparationPlot)
@@ -150,7 +162,7 @@ class ClassificationClassSeparationPlotRenderer(MetricRenderer):
                 target_name,
                 color_options=self.color_options,
             )
-        tabs = [TabData(name, widget) for name, widget in tab_data]
+        tabs = [TabData(_resolve_target_name(name, metric_result.target_names), widget) for name, widget in tab_data]
         return [
             header_text(label="Class Separation Quality"),
             widget_tabs(title="", tabs=tabs),
