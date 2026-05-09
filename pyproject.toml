@@ -31,7 +31,9 @@ dependencies = [
     "plotly>=5.10.0,<6",
     "statsmodels>=0.14.0",
     "scikit-learn>=1.1.1",
-    "pandas[parquet]>=1.3.5",
+    # pandas[parquet] extra was introduced in pandas 2.0 (issue #1700);
+    # earlier versions silently ignore the extra and leave pyarrow uninstalled.
+    "pandas[parquet]>=2.0.0",
     "numpy>=1.23.0",
     "nltk>=3.6.7",
     "scipy>=1.10.0",
