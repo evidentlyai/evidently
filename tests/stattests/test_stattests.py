@@ -110,6 +110,23 @@ def test_anderson_darling() -> None:
     assert anderson_darling_test.func(reference, current, "num", 0.001) == (approx(0.0635, abs=1e-3), False)
 
 
+def test_anderson_darling_no_scipy_deprecation_warning() -> None:
+    """Regression test for issue #1534: scipy>=1.17 deprecated the implicit
+    `midrank` default of anderson_ksamp. Calling the Evidently stat test
+    must not emit a DeprecationWarning about it."""
+    import warnings
+
+    reference = pd.Series([38.7, 41.5, 43.8, 44.5, 45.5, 46.0, 47.7, 58.0])
+    current = pd.Series([39.2, 39.3, 39.7, 41.4, 41.8, 42.9, 43.3, 45.8])
+    with warnings.catch_warnings(record=True) as caught:
+        warnings.simplefilter("always")
+        anderson_darling_test.func(reference, current, "num", 0.001)
+    midrank_warnings = [w for w in caught if "midrank" in str(w.message) or "variant" in str(w.message)]
+    assert not midrank_warnings, (
+        "anderson_ksamp emitted a midrank/variant DeprecationWarning: " f"{[str(w.message) for w in midrank_warnings]}"
+    )
+
+
 def test_g_test() -> None:
     reference = pd.Series(["a", "b", "c"]).repeat([5, 5, 8])
     current = pd.Series(["a", "b", "c"]).repeat([4, 6, 8])
