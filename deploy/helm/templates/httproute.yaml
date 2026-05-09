@@ -1,0 +1,32 @@
+{{- if and .Values.httpRoute.enabled .Values.httpRoute.parentRefs -}}
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: {{ include "evidently-ui.fullname" . }}
+  labels:
+    {{- include "evidently-ui.labels" . | nindent 4 }}
+  {{- with .Values.httpRoute.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  parentRefs:
+    {{- toYaml .Values.httpRoute.parentRefs | nindent 4 }}
+  {{- if .Values.httpRoute.hostnames }}
+  hostnames:
+    {{- range .Values.httpRoute.hostnames }}
+    - {{ . | quote }}
+    {{- end }}
+  {{- end }}
+  rules:
+    - matches:
+        - path:
+            type: {{ .Values.httpRoute.pathMatchType | default "PathPrefix" }}
+            value: {{ .Values.httpRoute.path | default "/" | quote }}
+      backendRefs:
+        - name: {{ include "evidently-ui.fullname" . }}
+          port: {{ .Values.service.port }}
+          {{- if .Values.httpRoute.backendRefWeight }}
+          weight: {{ .Values.httpRoute.backendRefWeight }}
+          {{- end }}
+{{- end }}
