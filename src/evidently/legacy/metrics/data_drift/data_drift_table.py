@@ -164,6 +164,7 @@ class DataDriftTableRenderer(MetricRenderer):
         agg_data: bool,
         current_fi: Optional[Dict[str, float]] = None,
         reference_fi: Optional[Dict[str, float]] = None,
+        current_title: str = "Current",
     ) -> Optional[RichTableDataRow]:
         details = RowDetails()
         if data.column_type == "text":
@@ -232,6 +233,7 @@ class DataDriftTableRenderer(MetricRenderer):
                         y_name=data.column_name,
                         x_name=data.scatter.x_name,
                         color_options=self.color_options,
+                        current_title=current_title,
                     )
                 else:
                     scatter_fig = plot_agg_line_data(
@@ -309,6 +311,7 @@ class DataDriftTableRenderer(MetricRenderer):
 
         columns = columns + all_columns
 
+        current_title = obj.get_options().render_options.current_title
         for column_name in columns:
             column_params = self._generate_column_params(
                 column_name,
@@ -316,6 +319,7 @@ class DataDriftTableRenderer(MetricRenderer):
                 agg_data,
                 results.current_fi,
                 results.reference_fi,
+                current_title=current_title,
             )
 
             if column_params is not None:

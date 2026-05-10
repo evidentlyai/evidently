@@ -163,7 +163,7 @@ class TextDescriptorsDriftRenderer(MetricRenderer):
         return pd.concat([v.get_pandas() for v in result.drift_by_columns.values()])
 
     def _generate_column_params(
-        self, column_name: str, data: ColumnDataDriftMetrics, agg_data: bool
+        self, column_name: str, data: ColumnDataDriftMetrics, agg_data: bool, current_title: str = "Current"
     ) -> Optional[RichTableDataRow]:
         details = RowDetails()
         if (
@@ -187,6 +187,7 @@ class TextDescriptorsDriftRenderer(MetricRenderer):
                     y_name=data.column_name,
                     x_name=data.scatter.x_name,
                     color_options=self.color_options,
+                    current_title=current_title,
                 )
             else:
                 scatter_fig = plot_agg_line_data(
@@ -253,8 +254,11 @@ class TextDescriptorsDriftRenderer(MetricRenderer):
             reverse=True,
         )
 
+        current_title = obj.get_options().render_options.current_title
         for column_name in columns:
-            column_params = self._generate_column_params(column_name, results.drift_by_columns[column_name], agg_data)
+            column_params = self._generate_column_params(
+                column_name, results.drift_by_columns[column_name], agg_data, current_title
+            )
 
             if column_params is not None:
                 params_data.append(column_params)

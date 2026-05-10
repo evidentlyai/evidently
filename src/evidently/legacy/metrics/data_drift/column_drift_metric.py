@@ -349,6 +349,7 @@ class ColumnDriftMetricRenderer(MetricRenderer):
                     y_name=result.column_name,
                     x_name=result.scatter.x_name,
                     color_options=self.color_options,
+                    current_title=obj.get_options().render_options.current_title,
                 )
             else:
                 scatter_fig = plot_agg_line_data(
