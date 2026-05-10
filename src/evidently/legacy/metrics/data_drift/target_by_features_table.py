@@ -215,7 +215,8 @@ class TargetByFeaturesTable(UsesRawDataMixin, Metric[TargetByFeaturesTableResult
 @default_renderer(wrap_type=TargetByFeaturesTable)
 class TargetByFeaturesTableRenderer(MetricRenderer):
     def render_html(self, obj: TargetByFeaturesTable) -> List[BaseWidgetInfo]:
-        if not obj.get_options().render_options.raw_data:
+        render_options = obj.get_options().render_options
+        if not render_options.raw_data:
             return []
         result = obj.get_result()
         current_data = result.current.plot_data
@@ -229,6 +230,8 @@ class TargetByFeaturesTableRenderer(MetricRenderer):
         ref_predictions = result.reference.predictions
         columns = result.columns
         task = result.task
+        current_title = render_options.current_title
+        reference_title = render_options.reference_title
         if curr_predictions is not None and ref_predictions is not None:
             current_data["prediction_labels"] = curr_predictions.predictions.values
             reference_data["prediction_labels"] = ref_predictions.predictions.values
@@ -243,9 +246,13 @@ class TargetByFeaturesTableRenderer(MetricRenderer):
             if target_name is not None:
                 parts.append({"title": "Target", "id": feature_name + "_target_values"})
                 if task == "regression":
-                    target_fig = self._get_regression_fig(feature_name, target_name, current_data, reference_data)
+                    target_fig = self._get_regression_fig(
+                        feature_name, target_name, current_data, reference_data, current_title, reference_title
+                    )
                 else:
-                    target_fig = self._get_classification_fig(feature_name, target_name, current_data, reference_data)
+                    target_fig = self._get_classification_fig(
+                        feature_name, target_name, current_data, reference_data, current_title, reference_title
+                    )
 
                 target_fig_json = json.loads(target_fig.to_json())
 
@@ -263,11 +270,16 @@ class TargetByFeaturesTableRenderer(MetricRenderer):
                 parts.append({"title": "Prediction", "id": feature_name + "_prediction_values"})
                 if task == "regression":
                     preds_fig = self._get_regression_fig(
-                        feature_name, "prediction_labels", current_data, reference_data
+                        feature_name, "prediction_labels", current_data, reference_data, current_title, reference_title
                     )
                 else:
                     preds_fig = self._get_classification_fig(
-                        feature_name, "prediction_labels", current_data, reference_data
+                        feature_name,
+                        "prediction_labels",
+                        current_data,
+                        reference_data,
+                        current_title,
+                        reference_title,
                     )
                 preds_fig_json = json.loads(preds_fig.to_json())
 
@@ -304,8 +316,16 @@ class TargetByFeaturesTableRenderer(MetricRenderer):
             )
         ]
 
-    def _get_regression_fig(self, feature_name: str, main_column: str, curr_data: pd.DataFrame, ref_data: pd.DataFrame):
-        fig = make_subplots(rows=1, cols=2, subplot_titles=("Current", "Reference"), shared_yaxes=True)
+    def _get_regression_fig(
+        self,
+        feature_name: str,
+        main_column: str,
+        curr_data: pd.DataFrame,
+        ref_data: pd.DataFrame,
+        current_title: str = "Current",
+        reference_title: str = "Reference",
+    ):
+        fig = make_subplots(rows=1, cols=2, subplot_titles=(current_title, reference_title), shared_yaxes=True)
         fig.add_trace(
             go.Scattergl(
                 x=curr_data[feature_name],
@@ -336,12 +356,18 @@ class TargetByFeaturesTableRenderer(MetricRenderer):
         return fig
 
     def _get_classification_fig(
-        self, feature_name: str, main_column: str, curr_data: pd.DataFrame, ref_data: pd.DataFrame
+        self,
+        feature_name: str,
+        main_column: str,
+        curr_data: pd.DataFrame,
+        ref_data: pd.DataFrame,
+        current_title: str = "Current",
+        reference_title: str = "Reference",
     ):
         curr = curr_data.copy()
         ref = ref_data.copy()
-        ref["dataset"] = "Reference"
-        curr["dataset"] = "Current"
+        ref["dataset"] = reference_title
+        curr["dataset"] = current_title
         merged_data = pd.concat([ref, curr])
         fig = px.histogram(
             merged_data,
@@ -349,7 +375,7 @@ class TargetByFeaturesTableRenderer(MetricRenderer):
             color=main_column,
             facet_col="dataset",
             barmode="overlay",
-            category_orders={"dataset": ["Current", "Reference"]},
+            category_orders={"dataset": [current_title, reference_title]},
         )
 
         return fig

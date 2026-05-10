@@ -1049,7 +1049,14 @@ def plot_line_in_time(
 
 
 def plot_scatter_for_data_drift(
-    curr_y: list, curr_x: list, y0: float, y1: float, y_name: str, x_name: str, color_options: ColorOptions
+    curr_y: list,
+    curr_x: list,
+    y0: float,
+    y1: float,
+    y_name: str,
+    x_name: str,
+    color_options: ColorOptions,
+    current_title: str = "Current",
 ):
     fig = go.Figure()
 
@@ -1073,7 +1080,7 @@ def plot_scatter_for_data_drift(
             x=curr_x,
             y=curr_y,
             mode="markers",
-            name="Current",
+            name=current_title,
             marker=dict(size=6, color=color_options.get_current_data_color()),
         )
     )

@@ -11,6 +11,8 @@ from evidently.legacy.calculations.stattests.registry import _impls
 from evidently.legacy.calculations.stattests.registry import add_stattest_impl
 from evidently.legacy.core import ColumnType
 from evidently.legacy.metrics import ColumnDriftMetric
+from evidently.legacy.options.agg_data import RenderOptions
+from evidently.legacy.options.base import Options
 from evidently.legacy.pipeline.column_mapping import ColumnMapping
 from evidently.legacy.report import Report
 
@@ -81,3 +83,16 @@ def test_column_drift_metric_errors(
     with pytest.raises(ValueError, match=expected_error):
         report.run(current_data=current_data, reference_data=reference_data, column_mapping=data_mapping)
         report.json()
+
+
+def test_column_drift_metric_custom_titles() -> None:
+    current = pd.DataFrame({"col": range(20)})
+    reference = pd.DataFrame({"col": range(10, 30)})
+    metric = ColumnDriftMetric(column_name="col")
+    report = Report(
+        metrics=[metric],
+        options=Options(render=RenderOptions(raw_data=True, current_title="Test", reference_title="Baseline")),
+    )
+    report.run(current_data=current, reference_data=reference)
+    html = report._build_dashboard_info()
+    assert html is not None
