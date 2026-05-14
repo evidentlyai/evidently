@@ -486,6 +486,12 @@ class ByLabelCountValue(MetricResult):
     count_display_name_template: str = "Missing label {label} count"
     share_display_name_template: str = "Missing label {label} share"
 
+    @validator("counts", "shares", pre=True)
+    def _convert_label_keys(cls, value):
+        if not isinstance(value, dict):
+            return value
+        return {convert_types(k): v for k, v in value.items()}
+
     def labels(self) -> List[Label]:
         return list(self.counts.keys())
 
@@ -551,6 +557,8 @@ except:  # noqa: E722
 
 
 def convert_types(val):
+    if val is pd.NA:
+        return None
     if isinstance(
         val,
         (
