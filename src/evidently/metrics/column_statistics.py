@@ -869,9 +869,9 @@ class UniqueValueCountCalculation(ByLabelCountCalculation[UniqueValueCount]):
         return f"Unique Value Share: {self.metric.column} for label {label}"
 
     def _all_unique_values(self, current: Dataset, reference: Optional[Dataset]) -> set:
-        values = set(current.as_dataframe()[self.metric.column].unique())
+        values = set(current.as_dataframe()[self.metric.column].dropna().unique())
         if reference is not None:
-            values.update(reference.as_dataframe()[self.metric.column].unique())
+            values.update(reference.as_dataframe()[self.metric.column].dropna().unique())
         return values
 
     def _calculate_value(self, dataset: Dataset, values: set):
