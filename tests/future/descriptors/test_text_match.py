@@ -1,8 +1,25 @@
+import py_compile
+import warnings
+
 import pandas as pd
 import pytest
 
 from evidently.core.datasets import Dataset
 from evidently.descriptors import TextMatch
+import evidently.descriptors.text_match as text_match_module
+
+
+def test_text_match_module_compiles_without_syntax_warning(tmp_path):
+    # Regression: the TextMatch docstring contains an `r"\b\d{3}-..."` regex
+    # example, but the docstring itself wasn't raw, so `\d` triggered
+    # `SyntaxWarning: invalid escape sequence '\d'` on Python 3.12+.
+    # py_compile surfaces SyntaxWarnings as PyCompileErrors when warnings are
+    # promoted to errors, so this is a reliable check that doesn't depend on
+    # whether the module is already cached / imported elsewhere.
+    source_path = text_match_module.__file__
+    with warnings.catch_warnings():
+        warnings.simplefilter("error", SyntaxWarning)
+        py_compile.compile(source_path, cfile=str(tmp_path / "out.pyc"), doraise=True)
 
 
 @pytest.fixture
