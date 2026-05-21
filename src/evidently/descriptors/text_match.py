@@ -115,7 +115,12 @@ class TextMatchProcessor:
 
 
 class TextMatch(Descriptor):
-    """
+    # The docstring contains a regex example with `\b\d{3}-\d{3}-\d{4}\b`. The
+    # `r"..."` prefix only marks the *example* literal as raw — the docstring
+    # itself still parses every backslash, so `\d` triggers
+    # `SyntaxWarning: invalid escape sequence '\d'` on Python 3.12+. Marking the
+    # docstring itself raw silences the warning without changing rendered help.
+    r"""
     Unified text matching descriptor that handles all word/text matching scenarios.
 
     This descriptor replaces multiple legacy text matching features with a single,
