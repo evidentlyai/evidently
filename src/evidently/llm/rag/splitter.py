@@ -2,6 +2,7 @@ import re
 from abc import ABC
 from abc import abstractmethod
 from enum import Enum
+from typing import Any
 from typing import ClassVar
 from typing import Iterator
 from typing import List
@@ -108,7 +109,7 @@ class SimpleSplitter(Splitter):
 class LlamaIndexSplitter(Splitter):
     separator: str = " "
     paragraph_separator: Optional[str] = None
-    _splitter = PrivateAttr(None)
+    _splitter: Optional[Any] = PrivateAttr(default=None)
 
     @property
     def splitter(self):

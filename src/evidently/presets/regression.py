@@ -219,7 +219,7 @@ class RegressionPreset(MetricContainer):
     abs_max_error_tests: SingleValueMetricTests = None
     """Optional test conditions for absolute max error."""
 
-    _quality: Optional[RegressionQuality] = PrivateAttr(None)
+    _quality: Optional[RegressionQuality] = PrivateAttr(default=None)
     """Internal regression quality preset."""
     regression_name: str = "default"
     """Name of the regression task."""

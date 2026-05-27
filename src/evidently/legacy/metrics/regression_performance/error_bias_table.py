@@ -1,5 +1,6 @@
 import copy
 import json
+from typing import Any
 from typing import ClassVar
 from typing import Dict
 from typing import List
@@ -280,11 +281,11 @@ class RegressionErrorBiasTableRenderer(MetricRenderer):
             ref_error = reference_data[prediction_name] - reference_data[target_name]
             current_error = current_data[prediction_name] - current_data[target_name]
 
-            ref_quantile_top = np.quantile(ref_error, obj.top_error)
-            ref_quantile_other = np.quantile(ref_error, 1 - obj.top_error)
+            ref_quantile_top: Any = np.quantile(ref_error, obj.top_error)
+            ref_quantile_other: Any = np.quantile(ref_error, 1 - obj.top_error)
 
-            current_quantile_top = np.quantile(current_error, obj.top_error)
-            current_quantile_other = np.quantile(current_error, 1 - obj.top_error)
+            current_quantile_top: Any = np.quantile(current_error, obj.top_error)
+            current_quantile_other: Any = np.quantile(current_error, 1 - obj.top_error)
 
             # create subplots
             reference_data["dataset"] = "Reference"
@@ -539,8 +540,8 @@ class RegressionErrorBiasTableRenderer(MetricRenderer):
         else:
             error = current_data[prediction_name] - current_data[target_name]
 
-            quantile_top = np.quantile(error, obj.top_error)
-            quantile_other = np.quantile(error, 1 - obj.top_error)
+            quantile_top: Any = np.quantile(error, obj.top_error)
+            quantile_other: Any = np.quantile(error, 1 - obj.top_error)
 
             current_data["Error bias"] = list(
                 map(

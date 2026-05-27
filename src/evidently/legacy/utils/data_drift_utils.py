@@ -240,7 +240,7 @@ def add_emb_drift_to_reports(
     result: List[Metric] = []
     sets = list(embeddings_data.keys())
     if embeddings is not None:
-        sets = np.intersect1d(sets, embeddings)
+        sets = list(np.intersect1d(sets, embeddings))  # type: ignore[assignment]
     if len(sets) == 0:
         return result
     f: Optional[Callable]
