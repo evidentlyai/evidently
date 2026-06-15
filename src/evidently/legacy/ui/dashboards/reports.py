@@ -9,7 +9,7 @@ from typing import Set
 from typing import Tuple
 from typing import Union
 
-from plotly import graph_objs as go
+from plotly import graph_objects as go
 
 from evidently.legacy.base_metric import Metric
 from evidently.legacy.metric_results import Distribution

@@ -3,7 +3,7 @@ from typing import Optional
 from typing import Union
 
 import numpy as np
-from plotly import graph_objs as go
+from plotly import graph_objects as go
 from plotly.subplots import make_subplots
 
 from evidently.legacy.metric_results import Histogram
