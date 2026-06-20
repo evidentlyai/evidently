@@ -54,7 +54,7 @@ class WordsPresence(ApplyColumnGeneratedFeature):
     words_list: List[str]
     mode: str
     lemmatize: bool = True
-    _lem: Optional[WordNetLemmatizer] = PrivateAttr(None)
+    _lem: Optional[WordNetLemmatizer] = PrivateAttr(default=None)
 
     def __init__(
         self,
@@ -145,7 +145,7 @@ class RowWordPresence(GeneratedFeature):
     columns: List[str]
     mode: str = "any"
     lemmatize: bool = True
-    _lem: Optional[WordNetLemmatizer] = PrivateAttr(None)
+    _lem: Optional[WordNetLemmatizer] = PrivateAttr(default=None)
 
     def __init__(self, columns: List[str], mode: str, lemmatize: bool, display_name: Optional[str] = None):
         self.columns = columns

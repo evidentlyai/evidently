@@ -79,6 +79,8 @@ dev = [
     "pytest-asyncio==0.23.7",
     "pytest-mock==3.14.0",
     "pytest-html>=4.2.0",
+    "psutil>=5.9.0",
+    "polars>=0.20.0",
 ]
 llm = [
     "openai>=1.16.2",
@@ -107,6 +109,10 @@ sql = [
     "sqlalchemy>=2.0.0",
     "psycopg2-binary>=2.9.0",
     "alembic>=1.13.0",
+]
+perf = [
+    "polars>=0.20.0",
+    "psutil>=5.9.0",
 ]
 
 [project.scripts]
@@ -179,8 +185,9 @@ ignore_missing_imports = true
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-python_classes = "*Test"
+python_classes = "Test*"
 markers = [
     "slow: slow tests",
+    "benchmark: benchmark tests",
     "asyncio: async tests",
 ]

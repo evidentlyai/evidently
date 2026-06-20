@@ -36,7 +36,7 @@ class LLMJudge(GeneratedFeatures):
     input_columns: Optional[Dict[str, str]] = None
     template: BaseLLMPromptTemplate
 
-    _llm_wrapper: Optional[LLMWrapper] = PrivateAttr(None)
+    _llm_wrapper: Optional[LLMWrapper] = PrivateAttr(default=None)
 
     def get_llm_wrapper(self, options: Options) -> LLMWrapper:
         if self._llm_wrapper is None:

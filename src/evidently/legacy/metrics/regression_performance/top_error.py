@@ -1,4 +1,5 @@
 import json
+from typing import Any
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -77,8 +78,8 @@ class RegressionTopErrorMetric(UsesRawDataMixin, Metric[RegressionTopErrorMetric
             raise ValueError("Expect one column for prediction. List of columns was provided.")
         curr_df = self._make_df_for_plot(curr_df, target_name, prediction_name, None)
         curr_error = curr_df[prediction_name] - curr_df[target_name]
-        quantile_5 = np.quantile(curr_error, 0.05)
-        quantile_95 = np.quantile(curr_error, 0.95)
+        quantile_5: Any = np.quantile(curr_error, 0.05)
+        quantile_95: Any = np.quantile(curr_error, 0.95)
 
         curr_df["Error bias"] = list(
             map(

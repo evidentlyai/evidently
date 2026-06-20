@@ -8,6 +8,7 @@ from typing import TypeVar
 from typing import Union
 
 from evidently.core.base_types import Label
+from evidently.core.data import polars_optimized
 from evidently.core.datasets import Dataset
 from evidently.core.datasets import DatasetColumn
 from evidently.core.metric_types import BoundTest
@@ -138,6 +139,7 @@ class MinValue(StatisticsMetric):
     pass
 
 
+@polars_optimized(enabled=True, lazy_eval=True)
 class MinValueCalculation(StatisticsCalculation[MinValue]):
     def calculate_value(self, column: DatasetColumn) -> Union[float, int]:
         return column.data.min()
@@ -157,6 +159,7 @@ class MeanValue(StatisticsMetric):
     pass
 
 
+@polars_optimized(enabled=True, lazy_eval=True)
 class MeanValueCalculation(StatisticsCalculation[MeanValue]):
     def calculate_value(self, column: DatasetColumn) -> Union[float, int]:
         return column.data.mean()
@@ -176,6 +179,7 @@ class MaxValue(StatisticsMetric):
     pass
 
 
+@polars_optimized(enabled=True, lazy_eval=True)
 class MaxValueCalculation(StatisticsCalculation[MaxValue]):
     def calculate_value(self, column: DatasetColumn) -> Union[float, int]:
         return column.data.max()
@@ -195,6 +199,7 @@ class StdValue(StatisticsMetric):
     pass
 
 
+@polars_optimized(enabled=True, lazy_eval=True)
 class StdValueCalculation(StatisticsCalculation[StdValue]):
     def calculate_value(self, column: DatasetColumn) -> Union[float, int]:
         return column.data.std()
@@ -214,6 +219,7 @@ class MedianValue(StatisticsMetric):
     pass
 
 
+@polars_optimized(enabled=True, lazy_eval=True)
 class MedianValueCalculation(StatisticsCalculation[MedianValue]):
     def calculate_value(self, column: DatasetColumn) -> Union[float, int]:
         return column.data.median()
@@ -234,6 +240,7 @@ class QuantileValue(StatisticsMetric):
     """Quantile value to compute (0.0 to 1.0)."""
 
 
+@polars_optimized(enabled=True, lazy_eval=True)
 class QuantileValueCalculation(StatisticsCalculation[QuantileValue]):
     def calculate_value(self, column: DatasetColumn) -> Union[float, int]:
         return column.data.quantile(self.metric.quantile)
@@ -253,6 +260,7 @@ class SumValue(StatisticsMetric):
     pass
 
 
+@polars_optimized(enabled=True, lazy_eval=True)
 class SumValueCalculation(StatisticsCalculation[SumValue]):
     def calculate_value(self, column: DatasetColumn) -> Union[float, int]:
         return column.data.sum()
@@ -308,6 +316,7 @@ class CategoryCount(ColumnMetric, CountMetric):
         ]
 
 
+@polars_optimized(enabled=True, lazy_eval=True)
 class CategoryCountCalculation(CountCalculation[CategoryCount]):
     def calculate(self, context: "Context", current_data: Dataset, reference_data: Optional[Dataset]):
         return (
@@ -361,6 +370,7 @@ class InRangeValueCount(ColumnMetric, CountMetric):
         ]
 
 
+@polars_optimized(enabled=True, lazy_eval=True)
 class InRangeValueCountCalculation(CountCalculation[InRangeValueCount]):
     def calculate(self, context: "Context", current_data: Dataset, reference_data: Optional[Dataset]):
         return (
@@ -398,6 +408,7 @@ class OutRangeValueCount(ColumnMetric, CountMetric):
         ]
 
 
+@polars_optimized(enabled=True, lazy_eval=True)
 class OutRangeValueCountCalculation(CountCalculation[OutRangeValueCount]):
     def calculate(self, context: "Context", current_data: Dataset, reference_data: Optional[Dataset]):
         return (
@@ -433,6 +444,7 @@ class InListValueCount(ColumnMetric, CountMetric):
         ]
 
 
+@polars_optimized(enabled=True, lazy_eval=True)
 class InListValueCountCalculation(CountCalculation[InListValueCount]):
     def calculate(self, context: "Context", current_data: Dataset, reference_data: Optional[Dataset]):
         return (
@@ -474,6 +486,7 @@ class OutListValueCount(ColumnMetric, CountMetric):
         ]
 
 
+@polars_optimized(enabled=True, lazy_eval=True)
 class OutListValueCountCalculation(CountCalculation[OutListValueCount]):
     def calculate(self, context: "Context", current_data: Dataset, reference_data: Optional[Dataset]):
         return (
@@ -510,6 +523,7 @@ class MissingValueCount(ColumnMetric, CountMetric):
         ]
 
 
+@polars_optimized(enabled=True, lazy_eval=True)
 class MissingValueCountCalculation(CountCalculation[MissingValueCount]):
     def calculate(self, context: "Context", current_data: Dataset, reference_data: Optional[Dataset]):
         return (

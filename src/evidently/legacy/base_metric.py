@@ -88,7 +88,7 @@ class ColumnName(EnumValueMixin, EvidentlyBaseModel):
     name: str
     display_name: DisplayName
     dataset: DatasetType
-    _feature_class: Optional["GeneratedFeatures"] = PrivateAttr(None)
+    _feature_class: Optional["GeneratedFeatures"] = PrivateAttr(default=None)
 
     def __init__(
         self, name: str, display_name: str, dataset: DatasetType, feature_class: Optional["GeneratedFeatures"] = None

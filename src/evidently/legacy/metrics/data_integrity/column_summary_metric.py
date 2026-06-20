@@ -144,10 +144,10 @@ class DataByTarget(MetricResult):
         type_alias = "evidently:metric_result:DataByTarget"
         smart_union = True
 
-    box_data: Optional[Dict[str, dict]]
-    scatter_data: Optional[Dict[str, Dict[str, list]]]
-    contour_data: Optional[Dict[str, ContourData]]
-    count_data: Optional[Dict[str, pd.DataFrame]]
+    box_data: Optional[Dict[str, dict]] = None
+    scatter_data: Optional[Dict[str, Dict[str, list]]] = None
+    contour_data: Optional[Dict[str, ContourData]] = None
+    count_data: Optional[Dict[str, pd.DataFrame]] = None
     target_name: str
     target_type: str
 

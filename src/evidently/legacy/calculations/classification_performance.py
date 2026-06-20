@@ -1,4 +1,5 @@
 from typing import TYPE_CHECKING
+from typing import Any
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -328,11 +329,11 @@ def calculate_matrix(target: pd.Series, prediction: pd.Series, labels: List[Labe
 
 def collect_plot_data(prediction_probas: pd.DataFrame) -> Boxes:
     res = {}
-    mins = []
-    lowers = []
-    means = []
-    uppers = []
-    maxs = []
+    mins: List[Any] = []
+    lowers: List[Any] = []
+    means: List[Any] = []
+    uppers: List[Any] = []
+    maxs: List[Any] = []
     for col in prediction_probas.columns:
         mins.append(np.percentile(prediction_probas[col], 0))
         lowers.append(np.percentile(prediction_probas[col], 25))

@@ -42,7 +42,7 @@ class GenericLLMDescriptor(Descriptor):
     prompt: PromptContent
     """Prompt template or messages to send to LLM."""
 
-    _llm_wrapper: Optional[LLMWrapper] = PrivateAttr(None)
+    _llm_wrapper: Optional[LLMWrapper] = PrivateAttr(default=None)
     """Internal cached LLM wrapper."""
 
     def __init__(
@@ -130,7 +130,7 @@ class LLMEval(Descriptor):
     template: BaseLLMPromptTemplate
     """Prompt template defining the evaluation task."""
 
-    # _llm_wrapper: Optional[LLMWrapper] = PrivateAttr(None)
+    # _llm_wrapper: Optional[LLMWrapper] = PrivateAttr(default=None)
     @property
     def _judge(self):
         """Get the underlying LLM judge instance."""
