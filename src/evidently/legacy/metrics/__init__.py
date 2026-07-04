@@ -5,6 +5,7 @@ For specific group see module documentation.
 """
 
 from . import _registry
+from .classification_performance.calibration_metric import ClassificationCalibrationMetrics
 from .classification_performance.class_balance_metric import ClassificationClassBalance
 from .classification_performance.class_separation_metric import ClassificationClassSeparationPlot
 from .classification_performance.classification_dummy_metric import ClassificationDummyMetric
@@ -85,6 +86,7 @@ __all__ = [
     "ClassificationQualityByClass",
     "ClassificationQualityByFeatureTable",
     "ClassificationRocCurve",
+    "ClassificationCalibrationMetrics",
     "ClassificationLiftCurve",
     "ClassificationLiftTable",
     "ColumnDriftMetric",

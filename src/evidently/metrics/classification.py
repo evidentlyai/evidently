@@ -21,6 +21,7 @@ from evidently.core.report import Context
 from evidently.core.report import _default_input_data_generator
 from evidently.legacy.base_metric import InputData
 from evidently.legacy.base_metric import Metric
+from evidently.legacy.metrics import ClassificationCalibrationMetrics
 from evidently.legacy.metrics import ClassificationConfusionMatrix
 from evidently.legacy.metrics import ClassificationDummyMetric
 from evidently.legacy.metrics import ClassificationLiftCurve
@@ -30,6 +31,7 @@ from evidently.legacy.metrics import ClassificationProbDistribution
 from evidently.legacy.metrics import ClassificationPRTable
 from evidently.legacy.metrics import ClassificationQualityByClass as _ClassificationQualityByClass
 from evidently.legacy.metrics import ClassificationRocCurve
+from evidently.legacy.metrics.classification_performance.calibration_metric import ClassificationCalibrationResults
 from evidently.legacy.metrics.classification_performance.classification_dummy_metric import (
     ClassificationDummyMetricResults,
 )
@@ -730,6 +732,103 @@ class LogLossCalculation(LegacyClassificationQuality[LogLoss]):
 
     def display_name(self) -> str:
         return "LogLoss metric"
+
+
+TCalibrationMetric = TypeVar("TCalibrationMetric", bound=ClassificationQualityBase)
+
+
+class LegacyClassificationCalibration(
+    SingleValueCalculation[TCalibrationMetric],
+    LegacyMetricCalculation[
+        SingleValue,
+        TCalibrationMetric,
+        ClassificationCalibrationResults,
+        ClassificationCalibrationMetrics,
+    ],
+    Generic[TCalibrationMetric],
+    abc.ABC,
+):
+    """Shared bridge for calibration metrics (Brier score, ECE). Both pull
+    from the same lightweight legacy `ClassificationCalibrationMetrics`,
+    rather than the larger, widely-shared `ClassificationQualityMetric`.
+    """
+
+    _legacy_metric: Optional[ClassificationCalibrationMetrics] = None
+
+    def task_name(self) -> str:
+        return self.metric.classification_name
+
+    def legacy_metric(self) -> ClassificationCalibrationMetrics:
+        if self._legacy_metric is None:
+            n_bins = getattr(self.metric, "n_bins", 10)
+            self._legacy_metric = ClassificationCalibrationMetrics(n_bins=n_bins)
+        return self._legacy_metric
+
+    @abc.abstractmethod
+    def calculate_value(
+        self,
+        context: "Context",
+        legacy_result: ClassificationCalibrationResults,
+        render: List[BaseWidgetInfo],
+    ) -> Tuple[SingleValue, Optional[SingleValue]]:
+        raise NotImplementedError()
+
+
+class BrierScore(ClassificationQualityBase):
+    """Calculate the Brier score for probabilistic classification predictions.
+
+    The Brier score is the mean squared difference between predicted
+    probabilities and the actual outcome. Lower values indicate
+    better-calibrated, more accurate probability estimates. Ranges from
+    0 (perfect) to 1 (worst).
+    """
+
+    pass
+
+
+class BrierScoreCalculation(LegacyClassificationCalibration[BrierScore]):
+    def calculate_value(
+        self,
+        context: "Context",
+        legacy_result: ClassificationCalibrationResults,
+        render: List[BaseWidgetInfo],
+    ) -> Tuple[SingleValue, Optional[SingleValue]]:
+        return (
+            self.result(legacy_result.current_brier_score),
+            None if legacy_result.reference_brier_score is None else self.result(legacy_result.reference_brier_score),
+        )
+
+    def display_name(self) -> str:
+        return "Brier score metric"
+
+
+class ECE(ClassificationQualityBase):
+    """Calculate the Expected Calibration Error (ECE).
+
+    ECE measures how well predicted probabilities reflect true likelihoods,
+    by binning predictions according to confidence and comparing each bin's
+    average confidence to its actual accuracy. Lower values indicate
+    better-calibrated predictions.
+    """
+
+    n_bins: int = 10
+    """Number of equal-width confidence bins used to estimate calibration error."""
+
+
+class ECECalculation(LegacyClassificationCalibration[ECE]):
+    def calculate_value(
+        self,
+        context: "Context",
+        legacy_result: ClassificationCalibrationResults,
+        render: List[BaseWidgetInfo],
+    ) -> Tuple[SingleValue, Optional[SingleValue]]:
+        return (
+            self.result(legacy_result.current_ece),
+            None if legacy_result.reference_ece is None else self.result(legacy_result.reference_ece),
+        )
+
+    def display_name(self) -> str:
+        return "Expected Calibration Error metric"
 
 
 class LegacyClassificationDummy(

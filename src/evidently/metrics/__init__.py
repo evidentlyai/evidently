@@ -27,11 +27,13 @@ snapshot = report.run(dataset, None)
 ```
 """
 
+from .classification import ECE
 from .classification import FNR
 from .classification import FPR
 from .classification import TNR
 from .classification import TPR
 from .classification import Accuracy
+from .classification import BrierScore
 from .classification import DummyAccuracy
 from .classification import DummyF1Score
 from .classification import DummyFNR
@@ -154,6 +156,8 @@ __all__ = [
     "FPR",
     "FNR",
     "LogLoss",
+    "BrierScore",
+    "ECE",
     "RocAuc",
     "F1ByLabel",
     "PrecisionByLabel",

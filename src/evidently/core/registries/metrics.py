@@ -29,6 +29,8 @@ register_type_alias(Metric, "evidently.metrics.classification.F1Score", "evident
 register_type_alias(Metric, "evidently.metrics.classification.FNR", "evidently:metric_v2:FNR")
 register_type_alias(Metric, "evidently.metrics.classification.FPR", "evidently:metric_v2:FPR")
 register_type_alias(Metric, "evidently.metrics.classification.LogLoss", "evidently:metric_v2:LogLoss")
+register_type_alias(Metric, "evidently.metrics.classification.BrierScore", "evidently:metric_v2:BrierScore")
+register_type_alias(Metric, "evidently.metrics.classification.ECE", "evidently:metric_v2:ECE")
 register_type_alias(Metric, "evidently.metrics.classification.Precision", "evidently:metric_v2:Precision")
 register_type_alias(Metric, "evidently.metrics.classification.PrecisionByLabel", "evidently:metric_v2:PrecisionByLabel")
 register_type_alias(Metric, "evidently.metrics.classification.Recall", "evidently:metric_v2:Recall")
