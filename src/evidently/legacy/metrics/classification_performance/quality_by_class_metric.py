@@ -5,8 +5,8 @@ from typing import Optional
 import numpy as np
 import pandas as pd
 import plotly.figure_factory as ff
+import plotly.graph_objects as go
 import sklearn
-from plotly import graph_objs as go
 from plotly.subplots import make_subplots
 
 from evidently.legacy.base_metric import InputData

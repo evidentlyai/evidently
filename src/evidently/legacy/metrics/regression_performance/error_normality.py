@@ -7,7 +7,7 @@ from typing import cast
 
 import numpy as np
 import pandas as pd
-from plotly import graph_objs as go
+import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 from scipy.stats import probplot
 
