@@ -10,9 +10,9 @@ from typing import cast
 
 import numpy as np
 import pandas as pd
+import plotly.graph_objects as go
 from packaging import version
 from pandas.api.types import is_datetime64_any_dtype
-from plotly import graph_objs as go
 from plotly.subplots import make_subplots
 from scipy import stats
 from scipy.linalg import LinAlgError
