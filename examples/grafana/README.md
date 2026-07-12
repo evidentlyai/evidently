@@ -1,4 +1,4 @@
-# Grafana 
+# Grafana
 
 This folder contains examples of using Evidently metrics with Grafana dashboards.
 
