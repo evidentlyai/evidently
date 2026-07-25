@@ -40,9 +40,9 @@ def semantic_similarity_scoring(question: DatasetColumn, context: DatasetColumn,
     context_column = context.data.name
     no_index_context = context.data.reset_index()
 
-    first = model.encode(question.data.fillna(""))
+    first = model.encode(question.data.fillna("").tolist())
     context_rows = no_index_context.explode([context_column]).reset_index()
-    second = model.encode(context_rows[context_column].fillna(""))
+    second = model.encode(context_rows[context_column].fillna("").tolist())
 
     scores = pd.Series(data=[[x] for x in second], index=context_rows.index, dtype=object)
     scind = pd.DataFrame(data={"ind": context_rows["index"], "scores": scores})
