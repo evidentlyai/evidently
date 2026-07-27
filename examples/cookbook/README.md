@@ -27,4 +27,4 @@ Use the cookbook if you want to:
 - copy a minimal implementation pattern,
 - understand a single evaluation or monitoring task without going through a full workflow.
 
-For end-to-end examples, see the main [`examples`](../) folder and the [`tutorials`](../tutorials/) directory.
+For end-to-end examples, see the [top-level tutorials](../README.md#start-here) in the main [`examples`](../) folder.
