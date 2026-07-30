@@ -62,7 +62,9 @@ def eq(
     if isinstance(expected, get_args(ThresholdType)):
         return GenericTest(
             test_name="eq",
-            metric=EqualMetricTest(expected=expected, is_critical=is_critical, label_filters=label_filters),
+            metric=EqualMetricTest(
+                expected=expected, is_critical=is_critical, label_filters=label_filters, alias=alias
+            ),
             descriptor=DescriptorTest(condition=EqualsColumnCondition(expected=expected), column=column, alias=alias),
         )
     else:
@@ -102,7 +104,9 @@ def not_eq(
     if isinstance(expected, get_args(ThresholdType)):
         return GenericTest(
             test_name="not_eq",
-            metric=NotEqualMetricTest(expected=expected, is_critical=is_critical, label_filters=label_filters),
+            metric=NotEqualMetricTest(
+                expected=expected, is_critical=is_critical, label_filters=label_filters, alias=alias
+            ),
             descriptor=DescriptorTest(
                 condition=NotEqualsColumnCondition(expected=expected),
                 column=column,
@@ -144,7 +148,9 @@ def lt(
 ) -> AnyTest:
     return GenericTest(
         test_name="lt",
-        metric=LessThanMetricTest(threshold=threshold, is_critical=is_critical, label_filters=label_filters),
+        metric=LessThanMetricTest(
+            threshold=threshold, is_critical=is_critical, label_filters=label_filters, alias=alias
+        ),
         descriptor=DescriptorTest(condition=LessColumnCondition(threshold=threshold), column=column, alias=alias),
     )
 
@@ -177,7 +183,9 @@ def gt(
 ) -> AnyTest:
     return GenericTest(
         test_name="gt",
-        metric=GreaterThanMetricTest(threshold=threshold, is_critical=is_critical, label_filters=label_filters),
+        metric=GreaterThanMetricTest(
+            threshold=threshold, is_critical=is_critical, label_filters=label_filters, alias=alias
+        ),
         descriptor=DescriptorTest(condition=GreaterColumnCondition(threshold=threshold), column=column, alias=alias),
     )
 
@@ -247,7 +255,9 @@ def lte(
 ) -> AnyTest:
     return GenericTest(
         test_name="lte",
-        metric=LessOrEqualMetricTest(threshold=threshold, is_critical=is_critical, label_filters=label_filters),
+        metric=LessOrEqualMetricTest(
+            threshold=threshold, is_critical=is_critical, label_filters=label_filters, alias=alias
+        ),
         descriptor=DescriptorTest(condition=LessEqualColumnCondition(threshold=threshold), column=column, alias=alias),
     )
 
@@ -282,7 +292,7 @@ def is_in(
 ) -> AnyTest:
     return GenericTest(
         test_name="is_in",
-        metric=IsInMetricTest(values=values, is_critical=is_critical, label_filters=label_filters),
+        metric=IsInMetricTest(values=values, is_critical=is_critical, label_filters=label_filters, alias=alias),
         descriptor=DescriptorTest(condition=IsInColumnCondition(values=set(values)), column=column, alias=alias),
     )
 
@@ -317,6 +327,6 @@ def not_in(
 ) -> AnyTest:
     return GenericTest(
         test_name="not_in",
-        metric=NotInMetricTest(values=values, is_critical=is_critical, label_filters=label_filters),
+        metric=NotInMetricTest(values=values, is_critical=is_critical, label_filters=label_filters, alias=alias),
         descriptor=DescriptorTest(condition=IsNotInColumnCondition(values=set(values)), column=column, alias=alias),
     )
