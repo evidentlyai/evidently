@@ -17,4 +17,6 @@ dataset_storage:
   # path: s3://<bucket>/workspace
   # or
   # path: gcs://<bucket>/workspace
+  # for s3, credentials and a custom endpoint come from the environment:
+  # FSSPEC_S3_KEY, FSSPEC_S3_SECRET, FSSPEC_S3_ENDPOINT_URL
   # list of supported FS: https://filesystem-spec.readthedocs.io/en/latest/api.html#built-in-implementations
