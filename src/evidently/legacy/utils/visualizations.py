@@ -254,9 +254,13 @@ def plot_distr_with_cond_perc_button(
     lt: Optional[float] = None,
     gt: Optional[float] = None,
     fill: Optional[bool] = True,
-    dict_rename: Dict[str, str] = {},
-    dict_style: Dict[str, str] = {},
+    dict_rename: Optional[Dict[str, str]] = None,
+    dict_style: Optional[Dict[str, str]] = None,
 ):
+    dict_rename = {} if dict_rename is None else dict_rename
+    # copied rather than aliased: the branch below writes into this mapping, so sharing it
+    # with the caller's object would mutate the caller's dict as well.
+    dict_style = {} if dict_style is None else dict(dict_style)
     fig = make_subplots(rows=1, cols=1)
     visible = [True, False]
     fig = add_traces_with_perc(fig, hist_curr, 1, 1, color_options.get_current_data_color(), "current")
