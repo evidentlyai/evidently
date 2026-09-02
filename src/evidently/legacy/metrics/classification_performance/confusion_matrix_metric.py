@@ -101,7 +101,7 @@ class ClassificationConfusionMatrixRenderer(MetricRenderer):
             if ref_matrix is not None:
                 ref_matrix.labels = [target_names[x] for x in ref_matrix.labels]
 
-        fig = plot_conf_mtrx(curr_matrix, ref_matrix)
+        fig = plot_conf_mtrx(curr_matrix, ref_matrix, self.color_options)
         fig.for_each_xaxis(lambda axis: axis.update(title_text="Predicted Value"))
         fig.update_layout(yaxis_title="Actual Value")
         return [
