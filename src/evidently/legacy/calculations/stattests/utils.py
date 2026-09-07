@@ -42,20 +42,14 @@ def get_binned_data(
         current_percents = np.array([current_feature_dict[key] / len(current_data) for key in keys])
 
     if feel_zeroes:
-        np.place(
-            reference_percents,
-            reference_percents == 0,
-            min(reference_percents[reference_percents != 0]) / 10**6
-            if min(reference_percents[reference_percents != 0]) <= 0.0001
-            else 0.0001,
-        )
-        np.place(
-            current_percents,
-            current_percents == 0,
-            min(current_percents[current_percents != 0]) / 10**6
-            if min(current_percents[current_percents != 0]) <= 0.0001
-            else 0.0001,
-        )
+        ref_non_zero = reference_percents[reference_percents != 0]
+        curr_non_zero = current_percents[current_percents != 0]
+
+        ref_fill = (min(ref_non_zero) / 10) if (len(ref_non_zero) > 0 and min(ref_non_zero) <= 0.0001) else 0.0001
+        curr_fill = (min(curr_non_zero) / 10) if (len(curr_non_zero) > 0 and min(curr_non_zero) <= 0.0001) else 0.0001
+
+        np.place(reference_percents, reference_percents == 0, ref_fill)
+        np.place(current_percents, current_percents == 0, curr_fill)
 
     return reference_percents, current_percents
 
