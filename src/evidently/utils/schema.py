@@ -14,7 +14,6 @@ import typing_inspect
 import yaml
 from litestar import get
 from litestar._openapi.schema_generation import SchemaCreator
-from litestar.contrib.pydantic import PydanticSchemaPlugin
 from litestar.openapi.spec import Schema
 from litestar.serialization import get_serializer
 from litestar.typing import FieldDefinition
@@ -35,6 +34,7 @@ from evidently.ui.service.components.base import Component
 from evidently.ui.service.components.base import ComponentContext
 from evidently.ui.service.datasets.filters import FilterBy
 from evidently.ui.service.managers.base import replace_signature
+from evidently.utils.litestar import PydanticSchemaPlugin
 
 
 @no_type_check
