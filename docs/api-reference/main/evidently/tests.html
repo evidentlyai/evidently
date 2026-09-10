@@ -109,7 +109,7 @@ generated when using presets with <code>include_tests=True</code>.</p>
 <span class="kn">from</span><span class="w"> </span><span class="nn"><a href="">evidently.tests</a></span><span class="w"> </span><span class="kn">import</span> <span class="n">gt</span>
 
 <span class="n">report</span> <span class="o">=</span> <span class="n">Report</span><span class="p">([</span>
-    <span class="n">MeanValue</span><span class="p">(</span><span class="n">column</span><span class="o">=</span><span class="s2">&quot;age&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">add_test</span><span class="p">(</span><span class="n">gt</span><span class="p">(</span><span class="mi">25</span><span class="p">))</span>
+    <span class="n">MeanValue</span><span class="p">(</span><span class="n">column</span><span class="o">=</span><span class="s2">"age"</span><span class="p">)</span><span class="o">.</span><span class="n">add_test</span><span class="p">(</span><span class="n">gt</span><span class="p">(</span><span class="mi">25</span><span class="p">))</span>
 <span class="p">])</span>
 <span class="n">snapshot</span> <span class="o">=</span> <span class="n">report</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
 </code></pre>

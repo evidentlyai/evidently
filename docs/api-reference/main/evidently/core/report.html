@@ -893,7 +893,7 @@ Used internally to organize metric results in a <code><a href="#Snapshot">Snapsh
 <div class="pdoc-code codehilite">
 <pre><span></span><code><span class="n">report</span> <span class="o">=</span> <span class="n">Report</span><span class="p">([</span><span class="n">DataSummaryPreset</span><span class="p">()])</span>
 <span class="n">snapshot</span> <span class="o">=</span> <span class="n">report</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">current_data</span><span class="p">,</span> <span class="n">reference_data</span><span class="p">)</span>
-<span class="n">snapshot</span><span class="o">.</span><span class="n">save_html</span><span class="p">(</span><span class="s2">&quot;report.html&quot;</span><span class="p">)</span>  <span class="c1"># Export as HTML</span>
+<span class="n">snapshot</span><span class="o">.</span><span class="n">save_html</span><span class="p">(</span><span class="s2">"report.html"</span><span class="p">)</span>  <span class="c1"># Export as HTML</span>
 <span class="n">snapshot</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>  <span class="c1"># Export as JSON string</span>
 <span class="n">snapshot</span><span class="o">.</span><span class="n">dict</span><span class="p">()</span>  <span class="c1"># Export as Python dictionary</span>
 </code></pre>
@@ -1407,7 +1407,7 @@ returns a <code><a href="#Snapshot">Snapshot</a></code> object with computed res
 <div class="pdoc-code codehilite">
 <pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn"><a href="../metrics.html">evidently.metrics</a></span><span class="w"> </span><span class="kn">import</span> <span class="n">ColumnCount</span><span class="p">,</span> <span class="n">ValueStats</span>
 
-<span class="n">report</span> <span class="o">=</span> <span class="n">Report</span><span class="p">([</span><span class="n">ColumnCount</span><span class="p">(),</span> <span class="n">ValueStats</span><span class="p">(</span><span class="n">column</span><span class="o">=</span><span class="s2">&quot;target&quot;</span><span class="p">)])</span>
+<span class="n">report</span> <span class="o">=</span> <span class="n">Report</span><span class="p">([</span><span class="n">ColumnCount</span><span class="p">(),</span> <span class="n">ValueStats</span><span class="p">(</span><span class="n">column</span><span class="o">=</span><span class="s2">"target"</span><span class="p">)])</span>
 <span class="n">snapshot</span> <span class="o">=</span> <span class="n">report</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
 </code></pre>
 </div>
@@ -1532,8 +1532,8 @@ Use <code><a href="#Snapshot.save_html">Snapshot.save_html()</a></code>, <code><
 
 <span class="n">report</span> <span class="o">=</span> <span class="n">Report</span><span class="p">([</span><span class="n">DataSummaryPreset</span><span class="p">()])</span>
 <span class="n">dataset</span> <span class="o">=</span> <span class="n">Dataset</span><span class="o">.</span><span class="n">from_pandas</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">data_definition</span><span class="o">=</span><span class="n">DataDefinition</span><span class="p">())</span>
-<span class="n">snapshot</span> <span class="o">=</span> <span class="n">report</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;daily_check&quot;</span><span class="p">)</span>
-<span class="n">snapshot</span><span class="o">.</span><span class="n">save_html</span><span class="p">(</span><span class="s2">&quot;report.html&quot;</span><span class="p">)</span>
+<span class="n">snapshot</span> <span class="o">=</span> <span class="n">report</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"daily_check"</span><span class="p">)</span>
+<span class="n">snapshot</span><span class="o">.</span><span class="n">save_html</span><span class="p">(</span><span class="s2">"report.html"</span><span class="p">)</span>
 </code></pre>
 </div>
 </div>

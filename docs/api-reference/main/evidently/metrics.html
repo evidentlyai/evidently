@@ -908,7 +908,7 @@ multiple related metrics together.</p>
 
 <span class="n">report</span> <span class="o">=</span> <span class="n">Report</span><span class="p">([</span>
     <span class="n">ColumnCount</span><span class="p">(),</span>
-    <span class="n">MeanValue</span><span class="p">(</span><span class="n">column</span><span class="o">=</span><span class="s2">&quot;age&quot;</span><span class="p">)</span>
+    <span class="n">MeanValue</span><span class="p">(</span><span class="n">column</span><span class="o">=</span><span class="s2">"age"</span><span class="p">)</span>
 <span class="p">])</span>
 <span class="n">snapshot</span> <span class="o">=</span> <span class="n">report</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
 </code></pre>
@@ -1201,8 +1201,8 @@ Can count a single category or multiple categories (for joint share).</p>
 <p>Example:</p>
 
 <div class="pdoc-code codehilite">
-<pre><span></span><code><span class="n">CategoryCount</span><span class="p">(</span><span class="n">column</span><span class="o">=</span><span class="s2">&quot;city&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;NY&quot;</span><span class="p">)</span>
-<span class="n">CategoryCount</span><span class="p">(</span><span class="n">column</span><span class="o">=</span><span class="s2">&quot;city&quot;</span><span class="p">,</span> <span class="n">categories</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;NY&quot;</span><span class="p">,</span> <span class="s2">&quot;LA&quot;</span><span class="p">])</span>
+<pre><span></span><code><span class="n">CategoryCount</span><span class="p">(</span><span class="n">column</span><span class="o">=</span><span class="s2">"city"</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">"NY"</span><span class="p">)</span>
+<span class="n">CategoryCount</span><span class="p">(</span><span class="n">column</span><span class="o">=</span><span class="s2">"city"</span><span class="p">,</span> <span class="n">categories</span><span class="o">=</span><span class="p">[</span><span class="s2">"NY"</span><span class="p">,</span> <span class="s2">"LA"</span><span class="p">])</span>
 </code></pre>
 </div>
 </div>
@@ -1862,7 +1862,7 @@ Returns both count and share (percentage) of values in range.</p>
 <p>Example:</p>
 
 <div class="pdoc-code codehilite">
-<pre><span></span><code><span class="n">InRangeValueCount</span><span class="p">(</span><span class="n">column</span><span class="o">=</span><span class="s2">&quot;age&quot;</span><span class="p">,</span> <span class="n">left</span><span class="o">=</span><span class="mi">18</span><span class="p">,</span> <span class="n">right</span><span class="o">=</span><span class="mi">65</span><span class="p">)</span>
+<pre><span></span><code><span class="n">InRangeValueCount</span><span class="p">(</span><span class="n">column</span><span class="o">=</span><span class="s2">"age"</span><span class="p">,</span> <span class="n">left</span><span class="o">=</span><span class="mi">18</span><span class="p">,</span> <span class="n">right</span><span class="o">=</span><span class="mi">65</span><span class="p">)</span>
 </code></pre>
 </div>
 </div>
@@ -1937,7 +1937,7 @@ Returns both count and share (percentage) of non-matching values.</p>
 <p>Example:</p>
 
 <div class="pdoc-code codehilite">
-<pre><span></span><code><span class="n">OutListValueCount</span><span class="p">(</span><span class="n">column</span><span class="o">=</span><span class="s2">&quot;city&quot;</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;NY&quot;</span><span class="p">,</span> <span class="s2">&quot;LA&quot;</span><span class="p">])</span>
+<pre><span></span><code><span class="n">OutListValueCount</span><span class="p">(</span><span class="n">column</span><span class="o">=</span><span class="s2">"city"</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="p">[</span><span class="s2">"NY"</span><span class="p">,</span> <span class="s2">"LA"</span><span class="p">])</span>
 </code></pre>
 </div>
 </div>

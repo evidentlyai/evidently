@@ -1029,7 +1029,7 @@ Used in <code><a href="#DataDefinition">DataDefinition</a></code> to specify col
                             <div id="ColumnInfo.__init__" class="classattr">
                                 <div class="attr function">
             
-        <span class="name">ColumnInfo</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="nb">type</span><span class="p">:</span> <span class="n"><a href="../../evidently.html#ColumnType">evidently.ColumnType</a></span>,</span><span class="param">	<span class="n">role</span><span class="p">:</span> <span class="n"><a href="#ColumnRole">ColumnRole</a></span> <span class="o">=</span> <span class="o">&lt;</span><span class="n"><a href="#ColumnRole.Unset">ColumnRole.Unset</a></span><span class="p">:</span> <span class="s1">&#39;Unset&#39;</span><span class="o">&gt;</span></span>)</span>
+        <span class="name">ColumnInfo</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="nb">type</span><span class="p">:</span> <span class="n"><a href="../../evidently.html#ColumnType">evidently.ColumnType</a></span>,</span><span class="param">	<span class="n">role</span><span class="p">:</span> <span class="n"><a href="#ColumnRole">ColumnRole</a></span> <span class="o">=</span> <span class="o">&lt;</span><span class="n"><a href="#ColumnRole.Unset">ColumnRole.Unset</a></span><span class="p">:</span> <span class="s1">'Unset'</span><span class="o">&gt;</span></span>)</span>
 
         
     </div>
@@ -1087,8 +1087,8 @@ Used in <code><a href="#DataDefinition">DataDefinition</a></code> to specify whi
 <div class="pdoc-code codehilite">
 <pre><span></span><code><span class="n">definition</span> <span class="o">=</span> <span class="n">DataDefinition</span><span class="p">(</span>
     <span class="n">classification</span><span class="o">=</span><span class="p">[</span><span class="n">BinaryClassification</span><span class="p">(</span>
-        <span class="n">target</span><span class="o">=</span><span class="s2">&quot;target&quot;</span><span class="p">,</span>
-        <span class="n">prediction_labels</span><span class="o">=</span><span class="s2">&quot;prediction&quot;</span>
+        <span class="n">target</span><span class="o">=</span><span class="s2">"target"</span><span class="p">,</span>
+        <span class="n">prediction_labels</span><span class="o">=</span><span class="s2">"prediction"</span>
     <span class="p">)]</span>
 <span class="p">)</span>
 </code></pre>
@@ -1099,7 +1099,7 @@ Used in <code><a href="#DataDefinition">DataDefinition</a></code> to specify whi
                             <div id="BinaryClassification.__init__" class="classattr">
                                 <div class="attr function">
             
-        <span class="name">BinaryClassification</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="o">*</span>,</span><span class="param">	<span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;default&#39;</span>,</span><span class="param">	<span class="n">target</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">prediction_labels</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">prediction_probas</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">pos_label</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">labels</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">pydantic</span><span class="o">.</span><span class="n">v1</span><span class="o">.</span><span class="n">types</span><span class="o">.</span><span class="n">StrictBool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">],</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span></span>)</span>
+        <span class="name">BinaryClassification</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="o">*</span>,</span><span class="param">	<span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">'default'</span>,</span><span class="param">	<span class="n">target</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">prediction_labels</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">prediction_probas</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">pos_label</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">labels</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">pydantic</span><span class="o">.</span><span class="n">v1</span><span class="o">.</span><span class="n">types</span><span class="o">.</span><span class="n">StrictBool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">],</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span></span>)</span>
 
         
     </div>
@@ -1213,9 +1213,9 @@ Used in <code><a href="#DataDefinition">DataDefinition</a></code> to specify whi
 <div class="pdoc-code codehilite">
 <pre><span></span><code><span class="n">definition</span> <span class="o">=</span> <span class="n">DataDefinition</span><span class="p">(</span>
     <span class="n">classification</span><span class="o">=</span><span class="p">[</span><span class="n">MulticlassClassification</span><span class="p">(</span>
-        <span class="n">target</span><span class="o">=</span><span class="s2">&quot;target&quot;</span><span class="p">,</span>
-        <span class="n">prediction_labels</span><span class="o">=</span><span class="s2">&quot;prediction&quot;</span><span class="p">,</span>
-        <span class="n">prediction_probas</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;0&quot;</span><span class="p">,</span> <span class="s2">&quot;1&quot;</span><span class="p">,</span> <span class="s2">&quot;2&quot;</span><span class="p">]</span>
+        <span class="n">target</span><span class="o">=</span><span class="s2">"target"</span><span class="p">,</span>
+        <span class="n">prediction_labels</span><span class="o">=</span><span class="s2">"prediction"</span><span class="p">,</span>
+        <span class="n">prediction_probas</span><span class="o">=</span><span class="p">[</span><span class="s2">"0"</span><span class="p">,</span> <span class="s2">"1"</span><span class="p">,</span> <span class="s2">"2"</span><span class="p">]</span>
     <span class="p">)]</span>
 <span class="p">)</span>
 </code></pre>
@@ -1226,7 +1226,7 @@ Used in <code><a href="#DataDefinition">DataDefinition</a></code> to specify whi
                             <div id="MulticlassClassification.__init__" class="classattr">
                                 <div class="attr function">
             
-        <span class="name">MulticlassClassification</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="o">*</span>,</span><span class="param">	<span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;default&#39;</span>,</span><span class="param">	<span class="n">target</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">prediction_labels</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">prediction_probas</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">labels</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">pydantic</span><span class="o">.</span><span class="n">v1</span><span class="o">.</span><span class="n">types</span><span class="o">.</span><span class="n">StrictBool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">],</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span></span>)</span>
+        <span class="name">MulticlassClassification</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="o">*</span>,</span><span class="param">	<span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">'default'</span>,</span><span class="param">	<span class="n">target</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">prediction_labels</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">prediction_probas</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">labels</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">pydantic</span><span class="o">.</span><span class="n">v1</span><span class="o">.</span><span class="n">types</span><span class="o">.</span><span class="n">StrictBool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">],</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span></span>)</span>
 
         
     </div>
@@ -1344,7 +1344,7 @@ Used in <code><a href="#DataDefinition">DataDefinition</a></code> to specify whi
 
 <div class="pdoc-code codehilite">
 <pre><span></span><code><span class="n">definition</span> <span class="o">=</span> <span class="n">DataDefinition</span><span class="p">(</span>
-    <span class="n">regression</span><span class="o">=</span><span class="p">[</span><span class="n">Regression</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="s2">&quot;y_true&quot;</span><span class="p">,</span> <span class="n">prediction</span><span class="o">=</span><span class="s2">&quot;y_pred&quot;</span><span class="p">)]</span>
+    <span class="n">regression</span><span class="o">=</span><span class="p">[</span><span class="n">Regression</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="s2">"y_true"</span><span class="p">,</span> <span class="n">prediction</span><span class="o">=</span><span class="s2">"y_pred"</span><span class="p">)]</span>
 <span class="p">)</span>
 </code></pre>
 </div>
@@ -1354,7 +1354,7 @@ Used in <code><a href="#DataDefinition">DataDefinition</a></code> to specify whi
                             <div id="Regression.__init__" class="classattr">
                                 <div class="attr function">
             
-        <span class="name">Regression</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;default&#39;</span>,</span><span class="param">	<span class="n">target</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;target&#39;</span>,</span><span class="param">	<span class="n">prediction</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;prediction&#39;</span></span>)</span>
+        <span class="name">Regression</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">'default'</span>,</span><span class="param">	<span class="n">target</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">'target'</span>,</span><span class="param">	<span class="n">prediction</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">'prediction'</span></span>)</span>
 
         
     </div>
@@ -1436,7 +1436,7 @@ and relevance scores. Used in <code><a href="#DataDefinition">DataDefinition</a>
                             <div id="Recsys.__init__" class="classattr">
                                 <div class="attr function">
             
-        <span class="name">Recsys</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;default&#39;</span>,</span><span class="param">	<span class="n">user_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;user_id&#39;</span>,</span><span class="param">	<span class="n">item_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;item_id&#39;</span>,</span><span class="param">	<span class="n">target</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;target&#39;</span>,</span><span class="param">	<span class="n">prediction</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;prediction&#39;</span>,</span><span class="param">	<span class="n">recommendations_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;score&#39;</span></span>)</span>
+        <span class="name">Recsys</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">'default'</span>,</span><span class="param">	<span class="n">user_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">'user_id'</span>,</span><span class="param">	<span class="n">item_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">'item_id'</span>,</span><span class="param">	<span class="n">target</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">'target'</span>,</span><span class="param">	<span class="n">prediction</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">'prediction'</span>,</span><span class="param">	<span class="n">recommendations_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">'score'</span></span>)</span>
 
         
     </div>
@@ -1579,9 +1579,9 @@ Used in <code><a href="#DataDefinition">DataDefinition</a></code> to specify whi
 <div class="pdoc-code codehilite">
 <pre><span></span><code><span class="n">definition</span> <span class="o">=</span> <span class="n">DataDefinition</span><span class="p">(</span>
     <span class="n">llm</span><span class="o">=</span><span class="n">LLMClassification</span><span class="p">(</span>
-        <span class="nb">input</span><span class="o">=</span><span class="s2">&quot;question&quot;</span><span class="p">,</span>
-        <span class="n">target</span><span class="o">=</span><span class="s2">&quot;expected_answer&quot;</span><span class="p">,</span>
-        <span class="n">predictions</span><span class="o">=</span><span class="s2">&quot;model_answer&quot;</span>
+        <span class="nb">input</span><span class="o">=</span><span class="s2">"question"</span><span class="p">,</span>
+        <span class="n">target</span><span class="o">=</span><span class="s2">"expected_answer"</span><span class="p">,</span>
+        <span class="n">predictions</span><span class="o">=</span><span class="s2">"model_answer"</span>
     <span class="p">)</span>
 <span class="p">)</span>
 </code></pre>
@@ -1592,7 +1592,7 @@ Used in <code><a href="#DataDefinition">DataDefinition</a></code> to specify whi
                             <div id="LLMClassification.__init__" class="classattr">
                                 <div class="attr function">
             
-        <span class="name">LLMClassification</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="nb">input</span><span class="p">:</span> <span class="nb">str</span>,</span><span class="param">	<span class="n">target</span><span class="p">:</span> <span class="nb">str</span>,</span><span class="param">	<span class="n">predictions</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">reasoning</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">prediction_reasoning</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;llm_default&#39;</span></span>)</span>
+        <span class="name">LLMClassification</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="nb">input</span><span class="p">:</span> <span class="nb">str</span>,</span><span class="param">	<span class="n">target</span><span class="p">:</span> <span class="nb">str</span>,</span><span class="param">	<span class="n">predictions</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">reasoning</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">prediction_reasoning</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">'llm_default'</span></span>)</span>
 
         
     </div>
@@ -1892,9 +1892,9 @@ columns and will fail if they're missing.</p>
 
 <div class="pdoc-code codehilite">
 <pre><span></span><code><span class="n">definition</span> <span class="o">=</span> <span class="n">DataDefinition</span><span class="p">(</span>
-    <span class="n">numerical_columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Age&quot;</span><span class="p">,</span> <span class="s2">&quot;Salary&quot;</span><span class="p">],</span>
-    <span class="n">categorical_columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Department&quot;</span><span class="p">],</span>
-    <span class="n">classification</span><span class="o">=</span><span class="p">[</span><span class="n">BinaryClassification</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="s2">&quot;target&quot;</span><span class="p">,</span> <span class="n">prediction_labels</span><span class="o">=</span><span class="s2">&quot;prediction&quot;</span><span class="p">)]</span>
+    <span class="n">numerical_columns</span><span class="o">=</span><span class="p">[</span><span class="s2">"Age"</span><span class="p">,</span> <span class="s2">"Salary"</span><span class="p">],</span>
+    <span class="n">categorical_columns</span><span class="o">=</span><span class="p">[</span><span class="s2">"Department"</span><span class="p">],</span>
+    <span class="n">classification</span><span class="o">=</span><span class="p">[</span><span class="n">BinaryClassification</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="s2">"target"</span><span class="p">,</span> <span class="n">prediction_labels</span><span class="o">=</span><span class="s2">"prediction"</span><span class="p">)]</span>
 <span class="p">)</span>
 </code></pre>
 </div>
@@ -4064,7 +4064,7 @@ Use <code><a href="#Dataset">Dataset</a></code> objects with <code>Report.run()<
 <div class="pdoc-code codehilite">
 <pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn"><a href="../descriptors.html">evidently.descriptors</a></span><span class="w"> </span><span class="kn">import</span> <span class="n">TextLength</span>
 
-<span class="n">dataset</span><span class="o">.</span><span class="n">add_descriptors</span><span class="p">([</span><span class="n">TextLength</span><span class="p">(</span><span class="n">column</span><span class="o">=</span><span class="s2">&quot;text&quot;</span><span class="p">)])</span>
+<span class="n">dataset</span><span class="o">.</span><span class="n">add_descriptors</span><span class="p">([</span><span class="n">TextLength</span><span class="p">(</span><span class="n">column</span><span class="o">=</span><span class="s2">"text"</span><span class="p">)])</span>
 </code></pre>
 </div>
 
@@ -4535,7 +4535,7 @@ Use <code><a href="#Dataset">Dataset</a></code> objects with <code>Report.run()<
 <div class="pdoc-code codehilite">
 <pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn"><a href="../descriptors.html">evidently.descriptors</a></span><span class="w"> </span><span class="kn">import</span> <span class="n">TextLength</span>
 
-<span class="n">dataset</span><span class="o">.</span><span class="n">add_descriptors</span><span class="p">([</span><span class="n">TextLength</span><span class="p">(</span><span class="n">column</span><span class="o">=</span><span class="s2">&quot;text&quot;</span><span class="p">)])</span>
+<span class="n">dataset</span><span class="o">.</span><span class="n">add_descriptors</span><span class="p">([</span><span class="n">TextLength</span><span class="p">(</span><span class="n">column</span><span class="o">=</span><span class="s2">"text"</span><span class="p">)])</span>
 </code></pre>
 </div>
 

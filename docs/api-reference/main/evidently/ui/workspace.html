@@ -536,9 +536,9 @@ with the project.</p>
 <p>Example:</p>
 
 <div class="pdoc-code codehilite">
-<pre><span></span><code><span class="n">workspace</span> <span class="o">=</span> <span class="n"><a href="#Workspace.create">Workspace.create</a></span><span class="p">(</span><span class="s2">&quot;my_workspace&quot;</span><span class="p">)</span>
-<span class="n">project</span> <span class="o">=</span> <span class="n">workspace</span><span class="o">.</span><span class="n">add_project</span><span class="p">(</span><span class="n">ProjectModel</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;My Project&quot;</span><span class="p">))</span>
-<span class="n">project</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;Updated Name&quot;</span>
+<pre><span></span><code><span class="n">workspace</span> <span class="o">=</span> <span class="n"><a href="#Workspace.create">Workspace.create</a></span><span class="p">(</span><span class="s2">"my_workspace"</span><span class="p">)</span>
+<span class="n">project</span> <span class="o">=</span> <span class="n">workspace</span><span class="o">.</span><span class="n">add_project</span><span class="p">(</span><span class="n">ProjectModel</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"My Project"</span><span class="p">))</span>
+<span class="n">project</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">"Updated Name"</span>
 <span class="n">project</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
 </code></pre>
 </div>
@@ -1231,8 +1231,8 @@ All data is stored in the specified directory on the local file system.</p>
 <p>Example:</p>
 
 <div class="pdoc-code codehilite">
-<pre><span></span><code><span class="n">workspace</span> <span class="o">=</span> <span class="n"><a href="#Workspace.create">Workspace.create</a></span><span class="p">(</span><span class="s2">&quot;my_workspace&quot;</span><span class="p">)</span>
-<span class="n">project</span> <span class="o">=</span> <span class="n">workspace</span><span class="o">.</span><span class="n">add_project</span><span class="p">(</span><span class="n">ProjectModel</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;My Project&quot;</span><span class="p">))</span>
+<pre><span></span><code><span class="n">workspace</span> <span class="o">=</span> <span class="n"><a href="#Workspace.create">Workspace.create</a></span><span class="p">(</span><span class="s2">"my_workspace"</span><span class="p">)</span>
+<span class="n">project</span> <span class="o">=</span> <span class="n">workspace</span><span class="o">.</span><span class="n">add_project</span><span class="p">(</span><span class="n">ProjectModel</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"My Project"</span><span class="p">))</span>
 <span class="n">workspace</span><span class="o">.</span><span class="n">add_run</span><span class="p">(</span><span class="n">project</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">snapshot</span><span class="p">)</span>
 </code></pre>
 </div>
@@ -1705,7 +1705,7 @@ All data is stored in the specified directory on the local file system.</p>
                     <div class="decorator decorator-classmethod">@classmethod</div>
 
         <span class="def">def</span>
-        <span class="name">create</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">cls</span>, </span><span class="param"><span class="n">path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;workspace&#39;</span></span><span class="return-annotation">):</span></span>
+        <span class="name">create</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">cls</span>, </span><span class="param"><span class="n">path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">'workspace'</span></span><span class="return-annotation">):</span></span>
 
         
     </div>
@@ -1758,8 +1758,8 @@ on a remote server instead of locally.</p>
 <p>Example:</p>
 
 <div class="pdoc-code codehilite">
-<pre><span></span><code><span class="n">workspace</span> <span class="o">=</span> <span class="n">RemoteWorkspace</span><span class="p">(</span><span class="s2">&quot;http://localhost:8000&quot;</span><span class="p">,</span> <span class="n">secret</span><span class="o">=</span><span class="s2">&quot;my-secret&quot;</span><span class="p">)</span>
-<span class="n">project</span> <span class="o">=</span> <span class="n">workspace</span><span class="o">.</span><span class="n">add_project</span><span class="p">(</span><span class="n">ProjectModel</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;My Project&quot;</span><span class="p">))</span>
+<pre><span></span><code><span class="n">workspace</span> <span class="o">=</span> <span class="n">RemoteWorkspace</span><span class="p">(</span><span class="s2">"http://localhost:8000"</span><span class="p">,</span> <span class="n">secret</span><span class="o">=</span><span class="s2">"my-secret"</span><span class="p">)</span>
+<span class="n">project</span> <span class="o">=</span> <span class="n">workspace</span><span class="o">.</span><span class="n">add_project</span><span class="p">(</span><span class="n">ProjectModel</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"My Project"</span><span class="p">))</span>
 <span class="n">workspace</span><span class="o">.</span><span class="n">add_run</span><span class="p">(</span><span class="n">project</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">snapshot</span><span class="p">)</span>
 </code></pre>
 </div>
@@ -2313,8 +2313,8 @@ the hosted Evidently service. Requires an API key for authentication.</p>
 <p>Example:</p>
 
 <div class="pdoc-code codehilite">
-<pre><span></span><code><span class="n">workspace</span> <span class="o">=</span> <span class="n">CloudWorkspace</span><span class="p">(</span><span class="n">token</span><span class="o">=</span><span class="s2">&quot;sk_...&quot;</span><span class="p">)</span>
-<span class="n">project</span> <span class="o">=</span> <span class="n">workspace</span><span class="o">.</span><span class="n">add_project</span><span class="p">(</span><span class="n">ProjectModel</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;My Project&quot;</span><span class="p">))</span>
+<pre><span></span><code><span class="n">workspace</span> <span class="o">=</span> <span class="n">CloudWorkspace</span><span class="p">(</span><span class="n">token</span><span class="o">=</span><span class="s2">"sk_..."</span><span class="p">)</span>
+<span class="n">project</span> <span class="o">=</span> <span class="n">workspace</span><span class="o">.</span><span class="n">add_project</span><span class="p">(</span><span class="n">ProjectModel</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"My Project"</span><span class="p">))</span>
 <span class="n">workspace</span><span class="o">.</span><span class="n">add_run</span><span class="p">(</span><span class="n">project</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">snapshot</span><span class="p">)</span>
 </code></pre>
 </div>
