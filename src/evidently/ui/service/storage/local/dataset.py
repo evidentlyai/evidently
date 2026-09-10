@@ -1,3 +1,4 @@
+import ntpath
 import posixpath
 
 from evidently.legacy.utils.sync import async_to_sync
@@ -11,13 +12,25 @@ from evidently.ui.service.type_aliases import UserID
 FileID = str
 
 
+def validate_filename(filename: str) -> str:
+    if (
+        not filename
+        or filename in {".", ".."}
+        or "\x00" in filename
+        or posixpath.basename(filename) != filename
+        or ntpath.basename(filename) != filename
+    ):
+        raise ValueError("Filename must not contain a path")
+    return filename
+
+
 class DatasetFileStorage(BaseDependant):
     dataset_blob_storage: BlobStorage
 
     @staticmethod
     def get_dataset_blob_id(project_id: ProjectID, dataset_id: DatasetID, filename: str) -> str:
         """Get the blob ID for a dataset file."""
-        return posixpath.join(str(project_id), "datasets", str(dataset_id), filename)
+        return posixpath.join(str(project_id), "datasets", str(dataset_id), validate_filename(filename))
 
     def put_dataset(
         self, user_id: UserID, project_id: ProjectID, dataset_id: DatasetID, filename: str, file_content: bytes
