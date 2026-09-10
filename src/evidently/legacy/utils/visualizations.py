@@ -1097,7 +1097,7 @@ def plot_scatter_for_data_drift(
     return fig
 
 
-def plot_conf_mtrx(curr_mtrx, ref_mtrx):
+def plot_conf_mtrx(curr_mtrx, ref_mtrx, color_options: ColorOptions):
     if ref_mtrx is not None:
         cols = 2
         subplot_titles = ["current", "reference"]
@@ -1125,7 +1125,7 @@ def plot_conf_mtrx(curr_mtrx, ref_mtrx):
             coloraxis="coloraxis",
         )
         fig.add_trace(trace, 1, 2)
-    fig.update_layout(coloraxis={"colorscale": "RdBu_r"})
+    fig.update_layout(coloraxis={"colorscale": color_options.heatmap})
     return fig
 
 
