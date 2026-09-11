@@ -47,7 +47,10 @@ def test_freq_obs_not_eq_freq_exp() -> None:
         approx(0.06812, abs=1e-5),
         False,
     )
-
+    assert g_test.func(reference, current, ColumnType.Categorical, 0.5) == (
+        approx(0.66575, abs=1e-5),
+        False,
+    )
 
 def test_cat_feature_with_nans() -> None:
     reference = pd.Series(["a", "b", np.nan]).repeat([10, 10, 10])
