@@ -108,6 +108,9 @@ from .regression import DummyMAPE
 from .regression import DummyRMSE
 from .regression import MeanError
 from .regression import R2Score
+from .regression import RegressionErrorBiasTable
+from .regression import RegressionErrorDistribution
+from .regression import RegressionPredictedVsActualScatter
 from .row_test_summary import RowTestSummary
 
 __all__ = [
@@ -169,6 +172,9 @@ __all__ = [
     "DummyMAE",
     "DummyMAPE",
     "DummyRMSE",
+    "RegressionPredictedVsActualScatter",
+    "RegressionErrorBiasTable",
+    "RegressionErrorDistribution",
     "ScoreDistribution",
     "NDCG",
     "FBetaTopK",

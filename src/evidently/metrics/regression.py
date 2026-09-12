@@ -24,6 +24,11 @@ from evidently.legacy.metrics import RegressionErrorDistribution
 from evidently.legacy.metrics import RegressionErrorNormality
 from evidently.legacy.metrics import RegressionErrorPlot
 from evidently.legacy.metrics import RegressionPredictedVsActualPlot
+from evidently.legacy.metrics.regression_performance.error_bias_table import RegressionErrorBiasTable as LegacyRegressionErrorBiasTable
+from evidently.legacy.metrics.regression_performance.error_bias_table import RegressionErrorBiasTableResults
+from evidently.legacy.metrics.regression_performance.predicted_vs_actual import RegressionPredictedVsActualScatter as LegacyRegressionPredictedVsActualScatter
+from evidently.legacy.metrics.regression_performance.predicted_vs_actual import RegressionPredictedVsActualScatterResults
+from evidently.legacy.metrics.regression_performance.error_distribution import RegressionErrorDistributionResults
 from evidently.legacy.metrics.regression_performance.regression_dummy_metric import RegressionDummyMetricResults
 from evidently.legacy.metrics.regression_performance.regression_quality import RegressionQualityMetric
 from evidently.legacy.metrics.regression_performance.regression_quality import RegressionQualityMetricResults
@@ -565,3 +570,137 @@ class DummyRMSECalculation(LegacyRegressionDummyValueMetric[DummyRMSE]):
 
     def display_name(self) -> str:
         return "Dummy RMSE"
+
+
+# ============================================================================
+# MIGRATED LEGACY METRICS (Issue #1805)
+# ============================================================================
+
+
+class RegressionPredictedVsActualScatter(SingleValueRegressionMetric):
+    """Predicted vs Actual scatter plot for regression predictions.
+    
+    Visualizes the relationship between predicted and actual target values.
+    Perfect predictions fall on the y=x diagonal line. Useful for identifying
+    systematic prediction biases across the prediction range.
+    
+    Can render as either raw scatter points (for small datasets) or aggregated
+    kernel density contours (for large datasets) to avoid overplotting.
+    """
+
+    pass
+
+
+class RegressionPredictedVsActualScatterCalculation(
+    LegacyRegressionSingleValueMetric[RegressionPredictedVsActualScatter],
+):
+    def calculate_value(
+        self,
+        context: Context,
+        legacy_result: RegressionPredictedVsActualScatterResults,
+        render: List[BaseWidgetInfo],
+    ):
+        # Return count of predictions as the metric value
+        if hasattr(legacy_result.current, 'predicted'):
+            current_value = float(len(legacy_result.current.predicted))
+        else:
+            current_value = 1.0  # Aggregated data
+        
+        current = self.result(current_value)
+        reference = None
+        
+        if legacy_result.reference is not None:
+            if hasattr(legacy_result.reference, 'predicted'):
+                ref_value = float(len(legacy_result.reference.predicted))
+            else:
+                ref_value = 1.0
+            reference = self.result(ref_value)
+        
+        return current, reference
+
+    def display_name(self) -> str:
+        return "Predicted vs Actual"
+
+
+class RegressionErrorBiasTable(SingleValueRegressionMetric):
+    """Regression error bias analysis by feature.
+    
+    Analyzes prediction error bias across different features. For each numeric
+    and categorical feature, categorizes errors as:
+    - Underestimation: Predicted < Actual
+    - Overestimation: Predicted > Actual
+    - Majority: Within the error quantile band
+    
+    Identifies which features have associated prediction bias, helping diagnose
+    model performance issues.
+    
+    Args:
+        columns: Specific columns to analyze. If None, uses all features.
+        top_error: Error quantile threshold (0-0.5). Default 0.05 (top 5%).
+        regression_name: Name of regression task for multi-task support.
+    """
+
+    columns: Optional[List[str]] = None
+    top_error: Optional[float] = None
+
+
+class RegressionErrorBiasTableCalculation(
+    LegacyRegressionSingleValueMetric[RegressionErrorBiasTable],
+):
+    def legacy_metric(self) -> LegacyRegressionErrorBiasTable:
+        return LegacyRegressionErrorBiasTable(
+            columns=self.metric.columns,
+            top_error=self.metric.top_error,
+        )
+
+    def calculate_value(
+        self,
+        context: Context,
+        legacy_result: RegressionErrorBiasTableResults,
+        render: List[BaseWidgetInfo],
+    ):
+        # Count of features analyzed as the metric value
+        if legacy_result.error_bias is None:
+            current_value = 0.0
+        else:
+            current_value = float(len(legacy_result.error_bias))
+        
+        return self.result(current_value), None
+
+    def display_name(self) -> str:
+        return "Error Bias Table"
+
+
+class RegressionErrorDistribution(SingleValueRegressionMetric):
+    """Histogram of prediction error distribution.
+    
+    Shows the distribution of errors across all predictions, helping identify
+    whether errors follow a normal distribution or have heavy tails indicating
+    outlier predictions.
+    """
+
+    pass
+
+
+class RegressionErrorDistributionCalculation(
+    LegacyRegressionSingleValueMetric[RegressionErrorDistribution],
+):
+    def legacy_metric(self) -> "RegressionErrorDistribution":  # type: ignore[return-value]
+        return RegressionErrorDistribution()
+
+    def calculate_value(
+        self,
+        context: Context,
+        legacy_result: RegressionErrorDistributionResults,
+        render: List[BaseWidgetInfo],
+    ):
+        # Return count of error values as metric
+        if hasattr(legacy_result, 'current_error_distribution') and legacy_result.current_error_distribution is not None:
+            value = float(len(legacy_result.current_error_distribution))
+        else:
+            value = 0.0
+        
+        return self.result(value), None
+
+    def display_name(self) -> str:
+        return "Error Distribution"
