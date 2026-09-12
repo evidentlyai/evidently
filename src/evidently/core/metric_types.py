@@ -1770,7 +1770,7 @@ class MeanStdMetric(Metric):
     """Optional list of tests to run on the standard deviation value."""
 
     def get_bound_tests(self, context: "Context") -> Sequence[BoundTest]:
-        if self.mean_tests is None and self.mean_tests is None and context.configuration.include_tests:
+        if self.mean_tests is None and self.std_tests is None and context.configuration.include_tests:
             return self._get_all_default_tests(context)
         fingerprint = self.get_fingerprint()
         return [t.bind_mean_std(fingerprint, True) for t in (self.mean_tests or [])] + [
