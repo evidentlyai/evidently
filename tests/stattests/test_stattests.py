@@ -13,9 +13,12 @@ from evidently.legacy.calculations.stattests.epps_singleton_stattest import epps
 from evidently.legacy.calculations.stattests.fisher_exact_stattest import fisher_exact_test
 from evidently.legacy.calculations.stattests.g_stattest import g_test
 from evidently.legacy.calculations.stattests.hellinger_distance import hellinger_stat_test
+from evidently.legacy.calculations.stattests.jensenshannon import jensenshannon_stat_test
+from evidently.legacy.calculations.stattests.kl_div import kl_div_stat_test
 from evidently.legacy.calculations.stattests.mann_whitney_urank_stattest import mann_whitney_u_stat_test
 from evidently.legacy.calculations.stattests.mmd_stattest import empirical_mmd
 from evidently.legacy.calculations.stattests.mmd_stattest import sigma_median
+from evidently.legacy.calculations.stattests.psi import psi_stat_test
 from evidently.legacy.calculations.stattests.t_test import t_test
 from evidently.legacy.calculations.stattests.tvd_stattest import tvd_test
 from evidently.legacy.core import ColumnType
@@ -335,3 +338,30 @@ def test_t_test() -> None:
     reference = pd.Series([38.7, 41.5, 43.8, 44.5, 45.5, 46.0, 47.7, 58.0])
     current = pd.Series([39.2, 39.3, 39.7, 41.4, 41.8, 42.9, 43.3, 45.8])
     assert t_test.func(reference, current, "num", 0.05) == (approx(0.084, abs=1e-3), False)
+
+
+@pytest.mark.parametrize(
+    "stattest",
+    (psi_stat_test, kl_div_stat_test, jensenshannon_stat_test, hellinger_stat_test),
+    ids=("psi", "kl_div", "jensenshannon", "hellinger"),
+)
+@pytest.mark.parametrize(
+    "reference, current",
+    (
+        (pd.Series([], dtype=float), pd.Series([1.0, 2.0, 3.0])),
+        (pd.Series([1.0, 2.0, 3.0]), pd.Series([], dtype=float)),
+        (pd.Series([], dtype=float), pd.Series([], dtype=float)),
+    ),
+    ids=("empty_reference", "empty_current", "both_empty"),
+)
+def test_divergence_stattests_reject_empty_series(stattest, reference, current) -> None:
+    with pytest.raises(ValueError, match="non-empty reference and current series"):
+        stattest.func(reference, current, ColumnType.Numerical, 0.1)
+
+
+def test_psi_disjoint_numeric_ranges_still_finite() -> None:
+    reference = pd.Series(list(range(1, 50)))
+    current = pd.Series([1000.0] * 49)
+    score, drifted = psi_stat_test.func(reference, current, ColumnType.Numerical, 0.1)
+    assert np.isfinite(score)
+    assert drifted

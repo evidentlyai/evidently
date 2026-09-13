@@ -33,6 +33,7 @@ import pandas as pd
 
 from evidently.legacy.calculations.stattests.registry import StatTest
 from evidently.legacy.calculations.stattests.registry import register_stattest
+from evidently.legacy.calculations.stattests.utils import ensure_nonempty_series
 from evidently.legacy.core import ColumnType
 
 
@@ -54,6 +55,7 @@ def _hellinger_distance(
     """
     reference_data.dropna(inplace=True)
     current_data.dropna(inplace=True)
+    ensure_nonempty_series(reference_data, current_data)
 
     keys = list((set(reference_data.unique()) | set(current_data.unique())))
 

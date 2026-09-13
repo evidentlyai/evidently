@@ -7,6 +7,28 @@ import pandas as pd
 
 from evidently.legacy.core import ColumnType
 
+_EMPTY_SERIES_ERROR = (
+    "Divergence statistical tests require non-empty reference and current series; "
+    "got reference_size={ref_size}, current_size={cur_size}."
+)
+
+
+def ensure_nonempty_series(reference_data: pd.Series, current_data: pd.Series) -> None:
+    """Raise ValueError if reference or current has length 0."""
+    ref_size = len(reference_data)
+    cur_size = len(current_data)
+    if ref_size == 0 or cur_size == 0:
+        raise ValueError(_EMPTY_SERIES_ERROR.format(ref_size=ref_size, cur_size=cur_size))
+
+
+def _fill_zero_percents(percents: np.ndarray) -> None:
+    nonzero = percents[percents != 0]
+    if len(nonzero) == 0:
+        raise ValueError("Cannot fill zero bins: all bin percents are zero (empty or all-missing data).")
+    min_nonzero = min(nonzero)
+    fill_value = min_nonzero / 10**6 if min_nonzero <= 0.0001 else 0.0001
+    np.place(percents, percents == 0, fill_value)
+
 
 def get_unique_not_nan_values_list_from_series(current_data: pd.Series, reference_data: pd.Series) -> list:
     """Get unique values from current and reference series, drop NaNs"""
@@ -26,6 +48,7 @@ def get_binned_data(
         reference_percents: % of records in each bucket for reference
         current_percents: % of records in each bucket for current
     """
+    ensure_nonempty_series(reference_data, current_data)
     n_vals = reference_data.nunique()
 
     if feature_type == ColumnType.Numerical and n_vals > 20:
@@ -42,20 +65,8 @@ def get_binned_data(
         current_percents = np.array([current_feature_dict[key] / len(current_data) for key in keys])
 
     if feel_zeroes:
-        np.place(
-            reference_percents,
-            reference_percents == 0,
-            min(reference_percents[reference_percents != 0]) / 10**6
-            if min(reference_percents[reference_percents != 0]) <= 0.0001
-            else 0.0001,
-        )
-        np.place(
-            current_percents,
-            current_percents == 0,
-            min(current_percents[current_percents != 0]) / 10**6
-            if min(current_percents[current_percents != 0]) <= 0.0001
-            else 0.0001,
-        )
+        _fill_zero_percents(reference_percents)
+        _fill_zero_percents(current_percents)
 
     return reference_percents, current_percents
 
