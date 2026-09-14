@@ -14,7 +14,7 @@ import typing_inspect
 import yaml
 from litestar import get
 from litestar._openapi.schema_generation import SchemaCreator
-from litestar.contrib.pydantic import PydanticSchemaPlugin
+from litestar.plugins.pydantic import PydanticSchemaPlugin
 from litestar.openapi.spec import Schema
 from litestar.serialization import get_serializer
 from litestar.typing import FieldDefinition
