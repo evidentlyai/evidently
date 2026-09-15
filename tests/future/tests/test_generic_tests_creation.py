@@ -16,8 +16,12 @@ from evidently.core.report import Report
 from evidently.core.tests import GenericTest
 from evidently.tests import eq
 from evidently.tests import gt
+from evidently.tests import gte
+from evidently.tests import is_in
 from evidently.tests import lt
+from evidently.tests import lte
 from evidently.tests import not_eq
+from evidently.tests import not_in
 
 
 class StubMetric(SingleValueMetric):
@@ -63,3 +67,21 @@ def test_instances(test: GenericTest, value, expected_metric, expected_descripto
 def test_failed_instances(test: Type, args):
     with pytest.raises(ValueError):
         test(*args)
+
+
+@pytest.mark.parametrize(
+    "test",
+    [
+        eq(1, alias="quality gate"),
+        not_eq(1, alias="quality gate"),
+        gt(1, alias="quality gate"),
+        gte(1, alias="quality gate"),
+        lt(1, alias="quality gate"),
+        lte(1, alias="quality gate"),
+        is_in([1], alias="quality gate"),
+        not_in([1], alias="quality gate"),
+    ],
+)
+def test_alias_is_preserved(test: GenericTest):
+    assert test.metric.alias == "quality gate", test.test_name
+    assert test.descriptor.alias == "quality gate", test.test_name
