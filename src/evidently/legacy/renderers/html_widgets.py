@@ -9,7 +9,7 @@ from typing import Union
 
 import numpy as np
 import pandas as pd
-from plotly import graph_objs as go
+from plotly import graph_objects as go
 from plotly.subplots import make_subplots
 from uuid6 import uuid7
 
