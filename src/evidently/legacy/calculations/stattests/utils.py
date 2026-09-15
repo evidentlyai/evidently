@@ -16,61 +16,36 @@ def get_unique_not_nan_values_list_from_series(current_data: pd.Series, referenc
 def get_binned_data(
     reference_data: pd.Series, current_data: pd.Series, feature_type: ColumnType, n: int, feel_zeroes: bool = True
 ):
-    """Split variable into n buckets based on reference quantiles
-    Args:
-        reference_data: reference data
-        current_data: current data
-        feature_type: feature type
-        n: number of quantiles
-    Returns:
-        reference_percents: % of records in each bucket for reference
-        current_percents: % of records in each bucket for current
-    """
+    """Split variable into n buckets based on reference quantiles"""
     n_vals = reference_data.nunique()
 
     if feature_type == ColumnType.Numerical and n_vals > 20:
         combined = np.asarray(pd.concat([reference_data, current_data], axis=0).values)
         bins = np.histogram_bin_edges(combined, bins="sturges")
-        reference_percents = np.histogram(reference_data, bins)[0] / len(reference_data)
-        current_percents = np.histogram(current_data, bins)[0] / len(current_data)
+        reference_percents = np.histogram(reference_data, bins)[0] / len(reference_data) if len(reference_data) > 0 else np.array([])
+        current_percents = np.histogram(current_data, bins)[0] / len(current_data) if len(current_data) > 0 else np.array([])
 
     else:
         keys = get_unique_not_nan_values_list_from_series(current_data=current_data, reference_data=reference_data)
         ref_feature_dict = {**dict.fromkeys(keys, 0), **dict(reference_data.value_counts())}
         current_feature_dict = {**dict.fromkeys(keys, 0), **dict(current_data.value_counts())}
-        reference_percents = np.array([ref_feature_dict[key] / len(reference_data) for key in keys])
-        current_percents = np.array([current_feature_dict[key] / len(current_data) for key in keys])
+        reference_percents = np.array([ref_feature_dict[key] / len(reference_data) if len(reference_data) > 0 else 0.0 for key in keys])
+        current_percents = np.array([current_feature_dict[key] / len(current_data) if len(current_data) > 0 else 0.0 for key in keys])
 
     if feel_zeroes:
-        np.place(
-            reference_percents,
-            reference_percents == 0,
-            min(reference_percents[reference_percents != 0]) / 10**6
-            if min(reference_percents[reference_percents != 0]) <= 0.0001
-            else 0.0001,
-        )
-        np.place(
-            current_percents,
-            current_percents == 0,
-            min(current_percents[current_percents != 0]) / 10**6
-            if min(current_percents[current_percents != 0]) <= 0.0001
-            else 0.0001,
-        )
+        ref_nz = reference_percents[reference_percents != 0]
+        ref_fill = (min(ref_nz) / 10**6 if min(ref_nz) <= 0.0001 else 0.0001) if ref_nz.size > 0 else 0.0001
+        np.place(reference_percents, reference_percents == 0, ref_fill)
+
+        curr_nz = current_percents[current_percents != 0]
+        curr_fill = (min(curr_nz) / 10**6 if min(curr_nz) <= 0.0001 else 0.0001) if curr_nz.size > 0 else 0.0001
+        np.place(current_percents, current_percents == 0, curr_fill)
 
     return reference_percents, current_percents
 
 
 def permutation_test(reference_data, current_data, observed, test_statistic_func, iterations=100):
-    """Perform a two-sided permutation test
-    Args:
-        reference_data: reference data
-        current_data: current data
-        observed: observed value
-        test_statistic_func: the test statistic function
-        iterations: number of times to permute
-    Returns:
-        p_value: two-sided p_value
-    """
+    """Perform a two-sided permutation test"""
     np.random.seed(0)
     hold_test_statistic = []
     for i in range(iterations):
@@ -86,15 +61,7 @@ def permutation_test(reference_data, current_data, observed, test_statistic_func
 
 
 def generate_fisher2x2_contingency_table(reference_data: pd.Series, current_data: pd.Series) -> np.ndarray:
-    """Generate 2x2 contingency matrix for fisher exact test
-    Args:
-        reference_data: reference data
-        current_data: current data
-    Raises:
-        ValueError: if reference_data and current_data are not of equal length
-    Returns:
-        contingency_matrix: contingency_matrix for binary data
-    """
+    """Generate 2x2 contingency matrix for fisher exact test"""
     if reference_data.shape[0] != current_data.shape[0]:
         raise ValueError(
             "reference_data and current_data are not of equal length, please ensure that they are of equal length"

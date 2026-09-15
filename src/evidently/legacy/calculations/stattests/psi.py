@@ -1,27 +1,4 @@
-"""PSI of two samples.
-
-Name: "psi"
-
-Import:
-
-    >>> from evidently.legacy.calculations.stattests import psi_stat_test
-
-Properties:
-- only for categorical and numerical features
-- returns PSI value
-
-Example:
-    Using by object:
-
-    >>> from evidently.legacy.options.data_drift import DataDriftOptions
-    >>> from evidently.legacy.calculations.stattests import psi_stat_test
-    >>> options = DataDriftOptions(all_features_stattest=psi_stat_test)
-
-    Using by name:
-
-    >>> from evidently.legacy.options.data_drift import DataDriftOptions
-    >>> options = DataDriftOptions(all_features_stattest="psi")
-"""
+"""PSI of two samples."""
 
 from typing import Tuple
 
@@ -37,17 +14,10 @@ from evidently.legacy.core import ColumnType
 def _psi(
     reference_data: pd.Series, current_data: pd.Series, feature_type: ColumnType, threshold: float, n_bins: int = 30
 ) -> Tuple[float, bool]:
-    """Calculate the PSI
-    Args:
-        reference_data: reference data
-        current_data: current data
-        feature_type: feature type
-        threshold: all values above this threshold means data drift
-        n_bins: number of bins
-    Returns:
-        psi_value: calculated PSI
-        test_result: whether the drift is detected
-    """
+    """Calculate the PSI"""
+    if reference_data.empty or current_data.empty:
+        return np.nan, False
+
     reference_percents, current_percents = get_binned_data(reference_data, current_data, feature_type, n_bins)
 
     psi_values = (reference_percents - current_percents) * np.log(reference_percents / current_percents)
