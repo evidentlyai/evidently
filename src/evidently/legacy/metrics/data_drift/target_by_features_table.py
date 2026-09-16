@@ -7,7 +7,7 @@ from typing import Union
 import numpy as np
 import pandas as pd
 import plotly.express as px
-import plotly.graph_objs as go
+import plotly.graph_objects as go
 from pandas.api.types import is_integer_dtype
 from pandas.api.types import is_string_dtype
 from plotly.subplots import make_subplots

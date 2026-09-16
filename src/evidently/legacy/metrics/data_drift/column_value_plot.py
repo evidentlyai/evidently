@@ -4,8 +4,8 @@ from typing import Union
 
 import numpy as np
 import pandas as pd
+import plotly.graph_objects as go
 from pandas.api.types import is_numeric_dtype
-from plotly import graph_objs as go
 
 from evidently.legacy.base_metric import InputData
 from evidently.legacy.base_metric import Metric

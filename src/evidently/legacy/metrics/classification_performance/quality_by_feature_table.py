@@ -6,7 +6,7 @@ from typing import Optional
 import numpy as np
 import pandas as pd
 import plotly.express as px
-import plotly.graph_objs as go
+import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
 from evidently.legacy.base_metric import InputData

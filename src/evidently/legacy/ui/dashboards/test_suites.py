@@ -11,7 +11,7 @@ from typing import Tuple
 from typing import Union
 
 import pandas as pd
-from plotly import graph_objs as go
+import plotly.graph_objects as go
 
 from evidently._pydantic_compat import BaseModel
 from evidently.legacy.model.widget import BaseWidgetInfo
