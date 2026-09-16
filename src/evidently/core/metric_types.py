@@ -564,8 +564,24 @@ def convert_types(val):
         return int(val)
     if isinstance(val, str):
         return val
-    if val is None or np.isnan(val):
+    # `pd.NA` / `pd.NaT` reach here when label values come from nullable pandas
+    # dtypes (e.g. "string", "Int64"). `np.isnan(pd.NA)` raises TypeError
+    # ("boolean value of NA is ambiguous"); `pd.isna` safely covers all
+    # NA flavors (None, NaN, NaT, NA). We return None — these can't survive
+    # downstream as dict keys for ByLabelCountValue anyway, and the existing
+    # numpy-NaN call site already relied on returning a NA-shaped value here.
+    if val is None:
         return val
+    try:
+        if pd.isna(val):
+            # Preserve numpy.nan as-is (back-compat for the existing
+            # ByLabelCountValue serializer that turns it into the string
+            # "nan"); collapse pandas-flavored NA to None.
+            if isinstance(val, float):
+                return val
+            return None
+    except (TypeError, ValueError):
+        pass
     raise ValueError(f"type {type(val)} not supported as Label")
 
 
