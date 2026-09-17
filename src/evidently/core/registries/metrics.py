@@ -109,3 +109,5 @@ register_type_alias(Metric, "evidently.metrics.recsys.UserBias", "evidently:metr
 register_type_alias(Metric, "evidently.core.metric_types.DataframeMetric", "evidently:metric_v2:DataframeMetric")
 
 register_type_alias(Metric, "evidently.metrics.embeddings.EmbeddingsDrift", "evidently:metric_v2:EmbeddingsDrift")
+
+register_type_alias(Metric, "evidently.metrics.text_evals.RougeScoreMetric", "evidently:metric_v2:RougeScoreMetric")

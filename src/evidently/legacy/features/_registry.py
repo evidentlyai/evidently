@@ -21,6 +21,7 @@ register_type_alias(GeneratedFeatures, "evidently.legacy.features.llm_judge.LLMJ
 register_type_alias(GeneratedFeatures, "evidently.legacy.features.non_letter_character_percentage_feature.NonLetterCharacterPercentage", "evidently:feature:NonLetterCharacterPercentage")
 register_type_alias(GeneratedFeatures, "evidently.legacy.features.openai_feature.OpenAIFeature", "evidently:feature:OpenAIFeature")
 register_type_alias(GeneratedFeatures, "evidently.legacy.features.regexp_feature.RegExp", "evidently:feature:RegExp")
+register_type_alias(GeneratedFeatures, "evidently.legacy.features.rouge_score_feature.RougeScoreFeature", "evidently:feature:RougeScoreFeature")
 register_type_alias(GeneratedFeatures, "evidently.legacy.features.semantic_similarity_feature.SemanticSimilarityFeature", "evidently:feature:SemanticSimilarityFeature")
 register_type_alias(GeneratedFeatures, "evidently.legacy.features.sentence_count_feature.SentenceCount", "evidently:feature:SentenceCount")
 register_type_alias(GeneratedFeatures, "evidently.legacy.features.sentiment_feature.Sentiment", "evidently:feature:Sentiment")
