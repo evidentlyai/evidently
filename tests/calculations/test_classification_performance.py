@@ -4,6 +4,7 @@ import pytest
 from sklearn import metrics
 
 from evidently.legacy.calculations.classification_performance import calculate_confusion_by_classes
+from evidently.legacy.calculations.classification_performance import calculate_matrix
 from evidently.legacy.calculations.classification_performance import calculate_metrics
 from evidently.legacy.calculations.classification_performance import get_prediction_data
 from evidently.legacy.metric_results import ConfusionMatrix
@@ -99,3 +100,79 @@ def test_get_prediction_data(dataframe, target, prediction, target_names, pos_la
     )
     for label in target_names:
         assert np.allclose(data.prediction_probas[label], expected[label], atol=1e-6)
+
+
+class CalculateMatrixMixedTypeLabelsTest:
+    """calculate_matrix must not raise TypeError when labels contain both str and int values.
+
+    Newer NumPy uses hash-based deduplication in np.unique (and therefore np.union1d), so
+    numeric-looking string labels such as "101" can be coerced to integers producing a
+    labels list with mixed types.  Sorting such a list with plain sorted() fails in Python 3
+    because '<' is not defined between str and int.  The function must fall back to a
+    type-safe sort key in that case.
+    """
+
+    def test_all_string_labels_return_correct_matrix(self):
+        target = pd.Series(["foo", "bar", "foo"])
+        prediction = pd.Series(["foo", "foo", "bar"])
+        labels = ["foo", "bar"]
+        result = calculate_matrix(target, prediction, labels)
+        assert set(result.labels) == {"foo", "bar"}
+        assert len(result.values) == 2
+
+    def test_all_integer_labels_return_correct_matrix(self):
+        target = pd.Series([0, 1, 0, 1])
+        prediction = pd.Series([0, 0, 1, 1])
+        labels = [0, 1]
+        result = calculate_matrix(target, prediction, labels)
+        assert set(result.labels) == {0, 1}
+        assert len(result.values) == 2
+
+    def test_mixed_str_int_labels_do_not_raise(self):
+        # Simulate the case where numeric-looking string labels like "101" have been
+        # coerced to int by NumPy, resulting in a labels list of mixed str and int.
+        target = pd.Series(["foo", "bar", 101, 102])
+        prediction = pd.Series(["foo", 101, "bar", 102])
+        labels = ["foo", "bar", 101, 102]  # mixed types — the bug scenario
+        # Must not raise TypeError
+        result = calculate_matrix(target, prediction, labels)
+        assert len(result.labels) == 4
+        assert len(result.values) == 4
+
+    def test_mixed_str_int_labels_confusion_matrix_shape(self):
+        # Reproduce the exact example from issue #1085
+        label_target = ["foo", "bar", "fun", "foo", "fun", "foo"]
+        label_predict = ["foo", "bar", "fun", "bar", "fun", "fun"]
+        # Simulate numeric labels coerced to int by NumPy
+        mixed_labels = ["foo", "bar", "fun", 101, 102]
+        target = pd.Series(label_target + [101, 102])
+        prediction = pd.Series(label_predict + [101, 101])
+        result = calculate_matrix(target, prediction, mixed_labels)
+        assert len(result.labels) == len(mixed_labels)
+
+    def test_string_dtype_dataframe_end_to_end(self):
+        # Exact reproduction from issue #1085: dtype="string" with numeric-looking labels
+        from evidently.legacy.metric_results import DatasetUtilityColumns
+        from evidently.legacy.calculations.classification_performance import get_prediction_data
+
+        label_target = ["foo", "bar", "fun", "foo", "fun", "foo", "101", "102"]
+        label_predict = ["foo", "bar", "fun", "bar", "fun", "fun", "101", "101"]
+        data_df = pd.DataFrame(
+            {"target": label_target, "prediction": label_predict}, dtype="string"
+        )
+        dataset_columns = DatasetColumns(
+            utility_columns=DatasetUtilityColumns(target="target", prediction="prediction"),
+            target_names=None,
+            num_feature_names=[],
+            cat_feature_names=[],
+            text_feature_names=[],
+            datetime_feature_names=[],
+        )
+        pred_data = get_prediction_data(data_df, dataset_columns, pos_label=None)
+        # calculate_matrix must not raise TypeError
+        result = calculate_matrix(
+            data_df["target"].astype(object),
+            pred_data.predictions.astype(object),
+            pred_data.labels,
+        )
+        assert len(result.labels) > 0

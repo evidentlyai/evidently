@@ -321,7 +321,17 @@ def calculate_lift_table(binded):
 
 
 def calculate_matrix(target: pd.Series, prediction: pd.Series, labels: List[Label]) -> ConfusionMatrix:
-    sorted_labels = sorted(labels)  # type: ignore[type-var]
+    try:
+        sorted_labels = sorted(labels)  # type: ignore[type-var]
+    except TypeError:
+        # Labels contain a mix of incomparable types (e.g. str and int produced when
+        # numeric-looking string labels such as "101" are coerced to integers by NumPy).
+        # Normalize every label to str so they can be sorted consistently, and align the
+        # target/prediction series to the same string representation so that
+        # sklearn.metrics.confusion_matrix receives a homogeneous label set.
+        sorted_labels = sorted(str(label) for label in labels)  # type: ignore[assignment]
+        target = target.astype(str)
+        prediction = prediction.astype(str)
     matrix = metrics.confusion_matrix(target, prediction, labels=sorted_labels)
     return ConfusionMatrix(labels=sorted_labels, values=[row.tolist() for row in matrix])
 
