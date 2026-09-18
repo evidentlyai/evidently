@@ -875,9 +875,9 @@ class TestSummaryInfo(SpecialColumnInfo):
         """Check if 'all' column is configured.
 
         Returns:
-        * `True` if `any_column` is set, `False` otherwise.
+        * `True` if `all_column` is set, `False` otherwise.
         """
-        return self.any_column is not None
+        return self.all_column is not None
 
     @property
     def has_any(self):
