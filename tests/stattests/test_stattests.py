@@ -335,3 +335,84 @@ def test_t_test() -> None:
     reference = pd.Series([38.7, 41.5, 43.8, 44.5, 45.5, 46.0, 47.7, 58.0])
     current = pd.Series([39.2, 39.3, 39.7, 41.4, 41.8, 42.9, 43.3, 45.8])
     assert t_test.func(reference, current, "num", 0.05) == (approx(0.084, abs=1e-3), False)
+
+
+@pytest.mark.parametrize(
+    "stattest",
+    [chi_stat_test, g_test],
+    ids=["chisquare", "g_test"],
+)
+def test_single_category_feature_is_not_drifted(stattest) -> None:
+    """A single shared category means there is no drift to detect, so p must not be nan.
+
+    With one category the test has zero degrees of freedom, and scipy returns nan for that
+    case (and for g_test raises outright when the sample sizes differ). A nan is not a legal
+    p-value. z_stat_test already reports 1.0 for the same input.
+    """
+    reference = pd.Series(["a"] * 50)
+    current = pd.Series(["a"] * 50)
+
+    assert stattest.func(reference, current, ColumnType.Categorical, 0.1) == (approx(1.0), False)
+
+
+@pytest.mark.parametrize(
+    "stattest",
+    [chi_stat_test, g_test],
+    ids=["chisquare", "g_test"],
+)
+def test_single_category_with_unequal_sample_sizes(stattest) -> None:
+    """Same single-category input, but with different row counts.
+
+    g_test used to raise ValueError here: it does not rescale the expected frequencies to the
+    current sample size, so the two sums could not agree.
+    """
+    reference = pd.Series(["a"] * 50)
+    current = pd.Series(["a"] * 10)
+
+    assert stattest.func(reference, current, ColumnType.Categorical, 0.1) == (approx(1.0), False)
+
+
+@pytest.mark.parametrize(
+    "stattest",
+    [chi_stat_test, g_test],
+    ids=["chisquare", "g_test"],
+)
+def test_single_category_with_nans(stattest) -> None:
+    """NaNs alongside a single real category behave the same way."""
+    reference = pd.Series(["a", None] * 25)
+    current = pd.Series(["a", None] * 25)
+
+    assert stattest.func(reference, current, ColumnType.Categorical, 0.1) == (approx(1.0), False)
+
+
+@pytest.mark.parametrize(
+    "stattest",
+    [chi_stat_test, g_test],
+    ids=["chisquare", "g_test"],
+)
+def test_two_category_feature_still_detects_drift(stattest) -> None:
+    """Guard against reading the fix as "single-category means never drifted".
+
+    Real drift in a genuinely multi-valued feature must still be reported as drifted.
+    """
+    reference = pd.Series(["a"] * 50)
+    current = pd.Series(["a"] * 25 + ["b"] * 25)
+
+    score, drifted = stattest.func(reference, current, ColumnType.Categorical, 0.05)
+
+    assert score == approx(0.0, abs=1e-4)
+    # np.float64 comparison yields np.bool_, so compare by truth value rather than identity
+    assert bool(drifted) is True
+
+
+@pytest.mark.parametrize(
+    "stattest",
+    [chi_stat_test, g_test],
+    ids=["chisquare", "g_test"],
+)
+def test_two_identical_categories_stay_undrifted(stattest) -> None:
+    """The multi-category case that already worked must not be perturbed."""
+    reference = pd.Series(["a"] * 25 + ["b"] * 25)
+    current = pd.Series(["a"] * 25 + ["b"] * 25)
+
+    assert stattest.func(reference, current, ColumnType.Categorical, 0.1) == (approx(1.0), False)
