@@ -42,6 +42,15 @@ class ColumnMapping:
     item_id: Optional[str] = "item_id"
     recommendations_type: Union[RecomType, str] = RecomType.SCORE
 
+    def __post_init__(self):
+        # Accept a bare string for any List[str] field and normalise it to a list
+        # so that `column_name in mapping.datetime_features` is always a list
+        # membership test, never a substring search.
+        for _field in ("numerical_features", "categorical_features", "datetime_features", "text_features"):
+            value = getattr(self, _field)
+            if isinstance(value, str):
+                setattr(self, _field, [value])
+
     @property
     def recom_type(self) -> RecomType:
         if isinstance(self.recommendations_type, str):

@@ -416,3 +416,40 @@ def test_create_data_definition(reference, current, mapping, target, id, datetim
     assert definition.get_prediction_columns() == prediction
     assert definition.get_columns() == columns
     assert definition.embeddings == embeddings
+
+
+def test_column_mapping_normalizes_string_feature_lists():
+    """Non-regression test for gh-846.
+
+    Feature-list fields (datetime_features, categorical_features, etc.) must
+    accept a bare string and normalise it to a one-element list so that
+    downstream ``column_name in mapping.datetime_features`` is always a list
+    membership test and never an accidental substring search.
+    """
+    # String input is normalised to a list
+    cm = ColumnMapping()
+    cm.datetime_features = "prediction_timestamp_utc"
+    cm.__post_init__()
+    assert cm.datetime_features == ["prediction_timestamp_utc"]
+
+    # Key regression: 'prediction' is NOT a substring of 'prediction_timestamp_utc'
+    # when the field is a proper list
+    assert "prediction" not in cm.datetime_features
+
+    # List input is left unchanged
+    cm2 = ColumnMapping(datetime_features=["ts1", "ts2"])
+    assert cm2.datetime_features == ["ts1", "ts2"]
+
+    # None input is left unchanged
+    cm3 = ColumnMapping(datetime_features=None)
+    assert cm3.datetime_features is None
+
+    # Same normalisation applies to the other feature-list fields
+    cm4 = ColumnMapping()
+    cm4.categorical_features = "cat_col"
+    cm4.numerical_features = "num_col"
+    cm4.text_features = "txt_col"
+    cm4.__post_init__()
+    assert cm4.categorical_features == ["cat_col"]
+    assert cm4.numerical_features == ["num_col"]
+    assert cm4.text_features == ["txt_col"]
