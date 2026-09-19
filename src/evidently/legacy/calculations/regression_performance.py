@@ -88,7 +88,7 @@ def _calculate_quality_metrics(
         "error_std": conf_interval_n_sigmas * float(sde),
         "abs_error_std": conf_interval_n_sigmas * float(sdae),
         "abs_perc_error_std": conf_interval_n_sigmas * float(sdape),
-        "near_zero_values": epsilon_values.size,
+        "near_zero_values": len(epsilon_values),
     }
 
 
