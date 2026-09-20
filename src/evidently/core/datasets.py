@@ -1027,7 +1027,7 @@ class TestSummary(Descriptor):
             )
         alias = self.alias or "summary"
         result = {f"{alias}_{key}": DatasetColumn(ct, value) for key, (ct, value) in summary_columns.items()}
-        if len(tests) == 0:
+        if len(summary_columns) == 0:
             raise ValueError("No summary columns specified")
         if len(result) == 1:
             return {alias: list(result.values())[0]}
