@@ -116,6 +116,27 @@ def test_g_test() -> None:
     assert g_test.func(reference, current, "cat", 0.5) == (approx(0.8176, abs=1e-3), False)
 
 
+def test_g_test_different_sample_sizes() -> None:
+    """Regression test for #1914: g_test raises ValueError when reference and
+    current datasets have different sample sizes."""
+    reference = pd.Series(["a"] * 500 + ["b"] * 500)
+    current = pd.Series(["a"] * 50 + ["b"] * 50)
+    p_value, is_drift = g_test.func(reference, current, ColumnType.Categorical, 0.05)
+    assert 0.0 <= p_value <= 1.0
+    assert is_drift == False  # identical distributions should not drift
+
+
+def test_g_test_different_sample_sizes_asymmetric() -> None:
+    """Verify g_test properly scales asymmetric reference distributions."""
+    # ref: 70% 'a', 30% 'b' (n=1000)
+    # cur: 50% 'a', 50% 'b' (n=100) -> expected E=[70, 30], O=[50, 50]
+    reference = pd.Series(["a"] * 700 + ["b"] * 300)
+    current = pd.Series(["a"] * 50 + ["b"] * 50)
+    p_value, is_drift = g_test.func(reference, current, ColumnType.Categorical, 0.05)
+    assert p_value < 0.001
+    assert is_drift == True
+
+
 def test_cramer_von_mises() -> None:
     reference = pd.Series(stats.norm.rvs(size=100, random_state=0))
     current = pd.Series(stats.norm.rvs(size=100, random_state=1))
