@@ -1248,6 +1248,7 @@ class Dataset:
         options: AnyOptions = None,
         metadata: Optional[Dict[str, MetadataValueType]] = None,
         tags: Optional[List[str]] = None,
+        strict: bool = False,
     ) -> "Dataset":
         """Create a `Dataset` from a `pandas.DataFrame`.
 
@@ -1259,6 +1260,9 @@ class Dataset:
         * `options`: Optional options for descriptor computation
         * `metadata`: Optional metadata dictionary
         * `tags`: Optional list of tags
+        * `strict`: Passed through to `PandasDataset`. If True and a
+          `data_definition` is provided, the definition is used exactly
+          as-is: unlisted columns are not auto-detected into it.
 
         Returns:
         * `Dataset` object ready for use with `Report.run()`
@@ -1270,7 +1274,7 @@ class Dataset:
         dataset = Dataset.from_pandas(df, data_definition=DataDefinition())
         ```
         """
-        dataset = PandasDataset(data, data_definition, metadata=metadata, tags=tags)
+        dataset = PandasDataset(data, data_definition, metadata=metadata, tags=tags, strict=strict)
         if descriptors is not None:
             dataset.add_descriptors(descriptors, options)
         return dataset
@@ -1541,9 +1545,31 @@ class PandasDataset(Dataset):
         data_definition: Optional[DataDefinition] = None,
         metadata: Optional[Dict[str, MetadataValueType]] = None,
         tags: Optional[List[str]] = None,
+        strict: bool = False,
     ):
+        """Create a dataset from a pandas DataFrame.
+
+        Args:
+            data: pandas DataFrame with the data.
+            data_definition: Optional `DataDefinition` for column mapping
+                (auto-inferred if None).
+            metadata: Optional metadata dictionary.
+            tags: Optional list of tags.
+            strict: If True and a `data_definition` is provided, use it exactly
+                as-is: columns that are not listed in the definition are left
+                unmapped (they resolve to `ColumnType.Unknown` and are ignored
+                by tests/metrics) instead of being auto-detected and merged
+                into the definition. This lets the same definition be shared
+                between reference and current datasets that have different
+                extra columns. Defaults to False (current auto-expansion
+                behavior is preserved).
+        """
         self._data = data.copy()
-        if (
+        if data_definition is not None and strict:
+            # Use the provided definition verbatim: no auto-detection, no
+            # expansion with unlisted columns (evidentlyai/evidently#1504).
+            self._data_definition = copy.deepcopy(data_definition)
+        elif (
             data_definition is None
             or data_definition.datetime_columns is None
             or data_definition.categorical_columns is None
