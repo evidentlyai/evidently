@@ -21,7 +21,7 @@ def get_binned_data(
         reference_data: reference data
         current_data: current data
         feature_type: feature type
-        n: number of quantiles
+        n: number of bins for numeric features (issue #1400)
     Returns:
         reference_percents: % of records in each bucket for reference
         current_percents: % of records in each bucket for current
@@ -30,7 +30,11 @@ def get_binned_data(
 
     if feature_type == ColumnType.Numerical and n_vals > 20:
         combined = np.asarray(pd.concat([reference_data, current_data], axis=0).values)
-        bins = np.histogram_bin_edges(combined, bins="sturges")
+        # Honor the caller-supplied `n`. Previously the signature declared `n`
+        # but the numeric branch ignored it (always used Sturges' rule), so the
+        # `n_bins` parameter of the PSI / Jensen-Shannon / KL stat tests had no
+        # effect on numeric features. See issue #1400.
+        bins = np.histogram_bin_edges(combined, bins=n)
         reference_percents = np.histogram(reference_data, bins)[0] / len(reference_data)
         current_percents = np.histogram(current_data, bins)[0] / len(current_data)
 

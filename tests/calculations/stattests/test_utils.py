@@ -4,8 +4,10 @@ import pytest
 
 from evidently.legacy.calculations.stattests.tvd_stattest import _total_variation_distance
 from evidently.legacy.calculations.stattests.utils import generate_fisher2x2_contingency_table
+from evidently.legacy.calculations.stattests.utils import get_binned_data
 from evidently.legacy.calculations.stattests.utils import get_unique_not_nan_values_list_from_series
 from evidently.legacy.calculations.stattests.utils import permutation_test
+from evidently.legacy.core import ColumnType
 
 
 @pytest.mark.parametrize(
@@ -91,3 +93,18 @@ def test_input_data_length_check_generate_fisher2x2_contingency_table(
         match="reference_data and current_data are not of equal length, please ensure that they are of equal length",
     ):
         generate_fisher2x2_contingency_table(current_data, reference_data)
+
+
+@pytest.mark.parametrize("n", [5, 10, 30, 50])
+def test_get_binned_data_honors_n_for_numeric(n: int) -> None:
+    """Regression test for issue #1400: `n` was silently ignored for numeric
+    features (Sturges' rule was always used). After the fix, the caller's `n`
+    must control the number of bins."""
+    rng = np.random.default_rng(0)
+    # > 20 unique values forces the numeric branch in get_binned_data.
+    reference = pd.Series(rng.normal(size=500))
+    current = pd.Series(rng.normal(size=500))
+    ref_pct, cur_pct = get_binned_data(reference, current, ColumnType.Numerical, n, feel_zeroes=False)
+    # np.histogram_bin_edges with bins=n returns n bins -> percent arrays of length n.
+    assert ref_pct.shape == (n,)
+    assert cur_pct.shape == (n,)
