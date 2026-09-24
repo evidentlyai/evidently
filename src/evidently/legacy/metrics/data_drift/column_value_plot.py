@@ -127,7 +127,15 @@ class ColumnValuePlot(UsesRawDataMixin, Metric[ColumnValuePlotResults]):
 
 @default_renderer(wrap_type=ColumnValuePlot)
 class ColumnValuePlotRenderer(MetricRenderer):
-    def render_raw(self, current_scatter, reference_scatter, column_name, datetime_column_name):
+    def render_raw(
+        self,
+        current_scatter,
+        reference_scatter,
+        column_name,
+        datetime_column_name,
+        current_title: str = "Current",
+        reference_title: str = "Reference",
+    ):
         # todo: better typing
         column = reference_scatter[column_name]
         if not isinstance(column, pd.Series):
@@ -156,7 +164,7 @@ class ColumnValuePlotRenderer(MetricRenderer):
                 x=curr_x,
                 y=current_scatter[column_name],
                 mode="markers",
-                name="Current",
+                name=current_title,
                 marker=dict(size=6, color=color_options.get_current_data_color()),
             )
         )
@@ -165,7 +173,7 @@ class ColumnValuePlotRenderer(MetricRenderer):
                 x=ref_x,
                 y=column,
                 mode="markers",
-                name="Reference",
+                name=reference_title,
                 marker=dict(size=6, color=color_options.get_reference_data_color()),
             )
         )
@@ -177,7 +185,7 @@ class ColumnValuePlotRenderer(MetricRenderer):
                 x=[x0, x0],
                 y=[y0, y1],
                 mode="markers",
-                name="Current",
+                name=current_title,
                 marker=dict(size=0.01, color=color_options.non_visible_color, opacity=0.005),
                 showlegend=False,
             )
@@ -247,8 +255,16 @@ class ColumnValuePlotRenderer(MetricRenderer):
 
     def render_html(self, obj: ColumnValuePlot) -> List[BaseWidgetInfo]:
         result = obj.get_result()
-        if obj.get_options().render_options.raw_data:
-            return self.render_raw(result.current, result.reference, result.column_name, result.datetime_column_name)
+        render_options = obj.get_options().render_options
+        if render_options.raw_data:
+            return self.render_raw(
+                result.current,
+                result.reference,
+                result.column_name,
+                result.datetime_column_name,
+                current_title=render_options.current_title,
+                reference_title=render_options.reference_title,
+            )
         return self.render_agg(
             result.current, result.reference, result.column_name, result.datetime_column_name, result.prefix
         )
