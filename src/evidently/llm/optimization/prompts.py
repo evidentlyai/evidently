@@ -563,8 +563,12 @@ class BlankLLMJudge(PromptExecutor):
             raise OptimizationConfigurationError("Target is required for BlankLLMJudge executor")
         inputs = dataset.input_values
         labels = target.unique()
-        model = context.config.model
-        provider = context.config.provider
+        if context.config.provider is None or context.config.model is None:
+            raise OptimizationConfigurationError(
+                "BlankLLMJudge requires provider and model to be set on the optimizer. "
+                "Pass provider=... and model=... to PromptOptimizer()."
+            )
+        provider, model = context.resolve_provider_model()
         if len(labels) < 2:
             raise OptimizationConfigurationError(f"Cannot create judge, target column has {len(labels)} labels")
         if len(labels) == 2:
