@@ -599,9 +599,9 @@ class DataSummaryPreset(MetricContainer):
     column_tests: Optional[Dict[str, ValueStatsTests]] = None
     """Optional dictionary mapping column names to ValueStatsTests configurations."""
 
-    _dataset_stats: Optional[DatasetStats] = PrivateAttr(None)
+    _dataset_stats: Optional[DatasetStats] = PrivateAttr(default=None)
     """Internal dataset stats preset."""
-    _text_evals: Optional[TextEvals] = PrivateAttr(None)
+    _text_evals: Optional[TextEvals] = PrivateAttr(default=None)
     """Internal text evals preset."""
 
     def __init__(

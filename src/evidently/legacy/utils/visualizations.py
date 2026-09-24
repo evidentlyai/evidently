@@ -548,7 +548,7 @@ def plot_cat_feature_in_time(
     title = "current"
     fig = go.Figure()
     orientation = "v" if not transpose else "h"
-    values: np.ndarray[Any, Any] = curr_data[feature_name].astype(str).unique()
+    values: Any = curr_data[feature_name].astype(str).unique()
     if ref_data is not None:
         values = np.union1d(curr_data[feature_name].astype(str).unique(), ref_data[feature_name].astype(str).unique())
     for i, val in enumerate(values):

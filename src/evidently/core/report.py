@@ -4,6 +4,7 @@ import pathlib
 import typing
 from datetime import datetime
 from itertools import chain
+from typing import Any
 from typing import Callable
 from typing import Dict
 from typing import List
@@ -536,6 +537,8 @@ class Snapshot:
         self._timestamp = timestamp
         self._tags = tags
         self._metadata = metadata
+        # Cache for optimization stats
+        self._optimization_stats: Optional[Dict[str, Any]] = None
 
     @property
     def context(self) -> Context:
@@ -566,6 +569,97 @@ class Snapshot:
                 snapshot_items.append(SnapshotItem(calc.id, widget))
         return snapshot_items, widgets
 
+    def _flatten_items(
+        self, items: Sequence[MetricOrContainer]
+    ) -> Tuple[List[Tuple[Metric, Optional[str]]], List[MetricContainer]]:
+        """Flatten metric containers into a list of items with their container parents.
+
+        Returns:
+            Tuple of (flattened_items, containers)
+            - flattened_items: List of (item, parent_container_id) tuples
+            - containers: List of all containers encountered
+        """
+        flattened = []
+        containers = []
+        container_counter = [0]  # Use list to allow mutation in nested function
+
+        def flatten_recursive(items: Sequence[MetricOrContainer], parent_id: Optional[str] = None):
+            for item in items:
+                if isinstance(item, MetricContainer):
+                    containers.append(item)
+                    # Use deterministic container index instead of object id
+                    container_id = f"container_{container_counter[0]}"
+                    container_counter[0] += 1
+                    flatten_recursive(item.metrics(self.context), parent_id=container_id)
+                else:
+                    flattened.append((item, parent_id))
+
+        flatten_recursive(items)
+        return flattened, containers
+
+    def _run_parallel_metrics(
+        self, metric_items: List[Tuple[MetricOrContainer, Optional[str]]], metric_results: Dict[MetricId, MetricResult]
+    ) -> None:
+        """Execute metrics in parallel using ThreadPoolExecutor.
+
+        Uses threading instead of multiprocessing for I/O-bound metric calculations.
+        Avoids pickling issues and is more efficient for network/file operations.
+
+        Args:
+            metric_items: List of (metric_item, parent_container_id) tuples
+            metric_results: Dictionary to store results
+        """
+        import logging
+        from concurrent.futures import ThreadPoolExecutor
+
+        logger = logging.getLogger(__name__)
+
+        def calculate_single_metric(item):
+            """Calculate a single metric, returns (metric_id, result)."""
+            try:
+                calc = item.to_calculation()
+                result = self.context.calculate_metric(calc)
+                return calc.id, result
+            except Exception as e:
+                logger.error(f"Failed to calculate metric: {e}")
+                return None, None
+
+        # Use ThreadPoolExecutor for parallel execution
+        max_workers = self.report.max_parallel_workers or min(4, len(metric_items))
+
+        try:
+            with ThreadPoolExecutor(max_workers=max_workers) as executor:
+                # Submit all metric calculations
+                futures = [executor.submit(calculate_single_metric, item[0]) for item in metric_items]
+
+                # Collect results as they complete
+                for future in futures:
+                    try:
+                        metric_id, result = future.result(timeout=300)  # 5 minute timeout per metric
+                        if metric_id is not None and result is not None:
+                            metric_results[metric_id] = result
+                    except Exception as e:
+                        logger.error(f"Error getting metric result: {e}")
+                        continue
+
+        except Exception as e:
+            # Fallback to sequential if parallel fails
+            logger.warning(f"Parallel execution failed, falling back to sequential: {e}")
+            for item, _ in metric_items:
+                try:
+                    calc = item.to_calculation()
+                    metric_results[calc.id] = self.context.calculate_metric(calc)
+                except Exception as calc_error:
+                    logger.error(f"Failed to calculate metric sequentially: {calc_error}")
+
+    def _run_items_sequential(
+        self,
+        items: Sequence[MetricOrContainer],
+        metric_results: Dict[MetricId, MetricResult],
+    ) -> Tuple[List[SnapshotItem], List[BaseWidgetInfo]]:
+        """Sequential metric execution (Phase 1 baseline)."""
+        return self._run_items(items, metric_results)
+
     def run(
         self,
         current_data: Dataset,
@@ -575,7 +669,21 @@ class Snapshot:
         """Run the report computation on datasets (typically called by `Report.run()`, not directly)."""
         self.context.init_dataset(current_data, reference_data, additional_data)
         self._metrics = {}
-        self._snapshot_item, self._widgets = self._run_items(self.report.items(), self._metrics)
+
+        # Choose execution strategy based on Report configuration
+        if self.report.enable_parallel:
+            try:
+                self._snapshot_item, self._widgets = self._run_items_parallel(self.report.items(), self._metrics)
+            except Exception as e:
+                # Fallback to sequential on any error
+                import logging
+
+                logger = logging.getLogger(__name__)
+                logger.warning(f"Parallel execution failed, falling back to sequential: {e}")
+                self._snapshot_item, self._widgets = self._run_items_sequential(self.report.items(), self._metrics)
+        else:
+            self._snapshot_item, self._widgets = self._run_items_sequential(self.report.items(), self._metrics)
+
         self._top_level_metrics = list(self.context._metrics_graph.keys())
         metrics_results = [self._metrics.get(result) for result in self._top_level_metrics]
         tests = list(chain(*[result.tests for result in metrics_results if result is not None]))
@@ -584,6 +692,77 @@ class Snapshot:
                 metric_tests_stats(tests),
                 metric_tests_widget(tests),
             ]
+
+    def _run_items_parallel(
+        self,
+        items: Sequence[MetricOrContainer],
+        metric_results: Dict[MetricId, MetricResult],
+    ) -> Tuple[List[SnapshotItem], List[BaseWidgetInfo]]:
+        """Parallel metric execution (Phase 2).
+
+        Executes independent metrics in parallel while respecting container hierarchy.
+        """
+        # Flatten the items to get all metrics
+        metric_items, containers = self._flatten_items(items)
+
+        # Execute metrics in parallel
+        self._run_parallel_metrics(metric_items, metric_results)
+
+        # Now reconstruct the snapshot items by processing the original items in order
+        widgets: List[BaseWidgetInfo] = []
+        snapshot_items: List[SnapshotItem] = []
+
+        for item in items:
+            if isinstance(item, MetricContainer):
+                # Render container with results from parallel execution
+                container_items, container_widgets = self._process_container(item, metric_results)
+                widget = item.render(self.context, [(v.metric_id, v.widgets) for v in container_items])
+                widgets.extend(widget)
+                snapshot_items.append(SnapshotItem(None, widget))
+            else:
+                # Get result from parallel execution
+                try:
+                    calc = item.to_calculation()
+                    if calc.id in metric_results:
+                        metric_result = metric_results[calc.id]
+                        widget = metric_result.get_widgets()
+                        widgets.extend(widget)
+                        snapshot_items.append(SnapshotItem(calc.id, widget))
+                    else:
+                        # Metric was not calculated, log warning but continue
+                        import logging
+
+                        logger = logging.getLogger(__name__)
+                        logger.warning(f"Metric {calc.id} was not calculated in parallel execution")
+                except Exception as e:
+                    # Handle errors in metric processing gracefully
+                    import logging
+
+                    logger = logging.getLogger(__name__)
+                    logger.error(f"Error processing metric item: {e}")
+
+        return snapshot_items, widgets
+
+    def _process_container(
+        self,
+        container: MetricContainer,
+        metric_results: Dict[MetricId, MetricResult],
+    ) -> Tuple[List[SnapshotItem], List[BaseWidgetInfo]]:
+        """Process a container, using pre-calculated results from parallel execution."""
+        items = container.metrics(self.context)
+        snapshot_items: List[SnapshotItem] = []
+
+        for item in items:
+            if isinstance(item, MetricContainer):
+                # Recursively process nested containers
+                nested_items, _ = self._process_container(item, metric_results)
+                snapshot_items.extend(nested_items)
+            else:
+                calc = item.to_calculation()
+                if calc.id in metric_results:
+                    snapshot_items.append(SnapshotItem(calc.id, metric_results[calc.id].get_widgets()))
+
+        return snapshot_items, []
 
     def get_html_str(self, as_iframe: bool):
         """Get HTML representation of the snapshot.
@@ -598,7 +777,69 @@ class Snapshot:
 
         widgets_to_render: List[BaseWidgetInfo] = [group_widget(title="", widgets=self._widgets)] + self._tests_widgets
 
-        return render_widgets(widgets_to_render, as_iframe=as_iframe)
+        html_str = render_widgets(widgets_to_render, as_iframe=as_iframe)
+
+        # Apply HTML size optimization if enabled
+        if self._report.optimize_html_size:
+            html_str = self._apply_html_optimization(html_str)
+
+        return html_str
+
+    def _apply_html_optimization(self, html_str: str) -> str:
+        """Apply HTML size optimization to reduce report size.
+
+        Uses configuration from Report:
+        - optimize_html_size: Whether to apply optimization
+        - histogram_bins: Number of bins for aggregation
+        - max_categories: Maximum categories before grouping
+        - downsample_points: Maximum plot points
+
+        Returns:
+        * Optimized HTML string (typically 50-70% smaller)
+        """
+        try:
+            import logging
+
+            from evidently.legacy.renderers.plotly_optimizer import optimize_html_for_size
+
+            logger = logging.getLogger(__name__)
+
+            # Apply optimization with configured parameters
+            optimized_html, stats = optimize_html_for_size(
+                html_str,
+                histogram_bins=self._report.histogram_bins,
+                max_categories=self._report.max_categories,
+                downsample_points=self._report.downsample_points,
+            )
+
+            # Store stats for reporting
+            self._optimization_stats = stats
+
+            # Log optimization results if there's any reduction
+            if stats.get("reduction_percent", 0) > 0:
+                logger.info(
+                    f"HTML optimization applied: "
+                    f"{stats.get('reduction_percent', 0):.1f}% reduction "
+                    f"({stats.get('original_size_kb', 0):.1f}KB → "
+                    f"{stats.get('optimized_size_kb', 0):.1f}KB)"
+                )
+
+            return optimized_html
+
+        except Exception as e:
+            import logging
+
+            logger = logging.getLogger(__name__)
+            logger.warning(f"HTML optimization failed, using original: {e}")
+            return html_str
+
+    def get_optimization_stats(self) -> Optional[Dict[str, Any]]:
+        """Get HTML optimization statistics from last rendering.
+
+        Returns:
+        * Dictionary with optimization metrics or None if optimization disabled
+        """
+        return self._optimization_stats
 
     def _repr_html_(self):
         return self.get_html_str(as_iframe=True)
@@ -881,16 +1122,36 @@ class Report:
         batch_size: str = None,
         dataset_id: str = None,
         include_tests: bool = False,
+        enable_parallel: bool = False,
+        max_parallel_workers: Optional[int] = None,
+        optimize_html_size: bool = False,
+        histogram_bins: int = 30,
+        max_categories: int = 20,
+        downsample_points: int = 1000,
     ):
         """Initialize a Report with metrics and optional metadata.
 
         The constructor maps parameters to class attributes. Additional convenience parameters
         (`model_id`, `reference_id`, `batch_size`, `dataset_id`) are stored in the `metadata` dictionary.
+
+        Args:
+        * `enable_parallel`: Enable parallel metric execution (experimental, Phase 2)
+        * `max_parallel_workers`: Max worker processes for parallel execution (None = auto)
+        * `optimize_html_size`: Enable HTML size optimization (Phase 3, default False)
+        * `histogram_bins`: Number of histogram bins for data aggregation (default 30, achieves 99% reduction)
+        * `max_categories`: Maximum categories to show before grouping (default 20)
+        * `downsample_points`: Maximum points in plot traces (default 1000)
         """
         self.metrics = metrics
         self.metadata = metadata or {}
         self.tags = tags or []
         self._timestamp: Optional[datetime] = None
+        self.enable_parallel = enable_parallel
+        self.max_parallel_workers = max_parallel_workers
+        self.optimize_html_size = optimize_html_size
+        self.histogram_bins = histogram_bins
+        self.max_categories = max_categories
+        self.downsample_points = downsample_points
         if model_id is not None:
             self.set_model_id(model_id)
         if batch_size is not None:

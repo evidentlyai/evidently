@@ -152,7 +152,7 @@ class BaseResult(BaseModel):
         include=None,
     ) -> "MappingIntStrAny":
         if not self.__config__.dict_include and not include or any(t in exclude_tags for t in self.__config__.tags):
-            return {}
+            return {}  # type: ignore[return-value]
         include = include or {}
         dict_include_fields = (
             set(() if isinstance(include, bool) else include)

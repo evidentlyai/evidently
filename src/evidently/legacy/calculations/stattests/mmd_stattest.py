@@ -84,9 +84,9 @@ def mmd_2samp(kernel_matrix: np.ndarray, no_y_values: int, permute: bool = False
     Returns:
         mmd: mmd distance without permutation
     """
-    no_x_values = kernel_matrix.shape[0] - no_y_values
+    no_x_values: int = int(kernel_matrix.shape[0]) - no_y_values  # type: ignore[index]
     if permute:
-        index = np.random.permutation(kernel_matrix.shape[0])
+        index = np.random.permutation(int(kernel_matrix.shape[0]))  # type: ignore[index]
         kernel_matrix = kernel_matrix[index][:, index]
 
     Kxx = kernel_matrix[:-no_y_values, :-no_y_values]
@@ -110,8 +110,8 @@ def mmd_pval(x: np.ndarray, y: np.ndarray) -> Tuple[float, float]:
     kernel_mat = kernel_matrix(x, y)
     kernel_mat = kernel_mat - np.diag(np.diagonal(kernel_mat))
 
-    mmd = mmd_2samp(kernel_mat, y.shape[0], permute=False)
-    mmd_permuted = np.array([mmd_2samp(kernel_mat, y.shape[0], permute=True) for _ in range(100)])
+    mmd = mmd_2samp(kernel_mat, int(y.shape[0]), permute=False)  # type: ignore[index]
+    mmd_permuted = np.array([mmd_2samp(kernel_mat, int(y.shape[0]), permute=True) for _ in range(100)])  # type: ignore[index]
 
     p_val = (mmd <= mmd_permuted).mean()
 

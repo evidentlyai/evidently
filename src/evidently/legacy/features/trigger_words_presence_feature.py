@@ -20,7 +20,7 @@ class TriggerWordsPresent(ApplyColumnGeneratedFeature):
     column_name: str
     words_list: List[str]
     lemmatize: bool = True
-    _lem: Optional[WordNetLemmatizer] = PrivateAttr(None)
+    _lem: Optional[WordNetLemmatizer] = PrivateAttr(default=None)
 
     def __init__(
         self,

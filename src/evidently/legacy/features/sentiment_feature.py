@@ -18,7 +18,7 @@ class Sentiment(ApplyColumnGeneratedFeature):
     display_name_template: ClassVar = "Sentiment for {column_name}"
     column_name: str
 
-    _sid: Optional[SentimentIntensityAnalyzer] = PrivateAttr(None)
+    _sid: Optional[SentimentIntensityAnalyzer] = PrivateAttr(default=None)
 
     def __init__(self, column_name: str, display_name: Optional[str] = None):
         self.display_name = display_name

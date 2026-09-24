@@ -377,7 +377,7 @@ class CallablePromptExecutor(PromptExecutor):
     """Prompt executor that wraps a callable function."""
 
     func: str
-    _func: Optional[CustomExecutorCallable] = PrivateAttr(None)
+    _func: Optional[CustomExecutorCallable] = PrivateAttr(default=None)
     task: Optional[str] = None
 
     def __init__(

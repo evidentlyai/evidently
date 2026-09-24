@@ -54,14 +54,14 @@ class ColumnInteractionPlotResults(MetricResult):
 
     y_type: ColumnType
     x_type: ColumnType
-    current_scatter: Optional[ColumnScatter]
-    current_contour: Optional[ContourData]
-    current_boxes: Optional[Dict[str, Union[list, np.ndarray]]]
-    current: Optional[pd.DataFrame]
-    reference_scatter: Optional[ColumnScatter]
-    reference_contour: Optional[ContourData]
-    reference_boxes: Optional[Dict[str, Union[list, np.ndarray]]]
-    reference: Optional[pd.DataFrame]
+    current_scatter: Optional[ColumnScatter] = None
+    current_contour: Optional[ContourData] = None
+    current_boxes: Optional[Dict[str, Union[list, np.ndarray]]] = None
+    current: Optional[pd.DataFrame] = None
+    reference_scatter: Optional[ColumnScatter] = None
+    reference_contour: Optional[ContourData] = None
+    reference_boxes: Optional[Dict[str, Union[list, np.ndarray]]] = None
+    reference: Optional[pd.DataFrame] = None
     prefix: Optional[str] = None
 
 

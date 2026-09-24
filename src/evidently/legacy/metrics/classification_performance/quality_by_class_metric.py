@@ -145,7 +145,7 @@ class ClassificationQualityByClassRenderer(MetricRenderer):
         if columns.target_names is not None and isinstance(columns.target_names, dict):
             # todo: refactor columns data typing
             names = [columns.target_names.get(x) or columns.target_names.get(int(x)) for x in names]  # type: ignore
-        z: np.ndarray[Any, Any] = metrics_frame.iloc[:-1].values
+        z: Any = metrics_frame.iloc[:-1].values
         x = list(map(str, names))
         y = ["precision", "recall", "f1-score"]
         if current_roc_aucs is not None and len(current_roc_aucs) > 2:

@@ -137,7 +137,7 @@ class TextMatch(Descriptor):
         )
 
         # Regex matching
-        TextMatch(text_column="description", match_items=r"\b\d{3}-\d{3}-\d{4}\b", match_type="regex")
+        TextMatch(text_column="description", match_items=r'\b\d{3}-\d{3}-\d{4}\b', match_type="regex")
     """
 
     column_name: str

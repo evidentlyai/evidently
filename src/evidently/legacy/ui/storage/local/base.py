@@ -94,7 +94,7 @@ class FSLocation:
 class FSSpecBlobStorage(BlobStorage):
     base_path: str
 
-    _location: FSLocation = PrivateAttr(None)
+    _location: Optional[FSLocation] = PrivateAttr(default=None)
 
     def __init__(self, base_path: str):
         self.base_path = base_path
@@ -191,7 +191,7 @@ class LocalState:
 class JsonFileProjectMetadataStorage(ProjectMetadataStorage):
     path: str
 
-    _state: LocalState = PrivateAttr(None)
+    _state: Optional[LocalState] = PrivateAttr(default=None)
 
     def __init__(self, path: str, local_state: Optional[LocalState] = None):
         self.path = path
@@ -275,7 +275,7 @@ class JsonFileProjectMetadataStorage(ProjectMetadataStorage):
 class InMemoryDataStorage(DataStorage):
     path: str
 
-    _state: LocalState = PrivateAttr(None)
+    _state: Optional[LocalState] = PrivateAttr(default=None)
 
     def __init__(self, path: str, local_state: Optional[LocalState] = None):
         self.path = path

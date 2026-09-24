@@ -74,9 +74,9 @@ class SnapshotMetadata(BaseModel):
     blob: "BlobMetadata"
     links: SnapshotLinks = SnapshotLinks()  # links to datasets and stuff
 
-    _project: "Project" = PrivateAttr(None)
-    _dashboard_info: "DashboardInfo" = PrivateAttr(None)
-    _additional_graphs: Dict[str, dict] = PrivateAttr(None)
+    _project: Optional["Project"] = PrivateAttr(default=None)
+    _dashboard_info: Optional["DashboardInfo"] = PrivateAttr(default=None)
+    _additional_graphs: Optional[Dict[str, dict]] = PrivateAttr(default=None)
 
     @property
     def project(self):
@@ -213,15 +213,15 @@ class Project(Entity):
         if reload_snapshots:
             await self.project_manager.reload_snapshots(self._user_id, self.id)  # type: ignore[arg-type]
 
-    save = sync_api(save_async)
-    load_snapshot = sync_api(load_snapshot_async)
-    delete_snapshot = sync_api(delete_snapshot_async)
-    list_snapshots = sync_api(list_snapshots_async)
-    show_dashboard = sync_api(show_dashboard_async)
-    build_dashboard_info = sync_api(build_dashboard_info_async)
-    get_snapshot_metadata = sync_api(get_snapshot_metadata_async)
-    add_snapshot = sync_api(add_snapshot_async)
-    reload = sync_api(reload_async)
+    save: "Any" = sync_api(save_async)  # type: ignore[assignment]
+    load_snapshot: "Any" = sync_api(load_snapshot_async)  # type: ignore[assignment]
+    delete_snapshot: "Any" = sync_api(delete_snapshot_async)  # type: ignore[assignment]
+    list_snapshots: "Any" = sync_api(list_snapshots_async)  # type: ignore[assignment]
+    show_dashboard: "Any" = sync_api(show_dashboard_async)  # type: ignore[assignment]
+    build_dashboard_info: "Any" = sync_api(build_dashboard_info_async)  # type: ignore[assignment]
+    get_snapshot_metadata: "Any" = sync_api(get_snapshot_metadata_async)  # type: ignore[assignment]
+    add_snapshot: "Any" = sync_api(add_snapshot_async)  # type: ignore[assignment]
+    reload: "Any" = sync_api(reload_async)  # type: ignore[assignment]
 
 
 class ProjectMetadataStorage(ABC):

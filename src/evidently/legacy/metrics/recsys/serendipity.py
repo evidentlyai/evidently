@@ -87,7 +87,7 @@ class SerendipityMetric(Metric[SerendipityMetricResult]):
             df[prediction_name] = df.groupby(user_id)[prediction_name].transform("rank", ascending=False)
         mask = (df[target_name] > 0) & (df[prediction_name] <= k)
         df = df.loc[mask, [user_id, item_id]]
-        all_users: np.ndarray[Any, Any] = df[user_id].unique()
+        all_users: Any = df[user_id].unique()
         all_users = np.intersect1d(all_users, train_df[user_id].unique())
         user_res = []
         for user in all_users:

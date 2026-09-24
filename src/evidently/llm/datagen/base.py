@@ -67,7 +67,7 @@ class BaseLLMDatasetGenerator(BaseDatasetGenerator, ABC):
     """LLM provider name."""
     model: str
     """LLM model name."""
-    _llm_wrapper: Optional[LLMWrapper] = PrivateAttr(None)
+    _llm_wrapper: Optional[LLMWrapper] = PrivateAttr(default=None)
 
     def get_llm_wrapper(self, options: Options) -> LLMWrapper:
         """Get or create the LLM wrapper for this generator.

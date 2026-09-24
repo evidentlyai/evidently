@@ -71,9 +71,9 @@ class ProjectSQLModel(Base):
     name: Mapped[str]
     description: Mapped[Optional[str]]
     dashboard_json: Mapped[JSON_FIELD]
-    date_from: Mapped[Optional[datetime.datetime]] = None
-    date_to: Mapped[Optional[datetime.datetime]] = None
-    created_at: Mapped[Optional[datetime.datetime]] = None
+    date_from: Mapped[Optional[datetime.datetime]] = mapped_column(default=None)
+    date_to: Mapped[Optional[datetime.datetime]] = mapped_column(default=None)
+    created_at: Mapped[Optional[datetime.datetime]] = mapped_column(default=None)
     version: Mapped[str] = mapped_column(default="1")
 
     author_id: Mapped[UserID] = mapped_column(ForeignKey("users.id"))

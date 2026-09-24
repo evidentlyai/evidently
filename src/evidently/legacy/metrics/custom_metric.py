@@ -34,7 +34,7 @@ class CustomValueMetric(Metric[CustomCallableMetricResult]):
     title: Optional[str] = None
     size: Optional[WidgetSize] = None
 
-    _func: Optional[CustomCallableType] = PrivateAttr(None)
+    _func: Optional[CustomCallableType] = PrivateAttr(default=None)
 
     def __init__(
         self,
