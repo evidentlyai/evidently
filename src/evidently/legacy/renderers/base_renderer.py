@@ -18,6 +18,7 @@ from evidently.legacy.model.widget import AdditionalGraphInfo
 from evidently.legacy.model.widget import BaseWidgetInfo
 from evidently.legacy.model.widget import PlotlyGraphInfo
 from evidently.legacy.options import ColorOptions
+from evidently.legacy.options.agg_data import RenderOptions
 
 if TYPE_CHECKING:
     from evidently.legacy.base_metric import Metric
@@ -29,6 +30,7 @@ class BaseRenderer:
     """Base class for all renderers"""
 
     color_options: ColorOptions
+    render_options: RenderOptions
 
     def __init__(self, color_options: Optional[ColorOptions] = None) -> None:
         if color_options is None:
@@ -36,6 +38,7 @@ class BaseRenderer:
 
         else:
             self.color_options = color_options
+        self.render_options = RenderOptions()
 
 
 TMetric = TypeVar("TMetric", bound="Metric")

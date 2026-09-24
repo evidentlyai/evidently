@@ -578,7 +578,7 @@ class ColumnSummaryMetricRenderer(MetricRenderer):
             metrics_values_headers = [""]
             if bins_for_hist.reference is not None:
                 hist_ref = bins_for_hist.reference
-                metrics_values_headers = ["current", "reference"]
+                metrics_values_headers = [self.render_options.current_name, self.render_options.reference_name]
 
             if column_type == "cat":
                 fig = plot_distr(
@@ -608,7 +608,7 @@ class ColumnSummaryMetricRenderer(MetricRenderer):
             graph = {}
             metrics_values_headers = [""]
             if metric_result.reference_characteristics is not None:
-                metrics_values_headers = ["current", "reference"]
+                metrics_values_headers = [self.render_options.current_name, self.render_options.reference_name]
 
         # additional plots
         additional_graphs = []

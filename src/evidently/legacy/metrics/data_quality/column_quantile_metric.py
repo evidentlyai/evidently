@@ -138,7 +138,7 @@ class ColumnQuantileMetricRenderer(MetricRenderer):
         if metric_result.reference is not None:
             reference_histogram_data: Optional[HistogramData] = HistogramData.from_distribution(
                 metric_result.reference.distribution,
-                name="reference",
+                name=self.render_options.reference_name,
             )
 
         else:

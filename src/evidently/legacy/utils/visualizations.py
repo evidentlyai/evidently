@@ -201,8 +201,8 @@ def plot_distr_with_perc_button(
     color_options: ColorOptions,
     subplots: bool = True,
     to_json: bool = True,
-    current_name: str = "current",
-    reference_name: str = "reference",
+    current_name: str = "Current",
+    reference_name: str = "Reference",
 ):
     if not same_color:
         curr_color = color_options.get_current_data_color()

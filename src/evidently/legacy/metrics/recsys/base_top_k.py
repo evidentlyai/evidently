@@ -97,9 +97,9 @@ class TopKMetricRenderer(MetricRenderer):
         metric_result = obj.get_result()
         k = metric_result.k
         index = (k - 1) if min(metric_result.current.index) == 0 else k
-        counters = [CounterData.float(label="current", value=metric_result.current[index], precision=3)]
+        counters = [CounterData.float(label=self.render_options.current_name, value=metric_result.current[index], precision=3)]
         if metric_result.reference is not None:
-            counters.append(CounterData.float(label="reference", value=metric_result.reference[index], precision=3))
+            counters.append(CounterData.float(label=self.render_options.reference_name, value=metric_result.reference[index], precision=3))
         fig = plot_metric_k(metric_result.current, metric_result.reference, self.yaxis_name)
         header_part = " No feedback users included."
         if not obj.no_feedback_users:

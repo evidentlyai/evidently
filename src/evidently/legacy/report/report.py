@@ -222,6 +222,7 @@ class Report(ReportBase):
         additional_graphs = []
 
         color_options = self.options.color_options
+        render_options = self.options.render_options
 
         id_generator = WidgetIdGenerator("")
         for metric in self._first_level_metrics:
@@ -229,6 +230,7 @@ class Report(ReportBase):
             renderer = find_metric_renderer(type(metric), self._inner_suite.context.renderers)
             # set the color scheme from the report for each render
             renderer.color_options = color_options
+            renderer.render_options = render_options
             html_info = renderer.render_html(metric)
             set_source_fingerprint(html_info, metric)
             replace_widgets_ids(html_info, id_generator)
