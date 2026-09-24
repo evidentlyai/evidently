@@ -901,6 +901,44 @@ class Report:
             self.set_dataset_id(dataset_id)
         self.include_tests = include_tests
 
+# -----------------------------------------------------------------------
+    # Migration helpers: raise clear errors for methods that moved to Snapshot
+    # in Evidently 0.7+. Fixes: https://github.com/evidentlyai/evidently/issues/1595
+    # -----------------------------------------------------------------------
+
+    def save_html(self, filename: str) -> None:
+        raise AttributeError(
+            "\n\n`save_html` is not available on the `Report` object in Evidently >= 0.7.\n\n"
+            "In Evidently 0.7+, `report.run()` returns a `Snapshot` object.\n"
+            "Call `save_html` on that snapshot instead:\n\n"
+            "    snapshot = report.run(current_data, reference_data)\n"
+            "    snapshot.save_html('file.html')\n\n"
+            "To use the old API, pin: pip install 'evidently==0.6.7'\n"
+            "Migration guide: https://docs.evidentlyai.com/faq/migration\n"
+        )
+
+    def save_json(self, filename: str) -> None:
+        raise AttributeError(
+            "\n\n`save_json` is not available on the `Report` object in Evidently >= 0.7.\n\n"
+            "In Evidently 0.7+, `report.run()` returns a `Snapshot` object.\n"
+            "Call `save_json` on that snapshot instead:\n\n"
+            "    snapshot = report.run(current_data, reference_data)\n"
+            "    snapshot.save_json('file.json')\n\n"
+            "To use the old API, pin: pip install 'evidently==0.6.7'\n"
+            "Migration guide: https://docs.evidentlyai.com/faq/migration\n"
+        )
+
+    def json(self) -> str:
+        raise AttributeError(
+            "\n\n`.json()` is not available on the `Report` object in Evidently >= 0.7.\n\n"
+            "In Evidently 0.7+, `report.run()` returns a `Snapshot` object.\n"
+            "Call `.json()` on that snapshot instead:\n\n"
+            "    snapshot = report.run(current_data, reference_data)\n"
+            "    snapshot.json()\n\n"
+            "To use the old API, pin: pip install 'evidently==0.6.7'\n"
+            "Migration guide: https://docs.evidentlyai.com/faq/migration\n"
+        )
+        
     def run(
         self,
         current_data: PossibleDatasetTypes,
