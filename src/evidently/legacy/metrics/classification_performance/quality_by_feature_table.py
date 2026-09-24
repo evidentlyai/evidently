@@ -25,6 +25,7 @@ from evidently.legacy.metric_results import StatsByFeature
 from evidently.legacy.model.widget import AdditionalGraphInfo
 from evidently.legacy.model.widget import BaseWidgetInfo
 from evidently.legacy.options.base import AnyOptions
+from evidently.legacy.pipeline.column_mapping import TargetNames
 from evidently.legacy.renderers.base_renderer import MetricRenderer
 from evidently.legacy.renderers.base_renderer import default_renderer
 from evidently.legacy.renderers.html_widgets import header_text
@@ -47,6 +48,7 @@ class ClassificationQualityByFeatureTableResults(MetricResult):
 
     target_name: str
     columns: List[str]
+    target_names: Optional[TargetNames] = None
 
 
 class ClassificationQualityByFeatureTable(UsesRawDataMixin, Metric[ClassificationQualityByFeatureTableResults]):
@@ -173,11 +175,20 @@ class ClassificationQualityByFeatureTable(UsesRawDataMixin, Metric[Classificatio
             reference=reference,
             columns=columns,
             target_name=target_name,
+            target_names=dataset_columns.target_names,
         )
 
 
 @default_renderer(wrap_type=ClassificationQualityByFeatureTable)
 class ClassificationQualityByFeatureTableRenderer(MetricRenderer):
+    @staticmethod
+    def _resolve_target_name(label, target_names: Optional[TargetNames]) -> str:
+        if target_names is not None and isinstance(target_names, dict):
+            resolved = target_names.get(label) or target_names.get(int(label)) if isinstance(label, str) else target_names.get(label)  # type: ignore[arg-type]
+            if resolved is not None:
+                return str(resolved)
+        return str(label)
+
     def render_html(self, obj: ClassificationQualityByFeatureTable) -> List[BaseWidgetInfo]:
         if not obj.get_options().render_options.raw_data:
             return []
@@ -185,6 +196,7 @@ class ClassificationQualityByFeatureTableRenderer(MetricRenderer):
         current_data = result.current.plot_data
         reference_data = result.reference.plot_data if result.reference is not None else None
         target_name = result.target_name
+        target_names = result.target_names
         curr_predictions = result.current.predictions
         # todo: better typing?
         assert curr_predictions is not None
@@ -211,7 +223,13 @@ class ClassificationQualityByFeatureTableRenderer(MetricRenderer):
                 {
                     "details": {
                         "parts": [{"title": "All", "id": "All" + "_" + str(feature_name)}]
-                        + [{"title": str(label), "id": feature_name + "_" + str(label)} for label in labels],
+                        + [
+                            {
+                                "title": self._resolve_target_name(label, target_names),
+                                "id": feature_name + "_" + str(label),
+                            }
+                            for label in labels
+                        ],
                         "insights": [],
                     },
                     "f1": feature_name,
@@ -276,6 +294,7 @@ class ClassificationQualityByFeatureTableRenderer(MetricRenderer):
                     cols = 1
                     subplot_titles = [""]
                 for label in labels:
+                    display_label = self._resolve_target_name(label, target_names)
                     fig = make_subplots(
                         rows=1,
                         cols=cols,
@@ -289,8 +308,8 @@ class ClassificationQualityByFeatureTableRenderer(MetricRenderer):
                             x=current_data[current_data[target_name] == label][feature_name],
                             y=current_data[current_data[target_name] == label][label],
                             mode="markers",
-                            name=str(label),
-                            legendgroup=str(label),
+                            name=display_label,
+                            legendgroup=display_label,
                             marker=dict(
                                 size=6,
                                 # set color equal to a variable
@@ -327,8 +346,8 @@ class ClassificationQualityByFeatureTableRenderer(MetricRenderer):
                                 x=reference_data[reference_data[target_name] == label][feature_name],
                                 y=reference_data[reference_data[target_name] == label][label],
                                 mode="markers",
-                                name=str(label),
-                                legendgroup=str(label),
+                                name=display_label,
+                                legendgroup=display_label,
                                 showlegend=False,
                                 marker=dict(size=6, color=color_options.get_current_data_color()),
                             ),
