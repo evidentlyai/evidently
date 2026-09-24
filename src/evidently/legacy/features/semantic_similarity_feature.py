@@ -26,8 +26,8 @@ class SemanticSimilarityFeature(GeneratedFeature):
 
         model = SentenceTransformer(self.model)
 
-        first = model.encode(data[self.columns[0]].fillna(""))
-        second = model.encode(data[self.columns[1]].fillna(""))
+        first = model.encode(data[self.columns[0]].fillna("").tolist())
+        second = model.encode(data[self.columns[1]].fillna("").tolist())
 
         return pd.DataFrame(
             {
