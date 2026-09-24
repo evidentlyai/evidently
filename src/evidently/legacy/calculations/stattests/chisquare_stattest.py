@@ -41,8 +41,9 @@ def _chi_stat_test(
     ref_feature_dict = {**dict.fromkeys(keys, 0), **dict(reference_data.value_counts())}
     current_feature_dict = {**dict.fromkeys(keys, 0), **dict(current_data.value_counts())}
     k_norm = current_data.shape[0] / reference_data.shape[0]
-    f_exp = [ref_feature_dict[key] * k_norm for key in keys]
     f_obs = [current_feature_dict[key] for key in keys]
+    f_exp = [max(ref_feature_dict[key] * k_norm, 1e-6) for key in keys]
+    f_exp = [f / sum(f_exp) * sum(f_obs) for f in f_exp]
     p_value = chisquare(f_obs, f_exp)[1]
     return p_value, p_value < threshold
 

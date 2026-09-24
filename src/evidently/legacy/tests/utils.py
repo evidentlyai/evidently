@@ -180,7 +180,10 @@ class ApproxValueNoDict(ApproxValue):
 
 
 # some monkeing for np asserts to work with ApproxValue
-np.core.numeric.ScalarType = np.core.numeric.ScalarType + (ApproxValue, ApproxValueNoDict)  # type: ignore[attr-defined]
+if hasattr(np, "_core"):
+    np._core.numeric.ScalarType = np._core.numeric.ScalarType + (ApproxValue, ApproxValueNoDict)  # type: ignore[attr-defined]
+else:
+    np.core.numeric.ScalarType = np.core.numeric.ScalarType + (ApproxValue, ApproxValueNoDict)  # type: ignore[attr-defined]
 
 
 def approx_result(value, relative=None, absolute=None):
