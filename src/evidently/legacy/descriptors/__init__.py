@@ -20,6 +20,7 @@ from .llm_judges import FaithfulnessLLMEval
 from .llm_judges import LLMEval
 from .llm_judges import NegativityLLMEval
 from .llm_judges import PIILLMEval
+from .llm_judges import QualityLLMEval
 from .llm_judges import ToxicityLLMEval
 from .non_letter_character_percentage_descriptor import NonLetterCharacterPercentage
 from .oov_words_percentage_descriptor import OOV
@@ -52,6 +53,7 @@ __all__ = [
     "NegativityLLMEval",
     "PIILLMEval",
     "DeclineLLMEval",
+    "QualityLLMEval",
     "ContextQualityLLMEval",
     "BiasLLMEval",
     "ToxicityLLMEval",
