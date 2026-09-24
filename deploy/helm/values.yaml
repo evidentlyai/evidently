@@ -1,0 +1,164 @@
+replicaCount: 1
+
+image:
+  repository: evidently/evidently-service
+  pullPolicy: IfNotPresent
+  tag: "0.7.20" 
+
+imagePullSecrets: []
+
+nameOverride: ""
+fullnameOverride: "evidently-ui"
+
+serviceAccount:
+  create: true
+  automount: true
+  annotations: {}
+  name: ""
+
+podAnnotations: {}
+podLabels: {}
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 8000
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # cert-manager.io/cluster-issuer: letsencrypt-prod
+  hosts:
+    - host: evidently.local
+      path: /
+      pathType: Prefix
+  tls: []
+  #  - secretName: evidently-tls
+  #    hosts:
+  #      - evidently.local
+
+# Gateway API HTTPRoute (e.g. for Istio, Envoy Gateway, Cilium).
+# Requires a Gateway to exist; set parentRefs to attach to it.
+httpRoute:
+  enabled: false
+  annotations: {}
+  parentRefs: []
+  #  - name: my-gateway
+  #    namespace: istio-system
+  #  - name: my-gateway
+  #    namespace: istio-system
+  #    sectionName: http  # optional: bind to specific listener
+  hostnames: []
+  #  - evidently.example.com
+  path: "/"
+  pathMatchType: PathPrefix  # PathPrefix or Exact
+  # backendRefWeight: 1  # optional, for traffic splitting
+
+resources:
+  limits:
+    cpu: 200m
+    memory: 1Gi
+  requests:
+    cpu: 100m
+    memory: 512Mi
+
+initContainersResources:
+  limits:
+    cpu: 200m
+    memory: 512Mi
+  requests:
+    cpu: 100m
+    memory: 256Mi
+
+startupProbe:
+  httpGet:
+    path: /
+    port: 8000
+  initialDelaySeconds: 10
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 36
+
+livenessProbe:
+  httpGet:
+    path: /
+    port: 8000
+  initialDelaySeconds: 60
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 3
+
+readinessProbe:
+  httpGet:
+    path: /
+    port: 8000
+  initialDelaySeconds: 30
+  periodSeconds: 5
+  timeoutSeconds: 5
+  failureThreshold: 3
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 2
+  targetCPUUtilizationPercentage: 80
+  targetMemoryUtilizationPercentage: 80
+
+podDisruptionBudget:
+  enabled: false
+  # Use one of minAvailable or maxUnavailable
+  minAvailable: 1
+  # maxUnavailable: 0
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+persistence:
+  enabled: false
+  mountPath: /app/workspace
+  accessMode: ReadWriteOnce
+  size: 10Gi
+  # storageClass: null   # use default storage class
+  # existingClaim: "evidently-pvc"
+
+envVars: []
+  # - name: EVIDENTLY_WORKSPACE
+  #   value: "/app/workspace"
+
+evidentlyDebug: false
+
+s3:
+  enabled: true
+  bucketName: ""
+  path: ""
+  endpointUrl: ""
+  region: ""
+  addressingStyle: ""
+  accessKey: ""
+  secretKey: ""
+  # existingSecret:
+  #   name: "my-s3-credentials"
+  #   accessKeyKey: "access-key-id"
+  #   secretKeyKey: "secret-access-key"
+  existingSecret: {}
+  # Cache S3 reads locally for faster report loads (fsspec simplecache).
+  # Cache is per-pod (emptyDir), lost on restart. Re-opening a report uses cache.
+  cache:
+    enabled: true
+    storagePath: "/app/s3-cache"

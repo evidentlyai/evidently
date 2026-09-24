@@ -1,0 +1,39 @@
+Evidently UI has been deployed.
+
+{{- if .Values.ingress.enabled }}
+  {{- range .Values.ingress.hosts }}
+  URL: http{{ if $.Values.ingress.tls }}s{{ end }}://{{ .host }}
+  {{- end }}
+{{- else if and .Values.httpRoute.enabled .Values.httpRoute.parentRefs }}
+  {{- if .Values.httpRoute.hostnames }}
+  URL: https://{{ index .Values.httpRoute.hostnames 0 }}
+  {{- else }}
+  URL: set via your Gateway / virtual host
+  {{- end }}
+{{- else }}
+  kubectl port-forward svc/{{ include "evidently-ui.fullname" . }} 8000:{{ .Values.service.port }}
+  Then open http://localhost:8000
+{{- end }}
+
+{{- if .Values.s3.enabled }}
+
+S3 workspace: s3://{{ .Values.s3.bucketName }}/{{ .Values.s3.path }}
+Endpoint: {{ .Values.s3.endpointUrl }}
+
+To use S3 you must provide credentials in one of these ways:
+  1. Install with inline creds:
+     helm upgrade --install evidently-ui . --set s3.accessKey="YOUR_ACCESS_KEY" --set s3.secretKey="YOUR_SECRET_KEY"
+  2. Use an existing Secret (e.g. from Vault or external-secrets): set in values
+     s3.existingSecret:
+       name: "your-s3-secret"
+       accessKeyKey: "access-key"   # optional, default: access-key
+       secretKeyKey: "secret-key"   # optional, default: secret-key
+  3. Create a secret, then install with existingSecret:
+     kubectl create secret generic evidently-ui-s3 --from-literal=access-key=... --from-literal=secret-key=...
+     helm upgrade --install evidently-ui . --set s3.existingSecret.name=evidently-ui-s3
+
+Without valid S3 credentials the UI pod will fail to start.
+{{- else }}
+
+Workspace: local path /app/workspace (ensure persistence is enabled or use a volume).
+{{- end }}

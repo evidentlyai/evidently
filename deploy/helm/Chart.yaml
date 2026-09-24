@@ -1,0 +1,16 @@
+apiVersion: v2
+name: evidently-ui
+description: A Helm chart for Evidently AI's UI
+type: application
+version: 0.1.0
+appVersion: "0.7.20"
+keywords:
+  - evidently
+  - mlops
+  - monitoring
+  - data-quality
+  - data-drift
+home: https://evidentlyai.com
+sources:
+  - https://github.com/evidentlyai/evidently
+maintainers: []

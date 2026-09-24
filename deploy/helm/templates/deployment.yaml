@@ -1,0 +1,230 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "evidently-ui.fullname" . }}
+  labels:
+    {{- include "evidently-ui.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.autoscaling.enabled | ternary .Values.autoscaling.minReplicas .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "evidently-ui.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "evidently-ui.selectorLabels" . | nindent 8 }}
+      {{- if .Values.podAnnotations }}
+      annotations:
+        {{- toYaml .Values.podAnnotations | nindent 8 }}
+      {{- end }}
+    spec:
+      serviceAccountName: {{ include "evidently-ui.serviceAccountName" . }}
+      {{- if .Values.podSecurityContext }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      {{- end }}
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if .Values.s3.enabled }}
+      initContainers:
+      - name: create-s3-workspace
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        command: ["python3", "-c"]
+        args:
+        - |
+          import sys
+          import traceback
+          path = '{{ include "evidently-ui.workspacePath" . }}'
+          print(f'Creating workspace at {path}...', flush=True)
+          try:
+              from evidently.ui.workspace import Workspace
+              ws = Workspace.create(path)
+              print(f'Workspace ready: {path} ({len(ws.list_projects())} projects)', flush=True)
+          except Exception as e:
+              print(f'ERROR: {e}', file=sys.stderr, flush=True)
+              traceback.print_exc(file=sys.stderr)
+              sys.exit(1)
+        env:
+        - name: FSSPEC_S3_KEY
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.s3.existingSecret.name | default (printf "%s-s3" (include "evidently-ui.fullname" .)) }}
+              key: {{ .Values.s3.existingSecret.accessKeyKey | default "access-key" }}
+        - name: FSSPEC_S3_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.s3.existingSecret.name | default (printf "%s-s3" (include "evidently-ui.fullname" .)) }}
+              key: {{ .Values.s3.existingSecret.secretKeyKey | default "secret-key" }}
+        - name: FSSPEC_S3_ENDPOINT_URL
+          value: {{ .Values.s3.endpointUrl | quote }}
+        {{- if .Values.s3.region }}
+        - name: AWS_DEFAULT_REGION
+          value: {{ .Values.s3.region | quote }}
+        {{- end }}
+        {{- if .Values.s3.addressingStyle }}
+        - name: AWS_S3_ADDRESSING_STYLE
+          value: {{ .Values.s3.addressingStyle | quote }}
+        {{- end }}
+        {{- if .Values.evidentlyDebug }}
+        - name: EVIDENTLY_DEBUG
+          value: "1"
+        {{- end }}
+        - name: HOME
+          value: "/tmp"
+        - name: XDG_CONFIG_HOME
+          value: "/tmp"
+        {{- if (index (.Values.s3.cache | default dict) "enabled") }}
+        - name: FSSPEC_simplecache_cache_storage
+          value: {{ (.Values.s3.cache | default dict).storagePath | default "/app/s3-cache" | quote }}
+        {{- end }}
+        {{- if .Values.initContainersResources }}
+        resources:
+          {{- toYaml .Values.initContainersResources | nindent 10 }}
+        {{- end }}
+        {{- if (index (.Values.s3.cache | default dict) "enabled") }}
+        volumeMounts:
+        - name: s3-cache
+          mountPath: {{ (.Values.s3.cache | default dict).storagePath | default "/app/s3-cache" }}
+        {{- end }}
+      {{- end }}
+      containers:
+      - name: evidently-ui
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        command: ["evidently"]
+        args: 
+        - "ui"
+        - "--workspace"
+        - {{ include "evidently-ui.workspacePath" . | quote }}
+        - "--port"
+        - "8000"
+        - "--host"
+        - "0.0.0.0"
+        ports:
+        - name: http
+          containerPort: {{ .Values.service.targetPort }}
+          protocol: TCP
+        env:
+        {{- if .Values.s3.enabled }}
+        - name: FSSPEC_S3_KEY
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.s3.existingSecret.name | default (printf "%s-s3" (include "evidently-ui.fullname" .)) }}
+              key: {{ .Values.s3.existingSecret.accessKeyKey | default "access-key" }}
+        - name: FSSPEC_S3_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.s3.existingSecret.name | default (printf "%s-s3" (include "evidently-ui.fullname" .)) }}
+              key: {{ .Values.s3.existingSecret.secretKeyKey | default "secret-key" }}
+        - name: FSSPEC_S3_ENDPOINT_URL
+          value: {{ .Values.s3.endpointUrl | quote }}
+        {{- if .Values.s3.region }}
+        - name: AWS_DEFAULT_REGION
+          value: {{ .Values.s3.region | quote }}
+        {{- end }}
+        {{- if .Values.s3.addressingStyle }}
+        - name: AWS_S3_ADDRESSING_STYLE
+          value: {{ .Values.s3.addressingStyle | quote }}
+        {{- end }}
+        - name: EVIDENTLY_WORKSPACE
+          value: {{ include "evidently-ui.workspacePath" . | quote }}
+        {{- if .Values.evidentlyDebug }}
+        - name: EVIDENTLY_DEBUG
+          value: "1"
+        {{- end }}
+        - name: HOME
+          value: "/tmp"
+        - name: XDG_CONFIG_HOME
+          value: "/tmp"
+        {{- if (index (.Values.s3.cache | default dict) "enabled") }}
+        - name: FSSPEC_simplecache_cache_storage
+          value: {{ (.Values.s3.cache | default dict).storagePath | default "/app/s3-cache" | quote }}
+        {{- end }}
+        {{- end }}
+        {{- with .Values.envVars }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+        {{- if .Values.startupProbe }}
+        startupProbe:
+          httpGet:
+            path: {{ .Values.startupProbe.httpGet.path }}
+            port: {{ .Values.startupProbe.httpGet.port }}
+          {{- if .Values.startupProbe.initialDelaySeconds }}
+          initialDelaySeconds: {{ .Values.startupProbe.initialDelaySeconds }}
+          {{- end }}
+          {{- if .Values.startupProbe.periodSeconds }}
+          periodSeconds: {{ .Values.startupProbe.periodSeconds }}
+          {{- end }}
+          {{- if .Values.startupProbe.timeoutSeconds }}
+          timeoutSeconds: {{ .Values.startupProbe.timeoutSeconds }}
+          {{- end }}
+          {{- if .Values.startupProbe.failureThreshold }}
+          failureThreshold: {{ .Values.startupProbe.failureThreshold }}
+          {{- end }}
+        {{- end }}
+        {{- if .Values.livenessProbe }}
+        livenessProbe:
+          httpGet:
+            path: {{ .Values.livenessProbe.httpGet.path }}
+            port: {{ .Values.livenessProbe.httpGet.port }}
+          {{- if .Values.livenessProbe.initialDelaySeconds }}
+          initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
+          {{- end }}
+          {{- if .Values.livenessProbe.periodSeconds }}
+          periodSeconds: {{ .Values.livenessProbe.periodSeconds }}
+          {{- end }}
+          {{- if .Values.livenessProbe.timeoutSeconds }}
+          timeoutSeconds: {{ .Values.livenessProbe.timeoutSeconds }}
+          {{- end }}
+          {{- if .Values.livenessProbe.failureThreshold }}
+          failureThreshold: {{ .Values.livenessProbe.failureThreshold }}
+          {{- end }}
+        {{- end }}
+        {{- if .Values.readinessProbe }}
+        readinessProbe:
+          httpGet:
+            path: {{ .Values.readinessProbe.httpGet.path }}
+            port: {{ .Values.readinessProbe.httpGet.port }}
+          {{- if .Values.readinessProbe.initialDelaySeconds }}
+          initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds }}
+          {{- end }}
+          {{- if .Values.readinessProbe.periodSeconds }}
+          periodSeconds: {{ .Values.readinessProbe.periodSeconds }}
+          {{- end }}
+          {{- if .Values.readinessProbe.timeoutSeconds }}
+          timeoutSeconds: {{ .Values.readinessProbe.timeoutSeconds }}
+          {{- end }}
+          {{- if .Values.readinessProbe.failureThreshold }}
+          failureThreshold: {{ .Values.readinessProbe.failureThreshold }}
+          {{- end }}
+        {{- end }}
+        {{- if .Values.resources }}
+        resources:
+          {{- toYaml .Values.resources | nindent 10 }}
+        {{- end }}
+        {{- if or (and .Values.persistence.enabled (not .Values.s3.enabled)) (index (.Values.s3.cache | default dict) "enabled") }}
+        volumeMounts:
+        {{- if and .Values.persistence.enabled (not .Values.s3.enabled) }}
+        - name: workspace-storage
+          mountPath: {{ .Values.persistence.mountPath }}
+        {{- end }}
+        {{- if (index (.Values.s3.cache | default dict) "enabled") }}
+        - name: s3-cache
+          mountPath: {{ (.Values.s3.cache | default dict).storagePath | default "/app/s3-cache" }}
+        {{- end }}
+        {{- end }}
+      {{- if or (and .Values.persistence.enabled (not .Values.s3.enabled)) (index (.Values.s3.cache | default dict) "enabled") }}
+      volumes:
+      {{- if and .Values.persistence.enabled (not .Values.s3.enabled) }}
+      - name: workspace-storage
+        persistentVolumeClaim:
+          claimName: {{ .Values.persistence.existingClaim | default (include "evidently-ui.fullname" .) }}
+      {{- end }}
+      {{- if (index (.Values.s3.cache | default dict) "enabled") }}
+      - name: s3-cache
+        emptyDir: {}
+      {{- end }}
+      {{- end }}
