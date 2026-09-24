@@ -5,6 +5,8 @@ from pytest import approx
 from scipy import stats
 
 from evidently.legacy.calculations.stattests import z_stat_test
+from evidently.legacy.calculations.stattests.kl_div import kl_div_stat_test
+from evidently.legacy.calculations.stattests.utils import get_binned_data
 from evidently.legacy.calculations.stattests.anderson_darling_stattest import anderson_darling_test
 from evidently.legacy.calculations.stattests.chisquare_stattest import chi_stat_test
 from evidently.legacy.calculations.stattests.cramer_von_mises_stattest import cramer_von_mises
@@ -335,3 +337,48 @@ def test_t_test() -> None:
     reference = pd.Series([38.7, 41.5, 43.8, 44.5, 45.5, 46.0, 47.7, 58.0])
     current = pd.Series([39.2, 39.3, 39.7, 41.4, 41.8, 42.9, 43.3, 45.8])
     assert t_test.func(reference, current, "num", 0.05) == (approx(0.084, abs=1e-3), False)
+
+
+def test_get_binned_data_fill_zero_is_dynamic() -> None:
+    # Regression test for https://github.com/evidentlyai/evidently/issues/334.
+    # When the minimum non-zero probability is smaller than 0.0001 the old code
+    # used min/1e6 as fill, which is astronomically small and inflates KL divergence.
+    # The fix uses min/10 so the fill stays proportional to the real data.
+    from evidently.legacy.core import ColumnType
+
+    # Build a categorical distribution where one bucket has a very small percent.
+    # 99_999 "a" and 1 "b" → p("b") ≈ 1e-5, well below the old 0.0001 threshold.
+    reference = pd.Series(["a"] * 99_999 + ["b"])
+    current = pd.Series(["a"] * 99_999 + ["c"])  # "c" absent in reference, "b" absent in current
+
+    ref_pct, cur_pct = get_binned_data(reference, current, ColumnType.Categorical, n=10)
+
+    # All zero slots must be filled with a positive value
+    assert np.all(ref_pct > 0), "reference percents must be strictly positive after fill"
+    assert np.all(cur_pct > 0), "current percents must be strictly positive after fill"
+
+    # The fill value must be strictly smaller than the smallest genuine probability
+    min_genuine = min(reference.value_counts(normalize=True).min(), current.value_counts(normalize=True).min())
+    fill_used = min(ref_pct.min(), cur_pct.min())
+    assert fill_used < min_genuine, "fill value must be smaller than any real non-zero probability"
+
+    # KL divergence must not be inflated: identical distributions should score near 0
+    ref_same = pd.Series(["a"] * 50 + ["b"] * 50)
+    cur_same = pd.Series(["a"] * 50 + ["b"] * 50)
+    score_same, _ = kl_div_stat_test.func(ref_same, cur_same, ColumnType.Categorical, 0.1)
+    assert score_same == approx(0.0, abs=1e-6), "KL of identical distributions must be ~0"
+
+
+def test_get_binned_data_fill_zero_symmetric() -> None:
+    # Both reference and current must receive the same fill value so that
+    # KL divergence is not artificially asymmetric.
+    from evidently.legacy.core import ColumnType
+
+    reference = pd.Series(["a"] * 90 + ["b"] * 10)
+    current = pd.Series(["a"] * 95 + ["c"] * 5)  # "b" zero in current, "c" zero in reference
+
+    ref_pct, cur_pct = get_binned_data(reference, current, ColumnType.Categorical, n=10)
+
+    # The fill value is derived from both distributions combined, so the minimum
+    # of ref and current percents must be identical.
+    assert ref_pct.min() == approx(cur_pct.min(), rel=1e-9), "fill value must be identical for ref and current"
