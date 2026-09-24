@@ -15,6 +15,7 @@ from evidently import Regression
 from evidently.core.metric_types import Metric
 from evidently.legacy.tests.base_test import TestStatus
 from evidently.legacy.utils.types import ApproxValue
+from evidently.metrics import ECE
 from evidently.metrics import FNR
 from evidently.metrics import FPR
 from evidently.metrics import MAE
@@ -25,6 +26,7 @@ from evidently.metrics import TPR
 from evidently.metrics import AbsMaxError
 from evidently.metrics import AlmostConstantColumnsCount
 from evidently.metrics import AlmostDuplicatedColumnsCount
+from evidently.metrics import BrierScore
 from evidently.metrics import ColumnCorrelationMatrix
 from evidently.metrics import ColumnCount
 from evidently.metrics import ConstantColumnsCount
@@ -399,6 +401,38 @@ all_metrics_test: List[Union[SimpleCase, AdditionalDataCase]] = [
     (classification_proba_dataset, DummyLogLoss(tests=[not_eq(555)]), TestStatus.SUCCESS),
     (classification_proba_dataset, DummyLogLoss(tests=[not_in([0])]), TestStatus.FAIL),
     (classification_proba_dataset, DummyLogLoss(tests=[not_in([555])]), TestStatus.SUCCESS),
+    (classification_proba_dataset, BrierScore(tests=[eq(0)]), TestStatus.FAIL),
+    (classification_proba_dataset, BrierScore(tests=[eq(0.25)]), TestStatus.SUCCESS),
+    (classification_proba_dataset, BrierScore(tests=[gte(555)]), TestStatus.FAIL),
+    (classification_proba_dataset, BrierScore(tests=[gte(0)]), TestStatus.SUCCESS),
+    (classification_proba_dataset, BrierScore(tests=[gt(555)]), TestStatus.FAIL),
+    (classification_proba_dataset, BrierScore(tests=[gt(0)]), TestStatus.SUCCESS),
+    (classification_proba_dataset, BrierScore(tests=[is_in([0])]), TestStatus.FAIL),
+    (classification_proba_dataset, BrierScore(tests=[is_in([0.25])]), TestStatus.SUCCESS),
+    (classification_proba_dataset, BrierScore(tests=[lte(0)]), TestStatus.FAIL),
+    (classification_proba_dataset, BrierScore(tests=[lte(555)]), TestStatus.SUCCESS),
+    (classification_proba_dataset, BrierScore(tests=[lt(0)]), TestStatus.FAIL),
+    (classification_proba_dataset, BrierScore(tests=[lt(555)]), TestStatus.SUCCESS),
+    (classification_proba_dataset, BrierScore(tests=[not_eq(0.25)]), TestStatus.FAIL),
+    (classification_proba_dataset, BrierScore(tests=[not_eq(0)]), TestStatus.SUCCESS),
+    (classification_proba_dataset, BrierScore(tests=[not_in([0.25])]), TestStatus.FAIL),
+    (classification_proba_dataset, BrierScore(tests=[not_in([0])]), TestStatus.SUCCESS),
+    (classification_proba_dataset, ECE(tests=[eq(1)]), TestStatus.FAIL),
+    (classification_proba_dataset, ECE(tests=[eq(0)]), TestStatus.SUCCESS),
+    (classification_proba_dataset, ECE(tests=[gte(555)]), TestStatus.FAIL),
+    (classification_proba_dataset, ECE(tests=[gte(0)]), TestStatus.SUCCESS),
+    (classification_proba_dataset, ECE(tests=[gt(0)]), TestStatus.FAIL),
+    (classification_proba_dataset, ECE(tests=[gt(-555)]), TestStatus.SUCCESS),
+    (classification_proba_dataset, ECE(tests=[is_in([1])]), TestStatus.FAIL),
+    (classification_proba_dataset, ECE(tests=[is_in([0])]), TestStatus.SUCCESS),
+    (classification_proba_dataset, ECE(tests=[lte(-555)]), TestStatus.FAIL),
+    (classification_proba_dataset, ECE(tests=[lte(0)]), TestStatus.SUCCESS),
+    (classification_proba_dataset, ECE(tests=[lt(0)]), TestStatus.FAIL),
+    (classification_proba_dataset, ECE(tests=[lt(555)]), TestStatus.SUCCESS),
+    (classification_proba_dataset, ECE(tests=[not_eq(0)]), TestStatus.FAIL),
+    (classification_proba_dataset, ECE(tests=[not_eq(1)]), TestStatus.SUCCESS),
+    (classification_proba_dataset, ECE(tests=[not_in([0])]), TestStatus.FAIL),
+    (classification_proba_dataset, ECE(tests=[not_in([1])]), TestStatus.SUCCESS),
     (regression_dataset, DummyMAE(tests=[eq(0)]), TestStatus.FAIL),
     (regression_dataset, DummyMAE(tests=[eq(ApproxValue(0.333, absolute=0.01))]), TestStatus.SUCCESS),
     (regression_dataset, DummyMAE(tests=[gte(555)]), TestStatus.FAIL),

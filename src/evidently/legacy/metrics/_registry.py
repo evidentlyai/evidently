@@ -210,3 +210,6 @@ register_type_alias(Metric, "evidently.legacy.metrics.regression_performance.reg
 register_type_alias(Metric, "evidently.legacy.metrics.regression_performance.top_error.RegressionTopErrorMetric", "evidently:metric:RegressionTopErrorMetric")
 register_type_alias(Metric, "evidently.ui.backport.MetricV2Adapter", "evidently:metric:MetricV2Adapter")
 register_type_alias(Metric, "evidently.ui.backport.MetricV2PresetAdapter", "evidently:metric:MetricV2PresetAdapter")
+
+register_type_alias(Metric, "evidently.legacy.metrics.classification_performance.calibration_metric.ClassificationCalibrationMetrics", "evidently:metric:ClassificationCalibrationMetrics")
+register_type_alias(MetricResult, "evidently.legacy.metrics.classification_performance.calibration_metric.ClassificationCalibrationResults", "evidently:metric_result:ClassificationCalibrationResults")

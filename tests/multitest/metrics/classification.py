@@ -5,6 +5,7 @@ from evidently.legacy.metric_results import ConfusionMatrix
 from evidently.legacy.metric_results import DatasetClassificationQuality
 from evidently.legacy.metric_results import Histogram
 from evidently.legacy.metric_results import HistogramData
+from evidently.legacy.metrics.classification_performance.calibration_metric import ClassificationCalibrationMetrics
 from evidently.legacy.metrics.classification_performance.class_balance_metric import ClassificationClassBalance
 from evidently.legacy.metrics.classification_performance.class_balance_metric import ClassificationClassBalanceResult
 from evidently.legacy.metrics.classification_performance.class_separation_metric import (
@@ -117,6 +118,17 @@ def classification_lift_curve():
         name="classification_lift_curve",
         metric=ClassificationLiftCurve(),
         fingerprint="57fc202600628307b5c1d4ee01163982",
+        outcomes=NoopOutcome(),
+        include_tags=[DatasetTags.CLASSIFICATION, DatasetTags.BINARY_CLASSIFICATION, DatasetTags.PROB_PREDICTIONS],
+    )
+
+
+@metric
+def classification_calibration_metrics():
+    return TestMetric(
+        name="classification_calibration_metrics",
+        metric=ClassificationCalibrationMetrics(),
+        fingerprint="2c470a0bf96d24d5891aeb558a4ea59e",
         outcomes=NoopOutcome(),
         include_tags=[DatasetTags.CLASSIFICATION, DatasetTags.BINARY_CLASSIFICATION, DatasetTags.PROB_PREDICTIONS],
     )
