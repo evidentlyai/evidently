@@ -601,7 +601,18 @@ class ValueDriftCalculation(SingleValueCalculation[ValueDrift]):
         if self.metric.threshold is None:
             self.resolve_parameter("threshold", drift.stattest_threshold)
         result = self.result(drift.drift_score)
-        result.widget = self._render(drift, Options(), ColorOptions())
+        # Pass the GroupBy-decorated display_name through to the widget so the
+        # rendered widget title matches the metric label users see elsewhere.
+        # When this metric is not wrapped, _render keeps the historical
+        # "Drift in column 'X'" wording. See issue #1706 — without this,
+        # GroupBy(ValueDrift(...)) widgets always rendered the bare column
+        # name and lost the group/label suffix.
+        decorated_name = self.display_name()
+        # _GROUP_BY_MARKER is the suffix appended by GroupByMetricCalculation
+        # (see metrics/group_by.py). We only override the widget title when it
+        # is present, to keep behavior unchanged outside a GroupBy.
+        widget_title = decorated_name if " group by '" in decorated_name else None
+        result.widget = self._render(drift, Options(), ColorOptions(), display_name=widget_title)
         if self.metric.tests is None and context.configuration.include_tests:
             # todo: move to _default_tests
             result.set_tests(
@@ -627,7 +638,13 @@ class ValueDriftCalculation(SingleValueCalculation[ValueDrift]):
     def display_name(self) -> str:
         return f"Value drift for {self.metric.column}"
 
-    def _render(self, result: ColumnDataDriftMetrics, options, color_options):
+    def _render(
+        self,
+        result: ColumnDataDriftMetrics,
+        options,
+        color_options,
+        display_name: Optional[str] = None,
+    ):
         if result.drift_detected:
             drift = "detected"
 
@@ -720,6 +737,11 @@ class ValueDriftCalculation(SingleValueCalculation[ValueDrift]):
                     widget=reference_table_examples,
                 ),
             ]
+        # Use the caller-supplied display_name when present (e.g. GroupBy
+        # decorates it with " group by '<col>' for label: '<label>'"); fall
+        # back to the historical wording when called outside a GroupBy. See
+        # issue #1706.
+        title = display_name if display_name is not None else f"Drift in column '{result.column_name}'"
         render_result = [
             counter(
                 counters=[
@@ -729,7 +751,7 @@ class ValueDriftCalculation(SingleValueCalculation[ValueDrift]):
                             f"Drift detection method: {result.stattest_name}. "
                             f"Drift score: {drift_score}"
                         ),
-                        f"Drift in column '{result.column_name}'",
+                        title,
                     )
                 ],
                 title="",
