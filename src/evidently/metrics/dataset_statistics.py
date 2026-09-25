@@ -19,6 +19,7 @@ from evidently.core.metric_types import TSingleValueMetric
 from evidently.legacy.base_metric import MetricResult as LegacyMetricResult
 from evidently.legacy.core import ColumnType
 from evidently.legacy.metrics import DatasetSummaryMetric
+from evidently.legacy.metrics.data_integrity.dataset_summary_metric import DatasetSummary
 from evidently.legacy.metrics.data_integrity.dataset_summary_metric import DatasetSummaryMetricResult
 from evidently.legacy.model.widget import BaseWidgetInfo
 from evidently.metrics._legacy import LegacyMetricCalculation
@@ -412,6 +413,12 @@ class DatasetMissingValueCount(CountMetric):
         ]
 
 
+def _missing_values_share(summary: DatasetSummary) -> float:
+    # missing values are counted over every cell, so the share is over rows * columns
+    number_of_cells = summary.number_of_rows * summary.number_of_columns
+    return summary.number_of_missing_values / number_of_cells if number_of_cells else 0.0
+
+
 class DatasetMissingValueCountCalculation(DatasetSummaryCountValueCalculation[CountValue, DatasetMissingValueCount]):
     def calculate_value(
         self,
@@ -419,15 +426,13 @@ class DatasetMissingValueCountCalculation(DatasetSummaryCountValueCalculation[Co
         legacy_result: DatasetSummaryMetricResult,
         render: List[BaseWidgetInfo],
     ):
-        value = legacy_result.current.number_of_missing_values
+        current = legacy_result.current
+        reference = legacy_result.reference
         return (
-            self.result(value, value / legacy_result.current.number_of_rows),
+            self.result(current.number_of_missing_values, _missing_values_share(current)),
             None
-            if legacy_result.reference is None
-            else self.result(
-                legacy_result.reference.number_of_missing_values,
-                legacy_result.reference.number_of_missing_values / legacy_result.reference.number_of_rows,
-            ),
+            if reference is None
+            else self.result(reference.number_of_missing_values, _missing_values_share(reference)),
         )
 
     def display_name(self) -> str:
