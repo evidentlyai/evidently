@@ -2,10 +2,12 @@ from typing import List
 from typing import Optional
 from typing import Union
 
+import numpy as np
 import pandas as pd
 import pytest
 
 from evidently.legacy.calculations.data_drift import ensure_prediction_column_is_string
+from evidently.legacy.calculations.data_drift import get_drift_for_columns
 from evidently.legacy.calculations.data_drift import get_one_column_drift
 from evidently.legacy.core import ColumnType
 from evidently.legacy.options.data_drift import DataDriftOptions
@@ -208,3 +210,35 @@ def test_get_one_column_drift_value_error(
             agg_data=False,
         )
     assert error.value.args[0] == expected_value_error
+
+
+@pytest.mark.parametrize("stattest", ["wasserstein", "psi"])
+def test_get_drift_for_columns_drops_inf_without_nan(stattest: str):
+    reference_data = pd.DataFrame({"feature": [float(i) for i in range(50)]})
+    current_data = pd.DataFrame({"feature": [float(i) for i in range(50)]})
+    # an infinite value and no NaN in the column
+    current_data.loc[0, "feature"] = np.inf
+    dataset_columns = process_columns(reference_data, ColumnMapping(numerical_features=["feature"]))
+    options = DataDriftOptions(all_features_stattest=stattest)
+
+    result = get_drift_for_columns(
+        current_data=current_data,
+        reference_data=reference_data,
+        dataset_columns=dataset_columns,
+        data_drift_options=options,
+        agg_data=True,
+    )
+    single_column = get_one_column_drift(
+        current_data=current_data,
+        reference_data=reference_data,
+        column_name="feature",
+        options=options,
+        dataset_columns=dataset_columns,
+        column_type=ColumnType.Numerical,
+        agg_data=True,
+    )
+
+    drift = result.drift_by_columns["feature"]
+    assert np.isfinite(drift.drift_score)
+    assert drift.drift_score == pytest.approx(single_column.drift_score)
+    assert not drift.drift_detected
