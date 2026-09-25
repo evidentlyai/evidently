@@ -495,6 +495,10 @@ def get_drift_for_columns(
         current_correlations,
         reference_correlations,
     )
+    # get_one_column_drift only cleans columns flagged here, and cleaning also drops +/-inf,
+    # so a column with inf values but no NaN must be flagged too.
+    is_current_needs_cleaning = is_current_contains_nans | current_data.isin([np.inf, -np.inf]).any()
+    is_reference_needs_cleaning = is_reference_contains_nans | reference_data.isin([np.inf, -np.inf]).any()
 
     for column_name in columns:
         drift_by_columns[column_name] = get_one_column_drift(
@@ -506,7 +510,7 @@ def get_drift_for_columns(
             dataset_columns=dataset_columns,
             agg_data=agg_data,
             num_correlations=num_correlations,
-            is_contains_nans=(is_current_contains_nans, is_reference_contains_nans),
+            is_contains_nans=(is_current_needs_cleaning, is_reference_needs_cleaning),
         )
 
     dataset_drift = get_dataset_drift(drift_by_columns, drift_share_threshold)
