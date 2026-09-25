@@ -322,14 +322,10 @@ class CategoryCountCalculation(CountCalculation[CategoryCount]):
         column = dataset.column(self.metric.column)
         try:
             counts = column.data.value_counts()
-            if all(isinstance(c, bool) for c in self.metric.categories):
-                #  only one boolean label is possible here
-                value = counts[self.metric.categories[0]]  # type: ignore[index]
-            else:
-                value = 0
-                for cat in self.metric.categories:
-                    if cat in counts:
-                        value += counts[cat]  # type: ignore[index]
+            value = 0
+            for cat in self.metric.categories:
+                if cat in counts:
+                    value += counts[cat]  # type: ignore[index]
         except KeyError:
             value = 0
         total = column.data.count()
