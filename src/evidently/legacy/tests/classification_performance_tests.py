@@ -6,6 +6,7 @@ from typing import List
 from typing import Optional
 from typing import Union
 
+from evidently.legacy.metric_results import ConfusionMatrix
 from evidently.legacy.metric_results import DatasetClassificationQuality
 from evidently.legacy.metric_results import Label
 from evidently.legacy.metric_results import ROCCurve
@@ -25,6 +26,7 @@ from evidently.legacy.metrics.classification_performance.confusion_matrix_metric
 from evidently.legacy.metrics.classification_performance.objects import ClassMetric
 from evidently.legacy.metrics.classification_performance.quality_by_class_metric import ClassificationQualityByClass
 from evidently.legacy.metrics.classification_performance.roc_curve_metric import ClassificationRocCurve
+from evidently.legacy.options import ColorOptions
 from evidently.legacy.renderers.base_renderer import TestHtmlInfo
 from evidently.legacy.renderers.base_renderer import TestRenderer
 from evidently.legacy.renderers.base_renderer import default_renderer
@@ -42,6 +44,7 @@ from evidently.legacy.tests.utils import plot_boxes
 from evidently.legacy.tests.utils import plot_conf_mtrx
 from evidently.legacy.tests.utils import plot_rates
 from evidently.legacy.utils.types import Numeric
+from evidently.legacy.utils.visualizations import plot_conf_mtrx as production_plot_conf_mtrx
 
 CLASSIFICATION_GROUP = GroupData(id="classification", title="Classification", description="")
 GroupingTypes.TestGroup.add_value(CLASSIFICATION_GROUP)
@@ -177,6 +180,27 @@ class TestAccuracyScoreRenderer(TestRenderer):
         fig = plot_conf_mtrx(curr_matrix, ref_matrix)
         info.with_details("Accuracy Score", plotly_figure(figure=fig, title=""))
         return info
+
+
+def test_confusion_matrix_custom_heatmap():
+    curr_matrix = ConfusionMatrix(
+        labels=["negative", "positive"],
+        values=[[10, 2], [3, 15]],
+    )
+
+    fig = production_plot_conf_mtrx(
+        curr_matrix,
+        None,
+        ColorOptions(heatmap="Viridis"),
+    )
+
+    default_fig = production_plot_conf_mtrx(
+        curr_matrix,
+        None,
+        ColorOptions(),
+    )
+
+    assert fig.layout.coloraxis.colorscale != default_fig.layout.coloraxis.colorscale
 
 
 class TestPrecisionScore(SimpleClassificationTestTopK):
