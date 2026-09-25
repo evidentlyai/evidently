@@ -42,20 +42,16 @@ def get_binned_data(
         current_percents = np.array([current_feature_dict[key] / len(current_data) for key in keys])
 
     if feel_zeroes:
-        np.place(
-            reference_percents,
-            reference_percents == 0,
-            min(reference_percents[reference_percents != 0]) / 10**6
-            if min(reference_percents[reference_percents != 0]) <= 0.0001
-            else 0.0001,
+        # Use a single fill value derived from both distributions so that
+        # reference and current are treated symmetrically. The fill is 1/10 of
+        # the smallest genuine non-zero probability seen in either distribution,
+        # guaranteeing it never inflates divergence metrics (KL, PSI, etc.).
+        all_nonzero = np.concatenate(
+            [reference_percents[reference_percents > 0], current_percents[current_percents > 0]]
         )
-        np.place(
-            current_percents,
-            current_percents == 0,
-            min(current_percents[current_percents != 0]) / 10**6
-            if min(current_percents[current_percents != 0]) <= 0.0001
-            else 0.0001,
-        )
+        fill_zero_value = float(all_nonzero.min()) / 10 if all_nonzero.size > 0 else 1e-4
+        reference_percents = np.where(reference_percents == 0, fill_zero_value, reference_percents)
+        current_percents = np.where(current_percents == 0, fill_zero_value, current_percents)
 
     return reference_percents, current_percents
 

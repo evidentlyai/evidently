@@ -601,7 +601,7 @@ class ValueDriftCalculation(SingleValueCalculation[ValueDrift]):
         if self.metric.threshold is None:
             self.resolve_parameter("threshold", drift.stattest_threshold)
         result = self.result(drift.drift_score)
-        result.widget = self._render(drift, Options(), ColorOptions())
+        result.widget = self._render(drift, Options(), ColorOptions(), title=self.display_name())
         if self.metric.tests is None and context.configuration.include_tests:
             # todo: move to _default_tests
             result.set_tests(
@@ -627,7 +627,7 @@ class ValueDriftCalculation(SingleValueCalculation[ValueDrift]):
     def display_name(self) -> str:
         return f"Value drift for {self.metric.column}"
 
-    def _render(self, result: ColumnDataDriftMetrics, options, color_options):
+    def _render(self, result: ColumnDataDriftMetrics, options, color_options, title: Optional[str] = None):
         if result.drift_detected:
             drift = "detected"
 
@@ -729,7 +729,7 @@ class ValueDriftCalculation(SingleValueCalculation[ValueDrift]):
                             f"Drift detection method: {result.stattest_name}. "
                             f"Drift score: {drift_score}"
                         ),
-                        f"Drift in column '{result.column_name}'",
+                        title if title is not None else f"Drift in column '{result.column_name}'",
                     )
                 ],
                 title="",
