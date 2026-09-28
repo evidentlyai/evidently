@@ -351,9 +351,21 @@ class ClassificationDummyQuality(MetricContainer):
 
     def generate_metrics(self, context: "Context") -> Sequence[MetricOrContainer]:
         return [
-            DummyPrecision(),
-            DummyRecall(),
-            DummyF1Score(),
+            DummyPrecision(
+                probas_threshold=self.probas_threshold,
+                k=self.k,
+                classification_name=self.classification_name,
+            ),
+            DummyRecall(
+                probas_threshold=self.probas_threshold,
+                k=self.k,
+                classification_name=self.classification_name,
+            ),
+            DummyF1Score(
+                probas_threshold=self.probas_threshold,
+                k=self.k,
+                classification_name=self.classification_name,
+            ),
         ]
 
     def render(
