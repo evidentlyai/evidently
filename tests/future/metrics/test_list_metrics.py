@@ -320,3 +320,86 @@ def test_regression_preset(regression_sample_dataset):
     report = Report([RegressionPreset()])
     snapshot = report.run(regression_sample_dataset, regression_sample_dataset)
     assert snapshot is not None
+
+
+def test_named_classification_default_tests():
+    from evidently.metrics import Accuracy
+    from evidently.metrics import DummyAccuracy
+    from evidently.metrics import F1Score
+    from evidently.metrics import Precision
+    from evidently.metrics import Recall
+
+    data = pd.DataFrame(
+        data={
+            "target": [1, 1, 0, 0, 1, 1],
+            "prediction": [1, 0, 0, 1, 1, 1],
+            "other_target": [0, 0, 0, 0, 0, 1],
+            "other_prediction": [0, 0, 0, 0, 1, 1],
+        }
+    )
+    definition = DataDefinition(
+        classification=[
+            BinaryClassification(target="other_target", prediction_labels="other_prediction"),
+            BinaryClassification(target="target", prediction_labels="prediction", name="named"),
+        ]
+    )
+    dataset = Dataset.from_pandas(data, data_definition=definition)
+
+    report = Report(
+        [
+            Accuracy(classification_name="named"),
+            Precision(classification_name="named"),
+            Recall(classification_name="named"),
+            F1Score(classification_name="named"),
+            DummyAccuracy(classification_name="named"),
+        ],
+        include_tests=True,
+    )
+    snapshot = report.run(dataset)
+    snapshot_data = snapshot.dict()
+
+    dummy_accuracy = snapshot_data["metrics"][-1]["value"]
+    tests = snapshot_data["tests"]
+    assert len(tests) == 4
+    assert tests[0]["test_config"]["threshold"] == pytest.approx(dummy_accuracy)
+
+
+def test_named_regression_default_tests():
+    from evidently.metrics import MAE
+    from evidently.metrics import MAPE
+    from evidently.metrics import RMSE
+    from evidently.metrics import DummyMAE
+
+    data = pd.DataFrame(
+        data={
+            "target": [1.0, 2.0, 3.0, 4.0, 5.0],
+            "prediction": [1.5, 2.5, 2.5, 4.5, 4.0],
+            "other_target": [100.0, 300.0, 200.0, 500.0, 400.0],
+            "other_prediction": [110.0, 290.0, 210.0, 490.0, 410.0],
+        }
+    )
+    definition = DataDefinition(
+        numerical_columns=list(data.columns),
+        regression=[
+            Regression(target="other_target", prediction="other_prediction"),
+            Regression(target="target", prediction="prediction", name="named"),
+        ],
+    )
+    dataset = Dataset.from_pandas(data, data_definition=definition)
+
+    report = Report(
+        [
+            MAE(regression_name="named"),
+            RMSE(regression_name="named"),
+            MAPE(regression_name="named"),
+            DummyMAE(regression_name="named"),
+        ],
+        include_tests=True,
+    )
+    snapshot = report.run(dataset)
+    snapshot_data = snapshot.dict()
+
+    dummy_mae = snapshot_data["metrics"][-1]["value"]
+    tests = snapshot_data["tests"]
+    assert len(tests) == 3
+    assert tests[0]["test_config"]["threshold"] == pytest.approx(dummy_mae)

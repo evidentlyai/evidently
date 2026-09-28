@@ -203,7 +203,7 @@ class MAE(MeanStdRegressionMetric):
         return [eq(Reference(relative=0.1)).bind_mean_std(self.get_fingerprint(), True)]
 
     def _default_tests(self, context: "Context") -> List[BoundTest]:
-        dv: SingleValue = context.calculate_metric(DummyMAE().to_calculation())
+        dv: SingleValue = context.calculate_metric(DummyMAE(regression_name=self.regression_name).to_calculation())
         return [lt(dv.value).bind_mean_std(self.get_fingerprint())]
 
 
@@ -256,7 +256,7 @@ class RMSE(SingleValueRegressionMetric):
         return [eq(Reference(relative=0.1)).bind_single(self.get_fingerprint())]
 
     def _default_tests(self, context: "Context") -> List[BoundTest]:
-        dv: SingleValue = context.calculate_metric(DummyRMSE().to_calculation())
+        dv: SingleValue = context.calculate_metric(DummyRMSE(regression_name=self.regression_name).to_calculation())
         return [lt(dv.value).bind_single(self.get_fingerprint())]
 
 
@@ -309,7 +309,7 @@ class MAPE(MeanStdRegressionMetric):
         return [eq(Reference(relative=0.1)).bind_mean_std(self.get_fingerprint())]
 
     def _default_tests(self, context: "Context") -> List[BoundTest]:
-        dv: SingleValue = context.calculate_metric(DummyMAPE().to_calculation())
+        dv: SingleValue = context.calculate_metric(DummyMAPE(regression_name=self.regression_name).to_calculation())
         return [lt(dv.value).bind_mean_std(self.get_fingerprint())]
 
 

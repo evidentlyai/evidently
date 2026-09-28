@@ -70,7 +70,12 @@ class ClassificationQuality(ClassificationQualityBase):
         self, context: Context, dummy_type: Type["DummyClassificationQuality"], **kwargs
     ) -> SingleValue:
         return context.calculate_metric(
-            dummy_type(probas_threshold=self.probas_threshold, k=self.k, **kwargs).to_calculation()
+            dummy_type(
+                classification_name=self.classification_name,
+                probas_threshold=self.probas_threshold,
+                k=self.k,
+                **kwargs,
+            ).to_calculation()
         )
 
 
