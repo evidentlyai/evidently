@@ -260,3 +260,63 @@ def test_data_definition_serialization_empty():
     data_definition = DataDefinition()
     parsed = parse_obj_as(DataDefinition, {})
     assert parsed == data_definition
+
+
+def _strict_test_frame():
+    return pd.DataFrame(
+        {
+            "a": [1.0, 2.0, 3.0, 4.0, 5.0],
+            "b": ["x", "y", "x", "y", "x"],
+            "internal_col": [None, None, None, None, None],
+        }
+    )
+
+
+def test_strict_definition_ignores_unlisted_columns():
+    # https://github.com/evidentlyai/evidently/issues/1765
+    dataset = Dataset.from_pandas(
+        _strict_test_frame(),
+        data_definition=DataDefinition(
+            numerical_columns=["a"], categorical_columns=["b"], strict=True
+        ),
+    )
+    definition = dataset.data_definition
+    assert definition.numerical_columns == ["a"]
+    assert definition.categorical_columns == ["b"]
+    assert definition.unknown_columns == []
+    assert definition.strict is True
+    # the unlisted all-null column is not processed at all
+    assert "internal_col" not in dataset.stats().column_stats
+    assert dataset.stats().column_count == 2
+
+
+def test_strict_definition_partial_backfill_stays_scoped():
+    # None fields are still backfilled, but only from explicitly listed columns
+    dataset = Dataset.from_pandas(
+        _strict_test_frame(),
+        data_definition=DataDefinition(numerical_columns=["a"], strict=True),
+    )
+    definition = dataset.data_definition
+    assert definition.numerical_columns == ["a"]
+    assert definition.categorical_columns == []
+    assert definition.unknown_columns == []
+
+
+def test_strict_definition_missing_column_raises():
+    with pytest.raises(ValueError, match="missing from the data"):
+        Dataset.from_pandas(
+            _strict_test_frame(),
+            data_definition=DataDefinition(numerical_columns=["nope"], strict=True),
+        )
+
+
+def test_non_strict_definition_keeps_backfill():
+    # default behavior is unchanged: unlisted columns are still auto-detected
+    dataset = Dataset.from_pandas(
+        _strict_test_frame(), data_definition=DataDefinition(numerical_columns=["a"])
+    )
+    definition = dataset.data_definition
+    assert definition.numerical_columns == ["a"]
+    assert definition.categorical_columns == ["b"]
+    assert definition.unknown_columns == ["internal_col"]
+    assert dataset.stats().column_count == 3

@@ -428,6 +428,11 @@ class DataDefinition(BaseModel):
     """Additional special column configurations."""
     embeddings: Optional[Dict[str, List[str]]] = None
     """Embeddings columns definitions: mapping of embedding name to list of columns"""
+    strict: bool = False
+    """When True, the definition acts as a strict schema: only columns explicitly listed in it are
+    processed (type inference and stats collection skip every other column), and referring to a
+    column that is missing from the data raises a ValueError. When False (default), columns that
+    are not listed are auto-detected as before."""
 
     def __init__(
         self,
@@ -449,6 +454,7 @@ class DataDefinition(BaseModel):
         service_columns: Optional[ServiceColumns] = None,
         special_columns: Optional[List[SpecialColumnInfo]] = None,
         embeddings: Optional[Dict[str, List[str]]] = None,
+        strict: bool = False,
     ):
         """Initialize DataDefinition with column mappings.
 
@@ -473,6 +479,7 @@ class DataDefinition(BaseModel):
             # ranking=ranking,
             service_columns=service_columns,
             special_columns=special_columns if special_columns is not None else [],
+            strict=strict,
         )
         self.classification = classification
         self.regression = regression
@@ -1527,6 +1534,30 @@ def _read_evidently_dataset(uri: str) -> Dataset:
     )
 
 
+def _get_defined_columns(data_definition: DataDefinition) -> List[str]:
+    """Collect every column name explicitly mentioned in a DataDefinition, preserving order."""
+    columns: List[str] = []
+    for column_list in (
+        data_definition.numerical_columns,
+        data_definition.categorical_columns,
+        data_definition.text_columns,
+        data_definition.datetime_columns,
+        data_definition.unknown_columns,
+        data_definition.list_columns,
+        data_definition.numerical_descriptors,
+        data_definition.categorical_descriptors,
+        data_definition.test_descriptors,
+    ):
+        if column_list:
+            columns.extend(column_list)
+    for single in (data_definition.id_column, data_definition.timestamp):
+        if single is not None:
+            columns.append(single)
+    if data_definition.service_columns is not None and data_definition.service_columns.trace_link is not None:
+        columns.append(data_definition.service_columns.trace_link)
+    return list(dict.fromkeys(columns))
+
+
 class PandasDataset(Dataset):
     SUPPORTED_FORMATS = {"csv": pd.read_csv, "parquet": pd.read_parquet, EVIDENTLY_DATASET_EXT: _read_evidently_dataset}
     _data: pd.DataFrame
@@ -1543,6 +1574,22 @@ class PandasDataset(Dataset):
         tags: Optional[List[str]] = None,
     ):
         self._data = data.copy()
+        strict = data_definition is not None and data_definition.strict
+        if strict:
+            # In strict mode the definition is a contract: only explicitly listed columns
+            # are processed, and references to missing columns fail fast.
+            defined_columns = _get_defined_columns(data_definition)
+            missing = [c for c in defined_columns if c not in data.columns]
+            if missing:
+                raise ValueError(
+                    f"DataDefinition(strict=True) refers to columns missing from the data: {missing}"
+                )
+            defined_set = set(defined_columns)
+            scoped_columns = [c for c in data.columns if c in defined_set]
+            scoped_data = data[scoped_columns]
+        else:
+            scoped_columns = list(data.columns)
+            scoped_data = data
         if (
             data_definition is None
             or data_definition.datetime_columns is None
@@ -1578,7 +1625,7 @@ class PandasDataset(Dataset):
                 if data_definition.categorical_descriptors is not None:
                     reserved_fields.extend(data_definition.categorical_descriptors)
             generated_data_definition = self._generate_data_definition(
-                data,
+                scoped_data,
                 reserved_fields,
                 data_definition.service_columns if data_definition is not None else None,
             )
@@ -1610,10 +1657,11 @@ class PandasDataset(Dataset):
                     self._data_definition.service_columns = generated_data_definition.service_columns
         else:
             self._data_definition = copy.deepcopy(data_definition)
-        (rows, columns) = data.shape
+        (rows, _) = data.shape
+        columns = len(scoped_columns)
 
         column_stats = {}
-        for column in data.columns:
+        for column in scoped_columns:
             column_stats[column] = self._collect_stats(self._data_definition.get_column_type(column), data[column])
         self._dataset_stats = DatasetStats(rows, columns, column_stats)
         self._metadata = metadata or {}
