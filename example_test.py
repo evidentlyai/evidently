@@ -1,4 +1,5 @@
 import os
+import subprocess
 import sys
 
 excludes = [
@@ -25,7 +26,7 @@ if __name__ == "__main__":
             if file.endswith(".py"):
                 if file in excludes:
                     continue
-                result = os.system(f"ipython example_scripts/{file}")
+                result = subprocess.run(["ipython", os.path.join(entry, file)], check=False).returncode
                 if result != 0:
                     failed_scripts.append((file, result))
 
