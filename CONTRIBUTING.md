@@ -122,11 +122,11 @@ pytest -v tests
 
 ### Running smoke tests
 
-Together with the unit tests we use smoke testing: we basically run all the notebooks from the [examples](https://github.com/evidentlyai/evidently/tree/main/evidently/examples).
+Together with the unit tests we use smoke testing: we basically run all the notebooks from the [examples](https://github.com/evidentlyai/evidently/tree/main/examples).
 To run the tests, first convert all the notebooks to a python script, then download the required datasets and run the script to check that all computation is executed correctly. It can be done by using the following commands:
 
 ```sh
-jupyter nbconvert --to script evidently/examples/*.ipynb --output-dir example_scripts
+jupyter nbconvert --to script examples/*.ipynb --output-dir example_scripts
 curl https://archive.ics.uci.edu/static/public/275/bike+sharing+dataset.zip -o Bike-Sharing-Dataset.zip &&
              unzip Bike-Sharing-Dataset.zip -d Bike-Sharing-Dataset
 python example_test.py

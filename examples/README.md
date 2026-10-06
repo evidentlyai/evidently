@@ -23,9 +23,6 @@ Learn how to validate datasets for traditional ML workflows, detect data quality
 **[`cookbook`](./cookbook/)**
 Short, focused examples that demonstrate specific Evidently functionality or implementation patterns.
 
-**[`tutorials`](./tutorials/)**
-Longer end-to-end examples that combine multiple Evidently capabilities for realistic use cases.
-
 **[`service`](./service/)**
 An example of how to run and serve the full Evidently system locally.
 
@@ -40,7 +37,7 @@ Sample datasets used in the examples.
 
 - Start with the three top-level tutorials for the quickest introduction.
 - Use the `cookbook` for focused implementation snippets and feature-specific examples.
-- Explore `tutorials` for more complete workflows and extended use cases.
+- Explore the top-level tutorials for more complete workflows and extended use cases.
 - Use `service` if you want to run Evidently locally as a full system.
 - Use `grafana` if you want to visualize Evidently metrics in external dashboards.
 
