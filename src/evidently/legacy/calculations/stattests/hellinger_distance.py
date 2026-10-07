@@ -52,8 +52,8 @@ def _hellinger_distance(
         hellinger_distance: normed Hellinger distance
         test_result: whether the drift is detected
     """
-    reference_data.dropna(inplace=True)
-    current_data.dropna(inplace=True)
+    reference_data = reference_data.dropna()
+    current_data = current_data.dropna()
 
     keys = list((set(reference_data.unique()) | set(current_data.unique())))
 

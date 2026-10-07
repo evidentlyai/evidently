@@ -335,3 +335,22 @@ def test_t_test() -> None:
     reference = pd.Series([38.7, 41.5, 43.8, 44.5, 45.5, 46.0, 47.7, 58.0])
     current = pd.Series([39.2, 39.3, 39.7, 41.4, 41.8, 42.9, 43.3, 45.8])
     assert t_test.func(reference, current, "num", 0.05) == (approx(0.084, abs=1e-3), False)
+
+
+@pytest.mark.parametrize(
+    "feature_type, values",
+    [(ColumnType.Categorical, ["a", "b", None]), (ColumnType.Numerical, [1.0, 2.0, np.nan])],
+)
+@pytest.mark.parametrize("same_series", [False, True])
+def test_hellinger_preserves_input_series(feature_type, values, same_series) -> None:
+    reference = pd.Series(values, index=[10, 20, 30], name="reference")
+    current = reference if same_series else pd.Series(values, index=[40, 50, 60], name="current")
+    reference_before = reference.copy(deep=True)
+    current_before = current.copy(deep=True)
+
+    score, drift = hellinger_stat_test.func(reference, current, feature_type, 0.1)
+
+    assert score == approx(0, abs=1e-7)
+    assert not drift
+    pd.testing.assert_series_equal(reference, reference_before)
+    pd.testing.assert_series_equal(current, current_before)
