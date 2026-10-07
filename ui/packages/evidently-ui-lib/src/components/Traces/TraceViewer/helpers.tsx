@@ -21,7 +21,7 @@ export function calculateTimeDifference(
   }
 
   const diffMinutes = diffMilliseconds / (1000 * 60)
-  return `${diffMinutes.toFixed(2)} m}`
+  return `${diffMinutes.toFixed(2)} m`
 }
 
 export function ExtractUsageData(trace: TraceModel): Map<string, [number, number]> {
