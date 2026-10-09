@@ -27,10 +27,65 @@ from evidently.legacy.core import ColumnType
         (pd.Series(["a", "b", "c", "d", "e", "f", "g"]), ColumnType.Text),
         (pd.Categorical(["a", "b", "c", "d", "e", "f", "g"]), ColumnType.Categorical),
         (pd.Series(pd.date_range("2025-01-01", periods=11, freq="D").values), ColumnType.Datetime),
+        (pd.Series(pd.date_range("2025-01-01", periods=2, tz="UTC")), ColumnType.Datetime),
+        (pd.Series([1, 2, 1], dtype="category"), ColumnType.Categorical),
+        (pd.Series([True, False], dtype="category"), ColumnType.Categorical),
+        (pd.Series(["a", "b", "a", "b"], dtype="string"), ColumnType.Categorical),
+        (pd.Series(["a", "b", "c"], dtype="string"), ColumnType.Text),
+        (pd.Series([[1], [2]], dtype="object"), ColumnType.List),
+        (pd.Series([None, None], dtype="object"), ColumnType.Unknown),
+        (pd.Series([1, 2], dtype="object"), ColumnType.Unknown),
+        (pd.Series([1 + 2j, 3 + 4j]), ColumnType.Unknown),
+        (pd.Series([1, 2], dtype="uint64"), ColumnType.Unknown),
+        (pd.Series([1, 2], dtype="UInt64"), ColumnType.Unknown),
+        (pd.Series([1.0, 0.0], dtype="Sparse[float64]"), ColumnType.Unknown),
+        (pd.Series([1, 0], dtype="Sparse[int64]"), ColumnType.Unknown),
+        (pd.Series([True, False], dtype="Sparse[bool]"), ColumnType.Unknown),
     ],
 )
 def test_infer_column_type(data: pd.Series, expected: ColumnType):
     assert infer_column_type(data) == expected
+
+
+@pytest.mark.parametrize("dtype", ["Float32", "Float64"])
+@pytest.mark.parametrize("values", [[0.1, 0.2], [0.1, None], [None, None], []])
+def test_infer_nullable_float_column_type(dtype, values):
+    assert infer_column_type(pd.Series(values, dtype=dtype)) == ColumnType.Numerical
+
+
+@pytest.mark.parametrize("dtype", ["Int8", "Int16", "Int32", "Int64"])
+@pytest.mark.parametrize(
+    "values,expected",
+    [
+        (list(range(10)), ColumnType.Categorical),
+        (list(range(11)), ColumnType.Numerical),
+        (list(range(10)) + [None], ColumnType.Categorical),
+        (list(range(11)) + [None], ColumnType.Numerical),
+        ([None, None], ColumnType.Categorical),
+        ([], ColumnType.Categorical),
+    ],
+)
+def test_infer_nullable_integer_column_type(dtype, values, expected):
+    assert infer_column_type(pd.Series(values, dtype=dtype)) == expected
+
+
+@pytest.mark.parametrize("values", [[True, False], [True, None], [None, None], []])
+def test_infer_nullable_boolean_column_type(values):
+    assert infer_column_type(pd.Series(values, dtype="boolean")) == ColumnType.Categorical
+
+
+def test_data_definition_convert_dtypes():
+    data = pd.DataFrame(
+        {
+            "amount": [i + 0.5 for i in range(12)],
+            "count": list(range(12)),
+            "category": [0, 1] * 6,
+            "flag": [True, False] * 6,
+        }
+    )
+    expected = Dataset.from_pandas(data).data_definition
+    actual = Dataset.from_pandas(data.convert_dtypes()).data_definition
+    assert actual == expected
 
 
 @pytest.mark.parametrize(

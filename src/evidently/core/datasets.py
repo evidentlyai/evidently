@@ -1427,9 +1427,11 @@ INTEGER_CARDINALITY_LIMIT = 10
 
 
 def infer_column_type(column_data: pd.Series) -> ColumnType:
-    if column_data.dtype.name.startswith("float"):
+    if isinstance(column_data.dtype, pd.SparseDtype):
+        return ColumnType.Unknown
+    if pd.api.types.is_float_dtype(column_data.dtype):
         return ColumnType.Numerical
-    if column_data.dtype.name.startswith("int"):
+    if pd.api.types.is_signed_integer_dtype(column_data.dtype):
         if column_data.nunique() <= INTEGER_CARDINALITY_LIMIT:
             return ColumnType.Categorical
         else:
@@ -1451,7 +1453,7 @@ def infer_column_type(column_data: pd.Series) -> ColumnType:
         elif isinstance(without_na.iloc[0], (list, tuple)) and isinstance(without_na.iloc[-1], (list, tuple)):
             return ColumnType.List
         return ColumnType.Unknown
-    if column_data.dtype.name in ["bool", "category"]:
+    if pd.api.types.is_bool_dtype(column_data.dtype) or column_data.dtype.name == "category":
         return ColumnType.Categorical
     if column_data.dtype.name.startswith("datetime"):
         return ColumnType.Datetime
