@@ -13,6 +13,23 @@ def get_unique_not_nan_values_list_from_series(current_data: pd.Series, referenc
     return list(set(reference_data.dropna().unique()) | set(current_data.dropna().unique()))
 
 
+def _fill_zeroes(percs: np.ndarray) -> np.ndarray:
+    """Replace zero bins with a small epsilon guaranteed to be smaller than the smallest non-zero bin.
+
+    Preserves the existing epsilon choice (0.0001 for common cases, otherwise min/10**6)
+    but computes the minimum once and guards degenerate all-zero input.
+    """
+    if not np.any(percs == 0):
+        return percs
+    nonzero = percs[percs != 0]
+    if nonzero.size == 0:
+        return percs
+    smallest = np.min(nonzero)
+    fill = smallest / 10**6 if smallest <= 0.0001 else 0.0001
+    np.place(percs, percs == 0, fill)
+    return percs
+
+
 def get_binned_data(
     reference_data: pd.Series, current_data: pd.Series, feature_type: ColumnType, n: int, feel_zeroes: bool = True
 ):
@@ -42,20 +59,8 @@ def get_binned_data(
         current_percents = np.array([current_feature_dict[key] / len(current_data) for key in keys])
 
     if feel_zeroes:
-        np.place(
-            reference_percents,
-            reference_percents == 0,
-            min(reference_percents[reference_percents != 0]) / 10**6
-            if min(reference_percents[reference_percents != 0]) <= 0.0001
-            else 0.0001,
-        )
-        np.place(
-            current_percents,
-            current_percents == 0,
-            min(current_percents[current_percents != 0]) / 10**6
-            if min(current_percents[current_percents != 0]) <= 0.0001
-            else 0.0001,
-        )
+        _fill_zeroes(reference_percents)
+        _fill_zeroes(current_percents)
 
     return reference_percents, current_percents
 

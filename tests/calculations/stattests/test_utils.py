@@ -3,9 +3,12 @@ import pandas as pd
 import pytest
 
 from evidently.legacy.calculations.stattests.tvd_stattest import _total_variation_distance
+from evidently.legacy.calculations.stattests.utils import _fill_zeroes
 from evidently.legacy.calculations.stattests.utils import generate_fisher2x2_contingency_table
+from evidently.legacy.calculations.stattests.utils import get_binned_data
 from evidently.legacy.calculations.stattests.utils import get_unique_not_nan_values_list_from_series
 from evidently.legacy.calculations.stattests.utils import permutation_test
+from evidently.legacy.core import ColumnType
 
 
 @pytest.mark.parametrize(
@@ -91,3 +94,38 @@ def test_input_data_length_check_generate_fisher2x2_contingency_table(
         match="reference_data and current_data are not of equal length, please ensure that they are of equal length",
     ):
         generate_fisher2x2_contingency_table(current_data, reference_data)
+
+
+def test_get_binned_data_fill_is_smaller_than_min_nonzero():
+    # Regression test for https://github.com/evidentlyai/evidently/issues/334
+    # A rare category (~1e-5) must not be dwarfed by the zero-fill value.
+    reference_data = pd.Series(["a"] * 100000 + ["b"] * 1)
+    current_data = pd.Series(["a"] * 99999 + ["c"] * 2)
+    reference_percents, current_percents = get_binned_data(
+        reference_data, current_data, ColumnType.Categorical, 30, feel_zeroes=True
+    )
+    assert not np.any(reference_percents == 0)
+    assert not np.any(current_percents == 0)
+    # The fill value must be strictly smaller than any real observed frequency.
+    assert np.min(reference_percents) < 1e-5
+    assert np.min(current_percents) < 2.1e-5
+
+
+def test_get_binned_data_default_epsilon_for_common_bins():
+    reference_data = pd.Series(["a", "b", "c", "a", "b", "a"])
+    current_data = pd.Series(["a", "b", "a", "a", "b", "c"])
+    reference_percents, _ = get_binned_data(reference_data, current_data, ColumnType.Categorical, 30, feel_zeroes=True)
+    # All bins are populated here, so no fill is applied.
+    assert not np.any(reference_percents == 0)
+
+
+def test_get_binned_data_feel_zeroes_false_keeps_zeros():
+    reference_data = pd.Series(["a", "a", "a"])
+    current_data = pd.Series(["a", "b", "b"])
+    reference_percents, _ = get_binned_data(reference_data, current_data, ColumnType.Categorical, 30, feel_zeroes=False)
+    assert np.any(reference_percents == 0)
+
+
+def test_fill_zeroes_all_zero_input_is_noop():
+    percs = np.array([0.0, 0.0])
+    assert _fill_zeroes(percs).tolist() == [0.0, 0.0]
