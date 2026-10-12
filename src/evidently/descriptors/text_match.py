@@ -115,7 +115,7 @@ class TextMatchProcessor:
 
 
 class TextMatch(Descriptor):
-    """
+    r"""
     Unified text matching descriptor that handles all word/text matching scenarios.
 
     This descriptor replaces multiple legacy text matching features with a single,
