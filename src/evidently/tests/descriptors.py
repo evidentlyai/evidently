@@ -78,7 +78,7 @@ def _typed_values(cls, values):
     for value in values:
         try:
             res.add(cls(value))
-        except ValueError:
+        except (ValueError, TypeError):
             pass
     return res
 

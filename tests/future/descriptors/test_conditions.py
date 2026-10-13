@@ -98,3 +98,23 @@ def test_conditions(condition: ColumnCondition, input: pd.Series, column_name: s
     condition2 = parse_obj_as(ColumnCondition, payload)
 
     assert condition2 == condition
+
+
+@pytest.mark.parametrize("condition_type", [IsInColumnCondition, IsNotInColumnCondition])
+@pytest.mark.parametrize(
+    "values,accepted,expected",
+    [
+        ([1, None, 2], {1}, [True, False, False]),
+        ([1, 2, 3], {1, None}, [True, False, False]),
+        ([1, None, 2], {1, None}, [True, True, False]),
+        ([1, 2, 3], {"2", "invalid"}, [False, True, False]),
+        ([1, 2, 3], {2, 3}, [False, True, True]),
+    ],
+)
+def test_membership_conditions_with_nulls(condition_type, values, accepted, expected):
+    dataset = Dataset.from_pandas(pd.DataFrame({"input": pd.Series(values, dtype=object)}))
+    dataset.add_descriptor(ColumnTest("input", condition_type(values=accepted), alias="allowed"))
+
+    if condition_type is IsNotInColumnCondition:
+        expected = [not value for value in expected]
+    assert dataset.as_dataframe()["allowed"].tolist() == expected
