@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 import pytest
 
 from evidently.core.metric_types import ByLabelCountValue
@@ -9,6 +10,7 @@ from evidently.core.metric_types import SingleValue
     "input,output",
     [
         ({np.nan: (1.0, 1.0)}, ({"nan": 1.0}, {"nan": 1.0})),
+        ({pd.NA: (1.0, 1.0)}, ({"nan": 1.0}, {"nan": 1.0})),
     ],
 )
 def test_by_label_count_value(input: dict, output: tuple):

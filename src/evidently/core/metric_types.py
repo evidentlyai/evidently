@@ -564,8 +564,10 @@ def convert_types(val):
         return int(val)
     if isinstance(val, str):
         return val
-    if val is None or np.isnan(val):
+    if val is None:
         return val
+    if pd.api.types.is_scalar(val) and pd.isna(val):
+        return np.nan
     raise ValueError(f"type {type(val)} not supported as Label")
 
 
