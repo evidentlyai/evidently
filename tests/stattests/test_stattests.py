@@ -271,7 +271,16 @@ def test_for_multiple_categories_fisher_exact(reference: pd.Series, current: pd.
 def test_mann_whitney() -> None:
     reference = pd.Series([1, 2, 3, 4, 5, 6]).repeat([16, 18, 16, 14, 12, 12])
     current = pd.Series([1, 2, 3, 4, 5, 6]).repeat([16, 16, 16, 16, 16, 8])
-    assert mann_whitney_u_stat_test.func(reference, current, "num", 0.05) == (approx(0.481, abs=1e-2), False)
+    assert mann_whitney_u_stat_test.func(reference, current, "num", 0.05) == (approx(0.963, abs=1e-2), False)
+
+
+@pytest.mark.parametrize("shift", [-1, 1])
+def test_mann_whitney_detects_a_shift_in_either_direction(shift) -> None:
+    reference = pd.Series(range(100))
+    current = reference + 50 * shift
+    p_value, drift_detected = mann_whitney_u_stat_test.func(reference, current, "num", 0.05)
+    assert p_value < 1e-10
+    assert drift_detected
 
 
 @pytest.mark.parametrize(

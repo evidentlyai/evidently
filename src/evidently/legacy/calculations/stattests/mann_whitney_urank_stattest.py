@@ -46,10 +46,10 @@ def _mannwhitneyu_rank(
         feature_type: feature type
         threshold: all values above this threshold means data drift
     Returns:
-        pvalue: the two-tailed p-value for the test depending on alternative and method
+        pvalue: the two-sided p-value of the test
         test_result: whether the drift is detected
     """
-    p_value = mannwhitneyu(x=reference_data, y=current_data, alternative="less")[1]
+    p_value = mannwhitneyu(x=reference_data, y=current_data, alternative="two-sided")[1]
     return p_value, p_value < threshold
 
 
