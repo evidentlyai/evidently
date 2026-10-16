@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+import pytest
 
 from evidently.legacy.metrics import RecallTopKMetric
 from evidently.legacy.pipeline.column_mapping import ColumnMapping
@@ -47,6 +48,25 @@ def test_recall_scores():
     assert results.current[0] == 0.5
     assert results.current[1] == 0.5
     assert results.current[2] == 1
+
+
+def test_recall_raises_for_k_above_available_recommendations():
+    current = pd.DataFrame(
+        data=dict(
+            user_id=["a", "a", "a", "b", "b", "b"],
+            prediction=[1, 2, 3, 1, 2, 3],
+            target=[1, 0, 0, 0, 0, 1],
+        ),
+    )
+
+    metric = RecallTopKMetric(k=4)
+    report = Report(metrics=[metric])
+    column_mapping = ColumnMapping(recommendations_type=RecomType.RANK)
+
+    report.run(reference_data=None, current_data=current, column_mapping=column_mapping)
+
+    with pytest.raises(ValueError, match="top-4.*top-3"):
+        metric.get_result()
 
 
 def test_recsll_include_no_feedback():
