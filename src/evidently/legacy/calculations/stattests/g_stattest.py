@@ -53,7 +53,7 @@ def _g_stat_test(
         **dict.fromkeys(keys, 0),
         **dict(current_data.value_counts()),
     }
-    k_norm = current_data.shape[0] / reference_data.shape[0]
+    k_norm = current_data.count() / reference_data.count()
     f_exp = [ref_feature_dict[key] * k_norm for key in keys]
     f_obs = [current_feature_dict[key] for key in keys]
     p_value = power_divergence(f_obs, f_exp, lambda_="log-likelihood")[1]

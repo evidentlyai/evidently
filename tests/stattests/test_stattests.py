@@ -119,6 +119,16 @@ def test_g_test() -> None:
     assert g_test.func(reference, current, "cat", 0.5) == (approx(0.8176, abs=1e-3), False)
 
 
+def test_g_test_with_different_nan_proportions() -> None:
+    reference = pd.Series(["a"] * 250 + ["b"] * 250 + [np.nan] * 500)
+    current = pd.Series(["a"] * 50 + ["b"] * 50)
+
+    p_value, drift = g_test.func(reference, current, ColumnType.Categorical, 0.1)
+
+    assert p_value == approx(1.0, abs=1e-5)
+    assert not drift
+
+
 def test_cramer_von_mises() -> None:
     reference = pd.Series(stats.norm.rvs(size=100, random_state=0))
     current = pd.Series(stats.norm.rvs(size=100, random_state=1))
