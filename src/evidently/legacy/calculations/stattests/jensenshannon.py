@@ -1,31 +1,9 @@
-"""Jensen-Shannon distance of two samples.
-
-Name: "jensenshannon"
-
-Import:
-
-    >>> from evidently.legacy.calculations.stattests import jensenshannon_stat_test
-
-Properties:
-- only for categorical and numerical features
-- returns distance
-
-Example:
-    Using by object:
-
-    >>> from evidently.legacy.options.data_drift import DataDriftOptions
-    >>> from evidently.legacy.calculations.stattests import jensenshannon_stat_test
-    >>> options = DataDriftOptions(all_features_stattest=jensenshannon_stat_test)
-
-    Using by name:
-
-    >>> from evidently.legacy.options.data_drift import DataDriftOptions
-    >>> options = DataDriftOptions(all_features_stattest="jensenshannon")
-"""
+"""Jensen-Shannon distance of two samples."""
 
 from typing import Optional
 from typing import Tuple
 
+import numpy as np
 import pandas as pd
 from scipy.spatial import distance
 
@@ -43,18 +21,10 @@ def _jensenshannon(
     n_bins: int = 30,
     base: Optional[float] = None,
 ) -> Tuple[float, bool]:
-    """Compute the Jensen-Shannon distance between two arrays
-    Args:
-        reference_data: reference data
-        current_data: current data
-        feature_type: feature type
-        threshold: all values above this threshold means data drift
-        n_bins: number of bins
-        base: the base of the logarithm used to compute the output
-    Returns:
-        jensenshannon: calculated Jensen-Shannon distance
-        test_result: whether the drift is detected
-    """
+    """Compute the Jensen-Shannon distance between two arrays"""
+    if reference_data.empty or current_data.empty:
+        return np.nan, False
+
     reference_percents, current_percents = get_binned_data(reference_data, current_data, feature_type, n_bins, False)
     jensenshannon_value = distance.jensenshannon(reference_percents, current_percents, base)
     return jensenshannon_value, jensenshannon_value >= threshold

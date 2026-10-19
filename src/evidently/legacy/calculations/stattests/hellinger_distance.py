@@ -1,27 +1,4 @@
-"""Hellinger distance of two samples.
-
-Name: "hellinger"
-
-Import:
-
-    >>> from evidently.legacy.calculations.stattests import hellinger_stat_test
-
-Properties:
-- only for categorical and numerical features
-- returns distance
-
-Example:
-    Using by object:
-
-    >>> from evidently.legacy.options.data_drift import DataDriftOptions
-    >>> from evidently.legacy.calculations.stattests import hellinger_stat_test
-    >>> options = DataDriftOptions(all_features_stattest=hellinger_stat_test)
-
-    Using by name:
-
-    >>> from evidently.legacy.options.data_drift import DataDriftOptions
-    >>> options = DataDriftOptions(all_features_stattest="hellinger")
-"""
+"""Hellinger distance of two samples."""
 
 from collections import defaultdict
 from math import sqrt
@@ -42,18 +19,12 @@ def _hellinger_distance(
     feature_type: ColumnType,
     threshold: float,
 ) -> Tuple[float, bool]:
-    """Compute the Hellinger distance between two arrays
-    Args:
-        reference_data: reference data
-        current_data: current data
-        feature_type: feature type
-        threshold: all values above this threshold means data drift
-    Returns:
-        hellinger_distance: normed Hellinger distance
-        test_result: whether the drift is detected
-    """
-    reference_data.dropna(inplace=True)
-    current_data.dropna(inplace=True)
+    """Compute the Hellinger distance between two arrays"""
+    reference_data = reference_data.dropna()
+    current_data = current_data.dropna()
+
+    if reference_data.empty or current_data.empty:
+        return np.nan, False
 
     keys = list((set(reference_data.unique()) | set(current_data.unique())))
 
@@ -76,7 +47,7 @@ def _hellinger_distance(
         h1 = np.histogram(reference_data.to_numpy(), bins=bins, density=True)[0]
         h2 = np.histogram(current_data.to_numpy(), bins=bins, density=True)[0]
 
-        bin_width = (max(bins) - min(bins)) / (len(bins) - 1)
+        bin_width = (max(bins) - min(bins)) / (len(bins) - 1) if len(bins) > 1 else 1.0
 
         hellinger_distance = 0.0
         for i in range(len(h1)):
