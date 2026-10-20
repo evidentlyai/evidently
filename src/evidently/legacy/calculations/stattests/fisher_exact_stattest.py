@@ -63,7 +63,7 @@ def _fisher_exact_stattest(
             "Null or inf values found in either reference_data or current_data. Please ensure that no null or inf values are present"
         )
 
-    if (reference_data.nunique() > 2) or (current_data.nunique() > 2):
+    if pd.concat([reference_data, current_data]).nunique() > 2:
         raise ValueError("Expects binary data for both reference and current, but found unique categories > 2")
 
     contingency_matrix = generate_fisher2x2_contingency_table(reference_data, current_data)
