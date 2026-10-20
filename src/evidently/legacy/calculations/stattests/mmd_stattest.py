@@ -17,6 +17,8 @@ def squared_paired_dist(x: np.ndarray, y: np.ndarray) -> np.ndarray:
     Returns:
         dist: squared euclidean pairwise distance between x and y
     """
+    x = np.asarray(x, dtype=float)
+    y = np.asarray(y, dtype=float)
     dotx = x**2
     doty = y**2
     dist = doty.T - 2 * np.dot(x, y.T) + dotx
