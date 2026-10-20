@@ -1,6 +1,5 @@
 import inspect
 import json
-import re
 from abc import ABC
 from abc import abstractmethod
 from typing import Any
@@ -133,22 +132,20 @@ class NoopOutputFormat(OutputFormatBlock[str]):
         return response
 
 
-_json_pattern = re.compile(r"\{(?:[^{}]|\{[^{}]*\})*\}")
-
-
 def find_largest_json(text):
-    candidates = _json_pattern.findall(text)
-
+    decoder = json.JSONDecoder()
     largest_json = None
     max_length = 0
-    for candidate in candidates:
+    for start, char in enumerate(text):
+        if char != "{":
+            continue
         try:
-            json_obj = json.loads(candidate)
-            if len(candidate) > max_length:
-                largest_json = json_obj
-                max_length = len(candidate)
+            json_obj, end = decoder.raw_decode(text, start)
         except json.JSONDecodeError:
             continue
+        if isinstance(json_obj, dict) and end - start > max_length:
+            largest_json = json_obj
+            max_length = end - start
     return largest_json
 
 
