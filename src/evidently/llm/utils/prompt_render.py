@@ -15,14 +15,16 @@ from evidently.llm.utils.blocks import NoopOutputFormat
 from evidently.llm.utils.blocks import OutputFormatBlock
 from evidently.llm.utils.blocks import PromptBlock
 
-placeholders_re = re.compile(r"\{([a-zA-Z0-9_. ]+)}")
+placeholders_re = re.compile(r"{{|}}|\{([a-zA-Z0-9_. ]+)}")
 
 
 def substitute_placeholders(template, mapping):
-    pattern = r"{([^{}]+)}"
+    pattern = r"{{|}}|{([^{}]+)}"
 
     def replacer(match):
         key = match.group(1)
+        if key is None:
+            return match.group(0)
         return str(mapping.get(key, match.group(0)))  # leave unchanged if not found
 
     return re.sub(pattern, replacer, template)
@@ -34,7 +36,9 @@ class PreparedTemplate:
     ):
         self.template = template
         if placeholders is None:
-            placeholders = set(placeholders_re.findall(template))
+            placeholders = {
+                match.group(1) for match in placeholders_re.finditer(template) if match.group(1) is not None
+            }
         self.placeholders = placeholders
         self._output_format = output_format
 
