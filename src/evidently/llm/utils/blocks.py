@@ -157,17 +157,17 @@ class JsonOutputFormatBlock(OutputFormatBlock[Dict[str, Any]]):
 
     def render(self) -> str:
         values = []
-        example_rows = []
+        example_values = {}
         for field, descr in self.fields.items():
             if isinstance(descr, tuple):
                 descr, field_key = descr
             else:
                 field_key = field
             values.append(field)
-            example_rows.append(f'"{field_key}": "{descr}"')
+            example_values[field_key] = descr
 
-        example_rows_str = "\n".join(example_rows)
-        return f"Return {', '.join(values)} formatted as json without formatting as follows:\n{{{{\n{example_rows_str}\n}}}}"
+        example = json.dumps(example_values, ensure_ascii=False, indent=2).replace("{", "{{").replace("}", "}}")
+        return f"Return {', '.join(values)} formatted as json without formatting as follows:\n{example}"
 
     def parse_response(self, response: str) -> Dict[str, Any]:
         try:
