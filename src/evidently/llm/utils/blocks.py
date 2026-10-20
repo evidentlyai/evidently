@@ -171,13 +171,16 @@ class JsonOutputFormatBlock(OutputFormatBlock[Dict[str, Any]]):
 
     def parse_response(self, response: str) -> Dict[str, Any]:
         try:
-            return json.loads(response)
+            parsed = json.loads(response)
         except json.JSONDecodeError as e:
             if self.search_for_substring:
                 sub = find_largest_json(response)
                 if sub is not None:
                     return sub
             raise LLMResponseParseError("Failed to parse response as json", response) from e
+        if not isinstance(parsed, dict):
+            raise LLMResponseParseError("Expected a JSON object", response)
+        return parsed
 
 
 class StringListFormatBlock(OutputFormatBlock[List[str]]):
