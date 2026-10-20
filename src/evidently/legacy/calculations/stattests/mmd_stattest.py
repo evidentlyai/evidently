@@ -3,6 +3,7 @@ from typing import Tuple
 
 import numpy as np
 import pandas as pd
+from scipy.spatial.distance import cdist
 
 from evidently.legacy.calculations.stattests.registry import StatTest
 from evidently.legacy.calculations.stattests.registry import register_stattest
@@ -19,10 +20,7 @@ def squared_paired_dist(x: np.ndarray, y: np.ndarray) -> np.ndarray:
     """
     x = np.asarray(x, dtype=float)
     y = np.asarray(y, dtype=float)
-    dotx = x**2
-    doty = y**2
-    dist = doty.T - 2 * np.dot(x, y.T) + dotx
-    return dist
+    return cdist(x, y, metric="sqeuclidean")
 
 
 def sigma_median(dist: np.ndarray) -> float:
