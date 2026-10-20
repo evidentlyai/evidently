@@ -81,7 +81,7 @@ def permutation_test(reference_data, current_data, observed, test_statistic_func
         new_current = list((count_combined - count_new_reference).elements())
         hold_test_statistic.append(test_statistic_func(pd.Series(new_reference), pd.Series(new_current)))
 
-    p_val = sum(observed <= abs(np.array(hold_test_statistic))) / len(hold_test_statistic)
+    p_val = sum(abs(observed) <= abs(np.array(hold_test_statistic))) / len(hold_test_statistic)
     return p_val
 
 
