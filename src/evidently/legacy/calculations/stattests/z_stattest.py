@@ -49,15 +49,15 @@ def proportions_diff_z_stat_ind(ref: pd.Series, curr: pd.Series):
 
 def proportions_diff_z_test(z_stat, alternative="two-sided"):
     if alternative == "two-sided":
-        return 2 * (1 - norm.cdf(np.abs(z_stat)))
+        return 2 * norm.sf(np.abs(z_stat))
 
     if alternative == "less":
         return norm.cdf(z_stat)
 
     if alternative == "greater":
-        return 1 - norm.cdf(z_stat)
+        return norm.sf(z_stat)
 
-    raise ValueError("alternative not recognized\n" "should be 'two-sided', 'less' or 'greater'")
+    raise ValueError("alternative not recognized\nshould be 'two-sided', 'less' or 'greater'")
 
 
 def _z_stat_test(
@@ -80,9 +80,12 @@ def _z_stat_test(
     ):
         p_value = 1
     else:
-        keys = sorted(
-            get_unique_not_nan_values_list_from_series(current_data=current_data, reference_data=reference_data)
-        )
+        keys = get_unique_not_nan_values_list_from_series(current_data=current_data, reference_data=reference_data)
+        try:
+            keys = sorted(keys)
+        except TypeError:
+            # Binary labels need not be mutually orderable.
+            pass
         p_value = proportions_diff_z_test(
             proportions_diff_z_stat_ind(
                 reference_data.apply(lambda x, key=keys[0]: 0 if x == key else 1),
