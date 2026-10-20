@@ -71,6 +71,8 @@ def permutation_test(reference_data, current_data, observed, test_statistic_func
     Returns:
         p_value: two-sided p_value
     """
+    if iterations <= 0:
+        raise ValueError("iterations must be positive")
     rng = np.random.RandomState(0)
     hold_test_statistic = []
     for i in range(iterations):

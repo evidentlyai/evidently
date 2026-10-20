@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+import pytest
 
 from evidently.legacy.calculations.stattests.utils import permutation_test
 
@@ -28,3 +29,12 @@ def test_two_sided_permutation_is_invariant_to_observed_sign():
     negative = permutation_test(reference, current, -1.0, statistic)
     assert positive < 1.0
     assert negative == positive
+
+
+@pytest.mark.parametrize("iterations", [0, -1])
+def test_permutation_rejects_nonpositive_iterations(iterations):
+    def statistic(ref, cur):
+        pytest.fail("invalid iterations should be rejected before evaluating the statistic")
+
+    with pytest.raises(ValueError, match="iterations must be positive"):
+        permutation_test(pd.Series([1]), pd.Series([2]), 1.0, statistic, iterations=iterations)
