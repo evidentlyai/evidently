@@ -1,6 +1,5 @@
 import inspect
 import json
-import re
 from abc import ABC
 from abc import abstractmethod
 from typing import Any
@@ -133,22 +132,20 @@ class NoopOutputFormat(OutputFormatBlock[str]):
         return response
 
 
-_json_pattern = re.compile(r"\{(?:[^{}]|\{[^{}]*\})*\}")
-
-
 def find_largest_json(text):
-    candidates = _json_pattern.findall(text)
-
+    decoder = json.JSONDecoder()
     largest_json = None
     max_length = 0
-    for candidate in candidates:
+    for start, char in enumerate(text):
+        if char != "{":
+            continue
         try:
-            json_obj = json.loads(candidate)
-            if len(candidate) > max_length:
-                largest_json = json_obj
-                max_length = len(candidate)
+            json_obj, end = decoder.raw_decode(text, start)
         except json.JSONDecodeError:
             continue
+        if isinstance(json_obj, dict) and end - start > max_length:
+            largest_json = json_obj
+            max_length = end - start
     return largest_json
 
 
@@ -160,27 +157,30 @@ class JsonOutputFormatBlock(OutputFormatBlock[Dict[str, Any]]):
 
     def render(self) -> str:
         values = []
-        example_rows = []
+        example_values = {}
         for field, descr in self.fields.items():
             if isinstance(descr, tuple):
                 descr, field_key = descr
             else:
                 field_key = field
             values.append(field)
-            example_rows.append(f'"{field_key}": "{descr}"')
+            example_values[field_key] = descr
 
-        example_rows_str = "\n".join(example_rows)
-        return f"Return {', '.join(values)} formatted as json without formatting as follows:\n{{{{\n{example_rows_str}\n}}}}"
+        example = json.dumps(example_values, ensure_ascii=False, indent=2).replace("{", "{{").replace("}", "}}")
+        return f"Return {', '.join(values)} formatted as json without formatting as follows:\n{example}"
 
     def parse_response(self, response: str) -> Dict[str, Any]:
         try:
-            return json.loads(response)
+            parsed = json.loads(response)
         except json.JSONDecodeError as e:
             if self.search_for_substring:
                 sub = find_largest_json(response)
                 if sub is not None:
                     return sub
             raise LLMResponseParseError("Failed to parse response as json", response) from e
+        if not isinstance(parsed, dict):
+            raise LLMResponseParseError("Expected a JSON object", response)
+        return parsed
 
 
 class StringListFormatBlock(OutputFormatBlock[List[str]]):

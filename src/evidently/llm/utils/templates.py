@@ -281,7 +281,7 @@ class StrPromptTemplate(PromptTemplate):
         # todo: deduplicate with @llm_call.inner
         placeholders = self.list_placeholders()
         sig = inspect.getfullargspec(self._contract.__original__)
-        arg_names = set(sig.args).difference(["self"])
+        arg_names = set(sig.args + sig.kwonlyargs).difference(["self"])
         if set(placeholders) != arg_names:
             raise ValueError(
                 f"Wrong prompt template: {self.__class__._contract} signature has {arg_names} args, "
