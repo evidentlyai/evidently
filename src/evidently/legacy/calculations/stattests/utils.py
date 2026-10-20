@@ -71,17 +71,19 @@ def permutation_test(reference_data, current_data, observed, test_statistic_func
     Returns:
         p_value: two-sided p_value
     """
-    np.random.seed(0)
+    if iterations <= 0:
+        raise ValueError("iterations must be positive")
+    rng = np.random.RandomState(0)
     hold_test_statistic = []
     for i in range(iterations):
         combined_data = reference_data.tolist() + current_data.tolist()
-        new_reference = np.random.choice(combined_data, len(reference_data), replace=False).tolist()
+        new_reference = rng.choice(combined_data, len(reference_data), replace=False).tolist()
         count_combined = Counter(combined_data)
         count_new_reference = Counter(new_reference)
         new_current = list((count_combined - count_new_reference).elements())
         hold_test_statistic.append(test_statistic_func(pd.Series(new_reference), pd.Series(new_current)))
 
-    p_val = sum(observed <= abs(np.array(hold_test_statistic))) / len(hold_test_statistic)
+    p_val = sum(abs(observed) <= abs(np.array(hold_test_statistic))) / len(hold_test_statistic)
     return p_val
 
 
