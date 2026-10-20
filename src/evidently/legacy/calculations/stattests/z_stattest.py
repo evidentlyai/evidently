@@ -49,13 +49,13 @@ def proportions_diff_z_stat_ind(ref: pd.Series, curr: pd.Series):
 
 def proportions_diff_z_test(z_stat, alternative="two-sided"):
     if alternative == "two-sided":
-        return 2 * (1 - norm.cdf(np.abs(z_stat)))
+        return 2 * norm.sf(np.abs(z_stat))
 
     if alternative == "less":
         return norm.cdf(z_stat)
 
     if alternative == "greater":
-        return 1 - norm.cdf(z_stat)
+        return norm.sf(z_stat)
 
     raise ValueError("alternative not recognized\nshould be 'two-sided', 'less' or 'greater'")
 
