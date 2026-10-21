@@ -26,7 +26,7 @@ Example:
 from typing import Tuple
 
 import pandas as pd
-from scipy.stats import chisquare
+from scipy.stats import chi2_contingency
 
 from evidently.legacy.calculations.stattests.registry import StatTest
 from evidently.legacy.calculations.stattests.registry import register_stattest
@@ -40,10 +40,11 @@ def _chi_stat_test(
     keys = get_unique_not_nan_values_list_from_series(current_data=current_data, reference_data=reference_data)
     ref_feature_dict = {**dict.fromkeys(keys, 0), **dict(reference_data.value_counts())}
     current_feature_dict = {**dict.fromkeys(keys, 0), **dict(current_data.value_counts())}
-    k_norm = current_data.shape[0] / reference_data.shape[0]
-    f_exp = [ref_feature_dict[key] * k_norm for key in keys]
-    f_obs = [current_feature_dict[key] for key in keys]
-    p_value = chisquare(f_obs, f_exp)[1]
+    # Both samples are drawn with sampling noise, so this is a two-sample test of homogeneity on the
+    # 2 x k contingency table. Treating reference frequencies as known expected values ignores the
+    # reference sampling variance and divides by zero for categories that only appear in current
+    contingency_table = [[current_feature_dict[key] for key in keys], [ref_feature_dict[key] for key in keys]]
+    p_value = chi2_contingency(contingency_table, correction=False)[1]
     return p_value, p_value < threshold
 
 
