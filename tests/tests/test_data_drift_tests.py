@@ -199,13 +199,13 @@ def test_data_drift_test_feature_value_drift_json_render() -> None:
     assert result_from_json["summary"]["all_passed"] is True
     test_info = result_from_json["tests"][0]
     assert test_info == {
-        "description": "The drift score for the feature **feature_1** is 0.064."
+        "description": "The drift score for the feature **feature_1** is 0.311."
         " The drift detection method is chi-square p_value. The drift detection threshold is 0.05.",
         "group": "data_drift",
         "name": "Drift per Column",
         "parameters": {
             "detected": False,
-            "score": 0.064,
+            "score": 0.311,
             "stattest": "chi-square p_value",
             "threshold": 0.05,
             "column_name": "feature_1",

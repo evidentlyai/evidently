@@ -175,8 +175,8 @@ def column_drift_metric_values():
                     ColumnDataDriftMetrics(
                         column_name="col",
                         column_type="cat",
-                        drift_detected=True,
-                        drift_score=0.0,
+                        drift_detected=False,
+                        drift_score=0.40600584970983794,
                         stattest_name="chi-square p_value",
                         stattest_threshold=0.05,
                         current=DriftStatsField(

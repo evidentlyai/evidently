@@ -26,7 +26,7 @@ def test_freq_obs_eq_freq_exp() -> None:
     reference = pd.Series([1, 2, 3, 4, 5, 6]).repeat([16, 18, 16, 14, 12, 12])
     current = pd.Series([1, 2, 3, 4, 5, 6]).repeat([16, 16, 16, 16, 16, 8])
     assert chi_stat_test.func(reference, current, ColumnType.Categorical, 0.5) == (
-        approx(0.67309, abs=1e-5),
+        approx(0.89853, abs=1e-5),
         False,
     )
     assert hellinger_stat_test.func(reference, current, ColumnType.Categorical, 0.1) == (
@@ -40,7 +40,7 @@ def test_freq_obs_not_eq_freq_exp() -> None:
     reference = pd.Series([1, 2, 3, 4, 5, 6]).repeat([x * 2 for x in [16, 18, 16, 14, 12, 12]])
     current = pd.Series([1, 2, 3, 4, 5, 6]).repeat([16, 16, 16, 16, 16, 8])
     assert chi_stat_test.func(reference, current, ColumnType.Categorical, 0.5) == (
-        approx(0.67309, abs=1e-5),
+        approx(0.83007, abs=1e-5),
         False,
     )
     assert hellinger_stat_test.func(reference, current, ColumnType.Categorical, 0.1) == (
@@ -60,6 +60,35 @@ def test_cat_feature_with_nans() -> None:
         approx(0, abs=1e-5),
         False,
     )
+
+
+def test_chi_stat_test_category_only_in_current_is_not_a_division_by_zero() -> None:
+    reference = pd.Series(["a", "b", "c", "d"]).repeat([40, 30, 20, 10])
+    current = pd.Series(["a", "b", "c", "d", "e"]).repeat([40, 30, 20, 9, 1])
+    p_value, drifted = chi_stat_test.func(reference, current, "cat", 0.05)
+    assert p_value == approx(0.90171, abs=1e-5)
+    assert not drifted
+
+
+@pytest.mark.parametrize(
+    "categories, probabilities, reference_size, current_size",
+    [
+        (list("abcde"), None, 200, 200),
+        (list("abcde"), [0.9, 0.05, 0.03, 0.015, 0.005], 500, 500),
+        ([str(i) for i in range(200)], None, 1000, 1000),
+        (list("abcd"), [0.4, 0.3, 0.2, 0.1], 50, 1000),
+    ],
+    ids=["balanced", "imbalanced", "high_cardinality", "small_reference"],
+)
+def test_chi_stat_test_false_positive_rate_without_drift(categories, probabilities, reference_size, current_size):
+    runs = 200
+    false_positives = 0
+    for seed in range(runs):
+        rng = np.random.default_rng(seed)
+        reference = pd.Series(rng.choice(categories, reference_size, p=probabilities))
+        current = pd.Series(rng.choice(categories, current_size, p=probabilities))
+        false_positives += chi_stat_test.func(reference, current, "cat", 0.05)[1]
+    assert false_positives / runs < 0.1
 
 
 def test_num_features() -> None:
