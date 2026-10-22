@@ -82,20 +82,28 @@ class TextMatchProcessor:
         processed_text = self.process_text(text)
 
         if self.options.case_sensitive:
-            return all(item in processed_text for item in items)
+            return all(self._contains_item(processed_text, item) for item in items)
         else:
             processed_text_lower = processed_text.lower()
-            return all(item.lower() in processed_text_lower for item in items)
+            return all(self._contains_item(processed_text_lower, item.lower()) for item in items)
 
     def any_match(self, text: str, items: List[str]) -> bool:
         """Check if text contains any of the specified items."""
         processed_text = self.process_text(text)
 
         if self.options.case_sensitive:
-            return any(item in processed_text for item in items)
+            return any(self._contains_item(processed_text, item) for item in items)
         else:
             processed_text_lower = processed_text.lower()
-            return any(item.lower() in processed_text_lower for item in items)
+            return any(self._contains_item(processed_text_lower, item.lower()) for item in items)
+
+    def _contains_item(self, text: str, item: str) -> bool:
+        """Match a literal item without starting or ending inside a word."""
+        if not self.options.word_boundaries or not item:
+            return item in text
+        prefix = r"(?<!\w)" if re.match(r"\w", item[0]) else ""
+        suffix = r"(?!\w)" if re.match(r"\w", item[-1]) else ""
+        return re.search(f"{prefix}{re.escape(item)}{suffix}", text) is not None
 
     def regex_match(self, text: str, pattern: str) -> bool:
         """Check if text matches a regex pattern."""
