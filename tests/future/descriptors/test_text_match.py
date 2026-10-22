@@ -1,8 +1,13 @@
 import pandas as pd
 import pytest
 
+from evidently import Report
 from evidently.core.datasets import Dataset
+from evidently.descriptors import ExcludesWords
+from evidently.descriptors import IncludesWords
 from evidently.descriptors import TextMatch
+from evidently.descriptors import WordMatch
+from evidently.metrics import CategoryCount
 
 
 @pytest.fixture
@@ -340,3 +345,133 @@ def test_column_items_input_columns():
     descriptor = TextMatch(column_name="description", match_items="keywords", match_type="contains")
     input_columns = descriptor.list_input_columns()
     assert set(input_columns) == {"description", "keywords"}
+
+
+@pytest.mark.parametrize("route", ["fixed", "substring", "column", "includes_words", "word_match", "excludes_words"])
+def test_whole_word_public_descriptors(route):
+    texts = ["cat", "A cat.", "concatenate", "bobcat", "scatter", "CAT", "dog", "", None, float("nan")]
+    dataset = Dataset.from_pandas(pd.DataFrame({"response": texts, "terms": ["cat"] * len(texts)}))
+    expected = [True, True, False, False, False, True, False, False, False, False]
+    if route == "fixed":
+        descriptor = TextMatch("response", ["cat"], word_boundaries=True, case_sensitive=False, alias="hit")
+    elif route == "substring":
+        descriptor = TextMatch("response", ["cat"], word_boundaries=False, case_sensitive=False, alias="hit")
+        expected = [True, True, True, True, True, True, False, False, False, False]
+    elif route == "column":
+        descriptor = TextMatch("response", "terms", word_boundaries=True, case_sensitive=False, alias="hit")
+    elif route == "includes_words":
+        descriptor = IncludesWords("response", ["cat"], lemmatize=False, alias="hit")
+    elif route == "word_match":
+        descriptor = WordMatch(["response", "terms"], lemmatize=False, alias="hit")
+    else:
+        descriptor = ExcludesWords("response", ["cat"], lemmatize=False, alias="hit")
+        expected = [False, False, True, True, True, False, True, True, True, True]
+    dataset.add_descriptor(descriptor)
+    assert dataset.column("hit").data.tolist() == expected
+
+
+@pytest.mark.parametrize(
+    "text,item,expected",
+    [
+        ("a red cat.", "red cat", True),
+        ("tired cat", "red cat", False),
+        ("red catfish", "red cat", False),
+        ("cat-dog", "cat dog", True),
+        ("cat dog", "cat  dog", False),
+        ("cat-dog", "cat", True),
+        ("cat,dog", "cat", True),
+        ("_cat", "cat", False),
+        ("cat_2", "cat", False),
+        ("cat2", "cat", False),
+        ("Le café!", "café", True),
+        ("caféteria", "café", False),
+        ("猫", "猫", True),
+        ("猫咪", "猫", False),
+        ("cat", "c.t", False),
+        ("cat", "cat[", False),
+        ("dog", "cat|dog", False),
+        ("cat.", "cat.", False),
+        ("a cat dog", " cat ", True),
+        ("cat dog", " ", True),
+    ],
+)
+def test_whole_word_literal_terms(text, item, expected):
+    dataset = Dataset.from_pandas(pd.DataFrame({"response": [text]}))
+    dataset.add_descriptor(TextMatch("response", [item], word_boundaries=True, case_sensitive=False, alias="hit"))
+    assert dataset.column("hit").data.tolist() == [expected]
+
+
+@pytest.mark.parametrize("case_sensitive,expected", [(True, False), (False, True)])
+def test_whole_word_case_sensitive(case_sensitive, expected):
+    dataset = Dataset.from_pandas(pd.DataFrame({"response": ["CAT"]}))
+    dataset.add_descriptor(
+        TextMatch("response", ["cat"], word_boundaries=True, case_sensitive=case_sensitive, alias="hit")
+    )
+    assert dataset.column("hit").data.tolist() == [expected]
+
+
+@pytest.mark.parametrize(
+    "match_type,match_mode,expected",
+    [
+        ("contains", "any", [True, True, True, False]),
+        ("contains", "all", [True, False, False, False]),
+        ("not_contains", "any", [False, True, True, True]),
+        ("not_contains", "all", [False, False, False, True]),
+    ],
+)
+def test_whole_word_any_all_modes(match_type, match_mode, expected):
+    dataset = Dataset.from_pandas(
+        pd.DataFrame({"response": ["cat dog", "bobcat dog", "cat dogfish", "bobcat dogfish"]})
+    )
+    dataset.add_descriptor(
+        TextMatch(
+            "response", ["cat", "dog"], match_type=match_type, match_mode=match_mode, word_boundaries=True, alias="hit"
+        )
+    )
+    assert dataset.column("hit").data.tolist() == expected
+
+
+@pytest.mark.parametrize(
+    "items,match_type,match_mode,expected",
+    [
+        ([], "contains", "any", False),
+        ([], "contains", "all", True),
+        ([], "not_contains", "any", False),
+        ([], "not_contains", "all", True),
+        ([""], "contains", "any", True),
+        ([""], "contains", "all", True),
+        ([""], "not_contains", "any", False),
+        ([""], "not_contains", "all", False),
+    ],
+)
+def test_whole_word_empty_items(items, match_type, match_mode, expected):
+    dataset = Dataset.from_pandas(pd.DataFrame({"response": ["cat", "", None]}))
+    dataset.add_descriptor(
+        TextMatch("response", items, match_type=match_type, match_mode=match_mode, word_boundaries=True, alias="hit")
+    )
+    assert dataset.column("hit").data.tolist() == [expected] * 3
+
+
+@pytest.mark.parametrize(
+    "match_type,item,text,expected",
+    [
+        ("exact", "cat dog", "cat-dog", True),
+        ("exact", "cat-dog", "cat-dog", False),
+        ("regex", r"\bcat\b", "bobcat", False),
+        ("regex", "cat", "bobcat", True),
+        ("regex", "cat dog", "cat-dog", True),
+        ("regex", r"cat\-dog", "cat-dog", False),
+    ],
+)
+def test_whole_word_exact_regex_unchanged(match_type, item, text, expected):
+    dataset = Dataset.from_pandas(pd.DataFrame({"response": [text]}))
+    dataset.add_descriptor(TextMatch("response", [item], match_type=match_type, word_boundaries=True, alias="hit"))
+    assert dataset.column("hit").data.tolist() == [expected]
+
+
+def test_whole_word_report_count():
+    dataset = Dataset.from_pandas(pd.DataFrame({"response": ["cat", "bobcat", "dog"]}))
+    dataset.add_descriptor(TextMatch("response", ["cat"], word_boundaries=True, alias="hit"))
+    result = Report([CategoryCount(column="hit", categories=[True])]).run(dataset).dict()["metrics"][0]["value"]
+    assert result["count"] == 1
+    assert result["share"] == pytest.approx(1 / 3)
