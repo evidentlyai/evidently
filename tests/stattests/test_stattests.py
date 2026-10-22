@@ -416,3 +416,37 @@ def test_two_identical_categories_stay_undrifted(stattest) -> None:
     current = pd.Series(["a"] * 25 + ["b"] * 25)
 
     assert stattest.func(reference, current, ColumnType.Categorical, 0.1) == (approx(1.0), False)
+
+
+@pytest.mark.parametrize(
+    "stattest",
+    [chi_stat_test, g_test],
+    ids=["chisquare", "g_test"],
+)
+def test_all_nan_sample_is_not_a_single_category(stattest) -> None:
+    """One category present in only one sample is not a shared single category.
+
+    `keys` is the union of the non-NaN values of both samples, so a sample that is entirely NaN
+    still leaves one key even though it carries no observation. The zero-degrees-of-freedom case
+    does not apply: the frequencies of an empty observed sample and a non-empty expected one cannot
+    be made to sum alike, and scipy raises on that. Handing it to the guard would turn that error
+    into a silent "no drift" for an empty sample.
+    """
+    reference = pd.Series(["a"] * 50)
+    current = pd.Series([None] * 50, dtype=object)
+
+    with pytest.raises(ValueError):
+        stattest.func(reference, current, ColumnType.Categorical, 0.1)
+
+
+@pytest.mark.parametrize(
+    "stattest",
+    [chi_stat_test, g_test],
+    ids=["chisquare", "g_test"],
+)
+def test_single_category_with_some_nans_still_reports_no_drift(stattest) -> None:
+    """The guard still applies when both samples have real observations alongside NaNs."""
+    reference = pd.Series(["a", None] * 25)
+    current = pd.Series(["a", None] * 5)
+
+    assert stattest.func(reference, current, ColumnType.Categorical, 0.1) == (approx(1.0), False)
