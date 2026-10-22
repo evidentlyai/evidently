@@ -446,7 +446,10 @@ class InListValueCountCalculation(CountCalculation[InListValueCount]):
     def _calculate_value(self, dataset: Dataset):
         column = dataset.column(self.metric.column)
         value_counts = column.data.value_counts()
-        value: float = float(value_counts.reindex(self.metric.values, fill_value=0).sum())
+        # Resolve the original labels first to preserve pandas' boolean/numeric lookup semantics.
+        _, positions = value_counts.index.reindex(self.metric.values)
+        matched = value_counts if positions is None else value_counts.iloc[sorted(set(positions) - {-1})]
+        value: float = float(matched.sum())
         total = column.data.count()
         return self.result(int(value), value / total)
 
@@ -487,7 +490,10 @@ class OutListValueCountCalculation(CountCalculation[OutListValueCount]):
     def _calculate_value(self, dataset: Dataset):
         column = dataset.column(self.metric.column)
         value_counts = column.data.value_counts()
-        value: float = float(value_counts.reindex(self.metric.values, fill_value=0).sum())
+        # Resolve the original labels first to preserve pandas' boolean/numeric lookup semantics.
+        _, positions = value_counts.index.reindex(self.metric.values)
+        matched = value_counts if positions is None else value_counts.iloc[sorted(set(positions) - {-1})]
+        value: float = float(matched.sum())
         total = column.data.count()
         return self.result(int(total - value), (total - value) / total)
 
