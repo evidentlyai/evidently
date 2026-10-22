@@ -38,6 +38,13 @@ def _chi_stat_test(
     reference_data: pd.Series, current_data: pd.Series, feature_type: ColumnType, threshold: float
 ) -> Tuple[float, bool]:
     keys = get_unique_not_nan_values_list_from_series(current_data=current_data, reference_data=reference_data)
+    # A single shared category leaves the test with zero degrees of freedom, and there is no
+    # chi-square distribution with zero degrees of freedom: scipy returns statistic=0.0 with
+    # pvalue=nan. There is also nothing for the test to detect when both samples can only take one
+    # and the same value, so report no drift. This mirrors z_stat_test, which already returns 1.0
+    # for this input.
+    if len(keys) == 1 and current_data.notna().any() and reference_data.notna().any():
+        return 1.0, False
     ref_feature_dict = {**dict.fromkeys(keys, 0), **dict(reference_data.value_counts())}
     current_feature_dict = {**dict.fromkeys(keys, 0), **dict(current_data.value_counts())}
     k_norm = current_data.shape[0] / reference_data.shape[0]

@@ -48,6 +48,12 @@ def _g_stat_test(
         test_result: whether the drift is detected
     """
     keys = get_unique_not_nan_values_list_from_series(current_data=current_data, reference_data=reference_data)
+    # Same zero-degrees-of-freedom case as the chi-square test: power_divergence returns nan here,
+    # and raises for differing ones, because the observed and expected
+    # frequencies cannot be made to sum alike. Neither outcome describes drift, and there is none to
+    # detect when both samples can only take one and the same value.
+    if len(keys) == 1 and current_data.notna().any() and reference_data.notna().any():
+        return 1.0, False
     ref_feature_dict = {**dict.fromkeys(keys, 0), **dict(reference_data.value_counts())}
     current_feature_dict = {
         **dict.fromkeys(keys, 0),
