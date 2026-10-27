@@ -68,7 +68,9 @@ class PersonalizationMetric(Metric[PersonalizationMetricResult]):
         df = df.copy()
         table = dict(df[item_id].value_counts()[:10])
         if recommendations_type == RecomType.SCORE:
-            df[prediction_name] = df.groupby(user_id)[prediction_name].transform("rank", ascending=False)
+            df[prediction_name] = df.groupby(user_id)[prediction_name].transform(
+                "rank", ascending=False, method="first"
+            )
         df = df[df[prediction_name] <= k]
         recommended_counter = df[item_id].value_counts()
         n_users = df[user_id].nunique()

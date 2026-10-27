@@ -137,7 +137,7 @@ class PopularityBias(Metric[PopularityBiasResult]):
         current_data = data.current_data.copy()
         if recommendations_type == RecomType.SCORE:
             current_data[prediction_name] = current_data.groupby(user_id)[prediction_name].transform(
-                "rank", ascending=False
+                "rank", ascending=False, method="first"
             )
 
         current_apr, current_distr_data = self.get_apr(
@@ -161,7 +161,7 @@ class PopularityBias(Metric[PopularityBiasResult]):
             reference_data = data.reference_data.copy()
             if recommendations_type == RecomType.SCORE:
                 reference_data[prediction_name] = reference_data.groupby(user_id)[prediction_name].transform(
-                    "rank", ascending=False
+                    "rank", ascending=False, method="first"
                 )
             if ref_user_interacted is None:
                 ref_user_interacted = curr_user_interacted

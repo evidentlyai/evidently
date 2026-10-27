@@ -52,14 +52,18 @@ class PairwiseDistance(Metric[PairwiseDistanceResult]):
         if recommendations_type is None or user_id is None or item_id is None:
             raise ValueError("recommendations_type, user_id, item_id must be provided in the column mapping.")
 
-        all_items = curr.copy()
-        if ref is not None:
-            all_items = pd.concat([curr, ref])
-        if recommendations_type == RecomType.SCORE:
-            all_items[prediction_name] = all_items.groupby(user_id.column_name)[prediction_name].transform(
-                "rank", ascending=False
-            )
-        all_items = all_items[all_items[prediction_name] <= self.k + 1]
+        candidates = []
+        for dataset in (curr, ref):
+            if dataset is None:
+                continue
+            items = dataset.copy()
+            if recommendations_type == RecomType.SCORE:
+                items[prediction_name] = items.groupby(user_id.column_name)[prediction_name].transform(
+                    "rank", ascending=False, method="first"
+                )
+            candidates.append(items[items[prediction_name] <= self.k + 1])
+        # Ranking after concatenation makes the two datasets compete for the same slots.
+        all_items = pd.concat(candidates)
         all_items = all_items[[item_id.column_name] + self.item_features]
         if current_train_data is not None:
             if not np.isin(self.item_features, current_train_data.columns).all():  # type: ignore[attr-defined]

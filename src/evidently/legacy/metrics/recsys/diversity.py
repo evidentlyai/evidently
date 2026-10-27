@@ -74,7 +74,7 @@ class DiversityMetric(Metric[DiversityMetricResult]):
     ):
         df = df.copy()
         if recommendations_type == RecomType.SCORE:
-            df[predictions] = df.groupby(user_id)[predictions].transform("rank", ascending=False)
+            df[predictions] = df.groupby(user_id)[predictions].transform("rank", ascending=False, method="first")
         ilds = []
         all_users = df[user_id].unique()
         for user in all_users:

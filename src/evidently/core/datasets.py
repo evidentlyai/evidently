@@ -265,7 +265,7 @@ class Recsys:
     prediction: str = "prediction"
     """Column name with predicted scores or ranks."""
     recommendations_type: str = "score"
-    """Type of prediction - "score" or "rank"."""
+    """Type of prediction - "score" or "rank". Score ties use input row order within each user."""
 
 
 @dataclasses.dataclass

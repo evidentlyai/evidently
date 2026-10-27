@@ -75,7 +75,7 @@ class ItemBiasMetric(Metric[ItemBiasMetricResult]):
         curr = data.current_data.copy()
         if recommendations_type == RecomType.SCORE:
             curr[prediction_name] = curr.groupby(col_user_id.column_name)[prediction_name].transform(
-                "rank", ascending=False
+                "rank", ascending=False, method="first"
             )
         curr = curr[curr[prediction_name] <= self.k]
 
@@ -94,7 +94,7 @@ class ItemBiasMetric(Metric[ItemBiasMetricResult]):
             ref = data.reference_data.copy()
             if recommendations_type == RecomType.SCORE:
                 ref[prediction_name] = ref.groupby(col_user_id.column_name)[prediction_name].transform(
-                    "rank", ascending=False
+                    "rank", ascending=False, method="first"
                 )
             ref = ref[ref[prediction_name] <= self.k]
             if reference_train_data is not None:
