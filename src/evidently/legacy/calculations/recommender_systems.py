@@ -20,7 +20,7 @@ def collect_dataset(
     if min_rel_score:
         df["target"] = (df["target"] >= min_rel_score).astype(int)
     if recommendations_type == RecomType.SCORE:
-        df["preds"] = df.groupby("users")["preds"].transform("rank", ascending=False).astype(int)
+        df["preds"] = df.groupby("users")["preds"].transform("rank", ascending=False, method="first").astype(int)
     if bin_data:
         df["target"] = (df["target"] > 0).astype(int)
     if not no_feedback_users:

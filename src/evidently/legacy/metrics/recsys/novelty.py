@@ -62,7 +62,9 @@ class NoveltyMetric(Metric[NoveltyMetricResult]):
     ):
         data = df.copy()
         if recommendations_type == RecomType.SCORE:
-            data[prediction_name] = data.groupby(user_name)[prediction_name].transform("rank", ascending=False)
+            data[prediction_name] = data.groupby(user_name)[prediction_name].transform(
+                "rank", ascending=False, method="first"
+            )
         data = data[data[prediction_name] <= k]
         data["miuf"] = -np.log2(data[item_name].map(interactions)).replace([np.inf, -np.inf], np.nan)
         data = data[~data.miuf.isna()]

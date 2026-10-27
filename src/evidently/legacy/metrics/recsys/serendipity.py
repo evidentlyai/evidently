@@ -84,7 +84,9 @@ class SerendipityMetric(Metric[SerendipityMetricResult]):
         if min_rel_score is not None:
             df[target_name] = (df[target_name] >= min_rel_score).astype(int)
         if recommendations_type == RecomType.SCORE:
-            df[prediction_name] = df.groupby(user_id)[prediction_name].transform("rank", ascending=False)
+            df[prediction_name] = df.groupby(user_id)[prediction_name].transform(
+                "rank", ascending=False, method="first"
+            )
         mask = (df[target_name] > 0) & (df[prediction_name] <= k)
         df = df.loc[mask, [user_id, item_id]]
         all_users: np.ndarray[Any, Any] = df[user_id].unique()

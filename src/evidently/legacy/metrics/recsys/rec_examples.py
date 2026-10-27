@@ -110,7 +110,7 @@ class RecCasesTable(Metric[RecCasesTableResults]):
             ascending = True
         else:
             ascending = False
-        curr = curr.sort_values(prediction_name, ascending=ascending)
+        curr = curr.sort_values(prediction_name, ascending=ascending, kind="quicksort" if ascending else "stable")
         for user in user_ids:
             res = curr.loc[curr[user_id] == user, [prediction_name, item_id] + display_features].astype(str)
             if self.item_num is not None:
@@ -120,7 +120,7 @@ class RecCasesTable(Metric[RecCasesTableResults]):
         reference = {}
         reference_train = {}
         if ref is not None:
-            ref = ref.sort_values(prediction_name, ascending=ascending)
+            ref = ref.sort_values(prediction_name, ascending=ascending, kind="quicksort" if ascending else "stable")
             for user in user_ids:
                 res = ref.loc[ref[user_id] == user, [prediction_name, item_id] + display_features].astype(str)
                 if self.item_num is not None:

@@ -64,7 +64,7 @@ class ScoreDistribution(Metric[ScoreDistributionResult]):
         user_id: Optional[str],
         prediction_name: str,
     ) -> Tuple[Distribution, Optional[Distribution], float]:
-        df["rank"] = df.groupby(user_id)[prediction_name].transform("rank", ascending=False)
+        df["rank"] = df.groupby(user_id)[prediction_name].transform("rank", ascending=False, method="first")
         top_k = df.loc[df["rank"] <= self.k, prediction_name]
         if self.k == df["rank"].max:
             other: Optional[pd.Series] = None

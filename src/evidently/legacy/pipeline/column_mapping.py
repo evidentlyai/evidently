@@ -16,6 +16,8 @@ class TaskType:
 
 
 class RecomType(str, Enum):
+    """Scores are ranked per user, descending, with ties broken by input row order."""
+
     SCORE = "score"
     RANK = "rank"
 
