@@ -113,6 +113,15 @@ def test_hit_rate_snapshot_render_after_loading(tmp_path):
     loaded = Report.load(str(snapshot))
     _, dashboard, _ = loaded._build_dashboard_info()
     assert dashboard is not None
+    current_counters = [
+        item["value"]
+        for widget in dashboard.widgets
+        if isinstance(widget.params, dict)
+        for item in widget.params.get("counters", [])
+        if item["label"] == "current"
+    ]
+    assert len(current_counters) == 1
+    assert float(current_counters[0]) == pytest.approx(0.5)
 
 
 @pytest.mark.parametrize("with_reference", [False, True])
