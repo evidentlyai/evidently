@@ -402,6 +402,7 @@ def test_data_integrity_test_duplicated_columns_json_render() -> None:
         ("Int64", np.int64),
         (np.dtype("int64"), np.int64),
         (pd.Int64Dtype(), np.int64),
+        ("datetime64[us]", np.datetime64),
     ],
 )
 def test_infer_dtype_type(dtype, expected) -> None:
