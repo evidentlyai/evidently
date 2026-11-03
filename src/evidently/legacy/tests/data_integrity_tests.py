@@ -8,7 +8,7 @@ from typing import Union
 import numpy
 import numpy as np
 import pandas as pd
-from pandas.core.dtypes.common import infer_dtype_from_object  # type: ignore[attr-defined]
+from pandas.api.types import pandas_dtype
 
 from evidently.legacy.base_metric import ColumnName
 from evidently.legacy.metrics import ColumnRegExpMetric
@@ -41,6 +41,40 @@ from evidently.legacy.utils.data_preprocessing import DataDefinition
 from evidently.legacy.utils.generators import BaseGenerator
 from evidently.legacy.utils.types import Numeric
 from evidently.legacy.utils.types import NumericApprox
+
+
+def _infer_dtype_type(dtype):
+    if isinstance(dtype, type) and issubclass(dtype, np.generic):
+        return dtype
+
+    if isinstance(dtype, (np.dtype, pd.api.extensions.ExtensionDtype)):
+        if hasattr(dtype, "numpy_dtype"):
+            return dtype.numpy_dtype.type
+        return dtype.type
+
+    try:
+        dtype = pandas_dtype(dtype)
+    except TypeError:
+        pass
+
+    if isinstance(dtype, pd.api.extensions.ExtensionDtype):
+        return dtype.type
+
+    if isinstance(dtype, str):
+        if dtype in ("datetimetz", "datetime64tz"):
+            return pd.DatetimeTZDtype.type
+        if dtype == "period":
+            raise NotImplementedError
+        if dtype in ("datetime", "timedelta"):
+            dtype += "64"
+
+        try:
+            return _infer_dtype_type(getattr(np, dtype))
+        except (AttributeError, TypeError):
+            pass
+
+    return _infer_dtype_type(np.dtype(dtype))
+
 
 DATA_INTEGRITY_GROUP = GroupData(id="data_integrity", title="Data Integrity", description="")
 GroupingTypes.TestGroup.add_value(DATA_INTEGRITY_GROUP)
@@ -1019,12 +1053,12 @@ class TestColumnsType(Test):
             if isinstance(expected_type_object, numpy.dtypes.DateTime64DType):
                 expected_type = expected_type_object.type
             else:
-                expected_type = infer_dtype_from_object(expected_type_object)
+                expected_type = _infer_dtype_type(expected_type_object)
 
             if isinstance(real_column_type_object, numpy.dtypes.DateTime64DType):
                 real_column_type = real_column_type_object.type
             else:
-                real_column_type = infer_dtype_from_object(real_column_type_object)
+                real_column_type = _infer_dtype_type(real_column_type_object)
             columns.append(
                 ColumnTypeParameter(
                     actual_type=real_column_type.__name__, expected_type=expected_type.__name__, column_name=column_name

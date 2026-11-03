@@ -28,6 +28,7 @@ from evidently.legacy.tests import TestNumberOfRowsWithMissingValues
 from evidently.legacy.tests import TestShareOfColumnsWithMissingValues
 from evidently.legacy.tests import TestShareOfMissingValues
 from evidently.legacy.tests import TestShareOfRowsWithMissingValues
+from evidently.legacy.tests.data_integrity_tests import _infer_dtype_type
 
 
 def test_data_integrity_test_number_of_columns() -> None:
@@ -388,6 +389,24 @@ def test_data_integrity_test_duplicated_columns_json_render() -> None:
         "parameters": {"condition": {"lte": 1}, "value": 1},
         "status": "SUCCESS",
     }
+
+
+@pytest.mark.parametrize(
+    "dtype, expected",
+    [
+        ("int64", np.int64),
+        ("float", np.float64),
+        ("bool", np.bool_),
+        ("datetime", np.datetime64),
+        ("timedelta", np.timedelta64),
+        ("Int64", np.int64),
+        (np.dtype("int64"), np.int64),
+        (pd.Int64Dtype(), np.int64),
+        ("datetime64[us]", np.datetime64),
+    ],
+)
+def test_infer_dtype_type(dtype, expected) -> None:
+    assert _infer_dtype_type(dtype) is expected
 
 
 def test_data_integrity_test_columns_type() -> None:
