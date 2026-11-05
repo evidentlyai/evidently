@@ -111,7 +111,7 @@ class LegacyTopKCalculation(
         current_series = legacy_result.current
         current_df = pd.DataFrame(
             {
-                "rank": current_series.index + 1,  # Convert 0-based to 1-based ranking
+                "rank": range(1, len(current_series) + 1),
                 "value": current_series.values,
             }
         )
@@ -124,7 +124,7 @@ class LegacyTopKCalculation(
         reference_series = legacy_result.reference
         reference_df = pd.DataFrame(
             {
-                "rank": reference_series.index + 1,  # Convert 0-based to 1-based ranking
+                "rank": range(1, len(reference_series) + 1),
                 "value": reference_series.values,
             }
         )
