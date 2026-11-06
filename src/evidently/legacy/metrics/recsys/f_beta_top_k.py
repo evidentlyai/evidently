@@ -61,7 +61,13 @@ class FBetaTopKMetric(TopKMetric):
         beta_sqr = self.beta**2
         precision_arr = np.array(precision)
         recall_arr = np.array(recall)
-        return (1 + beta_sqr) * precision_arr * recall_arr / (beta_sqr * precision_arr + recall_arr)
+        denominator = beta_sqr * precision_arr + recall_arr
+        return np.divide(
+            (1 + beta_sqr) * precision_arr * recall_arr,
+            denominator,
+            out=np.zeros_like(denominator, dtype=float),
+            where=denominator != 0,
+        )
 
     def key(self) -> str:
         return ""
