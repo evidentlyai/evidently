@@ -61,6 +61,22 @@ def test_permutation_test(reference, current, observed, test_statistic_func, pva
     assert permutation_test(reference, current, observed, test_statistic_func) == pvalue
 
 
+def test_permutation_test_preserves_numpy_random_state():
+    original_state = np.random.get_state()
+    try:
+        np.random.seed(123)
+        expected = np.random.RandomState(123).random_sample(5)
+        permutation_test(
+            pd.Series([0, 0, 1]),
+            pd.Series([0, 1, 1]),
+            1 / 3,
+            _total_variation_distance,
+        )
+        np.testing.assert_array_equal(np.random.random_sample(5), expected)
+    finally:
+        np.random.set_state(original_state)
+
+
 @pytest.mark.parametrize(
     "reference_data, current_data ,expected_contingency_table",
     (
