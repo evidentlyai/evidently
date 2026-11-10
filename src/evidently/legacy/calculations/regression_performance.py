@@ -74,7 +74,9 @@ def _calculate_quality_metrics(
     if mape_zero_handling == "drop":
         data.drop(epsilon_values.index, inplace=True)
 
-    abs_perc_err = np.abs(data[prediction_column] - data[target_column]) / np.maximum(data[target_column], epsilon)
+    abs_perc_err = np.abs(data[prediction_column] - data[target_column]) / np.maximum(
+        np.abs(data[target_column]), epsilon
+    )
     if mape_zero_handling == "replace" and epsilon_values.size > 0:
         abs_perc_err[epsilon_values.index] = mape_replace_value
     mape = 100.0 * np.mean(abs_perc_err)
