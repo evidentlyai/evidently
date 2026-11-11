@@ -33,6 +33,7 @@ import pandas as pd
 
 from evidently.legacy.calculations.stattests.registry import StatTest
 from evidently.legacy.calculations.stattests.registry import register_stattest
+from evidently.legacy.calculations.stattests.utils import reference_quantile_bin_edges
 from evidently.legacy.core import ColumnType
 
 
@@ -72,20 +73,14 @@ def _hellinger_distance(
         hellinger_distance = sqrt(1 - hellinger_distance)
 
     else:
-        bins = np.histogram_bin_edges(keys, bins="sturges")
-        h1 = np.histogram(reference_data.to_numpy(), bins=bins, density=True)[0]
-        h2 = np.histogram(current_data.to_numpy(), bins=bins, density=True)[0]
+        bins = reference_quantile_bin_edges(reference_data, 30)
+        reference = reference_data.dropna().to_numpy()
+        current = current_data.dropna().to_numpy()
+        h1 = np.histogram(reference, bins=bins)[0] / len(reference)
+        h2 = np.histogram(current, bins=bins)[0] / len(current)
 
-        bin_width = (max(bins) - min(bins)) / (len(bins) - 1)
-
-        hellinger_distance = 0.0
-        for i in range(len(h1)):
-            p1 = h1[i]
-            p2 = h2[i]
-            hellinger_distance += sqrt(float(p1) * float(p2)) * bin_width
-
+        hellinger_distance = sqrt(1 - np.sum(np.sqrt(h1 * h2)))
         hellinger_distance = np.clip(hellinger_distance, 0, 1)
-        hellinger_distance = sqrt(1 - hellinger_distance)
 
     return hellinger_distance, hellinger_distance >= threshold
 

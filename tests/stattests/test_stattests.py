@@ -14,8 +14,10 @@ from evidently.legacy.calculations.stattests.fisher_exact_stattest import fisher
 from evidently.legacy.calculations.stattests.g_stattest import g_test
 from evidently.legacy.calculations.stattests.hellinger_distance import hellinger_stat_test
 from evidently.legacy.calculations.stattests.mann_whitney_urank_stattest import mann_whitney_u_stat_test
+from evidently.legacy.calculations.stattests.kl_div import kl_div_stat_test
 from evidently.legacy.calculations.stattests.mmd_stattest import empirical_mmd
 from evidently.legacy.calculations.stattests.mmd_stattest import sigma_median
+from evidently.legacy.calculations.stattests.psi import psi_stat_test
 from evidently.legacy.calculations.stattests.t_test import t_test
 from evidently.legacy.calculations.stattests.tvd_stattest import tvd_test
 from evidently.legacy.core import ColumnType
@@ -335,3 +337,32 @@ def test_t_test() -> None:
     reference = pd.Series([38.7, 41.5, 43.8, 44.5, 45.5, 46.0, 47.7, 58.0])
     current = pd.Series([39.2, 39.3, 39.7, 41.4, 41.8, 42.9, 43.3, 45.8])
     assert t_test.func(reference, current, "num", 0.05) == (approx(0.084, abs=1e-3), False)
+
+
+def test_numeric_divergence_stattests_ignore_current_outliers() -> None:
+    """Regression for #1962: a single current outlier must not hide clear drift."""
+    rng = np.random.default_rng(0)
+    reference = pd.Series(rng.normal(0, 1, 10_000))
+    shifted_current = pd.Series(rng.normal(1.0, 1, 10_000))
+    current_with_outlier = pd.concat([shifted_current, pd.Series([1e3])], ignore_index=True)
+
+    psi_base, _ = psi_stat_test.func(reference, shifted_current, ColumnType.Numerical, 0.5)
+    psi_outlier, outlier_detected = psi_stat_test.func(reference, current_with_outlier, ColumnType.Numerical, 0.5)
+
+    assert psi_base > 0.5
+    assert psi_outlier > 0.5
+    assert outlier_detected
+    assert psi_outlier == approx(psi_base, rel=0.15)
+
+    kl_base, _ = kl_div_stat_test.func(reference, shifted_current, ColumnType.Numerical, 0.5)
+    kl_outlier, _ = kl_div_stat_test.func(reference, current_with_outlier, ColumnType.Numerical, 0.5)
+    assert kl_outlier > 0.1
+    assert kl_outlier == approx(kl_base, rel=0.15)
+
+    hellinger_base, _ = hellinger_stat_test.func(reference, shifted_current, ColumnType.Numerical, 0.5)
+    hellinger_outlier, outlier_hellinger = hellinger_stat_test.func(
+        reference, current_with_outlier, ColumnType.Numerical, 0.2
+    )
+    assert hellinger_base > 0.2
+    assert hellinger_outlier > 0.2
+    assert outlier_hellinger
