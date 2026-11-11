@@ -13,6 +13,23 @@ def get_unique_not_nan_values_list_from_series(current_data: pd.Series, referenc
     return list(set(reference_data.dropna().unique()) | set(current_data.dropna().unique()))
 
 
+def reference_quantile_bin_edges(reference_data: pd.Series, n: int) -> np.ndarray:
+    """Bin edges from reference quantiles with open-ended outer bins."""
+    reference = reference_data.dropna()
+    if reference.empty:
+        raise ValueError("Reference data must contain at least one non-null value.")
+
+    quantiles = np.linspace(0, 1, n + 1)
+    edges = np.unique(reference.quantile(quantiles, interpolation="linear").to_numpy(dtype=float))
+    if len(edges) < 2:
+        value = float(edges[0])
+        edges = np.array([value - 1e-9, value + 1e-9], dtype=float)
+    edges = edges.astype(float)
+    edges[0] = -np.inf
+    edges[-1] = np.inf
+    return edges
+
+
 def get_binned_data(
     reference_data: pd.Series, current_data: pd.Series, feature_type: ColumnType, n: int, feel_zeroes: bool = True
 ):
@@ -29,10 +46,9 @@ def get_binned_data(
     n_vals = reference_data.nunique()
 
     if feature_type == ColumnType.Numerical and n_vals > 20:
-        combined = np.asarray(pd.concat([reference_data, current_data], axis=0).values)
-        bins = np.histogram_bin_edges(combined, bins="sturges")
-        reference_percents = np.histogram(reference_data, bins)[0] / len(reference_data)
-        current_percents = np.histogram(current_data, bins)[0] / len(current_data)
+        bins = reference_quantile_bin_edges(reference_data, n)
+        reference_percents = np.histogram(reference_data.dropna(), bins=bins)[0] / len(reference_data.dropna())
+        current_percents = np.histogram(current_data.dropna(), bins=bins)[0] / len(current_data.dropna())
 
     else:
         keys = get_unique_not_nan_values_list_from_series(current_data=current_data, reference_data=reference_data)
