@@ -17,7 +17,7 @@ def collect_dataset(
 ):
     df = pd.concat([users, target, preds], axis=1)
     df.columns = pd.Index(["users", "target", "preds"])
-    if min_rel_score:
+    if min_rel_score is not None:
         df["target"] = (df["target"] >= min_rel_score).astype(int)
     if recommendations_type == RecomType.SCORE:
         df["preds"] = df.groupby("users")["preds"].transform("rank", ascending=False).astype(int)
