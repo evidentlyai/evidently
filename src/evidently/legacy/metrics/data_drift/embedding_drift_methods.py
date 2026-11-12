@@ -72,9 +72,9 @@ class DistanceDriftMethod(DriftMethod):
         res = DISTANCE_DICT[self.dist](reference_emb.mean(axis=0), current_emb.mean(axis=0))
         if self.bootstrap:
             bstrp_res = []
-            b_ref_size = int(reference_emb.shape[0] ** 2 / (reference_emb.shape[0] + current_emb.shape[0]))
-            b_curr_size = int(
-                current_emb.shape[0] * reference_emb.shape[0] / (reference_emb.shape[0] + current_emb.shape[0])
+            b_ref_size = max(int(reference_emb.shape[0] ** 2 / (reference_emb.shape[0] + current_emb.shape[0])), 1)
+            b_curr_size = max(
+                int(current_emb.shape[0] * reference_emb.shape[0] / (reference_emb.shape[0] + current_emb.shape[0])), 1
             )
             for i in range(N_BOOTSTRAP):
                 np.random.seed(i)
@@ -294,8 +294,8 @@ class MMDDriftMethod(DriftMethod):
             sigma2_x = np.median(pair_dists_bstrp) ** 2
             gamma_x = 1.0 / sigma2_x
             K = pairwise_kernels(x, metric="rbf", gamma=gamma_x)
-            x_size = max(int(m * m / (m + n)), 1)
-            y_size = max(int(m * n / (m + n)), 1)
+            x_size = max(int(m * m / (m + n)), 2)
+            y_size = max(int(m * n / (m + n)), 2)
             bstrp_res = []
             for i in range(N_BOOTSTRAP):
                 np.random.seed(i)
