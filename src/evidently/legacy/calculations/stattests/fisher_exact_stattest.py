@@ -44,10 +44,10 @@ def _fisher_exact_stattest(
         reference_data: reference data
         current_data: current data
         feature_type: feature type
-        threshold: all values above this threshold means data drift
+        threshold: p-values below this threshold indicate data drift
     Raises:
         ValueError: If null or inf values is found in either reference_data or current_data
-        ValueError: If reference_data or current_data is not binary(unique values exceeds 2)
+        ValueError: If the combined samples contain more than two categories
     Returns:
         p_value: two-tailed p-value
         test_result: whether the drift is detected
