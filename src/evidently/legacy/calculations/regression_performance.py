@@ -70,13 +70,14 @@ def _calculate_quality_metrics(
     else:
         epsilon = mape_epsilon
 
-    epsilon_values = data[~(abs(data[target_column]) > epsilon)]
+    near_zero_mask = ~(abs(data[target_column]) > epsilon)
+    epsilon_values = data[near_zero_mask]
     if mape_zero_handling == "drop":
-        data.drop(epsilon_values.index, inplace=True)
+        data = data[~near_zero_mask]
 
     abs_perc_err = np.abs(data[prediction_column] - data[target_column]) / np.maximum(data[target_column], epsilon)
     if mape_zero_handling == "replace" and epsilon_values.size > 0:
-        abs_perc_err[epsilon_values.index] = mape_replace_value
+        abs_perc_err[near_zero_mask] = mape_replace_value
     mape = 100.0 * np.mean(abs_perc_err)
     sdape = np.std(abs_perc_err, ddof=1)
 
