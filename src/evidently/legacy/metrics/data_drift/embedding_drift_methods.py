@@ -145,7 +145,12 @@ class ModelDriftMethod(DriftMethod):
         data = pd.concat((reference_emb, current_emb))
 
         X_train, X_test, y_train, y_test = train_test_split(
-            data.drop("target", axis=1), data["target"], test_size=0.5, random_state=42, shuffle=True
+            data.drop("target", axis=1),
+            data["target"],
+            test_size=0.5,
+            random_state=42,
+            shuffle=True,
+            stratify=data["target"],
         )
         clf = SGDClassifier(loss="log_loss", random_state=42)
         clf.fit(X_train, y_train)
