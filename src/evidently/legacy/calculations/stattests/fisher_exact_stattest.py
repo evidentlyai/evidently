@@ -44,10 +44,10 @@ def _fisher_exact_stattest(
         reference_data: reference data
         current_data: current data
         feature_type: feature type
-        threshold: all values above this threshold means data drift
+        threshold: p-values below this threshold indicate data drift
     Raises:
         ValueError: If null or inf values is found in either reference_data or current_data
-        ValueError: If reference_data or current_data is not binary(unique values exceeds 2)
+        ValueError: If the combined samples contain more than two categories
     Returns:
         p_value: two-tailed p-value
         test_result: whether the drift is detected
@@ -63,7 +63,7 @@ def _fisher_exact_stattest(
             "Null or inf values found in either reference_data or current_data. Please ensure that no null or inf values are present"
         )
 
-    if (reference_data.nunique() > 2) or (current_data.nunique() > 2):
+    if pd.concat([reference_data, current_data]).nunique() > 2:
         raise ValueError("Expects binary data for both reference and current, but found unique categories > 2")
 
     contingency_matrix = generate_fisher2x2_contingency_table(reference_data, current_data)

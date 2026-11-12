@@ -83,11 +83,7 @@ def test_generate_fisher2x2_contingency_table(
         (pd.Series([1, 1, 1, 1]), pd.Series([0])),
     ),
 )
-def test_input_data_length_check_generate_fisher2x2_contingency_table(
-    reference_data: pd.Series, current_data: pd.Series
-):
-    with pytest.raises(
-        ValueError,
-        match="reference_data and current_data are not of equal length, please ensure that they are of equal length",
-    ):
-        generate_fisher2x2_contingency_table(current_data, reference_data)
+def test_unequal_data_lengths_generate_fisher2x2_contingency_table(reference_data: pd.Series, current_data: pd.Series):
+    table = generate_fisher2x2_contingency_table(reference_data, current_data)
+    assert table.shape == (2, 2)
+    np.testing.assert_array_equal(table.sum(axis=1), [len(current_data), len(reference_data)])

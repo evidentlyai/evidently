@@ -90,15 +90,9 @@ def generate_fisher2x2_contingency_table(reference_data: pd.Series, current_data
     Args:
         reference_data: reference data
         current_data: current data
-    Raises:
-        ValueError: if reference_data and current_data are not of equal length
     Returns:
         contingency_matrix: contingency_matrix for binary data
     """
-    if reference_data.shape[0] != current_data.shape[0]:
-        raise ValueError(
-            "reference_data and current_data are not of equal length, please ensure that they are of equal length"
-        )
     unique_categories: Set[Any] = set(reference_data.unique().tolist() + current_data.unique().tolist())
     if len(unique_categories) != 2:
         unique_categories.add("placeholder")
