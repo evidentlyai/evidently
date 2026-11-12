@@ -261,6 +261,15 @@ def MMD2u_bstrp(K, m, n, x_idx, y_idx):
     )
 
 
+def _rbf_kernel(data, sigma2):
+    if sigma2 == 0:
+        # As the bandwidth tends to zero, the RBF kernel is 1 for equal vectors
+        # and 0 otherwise. Group labels avoid a samples-by-samples-by-features array.
+        _, groups = np.unique(data, axis=0, return_inverse=True)
+        return (groups[:, None] == groups[None, :]).astype(float)
+    return pairwise_kernels(data, metric="rbf", gamma=1.0 / sigma2)
+
+
 @autoregister
 class MMDDriftMethod(DriftMethod):
     class Config:
@@ -287,13 +296,12 @@ class MMDDriftMethod(DriftMethod):
         )
         sigma2 = np.median(pair_dists) ** 2
         xy = np.vstack([x, y])
-        K = pairwise_kernels(xy, metric="rbf", gamma=1.0 / sigma2)
+        K = _rbf_kernel(xy, sigma2)
         mmd2u = MMD2u(K, m, n)
         if self.bootstrap:
             pair_dists_bstrp = pairwise_distances(x.sample(min(m, 1000), random_state=0), metric="euclidean", n_jobs=-1)
             sigma2_x = np.median(pair_dists_bstrp) ** 2
-            gamma_x = 1.0 / sigma2_x
-            K = pairwise_kernels(x, metric="rbf", gamma=gamma_x)
+            K = _rbf_kernel(x, sigma2_x)
             x_size = max(int(m * m / (m + n)), 1)
             y_size = max(int(m * n / (m + n)), 1)
             bstrp_res = []
