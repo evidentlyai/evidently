@@ -77,9 +77,9 @@ class DistanceDriftMethod(DriftMethod):
                 current_emb.shape[0] * reference_emb.shape[0] / (reference_emb.shape[0] + current_emb.shape[0])
             )
             for i in range(N_BOOTSTRAP):
-                np.random.seed(i)
-                b_ref_idx = np.random.choice(reference_emb.shape[0], b_ref_size)
-                b_curr_idx = np.random.choice(reference_emb.shape[0], b_curr_size)
+                rng = np.random.RandomState(i)
+                b_ref_idx = rng.choice(reference_emb.shape[0], b_ref_size)
+                b_curr_idx = rng.choice(reference_emb.shape[0], b_curr_size)
                 bstrp_res.append(
                     DISTANCE_DICT[self.dist](
                         reference_emb.iloc[b_ref_idx, :].mean(axis=0), reference_emb.iloc[b_curr_idx, :].mean(axis=0)
@@ -119,8 +119,8 @@ def distance(
 
 
 def calc_roc_auc_random(y_test, i):
-    np.random.seed(i)
-    y_random_pred = np.random.rand(
+    rng = np.random.RandomState(i)
+    y_random_pred = rng.rand(
         len(y_test),
     )
     roc_auc_random = roc_auc_score(y_test, y_random_pred)
@@ -298,9 +298,9 @@ class MMDDriftMethod(DriftMethod):
             y_size = max(int(m * n / (m + n)), 1)
             bstrp_res = []
             for i in range(N_BOOTSTRAP):
-                np.random.seed(i)
-                x_idxs = np.random.choice(m, x_size)
-                y_idxs = np.random.choice(m, y_size)
+                rng = np.random.RandomState(i)
+                x_idxs = rng.choice(m, x_size)
+                y_idxs = rng.choice(m, y_size)
                 bstrp_res.append(MMD2u_bstrp(K, x_size, y_size, x_idxs, y_idxs))
                 perc = np.percentile(bstrp_res, 100 * self.quantile_probability)
             return max(mmd2u, 0), mmd2u > perc, "mmd"
