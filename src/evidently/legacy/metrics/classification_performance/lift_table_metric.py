@@ -117,7 +117,7 @@ class ClassificationLiftTable(Metric[ClassificationLiftTableResults]):
                     prediction.prediction_probas.iloc[:, 0].tolist(),
                 )
             )
-            lift_table[int(prediction.prediction_probas.columns[0])] = calculate_lift_table(binded)
+            lift_table[prediction.prediction_probas.columns[0]] = calculate_lift_table(binded)
         else:
             binaraized_target = pd.DataFrame(binaraized_target)
             binaraized_target.columns = labels
@@ -129,7 +129,7 @@ class ClassificationLiftTable(Metric[ClassificationLiftTableResults]):
                         prediction.prediction_probas[label],
                     )
                 )
-                lift_table[int(label)] = calculate_lift_table(binded)  # type: ignore[arg-type]
+                lift_table[label] = calculate_lift_table(binded)  # type: ignore[arg-type]
         return lift_table
 
 
