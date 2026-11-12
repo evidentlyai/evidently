@@ -140,13 +140,10 @@ class ModelDriftMethod(DriftMethod):
     def __call__(self, current_emb: pd.DataFrame, reference_emb: pd.DataFrame) -> Tuple[float, bool, str]:
         if self.pca_components:
             reference_emb, current_emb = get_pca_df(reference_emb, current_emb, self.pca_components)
-        reference_emb["target"] = [1] * reference_emb.shape[0]
-        current_emb["target"] = [0] * current_emb.shape[0]
         data = pd.concat((reference_emb, current_emb))
+        target = np.concatenate((np.ones(reference_emb.shape[0]), np.zeros(current_emb.shape[0])))
 
-        X_train, X_test, y_train, y_test = train_test_split(
-            data.drop("target", axis=1), data["target"], test_size=0.5, random_state=42, shuffle=True
-        )
+        X_train, X_test, y_train, y_test = train_test_split(data, target, test_size=0.5, random_state=42, shuffle=True)
         clf = SGDClassifier(loss="log_loss", random_state=42)
         clf.fit(X_train, y_train)
         y_pred_proba = clf.predict_proba(X_test)[:, 1]
