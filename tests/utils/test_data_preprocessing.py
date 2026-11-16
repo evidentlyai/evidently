@@ -416,3 +416,34 @@ def test_create_data_definition(reference, current, mapping, target, id, datetim
     assert definition.get_prediction_columns() == prediction
     assert definition.get_columns() == columns
     assert definition.embeddings == embeddings
+
+
+def test_single_feature_name_is_stored_as_a_list():
+    mapping = ColumnMapping()
+    mapping.numerical_features = "rooms"
+    mapping.categorical_features = "city"
+    mapping.datetime_features = "prediction_timestamp_utc"
+    mapping.text_features = "review"
+    assert mapping.numerical_features == ["rooms"]
+    assert mapping.categorical_features == ["city"]
+    assert mapping.datetime_features == ["prediction_timestamp_utc"]
+    assert mapping.text_features == ["review"]
+    assert ColumnMapping(numerical_features=["rooms", "price"]).numerical_features == ["rooms", "price"]
+
+
+def test_datetime_feature_name_does_not_retype_prediction_column():
+    current = pd.DataFrame(
+        {
+            "target": [0, 1, 0, 1],
+            "prediction": [0, 1, 1, 0],
+            "prediction_timestamp_utc": pd.to_datetime(["2020-01-01", "2020-01-02", "2020-01-03", "2020-01-04"]),
+        }
+    )
+    mapping = ColumnMapping(target="target", prediction="prediction")
+    mapping.datetime_features = "prediction_timestamp_utc"
+    definition = create_data_definition(None, current, mapping)
+    prediction = definition.get_prediction_columns()
+    assert prediction is not None
+    assert prediction.predicted_values == ColumnDefinition("prediction", ColumnType.Categorical)
+    datetime_features = definition.get_columns(filter_def=ColumnType.Datetime, features_only=True)
+    assert [column.column_name for column in datetime_features] == ["prediction_timestamp_utc"]

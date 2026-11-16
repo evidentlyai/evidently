@@ -22,6 +22,7 @@ class RecomType(str, Enum):
 
 TargetNames = Union[List[Label], Dict[Label, str]]
 Embeddings = Dict[str, List[str]]
+_FEATURE_LIST_FIELDS = frozenset({"numerical_features", "categorical_features", "datetime_features", "text_features"})
 
 
 @dataclass
@@ -41,6 +42,14 @@ class ColumnMapping:
     user_id: Optional[str] = "user_id"
     item_id: Optional[str] = "item_id"
     recommendations_type: Union[RecomType, str] = RecomType.SCORE
+
+    def __setattr__(self, name: str, value: object) -> None:
+        # A lone column name is a str. Leaving it as a str makes `name in features`
+        # a substring test, so "prediction" matches "prediction_timestamp_utc" and
+        # is typed as a datetime feature (#846).
+        if name in _FEATURE_LIST_FIELDS and isinstance(value, str):
+            value = [value]
+        object.__setattr__(self, name, value)
 
     @property
     def recom_type(self) -> RecomType:
