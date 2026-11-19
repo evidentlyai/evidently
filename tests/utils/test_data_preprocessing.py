@@ -431,6 +431,20 @@ def test_single_feature_name_is_stored_as_a_list():
     assert ColumnMapping(numerical_features=["rooms", "price"]).numerical_features == ["rooms", "price"]
 
 
+@pytest.mark.parametrize(
+    "field, column_name",
+    [
+        ("numerical_features", "rooms"),
+        ("categorical_features", "city"),
+        ("datetime_features", "prediction_timestamp_utc"),
+        ("text_features", "review"),
+    ],
+)
+def test_constructor_single_feature_name_is_stored_as_a_list(field, column_name):
+    mapping = ColumnMapping(**{field: column_name})
+    assert getattr(mapping, field) == [column_name]
+
+
 def test_datetime_feature_name_does_not_retype_prediction_column():
     current = pd.DataFrame(
         {
