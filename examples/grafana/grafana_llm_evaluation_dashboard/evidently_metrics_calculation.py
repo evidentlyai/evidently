@@ -18,6 +18,7 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s]: %(m
 
 rand = random.Random()
 SEND_TIMEOUT = 5
+OPENAI_MODEL = "gpt-6-luna"
 CONNECTION_STRING = "host=localhost port=5432 user=postgres password=example"
 CONNECTION_STRING_DB = CONNECTION_STRING + " dbname=test"
 
@@ -55,7 +56,8 @@ questions = [
 
 def mock_chatbot(client, question: str) -> str:
     response = client.chat.completions.create(
-        model="gpt-4o-mini",
+        model=OPENAI_MODEL,
+        reasoning_effort="none",
         messages=[
             {"role": "system", "content": "You are a helpful assistant. Aswer in 1-3 sentences"},
             {"role": "user", "content": question}
@@ -76,9 +78,9 @@ def mock_chatbot(client, question: str) -> str:
     return result
 
 descriptors = [
-        NegativityLLMEval("response", alias="Negativity"),
+        NegativityLLMEval("response", model=OPENAI_MODEL, alias="Negativity"),
         Sentiment("response", alias="Sentiment"),
-        DeclineLLMEval("response", alias="Declines"),
+        DeclineLLMEval("response", model=OPENAI_MODEL, alias="Declines"),
         SentenceCount("response", alias="Sentence count")        
     ]
 
