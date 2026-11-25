@@ -39,6 +39,37 @@ def test_threshold_default():
     assert options.get_threshold("feature", "num") is None
 
 
+@pytest.mark.parametrize(
+    "global_thr,cat_thr,num_thr,text_thr,per_feature_thr,expected",
+    [
+        (None, None, 0.5, None, {}, {"cat1": None, "num1": 0.5, "text1": None}),
+        (None, None, 0.5, None, {"cat1": 0.3}, {"cat1": 0.3, "num1": 0.5, "text1": None}),
+        (0.1, None, None, None, None, {"cat1": 0.1, "num1": 0.1, "text1": 0.1}),
+        (0.1, 0.2, 0.3, 0.4, None, {"cat1": 0.2, "num1": 0.3, "text1": 0.4}),
+        (0.1, 0.2, 0.3, 0.4, {"cat1": 0.7, "num1": 0.9}, {"cat1": 0.7, "num1": 0.9, "text1": 0.4}),
+        (None, None, 0.3, None, {"num1": 0.0}, {"num1": 0.0}),
+    ],
+)
+def test_threshold_precedence(global_thr, cat_thr, num_thr, text_thr, per_feature_thr, expected):
+    features_with_types = {"cat1": "cat", "num1": "num", "text1": "text"}
+    options = DataDriftOptions(
+        all_features_threshold=global_thr,
+        cat_features_threshold=cat_thr,
+        num_features_threshold=num_thr,
+        text_features_threshold=text_thr,
+        per_feature_threshold=per_feature_thr,
+    )
+    for feature, expected_threshold in expected.items():
+        assert options.get_threshold(feature, features_with_types[feature]) == expected_threshold
+
+
+@pytest.mark.parametrize("threshold_kwargs", [{"threshold": 0.1}, {"all_features_threshold": 0.1}])
+def test_confidence_and_threshold_conflict(threshold_kwargs):
+    options = DataDriftOptions(confidence=0.9, **threshold_kwargs)
+    with pytest.raises(ValueError, match="Only DataDriftOptions.confidence or DataDriftOptions.threshold can be set"):
+        options.get_threshold("feature1", "num")
+
+
 def _default_stattest():
     pass
 
