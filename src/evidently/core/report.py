@@ -292,14 +292,14 @@ class Context:
         for _, obj in dependencies:
             if isinstance(obj, LegacyMetric):
                 (result, render) = self.get_legacy_metric(obj, input_data_generator, task_name)
-                object.__setattr__(obj, "get_result", lambda: result)
+                object.__setattr__(obj, "get_result", _result_getter(result))
             else:
                 raise ValueError(f"unexpected type {type(obj)}")
         fp = metric.get_fingerprint() + ":task:" + (task_name or "")
         if fp not in self._legacy_metrics:
             result = metric.calculate(input_data)
             renderer = find_metric_renderer(type(metric), DEFAULT_RENDERERS)
-            object.__setattr__(metric, "get_result", lambda: result)
+            object.__setattr__(metric, "get_result", _result_getter(result))
             self._legacy_metrics[fp] = (result, renderer.render_html(metric))
         return typing.cast(T, self._legacy_metrics[fp][0]), self._legacy_metrics[fp][1]
 
@@ -390,6 +390,10 @@ class Context:
         )
         self._labels = list(current_labels | reference_labels)
         return self._labels
+
+
+def _result_getter(result: T) -> Callable[[], T]:
+    return lambda: result
 
 
 def _default_input_data_generator(context: "Context", task_name: Optional[str]) -> InputData:
