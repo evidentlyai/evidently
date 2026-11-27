@@ -15,6 +15,7 @@ from evidently.core.datasets import DataDefinition
 from evidently.core.datasets import Dataset
 from evidently.legacy.ui.type_aliases import UserID
 from evidently.ui.service.storage.local.dataset import DatasetFileStorage
+from evidently.ui.service.storage.local.dataset import validate_filename
 from evidently.ui.service.type_aliases import DatasetID
 from evidently.ui.service.type_aliases import ProjectID
 
@@ -73,12 +74,17 @@ class FileIO:
         allowed_extensions: Optional[Container[str]] = None,
     ) -> Tuple[FileID, str, bytes]:
         """Save an uploaded file and return file ID, extension, and content."""
-        _, file_extension = os.path.splitext(upload_file.filename)
+        try:
+            filename = validate_filename(upload_file.filename)
+        except ValueError as error:
+            raise HTTPException(status_code=400, detail="Invalid filename") from error
+
+        _, file_extension = os.path.splitext(filename)
         if allowed_extensions is not None and file_extension not in allowed_extensions:
             raise HTTPException(status_code=400, detail="Extension not allowed")
         file_content: bytes = upload_file.file.read()
         return (
-            self.file_storage.put_dataset(user_id, project_id, dataset_id, upload_file.filename, file_content),
+            self.file_storage.put_dataset(user_id, project_id, dataset_id, filename, file_content),
             file_extension,
             file_content,
         )

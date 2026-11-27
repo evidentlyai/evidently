@@ -90,3 +90,18 @@ def test_get_dataset_blob_id(dataset_file_storage, test_project_id, test_dataset
     assert str(test_project_id) in blob_id
     assert str(test_dataset_id) in blob_id
     assert "test_file.csv" in blob_id
+
+
+@pytest.mark.parametrize(
+    "filename",
+    [
+        "/tmp/data.csv",
+        "../data.csv",
+        "nested/data.csv",
+        "..\\data.csv",
+        "C:\\data.csv",
+    ],
+)
+def test_get_dataset_blob_id_rejects_filename_paths(test_project_id, test_dataset_id, filename):
+    with pytest.raises(ValueError, match="Filename must not contain a path"):
+        DatasetFileStorage.get_dataset_blob_id(test_project_id, test_dataset_id, filename)

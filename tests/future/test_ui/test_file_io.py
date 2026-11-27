@@ -2,6 +2,7 @@ from io import BytesIO
 
 import pandas as pd
 import pytest
+from litestar.datastructures import UploadFile
 from litestar.exceptions import HTTPException
 
 from evidently.legacy.core import new_id
@@ -116,6 +117,34 @@ def test_read_file_from_storage_missing_file(file_io, test_project_id):
     """Test reading non-existent file."""
     with pytest.raises(Exception):
         file_io.read_file_from_storage(test_project_id, "nonexistent/file/id.parquet")
+
+
+@pytest.mark.parametrize(
+    "filename",
+    [
+        "/tmp/data.csv",
+        "../data.csv",
+        "nested/data.csv",
+        "..\\data.csv",
+        "C:\\data.csv",
+    ],
+)
+def test_save_file_rejects_filename_paths(
+    file_io, test_user_id, test_project_id, test_dataset_id, sample_csv_data, filename
+):
+    upload_file = UploadFile(content_type="text/csv", filename=filename, file_data=sample_csv_data)
+
+    with pytest.raises(HTTPException) as exc_info:
+        file_io.save_file(
+            test_user_id,
+            test_project_id,
+            test_dataset_id,
+            upload_file,
+            allowed_extensions={".csv"},
+        )
+
+    assert exc_info.value.status_code == 400
+    assert exc_info.value.detail == "Invalid filename"
 
 
 def test_get_upload_file(sample_dataframe):
