@@ -58,7 +58,7 @@ Turn any Report into a **Test Suite** by adding pass/fail conditions.
 **Monitoring UI** service helps visualize metrics and test results over time.
 
 You can choose:
-* Self-host the open-source version. [Live demo](https://demo.evidentlyai.com).
+* Self-host the open-source version. [Run the monitoring dashboard demo locally](#monitoring-dashboard).
 * Sign up for [Evidently Cloud](https://www.evidentlyai.com/register) (Recommended).
 
 Evidently Cloud offers a generous free tier and extra features like dataset and user management, alerting, and no-code evals. [Compare OSS vs Cloud](https://docs.evidentlyai.com/faq/oss_vs_cloud).
