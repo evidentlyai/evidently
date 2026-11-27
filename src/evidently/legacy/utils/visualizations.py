@@ -45,7 +45,7 @@ def _doane_width(x, first_edge, last_edge):
             np.true_divide(temp, sigma, temp)
             np.power(temp, 3, temp)
             g1 = np.mean(temp)
-            return _unsigned_subtract(last_edge, first_edge) / (
+            return _unsigned_subtract(np.max(x), np.min(x)) / (
                 1.0 + np.log2(x.size) + np.log2(1.0 + np.absolute(g1) / sg1)
             )
     return 0.0
